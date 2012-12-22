@@ -1,0 +1,1254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wizard:WizardWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+					 xmlns:s="library://ns.adobe.com/flex/spark"
+					 xmlns:mx="library://ns.adobe.com/flex/mx"
+					 xmlns:services="com.momentumsi.c9.services.*"
+					 xmlns:wizard="com.momentumsi.c9.components.wizard.*"
+					 xmlns:components="com.momentumsi.c9.components.*"
+					 width="800" height="625" 
+					 creationComplete="creationCompleteHandler(event)"
+					 creationPolicy="all"
+					 wizardType="{ResourceTypeLabel.EC2}">
+			   
+	
+	<fx:Script>
+		<![CDATA[
+			import com.maccherone.json.JSON;
+			import com.momentumsi.c9.constants.AlertMessage;
+			import com.momentumsi.c9.constants.ImagePath;
+			import com.momentumsi.c9.constants.ResourceTypeLabel;
+			import com.momentumsi.c9.models.Cloud;
+			import com.momentumsi.c9.models.CloudAccount;
+			import com.momentumsi.c9.representers.ComputeRepresenter;
+			import com.momentumsi.c9.services.CloudApiService;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.collections.ArrayCollection;
+			import mx.collections.ArrayList;
+			import mx.controls.Alert;
+			import mx.core.UIComponent;
+			import mx.events.*;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.*;
+			
+			import spark.events.TextOperationEvent;
+
+			[Bindable]
+			public var ec2Data:ComputeRepresenter;
+			[Bindable]
+			private var scaleType:String = "none";
+			[Bindable]
+			private var imageReview:String;
+			[Bindable]
+			private var machineSizeReview:String;
+			[Bindable]
+			private var availabilityZoneReview:String;
+			[Bindable]
+			private var keyPairReview:String;
+			[Bindable]
+			private var securityGroupsReview:String;
+			[Bindable]
+			private var monitoringReview:String;
+			[Bindable]
+			private var terminationProtectionReview:String;
+			[Bindable]
+			private var shutdownBehaviorReview:String;
+			private var minSize:int = 0;
+			private var maxSize:int = 0;
+			[Bindable]
+			private var imageSelectionList:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var computePrice:String = "N/A";
+			private var selectedImage:Object;
+			
+			//Properties for spot instance time
+			[Bindable]
+			private var year:Number = new Date().fullYear;
+			[Bindable]
+			private var month:Number = new Date().month + 1;
+			[Bindable]
+			private var date:Number = new Date().date;
+			[Bindable]
+			private var hour:Number = new Date().hours;
+			[Bindable]
+			private var minute:Number = new Date().minutes;
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				ec2Service.addEventListener(FaultEvent.FAULT, getResources_faultHandler);
+				ec2Service.objectManagement = true;
+				ec2Service.objectManagementWizard = this;
+				ec2Service.getEc2Resources(cloudAccount.cloud_id);
+				
+				buttonGroup.nextButton.enabled = false;
+				
+				//If not amazon, remove content
+				if(cloudAccount.cloud_provider != CloudAccount.AMAZON)
+				{
+					instanceWizardViewStack.removeElement(elasticityConfigurationContent);
+					instanceWizardViewStack.removeElement(additionalConfigurationContent);
+				}
+			}
+			
+			protected function nextButton_clickHandler(event:MouseEvent):void
+			{
+				var imagesList:Object = imagesVG.getElementAt(0);
+				var alert:Boolean = false;
+				if(instanceWizardViewStack.selectedChild == imageSelectionContent)
+				{
+					if(imagesList.selectedIndex != -1)
+					{
+						machineSize.dataProvider = ec2Service.types;
+						machineSize.selectedIndex = 0;
+						setComputePrice();
+					}else
+					{
+						alert = true;
+						Alert.show(AlertMessage.SELECTIMAGE);
+					}
+				}else if(instanceWizardViewStack.selectedChild == instanceConfigurationContent)
+				{
+					if(machineName.text != "")
+					{
+						if(Helpers.validateAlphanumeric(machineName.text))
+						{
+							machineNameAlert.visible = false;
+						}else
+						{
+							alert = true;
+							machineNameAlert.text = "This field must be alphanumeric.";
+							machineNameAlert.visible = true;
+						}
+					}else
+					{
+						alert = true;
+						machineNameAlert.text = "Invalid Input.";
+						machineNameAlert.visible = true;
+					}
+				}else if(instanceWizardViewStack.selectedChild == elasticityConfigurationContent)
+				{
+					if(!noScale.selected)
+					{	
+						if(autoRecovery.selected)
+						{
+							minSize = 1;
+							maxSize = 1;
+						}else if(fixedArray.selected)
+						{
+							autoScaleAlert.visible = false;
+							try
+							{
+								var sizeInt:int = parseInt(fixedArraySize.text);
+								if(sizeInt > 0)
+								{
+									fixedArrayAlert.visible = false;
+									minSize = sizeInt;
+									maxSize = sizeInt;
+								}else
+								{
+									alert = true;
+									fixedArrayAlert.visible = true;
+									
+								}
+							}catch(e:Error)
+							{
+								alert = true;
+								fixedArrayAlert.visible = true;
+							}
+						}else if(autoScale.selected)
+						{
+							fixedArrayAlert.visible = false;
+							try
+							{
+								var minInt:int = parseInt(autoScaleMin.text);
+								var maxInt:int = parseInt(autoScaleMax.text);
+								if(minInt > 0 && maxInt > 0 && maxInt > minInt)
+								{
+									autoScaleAlert.visible = false;
+									minSize = minInt;
+									maxSize = maxInt;
+								}else
+								{
+									alert = true;
+									autoScaleAlert.visible = true;
+									
+								}
+							}catch(e:Error)
+							{
+								alert = true;
+								autoScaleAlert.visible = true;
+							}
+						}
+					}
+					
+
+				}
+
+				if(instanceWizardViewStack.selectedIndex == instanceWizardViewStack.numChildren - 2)
+				{
+					try
+					{
+						convertToDisplay();
+					}catch(e:Error){
+						trace(e.message);
+					}
+				}
+				
+				if(!alert)
+				{
+					instanceWizardViewStack.selectedIndex++;
+				}
+			}
+			
+			protected function validNumber(numString:String):Boolean
+			{
+				var valid:Boolean = false;
+				try
+				{
+					var numInt:int = parseInt(numString);
+					if(numInt > 0)
+					{
+						valid = true;
+					}else
+					{
+						valid = false;
+					}
+				}catch(e:Error)
+				{
+					valid = false;
+				}
+				return valid;
+			}
+
+			protected function setComputePrice():void
+			{
+				var instanceCount:int = 0;
+				if(noScale.selected || autoRecovery.selected)
+				{
+					instanceCount = 1;
+				}else if(fixedArray.selected)
+				{
+					if(validNumber(fixedArraySize.text))
+					{
+						instanceCount = parseInt(fixedArraySize.text);
+					}
+				}else if(autoScale.selected)
+				{
+					if(validNumber(autoScaleMin.text))
+					{
+						instanceCount = parseInt(autoScaleMin.text);
+					}
+				}
+				
+				if(machineSize.selectedIndex != -1 && ec2Service.hasOwnProperty('computePrices') && instanceCount > 0 && noSpotInstance.selected)
+				{
+					var found:Boolean = false;
+					for each(var price:Object in ec2Service.computePrices)
+					{
+						price = price.price;
+						if(!found)
+						{
+							if(cloudAccount.cloud_provider == CloudAccount.AMAZON)
+							{
+								if(machineSize.selectedItem.id == price.name)
+								{
+									found = true;
+									var priceNumber:Number = (price.effective_price as Number) * instanceCount;
+									computePrice = "$" + priceNumber.toFixed(2) + "/" + price.properties.denominator;
+									if(detailedMonitoringCheck.selected)
+									{
+										addDetailedMonitoringPrice();
+									}
+								}
+							}else
+							{
+								if(machineSize.selectedItem.name == price.name)
+								{
+									found = true;
+									computePrice = "$" + (price.effective_price as Number).toFixed(2) + "/" + price.properties.denominator;
+								}
+							}
+						}
+					}
+					if(!found)
+					{
+						computePrice = "N/A";
+					}
+				}else
+				{
+					computePrice = "N/A";
+				}
+			}
+			
+			protected function addDetailedMonitoringPrice():void
+			{
+				var found:Boolean = false;
+				for each(var price:Object in ec2Service.computePrices)
+				{
+					price = price.price;
+					if(!found)
+					{
+						if("detailed_monitoring" == price.name)
+						{
+							found = true;
+							computePrice = computePrice + " + $" + (price.effective_price as Number).toFixed(2) + "/" + price.properties.denominator;
+						}
+					}
+				}
+			}
+			
+			protected function previousButton_clickHandler(event:MouseEvent):void
+			{
+				if(instanceWizardViewStack.selectedIndex != 0)
+				{
+					instanceWizardViewStack.selectedIndex--;
+				}
+			}
+			
+			private function getResources_faultHandler(fault:FaultEvent):void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function faultHandler(event:FaultEvent):void
+			{
+				Alert.show("The auto scale group failed to create.");
+				buttonGroup.createButton.enabled = true;
+			}
+			
+			protected function finishButton_clickHandler(event:MouseEvent):void
+			{
+				buttonGroup.createButton.enabled = false;
+				var secGroups:Array = new Array();
+				for each(var secGroup:Object in securityGroups.selectedItems)
+				{
+					if(secGroup.groupName == null)
+					{
+						secGroups.push(secGroup.name);
+					}else{
+						secGroups.push(secGroup.groupName);
+					}
+				}
+				
+				var securityGroupsArray:String = JSON.encode(secGroups);
+				var zone:String;
+				if(availabilityZone.selectedItem != null)
+				{
+					zone = availabilityZone.selectedItem.zoneName;
+				}
+				var monitoring:String;	
+				if(monitoringReview == "Enabled")
+				{
+					monitoring = "true";
+				}else
+				{
+					monitoring = "false";
+				}
+				var temination:String;
+				if(scaleTypeGroup.selectedValue == "None")
+				{
+					if(noSpotInstance.selected)
+					{
+						if(terminationProtectionReview == "Enabled")
+						{
+							temination = "true";
+						}else
+						{
+							temination = "false";
+						}
+						var imagesList:Object = imagesVG.getElementAt(0);
+						var parameters:Object = {};
+						parameters.name = machineName.text;
+						parameters.image_id = selectedImage;
+						if(cloudAccount.cloud_provider != CloudAccount.RACKSPACE)
+						{
+							parameters.key_name = keyPair.selectedItem.name;
+						}
+						parameters.security_groups = secGroups;
+						parameters.flavor_id = machineSize.selectedItem.id;
+						if(cloudAccount.cloud_provider == CloudAccount.CLOUDSTACK)
+						{
+							parameters.availability_zone = availabilityZone.selectedItem.id;
+						}else
+						{
+							parameters.availability_zone = zone;
+						}
+						parameters.monitoring_enabled = monitoring;
+						if(cloudAccount.cloud_provider == CloudAccount.AMAZON)
+						{
+							parameters.disable_api_termination = temination;
+							parameters.instance_initiated_shutdown_behavior = shutdownBehaviorReview.toLowerCase();
+						}
+						ec2Service.addEventListener(ResultEvent.RESULT, objectManagementLaunchSvc_resultHandler);
+						ec2Service.launchEc2Instance(parameters);
+					}else
+					{
+						var params:Object = {};
+						params.ImageId = selectedImage;
+						params.SpotPrice = spotInstanceMaxPrice.text;
+						params.InstanceType = machineSize.selectedItem.id;
+						if(spotInstancePersistentRequest.selected)
+						{
+							params.Type = "persistent";
+						}
+						if(validFromDates.selected)
+						{
+							var fromDate:Date = new Date(validFromYear.text, parseInt(validFromMonth.text)-1, validFromDate.text, validFromHour.text, validFromMinute.text); 
+							params.ValidFrom = dateFormatter.format(fromDate);
+						}
+						if(validUntilDates.selected)
+						{
+							var untilDate:Date = new Date(validUntilYear.text, parseInt(validUntilMonth.text)-1, validUntilDate.text, validUntilHour.text, validUntilMinute.text);
+							params.ValidUntil = dateFormatter.format(untilDate);
+						}
+						if(spotInstanceLaunchGroup.text != "")
+						{
+							params.LaunchGroup = spotInstanceLaunchGroup.text;
+						}
+						params.KeyName = keyPair.selectedItem.name;
+						if(detailedMonitoringCheck.selected)
+						{
+							params.Monitoring = "true";
+						}
+						params.AvailabilityZone = zone;
+						params.SecurityGroup = secGroups;
+						
+						ec2Service.addEventListener(ResultEvent.RESULT, objectManagementLaunchSvc_resultHandler);
+						ec2Service.requestSpotInstances(params);
+					}
+				}else{
+					if(scalingTriggerOn.selected)
+					{
+						objectManagementLaunchSvc.send({name: machineName.text,
+														image_id: selectedImage,
+														key_name: keyPairReview,
+														security_groups: securityGroupsArray,
+														flavor_id: machineSize.selectedItem.id,
+														availability_zone: availabilityZoneReview,
+														monitoring_enabled: monitoringReview,
+														min_size: minSize,
+														max_size: maxSize,
+														trigger: true,
+														trigger_measurement: triggerMeasurement.selectedLabel,
+														trigger_statistic: triggerStatistic.selectedLabel,
+														trigger_unit: triggerUnit.text,
+														measure_period: (parseInt(triggerMeasurePeriod.text) * 60),
+														upper_threshold: triggerUpperThreshold.text,
+														scale_increment: triggerUpperBreachScale.text,
+														lower_threshold: triggerLowerThreshold.text,
+														scale_decrement: triggerLowerBreachScale.text});
+					}else
+					{
+						objectManagementLaunchSvc.send({name: machineName.text,
+														image_id: selectedImage,
+														key_name: keyPairReview,
+														security_groups: securityGroupsArray,
+														flavor_id: machineSize.selectedItem.id,
+														availability_zone: availabilityZoneReview,
+														monitoring_enabled: monitoringReview,
+														min_size: minSize,
+														max_size: maxSize});
+					}
+				}
+			}
+			
+			/*
+			protected function machineImage_changeHandler():void
+			{
+				if(machineImage.selectedIndex != - 1)
+				{
+					machineSize.enabled = true;
+					var architecture:String = machineImage.selectedItem.aws_architecture;
+					if(architecture == "x86_64")
+					{
+						switch(cloudAccount.cloud_provider)
+						{
+							case CloudAccount.AMAZON:
+								machineSize.dataProvider = Ec2Service.AWS_64BIT_TYPES;
+								break;
+							case CloudAccount.OPENSTACK:
+								machineSize.dataProvider = Ec2Service.OS_TYPES;
+								break;
+							case CloudAccount.EUCALYPTUS:
+								machineSize.dataProvider = Ec2Service.EUCA_TYPES;
+								break;
+						}							
+					}else
+					{
+						switch(cloudAccount.cloud_provider)
+						{
+							case CloudAccount.AMAZON:
+								machineSize.dataProvider = Ec2Service.AWS_32BIT_TYPES;
+								break;
+							case CloudAccount.OPENSTACK:
+								machineSize.dataProvider = Ec2Service.OS_TYPES;
+								break;
+							case CloudAccount.EUCALYPTUS:
+								machineSize.dataProvider = Ec2Service.EUCA_TYPES;
+								break;
+						}
+					}
+					machineSize.selectedIndex = 0;
+				}
+			}
+			*/
+			
+			protected function scaleTypeGroup_changeHandler(event:Event):void
+			{
+				if(noScale.selected == true)
+				{
+					fixedArraySizeLbl.enabled = false;
+					fixedArraySize.enabled = false;
+					autoScaleMinLbl.enabled = false;
+					autoScaleMin.enabled = false;
+					autoScaleMaxLbl.enabled = false;
+					autoScaleMax.enabled = false;
+					workspaceImage.source = ImagePath.NEW_EC2;
+					scaleType = "none";
+					detailedMonitoringCheck.selected = false;
+				}else if(autoRecovery.selected == true)
+				{
+					fixedArraySizeLbl.enabled = false;
+					fixedArraySize.enabled = false;
+					autoScaleMinLbl.enabled = false;
+					autoScaleMin.enabled = false;
+					autoScaleMaxLbl.enabled = false;
+					autoScaleMax.enabled = false;
+					workspaceImage.source = ImagePath.NEW_AUTORECOVER;
+					scaleType = "autoRecovery";
+					detailedMonitoringCheck.selected = true;
+				}else if(fixedArray.selected == true)
+				{
+					fixedArraySizeLbl.enabled = true;
+					fixedArraySize.enabled = true;
+					autoScaleMinLbl.enabled = false;
+					autoScaleMin.enabled = false;
+					autoScaleMaxLbl.enabled = false;
+					autoScaleMax.enabled = false;
+					workspaceImage.source = ImagePath.NEW_AUTOSCALE;
+					scaleType = "fixedArray";
+					detailedMonitoringCheck.selected = true;
+				}else
+				{
+					fixedArraySizeLbl.enabled = false;
+					fixedArraySize.enabled = false;
+					autoScaleMinLbl.enabled = true;
+					autoScaleMin.enabled = true;
+					autoScaleMaxLbl.enabled = true;
+					autoScaleMax.enabled = true
+					workspaceImage.source = ImagePath.NEW_AUTOSCALE;
+					scaleType = "autoScale";
+					detailedMonitoringCheck.selected = true;
+				}
+				
+				setComputePrice();
+			}
+			
+			protected function convertToDisplay():void
+			{
+				var secGroups:Array = new Array();
+				for each(var secGroup:Object in securityGroups.selectedItems)
+				{
+					if(secGroup.groupName == null)
+					{
+						secGroups.push(secGroup.name);
+					}else{
+						secGroups.push(secGroup.groupName);
+					}
+				}
+				machineSizeReview = machineSize.selectedLabel;
+				availabilityZoneReview = availabilityZone.selectedLabel;
+				securityGroupsReview = secGroups.join(", ");
+				keyPairReview = keyPair.selectedLabel;
+				
+				if(detailedMonitoringCheck.selected)
+				{
+					monitoringReview = "Enabled";
+				}else
+				{
+					monitoringReview = "Disabled";
+				}
+				
+				if(noScale.selected)
+				{
+					
+					if(terminationProtectionCheck.selected)
+					{
+						terminationProtectionReview = "Enabled";
+					}else
+					{
+						terminationProtectionReview = "Disabled";
+					}
+					
+					shutdownBehaviorReview = shutdownBehavior.selectedLabel;
+				}else
+				{
+					terminationProtectionReview = "N/A";
+					shutdownBehaviorReview = "N/A";
+				}
+			}
+			
+			protected function objectManagementLaunchSvc_resultHandler(event:ResultEvent):void
+			{
+				ec2Service.removeEventListener(ResultEvent.RESULT, objectManagementLaunchSvc_resultHandler);
+				objectManagement.refreshResourceList();
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function triggerMeasurement_changeHandler(event:ListEvent):void
+			{
+				//[CPUUtilization, NetworkIn, NetworkOut, DiskWriteOps, DiskReadBytes, DiskReadOps, DiskWriteBytes, Latency, RequestCount, HealthyHostCount, UnhealthyHostCount]
+				switch (triggerMeasurement.selectedIndex)
+				{
+					case 0:
+						triggerUnit.text = "Percent";
+						upperThresholdLbl.text = "(0-100)";
+						lowerThresholdLbl.text = "(0-100)";
+						triggerUpperThreshold.text = "80";
+						triggerLowerThreshold.text = "20";
+						break;
+					case 1:
+						triggerUnit.text = "Bytes";
+						upperThresholdLbl.text = "(0-20000000)";
+						lowerThresholdLbl.text = "(0-20000000)";
+						triggerUpperThreshold.text = "6000000";
+						triggerLowerThreshold.text = "2000000";
+						break;
+					case 2:
+						triggerUnit.text = "Bytes";
+						upperThresholdLbl.text = "(0-20000000)";
+						lowerThresholdLbl.text = "(0-20000000)";
+						triggerUpperThreshold.text = "6000000";
+						triggerLowerThreshold.text = "2000000";
+						break;
+					case 3:
+						triggerUnit.text = "Count";
+						upperThresholdLbl.text = "(0-20000000)";
+						lowerThresholdLbl.text = "(0-20000000)";
+						triggerUpperThreshold.text = "6000000";
+						triggerLowerThreshold.text = "2000000";
+						break;
+					case 4:
+						triggerUnit.text = "Bytes";
+						upperThresholdLbl.text = "(0-20000000)";
+						lowerThresholdLbl.text = "(0-20000000)";
+						triggerUpperThreshold.text = "6000000";
+						triggerLowerThreshold.text = "2000000";
+						break;
+					case 5:
+						triggerUnit.text = "Count";
+						upperThresholdLbl.text = "(0-20000000)";
+						lowerThresholdLbl.text = "(0-20000000)";
+						triggerUpperThreshold.text = "6000000";
+						triggerLowerThreshold.text = "2000000";
+						break;
+					case 6:
+						triggerUnit.text = "Bytes";
+						upperThresholdLbl.text = "(0-20000000)";
+						lowerThresholdLbl.text = "(0-20000000)";
+						triggerUpperThreshold.text = "6000000";
+						triggerLowerThreshold.text = "2000000";
+						break;
+					case 7:
+						triggerUnit.text = "Seconds";
+						upperThresholdLbl.text = "(0-20000000)";
+						lowerThresholdLbl.text = "(0-20000000)";
+						triggerUpperThreshold.text = "60";
+						triggerLowerThreshold.text = "10";
+						break;
+					case 8:
+						triggerUnit.text = "Count";
+						upperThresholdLbl.text = "(0-20000000)";
+						lowerThresholdLbl.text = "(0-20000000)";
+						triggerUpperThreshold.text = "6000000";
+						triggerLowerThreshold.text = "2000000";
+						break;
+					case 9:
+						triggerUnit.text = "Count";
+						upperThresholdLbl.text = "(0-20000000)";
+						lowerThresholdLbl.text = "(0-20000000)";
+						triggerUpperThreshold.text = "6000000";
+						triggerLowerThreshold.text = "2000000";
+						break;
+					case 10:
+						triggerUnit.text = "Count";
+						upperThresholdLbl.text = "(0-20000000)";
+						lowerThresholdLbl.text = "(0-20000000)";
+						triggerUpperThreshold.text = "6000000";
+						triggerLowerThreshold.text = "2000000";
+						break;
+				}
+				
+			}
+			
+			protected function createNewKeyPairButton_clickHandler(event:MouseEvent):void
+			{
+				var createKeyWindow:Ec2CreateKeyPair = new Ec2CreateKeyPair();
+				createKeyWindow.cloudAccount = cloudAccount;
+				createKeyWindow.region = region;
+				PopUpManager.addPopUp(createKeyWindow, UIComponent(parentApplication), true);
+			}
+			
+			public function buildImageList():void
+			{
+				imagesVG.removeAllElements();
+				imageSelectionList.removeAll();
+				var mappings:Boolean = false;
+				for each(var i:Object in ec2Service.designatedImages)
+				{
+					if(i.hasOwnProperty('cloud_mapping'))
+					{
+						mappings = true;
+						if(i.cloud_mapping.mapping_type == "image")
+						{
+							imageSelectionList.addItem({name: i.cloud_mapping.name, properties: i.cloud_mapping.properties, selectedArch: "x86_64"});
+						}
+					}else{
+						imageSelectionList.addItem(i);
+					}
+				}
+				
+				if(mappings)
+				{
+					imagesVG.addElement(imageSelection);
+				}else{
+					imagesVG.addElement(defaultImages);
+				}
+				
+				//Check if ec2Data before to display image content or set data for the user
+				if(ec2Data == null)
+				{	
+					imageSelectionViewStack.selectedChild = imageContent;
+				}else
+				{
+					setEc2DataAsDefaults();
+				}
+			}
+			
+			protected function setEc2DataAsDefaults():void
+			{
+				//set fields, use setComboBoxSelection
+				imageReview = ec2Data.imageId;
+				instanceWizardViewStack.selectedChild = instanceConfigurationContent;
+				setComboBoxSelection(ec2Data.flavorId, machineSize, "name");
+				setComboBoxSelection(ec2Data.keyName, keyPair, "name");
+				setComboBoxSelection(ec2Data.availabilityZone, availabilityZone, "zoneName");
+				setListSelections(ec2Data.securityGroupsCollection.toArray(), securityGroups, "name");
+				setComputePrice();
+			}
+			
+			private function securityGroupsList_labelFunction(item:Object):String
+			{
+				if(item.groupName != null)
+				{
+					return item.groupName;
+				}else{
+					return item.name;
+				}
+			}
+			
+			protected function machineSize_changeHandler(event:ListEvent):void
+			{
+				setComputePrice();
+			}
+			
+			protected function detailedMonitoringCheck_changeHandler(event:Event):void
+			{
+				setComputePrice();
+			}
+			
+			protected function autoScale_changeHandler(event:TextOperationEvent):void
+			{
+				setComputePrice();
+			}
+			
+			protected function spotInstanceGroup_changeHandler(event:Event):void
+			{
+				setComputePrice();
+			}
+			
+			protected function imageSelection_valueCommitHandler(event:FlexEvent):void
+			{
+				if(cloudAccount.cloud_provider == CloudAccount.AMAZON)
+				{
+					var architecture:String = event.currentTarget.selectedItems[0].selectedArch;
+					imageReview = event.currentTarget.selectedItem.properties[architecture].ami;
+					selectedImage = imageReview;
+				}else if(cloudAccount.cloud_provider == CloudAccount.OPENSTACK){
+					selectedImage = event.currentTarget.selectedItem.id;
+					imageReview = event.currentTarget.selectedItem.name;
+				}else{
+					imageReview = event.currentTarget.selectedItem.name;
+					selectedImage = imageReview;
+				}
+				buttonGroup.nextButton.enabled = true;
+			}
+			
+			protected function spotHistoryButton_clickHandler(event:MouseEvent):void
+			{
+				var priceHistoryWindow:SpotPriceHistoryWindow = new SpotPriceHistoryWindow();
+				priceHistoryWindow.computeService = ec2Service;
+				priceHistoryWindow.availabilityZones.addAll(ec2Service.availabilityZones);
+				PopUpManager.addPopUp(priceHistoryWindow, UIComponent(parentApplication), true);
+			}
+			
+			protected function instanceWizardViewStack_valueCommitHandler(event:FlexEvent):void
+			{
+				if(instanceWizardViewStack.selectedIndex == 0)
+				{
+					instanceWizardViewStack.percentHeight = 100;
+				}else{
+					instanceWizardViewStack.height = 504;
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<services:Ec2Service id="ec2Service"
+							 cloudAccountId="{cloudAccount.id}"
+							 region="{region}"/>
+		
+		<s:DateTimeFormatter id="dateFormatter"
+							 dateTimePattern="yyy-MM-dd'T'HH:mm:ss'.000Z'"
+							 useUTC="true"/>
+		
+		<components:ObjectManagementTab id="objectManagement"/>
+		
+		<services:CloudApiService id="objectManagementLaunchSvc"
+								  action="launch_auto_scaling_group"
+								  cloudAccountId="{cloudAccount.id}"
+								  region="{region}"
+								  serviceType="{CloudApiService.AS_SERVICE}"
+								  result="objectManagementLaunchSvc_resultHandler(event)"
+								  fault="faultHandler(event)"/>
+		
+		<s:RadioButtonGroup id="scalingTriggerOnOffGroup"/>
+		<s:RadioButtonGroup id="scaleTypeGroup" change="scaleTypeGroup_changeHandler(event)"/>
+		<s:RadioButtonGroup id="spotInstanceGroup" change="spotInstanceGroup_changeHandler(event)"/>
+		<s:RadioButtonGroup id="spotInstanceValidFrom"/>
+		<s:RadioButtonGroup id="spotInstanceValidUntil"/>
+		<s:BusyIndicator id="loading"/>
+		
+
+		
+		<s:DataGrid id="defaultImages"
+					height="100%" width="100%"
+					valueCommit="imageSelection_valueCommitHandler(event)"
+					dataProvider="{imageSelectionList}">
+			<s:columns>
+				<s:ArrayList>
+					<s:GridColumn headerText="Name" dataField="name"/>
+					<s:GridColumn headerText="Location" dataField="location"
+								  visible="{cloudAccount.cloud_provider == CloudAccount.EUCALYPTUS}"/>
+					<s:GridColumn headerText="Description" dataField="description" 
+								  visible="{cloudAccount.cloud_provider == CloudAccount.JOYENT}"/>
+					<s:GridColumn headerText="Operating System" dataField="os"
+								  visible="{cloudAccount.cloud_provider == CloudAccount.JOYENT}"/>					
+				</s:ArrayList>
+			</s:columns>
+		</s:DataGrid>
+	</fx:Declarations>
+	
+	<s:VGroup height="93%" width="100%" gap="0">
+		<wizard:WizardWindowTitle id="ec2WindowTitle"
+								  wizardStack="{instanceWizardViewStack}"
+								  resourceImage="{ImagePath.NEW_EC2}"
+								  resourceLabel="{wizardDisplayName}"/>
+		<wizard:CookieTrail id="ec2CookieTrail"
+							wizardStack="{instanceWizardViewStack}"/>
+		<mx:ViewStack id="instanceWizardViewStack"
+					  valueCommit="instanceWizardViewStack_valueCommitHandler(event)"
+					  height="100%" width="100%" creationPolicy="all">
+			<s:NavigatorContent id="imageSelectionContent" 
+								label="Select Image" 
+								height="100%" width="100%">
+				<mx:ViewStack id="imageSelectionViewStack" 
+							  height="100%" width="100%" 
+							  creationPolicy="all">
+					<s:NavigatorContent id="loadingImageContent">
+						<s:VGroup width="100%" height="100%"
+								  paddingTop="20" paddingLeft="20" paddingRight="20" 
+								  horizontalAlign="center" verticalAlign="middle">
+							<s:BusyIndicator width="100" height="100"/>
+						</s:VGroup>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="imageContent">
+						<s:VGroup id="imagesVG" width="100%" height="100%" paddingBottom="20"
+								  paddingLeft="20" paddingRight="20" paddingTop="20"
+								  verticalAlign="top">
+							<s:List id="imageSelection" width="100%" height="100%"
+									dataProvider="{imageSelectionList}"
+									valueCommit="imageSelection_valueCommitHandler(event)"
+									itemRenderer="com.momentumsi.c9.itemRenderers.Ec2ImageListSelection"/>
+						</s:VGroup>
+					</s:NavigatorContent>
+				</mx:ViewStack>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="instanceConfigurationContent" label="Configure Instance" height="100%" width="100%">
+				<s:Form height="100%" width="100%" textAlign="right">
+					<s:layout>
+						<s:FormLayout>
+							<s:gap>5</s:gap>
+						</s:FormLayout>
+					</s:layout>
+					<s:FormItem width="428" label="Name*:">
+						<s:HGroup textAlign="left">
+							<s:TextInput id="machineName" tabIndex="0" width="150"/>
+							<mx:Text id="machineNameAlert" text="Invalid Input." color="red" visible="false"/>
+						</s:HGroup>
+					</s:FormItem>
+					<s:FormItem label="Machine Size*:" width="100%">
+						<s:HGroup textAlign="left">
+							<mx:ComboBox id="machineSize"
+										 prompt="Select Size"
+										 tabIndex="3"
+										 width = "300"
+										 labelField="name"
+									     dataProvider="{ec2Service.types}"
+										 change="machineSize_changeHandler(event)">
+							</mx:ComboBox>
+							<mx:Text text="Cost: {computePrice}"/>
+							<mx:Text id="machineSizeAlert" text="Invalid Input." color="red" visible="false"/>
+						</s:HGroup>
+					</s:FormItem>
+					<s:FormItem label="Availability Zone*:"
+								visible="{ec2Service.availabilityZones.length > 0}"
+								includeInLayout="{ec2Service.availabilityZones.length > 0}">
+						<s:HGroup textAlign="left">
+							<mx:ComboBox id="availabilityZone"
+										 prompt="Select Zone"
+										 labelField="zoneName"
+										 tabIndex="4"
+										 dataProvider="{ec2Service.availabilityZones}"
+										 width = "200"/>
+							<mx:Text id="availabilityZoneAlert" text="Invalid Input." color="red" visible="false"/>
+						</s:HGroup>
+					</s:FormItem>
+					<s:FormItem label="Key Pair:*" width="100%"
+								visible="{cloudAccount.cloud_provider != CloudAccount.RACKSPACE}"
+								includeInLayout="{cloudAccount.cloud_provider != CloudAccount.RACKSPACE}">
+						<s:HGroup textAlign="left">
+							<mx:ComboBox id="keyPair"
+										 width="200"
+										 prompt="Select Key"
+										 labelField="name"
+										 tabIndex="5"
+										 dataProvider="{ec2Service.keyPairs}"/>
+							<s:Button id="createNewKeyPairButton"
+									  label="Create New Key"
+									  click="createNewKeyPairButton_clickHandler(event)"/>
+							<mx:Text id="keyPairAlert" text="Invalid Input." color="red" visible="false"/>
+						</s:HGroup>
+					</s:FormItem>
+					<s:FormItem label="Security Group*:" width="100%"
+								visible="{ec2Service.securityGroups.length > 0}"
+								includeInLayout="{ec2Service.securityGroups.length > 0}">
+						<s:HGroup id="securityGroupsHGroup" width="100%" textAlign="left">
+							<s:List id="securityGroups" width="550"
+									maxHeight="90"
+									allowMultipleSelection="true"
+									tabIndex="6"								    
+									dataProvider="{ec2Service.securityGroups}"
+									labelFunction="securityGroupsList_labelFunction"/>
+							<mx:Text id="securityGroupAlert" text="Invalid Input." color="red" visible="false"/>
+						</s:HGroup>
+					</s:FormItem>
+					<s:FormItem visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"
+								width="100%" height="100%" label="Request Spot Instances:"
+								includeInLayout="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"
+								skinClass="spark.skins.spark.FormItemSkin">
+						<s:VGroup id="spotInstancesVG" width="601" height="135" gap="5"
+								  textAlign="left">
+							<s:HGroup verticalAlign="middle">
+								<s:RadioButton group="{spotInstanceGroup}" id="yesSpotInstance" label="Yes"/>
+								<s:RadioButton group="{spotInstanceGroup}" id="noSpotInstance" label="No" selected="true"/>
+							</s:HGroup>
+							<s:HGroup verticalAlign="middle">
+								<s:Label text="Current Price:" fontWeight="bold"/>
+								<mx:Text text="${ec2Service.currentSpotPrice}"/>
+								<s:Button id="spotHistoryButton"
+										  label="View History"
+										  click="spotHistoryButton_clickHandler(event)"/>
+							</s:HGroup>
+							<s:BorderContainer>
+								<s:backgroundFill>
+									<s:SolidColor alpha="0"/>
+								</s:backgroundFill>
+								<s:Scroller width="550" height="111">
+									<s:VGroup>
+										<s:Form id="spotInstanceForm" width="100%"
+												enabled="{yesSpotInstance.selected}">
+											<s:layout>
+												<s:FormLayout gap="-10"/>
+											</s:layout>
+											<s:FormItem label="Max Price:">
+												<s:HGroup>
+													<s:TextInput id="spotInstanceMaxPrice" widthInChars="5"/>
+													<mx:Text text="(Ex: 0.045 = 4.5 cents/hour)"/>
+												</s:HGroup>
+											</s:FormItem>
+											<s:FormItem label="Launch Group:">
+												<s:TextInput id="spotInstanceLaunchGroup"/>
+											</s:FormItem>
+											<s:FormItem label="Persistent Request?">
+												<s:HGroup>
+													<s:CheckBox id="spotInstancePersistentRequest"/>
+													<s:Image source="{ImagePath.HELPER_ICON}" toolTip="The instance will restart when terminated (for any reason) for the duration of the request."/>
+												</s:HGroup>
+											</s:FormItem>
+											<s:FormItem width="567" label="Request Valid From:">
+												<s:HGroup>
+													<s:RadioButton group="{spotInstanceValidFrom}" id="validFromAnytime" label="Any time" selected="true"/>
+													<s:RadioButton group="{spotInstanceValidFrom}" id="validFromDates" label="Date:"/>
+													<s:HGroup enabled="{validFromDates.selected}"
+															  gap="0">
+														<s:TextInput id="validFromYear" widthInChars="4" text="{year}"/>
+														<mx:Text text="-"/>
+														<s:TextInput id="validFromMonth" widthInChars="2" text="{month}"/>
+														<mx:Text text="-"/>
+														<s:TextInput id="validFromDate" widthInChars="2" text="{date}"/>
+														<mx:Text text=" "/>
+														<s:TextInput id="validFromHour" widthInChars="2" text="{hour}"/>
+														<mx:Text text=":"/>
+														<s:TextInput id="validFromMinute" widthInChars="2" text="{minute}"/>
+													</s:HGroup>
+												</s:HGroup>
+											</s:FormItem>
+											<s:FormItem width="567" label="Request Valid Until:">
+												<s:HGroup>
+													<s:RadioButton group="{spotInstanceValidUntil}" id="validUntilAnytime" label="Any time" selected="true"/>
+													<s:RadioButton group="{spotInstanceValidUntil}" id="validUntilDates" label="Date:"/>
+													<s:HGroup enabled="{validUntilDates.selected}"
+															  gap="0">
+														<s:TextInput id="validUntilYear" widthInChars="4" text="{year}"/>
+														<mx:Text text="-"/>
+														<s:TextInput id="validUntilMonth" widthInChars="2" text="{month}"/>
+														<mx:Text text="-"/>
+														<s:TextInput id="validUntilDate" widthInChars="2" text="{date}"/>
+														<mx:Text text=" "/>
+														<s:TextInput id="validUntilHour" widthInChars="2" text="{hour}"/>
+														<mx:Text text=":"/>
+														<s:TextInput id="validUntilMinute" widthInChars="2" text="{minute}"/>
+													</s:HGroup>
+												</s:HGroup>
+											</s:FormItem>
+										</s:Form>
+									</s:VGroup>
+								</s:Scroller>
+							</s:BorderContainer>
+						</s:VGroup>
+					</s:FormItem>
+				</s:Form>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="elasticityConfigurationContent"
+								label="Configure Elasticity"
+								height="100%" width="100%">
+				<s:Scroller height="484" width="100%">
+					<s:Group height="100%" width="100%">
+						<mx:Form id="elasticity" width="100%">			
+							<mx:Box borderStyle="solid" paddingTop="10" paddingBottom="10" paddingLeft="10" paddingRight="10" width="100%">
+								<mx:HBox width="100%" height="100%">
+									<mx:VBox width="400">
+										<mx:HBox>
+											<s:RadioButton group="{scaleTypeGroup}" id="noScale" label="None" selected="true"/>
+										</mx:HBox>
+										<mx:HBox>
+											<s:RadioButton group="{scaleTypeGroup}" id="autoRecovery" label="Auto Recovery"/>
+										</mx:HBox>
+										<mx:HBox>
+											<s:RadioButton group="{scaleTypeGroup}" id="fixedArray" label="Fixed Array"/>
+											<mx:Label id="fixedArraySizeLbl" text="Size:" enabled="false"/>
+											<s:TextInput id="fixedArraySize" enabled="false" widthInChars="3" change="autoScale_changeHandler(event)"/>
+											<mx:Text id="fixedArrayAlert" text="Invalid Input." color="red" visible="false"/>
+										</mx:HBox>
+										<mx:HBox>
+											<s:RadioButton group="{scaleTypeGroup}" id="autoScale" label="Auto Scale"/>
+											<mx:Label id="autoScaleMinLbl" text="Min:" enabled="false"/>
+											<s:TextInput id="autoScaleMin" enabled="false" text="1" widthInChars="3" change="autoScale_changeHandler(event)"/>
+											<mx:Label id="autoScaleMaxLbl" text="Max:" enabled="false"/>
+											<s:TextInput id="autoScaleMax" enabled="false" text="2" widthInChars="3"/>
+											<mx:Text id="autoScaleAlert" text="Invalid Input." color="red" visible="false"/>
+										</mx:HBox>
+									</mx:VBox>
+									<mx:VBox height="100%" verticalAlign="middle" visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}" includeInLayout="{cloudAccount.cloud_provider == CloudAccount.AMAZON}">
+										<mx:Text text="Cost: {computePrice}"/>
+									</mx:VBox>
+									<mx:VBox width="100%" height="100%" verticalAlign="middle" horizontalAlign="center">
+										<s:Image id="workspaceImage" source="{ImagePath.NEW_EC2}"/>
+									</mx:VBox>
+								</mx:HBox>
+							</mx:Box>
+							<mx:Box id="triggerSettings" borderStyle="solid" paddingTop="10" paddingBottom="10" paddingLeft="10" paddingRight="10" width="100%" height="100%" enabled="{autoScale.selected==true}">
+								<s:HGroup width="200" height="16">
+									<s:Label text="Scaling Trigger" fontWeight="bold"/>
+									<s:RadioButton id="scalingTriggerOn" label="On" groupName="scalingTriggerOnOffGroup"/>
+									<s:RadioButton id="scalingTriggerOff" label="Off" groupName="scalingTriggerOnOffGroup" selected="true"/>
+								</s:HGroup>
+								<s:Form width="100%" enabled="{scalingTriggerOnOffGroup.selectedValue == 'On'}">
+									<s:FormItem label="Trigger Measurement">
+										<mx:HBox>
+											<mx:ComboBox id="triggerMeasurement" selectedIndex="0" change="triggerMeasurement_changeHandler(event)">
+												<mx:dataProvider>
+													<s:ArrayCollection>
+														[CPUUtilization, NetworkIn, NetworkOut, DiskWriteOps, DiskReadBytes, DiskReadOps, DiskWriteBytes, Latency, RequestCount, HealthyHostCount, UnhealthyHostCount]
+													</s:ArrayCollection>
+												</mx:dataProvider>
+											</mx:ComboBox>
+											<s:Image width="16" height="16"
+													 source="{ImagePath.HELPER_ICON}"
+													 toolTip="Trigger Measurement&#xd;The measure used to determine when to trigger a scaling activity."/>
+										</mx:HBox>
+									</s:FormItem>
+									<s:FormItem label="Trigger Statistic">
+										<mx:HBox>
+											<mx:ComboBox id="triggerStatistic" selectedIndex="3">
+												<mx:dataProvider>
+													<s:ArrayCollection>
+														[Minimum, Maximum, Sum, Average]
+													</s:ArrayCollection>
+												</mx:dataProvider>
+											</mx:ComboBox>
+											<s:Image width="16" height="16"
+													 source="{ImagePath.HELPER_ICON}"
+													 toolTip="Trigger Statistic&#xd;The statistic used for a given measure to determine when to trigger a scaling activity."/>
+										</mx:HBox>
+									</s:FormItem>
+									<s:FormItem label="Unit of Measurement">
+										<mx:HBox>
+											<mx:Text id="triggerUnit" text="Percent"/>
+											<!--
+											<mx:ComboBox id="triggerUnit" selectedIndex="1">
+											<mx:dataProvider>
+											<s:ArrayCollection>
+											[Seconds, Percent, Bytes, Bits, Count, Bytes/Second, Bits/Second, Count/Second, None]
+											</s:ArrayCollection>
+											</mx:dataProvider>
+											</mx:ComboBox>
+											-->
+											<s:Image width="16" height="16"
+													 source="{ImagePath.HELPER_ICON}"
+													 toolTip="Unit of Measurement&#xd;Every measure has a unit attached, such as seconds or bytes."/>
+										</mx:HBox>
+									</s:FormItem>
+									<s:FormItem label="Measure Period (minutes)">
+										<mx:HBox>
+											<s:TextInput id="triggerMeasurePeriod" text="5" widthInChars="3"/>
+											<mx:Text text="(1-600)"/>
+											<s:Image width="16" height="16"
+													 source="{ImagePath.HELPER_ICON}"
+													 toolTip="Measure Period&#xd;The period in minutes of the measure statistic over which a breach is determined."/>
+										</mx:HBox>
+									</s:FormItem>
+									<s:FormItem label="Upper Threshold">
+										<mx:HBox>
+											<s:TextInput id="triggerUpperThreshold" text="80" widthInChars="8"/>
+											<mx:Text id="upperThresholdLbl" text="(0-100)"/>
+											<s:Image width="16" height="16"
+													 source="{ImagePath.HELPER_ICON}"
+													 toolTip="Upper Threshold&#xd;The upper limit of the metric used."/>
+										</mx:HBox>
+									</s:FormItem>
+									<s:FormItem label="Upper Breach Scale Increment">
+										<mx:HBox>
+											<s:TextInput id="triggerUpperBreachScale" text="1" widthInChars="3"/>
+											<s:Image width="16" height="16"
+													 source="{ImagePath.HELPER_ICON}"
+													 toolTip="Upper Breach Scale Increment&#xd;The incremental number of EC2 instances to add when performing an upper triggered scaling activity."/>
+										</mx:HBox>
+									</s:FormItem>
+									<s:FormItem label="Lower Threshold">
+										<mx:HBox>
+											<s:TextInput id="triggerLowerThreshold" text="20" widthInChars="8"/>
+											<mx:Text id="lowerThresholdLbl" text="(0-100)"/>
+											<s:Image width="16" height="16"
+													 source="{ImagePath.HELPER_ICON}"
+													 toolTip="Lower Threshold&#xd;The lower limit of the metric used."/>
+										</mx:HBox>
+									</s:FormItem>
+									<s:FormItem label="Lower Breach Scale Decrement">
+										<mx:HBox>
+											<s:TextInput id="triggerLowerBreachScale" text="-1" widthInChars="3"/>
+											<s:Image width="16" height="16"
+													 source="{ImagePath.HELPER_ICON}"
+													 toolTip="Lower Breach Scale Decrement&#xd;The decremental number of EC2 instances to terminate when performing a lower triggered scaling activity."/>
+										</mx:HBox>
+									</s:FormItem>
+								</s:Form>
+							</mx:Box>
+						</mx:Form>
+					</s:Group>
+				</s:Scroller>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="additionalConfigurationContent"
+								label="Additional Configurations"
+								height="100%" width="100%">
+				<s:Form textAlign="right">
+					<s:FormItem label="Detailed Monitoring:">
+						<s:HGroup textAlign="left">
+							<s:CheckBox id="detailedMonitoringCheck" change="detailedMonitoringCheck_changeHandler(event)"/>
+							<s:Image width="16" height="16"
+									 source="{ImagePath.HELPER_ICON}"
+									 toolTip="Enable detailed monitoring for this instance."/>
+							<mx:Text text="{computePrice}"/>
+						</s:HGroup>
+					</s:FormItem>
+					<s:FormItem label="Termination Protection:" enabled="{noScale.selected}">
+						<s:HGroup textAlign="left">
+							<s:CheckBox id="terminationProtectionCheck"/>
+							<s:Image width="16" height="16"
+									 source="{ImagePath.HELPER_ICON}"
+									 toolTip="Prevention against accidental termination."/>
+						</s:HGroup>
+					</s:FormItem>
+					<s:FormItem label="Shutdown Behavior:" enabled="{noScale.selected}">
+						<s:HGroup textAlign="left">
+							<mx:ComboBox id="shutdownBehavior">
+								<mx:dataProvider>
+									<s:ArrayCollection>
+										<fx:Object label="Stop"/>
+										<fx:Object label="Terminate"/>
+									</s:ArrayCollection>
+								</mx:dataProvider>
+							</mx:ComboBox>
+							<s:Image width="16" height="16"
+									 source="{ImagePath.HELPER_ICON}"
+									 toolTip="The behavior when the instance is shutdown from within the instance."/>
+						</s:HGroup>
+					</s:FormItem>
+				</s:Form>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="instanceReviewContent" label="Review" height="100%" width="100%">
+				<s:VGroup paddingLeft="20" height="100%" width="100%" paddingTop="10">
+					<mx:Text text="Please Review Your Instance" y="20" fontWeight="bold"/>
+					<s:VGroup x="25" y="60" paddingLeft="20">
+						<mx:Text text="Name: {machineName.text}"/>
+						<mx:Text text="Image: {imageReview}"/>
+						<mx:Text text="Machine Size: {machineSizeReview}"/>
+						<mx:Text text="Availability Zone: {availabilityZoneReview}"
+								 visible="{ec2Service.availabilityZones.length > 0}" includeInLayout="{ec2Service.availabilityZones.length > 0}"/>
+						<mx:Text text="Key Pair: {keyPairReview}"
+								 visible="{cloudAccount.cloud_provider != CloudAccount.RACKSPACE}" includeInLayout="{cloudAccount.cloud_provider != CloudAccount.RACKSPACE}"/>
+						<mx:Text text="Security Group(s): {securityGroupsReview}" 
+								 visible="{ec2Service.securityGroups.length > 0}" includeInLayout="{ec2Service.securityGroups.length > 0}"/>
+						<mx:Text text="Elasticity: {scaleTypeGroup.selectedValue}"
+								 visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}" includeInLayout="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"/>
+						<mx:Text text="Detailed Monitoring: {monitoringReview}" 
+								 visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}" includeInLayout="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"/>
+						<mx:Text text="Termination Protection: {terminationProtectionReview}" 
+								 visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}" includeInLayout="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"/>
+						<mx:Text text="Shutdown Behavior: {shutdownBehaviorReview}" 
+								 visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}" includeInLayout="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"/>
+					</s:VGroup>
+					<mx:Text text="Cost: {computePrice}" y="20" fontWeight="bold"/>
+				</s:VGroup>
+			</s:NavigatorContent>
+		</mx:ViewStack>
+		<wizard:WizardButtonGroup id="buttonGroup"
+								  wizardStack="{instanceWizardViewStack}"
+								  previousButtonClick="previousButton_clickHandler(event)"
+								  nextButtonClick="nextButton_clickHandler(event)"
+								  finishButtonClick="finishButton_clickHandler(event)"/>
+	</s:VGroup>
+</wizard:WizardWindow>

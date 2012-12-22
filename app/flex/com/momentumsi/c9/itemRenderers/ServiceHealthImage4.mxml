@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:GridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					xmlns:s="library://ns.adobe.com/flex/spark" 
+					xmlns:mx="library://ns.adobe.com/flex/mx">
+	
+	<fx:Script>
+		<![CDATA[
+			
+			override public function set data(value:Object):void
+			{
+				super.data = value;
+				switch (value.day4)
+				{
+					case "Healthy":
+						healthImage.source = "/com/momentumsi/c9/assets/healthy.gif";
+						break;
+					case "Information":
+						healthImage.source = "/com/momentumsi/c9/assets/information.gif";
+						break;
+					case "Disrupted":
+						healthImage.source = "/com/momentumsi/c9/assets/disrupted.gif";
+						break;
+					case "Issues":
+						healthImage.source = "/com/momentumsi/c9/assets/issues.gif";
+						break;
+				}
+				
+				if(value.day4Information)
+				{
+					healthImage.toolTip = value.day4Information;
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<mx:VBox width="100%" height="100%" verticalAlign="middle" horizontalAlign="center">
+		<s:Image id="healthImage" width="22" height="22"/>
+	</mx:VBox>
+</s:GridItemRenderer>

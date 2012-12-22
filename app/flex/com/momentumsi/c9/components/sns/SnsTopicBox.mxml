@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<c9:DetailsBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:c9="com.momentumsi.c9.components.*"
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%"
+		 xmlns:uicomponent="fr.kapit.diagrammer.base.uicomponent.*" 
+		 xmlns:services="com.momentumsi.c9.services.*">
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.services.MonitoringService;
+			
+			import mx.core.UIComponent;
+			import mx.events.IndexChangedEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			protected function topicNavigator_changeHandler(event:IndexChangedEvent):void
+			{
+				if(topicNavigator.selectedChild == topicSubscriptions)
+				{
+					if(node.instanceId != null)
+					{
+						getSubscriptionsSvc.send();
+					}
+				}else if(topicNavigator.selectedChild == monitoring)
+				{
+					monitoringBox.resource = node;
+					monitoringBox.getDefaultMonitorsCall(MonitoringService.SNS_DEFAULT);
+				}
+			}
+			
+			protected function default_faultHandler(event:FaultEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+			}
+			
+			protected function createSubscription_clickHandler(event:MouseEvent):void
+			{
+				var subPopUp:SnsCreateSubscription = SnsCreateSubscription(PopUpManager.createPopUp( UIComponent(this.parentApplication), SnsCreateSubscription , true));
+				subPopUp.topic = this.snsTopic;
+				subPopUp.subscriptionsCollection = new ArrayCollection(subscriptionsGrid.dataProvider as Array);
+			}
+			
+			protected function deleteSubscription_clickHandler(event:MouseEvent):void
+			{
+				if(subscriptionsGrid.selectedItem.subscription_arn != null)
+				{
+					//unsubscribeSvc.send();
+				}
+			}
+			
+			private function subscriptionGrid_changeHandler():void
+			{
+				if(subscriptionsGrid.selectedItem.subscriptionId == 'PendingConfirmation')
+				{
+					deleteSubscriptionButton.enabled = false;
+				}
+			}
+			
+			protected function unsubscribeSvc_resultHandler(event:ResultEvent):void
+			{
+				if(String(event.result) == "true")
+				{
+					subscriptionsCollection.removeItemAt(subscriptionsGrid.selectedIndex);
+				}
+			}
+			
+			protected function publish_clickHandler(event:MouseEvent):void
+			{
+				var publishPopUp:SnsTopicPublish = SnsTopicPublish(PopUpManager.createPopUp( UIComponent(this.parentApplication), SnsTopicPublish , true));
+				publishPopUp.topic = this.snsTopic;
+			}
+			
+			
+			[Bindable]
+			private var _topicObject:Object;
+			override public function set resourceObject(value:Object):void
+			{
+				_topicObject = value;
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<fx:XML id="snsTopic"/>
+
+		<s:ArrayCollection id="subscriptionsCollection"/>
+		
+		<services:CloudApiService id="getSubscriptionsSvc"
+								  action="get_subscriptions"
+								  cloudAccountId="{cloudAccountId}"
+								  serviceType="{CloudApiService.SNS_SERVICE}"
+								  request="{{topic_arn: node.instanceId}}"/>
+		
+		<services:CloudApiService id="unsubscribeSvc"
+								  action="unsubscribe"
+								  cloudAccountId="{cloudAccountId}"
+								  serviceType="{CloudApiService.SNS_SERVICE}"
+								  request="{{subscription_arn: subscriptionsGrid.selectedItem.arn}}"/>
+		
+	</fx:Declarations>
+		<s:HGroup paddingBottom="5" paddingLeft="5" paddingTop="5">
+			<s:Button label="Publish to Topic" click="publish_clickHandler(event)"/>
+			<s:Button label="Create New Subscription" click="createSubscription_clickHandler(event)"/>
+			<s:Button label="Delete Subscription" id="deleteSubscriptionButton" click="deleteSubscription_clickHandler(event)" enabled="{subscriptionsGrid.selectedItem != null}"/> 
+		</s:HGroup>
+		<s:BorderContainer height="100%" width="100%" alpha="1" borderVisible="false">
+			<c9:DetailsBoxTabNavigator id="topicNavigator" change="topicNavigator_changeHandler(event)">
+				<s:NavigatorContent label="Details" id="topicDetails" width="100%" height="100%">
+					<s:BorderContainer borderVisible="false"  id="details" height="100%" width="100%">
+						<s:HGroup>
+							<s:Form>
+								<s:FormItem label="Name:">
+									<mx:Text text="{_topicObject.name}"/>
+								</s:FormItem>
+								<s:FormItem label="Topic ID:">
+									<mx:Text id="topicId" text="{_topicObject.arn}"/>
+								</s:FormItem>
+								<s:FormItem label="Topic Owner:">
+									<mx:Text text="{_topicObject.owner}"/>
+								</s:FormItem>
+								<s:FormItem label="Display Name">
+									<mx:Text text="{_topicObject.dispay_name}"/>
+								</s:FormItem>
+							</s:Form>
+						</s:HGroup>
+					</s:BorderContainer>
+				</s:NavigatorContent>
+				<s:NavigatorContent label="Subscriptions" id="topicSubscriptions" width="100%" height="100%">
+					<s:BorderContainer borderVisible="false" height="100%" width="100%">
+						<mx:DataGrid id="subscriptionsGrid" width="100%" height="100%" dataProvider="{getSubscriptionsSvc.result}" change="subscriptionGrid_changeHandler()">
+							<mx:columns>
+								<mx:DataGridColumn headerText="Subscription ID" dataField="subscription_arn" width="220"/>
+								<mx:DataGridColumn headerText="Protocol" dataField="protocol" width="100"/>
+								<mx:DataGridColumn headerText="Endpoint" dataField="endpoint"/>
+							</mx:columns>
+						</mx:DataGrid>
+					</s:BorderContainer>
+				</s:NavigatorContent>
+				<s:NavigatorContent id="monitoring" label="Monitoring" width="100%" height="100%">
+					<c9:MonitoringBox id="monitoringBox" width="100%" height="100%"/>
+				</s:NavigatorContent>
+			</c9:DetailsBoxTabNavigator>
+		</s:BorderContainer>
+</c9:DetailsBox>

@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="utf-8"?>
+<c9:DetailsBox xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:c9="com.momentumsi.c9.components.*"
+		  width="100%" height="100%"
+		  initialize="init(event)"
+		  xmlns:uicomponent="fr.kapit.diagrammer.base.uicomponent.*">
+
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.components.MainBox;
+			import com.momentumsi.c9.utils.Helpers;
+			import com.momentumsi.c9.models.ProvisionedInstance;
+			import com.momentumsi.c9.services.MonitoringService;
+			
+			import fr.kapit.diagrammer.Diagrammer;
+			import fr.kapit.diagrammer.base.uicomponent.DiagramSprite;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.DataGrid;
+			import mx.core.FlexGlobals;
+			import mx.core.UIComponent;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.events.IndexChangedEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.http.mxml.HTTPService;
+			
+			private var app:Object = FlexGlobals.topLevelApplication;
+			[Bindable]
+			private var host:String;
+			[Bindable]
+			public var loadBalancersRunningCollection:ArrayCollection = new ArrayCollection();
+					
+			public function init(event:Event):void
+			{				
+				host = app.GetConfiguration( "serviceUrl" ) ;
+			}		
+
+			public function getLoadBalancers(projectId:int, tagRevision:int):void
+			{
+				getDesignLoadBalancersSvc.send({project_id: projectId, tag_revision: tagRevision});
+				getProvisionedLoadBalancersSvc.send({project_id: projectId, tag_revision: tagRevision});
+			}
+			
+			private function getDesignLoadBalancersSvc_resultHandler(event:ResultEvent):void
+			{
+				var designDiagram:Diagrammer = Helpers.getDesignDiagram(this);
+				var result:XMLList = Helpers.xmlChildrenFromEvent(event);
+				var getInstancesSvc:HTTPService = new HTTPService();
+				getInstancesSvc.method = "GET";
+				getInstancesSvc.resultFormat = "e4x";
+				getInstancesSvc.addEventListener(ResultEvent.RESULT, getDesignLoadBalancerInstancesSvc_resultHandler);
+				getInstancesSvc.addEventListener(FaultEvent.FAULT, getInstancesSvc_faultHandler);
+				
+				for each(var loadBalancer:XML in result)
+				{
+					/*
+					var p:Point = new Point(loadBalancer.child('x-coordinate'), loadBalancer.child('y-coordinate'));
+					var node:DiagramSprite = designDiagram.addNodeElement(loadBalancer, null, null, p) as DiagramSprite;
+					node.isSizeFixed = true;
+					designNode = node;
+					getInstancesSvc.url = Helpers.getHost() + "/load_balancers/get_instances/" + loadBalancer.child('id') + ".xml";
+					getInstancesSvc.send();
+					*/
+				}
+			}
+			
+			private function getDesignLoadBalancerInstancesSvc_resultHandler(event:ResultEvent):void
+			{
+				var result:XMLList = Helpers.xmlChildrenFromEvent(event);
+				var designDiagram:Diagrammer = Helpers.getDesignDiagram(this);
+				for each(var instance:XML in result)
+				{
+					for each(var workspaceNode:DiagramSprite in designDiagram.nodesMap)
+					{
+						if(workspaceNode.data == instance)
+						{
+							//designDiagram.addLinkElement(null, designNode, workspaceNode);
+						}
+					}
+				}
+			}
+			
+			private function getInstancesSvc_faultHandler(event:FaultEvent):void
+			{
+				
+			}
+			
+			private function getProvisionedLoadBalancersSvc_resultHandler(event:ResultEvent):void
+			{
+				loadBalancersRunningCollection.removeAll();
+				var result:XMLList = Helpers.xmlChildrenFromEvent(event);
+				var runningDiagram:Diagrammer = Helpers.getRunningDiagram(this);
+				var getInstancesSvc:HTTPService = new HTTPService();
+				getInstancesSvc.method = "GET";
+				getInstancesSvc.resultFormat = "e4x";
+				getInstancesSvc.addEventListener(ResultEvent.RESULT, getProvisionedLoadBalancersInstancesSvc_resultHandler);
+				getInstancesSvc.addEventListener(FaultEvent.FAULT, getInstancesSvc_faultHandler);
+				
+				var p:Point;
+				for each(var loadBalancer:XML in result)
+				{
+					/*
+					p = new Point(loadBalancer.child('x-coordinate'), loadBalancer.child('y-coordinate'));
+					var node:DiagramSprite = runningDiagram.addNodeElement(loadBalancer, null, null, p) as DiagramSprite;
+					node.isSizeFixed = true;
+					runningNode = node;
+					getInstancesSvc.url = Helpers.getHost() + "/provisioned_load_balancers/get_instances/" + loadBalancer.child('id') + ".xml";
+					getInstancesSvc.send();
+					loadBalancersRunningCollection.addItem({node: node, data: loadBalancer, id: id, status: loadBalancer.child('dns-name').toString(), itemIdentifier: loadBalancer.child('item-identifier').toString(), ec2ConnectionIds: new ArrayCollection});
+					*/
+				}
+			}
+			
+			public function getLoadBalancerInstancesToLink(loadBalancerNodes:ArrayCollection):void
+			{
+				var type:String;
+				for each (var loadBalancerNode:DiagramSprite in loadBalancerNodes)
+				{
+					type = loadBalancerNode.data.name();
+					switch(type)
+					{
+						case "provisioned-load-balancer":
+							var getProvisionedInstancesSvc:HTTPService = new HTTPService();
+							getProvisionedInstancesSvc.method = "GET";
+							getProvisionedInstancesSvc.resultFormat = "e4x";
+							getProvisionedInstancesSvc.addEventListener(ResultEvent.RESULT, getProvisionedLoadBalancersInstancesSvc_resultHandler);
+							getProvisionedInstancesSvc.addEventListener(FaultEvent.FAULT, getInstancesSvc_faultHandler);
+							getProvisionedInstancesSvc.url = Helpers.getHost() + "/provisioned_load_balancers/get_instances/" + loadBalancerNode.data.child('id') + ".xml";
+							//runningNode = loadBalancerNode;
+							getProvisionedInstancesSvc.send();
+							break;
+						case "load-balancer":
+							var getInstancesSvc:HTTPService = new HTTPService();
+							getInstancesSvc.method = "GET";
+							getInstancesSvc.resultFormat = "e4x";
+							getInstancesSvc.addEventListener(ResultEvent.RESULT, getLoadBalancersInstancesSvc_resultHandler);
+							getInstancesSvc.addEventListener(FaultEvent.FAULT, getInstancesSvc_faultHandler);
+							getInstancesSvc.url = Helpers.getHost() + "/load_balancers/get_instances/" + loadBalancerNode.data.child('id') + ".xml";
+							//designNode = loadBalancerNode;
+							getInstancesSvc.send();
+							break;
+
+					}
+				}				
+			}
+			
+			private function getLoadBalancersInstancesSvc_resultHandler(event:ResultEvent):void
+			{
+				var result:XMLList = Helpers.xmlChildrenFromEvent(event);
+				var designDiagram:Diagrammer = Helpers.getDesignDiagram(this);
+				for each(var instance:XML in result)
+				{
+					for each(var workspaceNode:DiagramSprite in designDiagram.nodesMap)
+					{
+						if(workspaceNode.data == instance)
+						{
+							//designDiagram.addLinkElement(null, designNode, workspaceNode);
+						}
+					}
+				}
+			}
+			
+			private function getProvisionedLoadBalancersInstancesSvc_resultHandler(event:ResultEvent):void
+			{
+				var result:XMLList = Helpers.xmlChildrenFromEvent(event);
+				var runningDiagram:Diagrammer = Helpers.getRunningDiagram(this);
+				for each(var instance:XML in result)
+				{
+					for each(var workspaceNode:DiagramSprite in runningDiagram.nodesMap)
+					{
+						if(workspaceNode.data == instance)
+						{
+							//runningDiagram.addLinkElement(null, runningNode, workspaceNode);
+						}
+					}
+				}
+			}
+			
+			
+			public function getListeners(loadBalancer:XML):void
+			{
+				this.loadBalancer = loadBalancer;
+			}
+
+			
+			private function onLinkClick(event:TextEvent):void
+			{
+				var text:String = String(event.text);
+				if(text == 'instances')
+				{
+					loadBalancerDetails.selectedIndex = 1;
+				}else if(text == 'stickiness')
+				{
+					var stickySettings:LoadBalancerStickiness = LoadBalancerStickiness(PopUpManager.createPopUp( UIComponent(this.parentApplication), LoadBalancerStickiness , true));
+					stickySettings.loadBalancer = this.loadBalancer;
+					stickySettings.listener = this.listener;
+				}else if(text == 'healthCheck')
+				{
+					var healthCheckSettings:LoadBalancerHealthCheckPopUp = LoadBalancerHealthCheckPopUp(PopUpManager.createPopUp( UIComponent(this.parentApplication), LoadBalancerHealthCheckPopUp , true));
+					healthCheckSettings.loadBalancer = this.loadBalancer;
+
+				}
+			}
+			
+			protected function loadBalancerDetails_changeHandler(event:IndexChangedEvent):void
+			{
+				if(loadBalancerDetails.selectedIndex == 1)
+				{
+					monitoringBox.resource = node;
+					monitoringBox.getDefaultMonitorsCall(MonitoringService.ELB_DEFAULT);
+				}
+			}
+			
+			protected function deleteButton_clickHandler(event:MouseEvent):void
+			{
+				deleteLoadBalancerSvc.send();
+			}
+			
+			protected function deleteLoadBalancerSvc_resultHandler(event:ResultEvent):void
+			{
+				var result:XML = event.result as XML;
+				//node.data = result;
+			}
+			
+			[Bindable]
+			private var _loadBalancerObject:Object;
+			[Bindable]
+			private var _healthCheckObject:Object;
+			override public function set resourceObject(value:Object):void
+			{
+				_loadBalancerObject = value;
+				if(value.health_check != null)
+				{
+					_healthCheckObject =  value.health_check;
+				}
+				
+				portConfigs.text = "";
+				var listenersArray:Array = _loadBalancerObject.listeners;
+				if(listenersArray == null)
+				{
+					listenersArray = [];
+				}
+				for(var index:int; index < listenersArray.length; index++){
+					portConfigs.text = portConfigs.text + listenersArray[index]['load_balancer_port'] + " (" + listenersArray[index]['protocol'] + ") forwarding to " + listenersArray[index]['instance_port'] + "\n";					
+				}
+					
+			}
+			
+		]]>
+	</fx:Script>
+
+	<fx:Declarations>
+		<fx:XML id="loadBalancer"/>
+		<fx:XML id="listener"/>
+		
+		<s:HTTPService id="getDesignLoadBalancersSvc"
+					   url="{host}/load_balancers/get_current_project_load_balancers"
+					   method="POST"
+					   resultFormat="e4x"
+					   showBusyCursor="true"
+					   result="getDesignLoadBalancersSvc_resultHandler(event)"/>
+		
+		<s:HTTPService id="getProvisionedLoadBalancersSvc"
+					   url="{host}/provisioned_load_balancers/get_current_provisioned_load_balancers"
+					   method="POST"
+					   resultFormat="e4x"
+					   showBusyCursor="true"
+					   result="getProvisionedLoadBalancersSvc_resultHandler(event)"/>
+		
+		<s:HTTPService id="deleteLoadBalancerSvc"
+					   url="{host}/provisioned_load_balancers/remove_from_cloud/{loadBalancer.child('id')}.xml"
+					   method="GET"
+					   resultFormat="e4x"
+					   showBusyCursor="true"
+					   result="deleteLoadBalancerSvc_resultHandler(event)"/>
+
+	
+	</fx:Declarations>
+	<s:HGroup width="100%" id="elbButtonGroup" paddingLeft="5" paddingTop="2" visible="false" includeInLayout="{elbButtonGroup.visible}">
+		<s:Button id="deleteButton" label="Delete" click="deleteButton_clickHandler(event)"/>
+	</s:HGroup>
+	<s:BorderContainer height="100%" width="100%" alpha="1" borderVisible="false">
+		<c9:DetailsBoxTabNavigator id="loadBalancerDetails" change="loadBalancerDetails_changeHandler(event)">
+			<s:NavigatorContent label="Details" width="100%" height="100%">
+				<s:BorderContainer width="100%" height="100%" borderVisible="false">
+					<s:Form height="100%" width="100%" textAlign="right">
+						<s:FormItem label="Logical Name:">
+							<mx:Text text="{node.resourceId}"/>
+						</s:FormItem>
+						<s:FormItem label="Physical Name:">
+							<mx:Text text="{_loadBalancerObject.load_balancer_name}"/>
+						</s:FormItem>
+						<s:FormItem label="DNS Name:">
+							<mx:Text text="{_loadBalancerObject.dns_name}"/>
+						</s:FormItem>
+						<s:FormItem label="Hosted Zone Name ID:">
+							<mx:Text text="{_loadBalancerObject.canonical_hosted_zone_name_id}"/>
+						</s:FormItem>						
+						<s:FormItem label="Port Configuration:">
+							<mx:Text id="portConfigs" text=""/>
+						</s:FormItem>
+						<s:FormItem label="Availability Zones:">
+							<mx:Text text="{_loadBalancerObject.availability_zones.join('\n')}"/>
+						</s:FormItem>
+					</s:Form>
+				</s:BorderContainer>
+			</s:NavigatorContent>
+			<s:NavigatorContent label="Monitoring" width="100%" height="100%">
+				<c9:MonitoringBox id="monitoringBox" cloudAccountId="{cloudAccountId}" width="100%" height="100%"/>
+			</s:NavigatorContent>
+			<s:NavigatorContent label="Health Check">
+				<s:Form height="100%" width="100%" textAlign="right">
+					<s:FormItem label="Ping Target:">
+						<mx:Text text="{_healthCheckObject.target}"/>
+					</s:FormItem>
+					<s:FormItem label="Timeout:">
+						<mx:Text text="{_healthCheckObject.timeout} seconds"/>
+					</s:FormItem>
+					<s:FormItem label="Interval:">
+						<mx:Text text="{_healthCheckObject.interval} seconds"/>
+					</s:FormItem>
+					<s:FormItem label="Unhealthy Threshold:" toolTip="The number of consecutive health probe failures that move the instance to the unhealthy state.">
+						<mx:Text text="{_healthCheckObject.unhealthy_threshold}"/>
+					</s:FormItem>
+					<s:FormItem label="Healthy Threshold:" toolTip="The number of consecutive health probe successes required before moving the instance to the ealthy state.">
+						<mx:Text text="{_healthCheckObject.healthy_threshold}"/>
+					</s:FormItem>
+				</s:Form>
+			</s:NavigatorContent>
+		</c9:DetailsBoxTabNavigator>
+	</s:BorderContainer>
+</c9:DetailsBox>

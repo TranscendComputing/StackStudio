@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 width="182" height="198"
+		 implements="fr.kapit.visualizer.renderers.IRenderer"
+		 skinClass="com.momentumsi.c9.skins.InstallsPanelSkin">
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.constants.ImagePath;
+			import com.momentumsi.c9.constants.PlatformConstants;
+			import com.momentumsi.c9.constants.ResourceType;
+			import com.momentumsi.c9.models.Node;
+			import com.momentumsi.c9.models.resources.ChefRole;
+			
+			import fr.kapit.visualizer.Visualizer;
+			import fr.kapit.visualizer.base.IItem;
+			import fr.kapit.visualizer.renderers.IRenderer;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.DragEvent;
+			import mx.events.ToolTipEvent;
+			import mx.managers.DragManager;
+			
+			import spark.components.supportClasses.ItemRenderer;
+			import spark.events.IndexChangeEvent;
+			import spark.events.ListEvent;
+			
+			private var _data:Object; 
+			[Bindable]
+			private var _installsCollection:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public var gitCollection:ArrayCollection = new ArrayCollection([{label: "None"}]);
+			[Bindable]
+			private var typeLabel:String;
+			[Bindable]
+			private var vcpuLabel:String;
+			[Bindable]
+			private var imageLabel:String;
+			[Bindable]
+			private var memoryLabel:String;
+			[Bindable]
+			private var imageSource:String;
+			[Bindable]
+			private var showImage:Boolean = false;
+			private var _platform:String;
+			public var compatibleRoles:ArrayCollection;
+			private var installType:String;
+			public var roles:Array = [];
+			
+			[Bindable]
+			public function get installsCollection():ArrayCollection
+			{
+				return _installsCollection;
+			}
+			
+			public function set installsCollection(value:ArrayCollection):void
+			{
+				for each(var item:Object in value)
+				{
+					roles.push(item.name);
+				}
+				_installsCollection = value || new ArrayCollection();
+			}
+			
+			public function get data():Object  
+			{  
+				return _data;  
+			}  
+			public function set data(value:Object):void  
+			{  
+				_data = value;  
+				if(_data.properties != null && _data.properties.elementProperties != null)
+				{
+					var props:Object = _data.properties;
+					platform = String(props.operatingSystem);
+					showImage = true;
+					var instanceType:Object = props.instanceType;
+					if(instanceType != null)
+					{
+						typeLabel = instanceType.id;
+						vcpuLabel = "VCPU: " + instanceType.cores;
+						var ram:Number = Number(instanceType.ram)/1000;
+						if(ram < 1)
+						{
+							memoryLabel = "Memory: 613MB"; 
+						}else{
+							memoryLabel = "Memory: " + ram.toString() + "GB";
+						}
+					}
+				}
+			}
+			
+			public function get platform():String
+			{
+				return _platform;
+			}
+			
+			public function set platform(value:String):void
+			{
+				showImage = true;
+				if(value == PlatformConstants.UBUNTU)
+				{
+					imageSource = ImagePath.CANONICAL20;
+					imageLabel = "Ubuntu";
+				}else if(value == PlatformConstants.AWS_LINUX || value == PlatformConstants.AMAZON_LINUX){
+					imageSource = ImagePath.AMAZON20;
+					imageLabel = "AWS Linux";
+				}
+				_platform = value;
+			}
+			
+			private var _item:IItem;  
+			public function get item():IItem  
+			{  
+				return _item;  
+			}  
+			public function set item(value:IItem):void  
+			{  
+				_item = value;  
+			}  
+			
+			private var _isFixed:Boolean;  
+			public function get isFixed():Boolean  
+			{  
+				return _isFixed;  
+			}  
+			public function set isFixed(value:Boolean):void  
+			{  
+				_isFixed=value;  
+			} 
+			private var _status:String
+			
+			public function get status():String
+			{
+				return _status;
+			}
+			public function set status(value:String):void
+			{
+				_status=value;
+			}
+			
+			private function toolTip_startHandler(event:ToolTipEvent):void
+			{
+				event.stopImmediatePropagation();
+			}
+			
+			protected function installsList_dragDropHandler(event:DragEvent):void
+			{
+				event.preventDefault();
+				DragManager.showFeedback(DragManager.COPY);
+				var itemsArray:Array = event.dragSource.dataForFormat("treeItems") as Array;
+				var node:Node = itemsArray[0] as Node;
+				var isDuplicate:Boolean = false;
+				if(node.properties.Type == ResourceType.CHEF_ROLE)
+				{
+					addRole(node);
+				}else if(node.properties.Type == ResourceType.PUPPET_MODULE)
+				{
+					addModule(node);
+				}
+			}
+			
+			private function addRole(node:Node):void
+			{
+				var newRole:Object = node.properties.role_properties;
+				var newRolePlatform:String = node.properties.platform;
+				
+				if(installsCollection.length == 0)
+				{
+					roles.push(newRole.name);
+					installsCollection.addItem(newRole);
+					platform = node.properties.platform;
+				}else{
+					if(newRolePlatform != platform)
+					{
+						Alert.show("Incompatible platforms.");
+						return;
+					}else{
+						for each(var role:Object in installsCollection)
+						{
+							if(newRole.name == role.name)
+							{
+								Alert.show(newRole.name + " has already been added to the run list.", "Duplicate Alert");
+								return;
+							}
+						}
+						roles.push(newRole.name);
+						installsCollection.addItem(newRole);
+					}	
+				}
+			}
+			
+			private function addModule(node:Node):void
+			{
+				var newModule:Object = node.properties.module_properties;
+				//var newModulePlatform:String = node.properties.platform;
+				if(installsCollection.length == 0)
+				{
+					roles.push(newModule.name);
+					installsCollection.addItem(newModule);
+					platform = node.properties.platform;
+				}else{
+					for each(var module:Object in installsCollection)
+					{
+						if(newModule.name == module.name)
+						{
+							Alert.show(newModule.name + " has already been added to the run list.", "Duplicate Alert");
+							return;
+						}
+					}
+					roles.push(newModule.name);
+					installsCollection.addItem(newModule);	
+				}
+			}
+			
+			protected function installsList_itemRollOverHandler(event:ListEvent):void
+			{
+				var index:int = event.itemIndex;
+				var item:Object = installsCollection.getItemAt(index);
+				installsList.toolTip = item.description;
+			}
+			
+			protected function installsList_dragEnterHandler(event:DragEvent):void
+			{
+
+				if (event.dragSource.hasFormat("treeItems"))// || event.dragSource.hasFormat("treeItems"))
+				{
+					var itemsArray:Array = event.dragSource.dataForFormat("treeItems") as Array;
+					var node:Node = itemsArray[0] as Node;
+					if(node.properties.Type == ResourceType.CHEF_ROLE || node.properties.Type == ResourceType.PUPPET_MODULE)
+					{
+						DragManager.showFeedback(DragManager.COPY);
+						DragManager.acceptDragDrop(installsList);
+					}
+				}
+			}
+			
+			
+			protected function installTabs_changeHandler(event:IndexChangeEvent):void
+			{
+				if(installTabs.selectedItem == platforms)
+				{
+					installsList.dataProvider = installsCollection;
+				}else{
+					//installsList.dataProvider = gitCollection;
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<s:List id="installsList" x="0" y="26" width="180" height="107"
+			dataProvider="{installsCollection}" 
+			dragDrop="installsList_dragDropHandler(event)"
+			dragEnter="installsList_dragEnterHandler(event)"
+		    itemRenderer="com.momentumsi.c9.itemRenderers.InstallListItemRenderer"
+			labelField="name"
+			itemRollOver="installsList_itemRollOverHandler(event)">
+	</s:List>
+	<s:TabBar id="installTabs"
+			  x="0" y="0"
+			  width="180"
+			  change="installTabs_changeHandler(event)">
+		<s:ArrayCollection>
+			<fx:Object id="platforms" label="Platforms" enabled="true"/>
+			<fx:Object id="git" label="Git Synch" enabled="false"/>
+		</s:ArrayCollection>
+	</s:TabBar>
+	<s:HGroup x="29" y="137"
+			  fontSize="9">
+		<s:Label x="47" y="139" text="{imageLabel}"/>
+		<s:Label x="109" y="139" text="{typeLabel}"/>
+	</s:HGroup>
+	<s:HGroup x="28" y="152"
+			  fontSize="9">
+		<s:Label x="109" y="153" text="{vcpuLabel}"/>
+		<s:Label x="47" y="153" text="{memoryLabel}"/>
+	</s:HGroup>
+	<s:Image id="imageIcon"
+			 x="2" y="136"
+			 width="21" height="21"
+			 visible="{showImage}"
+			 source="{imageSource}"/>
+</s:Panel>

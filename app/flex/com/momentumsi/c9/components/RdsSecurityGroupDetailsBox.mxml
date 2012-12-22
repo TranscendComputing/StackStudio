@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components:ObjectManagementDetailsBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+									   xmlns:s="library://ns.adobe.com/flex/spark" 
+									   xmlns:mx="library://ns.adobe.com/flex/mx" 
+									   xmlns:components="com.momentumsi.c9.components.*" 
+									   xmlns:services="com.momentumsi.c9.services.*">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.events.rds.*;
+			import com.momentumsi.c9.representers.ComputeSecurityGroupRepresenter;
+			import com.momentumsi.c9.representers.DbSecurityGroupRepresenter;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.controls.Alert;
+			import mx.core.UIComponent;
+			import mx.managers.PopUpManager;
+			
+			import spark.events.IndexChangeEvent;
+			
+			[Bindable]
+			private var rdsSecurityGroup:DbSecurityGroupRepresenter;
+			
+			override public function set resourceData(value:Object):void
+			{
+				rdsSecurityGroup = new DbSecurityGroupRepresenter(value);
+				super.resourceData = rdsSecurityGroup;
+				refreshDetails();
+			}
+			
+			protected function deleteButton_clickHandler(event:MouseEvent):void
+			{
+				var destroyPopUp:DestroyResourceObjectManagement = new DestroyResourceObjectManagement();
+				destroyPopUp.cloudAccountId = cloudAccount.id;
+				destroyPopUp.resourceType = "rdsSecurityGroup";
+				destroyPopUp.resourceDisplayId = rdsSecurityGroup.id;
+				destroyPopUp.resourceId = rdsSecurityGroup.id;
+				PopUpManager.addPopUp(destroyPopUp, UIComponent(parentApplication), true)
+			}
+			
+			private function refreshDetails():void
+			{
+				ipRangeTI.text = "";
+				getComputeSecurityGroups();
+			}
+			
+			private function getComputeSecurityGroups():void
+			{
+				ec2Service.securityGroups.removeAll();
+				ec2Service.securityGroups.addItem({name: "Loading..."});
+				ec2Service.describeSecurityGroups();
+			}
+			
+			protected function addButton_clickHandler(event:MouseEvent):void
+			{
+				addButton.enabled = false;
+				addButton.label = "Adding";
+				var options:Object = new Object();
+				if(cidrRB.selected)
+				{
+					options["CIDRIP"] = ipRangeTI.text;
+				}else{
+					options["EC2SecurityGroupOwnerId"] = (securityGroupList.selectedItem as ComputeSecurityGroupRepresenter).ownerId;
+					options["EC2SecurityGroupName"] = (securityGroupList.selectedItem as ComputeSecurityGroupRepresenter).name;
+				}
+				rdsService.authorizeDbSecurityGroupIngress(rdsSecurityGroup.id, options);
+			}
+			
+			protected function removeButton_clickHandler(event:MouseEvent):void
+			{
+				removeButton.enabled = false;
+				removeButton.label = "Removing";
+				var options:Object = new Object();
+				var selectedIngress:Object = sourceDG.selectedItem;
+				
+				if(selectedIngress.type == "CIDR/IP")
+				{
+					options["CIDRIP"] = selectedIngress.value;
+				}else{
+					options["EC2SecurityGroupOwnerId"] = selectedIngress.owner;
+					options["EC2SecurityGroupName"] = selectedIngress.value;
+				}
+				rdsService.revokeDbSecurityGroupIngress(rdsSecurityGroup.id, options);
+			}
+			
+			protected function ipRangeTI_textInputHandler(event:TextEvent):void
+			{
+				addButton.enabled = true;
+			}
+			
+			protected function securityGroupList_changeHandler(event:IndexChangeEvent):void
+			{
+				addButton.enabled = true;
+			}
+			
+			protected function connectionTypeButtons_changeHandler(event:Event):void
+			{
+				if(connectionTypeButtons.selection == cidrRB)
+				{
+					if(ipRangeTI.text.replace(/s/g, "") != "")
+					{
+						addButton.enabled = true;
+					}else{
+						addButton.enabled = false;
+					}
+				}else{
+					if(securityGroupList.selectedItem != null)
+					{
+						addButton.enabled = true;
+					}else{
+						addButton.enabled = false;
+					}
+				}
+			}
+			
+			protected function refreshButton_clickHandler(event:MouseEvent):void
+			{
+				refreshButton.text = "Refreshing";
+				refreshButton.enabled = false;
+				rdsService.describeDbSecurityGroups(rdsSecurityGroup.id);
+			}
+			
+			protected function rdsService_dbSecurityGroupAuthorizedHandler(event:AuthorizeIngressResultEvent):void
+			{
+				addButton.enabled = true;
+				addButton.label = "Add";
+				rdsSecurityGroup = new DbSecurityGroupRepresenter(event.result);
+			}
+			
+			protected function rdsService_dbSecurityGroupRevokedHandler(event:RevokeIngressResultEvent):void
+			{
+				removeButton.enabled = true;
+				removeButton.label = "Remove";
+				rdsSecurityGroup = new DbSecurityGroupRepresenter(event.result);
+			}
+			
+			protected function rdsService_describeDbGroupsResultHandler(event:DescribeDbSecuityGroupsResultEvent):void
+			{
+				refreshButton.text = "Refresh";
+				refreshButton.enabled = true;
+				rdsSecurityGroup = new DbSecurityGroupRepresenter(event.result);
+			}
+			
+			protected function rdsService_describeDbGroupsFaultHandler(event:DescribeDbSecurityGroupsFaultEvent):void
+			{
+				refreshButton.text = "Refresh";
+				refreshButton.enabled = true;
+			}
+			
+			protected function rdsService_authorizeRdsSecGrpIngressFailedHandler(event:AuthorizeIngressFaultEvent):void
+			{
+				addButton.enabled = true;
+				addButton.label = "Add";
+			}
+			
+			
+			protected function rdsService_revokeRdsSecGrpIngressFailedHandler(event:RevokeIngressFaultEvent):void
+			{
+				removeButton.enabled = true;
+				removeButton.label = "Remove";
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<s:RadioButtonGroup id="connectionTypeButtons"
+							change="connectionTypeButtons_changeHandler(event)"/>
+		
+		<services:Ec2Service id="ec2Service"
+							 cloudAccountId="{cloudAccount.id}"
+							 region="{region}"/>
+		
+		<services:RdsService id="rdsService"
+							 cloudAccountId="{cloudAccount.id}"
+							 region="{region}"
+							 describeDbGroupsResult="rdsService_describeDbGroupsResultHandler(event)"
+							 describeDbGroupsFault="rdsService_describeDbGroupsFaultHandler(event)"
+							 authorizeRdsSecGrpIngressFailed="rdsService_authorizeRdsSecGrpIngressFailedHandler(event)"
+							 dbSecurityGroupAuthorized="rdsService_dbSecurityGroupAuthorizedHandler(event)"
+							 revokeRdsSecGrpIngressFailed="rdsService_revokeRdsSecGrpIngressFailedHandler(event)"
+							 dbSecurityGroupRevoked="rdsService_dbSecurityGroupRevokedHandler(event)"/>
+	</fx:Declarations>
+	<s:HGroup>
+		<components:TextButton id="deleteButton"
+							   text="Delete"
+							   click="deleteButton_clickHandler(event)"/>
+		<components:TextButton id="refreshButton"
+							   text="Refresh"
+							   click="refreshButton_clickHandler(event)"/>
+	</s:HGroup>
+	<s:HGroup width="100%">
+		<s:Form>
+			<s:layout>
+				<s:FormLayout horizontalAlign="left" gap="10"/>
+			</s:layout>
+			<s:HGroup>
+				<s:RadioButton id="cidrRB"
+							   selected="true"
+							   label="CIDR/IP"
+							   groupName="connectionTypeButtons"/>
+				<s:TextInput id="ipRangeTI"
+							 textInput="ipRangeTI_textInputHandler(event)"
+							 enabled="{cidrRB.selected}"/>
+			</s:HGroup>
+			<s:HGroup>
+				<s:RadioButton id="groupRB"
+							   label="Compute Security Group" 
+							   groupName="connectionTypeButtons"/>
+				<s:DropDownList id="securityGroupList"
+								enabled="{groupRB.selected}"
+								labelField="name"
+								prompt="Select Source Group"
+								selectedIndex="0"
+								width="226"
+								change="securityGroupList_changeHandler(event)"
+								dataProvider="{ec2Service.securityGroups}"/>
+			</s:HGroup>
+			<s:Button id="addButton"
+					  label="Add"
+					  enabled="false"
+					  click="addButton_clickHandler(event)"/>
+		</s:Form>
+		<s:VGroup height="100%" width="100%">
+			<s:DataGrid id="sourceDG"
+						width="100%"
+						requestedRowCount="-1"
+						minHeight="0"
+						dataProvider="{rdsSecurityGroup.sources}">
+				<s:columns>
+					<s:ArrayList>
+						<s:GridColumn headerText="Connection Type" dataField="type"/>
+						<s:GridColumn headerText="Details" dataField="value"/>
+						<s:GridColumn headerText="Status" dataField="status"/>
+					</s:ArrayList>
+				</s:columns>
+			</s:DataGrid>				
+			<s:Button id="removeButton"
+					  label="Remove"
+					  enabled="{sourceDG.selectedItem != null}"
+					  click="removeButton_clickHandler(event)"/>
+		</s:VGroup>
+	</s:HGroup>
+</components:ObjectManagementDetailsBox>

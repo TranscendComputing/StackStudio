@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" width="636" height="608"
+			   preinitialize="init(event)" close="closeHandler(event)"
+			   move="doMove(event)">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.components.elb.LoadBalancerConfigurations;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.events.CloseEvent;
+			import mx.events.MoveEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			
+			import spark.components.TextArea;
+			
+			[Bindable]
+			private var host:String 
+			private var app:Object = FlexGlobals.topLevelApplication;
+			
+			[Bindable]
+			private var ruleWidth:int = 200 ;
+			
+			public function init(event:Event):void
+			{
+				host = app.GetConfiguration("serviceUrl");
+			}
+			
+			protected function closeHandler(event:CloseEvent):void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function doMove(event:MoveEvent):void
+			{
+				var appW:Number=FlexGlobals.topLevelApplication.width;
+				var appH:Number=FlexGlobals.topLevelApplication.height;
+				if(this.x+this.width>appW)
+				{
+					this.x=appW-this.width;
+				}
+				if(this.x<0)
+				{
+					this.x=0;
+				}
+				if(this.y+this.height>appH)
+				{
+					this.y=appH-this.height;
+				}
+				if(this.y<0)
+				{
+					this.y=0;
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<mx:TabNavigator x="30" y="10" width="583" height="417">
+		<s:NavigatorContent label="Instance" width="100%" height="100%" id="tabInstance">
+			<mx:Form x="10" y="10" width="561" height="251" id="frmInstance">
+				<mx:FormItem label="Instance Type">
+					<mx:ComboBox id="cbInstanceType"/>
+				</mx:FormItem>
+				<mx:FormItem label="Security Group">
+					<s:TextInput id="txtSecurityGroup"/>
+				</mx:FormItem>
+				<mx:FormItem label="Key Pair">
+					<mx:ComboBox id="ddlKeyPair"></mx:ComboBox>
+				</mx:FormItem>
+				<mx:FormItem label="Monitoring Interval">
+					<mx:ComboBox id="cbMonitoringInterval"/>
+				</mx:FormItem>
+				<mx:FormItem label="Custom Image Id">
+					<s:TextInput id="txtCustomImage"/>
+				</mx:FormItem>
+			</mx:Form>
+		</s:NavigatorContent>
+		<s:NavigatorContent label="Load Balancer" width="100%" height="100%" id="tabLoadBalancer">
+			<mx:Form x="10" y="10" width="561" height="350" id="frmLoadBalancer">
+				<mx:FormItem label="HTTP Listener Port">
+					<mx:ComboBox id="cbHttpListenerPort"/>
+				</mx:FormItem>
+				<mx:FormItem label="HTTPS Listener Port">
+					<mx:ComboBox id="cbHttpsListenerPort"/>
+				</mx:FormItem>
+				<mx:FormItem label="SSL Certificate ID">
+					<s:TextInput/>
+				</mx:FormItem>
+				<mx:FormItem label="Instance Health Check">
+					<mx:HRule width="{ruleWidth}"/>
+				</mx:FormItem>
+				<mx:FormItem label="Health Check URL">
+					<s:TextInput id="txtHealthCheckURL"/>
+				</mx:FormItem>
+				<mx:FormItem label="Health Check Interval" toolTip="5-300 seconds">
+					<s:NumericStepper id="nsHealthCheckInterval"/>
+				</mx:FormItem>
+				<mx:FormItem label="Health Check Timeout">
+					<s:NumericStepper id="nsHealthCheckTimeout" toolTip="2-60 seconds"/>
+				</mx:FormItem>
+				<mx:FormItem label="Healthy Check Count Threshold">
+					<s:HSlider id="hsHealthyCheckThreshold" maximum="2" minimum="10"/>
+				</mx:FormItem>
+				<mx:FormItem label="Unhealthy Check Count Threshold">
+					<s:HSlider id="hsUnhealthyCheckThreshold" maximum="2" minimum="10"/>
+				</mx:FormItem>
+				<mx:FormItem label="Sessions">
+					<mx:HRule width="{ruleWidth}"/>
+				</mx:FormItem>
+				<mx:FormItem label="Enable Session Stickiness">
+					<s:CheckBox id="cbEnableSessionStickiness"/>
+				</mx:FormItem>
+				<mx:FormItem label="Cookie Expiration Period" toolTip="0-1,000,000 seconds">
+					<s:TextInput id="txtCookieExpirationPeriod" restrict="0-9"/>
+				</mx:FormItem>
+			</mx:Form>
+		</s:NavigatorContent>
+		<s:NavigatorContent label="Auto Scaling" width="100%" height="100%" id="tabAutoScaling">
+			<mx:Form x="10" y="10" width="561" height="350" id="frmAutoScaling">
+				<mx:FormItem label="Instance Count (min - max)" width="513">
+					<s:HGroup width="330" height="23">
+						<s:TextInput id="txtMinimumInstanceCount" toolTip="1 - 10,000" restrict="0-9"/>
+						<s:TextInput id="txtMaximumInstanceCount" toolTip="1 - 10,000"/>
+					</s:HGroup>
+				</mx:FormItem>
+				<mx:FormItem label="Availability Zones">
+					<mx:ComboBox id="cbAvailabilityZones"/>
+				</mx:FormItem>
+				<mx:FormItem label="Scaling Cooldown Time">
+					<s:TextInput id="txtScalingCooldownTime" toolTip="0-10,000 seconds" restrict="0-9"/>
+				</mx:FormItem>
+				<mx:FormItem label="Scaling Trigger">
+					<mx:HRule width="{ruleWidth}"/>
+				</mx:FormItem>
+				<mx:FormItem label="Trigger Measurement">
+					<mx:ComboBox id="cbTriggerMeasurement"/>
+				</mx:FormItem>
+				<mx:FormItem label="Trigger Statistic">
+					<mx:ComboBox id="cbTriggerStatistic"/>
+				</mx:FormItem>
+				<mx:FormItem label="Unit of Measurement">
+					<mx:ComboBox id="cbUnitOfMeasurement"/>
+				</mx:FormItem>
+				<mx:FormItem label="Measurement Period" toolTip="1-600 minutes">
+					<s:TextInput restrict="0-9" id="txtMeasurementPeriod"/>
+				</mx:FormItem>
+				<mx:FormItem label="Breach Duration">
+					<s:TextInput toolTip="1-600 minutes" id="cbBreachDuration" restrict="0-9"/>
+				</mx:FormItem>
+				<mx:FormItem label="Threshold (lower-upper)" width="519">
+					<s:HGroup width="338" height="24">
+						<s:TextInput id="txtLowerThreshold" toolTip="Lower Threshold, 0 - 20,000,000" restrict="0-9"/>
+						<s:TextInput id="txtUpperThreshold" toolTip="Upper Threshold 0 - 20,000,000" restrict="0-9"/>
+					</s:HGroup>
+				</mx:FormItem>
+				<mx:FormItem label="Breach Scale Increment (lower/upper)" width="519">
+					<s:HGroup width="337" height="30">
+						<s:TextInput id="txtLowerBreachScaleIncrement" restrict="0-9"/>
+						<s:TextInput id="txtUpperBreachScaleIncrement" restrict="0-9"/>
+					</s:HGroup>
+				</mx:FormItem>
+			</mx:Form>
+		</s:NavigatorContent>
+		<s:NavigatorContent label="Database" width="100%" height="100%" id="tabDatabase">
+			<s:Label x="20" y="10" text=" Amazon Web Services provides a number of database options for developers to persist application data when using Elastic Beanstalk. Amazon RDS enables you to run a fully featured relational database while offloading database administration; Amazon SimpleDB provides simple index and query capabilities with seamless scalability; and using one of our many relational database AMIs on Amazon EC2 and Amazon EBS allows you to operate your own relational database in the cloud. " width="499" height="95"/>
+		</s:NavigatorContent>
+		<s:NavigatorContent label="Notifications" width="100%" height="100%" id="tabNotifications">
+			<mx:Form x="9" y="6" width="562" height="334">
+				<mx:FormItem label="Email Address">
+					<s:TextInput id="txtEmailAddress" width="427"/>
+				</mx:FormItem>
+			</mx:Form>
+		</s:NavigatorContent>
+		<s:NavigatorContent label="Container" width="100%" height="100%">
+			<mx:Form x="10" y="7" width="561" height="369">
+				<mx:FormItem label="Container Options" width="496">
+					<mx:HRule width="{ruleWidth}"/>
+				</mx:FormItem>
+				<mx:FormItem label="Initial JVM Heap Size">
+					<s:TextInput id="txtInitialJVMHeapSize" toolTip="in megabytes"/>
+				</mx:FormItem>
+				<mx:FormItem label="Maximum JVM Heap Size">
+					<s:TextInput id="txtMaximumJVMHeapSize" toolTip="in megabytes"/>
+				</mx:FormItem>
+				<mx:FormItem label="Max JVM Permanent Generation Size">
+					<s:TextInput id="txtMaximumJVMPermanentGenerationSize"/>
+				</mx:FormItem>
+				<mx:FormItem label="JVM Command Line Options">
+					<s:TextInput width="273" id="txtJVMCommandLineOptions"/>
+				</mx:FormItem>
+				<mx:FormItem label="Enable log file rotation">
+					<s:CheckBox id="cbLogFileRotation"/>
+				</mx:FormItem>
+				<mx:FormItem label="Environment Properties" width="496">
+					<mx:HRule width="{ruleWidth}"/>
+				</mx:FormItem>
+				<mx:FormItem label="AWS_ACCESS_KEY_ID">
+					<s:TextInput width="271" id="txtAccessKeyId"/>
+				</mx:FormItem>
+				<mx:FormItem label="AWS_SECRET_KEY">
+					<s:TextInput width="270" id="txtSecretKey"/>
+				</mx:FormItem>
+				<mx:FormItem label="JDBC_CONNECTION_STRING">
+					<s:TextInput width="269" id="txtJdbcConnectionString"/>
+				</mx:FormItem>
+				<mx:FormItem label="Param 1 &amp; 2" height="22" width="493">
+					<s:HGroup width="266" height="20">
+						<s:TextInput id="txtParam1"/>
+						<s:TextInput id="txtParam2"/>
+					</s:HGroup>
+				</mx:FormItem>
+				<mx:FormItem label="Param 3 &amp; 4" height="22">
+					<s:HGroup width="270" height="21">
+						<s:TextInput id="txtParam3"/>
+						<s:TextInput id="txtParam4"/>
+					</s:HGroup>
+				</mx:FormItem>
+				<mx:FormItem label="Param 5" height="22">
+					<s:TextInput id="txtParam5"/>
+				</mx:FormItem>
+			</mx:Form>
+		</s:NavigatorContent>
+	</mx:TabNavigator>
+	<s:Button x="396" y="433" label="Cancel" id="btnCancel"/>
+	<s:Button x="492" y="432" label="Apply Changes" id="btnApplyChanges"/>
+			
+</s:TitleWindow>

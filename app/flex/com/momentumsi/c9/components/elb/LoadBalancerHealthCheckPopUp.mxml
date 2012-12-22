@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:s="library://ns.adobe.com/flex/spark" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx"
+		   xmlns:containers="com.momentumsi.c9.containers.*"
+		   title="Configure Health Check"
+		   close="PopUpManager.removePopUp(this)"
+		   creationComplete="creationCompleteHandler(event)"
+		   width="634" height="522">
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				PopUpManager.centerPopUp(this);
+				
+			}
+			
+			protected function saveButton_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<s:ArrayCollection id="confProtocol">
+			<fx:Object label="HTTP"/>
+			<fx:Object label="TCP"/>
+		</s:ArrayCollection>
+		<fx:XML id="loadBalancer"/>
+	</fx:Declarations>
+	<containers:Drawer width="100%" skinClass="com.momentumsi.c9.skins.TopTextDrawerSkin">
+		<mx:Text width="100%" fontSize="12">
+			<mx:text>
+				Your load balancer will automatically perform health checks on your EC2 
+				instances and only route traffic to instances that pass the health check. 
+				The healthy threshold specifies the number of consecutive health probe 
+				successes required before moving the instance to the Healthy state.  The 
+				unhealthy threshold specifies the number of consecutive health probe 
+				failures required before moving the instance to the Unhealthy state.  If an 
+				instance fails the health check, it is automatically removed from the 
+				load balancer. Customize the health check to meet your specific needs.
+			</mx:text>
+		</mx:Text>
+	</containers:Drawer>
+	<mx:Text  text="Configuration Options:" x="48.85" y="112.55" width="134" fontThickness="50" fontSize="14" fontWeight="bold" height="41"/>
+	<mx:Form x="212" y="113">
+		<mx:FormItem label="Ping Protocol:" x="56" y="123">
+			<mx:ComboBox id="pingProtocol" color="black" dataProvider="{confProtocol}" width="88" x="146" y="117"/>
+		</mx:FormItem>
+		<mx:FormItem label="Ping Port" x="78" y="149">
+			<s:TextInput id="pingPort" text="{loadBalancer.child('ping-port')}" color="black"/>
+		</mx:FormItem>
+		<mx:FormItem label="Ping Path:" x="78" y="182">
+			<s:TextInput id="pingPath" color="black" text="{loadBalancer.child('ping-path')}" x="146" y="180" width="88"/>
+		</mx:FormItem>
+	</mx:Form>
+	<mx:Text text="Advanced Options:" x="48.85" y="230.55" width="119" fontThickness="50" height="49" fontWeight="bold" fontSize="14"/>
+	<mx:Form x="159" y="231">
+		<mx:FormItem label="Response Timeout:" x="26" y="266">
+			<s:HGroup verticalAlign="middle">
+				<s:TextInput id="respTimeout" color="black" text="5" x="146" y="264" width="88"/>
+				<mx:Text text="seconds"/>
+			</s:HGroup>
+		</mx:FormItem>
+		<mx:FormItem label="Health Check Interval:" x="10" y="299">
+			<s:HGroup verticalAlign="middle">
+				<s:TextInput id="healthCheckInt" color="black" text="30" x="146" y="297" width="88"/>
+				<mx:Text text="seconds"/>
+			</s:HGroup>
+		</mx:FormItem>	
+		<mx:FormItem label="Unhealthy Threshold:" x="8" y="344">
+			<mx:HSlider id="unhealthyThresh"
+						dataTipPlacement="left" 
+						minimum="2" 
+						maximum="10" 
+						labels="[2,3,4,5,6,7,8,9,10]" 
+						snapInterval="1"
+						tickInterval="1"
+						liveDragging="true"
+						value = "2"
+						x="146" y="330" width="172" height="47"/>
+		</mx:FormItem>
+		<mx:FormItem label="Healthy Threashhold:"  x="11" y="414">
+			<mx:HSlider id="healthyThresh" 
+						dataTipPlacement="right" 
+						minimum="2" 
+						maximum="10" 
+						labels="[2,3,4,5,6,7,8,9,10]" 
+						liveDragging="true"
+						snapInterval="1"
+						tickInterval="1"
+						value="10"
+						x="146" y="385" width="172" height="47"/>
+		</mx:FormItem>
+	</mx:Form>
+	<s:HGroup x="243" y="444">
+		<s:Button id="saveButton" label="Save" click="saveButton_clickHandler(event)"/>
+		<s:Button label="Cancel" click="PopUpManager.removePopUp(this)"/>
+	</s:HGroup>
+</s:TitleWindow>

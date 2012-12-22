@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<c9:DetailsBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:c9="com.momentumsi.c9.components.*"
+		 width="100%" height="100%"
+		 xmlns:diagrammer="fr.kapit.diagrammer.base.uicomponent.*" xmlns:services="com.momentumsi.c9.services.*">
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.utils.Helpers;
+			import com.momentumsi.c9.models.ProvisionedInstance;
+			import com.momentumsi.c9.services.CloudApiService;
+			
+			import fr.kapit.diagrammer.Diagrammer;
+			import fr.kapit.diagrammer.base.uicomponent.DiagramSprite;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			[Bindable]
+			public var accountId:int;
+			[Bindable]
+			public var asCollection:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public var asEvents:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var thisAsEvents:ArrayCollection = new ArrayCollection();
+
+			public var autoScaleRunningCollection:ArrayCollection = new ArrayCollection();
+			private var terminatedCollection:ArrayCollection = new ArrayCollection();
+
+			[Bindable]
+			public var mainBox:MainBox;
+
+			private var instanceService:CloudApiService;
+
+			public function getScaleType():void
+			{
+				if(_autoScaleObject.min_size != null)
+				{
+					if(_autoScaleObject.min_size == _autoScaleObject.max_size)
+					{
+						if(_autoScaleObject.min_size == 1)
+						{
+							scaleType.text = "Auto Recovery";
+						}else{
+							scaleType.text = "Fixed Array";
+						}
+					}else{
+						scaleType.text = "Auto Scale";
+					}
+				}
+			}
+			
+			public function getEventsList():void
+			{
+				thisAsEvents.removeAll();
+				for each (var item:Object in asEvents)
+				{
+					if(item.id == autoscaleInstance.child('name'))
+					{
+						thisAsEvents.addItem(item);
+					}
+				}
+			}
+			
+			protected function terminateButton_clickHandler(event:MouseEvent):void
+			{
+				var deleteAsGroup:AsDeletePopUp = AsDeletePopUp(PopUpManager.createPopUp( UIComponent(this.parentApplication), AsDeletePopUp , true));
+				deleteAsGroup.autoScaleBox = this;
+				deleteAsGroup.autoscaleInstance = autoscaleInstance;
+			}
+			
+	
+			
+			public function deleteAsGroupCall():void
+			{
+				stopAutoScaling.send();
+				
+				var mainBox:MainBox = Helpers.getMainBox(this);
+				var runningDiagram:Diagrammer = Helpers.getRunningDiagram(this);
+				for each ( var nodeCheck:DiagramSprite in runningDiagram.nodesMap )
+				{
+					var nodeData:XML = nodeCheck.data as XML;
+					if(nodeData.name() == 'provisioned-ec2-instance')
+					{
+						if(nodeData.child('auto-scale-id').toString() == autoscaleInstance.child('id').toString())
+						{
+							mainBox.runningView.visual.removeNodeElement(nodeCheck.itemID);
+						}
+					}
+				}
+				
+			}
+				
+			protected function stopAutoScaling_resultHandler(event:ResultEvent):void
+			{
+				var result:XML = event.result as XML;
+				var runningDiagram:Diagrammer = Helpers.getRunningDiagram(this);
+				for each( var asNodeCheck:DiagramSprite in runningDiagram.nodesMap )
+				{
+					var nodeDataAs:XML = asNodeCheck.data as XML;
+					if(nodeDataAs.name() == 'auto-scale' && nodeDataAs.child('id').toString() == result.child('id').toString())
+					{
+						asNodeCheck.data = result;
+					}
+				}
+			}
+			
+			protected function faultHandler(event:FaultEvent):void
+			{
+				//Helpers.handleFault(event);
+			}
+
+			
+			protected function desiredCapacityButton_clickHandler(event:MouseEvent):void
+			{
+				var setDesiredCapacity:AsSetDesiredCapacityPopUp = AsSetDesiredCapacityPopUp(PopUpManager.createPopUp( UIComponent(this.parentApplication), AsSetDesiredCapacityPopUp , true));
+				setDesiredCapacity.autoscaleInstance = autoscaleInstance;
+			}
+			
+			[Bindable]
+			private	var _autoScaleObject:Object = new Object();
+			override public function set resourceObject(value:Object):void
+			{
+				_autoScaleObject = value;
+				getScaleType();
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<fx:XML id="autoscaleInstance"/>
+		<fx:XML id="autoscaleInstanceFill"/>
+		<fx:XML id="ec2Instance"/>
+	
+		<s:HTTPService id="stopAutoScaling"
+					   url="{Helpers.getHost()}/auto_scales/stop_auto_scaling_group/{autoscaleInstance.child('id')}.xml"
+					   resultFormat="e4x"
+					   method="GET"
+					   showBusyCursor="true"
+					   result="stopAutoScaling_resultHandler(event)"
+					   fault="faultHandler(event)"/>
+
+	</fx:Declarations>
+	
+	<s:HGroup id="asButtonBar" height="25" paddingLeft="10" visible="false">
+		<s:Button id="terminateButton" label="Terminate" click="terminateButton_clickHandler(event)"/>
+		<s:Button id="desiredCapacityButton" label="Set Desired Capacity" click="desiredCapacityButton_clickHandler(event)"/>
+	</s:HGroup>
+	<s:BorderContainer height="100%" width="100%" alpha="1" borderVisible="false">
+		<c9:DetailsBoxTabNavigator id="asDetails">
+			<s:NavigatorContent label="Details" width="100%" height="100%">
+				<s:BorderContainer borderVisible="false"  id="details" height="100%" width="100%">
+					<s:Scroller width="100%" height="100%">
+						<s:viewport>
+							<s:HGroup width="100%">
+								<s:Form textAlign="right">
+									<s:layout>
+										<s:FormLayout gap="-7"/>
+									</s:layout>
+									<s:FormItem label="Logical Name:">
+										<mx:Text text="{node.resourceId}"/>
+									</s:FormItem>
+									<s:FormItem label="Physical Name:">
+										<mx:Text text="{_autoScaleObject.auto_scaling_group_name}"/>
+									</s:FormItem>
+									<s:FormItem label="Availability Zones:">
+										<mx:Text text="{_autoScaleObject.availability_zones.join('\n')}"/>
+									</s:FormItem>
+								</s:Form>
+								<s:Form textAlign="right">
+									<s:layout>
+										<s:FormLayout gap="-7"/>
+									</s:layout>
+									<s:FormItem label="Scale Type:">
+										<mx:Text id="scaleType"/>
+									</s:FormItem>
+									<s:FormItem label="Min Size:">
+										<mx:Text text="{_autoScaleObject.min_size}"/>
+									</s:FormItem>
+									<s:FormItem label="Max Size:">
+										<mx:Text text="{_autoScaleObject.max_size}"/>
+									</s:FormItem>
+									<s:FormItem label="Desired Capacity:">
+										<mx:Text text="{_autoScaleObject.desired_capacity}"/>
+									</s:FormItem>
+								</s:Form>
+							</s:HGroup>
+						</s:viewport>
+					</s:Scroller>
+				</s:BorderContainer>
+			</s:NavigatorContent>
+			<s:NavigatorContent label="Recent Events" width="100%" height="100%">
+				<s:BorderContainer borderVisible="false" id="recentEvents" height="100%" width="100%">
+					<mx:DataGrid id="asEventsGrid" width="100%" height="100%" dataProvider="{thisAsEvents}">
+						<mx:columns>
+							<mx:DataGridColumn headerText="Event Details" dataField="details" width="220"/>
+							<mx:DataGridColumn headerText="Event Type" dataField="type" width="100"/>
+							<mx:DataGridColumn headerText="Event Time" dataField="time"/>
+						</mx:columns>
+					</mx:DataGrid>
+				</s:BorderContainer>
+			</s:NavigatorContent>
+		</c9:DetailsBoxTabNavigator>
+	</s:BorderContainer>
+</c9:DetailsBox>

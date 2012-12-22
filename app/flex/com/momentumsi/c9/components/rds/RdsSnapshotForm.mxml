@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx">
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.representers.DbSnapshotRepresenter;
+			[Bindable]
+			public var snapshot:DbSnapshotRepresenter;
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:Form>
+		<s:layout>
+			<s:FormLayout gap="-7"/>
+		</s:layout>
+		<s:FormItem label="Snapshot Id:">
+			<s:Label text="{snapshot.id}"/>
+		</s:FormItem>
+		<s:FormItem label="Master Username:">
+			<s:Label text="{snapshot.masterUsername}"/>
+		</s:FormItem>
+		<s:FormItem label="Engine Version:">
+			<s:Label text="{snapshot.engineVersion}"/>
+		</s:FormItem>
+		<s:FormItem label="Engine:">
+			<s:Label text="{snapshot.engine}"/>
+		</s:FormItem>
+		<s:FormItem label="DB Instance Id:">
+			<s:Label text="{snapshot.instanceId}"/>
+		</s:FormItem>
+		<s:FormItem label="Allocated Storage:">
+			<s:Label text="{snapshot.allocatedStorage}"/>
+		</s:FormItem>
+	</s:Form>
+	<s:Form>
+		<s:layout>
+			<s:FormLayout gap="-7"/>
+		</s:layout>
+		<s:FormItem label="Snapshot Create Time:">
+			<s:Label text="{snapshot.createdAt}"/>
+		</s:FormItem>
+		<s:FormItem label="DB Instance Create Time:">
+			<s:Label text="{snapshot.instanceCreatedAt}"/>
+		</s:FormItem>
+		<s:FormItem label="Availability Zone:">
+			<s:Label text="{snapshot.availabilityZone}"/>
+		</s:FormItem>
+		<s:FormItem label="Status:">
+			<s:Label text="{snapshot.state}"/>
+		</s:FormItem>
+		<s:FormItem label="Port:">
+			<s:Label text="{snapshot.port}"/>
+		</s:FormItem>
+		<s:FormItem label="Snapshot Type:">
+			<s:Label text="{snapshot.type}"/>
+		</s:FormItem>
+	</s:Form>
+</s:HGroup>

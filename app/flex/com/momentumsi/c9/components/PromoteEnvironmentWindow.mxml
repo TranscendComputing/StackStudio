@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wizard:WizardWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					 xmlns:s="library://ns.adobe.com/flex/spark" 
+					 xmlns:mx="library://ns.adobe.com/flex/mx" 
+					 xmlns:wizard="com.momentumsi.c9.components.wizard.*"
+					 creationComplete="wizardwindow1_creationCompleteHandler(event)"
+					 width="596" height="386">
+	<fx:Script>
+		<![CDATA[
+			import com.maccherone.json.JSON;
+			import com.maccherone.json.JSONParseError;
+			import com.momentumsi.c9.events.project.PromoteEnvironmentFaultEvent;
+			import com.momentumsi.c9.events.project.PromoteEnvironmentResultEvent;
+			import com.momentumsi.c9.models.Project;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			[Bindable]
+			public var newEnvironment:String;
+			[Bindable]
+			public var currentEnvironment:String;
+			[Bindable]
+			private var accessors:ArrayCollection;
+			[Bindable]
+			public var version:String;
+			
+			
+			protected function buttonGroup_finishButtonClickHandler(event:MouseEvent):void
+			{
+				buttonGroup.createButton.enabled = false;
+				project.promoteEnvironment(version, newEnvironment);
+			}
+			
+			protected function wizardwindow1_creationCompleteHandler(event:FlexEvent):void
+			{
+				buttonGroup.nextButton.visible = false;
+				buttonGroup.previousButton.visible = false;
+				buttonGroup.nextButton.includeInLayout = false;
+				buttonGroup.previousButton.includeInLayout = false;
+				project.addEventListener(PromoteEnvironmentFaultEvent.FAULT, promote_faultHandler);
+				project.addEventListener(PromoteEnvironmentResultEvent.RESULT, versionUpdated);
+				accessors = project.getMemberGroupAccessors(newEnvironment);
+			}
+			
+			private function promote_faultHandler(event:FaultEvent):void
+			{
+				buttonGroup.createButton.enabled = true;
+				project.removeEventListener(PromoteEnvironmentFaultEvent.FAULT, promote_faultHandler);
+				project.removeEventListener(PromoteEnvironmentResultEvent.RESULT, versionUpdated);
+				try
+				{
+					var error:String = String(event.fault.content);
+					var errorObject:Object = JSON.decode(error);
+					var message:String = errorObject.error.message;
+					Alert.show(message);
+				} 
+				catch(error:JSONParseError) 
+				{
+					Alert.show("Unable to promote environment");
+				}
+			}
+			
+			private function versionUpdated(event:ResultEvent):void
+			{
+				project.removeEventListener(PromoteEnvironmentFaultEvent.FAULT, promote_faultHandler);
+				project.removeEventListener(PromoteEnvironmentResultEvent.RESULT, versionUpdated);
+				PopUpManager.removePopUp(this);
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:VGroup width="100%">
+		<wizard:WizardWindowTitle id="promoteEnvironmnetWWT"
+								  visible="true"
+								  includeInLayout="true"
+								  width="100%"
+								  resourceLabel="Promote Environment"/>
+		<s:VGroup width="100%"
+				  gap="14"
+				  horizontalAlign="center">
+			<s:Label fontWeight="bold" fontSize="15" 
+					 text="You have selected to promote the {version} environment from:"/>
+			<mx:Text fontSize="20" fontWeight="bold"
+					 text="{currentEnvironment.toUpperCase()} to {newEnvironment.toUpperCase()}"/>
+			<s:Label fontWeight="bold" fontSize="15" 
+					 text="The following people/groups have access to {newEnvironment.toUpperCase()}:"/>
+			<s:List id="environmentAccessors" 
+					x="190" 
+					width="180" height="145"
+					labelField="name"
+					dataProvider="{accessors}"/>
+		</s:VGroup>
+		<wizard:WizardButtonGroup id="buttonGroup"
+								  finishButtonClick="buttonGroup_finishButtonClickHandler(event)"
+								  width="100%"/>
+	</s:VGroup>
+</wizard:WizardWindow>

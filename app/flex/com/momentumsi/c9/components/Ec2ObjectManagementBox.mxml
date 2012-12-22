@@ -1,0 +1,470 @@
+<?xml version="1.0" encoding="utf-8"?>
+<c9:ObjectManagementDetailsBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:c9="com.momentumsi.c9.components.*" xmlns:services="com.momentumsi.c9.services.*">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.events.compute.RebootInstanceFaultEvent;
+			import com.momentumsi.c9.events.compute.RebootInstanceResultEvent;
+			import com.momentumsi.c9.events.compute.StartInstanceFaultEvent;
+			import com.momentumsi.c9.events.compute.StartInstanceResultEvent;
+			import com.momentumsi.c9.events.compute.StopInstanceFaultEvent;
+			import com.momentumsi.c9.events.compute.StopInstanceResultEvent;
+			import com.momentumsi.c9.models.CloudAccount;
+			import com.momentumsi.c9.representers.ComputeRepresenter;
+			import com.momentumsi.c9.services.CloudApiService;
+			import com.momentumsi.c9.services.MonitoringService;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.controls.Alert;
+			import mx.core.UIComponent;
+			import mx.events.IndexChangedEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.StringUtil;
+			
+			import spark.components.TextArea;
+			
+			[Bindable]
+			private var ec2Data:ComputeRepresenter;
+			[Bindable]
+			private var imageNameVisible:Boolean = false;
+			[Bindable]
+			private var buttonsEnabled:Boolean = true;
+			
+			override public function set resourceData(value:Object):void
+			{
+				ec2Data = new ComputeRepresenter(value);
+				super.resourceData = ec2Data;
+				ec2Details.selectedIndex = 0;
+				determineDisplayingActions();
+			}
+			
+			protected function terminate_clickHandler(event:MouseEvent):void
+			{
+				var destroyPopUp:DestroyResourceObjectManagement = DestroyResourceObjectManagement(PopUpManager.createPopUp(UIComponent(this.parentApplication), DestroyResourceObjectManagement, true));
+				destroyPopUp.cloudAccountId = cloudAccount.id;
+				destroyPopUp.region = region;
+				destroyPopUp.resourceType = CloudApiService.EC2_SERVICE;
+				if(ec2Data.name == null)
+				{
+					destroyPopUp.resourceDisplayId = ec2Data.id;
+				}else{
+					destroyPopUp.resourceDisplayId = ec2Data.name;
+				}
+				destroyPopUp.resourceId = ec2Data.id;
+			}
+			
+			protected function ec2Details_changeHandler(event:IndexChangedEvent):void
+			{
+				if(ec2Details.selectedChild == monitoringContent)
+				{
+					monitorBox.objectManagement = true;
+					monitorBox.objectManagementResource = ec2Data;
+					monitorBox.objectManagementResourceType = MonitoringService.EC2_DEFAULT;
+					monitorBox.getDefaultMonitorsCall(MonitoringService.EC2_DEFAULT);
+				}
+			}
+			
+			protected function console_clickHandler():void
+			{
+				if(ec2Data.platform != "windows")
+				{
+					var consolePopUp:Ec2InstanceConsole = new Ec2InstanceConsole();
+					consolePopUp.keyName = ec2Data.keyName;
+					consolePopUp.cloudProvider = cloudAccount.cloud_provider;
+					PopUpManager.addPopUp(consolePopUp, UIComponent(parentApplication), true);
+					if(ec2Data.dnsName != null)
+					{
+						consolePopUp.dnsName = ec2Data.dnsName;
+					}else if(ec2Data.publicIpAddress != null)
+					{
+						consolePopUp.dnsName = ec2Data.publicIpAddress;
+					}else
+					{
+						Alert.show("Associate an address to the server for console access.");
+					}
+				}else
+				{
+					Alert.show("Please use Remote Desktop to connect to Windows instances.");
+				}
+			}
+			
+			protected function viewUserData_clickHandler(event:MouseEvent):void
+			{
+				ec2Service.describeInstanceAttribute(ec2Data.id);
+				var data:TextArea = new TextArea();
+				data.text = ec2Service.userData;
+				var userDataWindow:CustomTitleWindow = new CustomTitleWindow();
+				userDataWindow.title = "User Data";
+				userDataWindow.addElement(data);
+				PopUpManager.addPopUp(userDataWindow, UIComponent(parentApplication), true);
+			}
+			
+			protected function textbutton1_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+			}
+			
+			protected function associateAddress_clickHandler(event:MouseEvent):void
+			{
+				ec2Service.addEventListener(ResultEvent.RESULT, associateAddress);
+				ec2Service.allocateAddress();
+			}
+			
+			private var newAddress:String;
+			private function associateAddress(event:ResultEvent):void
+			{
+				var address:Object = ec2Service.result;
+				newAddress = address.public_ip;
+				ec2Service.removeEventListener(ResultEvent.RESULT, associateAddress);
+				ec2Service.addEventListener(ResultEvent.RESULT, associateAddress_resultHandler);
+				
+				ec2Service.associateAddress(newAddress);
+			}
+			
+			private function  associateAddress_resultHandler(event:ResultEvent):void
+			{
+				ec2Service.removeEventListener(ResultEvent.RESULT, associateAddress_resultHandler);
+				ec2Data.publicIpAddress = newAddress;
+				publicIpReviewLabel.text = newAddress;
+			}
+			
+			protected function disassociateAddress_clickHandler(event:MouseEvent):void
+			{
+				ec2Service.addEventListener(ResultEvent.RESULT, releaseAddress);
+				ec2Service.addEventListener(FaultEvent.FAULT, disassociateAddress_faultHandler);
+				ec2Service.disassociateAddress(ec2Data.publicIpAddress);
+			}
+			
+			private function releaseAddress(event:ResultEvent):void
+			{
+				ec2Service.removeEventListener(ResultEvent.RESULT, releaseAddress);
+				ec2Service.releaseAddress(ec2Data.publicIpAddress);
+			}
+			
+			protected function disassociateAddress_faultHandler(event:FaultEvent):void
+			{
+				var rawResult:String = event.message.body as String;
+				var splitResult:Array = rawResult.split("\"message\"");
+				if(splitResult.length > 1)
+				{
+					var messageSplit:Array = splitResult[1].toString().split("\"");
+					if(messageSplit.length > 1)
+					{
+						var message:String = messageSplit[1];
+						Alert.show(message, "Error");
+					}	
+				}
+			}
+			
+			public function determineDisplayingActions():void
+			{	
+				showAllActions();
+				switch(cloudAccount.cloud_provider)
+				{
+					case CloudAccount.AMAZON:
+						break;
+					case CloudAccount.AZURE:
+						imageNameVisible = false;
+						break;
+					case CloudAccount.CLOUDSTACK:
+						associate.visible = false;
+						associate.includeInLayout = false;
+						disassociate.visible = false;
+						disassociate.includeInLayout = false;
+						break;
+					case CloudAccount.EUCALYPTUS:
+						imageNameVisible = false;
+						break;
+					case CloudAccount.HP:
+						imageNameVisible = false;
+						break;
+					case CloudAccount.JOYENT:
+						imageNameVisible = false;
+						associate.visible = false;
+						associate.includeInLayout = false;
+						disassociate.visible = false;
+						disassociate.includeInLayout = false;
+						break;
+					case CloudAccount.OPENSTACK:
+						imageNameVisible = false;
+						break;
+					case CloudAccount.PISTON:
+						imageNameVisible = false;
+						break;
+					case CloudAccount.RACKSPACE:
+						imageNameVisible = false;
+						associate.visible = false;
+						associate.includeInLayout = false;
+						disassociate.visible = false;
+						disassociate.includeInLayout = false;
+						break;
+				}
+			}
+			
+			protected function showAllActions():void
+			{
+				/*
+				if(cloudAccount.cloud_provider == CloudAccount.AMAZON)
+				{
+					console.visible = true;
+					console.includeInLayout = true;
+				}else
+				{
+					console.visible = false;
+					console.includeInLayout = false;
+				}
+				*/
+				
+				terminate.visible = true;
+				terminate.includeInLayout = true;
+
+				associate.visible = true;
+				associate.includeInLayout = true;
+				
+				disassociate.visible = true;
+				disassociate.includeInLayout = true;
+				
+				imageNameVisible = true;
+			}
+			
+			protected function startButton_clickHandler(event:MouseEvent):void
+			{
+				buttonsEnabled = false;
+				ec2Service.addEventListener(StartInstanceResultEvent.RESULT, updateInstanceData_resultHandler);
+				ec2Service.addEventListener(StartInstanceFaultEvent.FAULT, updateInstanceData_faultHandler);
+				ec2Service.startInstance();
+			}
+			
+			protected function stopButton_clickHandler(event:MouseEvent):void
+			{
+				buttonsEnabled = false;
+				ec2Service.addEventListener(StopInstanceResultEvent.RESULT, updateInstanceData_resultHandler);
+				ec2Service.addEventListener(StopInstanceFaultEvent.FAULT, updateInstanceData_faultHandler);
+				ec2Service.stopInstance();
+			}
+			
+			protected function rebootButton_clickHandler(event:MouseEvent):void
+			{
+				buttonsEnabled = false;
+				ec2Service.addEventListener(RebootInstanceResultEvent.RESULT, updateInstanceData_resultHandler);
+				ec2Service.addEventListener(RebootInstanceFaultEvent.FAULT, updateInstanceData_faultHandler);
+				ec2Service.rebootInstance();
+			}
+			
+			private function updateInstanceData_resultHandler(event:ResultEvent):void
+			{
+				ec2Service.removeEventListener(StartInstanceResultEvent.RESULT, updateInstanceData_resultHandler);
+				ec2Service.removeEventListener(StartInstanceFaultEvent.FAULT, updateInstanceData_faultHandler);
+				ec2Data = new ComputeRepresenter(event.result);
+				buttonsEnabled = true;
+			}
+			
+			private function updateInstanceData_faultHandler(event:FaultEvent):void
+			{
+				ec2Service.removeEventListener(StartInstanceResultEvent.RESULT, updateInstanceData_resultHandler);
+				ec2Service.removeEventListener(StartInstanceFaultEvent.FAULT, updateInstanceData_faultHandler);
+				buttonsEnabled = true;
+			}
+			
+			protected function launchMoreLikeThis_clickHandler(event:MouseEvent):void
+			{
+				var ec2Wizard:Ec2ObjectManagementWizard = new Ec2ObjectManagementWizard();
+				ec2Wizard.cloudAccount = cloudAccount;
+				if(cloudAccount.cloud_provider == CloudAccount.AMAZON)
+				{
+					ec2Wizard.region = region;
+				}
+				ec2Wizard.objectManagementCreate = true;
+				ec2Wizard.ec2Data = ec2Data;
+				PopUpManager.addPopUp(ec2Wizard, UIComponent(this.parentApplication), true);
+			}
+			
+			protected function viewSystemLog_clickHandler(event:MouseEvent):void
+			{
+				var ec2ViewSystemLog:Ec2ViewSystemLog = new Ec2ViewSystemLog();
+				ec2ViewSystemLog.cloudAccount = cloudAccount;
+				if(cloudAccount.cloud_provider == CloudAccount.AMAZON)
+				{
+					ec2ViewSystemLog.region = region;
+				}
+				ec2ViewSystemLog.instanceId = ec2Data.id;
+				PopUpManager.addPopUp(ec2ViewSystemLog, UIComponent(this.parentApplication), true);
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<services:Ec2Service id="ec2Service"
+							 showBusyCursor="true"
+							 instanceId="{ec2Data.id}"
+							 cloudAccountId="{cloudAccount.id}"
+							 region="{region}"/>
+	</fx:Declarations>
+	
+
+	<s:HGroup paddingLeft="10" gap="20">
+		<c9:TextButton id="console"
+			text="Console"
+			enabled="{buttonsEnabled}"
+			click="console_clickHandler()"/>
+		<c9:TextButton id="startButton"
+					   text="Start"
+					   enabled="{buttonsEnabled}"
+					   click="startButton_clickHandler(event)"/>
+		<c9:TextButton id="stopButton"
+					   text="Stop"
+					   enabled="{buttonsEnabled}"
+					   click="stopButton_clickHandler(event)"/>
+		<c9:TextButton id="rebootButton"
+					   text="Reboot"
+					   enabled="{buttonsEnabled}"
+					   click="rebootButton_clickHandler(event)"/>
+		<c9:TextButton id="terminate"
+						text="Terminate"
+						enabled="{buttonsEnabled}"
+						click="terminate_clickHandler(event)"/>
+		<c9:TextButton id="view"
+						text="View/Change User Data"
+						enabled="{buttonsEnabled}"
+						click="textbutton1_clickHandler(event)"
+						visible="false" includeInLayout="false"/>
+		<c9:TextButton id="associate"
+						text="Associate Address"
+						enabled="{buttonsEnabled}"
+						click="associateAddress_clickHandler(event)"/>
+		<c9:TextButton id="disassociate"
+						text="Disassociate Address"
+						enabled="{buttonsEnabled}"
+						click="disassociateAddress_clickHandler(event)"/>
+		<c9:TextButton id="launchMoreLikeThis"
+						text="Launch More Like This"
+						enabled="{buttonsEnabled}"
+						click="launchMoreLikeThis_clickHandler(event)"
+						visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"
+						includeInLayout="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"/>
+		<c9:TextButton id="viewSystemLog"
+						text="View System Log"
+						enabled="{buttonsEnabled}"
+					 	click="viewSystemLog_clickHandler(event)"
+						visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"
+						includeInLayout="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"/>
+	</s:HGroup>
+	<s:BorderContainer height="100%" width="100%" alpha="1" borderVisible="false">
+		<mx:TabNavigator id="ec2Details" width="100%" height="100%" change="ec2Details_changeHandler(event)">
+			<s:NavigatorContent label="Details" width="100%" height="100%">
+				<s:BorderContainer borderVisible="false"  id="details" height="100%" width="100%">
+					<s:Scroller width="100%" height="100%">
+						<s:viewport>
+							<s:HGroup>
+								<s:Form>
+									<s:layout>
+										<s:FormLayout gap="-7"/>
+									</s:layout>
+									<s:FormItem label="Name:">
+										<c9:DetailsBoxLabel text="{ec2Data.name}"/>
+									</s:FormItem>
+									<s:FormItem label="Description:">
+										<c9:DetailsBoxLabel text="{ec2Data.description}"/>
+									</s:FormItem>
+									<s:FormItem label="Instance ID:">
+										<c9:DetailsBoxLabel text="{ec2Data.id}"/>
+									</s:FormItem>
+									<s:FormItem label="Image ID:">
+										<c9:DetailsBoxLabel text="{ec2Data.imageId}"/>
+									</s:FormItem>
+									<s:FormItem label="Image Name:">
+										<c9:DetailsBoxLabel text="{ec2Data.imageName}"/>
+									</s:FormItem>
+									<s:FormItem label="Kernel ID:"
+												visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"
+												includeInLayout="{cloudAccount.cloud_provider == CloudAccount.AMAZON}">
+										<c9:DetailsBoxLabel text="{ec2Data.kernelId}"/>
+									</s:FormItem>
+									<s:FormItem label="Ramdisk ID:"
+												visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"
+												includeInLayout="{cloudAccount.cloud_provider == CloudAccount.AMAZON}">
+										<c9:DetailsBoxLabel text="{ec2Data.ramdiskId}"/>
+									</s:FormItem>
+									<s:FormItem label="Root Device Type:"
+												visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"
+												includeInLayout="{cloudAccount.cloud_provider == CloudAccount.AMAZON}">
+										<c9:DetailsBoxLabel text="{ec2Data.rootDeviceType}"/>
+									</s:FormItem>
+									<s:FormItem label="Zone:">
+										<c9:DetailsBoxLabel text="{ec2Data.availabilityZone}"/>
+									</s:FormItem>
+									<s:FormItem label="State:">
+										<c9:DetailsBoxLabel text="{ec2Data.state}"/>
+									</s:FormItem>
+									<s:FormItem label="Date Created:">
+										<c9:DetailsBoxLabel text="{ec2Data.createdAt}"/>
+									</s:FormItem>
+								</s:Form>
+								<s:Form>
+									<s:layout>
+										<s:FormLayout gap="-7"/>
+									</s:layout>
+									<s:FormItem id="keyPairReviewFI"
+												label="Key Pair Name:">
+										<c9:DetailsBoxLabel id="keyPairReviewLabel"
+															text="{ec2Data.keyName}"/>
+									</s:FormItem>
+									<s:FormItem id="securityGroupsReviewFI"
+												label="Security Group(s):">
+										<c9:DetailsBoxLabel id="securityGroupsReviewLabel"
+															text="{ec2Data.securityGroups}"/>
+									</s:FormItem>
+									<s:FormItem id="publicIpReviewFI"
+												label="Public IP Address:">
+										<c9:DetailsBoxLabel id="publicIpReviewLabel" 
+															text="{ec2Data.publicIpAddress}"/>
+									</s:FormItem>
+									<s:FormItem id="privateIpReviewFI"
+												label="Private IP Address:">
+										<c9:DetailsBoxLabel id="privateIpReviewLabel" 
+															text="{ec2Data.privateIpAddress}"/>
+									</s:FormItem>
+									<s:FormItem label="Public DNS Name:"
+												visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"
+												includeInLayout="{cloudAccount.cloud_provider == CloudAccount.AMAZON}">
+										<c9:DetailsBoxLabel text="{ec2Data.dnsName}"/>
+									</s:FormItem>
+									<s:FormItem label="Private DNS Name:"
+												visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"
+												includeInLayout="{cloudAccount.cloud_provider == CloudAccount.AMAZON}">
+										<c9:DetailsBoxLabel text="{ec2Data.privateDnsName}"/>
+									</s:FormItem>
+									<s:FormItem label="Detailed Monitoring:"
+												visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"
+												includeInLayout="{cloudAccount.cloud_provider == CloudAccount.AMAZON}">
+										<c9:DetailsBoxLabel text="{ec2Data.monitoring}"/>
+									</s:FormItem>
+									<s:FormItem label="Virtualization Type:"
+												visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"
+												includeInLayout="{cloudAccount.cloud_provider == CloudAccount.AMAZON}">
+										<c9:DetailsBoxLabel text="{ec2Data.virtualizationType}"/>
+									</s:FormItem>
+									<s:FormItem label="Instance Type:">
+										<c9:DetailsBoxLabel text="{ec2Data.flavorId}"/>
+									</s:FormItem>
+								</s:Form>
+							</s:HGroup>
+						</s:viewport>
+					</s:Scroller>
+				</s:BorderContainer>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="monitoringContent" label="Monitoring" width="100%" height="100%">
+				<c9:MonitoringBox id="monitorBox"
+								  cloudAccountId="{cloudAccount.id}"
+								  region="{region}"/>
+			</s:NavigatorContent>
+		</mx:TabNavigator>
+	</s:BorderContainer>
+</c9:ObjectManagementDetailsBox>

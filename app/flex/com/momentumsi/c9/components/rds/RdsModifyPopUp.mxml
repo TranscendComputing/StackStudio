@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" 
+			   width="764" height="425"
+			   title="Modify DB Instance: {dbInstance.child('rds-db-instance-identifier')}"
+			   close="PopUpManager.removePopUp(this)"
+			   move="Helpers.doMove(this)"
+			   creationComplete="creationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.components.MainBox;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			
+			[Bindable]
+			private var host:String;
+			private var mainBox:MainBox;
+			[Bindable]
+			private var accountId:int;
+			private var cloud:String;
+			[Bindable]
+			private var instanceClassList:ArrayCollection = new ArrayCollection();
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				host = Helpers.getHost();
+				accountId = Helpers.currentAccount(this);
+				cloud = Helpers.currentCloud(this);
+				mainBox = Helpers.getMainBox(this);
+				getDbEngineVersionsSvc.send();
+				getDbSecurityGroupsSvc.send();
+				getDbParameterGroupsSvc.send();
+				PopUpManager.centerPopUp(this);
+				
+				loadCurrentConfigurations();
+				
+				if(dbInstance.child('rds-read-replica-source') != '')
+				{
+					backupPeriodItem.visible = false;
+					modifyForm.removeElement(backupWindowItem);
+					modifyForm.addElementAt(notify, 6);
+				}
+				
+				if(cloud == "EUC")
+				{
+					instanceClassList = eucTypes;
+					instanceClass.selectedIndex = 1;
+				}else{
+					instanceClassList = awsTypes;
+				}
+				
+			}
+			
+			private function loadCurrentConfigurations():void
+			{
+				var obj:Object;
+				for each(obj in instanceClassList)
+				{
+					if(obj.label == dbInstance.child('rds-db-instance-class'))
+						{
+							instanceClass.selectedIndex = instanceClassList.getItemIndex(obj);
+						}
+				}
+				autoUpgradeRadioButtons.selectedValue = dbInstance.child('auto-minor-version-upgrade');
+				multiAvailZoneRadioButtons.selectedValue = dbInstance.child('multiple-availability-zones');
+				storage.text = dbInstance.child('rds-allocated-storage');
+				retentionPeriod.selectedIndex = dbInstance.child('rds-backup-retention-period') - 1;
+				var backupWindow:Array = dbInstance.child('rds-preferred-backup-window').split('-');
+				bwStart.text = backupWindow[0];
+				bwEnd.text = backupWindow[1];
+			}
+			
+			protected function getDbEngineVersionsSvc_resultHandler(event:ResultEvent):void
+			{
+				var result:XMLList = Helpers.xmlChildrenFromEvent(event);
+				var engine:String = dbInstance.child('rds-engine');
+				if(cloud == "EUC")
+				{
+					versions.addItem({label: '5.5'});
+					engineVersion.selectedIndex = 0;
+					engineVersion.enabled = false;
+				}else{
+					for each (var element:XML in result)
+					{
+						var elementEngine:String = element.child('engine');
+						if (elementEngine == engine)
+						{
+							var version:String = element.child('engine-version');
+							versions.addItem({label: version});
+						}
+					}
+					for each(var obj:Object in versions)
+					{ 
+						var listVersion:String = obj.label;
+						var currentVersion:String = dbInstance.child('rds-db-engine-version'); 
+						if(listVersion == currentVersion)
+						{
+							engineVersion.selectedIndex = versions.getItemIndex(obj);
+						}
+					}	
+				}
+			}
+			
+			protected function getDbSecurityGroupsSvc_resultHandler(event:ResultEvent):void
+			{
+				var result:XMLList = Helpers.xmlChildrenFromEvent(event);
+				for each (var element:XML in result)
+				{
+					var name:String = element.child('name');
+					securityGroupsList.addItem({label: name});
+				}
+			}
+			
+			protected function getDbParameterGroupsSvc_resultHandler(event:ResultEvent):void
+			{
+				var result:XMLList = Helpers.xmlChildrenFromEvent(event);
+				for each (var element:XML in result)
+				{
+					var name:String = element.child('name');
+					paramGroupsList.addItem({label: name});
+				}				
+				paramGroup.selectedIndex = 0;
+			}
+			
+			protected function modifyButton_clickHandler(event:MouseEvent):void
+			{
+				var secGroups:Array = new Array();
+				for each(var obj:Object in securityGroups.selectedItems)
+				{
+					secGroups.push(obj.label);
+				}
+				var params:Object = new Object();
+				params['instance_class'] = instanceClass.selectedItem.label;
+				params['engine_version'] = engineVersion.selectedItem.label;
+				params['multi_az'] = multiAvailZoneRadioButtons.selectedValue;
+				params['auto_minor_version_upgrade'] = autoUpgradeRadioButtons.selectedValue;
+				params['allocated_storage'] = storage.text;
+				params['backup_retention_period'] = retentionPeriod.selectedIndex + 1;
+				params['preferred_backup_window'] = bwStart.text + "-" + bwEnd.text;
+				params['preferred_maintenance_window'] = mwStart.selectedItem.value + ":" + mwStartTime.text + "-" + mwEnd.selectedItem.value + ":" + mwEndTime.text;
+				params['apply_immediately'] = applyImmediately.selected;
+				params['db_parameter_group'] = paramGroup.selectedItem.label;
+				params['db_security_groups'] = secGroups;
+				if(password.text != "")
+				{
+					params['master_user_password'] = password.text;
+				}
+				params['id'] = dbInstance.child('id');
+				modifyRdsInstanceSvc.send(params);
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<fx:XML id="dbInstance"/>
+		<mx:Text id="notify" text="No backups will be retained" fontSize="13" fontWeight="bold" paddingLeft="70"/>
+		
+		<s:RadioButtonGroup id="autoUpgradeRadioButtons"/>
+		<s:RadioButtonGroup id="multiAvailZoneRadioButtons"/>
+		
+		<s:HTTPService id="getDbEngineVersionsSvc"
+					   url="{host}/ec2_accounts/describe_db_engine_versions/{accountId}.xml"
+					   resultFormat="e4x"
+					   method="GET"
+					   showBusyCursor="true"
+					   result="getDbEngineVersionsSvc_resultHandler(event)"/>
+		
+		<s:HTTPService id="getDbSecurityGroupsSvc"
+					   url="{host}/ec2_accounts/describe_db_security_groups/{accountId}.xml"
+					   resultFormat="e4x"
+					   method="GET"
+					   showBusyCursor="true"
+					   result="getDbSecurityGroupsSvc_resultHandler(event)"/>
+		
+		<s:HTTPService id="getDbParameterGroupsSvc"
+					   url="{host}/ec2_accounts/describe_db_parameter_groups/{accountId}.xml"
+					   resultFormat="e4x"
+					   method="GET"
+					   showBusyCursor="true"
+					   result="getDbParameterGroupsSvc_resultHandler(event)"/>
+		
+		<s:HTTPService id="modifyRdsInstanceSvc"
+					   url="{host}/rds_db_instances/modify_rds_db_instance_in_cloud"
+					   resultFormat="e4x"
+					   method="POST"
+					   showBusyCursor="true"/>
+		
+		<s:ArrayCollection id="awsTypes">
+			<fx:Object label="db.m1.small"/>
+			<fx:Object label="db.m1.large"/>
+			<fx:Object label="db.m1.xlarge"/>
+			<fx:Object label="db.m2.xlarge"/>
+			<fx:Object label="db.m2.2xlarge"/>
+			<fx:Object label="db.m2.4xlarge"/>
+		</s:ArrayCollection>
+		
+		<s:ArrayCollection id="eucTypes">
+			<fx:Object label="m1.small"/>
+			<fx:Object label="m1.large"/>
+			<fx:Object label="m1.xlarge"/>
+			<fx:Object label="m2.xlarge"/>
+			<fx:Object label="m2.2xlarge"/>
+			<fx:Object label="m2.4xlarge"/>
+		</s:ArrayCollection>		
+	</fx:Declarations>
+		<s:Form id="modifyForm">
+			<s:layout>
+				<s:FormLayout gap="-7"/>
+			</s:layout>
+			<s:FormItem label="DB Instance Class:">
+				<mx:ComboBox id="instanceClass" color="black" labelField="label" dataProvider="{instanceClassList}"/>
+			</s:FormItem>
+			<s:FormItem label="DB Engine Version:">
+				<mx:ComboBox id="engineVersion" width="84" color="black" labelField="label">
+					<mx:dataProvider>
+						<s:ArrayCollection id="versions"/>
+					</mx:dataProvider>
+				</mx:ComboBox>
+			</s:FormItem>
+			<s:FormItem label="Multi-AZ Deployment:">
+				<s:HGroup>
+					<s:RadioButton group="{multiAvailZoneRadioButtons}" id="multiAvailZoneYes" label="Yes" value="{true}" selected="true"/>
+					<s:RadioButton group="{multiAvailZoneRadioButtons}" label="No" value="{false}"/>
+				</s:HGroup>
+			</s:FormItem>
+			<s:FormItem label="Auto Minor Version Upgrade:">
+				<s:HGroup>
+					<s:RadioButton group="{autoUpgradeRadioButtons}" id="autoUpgradeYes" label="Yes" value="{true}" fontWeight="normal" fontSize="11" selected="true"/>
+					<s:RadioButton group="{autoUpgradeRadioButtons}" label="No" value="{false}" fontWeight="normal" fontSize="11"/>
+				</s:HGroup>
+			</s:FormItem>
+			<s:FormItem label="Allocated Storage:">
+				<s:HGroup>
+					<s:TextInput id="storage" width="69" text="20"/>
+					<mx:Text text="GB"/>
+				</s:HGroup>
+			</s:FormItem>
+			<s:FormItem id="backupPeriodItem" label="Backup Retention Period:">
+				<s:HGroup>
+					<mx:ComboBox id="retentionPeriod" width="54" color="black" selectedIndex="0">
+						<mx:dataProvider>
+							<s:ArrayCollection>
+								[1,2,3,4,5,6,7,8]
+							</s:ArrayCollection>
+						</mx:dataProvider>
+					</mx:ComboBox>
+					<mx:Text text="days" verticalCenter="0"/>
+				</s:HGroup>
+			</s:FormItem>
+			<s:FormItem id="backupWindowItem" label="Backup Window:">
+				<s:HGroup>
+					<s:TextInput id="bwStart" width="65"/>
+					<mx:Text text="-"/>
+					<s:TextInput id="bwEnd" width="65"/>
+					<mx:Text text="UTC"/>
+				</s:HGroup>
+			</s:FormItem>
+			<s:FormItem label="Maintenance Window:">
+				<s:HGroup>
+					<mx:ComboBox id="mwStart" color="black" selectedIndex="0">
+						<mx:dataProvider>
+							<s:ArrayCollection>
+								<fx:Object label="Monday" value="mon"/>
+								<fx:Object label="Tuesday" value="tue"/>
+								<fx:Object label="Wednesday" value="wed"/>
+								<fx:Object label="Thursday" value="thu"/>
+								<fx:Object label="Friday" value="fri"/>
+								<fx:Object label="Saturday" value="sat"/>
+								<fx:Object label="Sunday" value="sun"/>
+							</s:ArrayCollection>
+						</mx:dataProvider>
+					</mx:ComboBox>
+					<s:TextInput id="mwStartTime" width="65" text="00:00"/>
+					<mx:Text text="-"/>
+					<mx:ComboBox id="mwEnd" color="black" selectedIndex="0">
+						<mx:dataProvider>
+							<s:ArrayCollection>
+								<fx:Object label="Monday" value="mon"/>
+								<fx:Object label="Tuesday" value="tue"/>
+								<fx:Object label="Wednesday" value="wed"/>
+								<fx:Object label="Thursday" value="thu"/>
+								<fx:Object label="Friday" value="fri"/>
+								<fx:Object label="Saturday" value="sat"/>
+								<fx:Object label="Sunday" value="sun"/>
+							</s:ArrayCollection>
+						</mx:dataProvider>
+					</mx:ComboBox>
+					<s:TextInput id="mwEndTime" width="65" text="00:30"/>
+					<mx:Text text="UTC"/>
+				</s:HGroup>
+			</s:FormItem>
+			<s:FormItem label="Apply Immediately:">
+				<s:CheckBox id="applyImmediately" selected="false"/>
+			</s:FormItem>
+		</s:Form>
+		<s:Form x="407" y="15">
+			<s:layout>
+				<s:FormLayout gap="-7"/>
+			</s:layout>
+			<s:FormItem label="DB Parameter Group:">
+				<mx:ComboBox id="paramGroup" width="138" color="black">
+					<mx:dataProvider>
+						<s:ArrayCollection id="paramGroupsList"/>
+					</mx:dataProvider>
+				</mx:ComboBox>
+			</s:FormItem>
+			<s:FormItem label="DB Security Groups:">
+				<s:List id="securityGroups" width="138" height="78" labelField="label" allowMultipleSelection="true" color="black">
+					<s:dataProvider>
+						<s:ArrayCollection id="securityGroupsList"/>
+					</s:dataProvider>
+				</s:List>
+			</s:FormItem>
+			<s:FormItem label="Master User Password:">
+				<s:TextInput id="password"/>
+			</s:FormItem>
+		</s:Form>
+	<s:Line x="5.5" y="135.5" width="741" xFrom="5" xTo="150" yFrom="180" yTo="180">
+		<s:stroke>
+			<s:SolidColorStroke color="white"/>
+		</s:stroke>
+	</s:Line>
+	<s:Button id="modifyButton" x="308" y="361" label="Modify"
+			  click="modifyButton_clickHandler(event)"/> 
+	<s:Button x="385" y="361" label="Cancel" click="PopUpManager.removePopUp(this)"/>
+</s:TitleWindow>

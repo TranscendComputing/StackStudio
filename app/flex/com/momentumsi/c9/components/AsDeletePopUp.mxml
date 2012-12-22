@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:c9="com.momentumsi.c9.components.*"
+		 width="335" height="172"
+		 title="Terminate Auto Scale Group"
+		 move="Helpers.doMove(this)"
+		 close="PopUpManager.removePopUp(this)"
+		 creationComplete="PopUpManager.centerPopUp(this)"
+		 defaultButton="{deleteButton}">
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
+			public var autoScaleBox:AutoScaleBox;
+			
+			protected function delete_clickHandler(event:MouseEvent):void
+			{
+				autoScaleBox.autoscaleInstance = this.autoscaleInstance;
+				autoScaleBox.deleteAsGroupCall();
+				PopUpManager.removePopUp(this);
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<fx:XML id="autoscaleInstance"/>
+	</fx:Declarations>
+
+	<mx:Text paddingLeft="15" x="0" y="14" text="Are you sure you want to terminate the following{'\n'} auto scale group?"/>
+	<mx:Text paddingLeft="15" x="10" y="50" text=" - {autoscaleInstance.child('name')}"/>
+	<s:Button x="93" y="108" id="deleteButton" label="Delete" click="delete_clickHandler(event)"/>
+	<s:Button x="171" y="108" id="cancelButton" label="Cancel" click="PopUpManager.removePopUp(this)"/>
+</s:TitleWindow>

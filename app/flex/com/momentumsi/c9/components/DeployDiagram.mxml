@@ -1,0 +1,706 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"   
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:diagrammer="fr.kapit.diagrammer.*" 
+		  xmlns:visualizer="fr.kapit.visualizer.*"
+		  xmlns:components1="com.momentumsi.c9.components.*" 
+		  xmlns:models="com.momentumsi.c9.models.*"
+		  width="100%" height="100%">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.constants.Color;
+			import com.momentumsi.c9.constants.ImagePath;
+			import com.momentumsi.c9.constants.ResourceType;
+			import com.momentumsi.c9.itemRenderers.CustomNodeRenderer;
+			import com.momentumsi.c9.models.Element;
+			import com.momentumsi.c9.models.Node;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import flexunit.utils.ArrayList;
+			
+			import fr.kapit.diagrammer.Diagrammer;
+			import fr.kapit.diagrammer.actions.DiagramSelectionAction;
+			import fr.kapit.diagrammer.actions.LinkAction;
+			import fr.kapit.diagrammer.actions.ResizeAction;
+			import fr.kapit.diagrammer.actions.data.LinkActionData;
+			import fr.kapit.diagrammer.base.sprite.DiagramLink;
+			import fr.kapit.diagrammer.base.uicomponent.DiagramSprite;
+			import fr.kapit.diagrammer.base.uicomponent.container.DiagramColumn;
+			import fr.kapit.diagrammer.controls.DiagramLinkController;
+			import fr.kapit.diagrammer.events.DiagrammerEvent;
+			import fr.kapit.diagrammer.events.DiagrammerRequestEvent;
+			import fr.kapit.layouts.constants.EdgeDrawType;
+			import fr.kapit.layouts.model.GraphItem;
+			import fr.kapit.visualizer.actions.MultiSelectionAction;
+			import fr.kapit.visualizer.actions.PanAction;
+			import fr.kapit.visualizer.actions.data.SelectionActionData;
+			import fr.kapit.visualizer.base.IGroup;
+			import fr.kapit.visualizer.base.ISprite;
+			import fr.kapit.visualizer.base.uicomponent.GenericSprite;
+			import fr.kapit.visualizer.decorators.sprite.*;
+			import fr.kapit.visualizer.events.VisualizerEvent;
+			import fr.kapit.visualizer.styles.LinkStyle;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
+			import mx.events.MoveEvent;
+			import mx.graphics.ImageSnapshot;
+			import mx.managers.DragManager;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			[Bindable]
+			private var nodeList:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var dependentList:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var nonDependentList:ArrayCollection = new ArrayCollection();
+			private var linkList:ArrayCollection = new ArrayCollection();
+			private var positionList:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var point:Point;
+			[Bindable]
+			private var endNode:DiagramSprite;
+			[Bindable]
+			private var startNode:DiagramSprite;
+			[Bindable]
+			public var waitNodeList:ArrayCollection = new ArrayCollection();
+			private var linkStyle:LinkStyle;
+			[Bindable]
+			private var waitConditionNameNum:int = 1;
+			private var yCoordinate:int = 25;
+			private var xCoordinate:int = 200;
+			[Bindable]
+			private var xStartCoordinate:int;
+			
+			private var templateResources:ArrayCollection;
+			private static const START_NODE:String = "Start";
+			private static const END_NODE:String = "End";
+			
+			
+			protected function visual_doubleClickHandler(event:MouseEvent):void
+			{
+				var data:Node = event.target.parentDocument.data as Node;
+				var node:DiagramSprite = event.target.parentDocument.item as DiagramSprite;
+				if(data.properties["Type"] == ResourceType.WAIT_CONDITION)
+				{
+					var waitConditionWizard:WaitConditionWizard = new WaitConditionWizard();
+					waitConditionWizard.node = node;
+					waitConditionWizard.waitConditionData = data;
+					PopUpManager.addPopUp(waitConditionWizard, UIComponent(this.parentApplication), true);
+				}
+			}
+				
+			public function nodeRendererFunction(data:Object):CustomNodeRenderer
+			{
+				var element:Element;
+				if(!(data is String)){
+					var node:Node = Node(data);
+					element = projectVersion.getElementByName(node.name);
+				}
+				var renderer:CustomNodeRenderer = new CustomNodeRenderer();
+				if(element != null)
+				{
+					switch(element.elementType)
+					{
+						case ResourceType.DB_INSTANCE:
+							renderer.image.source = ImagePath.NEW_RDS;
+							break;
+						case ResourceType.LOAD_BALANCER:
+							renderer.image.source = ImagePath.NEW_ELB;
+							break;
+						case ResourceType.S3_BUCKET:
+							renderer.image.source = ImagePath.NEW_S3;
+							break;
+						case ResourceType.SQS_QUEUE:
+							renderer.image.source = ImagePath.NEW_SQS;
+							break;
+						case ResourceType.SNS_TOPIC:
+							renderer.image.source = ImagePath.NEW_SNS;
+							break;
+						case ResourceType.BEANSTALK_APP:
+							renderer.image.source = ImagePath.NEW_BEAN;
+							break;
+						case ResourceType.EBS_VOLUME:
+							renderer.image.source = ImagePath.NEW_EBS;
+							break;
+						case ResourceType.AS_GROUP:
+							var min:String = element.properties["Properties"]["MinSize"];
+							var max:String = element.properties["Properties"]["MaxSize"];
+							if(min == "1" && max == "1"){
+								renderer.image.source = ImagePath.NEW_AUTORECOVER;
+							}
+							else if(min == max){
+								renderer.image.source = ImagePath.NEW_AUTOSCALE;
+							}
+							else{
+								renderer.image.source = ImagePath.NEW_AUTOSCALE;
+							}
+							break;
+						case ResourceType.EC2_INSTANCE:
+							renderer.image.source = ImagePath.NEW_EC2;
+							break;
+						case ResourceType.CACHE_CLUSTER:
+							renderer.image.source = ImagePath.NEW_ELC;
+							break;
+						case ResourceType.RECORD_SET:
+							renderer.image.source = ImagePath.NEW_DNS;
+							break;
+						case ResourceType.EC2_SECURITY_GROUP:
+							renderer.image.source = ImagePath.NEW_SECURITY_GROUP;
+							break;
+						case ResourceType.S3_BUCKET_POLICY:
+						case ResourceType.SQS_POLICY:
+						case ResourceType.SNS_POLICY:
+							renderer.image.source = ImagePath.NEW_RESOURCE_POLICY;
+							break;
+						case ResourceType.IAM_GROUP:
+							renderer.image.source = ImagePath.NEW_IAM_GROUP;
+							break;
+						case ResourceType.IAM_USER:
+							renderer.image.source = ImagePath.NEW_IAM_USER;
+							break;
+						case ResourceType.CW_ALARM:
+							renderer.image.source = ImagePath.NEW_ALARM;
+							break;
+						case ResourceType.CLOUD_FRONT:
+							renderer.image.source = ImagePath.NEW_CDN;
+							break;
+						case ResourceType.SIMPLE_DB_INSTANCE:
+							renderer.image.source = ImagePath.NEW_SDB;
+							break;
+						case ResourceType.EMBEDDED_STACK:
+							renderer.image.source = ImagePath.NEW_STACK;
+							break;
+						case ResourceType.WAIT_CONDITION:
+							renderer.image.source = ImagePath.WAIT_CONDITION;
+							break;
+					}
+				}else if(node.name == START_NODE)
+				{
+					renderer.image.source = ImagePath.START_NODE;
+					renderer.label.text = "Start";
+				}else if(node.name == END_NODE)
+				{
+					renderer.image.source = ImagePath.END_NODE;
+					renderer.label.text = "End";
+				}else{
+					Alert.show("Unsupported at this time.");
+					PopUpManager.removePopUp(this);
+				}
+				if(element != null)
+				{
+					renderer.label.text = element.name;
+				}
+				renderer.data = node;
+				renderer.isFixed = false;
+				renderer.label.toolTip = null;
+				return renderer;
+			}
+			
+			public function visual_isActive():void
+			{	
+				activateLinkMode();
+				activateLinkMode();
+				nodeList.removeAll();
+				addCollectionOfNodes();
+				//visual.fromXML(Helpers.getMainBox(this).designView.vis.toXML());
+			
+				//var node1:XML = new XML("<Start></Start>");
+				var node1:Node = new Node(null, START_NODE, 100, 250);
+				startNode = DiagramSprite(visual.addNodeElement(node1, null, null, new Point(node1.x, node1.y)));
+				//var node2:XML = new XML("<End></End>");
+				var node2:Node = new Node(null, END_NODE, 650, 250);
+				endNode = DiagramSprite(visual.addNodeElement(node2, null, null , new Point(node2.x, node2.y)));
+				
+				//Add wait condition nodes to the workspace
+				templateResources = new ArrayCollection();
+				for each(var element:Element in projectVersion.elements)
+				{
+					if(element.elementGroup == Element.ELEMENT_GROUP_RESOURCE)
+					{
+						templateResources.addItem(element);
+					}
+				}
+				
+				/*
+				var waitNode:Node;
+				for each(var resource:Element in templateResources)
+				{
+					if(resource.elementType == ResourceType.WAIT_CONDITION)
+					{
+						waitNode = projectVersion.getNodeByName(resource.name);
+						//var newObject:XML = new XML();
+						//newObject = <Wait><name>{resource}</name><timeout>{templateResources[resource]["Properties"]["Timeout"]}</timeout><handleName>{templateResources[resource]["Properties"]["Handle"]["Ref"]}</handleName></Wait>;
+						waitConditionNameNum++;
+						var waitDiagramNode:DiagramSprite = DiagramSprite(visual.addNodeElement(waitNode, null, null, new Point(50,50)));
+						waitNodeList.addItem(waitNode);
+						nodeList.addItem(waitNode);
+					}
+				}
+				*/
+				
+				for each(var node:DiagramSprite in visual.nodesMap)
+				{
+					node.isSizeFixed=true;
+					nodeList.addItem(node);
+					
+					if(node != startNode && node != endNode)
+					{
+						var nodeData:Node = node.data as Node;
+						var r:Element = projectVersion.getElementByName(nodeData.name);
+						if(r != null)
+						{
+							if(r.properties.hasOwnProperty("DependsOn"))
+							{
+								dependentList.addItem({node: node, depend: r.properties["DependsOn"]});
+							}else
+							{
+								nonDependentList.addItem({node: node});
+							}
+						}
+					}
+				}
+				if(dependentList.length == 0)
+				{
+					xStartCoordinate = 375;
+				}else
+				{
+					xStartCoordinate = 200;	
+				}
+				
+				yCoordinate = 25;
+				
+				for each(var item:Object in nonDependentList)
+				{
+					linkList.addItem({sourceNode: startNode, targetNode: item.node});
+					xCoordinate = xStartCoordinate;
+					positionList.addItem({node: item.node, x: xCoordinate, y: yCoordinate});
+					drawDependents(item.node as DiagramSprite);
+					yCoordinate = yCoordinate + 75;
+				}
+
+				linkNodes();
+				positionNodes();
+				setTimeout(zoomDiagrammer, 1);
+			}
+			
+			private function addCollectionOfNodes():void
+			{
+				var nodes:ArrayCollection = projectVersion.nodes;
+				var nodeLinkCollection:ArrayCollection = new ArrayCollection();
+				var node:Node;
+				var diagramNode:DiagramSprite;
+				var p:Point;
+				for each(node in nodes)
+				{	
+					p = new Point(node.x, node.y);
+					diagramNode = visual.addNodeElement(node, null, null, p, node.id) as DiagramSprite;
+					diagramNode.isSizeFixed = true;
+				}
+			}
+			
+			public function positionNodes():void
+			{
+				var node:DiagramSprite;
+				for each(var item:Object in positionList)
+				{
+					node = item.node as DiagramSprite;
+					node.x = item.x as Number;
+					node.y = item.y as Number;
+				}
+			}
+			
+			private function drawDependents(node:DiagramSprite):void
+			{
+				var nodeData:Node = node.data as Node;
+				var dependCount:int = 0;
+				var temporaryNode:DiagramSprite;
+				
+				for each(var item:Object in dependentList)
+				{
+					if(item.depend is Array)
+					{
+						if(item.depend.indexOf(nodeData.name) >= 0)
+						{
+							if(dependCount > 0)
+							{
+								xCoordinate = xCoordinate - 100;
+							}
+							linkList.addItem({sourceNode: node, targetNode: item.node});
+							xCoordinate = xCoordinate + 100;
+							positionList.addItem({node: item.node, x: xCoordinate, y: yCoordinate});
+							dependCount++;
+							temporaryNode = item.node as DiagramSprite;
+							drawDependents(temporaryNode);
+							yCoordinate = yCoordinate + 75;
+						}
+					}else
+					{
+						if(item.depend == nodeData.name)
+						{
+							if(dependCount > 0)
+							{
+								xCoordinate = xCoordinate - 100;
+							}
+							linkList.addItem({sourceNode: node, targetNode: item.node});
+							xCoordinate = xCoordinate + 100;
+							positionList.addItem({node: item.node, x: xCoordinate, y: yCoordinate});
+							dependCount++;
+							temporaryNode = item.node as DiagramSprite;
+							drawDependents(temporaryNode);
+							yCoordinate = yCoordinate + 75;
+						}
+					}
+				}
+				
+				if(dependCount > 0)
+				{
+					yCoordinate = yCoordinate - 75;
+				}else
+				{
+					linkList.addItem({sourceNode: endNode, targetNode: node});
+				}
+			}
+			
+		   	public function zoomDiagrammer():void
+			{
+				var p:Point = new Point(400,0);
+				if(nodeList.length > 8)
+				{
+					visual.zoomContent(.9, p, true, true, true);
+				}
+				if(nodeList.length > 9)
+				{
+					visual.zoomContent(.85, p, true, true, true);
+				}
+				if(nodeList.length > 10)
+				{
+					visual.zoomContent(.9, p, true, true, true);
+				}
+				if(nodeList.length > 11)
+				{
+					visual.zoomContent(.9, p, true, true, true);
+				}
+				if(nodeList.length > 12)
+				{
+					visual.zoomContent(.9, p, true, true, true);
+				}
+				if(nodeList.length > 13)
+				{
+					visual.zoomContent(.9, p, true, true, true);
+				}
+				if(nodeList.length > 14)
+				{
+					visual.zoomContent(.9, p, true, true, true);
+				}
+				if(nodeList.length > 15)
+				{
+					visual.zoomContent(.9, p, true, true, true);
+				}
+			}
+			
+			public function linkNodes():void
+			{	
+				var sourceNode:DiagramSprite;
+				var targetNode:DiagramSprite;
+				var linkActionData:LinkActionData = new LinkActionData();
+				var linkAction:LinkAction = new LinkAction();
+				linkStyle = new LinkStyle();
+				linkStyle.thickness = 3;
+				linkStyle.lineColor = 0x000000;
+				linkActionData.linkStyle = linkStyle;
+				
+				for each(var item:Object in linkList)
+				{
+					sourceNode = item.sourceNode as DiagramSprite;
+					targetNode = item.targetNode as DiagramSprite;
+					visual.addLinkElement(null, sourceNode, targetNode, null, -1, -1, null, linkStyle, 4);
+				}
+			}
+			
+			public function addWaitButton_clickHandler(event:MouseEvent):void
+			{
+				var newWaitCondition:Element = new Element();
+				newWaitCondition.elementGroup = Element.ELEMENT_GROUP_RESOURCE;
+				newWaitCondition.elementType = ResourceType.WAIT_CONDITION;
+				newWaitCondition.name = "WaitCondition" + waitConditionNameNum;
+				newWaitCondition.properties = {Properties: {Timeout: 4500, Handle: {Ref: newWaitCondition.name + "Handle"} }, Type: newWaitCondition.elementType};
+				
+				projectVersion.elements.addItem(newWaitCondition);
+				var newWaitConditionNode:Node = new Node();
+				newWaitConditionNode.name = newWaitCondition.name;
+				newWaitConditionNode.properties = newWaitCondition.properties;
+				newWaitConditionNode.x = 50;
+				newWaitConditionNode.y = 50;
+				
+				var newWaitConditionHandle:Element = new Element();
+				
+				//newObject = <Wait><name>WaitCondition{waitConditionNameNum}</name><timeout>4500</timeout><handleName>WaitCondition{waitConditionNameNum}Handle</handleName></Wait>;
+				waitConditionNameNum++;
+			 	var waitNode:DiagramSprite = DiagramSprite(visual.addNodeElement(newWaitConditionNode, null, null, new Point(newWaitConditionNode.x, newWaitConditionNode.y)));
+				waitNodeList.addItem(waitNode);
+				for each(var node:DiagramSprite in visual.nodesMap)
+				{
+					node.isSizeFixed=true;
+				}				
+			}
+			
+			public function activateLinkMode():void 
+			{
+				if(linkModeToggleButton.selected == true)
+				{
+					//backButton.enabled=false;
+					waitButton.enabled=false;
+					//promoteButton.enabled=false;
+					visual.deactivateAction(MultiSelectionAction.ID);
+					for each(var obj:DiagramSprite in visual.nodesMap)
+					{
+						obj.isFixed = true;
+					}
+					
+					visual.unselectAll();
+					visual.activateAction(LinkAction.ID);
+					var linkActionData:LinkActionData = new LinkActionData();
+					var linkAction:LinkAction = new LinkAction();
+					linkStyle = new LinkStyle();
+					linkStyle.thickness = 3;
+					linkStyle.lineColor = 0x000000;
+					linkActionData.linkStyle = linkStyle;
+					linkActionData.linkLine = 4;
+					visual.updateAction(LinkAction.ID, linkActionData);
+				}else{
+					//backButton.enabled=true;
+					waitButton.enabled=true;
+					//promoteButton.enabled=true;
+					visual.deactivateAction(LinkAction.ID);
+					
+					for each(var obj1:DiagramSprite in visual.nodesMap)
+					{
+						obj1.isFixed = false;
+					}
+					visual.unselectAll();	
+					visual.activateAction(MultiSelectionAction.ID);
+				}
+			}
+			
+			protected function creationCompleteHandler():void
+			{
+				PopUpManager.centerPopUp(this);
+			}
+			
+			protected function deployTime_initializeHandler(event:FlexEvent):void
+			{
+				visual.addEventListener(VisualizerEvent.ELEMENTS_CREATED, disableLinkToggle);
+				visual.addEventListener(KeyboardEvent.KEY_DOWN, reportKeyDown);
+				this.addEventListener(KeyboardEvent.KEY_DOWN, reportKeyDown);
+			}
+			
+			protected function disableLinkToggle(event:VisualizerEvent):void
+			{
+				//backButton.enabled=true;
+				waitButton.enabled=true;
+				//promoteButton.enabled=true;
+				visual.deactivateAction(LinkAction.ID);
+				
+				for each(var obj1:DiagramSprite in visual.nodesMap)
+				{
+					obj1.isFixed = false;
+				}
+				
+				visual.unselectAll();	
+				visual.activateAction(MultiSelectionAction.ID);
+				linkModeToggleButton.selected = false;
+			}
+			
+			private function reportKeyDown(event:KeyboardEvent):void
+			{
+				if(event.keyCode == Keyboard.DELETE)
+				{
+					event.stopImmediatePropagation();
+					
+					var target:Diagrammer = event.currentTarget as Diagrammer;
+					if(target.selection[0] is DiagramSprite)
+					{
+						var node:DiagramSprite = target.selection[0];
+						var type:String = Node(node.data).properties["Type"];
+						if(type != null)
+						{
+							if(type == ResourceType.WAIT_CONDITION)
+							{
+								visual.removeNodeElement(node.itemID);
+							}						
+						}
+					}else if(target.selection[0] is DiagramLink)
+					{
+						visual.removeLinkElement(target.selection[0].itemID);
+					}
+				}
+			}
+			
+			protected function submitButton_clickHandler(event:MouseEvent):void
+			{
+				//resetWaitConditions();
+
+				var mainBox:MainBox = Helpers.getMainBox(this);
+				
+				var waitsOn:Array = new Array();
+				var inConnect:Boolean = false;
+				var nodeDataXML:XML;
+				for each(var node:DiagramSprite in visual.nodesMap)
+				{
+					if(node != startNode && node != endNode)
+					{
+						nodeDataXML = node.data as XML;
+						inConnect = false;
+						waitsOn = new Array();
+						for each(var inConnection:DiagramSprite in node.inConnections)
+						{
+							if(inConnection.data.name() != 'Start' && inConnection.data.name() != 'End')
+							{
+								waitsOn.push(inConnection.data.child('name').toString());
+							}
+							inConnect = true;
+						}
+						
+						if(inConnect)
+						{
+							if(node.data.name() == "Wait")
+							{
+								//Wait Condition
+								var waitAttributes:Object = new Object();
+								var waitProperties:Object = new Object();
+								var waitObject:Object = new Object();
+								
+								var name:String = nodeDataXML.child('name');
+								waitAttributes['Type'] = "AWS::CloudFormation::WaitCondition";
+								
+								if(waitsOn.length == 1)
+								{
+									waitAttributes['DependsOn'] = waitsOn[0];
+								}else if(waitsOn.length > 1)
+								{
+									waitAttributes['DependsOn'] = []
+									for each(var depend:String in waitsOn)
+									{
+										waitAttributes['DependsOn'].push(depend);
+									}
+								}
+								
+								waitProperties['Handle'] = { "Ref" : nodeDataXML.child('handleName').toString() };
+								waitProperties['Timeout'] = nodeDataXML.child('timeout').toString();
+								if(nodeDataXML.child('count').toString() != "")
+								{
+									waitProperties['Count'] = nodeDataXML.child('count').toString();
+								}
+								waitAttributes['Properties'] = waitProperties;
+								waitObject[name] = waitAttributes;
+								
+								//mainBox.jsonViewer.addToTemplateSource();
+								
+								//Wait Condition Handle
+								var waitHandle:Object = new Object();
+								var waitHandleAttributes:Object = new Object();
+								
+								var handleName:String = nodeDataXML.child('handleName').toString();
+								
+								waitHandleAttributes['Type'] = "AWS::CloudFormation::WaitConditionHandle";
+								waitHandle[handleName] = waitHandleAttributes;
+								
+								//mainBox.jsonViewer.addToTemplateSource();
+							}else
+							{
+								if(waitsOn.length > 0)
+								{
+									//mainBox.jsonViewer.addDependsOnAttribute(nodeDataXML.child('name').toString(), waitsOn);
+								}
+							}
+						}
+					}
+				}
+				
+				//mainBox.jsonViewer.updateTemplateSource();
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function resetWaitConditions():void
+			{
+				//templateResources.
+				for each(var resource:Element in templateResources)
+				{
+					if(resource.elementType == ResourceType.WAIT_CONDITION || resource.elementType == ResourceType.WAIT_CONDITION_HANDLE)
+					{
+						delete templateResources[resource];
+					}else
+					{
+						if(templateResources[resource]['DependsOn'])
+						{
+							delete templateResources[resource]['DependsOn'];
+						}
+					}
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<models:ProjectVersion id="projectVersion"/>
+		<fx:String id="stackName"/>
+	</fx:Declarations>
+	<s:BorderContainer width="100%" height="30"
+						   borderVisible="false">
+		<s:backgroundFill>
+			<s:SolidColor>
+				<s:color>{Color.PURPLE}</s:color>
+			</s:SolidColor>
+		</s:backgroundFill>
+		<s:NavigatorContent width="100%"
+							height="100%">
+			<s:HGroup z="1" width="100%"
+					  height="100%" alpha="1"
+					  gap="45" paddingLeft="14"
+					  paddingTop="7">
+				<mx:LinkButton id="waitButton" 
+							   icon="@Embed(source='../assets/IconPNGs/16Timer.png')" 
+							   overIcon="@Embed(source='../assets/IconPNGs/16TimerDisabled.png')"
+							   height="16" width="16" 
+							   skin="{null}"
+							   click="addWaitButton_clickHandler(event)"
+							   toolTip="Add Wait Node."/>
+				<mx:LinkButton id="linkModeToggleButton"
+							   icon="@Embed(source='../assets/IconPNGs/16Link.png')"
+							   overIcon="@Embed(source='../assets/IconPNGs/16LinkDisabled.png')" 
+							   toggle="true"
+							   height="16" width="16"
+							   skin="{null}" 
+							   click="activateLinkMode()" 
+							   toolTip="Draw a link between elements."/>
+			</s:HGroup>
+		</s:NavigatorContent>
+	</s:BorderContainer>
+	<s:Group width="100%" height="100%">
+		<s:Rect width="100%" height="100%">
+			<s:fill>
+				<s:SolidColor color="white"/>
+			</s:fill>
+		</s:Rect>
+		<diagrammer:Diagrammer id="visual" width="100%" height="100%" 
+							   layout="balloon"
+							   enableLinkControllerCreation="false"
+							   doubleClick="visual_doubleClickHandler(event)"
+							   nodeRendererFunction="{nodeRendererFunction}"
+							   nodeRendererDataSource="null"
+							   nodeExpandPolicy="fixNode"
+							   groupLabelField="label"
+							   enablePan="false"
+							   enableAnimation="false"
+							   creationComplete="visual_isActive()"/>
+	</s:Group>
+</s:VGroup>

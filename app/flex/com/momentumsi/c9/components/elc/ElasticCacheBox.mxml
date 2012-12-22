@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<c9:DetailsBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:c9="com.momentumsi.c9.components.*"
+		  width="100%" height="100%"
+		  xmlns:diagrammer="fr.kapit.diagrammer.base.uicomponent.*">
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.components.MainBox;
+			import com.momentumsi.c9.utils.Helpers;
+			import com.momentumsi.c9.models.ProvisionedInstance;
+			
+			import fr.kapit.diagrammer.Diagrammer;
+			import fr.kapit.diagrammer.base.uicomponent.DiagramSprite;
+			
+			import mx.collections.ArrayCollection;
+			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
+			import mx.events.IndexChangedEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.http.mxml.HTTPService;
+			
+			[Bindable]
+			private var thisElcEvents:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public var elcCollection:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public var mainBox:MainBox;
+			
+			protected function delete_clickHandler(event:MouseEvent):void
+			{
+				var elcDeletePopUp:ElasticCacheDeletePopUp = ElasticCacheDeletePopUp(PopUpManager.createPopUp( UIComponent(this.parentApplication), ElasticCacheDeletePopUp , true));
+				elcDeletePopUp.cacheInstance = cacheInstance;
+				//elcDeletePopUp.node = node;
+			}
+			
+			protected function faultHandler(event:FaultEvent):void
+			{
+				
+			}
+			
+			protected function addNodes_clickHandler(event:MouseEvent):void
+			{
+				var elcAddPopUp:ElasticCacheAddNodesPopUp = ElasticCacheAddNodesPopUp(PopUpManager.createPopUp( UIComponent(this.parentApplication), ElasticCacheAddNodesPopUp , true));
+				elcAddPopUp.cacheInstance = cacheInstance;
+			}
+			
+			protected function elcDetails_changeHandler(event:IndexChangedEvent):void
+			{
+				/*
+				else if(elc.selectedIndex == 2)
+				{
+					describeEvents();
+				}
+				*/
+			}
+			
+			[Bindable]
+			private var _cacheObject:Object = new Object();
+			[Bindable]
+			private var _cacheParamGroupObject:Object = new Object();
+			private var _cacheSecGroups:Array = new Array();
+			override public function set resourceObject(value:Object):void
+			{
+				_cacheObject = value;
+				if(value.CacheParameterGroup != null)
+				{
+					_cacheParamGroupObject = value.CacheParameterGroup;
+				}
+				if(value.CacheSecurityGroups != null)
+				{
+					_cacheSecGroups = value.CacheSecurityGroups;
+				}
+				format();
+			}
+			
+			private function format():void
+			{
+				//Display security groups (one each line with status)
+				for(var index:int=0; index < _cacheSecGroups.length; index++)
+				{
+					securityGroups.text = securityGroups.text + _cacheSecGroups[index].CacheSecurityGroupName + "  (" + _cacheSecGroups[index].Status + ")\n";
+				}
+				
+				//Correctly format date to display
+				if(_cacheObject.CacheClusterCreateTime != null)
+				{
+					createdAt.text = dateFormatter.format(Helpers.formatDate(_cacheObject.CacheClusterCreateTime));
+				}
+				
+				// Window returned in lowercase letters, display as uppercase to look nicer
+				if(_cacheObject.PreferredMaintenanceWindow != null)
+				{
+					maintWindow.text = _cacheObject.PreferredMaintenanceWindow;
+					maintWindow.text.toUpperCase();
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<fx:XML id="cacheInstance"/>
+	</fx:Declarations>
+	
+	<s:HGroup id="elasticCacheButtonBar" height="25" paddingLeft="10">
+		<s:Button id="deleteButton" label="Delete" click="delete_clickHandler(event)" enabled="{node.status == ProvisionedInstance.RUNNING}"/>
+		<s:Button id="addNodesButton" label="Add Nodes" click="addNodes_clickHandler(event)" enabled="{node.status == ProvisionedInstance.RUNNING}"/>
+	</s:HGroup>
+	<s:BorderContainer height="100%" width="100%" alpha="1" borderVisible="false">
+		<c9:DetailsBoxTabNavigator id="elcDetails" change="elcDetails_changeHandler(event)">
+			<s:NavigatorContent label="Details" width="100%" height="100%">
+				<s:BorderContainer borderVisible="false"  id="details" height="100%" width="100%">
+					<s:Scroller width="100%" height="100%">
+						<s:viewport>
+							<s:HGroup>
+								<s:Form>
+									<s:layout>
+										<s:FormLayout gap="-7"/>
+									</s:layout>
+									<s:FormItem label="Cache Cluster Name:">
+										<mx:Text text="{node.resourceId}"/>
+									</s:FormItem>
+									<s:FormItem label="Cache Cluster ID:">
+										<mx:Text text="{_cacheObject.CacheClusterId}"/>
+									</s:FormItem>
+									<s:FormItem label="Cache Nodes Type:">
+										<mx:Text text="{_cacheObject.CacheNodeType}"/>
+									</s:FormItem>
+									<s:FormItem label="Engine:">
+										<mx:Text text="{_cacheObject.Engine} {_cacheObject.EngineVersion}"/>
+									</s:FormItem>
+									<s:FormItem label="Security Groups (status):">
+										<mx:Text id="securityGroups"/>
+									</s:FormItem>
+									<s:FormItem label="Parameter Group:">
+										<mx:Text text="{_cacheParamGroupObject.CacheParameterGroupName}"/>
+									</s:FormItem>
+									<s:FormItem label="Parameter Apply Status">
+										<mx:Text text="{_cacheParamGroupObject.ParameterApplyStatus}"/>
+									</s:FormItem>
+									<s:FormItem label="Preferred Availability Zone:">
+										<mx:Text text="{_cacheObject.PreferredAvailabilityZone}"/>
+									</s:FormItem>
+									<s:FormItem label="Preferred Maintenance Window:">
+										<mx:Text id="maintWindow"/>
+									</s:FormItem>
+									<s:FormItem label="Created At:">
+										<mx:Text id="createdAt"/>
+									</s:FormItem>
+									<s:FormItem label="Status:">
+										<mx:Text id="statusText" text="{_cacheObject.CacheClusterStatus}"/>
+									</s:FormItem>
+								</s:Form>
+							</s:HGroup>
+						</s:viewport>
+					</s:Scroller>
+				</s:BorderContainer>
+			</s:NavigatorContent>
+			<s:NavigatorContent label="Recent Events" width="100%" height="100%">
+				<s:BorderContainer borderVisible="false" id="recentEvents" height="100%" width="100%">
+					<mx:DataGrid id="elasticCacheEventsGrid" width="100%" height="100%" dataProvider="{thisElcEvents}">
+						<mx:columns>
+							<mx:DataGridColumn headerText="Event Details" dataField="details" width="220"/>
+							<mx:DataGridColumn headerText="Event Type" dataField="type" width="100"/>
+							<mx:DataGridColumn headerText="Event Time" dataField="time"/>
+						</mx:columns>
+					</mx:DataGrid>
+				</s:BorderContainer>
+			</s:NavigatorContent>
+		</c9:DetailsBoxTabNavigator>
+	</s:BorderContainer>
+</c9:DetailsBox>

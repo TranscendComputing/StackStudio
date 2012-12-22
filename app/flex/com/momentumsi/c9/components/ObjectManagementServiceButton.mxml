@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 color="blue" 
+		 textDecoration="underline" 
+		 useHandCursor="true" 
+		 buttonMode="true"
+		 mouseChildren="false"
+		 creationComplete="creationCompleteHandler(event)"
+		 xmlns:services="com.momentumsi.c9.services.*">
+	<fx:Metadata>
+		[Event(name="resourceComplete", type="mx.rpc.events.ResultEvent")]
+		[Event(name="resourceFailed", type="mx.rpc.events.FaultEvent")]
+		[Event(name="cloudSet", type="flash.events.Event")]
+	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.constants.ResourceTypeLabel;
+			import com.momentumsi.c9.models.CloudAccount;
+			import com.momentumsi.c9.representers.CacheSecurityGroupRepresenter;
+			import com.momentumsi.c9.representers.ComputeSecurityGroupRepresenter;
+			import com.momentumsi.c9.representers.DbSecurityGroupRepresenter;
+			import com.momentumsi.c9.representers.DbSnapshotRepresenter;
+			import com.momentumsi.c9.representers.IdentityGroupRepresenter;
+			import com.momentumsi.c9.representers.IdentityUserRepresenter;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.collections.ArrayCollection;
+			import mx.core.BitmapAsset;
+			import mx.events.FlexEvent;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			//[Bindable]
+			//public var cloudAccount:CloudAccount;
+			[Bindable]
+			public var imageSource:String;
+			[Bindable]
+			public var action:String;
+			[Bindable]
+			public var serviceType:String;
+			[Bindable]
+			public var region:String;
+			[Bindable]
+			public var resourceCollection:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public var secondaryCollection:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public var collectionThree:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public var collectionFour:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public var collectionFive:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public var collectionSix:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var text:String;
+			[Bindable]
+			private var _cloudAccount:CloudAccount;
+			public var resourceType:int;
+			
+			public static const CLOUD_SET_EVENT:String = "cloudSet";
+			
+			protected function getResources(event:Event):void
+			{
+				if(action != null && serviceType != null && _cloudAccount != null)
+				{
+					getObjectManagementItemsSvc.send();
+				}
+			}
+			
+			protected function getObjectManagementItemsSvc_resultHandler(event:ResultEvent):void
+			{
+				var index:int;
+				var tmpCollection:ArrayCollection;
+				var item:Object;
+				var result:Object = getObjectManagementItemsSvc.result;
+				resourceCollection.removeAll();
+				secondaryCollection.removeAll();
+				collectionThree.removeAll();
+				collectionFour.removeAll();
+				switch(serviceType){
+					case CloudApiService.IAM_SERVICE:
+						tmpCollection= new ArrayCollection(result.groups as Array);
+						for each(item in tmpCollection)
+						{
+							index = tmpCollection.getItemIndex(item);
+							tmpCollection.setItemAt(new IdentityGroupRepresenter(item), index);
+						}
+						resourceCollection = new ArrayCollection(tmpCollection.source);
+						
+						tmpCollection = new ArrayCollection(result.users as Array);
+						for each(item in tmpCollection)
+						{
+							index = tmpCollection.getItemIndex(item);
+							tmpCollection.setItemAt(new IdentityUserRepresenter(item), index);
+						}
+						secondaryCollection = new ArrayCollection(tmpCollection.source);
+						break;
+					case CloudApiService.CACHE_SERVICE:
+						resourceCollection = new ArrayCollection(result.clusters as Array);
+						secondaryCollection = new ArrayCollection(result.parameter_groups as Array);
+						tmpCollection = new ArrayCollection(result.security_groups as Array);
+						for each(item in tmpCollection)
+						{
+							collectionThree.addItem(new CacheSecurityGroupRepresenter(item));
+						}
+						break;
+					case CloudApiService.RDS_SERVICE:
+						resourceCollection = new ArrayCollection(result.databases as Array);
+						secondaryCollection = new ArrayCollection(result.parameter_groups as Array);
+						tmpCollection = new ArrayCollection(result.snapshots as Array);
+						for each(item in tmpCollection)
+						{
+							collectionThree.addItem(new DbSnapshotRepresenter(item));
+						}
+						tmpCollection = new ArrayCollection(result.security_groups as Array);
+						for each(item in tmpCollection)
+						{
+							collectionFour.addItem(new DbSecurityGroupRepresenter(item));
+						}
+						break;
+					case CloudApiService.EC2_SERVICE:
+						if(action == "describe_all_security_groups")
+						{
+							resourceCollection = new ArrayCollection(result as Array);
+						}else{
+							resourceCollection = new ArrayCollection(result.instances as Array);
+							tmpCollection = new ArrayCollection(result.security_groups as Array);
+							for each(item in tmpCollection)
+							{
+								if(!(String(item.name).match("rds-") != null))
+								{
+									if(!(String(item.name).match("__elb") != null))
+									{
+										if(!(String(item.name).match("__ecache_") != null))
+										{
+											secondaryCollection.addItem(new ComputeSecurityGroupRepresenter(item));	
+										}
+									}
+								}
+							}
+							collectionThree = new ArrayCollection(result.reserved_instances as Array);
+							collectionFour = new ArrayCollection(result.spot_instances as Array);
+							collectionFive = new ArrayCollection(result.elastic_ips as Array);
+							collectionSix = new ArrayCollection(result.key_pairs as Array);
+						}
+						break;
+					default:
+						resourceCollection = new ArrayCollection(result as Array);
+						break;
+				}
+				
+				dispatchEvent(new ResultEvent("resourceComplete", false, true, event.result));
+			}
+			
+			protected function getObjectManagementItemsSvc_faultHandler(event:FaultEvent):void
+			{
+				dispatchEvent(new FaultEvent("resourceFailed", false, true, event.fault));
+			}
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				addEventListener(CLOUD_SET_EVENT, getResources);
+			}
+			
+			public function set cloudAccount(value:CloudAccount):void 
+			{
+				text = ResourceTypeLabel.RESOURCE_NAME[value.cloud_provider][resourceType];
+				_cloudAccount = value;
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:DateTimeFormatter id="dateFormatter" dateTimePattern="MM/dd/yyyy hh:mm:ss a"/>
+		
+		<services:CloudApiService id="getObjectManagementItemsSvc"
+								  action="{action}"
+								  cloudAccountId="{_cloudAccount.id}"
+								  region="{region}"
+								  serviceType="{serviceType}"
+								  result="getObjectManagementItemsSvc_resultHandler(event)"
+								  fault="getObjectManagementItemsSvc_faultHandler(event)"/>
+	</fx:Declarations>
+	<s:Image id="serviceButtonImage" 
+			 width="20" height="20"
+			 smooth="false" smoothingQuality="high"
+			 source="{imageSource}"/>
+	<mx:Text text="{text}"/>
+</s:HGroup>

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wizard:WizardWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   title="Attach Volume"
+			   creationComplete="wizardwindow1_creationCompleteHandler(event)"
+			   width="400" height="200" xmlns:wizard="com.momentumsi.c9.components.wizard.*">
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.constants.ImagePath;
+			import com.momentumsi.c9.constants.ResourceType;
+			import com.momentumsi.c9.models.Element;
+			
+			import fr.kapit.diagrammer.Diagrammer;
+			import fr.kapit.diagrammer.base.sprite.DiagramLink;
+			import fr.kapit.diagrammer.base.uicomponent.DiagramSprite;
+			
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			
+			import spark.events.IndexChangeEvent;
+
+			public var volumeNode:DiagramSprite;
+			public var link:DiagramLink;
+			[Bindable]
+			public var ebsVolume:Element;
+			[Bindable]
+		    public var ec2Instance:Element;
+			public var diagram:Diagrammer;
+
+			
+			protected function attachButton_clickHandler(event:MouseEvent):void
+			{
+				if(resourceName.text.replace(" ", "") != "")
+				{
+					nameAlert.visible = false;
+					if( device.text.replace(" ", "") != "")
+					{
+						attachButton.enabled = false;
+						deviceAlert.visible = false;
+						mountAttributes = new Object();
+						
+						mountObject = new Object();
+						var name:String = resourceName.text;
+						mountAttributes['Type'] = "AWS::EC2::VolumeAttachment";
+						mountAttributes['Properties'] = getPropertiesObject();
+						saveElement(name, mountAttributes); 
+					}else
+					{
+						deviceAlert.visible = true;
+					}
+				}else
+				{
+					nameAlert.visible = true;
+				}
+			}
+			
+			private function getPropertiesObject():Object
+			{
+				var ec2Name:String = ec2Instance.name;
+				var volName:String = ebsVolume.name;
+				var attachProperties:Object = new Object();	
+				attachProperties['InstanceId'] = {"Ref" : ec2Name};
+				attachProperties['VolumeId'] = {"Ref" : volName};
+				attachProperties['Device'] = device.text;
+				
+				return attachProperties;
+			}
+			
+			protected function cancel_clickHandler(event:MouseEvent):void
+			{
+				diagram.removeLinkElement(link.itemID);
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function wizardwindow1_creationCompleteHandler(event:FlexEvent):void
+			{
+				for each(var element:Element in projectVersion.elements)
+				{
+					if(element.elementType == ResourceType.EBS_VOLUME_ATTACHMENT)
+					{
+						var properties:Object = element.properties["Properties"];
+						try
+						{
+							if(properties["InstanceId"]["Ref"] == ec2Instance.name && properties["VolumeId"]["Ref"] == ebsVolume.name)
+							{
+								this.element = element;
+								device.text = properties['Device'];
+							}
+						} 
+						catch(error:Error) 
+						{
+							// VolumeAttachment element has no references in this template
+						}
+					}
+				}
+				if(element == null)
+				{
+					element = new Element();
+					element.elementGroup = Element.ELEMENT_GROUP_RESOURCE;
+					element.elementType = ResourceType.EBS_VOLUME_ATTACHMENT;
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<fx:Object id="mountObject"/>
+		<fx:Object id="mountAttributes"/>
+	</fx:Declarations>
+	<s:Form width="320">
+		<s:FormItem label="Name*: ">
+			<s:HGroup>
+				<s:TextInput id="resourceName" text="@{element.name}" width="155"/>
+				<s:Image id="nameHelp" width="16" height="16" source="{ImagePath.HELPER_ICON}" 
+						 toolTip="The logical resource name used in the cloud formation template"/>
+				<mx:Text id="nameAlert" text="Invalid Input." color="red" visible="false"/>
+			</s:HGroup>
+		</s:FormItem>
+		<s:FormItem label="Device*: ">
+			<s:VGroup>
+				<s:HGroup>
+					<s:TextInput id="device" width="155"/>
+					<mx:Text text="example: /dev/sdh"/>
+				</s:HGroup>
+				<mx:Text id="deviceAlert" text="Invalid Input." color="red" visible="false"/>
+			</s:VGroup>
+		</s:FormItem>
+	</s:Form>
+	<s:Button id="attachButton" x="126" y="136" label="Attach"
+			  click="attachButton_clickHandler(event)"/>
+	<s:Button x="204" y="136" label="Cancel" click="cancel_clickHandler(event)"/>
+</wizard:WizardWindow>

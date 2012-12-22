@@ -1,0 +1,815 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 xmlns:c9="com.momentumsi.c9.components.*"
+		 xmlns:diagrammer="fr.kapit.diagrammer.*" 
+		 xmlns:visualizer="fr.kapit.visualizer.*"
+		 width="100%" height="100%"
+		 initialize="group1_initializeHandler(event)" 
+		 creationComplete="group1_creationCompleteHandler(event)"
+		 xmlns:components="fr.kapit.diagrammer.artifacts.components.*"
+		 xmlns:local="*">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.components.dns.Dns53Wizard;
+			import com.momentumsi.c9.components.ebs.EbsAttachVolumeByLink;
+			import com.momentumsi.c9.components.ebs.EbsCreateVolumePopUp;
+			import com.momentumsi.c9.components.elb.LoadBalancerWizard;
+			import com.momentumsi.c9.components.elc.ElasticCacheWizard;
+			import com.momentumsi.c9.components.rds.RdsBox;
+			import com.momentumsi.c9.components.s3.SimpleStorageWizard;
+			import com.momentumsi.c9.components.sns.SnsCreateTopic;
+			import com.momentumsi.c9.components.sqs.SqsDeletePopUp;
+			import com.momentumsi.c9.components.wizard.*;
+			import com.momentumsi.c9.constants.PermissionType;
+			import com.momentumsi.c9.constants.PlatformConstants;
+			import com.momentumsi.c9.constants.ResourceType;
+			import com.momentumsi.c9.events.ElementSaveEvent;
+			import com.momentumsi.c9.itemRenderers.CustomNodeRenderer;
+			import com.momentumsi.c9.itemRenderers.InstallsNodeRenderer;
+			import com.momentumsi.c9.itemRenderers.NodeTooltipRenderer;
+			import com.momentumsi.c9.models.*;
+			import com.momentumsi.c9.models.resources.*;
+			import com.momentumsi.c9.services.ProjectService;
+			import com.momentumsi.c9.templates.AwsLinuxChef;
+			import com.momentumsi.c9.templates.AwsLinuxPuppet;
+			import com.momentumsi.c9.templates.InstallObject;
+			import com.momentumsi.c9.templates.PuppetObject;
+			import com.momentumsi.c9.templates.UbuntuChef;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import flash.external.ExternalInterface;
+			
+			import flashx.textLayout.events.UpdateCompleteEvent;
+			
+			import fr.kapit.diagrammer.Diagrammer;
+			import fr.kapit.diagrammer.actions.*;
+			import fr.kapit.diagrammer.actions.data.LinkActionData;
+			import fr.kapit.diagrammer.base.sprite.DiagramLink;
+			import fr.kapit.diagrammer.base.uicomponent.DiagramSprite;
+			import fr.kapit.diagrammer.controls.DiagramLinkController;
+			import fr.kapit.diagrammer.events.*;
+			import fr.kapit.diagrammer.lib.RendererLib;
+			import fr.kapit.diagrammer.managers.data.*;
+			import fr.kapit.layouts.constants.EdgeDrawType;
+			import fr.kapit.layouts.model.GraphItem;
+			import fr.kapit.visualizer.Visualizer;
+			import fr.kapit.visualizer.actions.*;
+			import fr.kapit.visualizer.actions.data.*;
+			import fr.kapit.visualizer.base.*;
+			import fr.kapit.visualizer.base.uicomponent.GenericSprite;
+			import fr.kapit.visualizer.decorators.sprite.*;
+			import fr.kapit.visualizer.events.VisualizerEvent;
+			import fr.kapit.visualizer.renderers.IRenderer;
+			import fr.kapit.visualizer.styles.LinkStyle;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.*;
+			import mx.events.*;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.*;
+			import mx.rpc.http.mxml.HTTPService;
+			
+			import spark.components.*;
+			
+			[Bindable]
+			public var user:User;
+			[Bindable]
+			public var link:DiagramLink;
+			private var detachVolumeNode:DiagramSprite;
+			[Bindable]
+			public var mainBox:MainBox;
+			[Bindable]
+			public var project:Project;
+			[Bindable]
+			public var projectVersion:ProjectVersion;
+			[Bindable]
+			public var environment:String;
+			[Bindable]
+			public var environmentColor:uint = 0xFFFFFF;
+			
+			public function group1_initializeHandler(event:FlexEvent):void
+			{
+				addEventListener(MouseEvent.MOUSE_WHEEL, diagramZoomHandler);
+				vis.addEventListener(VisualizerEvent.ELEMENTS_CREATED, linkRequest_handler);
+				vis.addEventListener(VisualizerEvent.ELEMENTS_DELETED, linkDeleted_handler);
+			}
+			
+			private function linkRequest_handler(event:VisualizerEvent):void
+			{
+				if(event.items[0] is DiagramSprite)
+				{
+					return;
+				}
+
+				var source:DiagramSprite = event.items[0].source;
+				var target:DiagramSprite = event.items[0].target;
+				link = event.items[0];
+				link.arrowTargetType = LinkStyle.LINK_ARROW_ARROW_TYPE;
+				link.arrowSourceType = LinkStyle.LINK_ARROW_ARROW_TYPE;
+				link.arrowRadius = 10;
+				link.arrowWidth = 15;
+				link.thickness = 3;
+				link.lineColor = 0x000000;
+				link.linkLine = 4;
+				link.enableControllerCreation = false;
+				if(mainBox.linkModeToggleButton.selected == true)
+				{
+					var sourceNode:Node = Node(source.data);
+					var targetNode:Node = Node(target.data);
+					var sourceNodeElement:Element = projectVersion.getElementById(sourceNode.elementId);
+					var targetNodeElement:Element = projectVersion.getElementById(targetNode.elementId);
+					var volumeByLink:EbsAttachVolumeByLink = new EbsAttachVolumeByLink();
+					if(sourceNode.id == null || targetNode.id == null){
+						link_clickHandler(false);
+						mainBox.linkModeToggleButton.selected = false;
+						return;
+					}else{
+						var nodeLink:Object;
+						for(var index:int=0; index < sourceNode.nodeLinks.length; index++)
+						{
+							nodeLink = sourceNode.nodeLinks[index]["node_link"];
+							if(nodeLink["target_id"] == targetNode.id || nodeLink["source_id"] == targetNode.id)
+							{
+								//Link already exists between two nodes
+								vis.removeLinkElement(event.items[0].itemID);
+								return;
+							}
+						}
+						sourceNode.createNodeLink(targetNode);
+						targetNode.createNodeLink(sourceNode, false);
+					}
+					
+					if(sourceNodeElement.elementType == ResourceType.LOAD_BALANCER)
+					{
+						var loadBalancerElement:LoadBalancer = new LoadBalancer(sourceNodeElement);
+						if(targetNodeElement.elementType != ResourceType.EC2_INSTANCE && targetNodeElement.elementType != ResourceType.AS_GROUP)
+						{
+							vis.removeLinkElement(event.items[0].itemID);
+							Alert.show("Load balancers may only be linked to instances.");
+						}else if(targetNodeElement.elementType  == ResourceType.EC2_INSTANCE)
+						{
+							loadBalancerElement.addLoadBalancerEc2InstanceRef(targetNodeElement, projectVersion);
+						}else if(targetNodeElement.elementType  == ResourceType.AS_GROUP)
+						{
+							var asGroupElement:ASGroup = new ASGroup(targetNodeElement);
+							asGroupElement.addAutoScaleGroupLoadBalancerRef(sourceNodeElement, projectVersion);
+						}
+					}else if(sourceNodeElement.elementType == ResourceType.DB_INSTANCE){
+						if(targetNodeElement.elementType  == ResourceType.EC2_SECURITY_GROUP)
+						{
+							var dbInstanceSource:DbInstance = new DbInstance(sourceNodeElement);
+							dbInstanceSource.addRdsDbSecurityGroup(targetNodeElement, projectVersion);
+						}
+					}else if(sourceNodeElement.elementType  == ResourceType.EC2_SECURITY_GROUP)
+					{
+						if(targetNodeElement.elementType == ResourceType.EC2_INSTANCE)
+						{
+							var ec2InstanceTargetElement:Ec2Instance = new Ec2Instance(targetNodeElement);
+							ec2InstanceTargetElement.addSecurityGroupEc2InstanceRef(sourceNodeElement, projectVersion);
+						}else if(targetNodeElement.elementType == ResourceType.AS_GROUP)
+						{
+							var asGroupTarget:ASGroup = new ASGroup(targetNodeElement);
+							asGroupTarget.addSecurityGroupLaunchConfigRef(sourceNodeElement, projectVersion);
+						}else if(targetNodeElement.elementType == ResourceType.DB_INSTANCE)
+						{
+							var dbInstanceTarget:DbInstance = new DbInstance(targetNodeElement);
+							dbInstanceTarget.addRdsDbSecurityGroup(sourceNodeElement, projectVersion);
+						}else if(sourceNodeElement.elementType == ResourceType.CACHE_CLUSTER)
+						{
+							var clusterTargetElement:ElastiCacheCluster = new ElastiCacheCluster(targetNodeElement);
+							clusterTargetElement.addElastiCacheSecurityGroup(targetNodeElement, projectVersion);
+						}
+					}else if(sourceNodeElement.elementType == ResourceType.EC2_INSTANCE)
+					{
+						if(targetNodeElement.elementType == ResourceType.EBS_VOLUME)
+						{
+							volumeByLink.ec2Instance = sourceNodeElement;
+							volumeByLink.ebsVolume = targetNodeElement;
+							volumeByLink.volumeNode = target;
+							volumeByLink.link = link;
+							volumeByLink.projectVersion = projectVersion;
+							PopUpManager.addPopUp(volumeByLink, UIComponent(this.parentApplication), true);
+						}else if(targetNodeElement.elementType == ResourceType.EC2_SECURITY_GROUP)
+						{
+							var ec2InstanceSourceElement:Ec2Instance = new Ec2Instance(sourceNodeElement);
+							ec2InstanceSourceElement.addSecurityGroupEc2InstanceRef(targetNodeElement, projectVersion);
+						}else if(targetNodeElement.elementType == ResourceType.LOAD_BALANCER)
+						{
+							var loadBalancerTargetElement:LoadBalancer = new LoadBalancer(targetNodeElement);
+							loadBalancerTargetElement.addLoadBalancerEc2InstanceRef(sourceNodeElement, projectVersion);
+						}
+					}else if(sourceNodeElement.elementType == ResourceType.EBS_VOLUME)
+					{
+						
+						if(targetNodeElement.elementType == ResourceType.EC2_INSTANCE || targetNodeElement.elementType == ResourceType.AS_GROUP)
+						{
+							volumeByLink.ebsVolume = sourceNodeElement;
+							volumeByLink.ec2Instance = targetNodeElement;
+							volumeByLink.volumeNode = target;
+							volumeByLink.link = link;
+							volumeByLink.projectVersion = projectVersion;
+							PopUpManager.addPopUp(volumeByLink, UIComponent(this.parentApplication), true);
+						}
+						
+					}else if(sourceNodeElement.elementType == ResourceType.AS_GROUP)
+					{
+						if(targetNodeElement.elementType == ResourceType.EC2_SECURITY_GROUP)
+						{
+							var asGroupSource:ASGroup = new ASGroup(sourceNodeElement);
+							asGroupSource.addSecurityGroupLaunchConfigRef(targetNodeElement, projectVersion);
+						}
+					}else if(sourceNodeElement.elementType == ResourceType.CACHE_CLUSTER)
+					{
+						if(targetNodeElement.elementType == ResourceType.EC2_SECURITY_GROUP)
+						{
+							var clusterElement:ElastiCacheCluster = new ElastiCacheCluster(sourceNodeElement);
+							clusterElement.addElastiCacheSecurityGroup(targetNodeElement, projectVersion);
+						}					
+					}
+					link_clickHandler(false);
+					mainBox.linkModeToggleButton.selected = false;
+				}
+			}
+			
+			private function linkDeleted_handler(event:VisualizerEvent):void
+			{
+				for(var index:int = 0; index < event.items.length; index++){
+					if(event.items[index] is DiagramSprite){
+						return;
+					}
+				}
+				var source:DiagramSprite = event.items[0].source;
+				var target:DiagramSprite = event.items[0].target;
+				
+				var sourceNode:Node = Node(source.data);
+				var targetNode:Node = Node(target.data);
+				var sourceNodeElement:Element = projectVersion.getElementById(sourceNode.elementId);
+				var targetNodeElement:Element = projectVersion.getElementById(targetNode.elementId);
+				
+				link = event.items[0];
+				
+				sourceNode.removeNodeLink(targetNode.id);
+				targetNode.removeNodeLink(sourceNode.id, false);
+				switch(sourceNodeElement.elementType)
+				{
+					case ResourceType.LOAD_BALANCER:
+						if(targetNodeElement.elementType == ResourceType.EC2_INSTANCE)
+						{	
+							//TODO remove instance ref from load balancer
+						}else if(targetNodeElement.elementType == ResourceType.AS_GROUP)
+						{
+							//TODO remove load balancer ref from as group
+						}
+						break;
+
+				}
+				if(sourceNodeElement.elementType == ResourceType.EC2_INSTANCE)
+				{
+					switch(targetNodeElement.elementType)
+					{
+						case ResourceType.LOAD_BALANCER:
+							// TODO remove instance reference in load balancer
+							break;
+						case ResourceType.EBS_VOLUME:
+							
+							break;					
+					}
+				}else if(sourceNodeElement.elementType == ResourceType.EBS_VOLUME)
+				{
+					
+				}else if(sourceNodeElement.elementType == ResourceType.DB_INSTANCE)
+				{
+					var dbSourceElement:DbInstance = new DbInstance(sourceNodeElement);
+					if(targetNodeElement.elementType == ResourceType.EC2_SECURITY_GROUP)
+					{
+						dbSourceElement.removeSecurityGroupRef(projectVersion);
+					}
+				}else if(sourceNodeElement.elementType == ResourceType.EC2_SECURITY_GROUP)
+				{
+					if(targetNodeElement.elementType == ResourceType.DB_INSTANCE)
+					{
+						var dbTargetElement:DbInstance = new DbInstance(targetNodeElement);
+						dbTargetElement.removeSecurityGroupRef(projectVersion);
+					}
+				}
+				link_clickHandler(false);
+				mainBox.linkModeToggleButton.selected = false;
+			}
+			
+			protected function detachVolumeByLink_resultHandler(event:ResultEvent):void
+			{
+				detachVolumeNode.data = event.result as XML;
+			}
+			
+			private function linkInstanceSvc_faultHandler(event:FaultEvent):void
+			{
+				//TODO
+			}
+
+			private function diagramZoomHandler(event:MouseEvent):void
+			{
+				if(event.currentTarget.id == "designView")
+				{
+					//event.stopPropagation();
+				}
+			}
+
+			
+			protected function vis_doubleClickHandler(event:MouseEvent):void
+			{	
+				var diagramNode:DiagramSprite = vis.selectedNode;
+				var node:Node = Node(IRenderer(diagramNode.itemRenderer).data);
+				var elementWizard:WizardWindow;
+				var element:Element;
+				//node = Node(IRenderer(diagramNode.itemRenderer).data);
+				if(node.elementId != null)
+				{
+					element = projectVersion.getElementById(node.elementId);
+				}else{
+					element = new Element(null, node.name, node.properties.Type, project.project_id); 
+				}	
+					
+				switch(node.properties.Type)
+				{
+					case ResourceType.AS_GROUP:
+					case ResourceType.EC2_INSTANCE:
+						/* elementWizard = new Ec2InstanceWizard();
+						break; */
+					case ResourceType.CHEF_ROLE:
+					case ResourceType.PUPPET_MODULE:
+						var installsRenderer:InstallsNodeRenderer = diagramNode.itemRenderer as InstallsNodeRenderer;
+						var installsWizard:Ec2InstanceWizard = new Ec2InstanceWizard();
+						var installsColl:ArrayCollection = new ArrayCollection();
+						var installObject:InstallObject;
+						installsColl.addAll(installsRenderer.installsCollection);
+						installsWizard.initialInstalls = installsColl;
+						//If element Id is null, set type to ec2Instance by default in order to select wizard defaults
+						if(element.id == null)
+						{
+							element.elementType = ResourceType.EC2_INSTANCE;
+							//Generate install object
+							if(node.properties.Type == ResourceType.PUPPET_MODULE)
+							{
+								installObject = new PuppetObject(installsRenderer.roles, project.cloud_account.puppetServerUrl, project.cloud_account.puppetBucket);
+							}else if(node.properties.Type == ResourceType.CHEF_ROLE)
+							{
+								installsWizard.platform = installsRenderer.platform;
+								if(installsRenderer.platform == PlatformConstants.UBUNTU)
+								{
+									installObject = new UbuntuChef(installsRenderer.roles, project.cloud_account.chefServerUrl, project.cloud_account.chefBucket);
+								}else{
+									installObject = new AwsLinuxChef(installsRenderer.roles, project.cloud_account.chefServerUrl, project.cloud_account.chefBucket);
+								}
+							}
+							installsWizard.installObject = installObject;
+						}
+						elementWizard = installsWizard;
+						break;
+					case ResourceType.EBS_VOLUME:
+						elementWizard = new EbsCreateVolumePopUp();
+						break;
+					case ResourceType.EC2_SECURITY_GROUP:
+					case ResourceType.DB_SECURITY_GROUP:
+						elementWizard = new SecGroupWizard();
+						break;
+					case ResourceType.CACHE_CLUSTER:
+						elementWizard = new ElasticCacheWizard();
+						break;
+					case ResourceType.BEANSTALK_APP:
+						elementWizard = new BeanstalkApplicationWizard();
+						break;
+					case ResourceType.LOAD_BALANCER:
+						elementWizard = new LoadBalancerWizard();
+						break;
+					case ResourceType.DB_INSTANCE:
+						elementWizard = new RDSWizard();
+						break;
+					case ResourceType.RECORD_SET:
+						elementWizard = new Dns53Wizard();
+						break;
+					case ResourceType.S3_BUCKET:
+						elementWizard = new SimpleStorageWizard();
+						break;
+					case ResourceType.SNS_TOPIC:
+						elementWizard = new SnsCreateTopic();
+						break;
+					case ResourceType.SQS_QUEUE:
+						elementWizard = new SqsCreateQueueTitleWindow();
+						break;
+					case ResourceType.S3_BUCKET_POLICY:
+					case ResourceType.SNS_POLICY:
+					case ResourceType.SQS_POLICY:
+						elementWizard = new ResourcePolicyWizard();
+						break;
+					case ResourceType.IAM_GROUP:
+						elementWizard = new IamWizard();
+						break;
+					case ResourceType.IAM_USER:
+						elementWizard = new IamUserWizard();
+						break;
+					case ResourceType.CLOUD_FRONT:
+						elementWizard = new CloudFrontWizard();
+						break;
+					case ResourceType.CW_ALARM:
+						elementWizard = new CloudWatchAlarmWizard();
+						break;
+					case ResourceType.SIMPLE_DB_INSTANCE:
+						elementWizard = new SimpleDBWizard();
+						break;
+					case ResourceType.EMBEDDED_STACK:
+						elementWizard = new EmbeddedStackWizard();
+						break;
+				}
+				
+				if(elementWizard != null){
+					elementWizard.node = node;
+					elementWizard.element = element;
+					elementWizard.diagramNode = diagramNode;
+					elementWizard.projectVersion = projectVersion;
+					elementWizard.project = project;
+					elementWizard.user = user;
+					elementWizard.cloudAccount = project.cloud_account;
+					if(project.region == null || project.region == "")
+					{
+						elementWizard.region = "us-east-1";
+					}else
+					{
+						elementWizard.region = project.region;
+					}
+					PopUpManager.addPopUp(elementWizard, UIComponent(parentApplication), true);
+					elementWizard.applyConfigurations();
+					vis.stage.focus = null;
+				}
+			}
+			
+			public function removeNode(id:String):void
+			{
+				vis.removeNodeElement(id);
+				//recoverCloud.removeNodeElement(id);
+			}
+			
+			public function launchSelectedNodes():void
+			{
+				var selectedNodes:Array = vis.selection;
+			}
+				
+			public function groupSelectedNodes():void
+			{
+				var test:Array = new Array();
+				if(vis.selection.length > 0)
+				{
+					for(var i:int = 0; i < vis.selection.length; i++)
+					{
+						test.push(vis.selection[i]);
+					}
+					var group:IGroup = vis.groupElements(new Object(), test);
+				}
+				else {trace('nothing selected');}
+			}
+			
+			public function ungroupSelectedNodes():void
+			{
+				if(vis.selection.length > 0)
+				{
+					var selection:Array = vis.selection.concat();
+					vis.unselectAll();
+					vis.unGroupElements(selection);
+				}
+			}
+			
+			public function link_clickHandler(toggle:Boolean):void
+			{
+				var obj:DiagramSprite;
+				var linkStyle:LinkStyle;
+				var linkAction:LinkAction;
+				var linkActionData:LinkActionData;
+				if(toggle == true)
+				{
+					vis.deactivateAction(MultiSelectionAction.ID);
+					vis.updateAction(MultiSelectionAction.ID);
+					for each(obj in vis.nodesMap)
+					{
+						obj.isFixed = true;
+					}
+
+					vis.unselectAll();
+					vis.activateAction(LinkAction.ID);
+					
+					linkStyle = new LinkStyle();
+					linkStyle.arrowTargetType = LinkStyle.LINK_ARROW_ARROW_TYPE;
+					linkStyle.arrowSourceType = LinkStyle.LINK_ARROW_ARROW_TYPE;
+					linkStyle.arrowRadius = 10;
+					linkStyle.arrowWidth = 15;
+					linkStyle.thickness = 3;
+					linkStyle.lineColor = 0x000000;
+					linkActionData = new LinkActionData();
+					linkAction = new LinkAction();
+					linkActionData.linkStyle = linkStyle;
+					linkActionData.linkLine = 4;
+					
+					vis.updateAction(LinkAction.ID);
+				}else{
+					vis.deactivateAction(LinkAction.ID);
+					vis.updateAction(LinkAction.ID);
+					for each(obj in vis.nodesMap)
+					{
+						obj.isFixed = false;
+					}
+					vis.unselectAll();	
+					vis.activateAction(MultiSelectionAction.ID);
+					vis.updateAction(MultiSelectionAction.ID);
+				}
+			}
+			
+			protected function workspace_dividerDragHandler(event:DividerEvent):void
+			{
+				// TODO Auto-generated method stub
+			}
+			
+			private function dividerDragCompleteHandler(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+			}
+			
+			protected function nodeTooltipRendererFunction(data:Object):DisplayObject
+			{
+				var tooltipRenderer:NodeTooltipRenderer = new NodeTooltipRenderer();
+				if(data.properties["Type"] == 'rds-db-instance')
+				{
+					tooltipRenderer.tooltipContent ="Relational Database" + "\n" + 
+													"Name: " + data.child('name') + "\n" + 
+													"DB: " + data.child('rds-engine') + " " + data.child('rds-db-engine-version') + "\n" +
+													"Class: " + data.child('rds-db-instance-class');
+				}else if(data.properties["Type"] == 'load-balancer')
+				{
+					tooltipRenderer.tooltipContent ="Load Balancer" + "\n" +  
+													"Name: " + data.child('name');
+				}else if(data.properties["Type"] == 's3')
+				{
+					tooltipRenderer.tooltipContent ="S3 Bucket" + "\n" +  
+													"Name: " + data.child('name');
+				}else if(data['label'] == 'instance')
+				{
+
+				}else if(data.properties["Type"] == 'auto-scale')
+				{
+					if(data.child('scale-type') == 'autoRecovery')
+					{
+						tooltipRenderer.tooltipContent ="Auto Recovery" + "\n" + 
+														"Name: " + data.child('name') + "\n" +
+														"Avail. Zone: " + data.child('availability-zone');
+					}
+					else if(data.child('scale-type') == 'fixedArray')
+					{
+						tooltipRenderer.tooltipContent ="Fixed Array" + "\n" + 
+														"Name: " + data.child('name') + "\n" +
+														"Size: " + data.child('min-size');
+					}
+					else if(data.child('scale-type') == 'autoScale')
+					{
+						tooltipRenderer.tooltipContent ="Auto Scale" + "\n" + 
+														"Name: " + data.child('name') + "\n" +
+														"Min Size: " + data.child('min-size') + "\n" +
+														"Max Size: " + data.child('max-size');
+					}
+				}else if(data.properties["Type"] == 'sqs-message')
+				{
+					tooltipRenderer.tooltipContent ="Message Queue" + "\n" + 
+													"Name: " + data.child('name') + "\n" +
+													"Timeout: " + data.child('visibility-timeout') + "\n" +
+													"Max Msg Size: " + data.child('max-message-size') + "\n" +
+													"Msg Retention: " + data.child('retention-period');
+				}else if(data.properties["Type"] == 'elastic-beanstalk-app')
+				{
+					tooltipRenderer.tooltipContent ="Elastic Beanstalk" + "\n" + 
+													"Name: " + data.child('name');
+				}else if(data.properties["Type"] == 'ebs-volume')
+				{
+					tooltipRenderer.tooltipContent ="EBS Volume" + "\n" + 
+													"Name: " + data.child('name') + "\n" +
+													"Size: " + data.child('size') + " GB" + "\n" +
+													"Avail. Zone: " + data.child('availability-zone');
+				}else if(data.properties["Type"] == 'ec2-instance')
+				{
+					tooltipRenderer.tooltipContent ="EC2 Instance" + "\n" + 
+													"Name: " + data.child('name') + "\n" +
+													"Instance: " + data.child('instance-type') + "\n" +
+													"Image Id: " + data.child('machine-id');
+				}else if(data.properties["Type"] == 'elastic-cache')
+				{
+					tooltipRenderer.tooltipContent ="Cache Cluster" + "\n" +
+													"Name: " + data.child('name') + "\n" +
+													"Engine: " + data.child('engine') + "\n" +
+													"Cache Port: " + data.child('cache-port');
+				}else if(data.properties["Type"] == 'dns-record-set')
+				{
+					tooltipRenderer.tooltipContent ="DNS Record Set" + "\n" +
+													"Name: " + data.child('name') + "\n" +
+													"Host Zone: " + data.child('hosted-zone-name') + "\n" +
+													"Record Name: " + data.child('record-name')  + "\n" +
+													"Type: " + data.child('record-type');
+				}else if(data.properties["Type"] == 'ec2-security-group')
+				{
+					tooltipRenderer.tooltipContent =
+						"Security Group" + "\n" +
+						"Name: " + data.child('name');
+				}else if(data.properties["Type"] == 'sns-topic')
+				{
+					tooltipRenderer.tooltipContent =
+						"SNS Topic" + "\n" +
+						"Name: " + data.child('name');
+				}else if(data.properties["Type"] == 'external-object')
+				{
+					tooltipRenderer.tooltipContent ="External Object" + "\n" + 
+													"Name: " + data.child('name') + "\n" +
+													"Description: " + data.child('description') + "\n" +
+													"Ports: " + data.child('object-ports');
+				}else if(	data == "Elastic Servlet" || data == "Elastic Beanstalk Application" || data == "Block Storage" || data == "Elastic Block Storage" ||
+							data == "Load Balancer" || data == "Elastic Load Balancer" || data == "Cache Cluster" || data == "ElastiCache" || data == "Relational Database" ||
+							data == "DNS 53 Record" || data == "Route 53 Record" || data == "Notification Topic" || data == "Simple Notification" || data == "Message Queue" ||
+							data == "Simple Queue" || data == "Object Storage" || data == "Simple Storage" || data == "Security Group" || data == "Compute Service" ||
+							data == "IAM Group" || data == "Resource Policy" || data == "IAM User" || data == "Alarm")
+				{
+					tooltipRenderer.tooltipContent = data.toString() + "\n" + "Not Configured";
+				}else if(data == 'Blank Image')
+				{
+					tooltipRenderer.tooltipContent ="Image" + "\n" +  
+													"Not Configured";
+				}else if(data == 'Dummy Image')
+				{
+					tooltipRenderer.tooltipContent ="Dummy Image" + "\n" +  
+													"Not Configured";
+				}else if(data == "New External Object")
+				{
+					tooltipRenderer.tooltipContent ="External Object" + "\n" +  
+													"Not Configured";
+				}else if(data == "Windows Template")
+				{
+					tooltipRenderer.tooltipContent ="Windows Template" + "\n" +  
+													"Not Configured";
+				}else
+					tooltipRenderer.visible = false;
+				
+				return tooltipRenderer;
+			}
+			
+			protected function linkTooltipRendererFunction(data:Object):DisplayObject
+			{
+				var tooltipRenderer:NodeTooltipRenderer = new NodeTooltipRenderer();
+				var dataXML:XML = XML(data);
+				try{
+					if(data.properties["Type"] == 'load-balancer-listeners')
+					{
+						for each(var listener:XML in dataXML.children())
+						{
+							tooltipRenderer.tooltipContent = tooltipRenderer.tooltipContent +
+								"Load Balancer Port: " + listener.child('load-balancer-port') +
+								"\nInstance Port: " + listener.child('instance-port') + "\n";			
+						}
+					}else if(data.properties["Type"] == 'ebs-volume')
+					{
+						tooltipRenderer.tooltipContent ="Device: " + dataXML.child('device');
+					}else{
+						tooltipRenderer.visible = false;
+					}
+				}catch(e:Error){
+					return null;
+					
+				}
+				return tooltipRenderer;
+			}
+			
+			private var _copyNodes:ArrayCollection;
+			public function copyNode():void
+			{
+				_copyNodes = new ArrayCollection();
+				var selectedNodes:ArrayCollection = new ArrayCollection(vis.selection);
+				var nodeData:Node;
+				var nodeElement:Element;
+				var newElement:Element;
+				for each(var node:DiagramSprite in selectedNodes)
+				{
+					nodeData = Node(node.data);
+					_copyNodes.addItem(nodeData);
+					nodeElement = projectVersion.getElementByName(nodeData.name);
+					newElement = new Element(null, nodeElement.name + "001", nodeElement.elementType, nodeElement.projectId);
+					newElement.elementGroup = nodeElement.elementGroup;
+					newElement.addEventListener(ElementSaveEvent.RESULT, copyResult);
+					newElement.save(projectVersion);
+				}
+			}
+			
+			protected function copyResult(event:ElementSaveEvent):void
+			{
+				var newElement:Element = event.element;
+				var newNode:Node = new Node();
+				newNode.name = newElement.name;
+				newNode.projectId = newElement.projectId;
+				newNode.properties = newElement.properties;
+				newNode.view = Node.DESIGN_VIEW;
+				
+				for each(var node:Node in _copyNodes)
+				{
+					if(node.properties == newNode.properties)
+					{
+						newNode.y = node.y + 75;
+						_copyNodes.removeItemAt(_copyNodes.getItemIndex(node));
+						break;
+					}
+				}
+				
+				newNode.save(projectVersion, vis.addNodeElement(newNode, null, null, new Point(newNode.x, newNode.y)) as DiagramSprite);		
+			}
+
+			
+			protected function vis_creationCompleteHandler(event:FlexEvent):void
+			{
+				var deleteAction:Array = vis.actionsPackager.actionSets;
+				//deleteAction.deactivate();
+				
+				//Enable multi-selection of nodes
+				var data:SelectionActionData = new SelectionActionData();  
+				//data.color = int(selectionAreaFillColor.value); // we have defined a color picker to choose the selection color  
+				//data.thickness = selectionAreaThincknes.value; // a numericStepper was used to choose the thickness (the minimum is 0 the maximum is 1)  
+				//data.line = lineCombo.selectedItem as String; // we have defined a combobox by which user can choose his line type  
+				//data.exclusiveSelection = useExclusiveSelection.selected; // a checkBox is used to specify if the selection is exclusive or not  
+				//data.alpha = selectionAreaAlpha.value; // a numericStepper used to specify the alpha value.  
+				vis.activateAction(MultiSelectionAction.ID,data);				
+			}
+			
+			private function default_faultHandler(event:FaultEvent):void
+			{
+				trace(event.message);
+			}
+			
+			public function linkReferencedResources(linkCollection:ArrayCollection):void
+			{
+				var sourceNode:DiagramSprite;
+				var targetNode:DiagramSprite;
+				var newLink:DiagramLink;
+				for each(var pair:Object in linkCollection)
+				{
+					sourceNode = Helpers.getNodeFromResourceName(vis, pair.parent);
+					targetNode = Helpers.getNodeFromResourceName(vis, pair.reference);
+					if(sourceNode != null && targetNode != null)
+					{
+						newLink = vis.addLinkElement(null, sourceNode, targetNode) as DiagramLink;
+						newLink.enableControllerCreation = false;
+					}
+				}
+			}
+			
+			protected function group1_creationCompleteHandler(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		
+	</fx:Declarations>
+
+	<mx:HDividedBox id="workspace"
+					height="100%"
+					width="100%"
+					backgroundColor="gray" 
+					dividerDrag="workspace_dividerDragHandler(event)"
+					updateComplete="dividerDragCompleteHandler(event)">
+		<s:Group width="100%" height="100%" id="designDiagram">
+			<s:Rect width="100%" height="100%">
+				<s:fill>
+					<s:SolidColor color="{environmentColor}"/>
+				</s:fill>
+			</s:Rect>
+			<s:VGroup height="100%" width="100%">
+				<c9:DesignDiagram  id="vis" 
+								   project="@{project}"
+								   user="{user}"
+								   projectVersion="@{projectVersion}"
+								   top="30"
+								   layout="balloon"
+								   enableSelectionDrag="true"
+								   enableLinkControllerCreation="false"
+								   doubleClick="vis_doubleClickHandler(event)"
+								   nodeRendererDataSource="null"
+								   nodeExpandPolicy="fixNode"
+								   groupLabelField="label"
+								   enablePan="false"
+								   environment="{environment}"
+								   enableZoomOnMouseWheel="false"
+								   creationComplete="vis_creationCompleteHandler(event)"
+								   linkTooltipRendererFunction="{linkTooltipRendererFunction}"/>
+			</s:VGroup>
+		</s:Group>
+				
+	</mx:HDividedBox>
+
+	
+</s:Group>

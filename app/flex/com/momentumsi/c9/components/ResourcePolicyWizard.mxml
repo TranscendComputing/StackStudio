@@ -1,0 +1,1415 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wizard:WizardWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   xmlns:diagrammer="fr.kapit.diagrammer.base.uicomponent.*"
+			   xmlns:components="com.momentumsi.c9.components.*"
+			   creationComplete="creationCompleteHandler(event)"
+			   wizardType="{ResourceTypeLabel.RESOURCE_POLICY}"
+			   width="700" height="500" xmlns:services="com.momentumsi.c9.services.*"
+			   xmlns:wizard="com.momentumsi.c9.components.wizard.*">
+	<fx:Script>
+		<![CDATA[
+			import com.maccherone.json.*;
+			import com.momentumsi.c9.constants.AlertMessage;
+			import com.momentumsi.c9.constants.ImagePath;
+			import com.momentumsi.c9.constants.ResourceType;
+			import com.momentumsi.c9.constants.ResourceTypeLabel;
+			import com.momentumsi.c9.models.Element;
+			import com.momentumsi.c9.services.CloudApiService;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			private var existingS3ResourceList:ArrayCollection = new ArrayCollection();
+			private var existingSnsResourceList:ArrayCollection = new ArrayCollection();
+			private var existingSqsResourceList:ArrayCollection = new ArrayCollection();
+			private var s3ResourcesGathered:Boolean = false;
+			private var snsResourcesGathered:Boolean = false;
+			private var sqsResourcesGathered:Boolean = false;
+			private var principal:Object = new Object();
+			[Bindable]
+			private var resourcesLoading:Boolean = true;
+			[Bindable]
+			private var principalLoading:Boolean = true;
+			[Bindable]
+			private var policyType:String = "";
+			public var policyObject:Object;
+			private var currentPolicyName:String;
+			private var reconfigure:Boolean = false;
+			[Bindable]
+			private var existingResourceList:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var templateResourceList:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var existingIamUserList:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var templateIamUserList:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var addResourceList:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var addPrincipalList:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var actionsAddList:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var statementAddList:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public var selectAll:Boolean = false;
+			[Bindable]
+			private var resourceTypeCollection:ArrayCollection = new ArrayCollection([{label: CloudApiService.S3_SERVICE, value: "s3", type: "AWS::S3::BucketPolicy"},
+																					{label: CloudApiService.SNS_SERVICE, value: "sns", type: "AWS::SNS::TopicPolicy"},
+																					{label: CloudApiService.SQS_SERVICE, value: "sqs", type: "AWS::SQS::QueuePolicy"}]);
+			[Bindable]
+			private var s3ActionList:ArrayCollection = new ArrayCollection([{label: "AbortMultipartUpload", add: false},{label: "CopyObject", add: false},
+																			{label: "CreateBucket", add: false},{label: "DeleteBucket", add: false},
+																			{label: "DeleteObject", add: false},{label: "DeleteObjectVersion", add: false},
+																			{label: "GetBucketAccessControlPolicy", add: false},{label: "GetBucketAcl", add: false},
+																			{label: "GetBucketLocation", add: false},{label: "GetBucketLogging", add: false},
+																			{label: "GetBucketNotification", add: false},{label: "GetBucketPolicy", add: false},
+																			{label: "GetBucketRequestPayment", add: false},{label: "GetBucketVersioning", add: false},
+																			{label: "GetLifecycleConfiguration", add: false},{label: "GetObject", add: false},
+																			{label: "GetObjectAccessControlPolicy", add: false},{label: "GetObjectAcl", add: false},
+																			{label: "GetObjectExtended", add: false},{label: "GetObjectVersion", add: false},
+																			{label: "GetObjectVersionAcl", add: false},{label: "ListAllMyBuckets", add: false},
+																			{label: "ListBucket", add: false},{label: "ListBucketMultipartUploads", add: false},
+																			{label: "ListBucketVersions", add: false},{label: "ListMultipartUploadParts", add: false},
+																			{label: "PutBucketAcl", add: false},{label: "PutBucketLogging", add: false},
+																			{label: "PutBucketNotification", add: false},{label: "PutBucketPolicy", add: false},
+																			{label: "PutBucketRequestPayment", add: false},{label: "PutBucketVersioning", add: false},
+																			{label: "PutLifecycleConfiguration", add: false},{label: "PutObject", add: false},
+																			{label: "PutObjectAcl", add: false},{label: "PutObjectInline", add: false},
+																			{label: "PutObjectVersionAcl", add: false},{label: "SetBucketAccessControlPolicy", add: false},
+																			{label: "SetObjectAccessControlPolicy", add: false}]);
+			[Bindable]
+			private var snsActionList:ArrayCollection = new ArrayCollection([{label: "AddPermission", add: false},{label: "ConfirmSubscription", add: false},
+																			{label: "CreateTopic", add: false},{label: "DeleteTopic", add: false},
+																			{label: "GetTopicAttributes", add: false},{label: "ListSubscriptions", add: false},
+																			{label: "ListSubscriptionsByTopic", add: false},{label: "ListTopics", add: false},
+																			{label: "Publish", add: false},{label: "RemovePermission", add: false},
+																			{label: "SetTopicAttributes", add: false},{label: "Subscribe", add: false},
+																			{label: "Unsubscribe", add: false}]);
+			[Bindable]
+			private var sqsActionList:ArrayCollection = new ArrayCollection([{label: "AddPermission", add: false},{label: "ChangeMessageVisibility", add: false},
+																			{label: "CreateQueue", add: false},{label: "DeleteMessage", add: false},
+																			{label: "DeleteQueue", add: false},{label: "GetQueueAttributes", add: false},
+																			{label: "ListQueues", add: false},{label: "ReceiveMessage", add: false},
+																			{label: "RemovePermission", add: false},{label: "SendMessage", add: false},
+																			{label: "SetQueueAttributes", add: false}]);
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				policyObject = element.properties;
+				setPolicyObject();
+				if(!reconfigure)
+				{
+					resourcesLoading = true;
+					getResourcesSvc.action = "describe_storage";
+					getResourcesSvc.serviceType = CloudApiService.S3_SERVICE;
+					getResourcesSvc.send();
+					getTemplateResourcesByType(CloudApiService.S3_SERVICE);
+				}
+				getResourcePolicyPrincipalOptions();
+			}
+			
+			override public function applyConfigurations():void
+			{
+				if(node.elementId != null)
+				{
+					reconfigure = true;
+					element = projectVersion.getElementById(node.elementId);
+				}else
+				{
+					return;
+				}
+
+				var templateResources:ArrayCollection = projectVersion.elements;
+				currentPolicyName = node.name;
+				policyName.text = currentPolicyName;
+
+				if(node.properties.hasOwnProperty("Type"))
+				{
+					switch(node.properties.Type)
+					{
+						case ResourceType.S3_BUCKET_POLICY:
+							resourceTypeSelection.selectedIndex = 0;
+							existingResourceSelection.labelField = "key";
+							getResourcesSvc.action = "describe_storage";
+							getResourcesSvc.serviceType = CloudApiService.S3_SERVICE;
+							getTemplateResourcesByType(CloudApiService.S3_SERVICE);
+							break;
+						case ResourceType.SNS_POLICY:
+							resourceTypeSelection.selectedIndex = 1;
+							existingResourceSelection.labelField = "TopicName";
+							getResourcesSvc.action = "describe_topics";
+							getResourcesSvc.serviceType = CloudApiService.SNS_SERVICE;
+							getTemplateResourcesByType(CloudApiService.SNS_SERVICE);
+							break;
+						case ResourceType.SQS_POLICY:
+							resourceTypeSelection.selectedIndex = 2;
+							existingResourceSelection.labelField = "QueueName";
+							getResourcesSvc.action = "describe_message_queues";
+							getResourcesSvc.serviceType = CloudApiService.SQS_SERVICE;
+							getTemplateResourcesByType(CloudApiService.SQS_SERVICE);
+							break;
+					}
+					resourcesLoading = true;
+					getResourcesSvc.send();
+				}
+
+				policyObject = element.properties;
+				setPolicyObject();
+				policyAccordion.selectedChild = policyCustom;
+				if(policyObject.hasOwnProperty('Properties') && policyObject['Properties'].hasOwnProperty('PolicyDocument'))
+				{
+					try{
+						var policyDoc:Object = policyObject['Properties']['PolicyDocument'];
+						policyDocument.text = JSON.encode(policyDoc, true);
+					}catch(error:Error){
+						trace(error.message);
+					}
+				}
+			}
+			
+			protected function resourceTypeSelection_changeHandler(event:ListEvent):void
+			{
+				existingResourceList = new ArrayCollection();
+				existingResourceSelection.prompt = "Loading Resources";
+				existingResourceSelection.selectedIndex = -1;
+				getTemplateResourcesByType(resourceTypeSelection.selectedLabel);
+				
+				addResourceList.removeAll();
+				
+				switch(resourceTypeSelection.selectedLabel)
+				{
+					case CloudApiService.S3_SERVICE:
+						existingResourceSelection.labelField = "key";
+						if(s3ResourcesGathered)
+						{
+							existingResourceList = existingS3ResourceList;
+							displayExistingResources();
+						}else
+						{
+							getResourcesSvc.action = "describe_storage";
+							getResourcesSvc.serviceType = CloudApiService.S3_SERVICE;
+							resourcesLoading = true;
+							getResourcesSvc.send();
+						}
+						break;
+					case CloudApiService.SNS_SERVICE:
+						existingResourceSelection.labelField = "TopicName";
+						if(snsResourcesGathered)
+						{
+							existingResourceList = existingSnsResourceList;
+							displayExistingResources();
+						}else
+						{
+							getResourcesSvc.action = "describe_topics";
+							getResourcesSvc.serviceType = CloudApiService.SNS_SERVICE;
+							resourcesLoading = true;
+							getResourcesSvc.send();
+						}
+						break;
+					case CloudApiService.SQS_SERVICE:
+						existingResourceSelection.labelField = "QueueName";
+						if(sqsResourcesGathered)
+						{
+							existingResourceList = existingSqsResourceList;
+							displayExistingResources();
+						}else
+						{
+							getResourcesSvc.action = "describe_message_queues";
+							getResourcesSvc.serviceType = CloudApiService.SQS_SERVICE;
+							resourcesLoading = true;
+							getResourcesSvc.send();
+						}
+						break;
+				}
+			}
+			
+			protected function displayExistingResources():void
+			{
+				if(existingResourceList.length > 0)
+				{
+					existingResourceSelection.selectedIndex = 0;
+				}else
+				{
+					existingResourceSelection.prompt = "No Resources";
+					existingResourceSelection.selectedIndex = -1;
+				}
+			}
+			
+			protected function getTemplateResourcesByType(type:String):void
+			{
+				templateResourceList.removeAll();
+				templateResourceSelection.prompt = "Loading Resources";
+				templateResourceSelection.selectedIndex = -1;
+				
+				var resourceType:String = "";
+				if(type == CloudApiService.S3_SERVICE)
+				{
+					resourceType = ResourceType.S3_BUCKET;
+				}else if(type == CloudApiService.SNS_SERVICE)
+				{
+					resourceType = ResourceType.SNS_TOPIC;
+				}else if(type == CloudApiService.SQS_SERVICE)
+				{
+					resourceType = ResourceType.SQS_QUEUE;
+				}
+
+				templateResourceList = projectVersion.getElementByType(resourceType);
+				
+				if(templateResourceList.length > 0)
+				{
+					templateResourceSelection.selectedIndex = 0;
+				}else
+				{
+					templateResourceSelection.prompt = "No Template Resources";
+					templateResourceSelection.selectedIndex = -1;
+				}
+			}
+			
+			protected function getResourcePolicyPrincipalOptions():void
+			{
+				principalLoading = true;
+				getUsersSvc.send();
+				
+				//Search template resources for iam users
+				var templateResources:ArrayCollection = projectVersion.elements;
+				var resource:Element;
+				for each(resource in templateResources)
+				{
+					if(resource.elementType == ResourceType.IAM_USER)
+					{
+						templateIamUserList.addItem(resource);
+					}
+				}
+				
+				if(templateIamUserList.length > 0)
+				{
+					templateIamUserSelection.selectedIndex = 0;
+				}else
+				{
+					templateIamUserSelection.prompt = "No Template Users";
+					templateIamUserSelection.selectedIndex = -1;
+				}
+			}
+			
+			protected function addExistingResourceButton_clickHandler(event:MouseEvent):void
+			{
+				if(existingResourceSelection.selectedIndex != -1)
+				{
+					var existingResourceArn:String = "";
+					if(resourceTypeSelection.selectedLabel == CloudApiService.SNS_SERVICE)
+					{
+						existingResourceArn = existingResourceSelection.selectedItem.TopicArn;
+					}else if(resourceTypeSelection.selectedLabel == CloudApiService.SQS_SERVICE)
+					{
+						existingResourceArn = existingResourceSelection.selectedItem.QueueArn;
+					}
+					addResourceList.addItem({label: existingResourceSelection.selectedLabel, resourceName: existingResourceArn, type: "existing"});
+				}
+			}
+			
+			protected function addTemplateResourceButton_clickHandler(event:MouseEvent):void
+			{
+				if(templateResourceSelection.selectedIndex != -1)
+				{
+					addResourceList.addItem({label: templateResourceSelection.selectedItem.name, type: "template"});
+				}
+			}
+			
+			protected function setPolicyObject():void
+			{
+				if(policyObject is String)
+				{
+					policyObject = JSON.decode(policyObject.toString());
+				}
+			}
+			
+			/*
+			protected function getObjectManagementResourceSvc_resultHandler(event:ResultEvent):void
+			{
+				var result:XML = event.result as XML;
+				for each(var cloudObjectArray:XML in result.children())
+				{
+					for each(var cloudObject:XML in cloudObjectArray.children())
+					{
+						var cloudObjectName:String = cloudObject.name().toString();
+						switch(cloudObjectName)
+						{
+							case "provisioned-s3":
+								existingS3ResourceList.addItem({	name: cloudObject.child('name'),
+																resourceName: cloudObject.child('name'),
+																creationDate: cloudObject.child('creation-date'),
+																ownerId: cloudObject.child('owner'),
+																ownerName: cloudObject.child('owner-name'),
+																state: cloudObject.child('state')});
+								s3ResourcesGathered = true;
+								break;
+							case "provisioned-sqs-message":
+								existingSqsResourceList.addItem({	name: cloudObject.child('name'),
+																resourceName: cloudObject.child('queue-url'),
+																visibilityTimeout: cloudObject.child('visibility-timeout'),
+																messageNumber: cloudObject.child('message-number'),
+																messageNumberNotVisible: cloudObject.child('message-number-not-visible'),
+																creationDate: cloudObject.child('creation-date'),
+																lastModifiedDate: cloudObject.child('last-modified-date'),
+																maxMessageSize: cloudObject.child('max-message-size'),
+																retentionPeriod: cloudObject.child('retention-period'),
+																queueUrl: cloudObject.child('queue-url'),
+																state: cloudObject.child('state')});
+								sqsResourcesGathered = true;
+								break;
+							case "provisioned-sns-topic":
+								existingSnsResourceList.addItem({	name: cloudObject.child('name'),
+																resourceName: cloudObject.child('topic-arn'),
+																topicArn: cloudObject.child('topic-arn'),
+																owner: cloudObject.child('owner'),
+																subsConfirmed: cloudObject.child('num-subscriptions-confirmed'),
+																subsPending: cloudObject.child('num-subscriptions-pending'),
+																subsDeleted: cloudObject.child('num-subscriptions-deleted'),
+																subscriptions: cloudObject.child('subscriptions'),
+																state: cloudObject.child('state')});
+								snsResourcesGathered = true;
+								break;
+						}
+					}
+				}
+				
+				var index:int = 0
+				switch(resourceTypeSelection.selectedLabel)
+				{
+					case CloudApiService.S3_SERVICE:
+						existingResourceList = existingS3ResourceList;
+						if(reconfigure)
+						{
+							var bucket:Object;
+							if(policyObject[currentPolicyName]['Properties']['Bucket'] is String)
+							{
+								existingResource.selected = true;
+								for each(bucket in existingResourceList)
+								{
+									if(policyObject[currentPolicyName]['Properties']['Bucket'] == bucket.name.toString())
+									{
+										existingResourceSelection.selectedIndex = index;
+										break;
+									}
+									index++;
+								}
+							}else
+							{
+								templateResource.selected = true;
+								for each(bucket in templateResourceList)
+								{
+									if(policyObject[currentPolicyName]['Properties']['Bucket'].Ref == bucket.name.toString())
+									{
+										templateResourceSelection.selectedIndex = index;
+										break;
+									}
+									index++;
+								}
+							}
+						}
+						break;
+					case CloudApiService.SNS_SERVICE:
+						existingResourceList = existingSnsResourceList;
+						if(reconfigure)
+						{
+							for each(var topicResource:* in policyObject[currentPolicyName]['Properties']['Topics'])
+							{
+								if(topicResource is String)
+								{
+									for each(var topic:Object in existingResourceList)
+									{
+										if(topicResource == topic.resourceName.toString())
+										{
+											addResourceList.addItem({label: topic.name, resourceName: topic.resourceName.toString(), type: "existing"});
+										}
+									}
+								}else
+								{
+									addResourceList.addItem({label: topicResource.Ref, type: "template"});
+								}
+							}
+						}
+						break;
+					case CloudApiService.SQS_SERVICE:
+						existingResourceList = existingSqsResourceList;
+						if(reconfigure)
+						{
+							for each(var queueResource:* in policyObject[currentPolicyName]['Properties']['Queues'])
+							{
+								if(queueResource is String)
+								{
+									for each(var queue:Object in existingResourceList)
+									{
+										if(queueResource == queue.resourceName.toString())
+										{
+											addResourceList.addItem({label: queue.name, resourceName: queue.resourceName.toString(), type: "existing"});
+										}
+									}
+								}else
+								{
+									addResourceList.addItem({label: queueResource.Ref, type: "template"});
+								}
+							}
+						}
+						break;
+				}
+				resourceGroupVisible = true;
+				displayExistingResources();
+			}
+			
+			protected function getObjectManagementResourceSvc_faultHandler(event:FaultEvent):void
+			{
+				resourceGroupVisible = true;
+				existingResourceSelection.prompt = "Error";
+				existingResourceSelection.selectedIndex = -1;
+			}
+			*/
+			
+			protected function previousButton_clickHandler(event:MouseEvent):void
+			{
+				if(resourcePolicyWizard.selectedIndex > 0)
+				{
+					if(resourcePolicyWizard.selectedChild == policyGeneratorContent)
+					{
+						resourcePolicyWizard.selectedChild = permissionsContent;
+					}else
+					{
+						resourcePolicyWizard.selectedIndex--;
+					}
+				}
+			}
+			
+			protected function nextButton_clickHandler(event:MouseEvent):void
+			{
+				var alert:Boolean = false;
+				
+				if(resourcePolicyWizard.selectedChild == resourceDetailsContent)
+				{
+					if(policyName.text != "")
+					{
+						if(Helpers.validateAlphanumeric(policyName.text))
+						{
+							if(projectVersion.validateUniqueName(policyName.text, element))
+							{
+								policyNameAlert.visible = false;
+								policyType = resourceTypeSelection.selectedLabel;
+							}else
+							{
+								policyNameAlert.text = AlertMessage.NOT_UNIQUE;
+								policyNameAlert.visible = true;
+								alert = true;
+							}
+						}else
+						{
+							policyNameAlert.text = AlertMessage.NOTALPHANUMERIC
+							policyNameAlert.visible = true;
+							alert = true;
+						}
+					}else
+					{
+						policyNameAlert.text = AlertMessage.INVALID;
+						policyNameAlert.visible = true;
+						alert = true;
+					}
+					
+					if(!resourcesLoading)
+					{
+						//BucketPolicies only apply to one bucket while the others may have one more more resources
+						if(resourceTypeSelection.selectedLabel == CloudApiService.S3_SERVICE)
+						{
+							if((existingResource.selected && existingResourceSelection.selectedIndex != -1) || (templateResource.selected && templateResourceSelection.selectedIndex != -1))
+							{
+								if(existingResource.selected)
+								{
+									policyResources.text = existingResourceSelection.selectedLabel;
+								}else
+								{
+									policyResources.text = templateResourceSelection.selectedLabel;
+								}
+							}else
+							{
+								Alert.show("A bucket resource must be selected to proceed.");
+								alert = true;
+							}
+						}else
+						{
+							if(addResourceList.length > 0)
+							{
+								var policyResourcesString:String = "";
+								for each(var resource:* in addResourceList)
+								{
+									policyResourcesString = policyResourcesString + resource.label + "\n";
+								}
+								policyResources.text = policyResourcesString;
+							}else
+							{
+								Alert.show("The policy must apply to at least one " + resourceTypeSelection.selectedLabel + " resource.");
+								alert = true;
+							}
+						}
+					}else
+					{
+						Alert.show("The policy must apply to at least one " + resourceTypeSelection.selectedLabel + " resource.");
+						alert = true;
+					}
+					
+					policyTemplateGroup.removeAllElements();
+					switch(resourceTypeSelection.selectedLabel)
+					{
+						case CloudApiService.S3_SERVICE:
+							policyTemplateGroup.addElement(s3PolicyTemplateGroup);
+							s3FullAccess.selected = true;
+							break;
+						case CloudApiService.SNS_SERVICE:
+							policyTemplateGroup.addElement(snsPolicyTemplateGroup);
+							snsFullAccess.selected = true;
+							break;
+						case CloudApiService.SQS_SERVICE:
+							policyTemplateGroup.addElement(sqsPolicyTemplateGroup);
+							sqsFullAccess.selected = true;
+							break;
+					}
+				}else if(resourcePolicyWizard.selectedChild == principalContent)
+				{
+					if(addPrincipalList.length > 0)
+					{
+						//Build the principal object for JSON
+						if(addPrincipalList.length == 1)
+						{
+							if(addPrincipalList[0].type == "existing")
+							{
+								principal["AWS"] = addPrincipalList[0].resourceName.toString();
+							}else if(addPrincipalList[0].type == "template")
+							{
+								principal["AWS"] = {"Fn::GetAtt":[addPrincipalList[0].label.toString(), "Arn"]};
+							}else if(addPrincipalList[0].type == "all")
+							{
+								principal["AWS"] = "*";
+							}
+						}else
+						{
+							//More than one principal
+							var principalArray:Array = new Array();
+							for each(var p:Object in addPrincipalList)
+							{
+								if(p.type == "existing")
+								{
+									principalArray.push(p.resourceName.toString());
+								}else if(p.type == "template")
+								{
+									principalArray.push({"Fn::GetAtt":[p.label.toString(), "Arn"]})
+								}else if(p.type == "all")
+								{
+									principalArray.push("*");
+								}
+							}
+							principal["AWS"] = principalArray;
+						}
+					}else
+					{
+						Alert.show("At least one principal must be provided.");
+						alert = true;
+					}
+				}else if(resourcePolicyWizard.selectedChild == permissionsContent)
+				{
+					permissionsSelectionHandler();
+					
+					if(policyAccordion.selectedChild == policyGenerator)
+					{
+						alert = true;
+					}
+				}else if(resourcePolicyWizard.selectedChild == policyGeneratorContent)
+				{
+					if(statementList.dataProviderLength > 0)
+					{
+						try
+						{
+							var policyResource:Object = new Object();
+							policyResource['Statement'] = [];
+							for each(var item:* in statementAddList)
+							{
+								var newStatement:Object = new Object();
+								newStatement['Action'] = [];
+								for each(var action:String in item.actions)
+								{
+									newStatement['Action'].push(action);
+								}
+								newStatement['Effect'] = item.effect;
+								newStatement['Resource'] = item.resource;
+								newStatement['Principal'] = principal;
+								policyResource['Statement'].push(newStatement);
+							}
+							policyDocument.text = JSON.encode(policyResource, true);
+						}
+						catch(error:Error) 
+						{
+							trace(error.message);
+						}
+						resourcePolicyWizard.selectedChild = policyContent;
+					}else
+					{
+						Alert.show("At least one statement must be included to proceed.");
+					}
+					alert = true;
+				}else if(resourcePolicyWizard.selectedChild == policyContent)
+				{
+					if(policyDocument.text.replace(" ", "") != "")
+					{
+						try
+						{
+							var checkJSON:Object = JSON.decode(policyDocument.text);
+							policyDocumentAlert.visible = false;
+						} 
+						catch(error:Error) 
+						{
+							alert = true;
+							policyDocumentAlert.text = "The policy is not in valid JSON format.";
+							policyDocumentAlert.visible = true;
+						}
+					}else
+					{
+						alert = true;
+						policyDocumentAlert.text = "Policy Document is required.";
+						policyDocumentAlert.visible = true;
+					}
+				}
+				
+				if(!alert)
+				{
+					resourcePolicyWizard.selectedIndex++;
+				}
+			}
+			
+			protected function submitButton_clickHandler(event:MouseEvent):void
+			{
+				submitButton.enabled = false;
+				submitButton.label = "Saving";
+				
+				var resourcePolicyAttributes:Object = new Object();
+				
+				resourcePolicyAttributes['Type'] = resourceTypeSelection.selectedItem.type;
+				
+				var policyProperties:Object = new Object();
+				policyProperties['PolicyDocument'] = JSON.decode(policyDocument.text);
+				switch(resourceTypeSelection.selectedLabel)
+				{
+					case CloudApiService.S3_SERVICE:
+						if(existingResource.selected)
+						{
+							policyProperties['Bucket'] = existingResourceSelection.selectedItem.key.toString();
+						}else
+						{
+							policyProperties['Bucket'] = {"Ref":templateResourceSelection.selectedItem.name.toString()};
+						}
+						break;
+					case CloudApiService.SNS_SERVICE:
+						policyProperties["Topics"] = setupSnsResourceArray();
+						break;
+					case CloudApiService.SQS_SERVICE:
+						policyProperties["Queues"] = setupSqsResourceArray();
+						break;
+				}
+				resourcePolicyAttributes['Properties'] = policyProperties;
+
+				saveElement(policyName.text, resourcePolicyAttributes, resourceTypeSelection.selectedItem.type); 
+			}
+			
+			protected function RemoveResourceButton_clickHandler(event:MouseEvent):void
+			{
+				if(resourceList.selectedIndex != -1)
+				{
+					addResourceList.removeItemAt(resourceList.selectedIndex);
+				}
+			}
+			
+			protected function permissionsSelectionHandler():void
+			{
+				var policyResource:Object = new Object();
+				
+				switch(policyAccordion.selectedChild)
+				{
+					case policyTemplate:
+						if(s3FullAccess.selected)
+						{
+							if(existingResource.selected)
+							{
+								policyResource['Statement'] = [{Effect: "Allow", Action: "s3:*", Resource: "arn:aws:s3:::" + existingResourceSelection.selectedLabel + "/*", Principal: principal}];
+							}else
+							{
+								policyResource['Statement'] = [{Effect: "Allow", Action: "s3:*", Resource: {"Fn::Join":["",["arn:aws:s3:::",{"Ref":templateResourceSelection.selectedLabel},"/*"]]}, Principal: principal}];
+							}
+						}else if(s3ReadAccess.selected)
+						{
+							if(existingResource.selected)
+							{
+								policyResource['Statement'] = [{Effect: "Allow", 
+																Action: ["s3:Get*",
+																		"s3:List*"],
+																Resource: "arn:aws:s3:::" + existingResourceSelection.selectedLabel + "/*",
+																Principal: principal}];
+							}else
+							{
+								policyResource['Statement'] = [{Effect: "Allow", 
+																Action: ["s3:Get*",
+																		"s3:List*"],
+																Resource: {"Fn::Join":["",["arn:aws:s3:::",{"Ref":templateResourceSelection.selectedLabel},"/*"]]},
+																Principal: principal}];
+							}
+						}else if(snsFullAccess.selected)
+						{
+							policyResource['Statement'] = [{Effect: "Allow",
+															Action: ["sns:AddPermission",
+																	"sns:DeleteTopic",
+																	"sns:GetTopicAttributes",
+																	"sns:ListSubscriptionsByTopic",
+																	"sns:Publish",
+																	"sns:Receive",
+																	"sns:RemovePermission",
+																	"sns:SetTopicAttributes",
+																	"sns:Subscribe"], 
+															Resource: "*", 
+															Principal: principal}];
+						}else if(snsReadAccess.selected)
+						{
+							policyResource['Statement'] = [{Effect: "Allow", 
+															Action: ["sns:GetTopicAttributes",
+																	"sns:ListSubscriptionsByTopic"],
+															Resource: "*",
+															Principal: principal}];
+						}else if(sqsFullAccess.selected)
+						{
+							var time:Date = new Date();
+							policyResource['Statement'] = [{Sid: "sqsFullAccess-" + dateFormatter.format(time), Effect: "Allow", Action: "sqs:*", Resource: "*", Principal: principal}];
+						}else if(sqsReadAccess.selected)
+						{
+							var time2:Date = new Date();
+							policyResource['Statement'] = [{Sid: "sqsReadAccess-" + dateFormatter.format(time2),
+															Effect: "Allow", 
+															Action: ["sqs:GetQueueAttributes",
+																	"sqs:ListQueues"],
+															Resource: "*",
+															Principal: principal}];
+						}
+						policyDocument.text = JSON.encode(policyResource, true);
+						break;
+					case policyGenerator:
+						actionsAddList.removeAll();
+						switch(resourceTypeSelection.selectedLabel)
+						{
+							case CloudApiService.S3_SERVICE:
+								actionsAddList.addAll(s3ActionList);
+								break;
+							case CloudApiService.SNS_SERVICE:
+								actionsAddList.addAll(snsActionList);
+								break;
+							case CloudApiService.SQS_SERVICE:
+								actionsAddList.addAll(sqsActionList);
+								break;
+						}
+						resourcePolicyWizard.selectedChild = policyGeneratorContent;
+						break;
+					case policyCustom:
+						break;
+				}
+			}
+			
+			protected function setupSnsResourceArray():Array
+			{
+				var snsResourceArray:Array = new Array();
+				for each(var sns:Object in addResourceList)
+				{
+					if(sns.type == "existing")
+					{
+						snsResourceArray.push(sns.resourceName.toString());
+					}else
+					{
+						snsResourceArray.push({"Ref":sns.label.toString()});
+					}
+				}
+				
+				return snsResourceArray;
+			}
+			
+			protected function setupSqsResourceArray():Array
+			{
+				var sqsResourceArray:Array = new Array();
+				for each(var sqs:Object in addResourceList)
+				{
+					if(sqs.type == "existing")
+					{
+						sqsResourceArray.push(sqs.resourceName.toString());
+					}else
+					{
+						sqsResourceArray.push({"Ref":sqs.label.toString()});
+					}
+				}
+				
+				return sqsResourceArray;
+			}
+			
+			protected function selectAllButton_clickHandler(event:MouseEvent):void
+			{
+				var item:*;
+				if(!selectAll)
+				{
+					for each(item in actionsAddList)
+					{
+						item.add = true;
+					}
+					selectAll = true;
+				}else
+				{
+					for each(item in actionsAddList)
+					{
+						item.add = false;
+					}
+					selectAll = false;
+				}
+				actionsAddList.refresh();
+			}
+			
+			protected function removeStatementButton_clickHandler(event:MouseEvent):void
+			{
+				if(statementList.selectedIndex != -1)
+				{
+					statementAddList.removeItemAt(statementList.selectedIndex);
+				}
+				
+			}
+			
+			protected function addStatementButton_clickHandler(event:MouseEvent):void
+			{
+				var actionArray:Array = new Array();
+				if(selectAll)
+				{
+					actionArray.push(resourceTypeSelection.selectedItem.value + ":*");
+				}else
+				{
+					for each(var action:* in actionsAddList)
+					{
+						if(action.add)
+						{
+							actionArray.push(resourceTypeSelection.selectedItem.value + ":" + action.label);
+						}
+					}
+				}
+				
+				statementAddList.addItem({effect: policyEffect.selection.label, actions: actionArray, resource: statementResource.text, resourcePolicyWizard: this});
+				
+				statementList.validateNow();
+			}
+			
+			public function redraw_statementList():void
+			{
+				if(statementList.dataProviderLength > 0)
+				{
+					statementList.validateNow();
+					if(statementList.height != 120)
+					{
+						statementList.height = 120;
+					}
+				}
+			}
+			
+			protected function addPrincipal_clickHandler(event:MouseEvent):void
+			{
+				if(existingIamUser.selected)
+				{
+					var user:Object = existingIamUserSelection.selectedItem;
+					addPrincipalList.addItem({label: user.id, resourceName: user.arn, type: "existing"});
+				}else if(templateIamUser.selected)
+				{
+					addPrincipalList.addItem({label: templateIamUserSelection.selectedItem.name, type: "template"});
+				}else if(allUsers.selected)
+				{
+					addPrincipalList.removeAll();
+					addPrincipalList.addItem({label: "*", type: "all"});
+				}
+			}
+			
+			protected function removePrinicipalButton_clickHandler(event:MouseEvent):void
+			{
+				if(principalList.selectedIndex != -1)
+				{
+					addPrincipalList.removeItemAt(principalList.selectedIndex);
+				}
+			}
+			
+			protected function getUsersSvc_resultHandler(event:ResultEvent):void
+			{
+				var result:Array = getUsersSvc.result as Array;
+				existingIamUserList = new ArrayCollection(result);
+				
+				if(reconfigure)
+				{
+					//Add previous groups and users to principalList
+					if(policyObject['Properties']['PolicyDocument']['Statement'][0].hasOwnProperty('Principal'))
+					{
+						if(policyObject['Properties']['PolicyDocument']['Statement'][0]['Principal']['AWS'] is Array)
+						{
+							for each(var principal:* in policyObject['Properties']['PolicyDocument']['Statement'][0]['Principal']['AWS'])
+							{
+								if(principal is String)
+								{
+									findExistingPrincipal(principal);
+								}else
+								{
+									if(principal.hasOwnProperty("Ref"))
+									{
+										addPrincipalList.addItem({label: principal.Ref, type: "template"});
+									}else if(principal.hasOwnProperty("Fn::GetAtt"))
+									{
+										var user:String = principal["Fn::GetAtt"][0];
+										addPrincipalList.addItem({label: user, type: "template"});
+									}
+								}
+							}
+						}else
+						{
+							if(policyObject['Properties']['PolicyDocument']['Statement'][0]['Principal']['AWS'] is String)
+							{
+								findExistingPrincipal(policyObject['Properties']['PolicyDocument']['Statement'][0]['Principal']['AWS']);
+							}else
+							{
+								if(policyObject['Properties']['PolicyDocument']['Statement'][0]['Principal']['AWS'].hasOwnProperty("Ref"))
+								{
+									addPrincipalList.addItem({label: policyObject['Properties']['PolicyDocument']['Statement'][0]['Principal']['AWS'].Ref, type: "template"});
+								}else if(policyObject['Properties']['PolicyDocument']['Statement'][0]['Principal']['AWS'].hasOwnProperty("Fn::GetAtt"))
+								{
+									var userString:String = (policyObject['Properties']['PolicyDocument']['Statement'][0]['Principal']['AWS']["Fn::GetAtt"] as Array)[0];
+									addPrincipalList.addItem({label: userString, type: "template"});
+								}
+							}
+						}
+					}
+				}
+				principalLoading = false;
+			}
+			
+			protected function findExistingPrincipal(principal:String):void
+			{
+				var found:Boolean = false;
+
+				if(principal == "*")
+				{
+					addPrincipalList.addItem({label: "*", type: "all"})
+				}else
+				{
+					for each(var existUser:Object in existingIamUserList)
+					{
+						if(!found && principal == existUser.arn)
+						{
+							addPrincipalList.addItem({label: existUser.id, resourceName: existUser.arn, type: "existing"});
+							found = true;
+						}
+					}
+				}
+			}
+			
+			protected function getUsersSvc_faultHandler(event:FaultEvent):void
+			{
+				existingIamUserSelection.prompt = "Error";
+				existingIamUserSelection.selectedIndex = -1;
+				principalLoading = false;
+			}
+			
+			protected function getResourcesSvc_resultHandler(event:ResultEvent):void
+			{
+				var result:Object = getResourcesSvc.result;
+				switch(getResourcesSvc.serviceType)
+				{
+					case CloudApiService.S3_SERVICE:
+						existingS3ResourceList = new ArrayCollection(result as Array);
+						s3ResourcesGathered = true;
+						break;
+					case CloudApiService.SQS_SERVICE:
+						existingSqsResourceList = new ArrayCollection(result as Array);
+						sqsResourcesGathered = true;
+						break;
+					case CloudApiService.SNS_SERVICE:
+						existingSnsResourceList = new ArrayCollection(result as Array);
+						sqsResourcesGathered = true;
+						break;
+				}
+				
+				var index:int = 0
+				switch(resourceTypeSelection.selectedLabel)
+				{
+					case CloudApiService.S3_SERVICE:
+						existingResourceList = existingS3ResourceList;
+						if(reconfigure)
+						{
+							var bucket:Object;
+							if(policyObject['Properties']['Bucket'] is String)
+							{
+								existingResource.selected = true;
+								for each(bucket in existingResourceList)
+								{
+									if(policyObject['Properties']['Bucket'] == bucket.key.toString())
+									{
+										existingResourceSelection.selectedIndex = index;
+										break;
+									}
+									index++;
+								}
+							}else
+							{
+								templateResource.selected = true;
+								for each(bucket in templateResourceList)
+								{
+									if(policyObject['Properties']['Bucket'].Ref == bucket.name.toString())
+									{
+										templateResourceSelection.selectedIndex = index;
+										break;
+									}
+									index++;
+								}
+							}
+						}
+						break;
+					case CloudApiService.SNS_SERVICE:
+						existingResourceList = existingSnsResourceList;
+						if(reconfigure)
+						{
+							for each(var topicResource:* in policyObject['Properties']['Topics'])
+							{
+								if(topicResource is String)
+								{
+									for each(var topic:Object in existingResourceList)
+									{
+										if(topicResource == topic.TopicArn.toString())
+										{
+											addResourceList.addItem({label: topic.TopicName, resourceName: topic.TopicArn.toString(), type: "existing"});
+										}
+									}
+								}else
+								{
+									addResourceList.addItem({label: topicResource.Ref, type: "template"});
+								}
+							}
+						}
+						break;
+					case CloudApiService.SQS_SERVICE:
+						existingResourceList = existingSqsResourceList;
+						if(reconfigure)
+						{
+							for each(var queueResource:* in policyObject['Properties']['Queues'])
+							{
+								if(queueResource is String)
+								{
+									for each(var queue:Object in existingResourceList)
+									{
+										if(queueResource == queue.QueueArn.toString())
+										{
+											addResourceList.addItem({label: queue.QueueName, resourceName: queue.QueueArn.toString(), type: "existing"});
+										}
+									}
+								}else
+								{
+									addResourceList.addItem({label: queueResource.Ref, type: "template"});
+								}
+							}
+						}
+						break;
+				}
+				resourcesLoading = false;
+				displayExistingResources();
+			}
+			
+			protected function getResourcesSvc_faultHandler(event:FaultEvent):void
+			{
+				resourcesLoading = false;
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<s:RadioButtonGroup id="resourceGroup"/>
+		<s:RadioButtonGroup id="policyTemplateRadioGroup"/>
+		<s:RadioButtonGroup id="policyGeneratorRadioGroup"/>
+		<s:RadioButtonGroup id="policyCustomRadioGroup"/>
+		<s:RadioButtonGroup id="policyEffect"/>
+		<s:RadioButtonGroup id="principalGroup"/>
+		<s:DateTimeFormatter id="dateFormatter" dateTimePattern="yyyyMMddhhmm" useUTC="true"/>
+		
+		<services:CloudApiService id="getResourcesSvc"
+								  cloudAccountId="{cloudAccount.id}"
+								  region="{region}"
+								  result="getResourcesSvc_resultHandler(event)"
+								  fault="getResourcesSvc_faultHandler(event)"/>
+		
+		<services:CloudApiService id="getUsersSvc"
+								  cloudAccountId="{cloudAccount.id}"
+								  region="{region}"
+								  serviceType="{CloudApiService.IAM_SERVICE}"
+								  action="list_users"
+								  result="getUsersSvc_resultHandler(event)"
+								  fault="getUsersSvc_faultHandler(event)"/>
+	</fx:Declarations>
+	
+	<s:VGroup width="100%" height="90%" gap="0">
+		<s:Group width="100%" height="60" visible="{resourcePolicyWizard.selectedIndex == 0}" includeInLayout="{resourcePolicyWizard.selectedIndex == 0}">
+			<s:Rect width="100%" height="100%">
+				<s:fill>
+					<s:SolidColor color="#FFFFFF"/>
+				</s:fill>
+			</s:Rect>
+			<s:HGroup width="100%" height="60" verticalAlign="middle" paddingTop="10" paddingBottom="10" paddingLeft="20"  gap="15">
+				<s:Image source="{ImagePath.NEW_RESOURCE_POLICY}"/>		
+				<s:Label text="{wizardDisplayName}" fontWeight="bold" fontSize="24"/>		
+			</s:HGroup>
+		</s:Group>
+		<s:Group height="60" width="100%">
+			<s:Rect width="100%" height="100%">
+				<s:fill>
+					<s:SolidColor color="#A7A9Ad"/>
+				</s:fill>
+			</s:Rect>
+			<s:Line x="50" y="14" width="600">
+				<s:stroke>
+					<s:SolidColorStroke color="#838588" weight="1"/>
+				</s:stroke>
+			</s:Line>
+			<s:Line x="50" y="15" width="600">
+				<s:stroke>
+					<s:SolidColorStroke color="#D1D3D8" weight="1"/>
+				</s:stroke>
+			</s:Line>
+			<s:HGroup width="100%" gap="60" horizontalAlign="center" paddingTop="9">
+				<s:VGroup horizontalAlign="center">
+					<s:Image source="{ImagePath.TRAIL_KNOB}" width="16" height="16" visible="{resourcePolicyWizard.selectedChild == resourceDetailsContent}"/>
+					<mx:Text text="Resource Details" fontWeight="bold" enabled="{resourcePolicyWizard.selectedChild == resourceDetailsContent}" disabledColor="white"/>
+				</s:VGroup>
+				<s:VGroup horizontalAlign="center">
+					<s:Image source="{ImagePath.TRAIL_KNOB}" width="16" height="16" visible="{resourcePolicyWizard.selectedChild == principalContent}"/>
+					<mx:Text text="Principal" fontWeight="bold" enabled="{resourcePolicyWizard.selectedChild == principalContent}" disabledColor="white"/>
+				</s:VGroup>
+				<s:VGroup horizontalAlign="center">
+					<s:Image source="{ImagePath.TRAIL_KNOB}" width="16" height="16" visible="{resourcePolicyWizard.selectedChild == permissionsContent || resourcePolicyWizard.selectedChild == policyGeneratorContent}"/>
+					<mx:Text text="Permissions" fontWeight="bold" enabled="{resourcePolicyWizard.selectedChild == permissionsContent || resourcePolicyWizard.selectedChild == policyGeneratorContent}" disabledColor="white"/>
+				</s:VGroup>
+				<s:VGroup horizontalAlign="center">
+					<s:Image source="{ImagePath.TRAIL_KNOB}" width="16" height="16" visible="{resourcePolicyWizard.selectedChild == policyContent}"/>
+					<mx:Text text="Policy" fontWeight="bold" enabled="{resourcePolicyWizard.selectedChild == policyContent}" disabledColor="white"/>
+				</s:VGroup>
+				<s:VGroup horizontalAlign="center">
+					<s:Image source="{ImagePath.TRAIL_KNOB}" width="16" height="16" visible="{resourcePolicyWizard.selectedChild == reviewContent}"/>
+					<mx:Text text="Review" fontWeight="bold" enabled="{resourcePolicyWizard.selectedChild == reviewContent}" disabledColor="white"/>
+				</s:VGroup>
+			</s:HGroup>
+		</s:Group>
+		<mx:ViewStack id="resourcePolicyWizard" width="100%" height="100%" paddingLeft="20" paddingRight="20" paddingTop="10" creationPolicy="all">
+			<s:NavigatorContent id="resourceDetailsContent" width="100%" height="100%">
+				<s:Form textAlign="right">
+					<s:layout>
+						<s:FormLayout gap="-11"/>
+					</s:layout>
+					<s:FormItem label="Policy Name*:">
+						<s:HGroup>
+							<s:TextInput id="policyName" textAlign="left" width="200"/>
+							<mx:Text id="policyNameAlert" text="This field must be alphanumeric." color="red" visible="false"/>
+						</s:HGroup>
+					</s:FormItem>
+					<s:FormItem label="Resource Type*:">
+						<mx:ComboBox id="resourceTypeSelection" textAlign="left" dataProvider="{resourceTypeCollection}" change="resourceTypeSelection_changeHandler(event)" enabled="{!resourcesLoading}"/>
+					</s:FormItem>
+					<s:FormItem label="Resources*: ">
+						<s:BusyIndicator id="resourceSelectionGroupBusy" width="30" height="30" visible="{resourcesLoading}" includeInLayout="{resourcesLoading}"/>
+						<s:VGroup id="resourceSelectionGroup" visible="{!resourcesLoading}" includeInLayout="{!resourcesLoading}">
+							<s:RadioButton id="existingResource" label="Existing Resource" group="{resourceGroup}" selected="true"/>
+							<s:HGroup paddingLeft="20" enabled="{existingResource.selected}">
+								<mx:ComboBox id="existingResourceSelection" dataProvider="{existingResourceList}" labelField="key" textAlign="left" width="255" prompt="Loading Resources"/>
+								<s:Button id="addExistingResourceButton" label="Add" click="addExistingResourceButton_clickHandler(event)" visible="{resourceTypeSelection.selectedIndex!=0}"/>
+							</s:HGroup>
+							<s:RadioButton id="templateResource" label="Template Resource" group="{resourceGroup}"/>
+							<s:HGroup paddingLeft="20" enabled="{templateResource.selected}">
+								<mx:ComboBox id="templateResourceSelection" dataProvider="{templateResourceList}" labelField="name" textAlign="left" width="255" prompt="Loading Resources"/>
+								<s:Button id="addTemplateResourceButton" label="Add" click="addTemplateResourceButton_clickHandler(event)" visible="{resourceTypeSelection.selectedIndex!=0}"/>
+							</s:HGroup>
+						</s:VGroup>
+					</s:FormItem>
+					<s:FormItem width="100%" height="100%" visible="{resourceTypeSelection.selectedIndex!=0}">
+						<s:List id="resourceList" width="350" height="60" dataProvider="{addResourceList}" textAlign="left" visible="{!resourcesLoading}" includeInLayout="{!resourcesLoading}"/>
+						<s:Button id="RemoveResourceButton" label="Remove" click="RemoveResourceButton_clickHandler(event)" visible="{!resourcesLoading}" includeInLayout="{!resourcesLoading}"/>
+					</s:FormItem>
+				</s:Form>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="principalContent" width="100%" height="100%">
+				<s:Form textAlign="right">
+					<s:layout>
+						<s:FormLayout gap="-11"/>
+					</s:layout>
+					<s:FormItem label="Principal(s)*:">
+						<s:BusyIndicator id="principalSelectionGroupBusy" width="30" height="30" visible="{principalLoading}" includeInLayout="{principalLoading}"/>
+						<s:VGroup textAlign="left" visible="{!principalLoading}" includeInLayout="{!principalLoading}">
+							<s:RadioButton id="existingIamUser" label="Existing User" group="{principalGroup}" selected="true"/>
+							<s:HGroup paddingLeft="20" enabled="{existingIamUser.selected}">
+								<mx:ComboBox id="existingIamUserSelection" width="300" dataProvider="{existingIamUserList}" labelField="id" prompt="No Users" selectedIndex="{existingIamUserList.length - 1}"/>
+								<s:Button label="Add" click="addPrincipal_clickHandler(event)"/>
+							</s:HGroup>
+							<s:RadioButton id="templateIamUser" label="Template User" group="{principalGroup}"/>
+							<s:HGroup paddingLeft="20" enabled="{templateIamUser.selected}">
+								<mx:ComboBox id="templateIamUserSelection" width="300" dataProvider="{templateIamUserList}" labelField="name" prompt="Loading Users"/>
+								<s:Button label="Add" click="addPrincipal_clickHandler(event)"/>
+							</s:HGroup>
+							<s:RadioButton id="allUsers" label="All Users" group="{principalGroup}"/>
+							<s:HGroup paddingLeft="20" enabled="{allUsers.selected}">
+								<mx:Text text="*"/>
+								<s:Button label="Add" click="addPrincipal_clickHandler(event)"/>
+							</s:HGroup>
+						</s:VGroup>
+					</s:FormItem>
+					<s:FormItem width="100%" height="100%">
+						<s:List id="principalList" width="350" height="60" dataProvider="{addPrincipalList}" textAlign="left" visible="{!principalLoading}" includeInLayout="{!principalLoading}"/>
+						<s:Button id="removePrinicipalButton" label="Remove" click="removePrinicipalButton_clickHandler(event)" visible="{!principalLoading}" includeInLayout="{!principalLoading}"/>
+					</s:FormItem>
+				</s:Form>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="permissionsContent" width="100%" height="100%">
+				<mx:Accordion id="policyAccordion" width="100%" height="100%">
+					<s:NavigatorContent id="policyTemplate" label="Select Policy Template" width="100%" height="100%">
+						<s:BorderContainer width="100%" height="100%">
+							<s:Scroller width="100%" height="100%">
+								<s:viewport>
+									<s:VGroup id="policyTemplateGroup" width="100%" height="100%">
+										<s:VGroup id="s3PolicyTemplateGroup" width="100%">
+											<s:RadioButton id="s3FullAccess" label="S3 Full Access" group="{policyTemplateRadioGroup}" selected="true"/>
+											<mx:Text text="Provides full access to all buckets." width="100%" paddingLeft="15"/>
+											<mx:HRule width="100%"/>
+											<s:RadioButton id="s3ReadAccess" label="S3 Read Only Access" group="{policyTemplateRadioGroup}"/>
+											<mx:Text text="Provides read-only access to all buckets." width="100%" paddingLeft="15"/>
+											<mx:HRule width="100%"/>
+										</s:VGroup>
+										<s:VGroup id="snsPolicyTemplateGroup" width="100%">
+											<s:RadioButton id="snsFullAccess" label="SNS Full Access" group="{policyTemplateRadioGroup}"/>
+											<mx:Text text="Provides full access to simple notification." width="100%" paddingLeft="15"/>
+											<mx:HRule width="100%"/>
+											<s:RadioButton id="snsReadAccess" label="SNS Read Only Access" group="{policyTemplateRadioGroup}"/>
+											<mx:Text text="Provides read-only access to simple notification." width="100%" paddingLeft="15"/>
+											<mx:HRule width="100%"/>
+										</s:VGroup>
+										<s:VGroup id="sqsPolicyTemplateGroup" width="100%">
+											<s:RadioButton id="sqsFullAccess" label="SQS Full Access" group="{policyTemplateRadioGroup}"/>
+											<mx:Text text="Provides full access to simple queue." width="100%" paddingLeft="15"/>
+											<mx:HRule width="100%"/>
+											<s:RadioButton id="sqsReadAccess" label="SQS Read Only Access" group="{policyTemplateRadioGroup}"/>
+											<mx:Text text="Provides read-only access to simple queue." width="100%" paddingLeft="15"/>
+											<mx:HRule width="100%"/>
+										</s:VGroup>
+									</s:VGroup>
+								</s:viewport>
+							</s:Scroller>
+						</s:BorderContainer>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="policyGenerator" label="Policy Generator" width="100%" height="100%">
+						<s:BorderContainer width="100%" height="100%">
+							<s:Scroller width="100%" height="100%">
+								<s:viewport>
+									<s:VGroup width="100%" height="100%">
+										<s:RadioButton id="policyGeneratorRB" label="Policy Generator" group="{policyGeneratorRadioGroup}" selected="true"/>
+										<mx:Text text="Use the policy generator to create your own set of permissions." width="100%" paddingLeft="15"/>
+									</s:VGroup>
+								</s:viewport>
+							</s:Scroller>
+						</s:BorderContainer>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="policyCustom" label="Custom Policy" width="100%" height="100%">
+						<s:BorderContainer width="100%" height="100%">
+							<s:Scroller width="100%" height="100%">
+								<s:viewport>
+									<s:VGroup width="100%" height="100%">
+										<s:RadioButton id="policyCustomRB" label="Custom Policy" group="{policyCustomRadioGroup}" selected="true"/>
+										<mx:Text text="Use the policy editor to customize your own set of permissions." width="100%" paddingLeft="15"/>
+									</s:VGroup>
+								</s:viewport>
+							</s:Scroller>
+						</s:BorderContainer>
+					</s:NavigatorContent>
+				</mx:Accordion>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="policyContent" width="100%" height="100%">
+				<s:VGroup width="100%" height="100%">
+					<mx:Text text="You may customize permissions by editing the policy document below."/>
+					<s:HGroup>
+						<mx:Text text="Policy Document:" fontWeight="bold"/>
+						<mx:Text id="policyDocumentAlert" text="Policy Document required." color="red" visible="false"/>
+					</s:HGroup>
+					<s:TextArea id="policyDocument" width="100%" height="100%"/>
+				</s:VGroup>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="reviewContent" width="100%" height="100%">
+				<s:VGroup paddingLeft="20" height="100%" width="100%" paddingTop="10">
+					<mx:Text text="Please Review Your Resource Policy" y="20" fontWeight="bold"/>
+					<s:VGroup x="25" y="60" paddingLeft="20">
+						<mx:Text text="Policy Name: {policyName.text}"/>
+						<mx:Text text="Policy Type: {resourceTypeSelection.selectedItem.type}"/>
+						<s:HGroup>
+							<mx:Text text="Policy Resources:"/>
+							<mx:Text id="policyResources"/>
+						</s:HGroup>
+					</s:VGroup>
+				</s:VGroup>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="policyGeneratorContent" width="100%" height="100%">
+				<s:Form textAlign="right" width="100%">
+					<s:layout>
+						<s:FormLayout gap="-7"/>
+					</s:layout>
+					<s:FormItem label="Effect:">
+						<s:HGroup textAlign="left">
+							<s:RadioButton id="effectAllow" label="Allow" group="{policyEffect}" selected="true"/>
+							<s:RadioButton id="effectDeny" label="Deny" group="{policyEffect}"/>
+						</s:HGroup>
+					</s:FormItem>
+					<s:FormItem label="Actions:" width="100%">
+						<s:HGroup width="100%">
+							<s:DataGrid id="actionsList" width="420" minHeight="0" maxHeight="98" dataProvider="{actionsAddList}" textAlign="left">
+								<s:columns>
+									<s:ArrayList id="actionsGridColumns">
+										<s:GridColumn headerText="Add" dataField="add" itemRenderer="com.momentumsi.c9.itemRenderers.IamPolicyGeneratorAdd" width="40"/>
+										<s:GridColumn headerText="Action" dataField="label"/>
+									</s:ArrayList>
+								</s:columns>
+							</s:DataGrid>
+							<s:VGroup>
+								<mx:Text id="selectAllButton" text="Select/Deselect All" color="blue" click="selectAllButton_clickHandler(event)"  useHandCursor="true" buttonMode="true" mouseChildren="false"/>
+								<s:Button id="addStatementButton" label="Add Statement" click="addStatementButton_clickHandler(event)"/>
+							</s:VGroup>
+						</s:HGroup>
+					</s:FormItem>
+					<s:FormItem label="Resource:">
+						<s:TextInput id="statementResource" width="200" text="*" textAlign="left"/>
+					</s:FormItem>
+					<s:FormItem label="Statements:" width="100%">
+						<s:HGroup width="100%">
+							<s:DataGrid id="statementList" width="465" minHeight="0" maxHeight="120" dataProvider="{statementAddList}" textAlign="left" variableRowHeight="true" selectionMode="singleRow">
+								<s:columns>
+									<s:ArrayList id="statementGridColumns">
+										<s:GridColumn headerText="Effect" dataField="effect" width="75"/>
+										<s:GridColumn headerText="Action" dataField="actions" itemRenderer="com.momentumsi.c9.itemRenderers.ResourcePolicyGeneratorActionArray"/>
+										<s:GridColumn headerText="Resource" dataField="resource" width="75"/>
+									</s:ArrayList>
+								</s:columns>
+							</s:DataGrid>
+							<s:Button id="removeStatementButton" label="Remove" click="removeStatementButton_clickHandler(event)"/>
+						</s:HGroup>
+					</s:FormItem>
+				</s:Form>
+			</s:NavigatorContent>
+		</mx:ViewStack>
+	</s:VGroup>
+	<s:Button id="previousButton" x="10" y="436" label="Previous" click="previousButton_clickHandler(event)" enabled="{resourcePolicyWizard.selectedIndex != 0}"/>
+	<s:Button id="nextButton" x="92" y="436" label="Next" click="nextButton_clickHandler(event)" enabled="{resourcePolicyWizard.selectedChild != reviewContent}"/>
+	<s:Button id="submitButton" x="169" y="436" label="Finish" click="submitButton_clickHandler(event)" enabled="{resourcePolicyWizard.selectedChild == reviewContent}"/>
+	<s:Button id="cancelButton" x="619" y="436" label="Cancel" click="{PopUpManager.removePopUp(this)}"/>
+</wizard:WizardWindow>

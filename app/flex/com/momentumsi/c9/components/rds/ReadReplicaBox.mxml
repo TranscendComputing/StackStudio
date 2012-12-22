@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 initialize="init(event)"
+		 label="Relational Database Read Replica" width="100%" height="100%" 
+		 xmlns:c9="com.momentumsi.c9.components.*"
+		 xmlns:diagrammer="fr.kapit.diagrammer.base.uicomponent.*">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.components.MainBox;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import fr.kapit.diagrammer.Diagrammer;
+			import fr.kapit.diagrammer.base.uicomponent.DiagramSprite;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.DateField;
+			import mx.core.FlexGlobals;
+			import mx.core.UIComponent;
+			import mx.events.CloseEvent;
+			import mx.events.IndexChangedEvent;
+			import mx.formatters.DateFormatter;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			[Bindable]
+			private var host:String;
+			private var app:Object = FlexGlobals.topLevelApplication;
+			[Bindable]
+			private var thisReplicaEvents:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public var replicaEvents:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public var replicaInstance:XML;
+			[Bindable]
+			public var replicasCreatingCollection:ArrayCollection = new ArrayCollection();
+			private var createTimer:Timer = new Timer(30000);
+			
+			private function init(event:Event):void
+			{
+				host = app.GetConfiguration( "serviceUrl" );
+				createTimer.addEventListener(TimerEvent.TIMER, updateCreatingReplicas)
+			}
+			
+			public function getEventsList():void
+			{
+				thisReplicaEvents.removeAll();
+				for each (var item:Object in replicaEvents)
+				{
+					if(item.id == replicaInstance.child('name'))
+					{
+						thisReplicaEvents.addItem(item);
+					}
+				}
+			}
+			
+			protected function replicaDetails_changeHandler(event:IndexChangedEvent):void
+			{
+				if(replicaDetails.selectedIndex == 1)
+				{
+					monitoringBox.nodeXML = node.data as XML;
+					monitoringBox.getDefaultMonitorsCall("rds");
+				}
+			}
+			
+			public function startUpdateCreatingReplicas():void
+			{
+				createTimer.reset();
+				createTimer.start();
+			}
+			
+			protected function updateCreatingReplicas(event:TimerEvent):void
+			{	
+				for each (var replica:DiagramSprite in replicasCreatingCollection)
+				{
+					var nodeData:XML = replica.data as XML;
+					var updateDbInstanceSvc:HTTPService = new HTTPService();
+					updateDbInstanceSvc.url= host + "/rds_read_replicas/update_db_instance/" + nodeData.child('id') + ".xml";
+					updateDbInstanceSvc.method="POST";
+					updateDbInstanceSvc.resultFormat="e4x";
+					updateDbInstanceSvc.addEventListener(ResultEvent.RESULT, updateDbInstanceSvc_resultHandler);
+					updateDbInstanceSvc.send();
+				}
+			}
+			
+			protected function deleteButton_clickHandler(event:MouseEvent):void
+			{
+				var deletePopUp:RdsDeleteReadReplica = RdsDeleteReadReplica(PopUpManager.createPopUp( UIComponent(this.parentApplication), RdsDeleteReadReplica , true));
+				deletePopUp.replicaInstance = replicaInstance;
+				deletePopUp.node = node;
+			}
+			
+			protected function updateDbInstanceSvc_resultHandler(event:ResultEvent):void
+			{
+				if( event.result == " " )
+				{
+					return;
+				}
+				
+				var result:XML = XML(event.result);
+				var status:String = result.child('status');
+				var time:Date = new Date();
+				var runningDiagram:Diagrammer = Helpers.getRunningDiagram(this);
+				var mainBox:MainBox = Helpers.getMainBox(this);
+				
+				for(var i:int = 0; i < replicasCreatingCollection.length; i++)
+				{
+					var rdsObj:Object = replicasCreatingCollection[i];
+					if(rdsObj['id'] == result.child('id'))
+					{
+						rdsObj['data'] = result;
+						if(rdsObj['status'] != status)
+						{
+							rdsObj['status'] = status;
+							rdsObj['node'].data = result;
+						}
+					}
+					
+					if(status == "available")
+					{
+						mainBox.runningView.rdsBox.fillRdsReadReplicas(result.child('rds-db-instance-id'));
+					}
+				}
+				
+				if(replicasCreatingCollection.length > 0)
+				{
+					createTimer.reset();
+					createTimer.start();
+				}else
+					createTimer.stop();
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<diagrammer:DiagramSprite id="node"/>
+		
+		<s:HTTPService id="updateDbInstanceSvc"
+					   url="{host}/rds_db_instances/update_db_instance"
+					   resultFormat="e4x"
+					   method="POST"
+					   showBusyCursor="true"
+					   result="updateDbInstanceSvc_resultHandler(event)"/>
+	</fx:Declarations>
+	<s:HGroup id="rdsButtonBar" height="25" paddingLeft="10">
+		<s:Button id="deleteButton" label="Delete" click="deleteButton_clickHandler(event)"/>
+	</s:HGroup>
+	<s:BorderContainer height="100%" width="100%">
+		<mx:TabNavigator id="replicaDetails" width="100%" height="100%" fontSize="14" change="replicaDetails_changeHandler(event)">
+			<s:NavigatorContent label="Description" width="100%" height="100%">
+				<s:BorderContainer borderVisible="false"  id="description" height="100%" width="100%">
+					<s:Scroller width="100%" height="100%">
+						<s:viewport>
+							<s:HGroup>
+								<s:Form width="65%">
+									<s:layout>
+										<s:FormLayout gap="-7"/>
+									</s:layout>
+									<s:FormItem label="DB Instance Replica Name:">
+										<mx:Text text="{replicaInstance.child('name')}"/>
+									</s:FormItem>
+									<s:FormItem label="Auto Minor Ver. Upgrade">
+										<mx:Text text="{replicaInstance.child('auto-minor-version-upgrade')}"/>
+									</s:FormItem>
+									<s:FormItem label="DB Status:">
+										<mx:Text id="dbStatus" text="{replicaInstance.child('status')}"/>
+									</s:FormItem>
+									<s:FormItem label="Zone:">
+										<mx:Text text="{replicaInstance.child('availability-zone')}"/>
+									</s:FormItem>
+									<s:FormItem label="DB Storage:">
+										<mx:Text text="{replicaInstance.child('rds-allocated-storage')}"/>
+									</s:FormItem>
+									<s:FormItem label="Backup Retention Period:">
+										<mx:Text text="{replicaInstance.child('rds-backup-retention-period')}"/>
+									</s:FormItem>
+									<s:FormItem label="Backup Window:">
+										<mx:Text text="{replicaInstance.child('rds-preferred-backup-window')}"/>
+									</s:FormItem>
+								</s:Form>
+								<s:Form width="35%">
+									<s:layout>
+										<s:FormLayout gap="-7"/>
+									</s:layout>
+									<s:FormItem label="DB Engine:">
+										<mx:Text text="{replicaInstance.child('rds-engine')}"/>
+									</s:FormItem>
+									<s:FormItem label="DB Security Group:">
+										<mx:Text text="{replicaInstance.child('rds-security-group')}"/>
+									</s:FormItem>
+									<s:FormItem label="DB Instance Class:">
+										<mx:Text text="{replicaInstance.child('rds-db-instance-class')}"/>
+									</s:FormItem>
+									<s:FormItem label="Port:">
+										<mx:Text text="{replicaInstance.child('rds-port')}"/>
+									</s:FormItem>
+									<s:FormItem label="Multiple AZ Deployment:">
+										<mx:Text text="{replicaInstance.child('multiple-availability-zones')}"/>
+									</s:FormItem>
+									<s:FormItem label="DB Parameter Group:">
+										<mx:Text text="{replicaInstance.child('rds-parameter-group')}"/>
+									</s:FormItem>
+									<s:FormItem label="Maintenance Window:">
+										<mx:Text text="{replicaInstance.child('rds-preferred-maintenance-window').toString().toUpperCase()}"/>
+									</s:FormItem>
+									<s:FormItem label="Read Replica Source:">
+										<mx:Text id="replicaSource" text="{replicaInstance.child('source')}"/>
+									</s:FormItem>
+								</s:Form>
+							</s:HGroup>
+						</s:viewport>
+					</s:Scroller>		
+				</s:BorderContainer>
+			</s:NavigatorContent>
+			<s:NavigatorContent label="Monitoring" width="100%" height="100%">
+				<s:BorderContainer borderVisible="false" id="monitoring" height="100%" width="100%">
+					<c9:MonitoringBox id="monitoringBox" width="100%" height="100%"/>
+				</s:BorderContainer>
+			</s:NavigatorContent>
+			<s:NavigatorContent label="Recent Events" width="100%" height="100%">
+				<s:BorderContainer borderVisible="false" id="recentEvents" height="100%" width="100%">
+					<mx:DataGrid id="replicaEventsGrid" width="100%" height="100%" dataProvider="{thisReplicaEvents}">
+						<mx:columns>
+							<mx:DataGridColumn headerText="Event Details" dataField="details" width="220"/>
+							<mx:DataGridColumn headerText="Event Type" dataField="type" width="100"/>
+							<mx:DataGridColumn headerText="Event Time" dataField="time"/>
+						</mx:columns>
+					</mx:DataGrid>
+				</s:BorderContainer>
+			</s:NavigatorContent>
+		</mx:TabNavigator>
+	</s:BorderContainer>
+</mx:VBox>

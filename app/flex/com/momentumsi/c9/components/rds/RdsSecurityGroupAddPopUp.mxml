@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="540" height="188"
+		 title="Add New DB Security Group"
+		 creationComplete="init(event)"
+		 close="closeHandler()"
+		 move="Helpers.doMove(this)" 
+		 xmlns:components="com.momentumsi.c9.components.*" 
+		 xmlns:rds="com.momentumsi.c9.components.rds.*"
+		 xmlns:services="com.momentumsi.c9.services.*">
+	<fx:Metadata>
+		[Event(name="securityGroupCreated", type="flash.events.Event")]
+	</fx:Metadata>
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.events.MoveEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			[Bindable]
+			public var cloudAccountId:String;
+			[Bindable]
+			public var region:String;
+			
+			protected function init(event:FlexEvent):void
+			{
+				PopUpManager.centerPopUp(this);
+			}
+			
+			protected function closeHandler():void
+			{
+				PopUpManager.removePopUp(this);	
+			}
+			
+			protected function submitButton_clickHandler(event:MouseEvent):void
+			{
+				if(securityGroupName.text.replace(/\s/g,"") != "" && securityGroupDescrip.text.replace(/\s/g,"") != "")
+				{
+					var name:String = securityGroupName.text;
+					var descrip:String = securityGroupDescrip.text;
+					rdsService.createDbSecurityGroup(name, descrip);
+					submitButton.label = "Creating";
+					submitButton.enabled = false;
+				}else
+					Alert.show("Name and Description are required for creation.");
+			}
+			
+			protected function rdsService_resultHandler(event:ResultEvent):void
+			{
+				dispatchEvent(new Event(RdsService.SECURITY_GROUP_CREATED));
+			}
+			
+			protected function rdsService_faultHandler(event:FaultEvent):void
+			{
+				submitButton.label = "Create";
+				submitButton.enabled = true;
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<services:RdsService id="rdsService"
+							 cloudAccountId="{cloudAccountId}"
+							 region="{region}"
+							 result="rdsService_resultHandler(event)"
+							 fault="rdsService_faultHandler(event)"/>
+	</fx:Declarations>
+	
+	<s:VGroup height="100%" width="100%">
+		<s:HGroup height="100%" width="100%" horizontalAlign="center">
+			<s:Form height="113" width="100%" fontSize="13" defaultButton="{submitButton}">
+				<s:FormItem label="Name:*" width="100%">
+					<s:TextInput id="securityGroupName" width="50%"/>
+				</s:FormItem>
+				<s:FormItem label="Description:*" width="100%">
+					<s:TextInput id="securityGroupDescrip" width="100%"/>
+				</s:FormItem>
+			</s:Form>
+		</s:HGroup>
+		<s:HGroup width="100%" horizontalAlign="center" paddingBottom="10">
+			<s:Button id="submitButton" label="Create" click="submitButton_clickHandler(event)"/>
+			<s:Button id="cancelButton" label="Cancel" click="closeHandler()"/>
+		</s:HGroup>
+	</s:VGroup>
+</s:TitleWindow>

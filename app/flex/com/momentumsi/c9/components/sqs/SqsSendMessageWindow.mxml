@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components:CustomTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+							  xmlns:s="library://ns.adobe.com/flex/spark" 
+							  xmlns:mx="library://ns.adobe.com/flex/mx"
+							  xmlns:components="com.momentumsi.c9.components.*"
+							  title="Send a Message to {queue.name}"
+							  width="624" height="450" xmlns:services="com.momentumsi.c9.services.*">
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.events.sqs.SendMessageResultEvent;
+			import com.momentumsi.c9.models.CloudAccount;
+			import com.momentumsi.c9.representers.MessageQueueRepresenter;
+			
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.events.ValidationResultEvent;
+			import mx.managers.PopUpManager;
+			
+			[Bindable]
+			public var queue:MessageQueueRepresenter;
+			[Bindable]
+			public var cloudAccount:CloudAccount;
+			[Bindable]
+			public var region:String;
+			
+			protected function sendButton_clickHandler(event:MouseEvent):void
+			{
+				sqsService.addEventListener(SendMessageResultEvent.RESULT, sqsService_sendMessageResultHandler);
+				sqsService.sendMessage(messageTA.text);
+			}
+			
+			protected function messageTA_textInputHandler(event:TextEvent):void
+			{
+				checkForEmptyMessage();
+			}
+			
+			protected function messageTA_keyUpHandler(event:KeyboardEvent):void
+			{
+				checkForEmptyMessage();
+			}
+			
+			private function checkForEmptyMessage():void
+			{
+				if(messageTA.text.replace(/\s/g, "") != "")
+				{
+					sendButton.enabled = true;
+				}else{
+					sendButton.enabled = false;
+				}
+			}
+			
+			protected function delayTI_focusOutHandler(event:FocusEvent):void
+			{
+				var delay:int = int(delayTI.text);
+				if(delayDDL.selectedIndex == 0)
+				{
+					if(delay > 900 || delay < 0)
+					{
+						Alert.show("Invalid value for delay: must be <= 900 seconds.");
+						sendButton.enabled = false;
+					}
+				}else{
+					if(delay > 15 || delay < 0)
+					{
+						Alert.show("Invalid value for delay: must be <= 15 minutes.");
+						sendButton.enabled = false;
+					}
+				}
+			}
+			
+			protected function sqsService_sendMessageResultHandler(event:SendMessageResultEvent):void
+			{
+				trace("message sent");
+				PopUpManager.removePopUp(this);
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<services:SqsService id="sqsService"
+							 queueUrl="{queue.queueUrl}"
+							 cloudAccountId="{cloudAccount.id}"
+							 region="{region}"/>
+	</fx:Declarations>
+	
+	<s:TextArea id="messageTA"
+				textInput="messageTA_textInputHandler(event)"
+				keyUp="messageTA_keyUpHandler(event)"
+				x="26" y="45" 
+				width="563" height="298"/>
+	<s:Label x="26" y="19" text="Enter message contents below."/>
+	<s:HGroup id="delayHG"
+			  x="26" y="351" 
+			  width="559" height="21" 
+			  verticalAlign="middle">
+		<s:CheckBox id="delayCB"
+					label="Delay delivery of this message by "/>
+		<s:TextInput id="delayTI"
+					 focusOut="delayTI_focusOutHandler(event)"
+					 enabled="{delayCB.selected}"
+					 text="0"
+					 width="61"/>
+		<s:DropDownList id="delayDDL"
+						enabled="{delayCB.selected}"
+						width="91" 
+						selectedIndex="0">
+			<s:dataProvider>
+				<s:ArrayCollection>
+					<fx:String>seconds</fx:String>
+					<fx:String>minutes</fx:String>
+				</s:ArrayCollection>
+			</s:dataProvider>
+		</s:DropDownList>
+		<s:Label text="(up to 15 minutes)."/>
+	</s:HGroup>
+	<s:Button id="sendButton"
+			  enabled="false"
+			  click="sendButton_clickHandler(event)"
+			  x="26" y="384" 
+			  label="Send Message"/>
+	<s:Button id="cancelButton"
+			  click="PopUpManager.removePopUp(this)"
+			  x="516" y="384"
+			  label="Cancel"/>
+</components:CustomTitleWindow>

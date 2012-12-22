@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="604" height="500"
+		 xmlns:c9="com.momentumsi.c9.components.*"
+		 close="PopUpManager.removePopUp(this);"
+		 creationComplete="creationCompleteHandler(event)"
+		 title="Edit Template Wizard">
+	
+	<fx:Metadata>
+		[Event(
+		name="projectCreate",
+		type="com.momentumsi.c9.events.ProjectEvent")]
+	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.components.cfn.CloudFormationTemplate;
+			import com.momentumsi.c9.utils.Helpers;
+			import com.momentumsi.c9.events.LoginEvent;
+			import com.momentumsi.c9.events.ProjectEvent;
+			import com.momentumsi.c9.models.Project;
+			import com.momentumsi.c9.models.User;
+			
+			import fr.kapit.diagrammer.Diagrammer;
+			import fr.kapit.diagrammer.base.uicomponent.DiagramSprite;
+			
+			import mx.controls.Alert;
+			import mx.core.Application;
+			import mx.core.FlexGlobals;
+			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
+			import mx.managers.CursorManager;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			
+			private var app:Object = FlexGlobals.topLevelApplication;
+			
+			[Bindable]
+			private var host:String;
+			private var designDiagramDictionary:Dictionary;
+			public var loginWindow:String = "LoginPopUp";
+			[Bindable]
+			private var user:User;
+			[Bindable]
+			public var shallowProject:Project;
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				PopUpManager.centerPopUp(this);
+				loginBox.defaultButton = nextButton;
+			    loginBox.loginButton.visible = false;
+				newProject.readOnlyProjectCreate = true;
+				newProject.loginPopUp = this;
+				//designDiagramDictionary = Helpers.getDesignDiagram(this).nodesMap;
+			}
+			
+			private function newAccountHandler():void
+			{
+				//var newAccountBox:AccountCreateBox = AccountCreateBox(PopUpManager.createPopUp( UIComponent(this.parentApplication), AccountCreateBox , true));
+				var newAccountBox:AccountCreateWizard = AccountCreateWizard(PopUpManager.createPopUp( UIComponent(this.parentApplication), AccountCreateWizard , true));
+				newAccountBox.owner = this;
+			}
+			
+			private function login():void
+			{
+				//host = app.GetConfiguration( "serviceUrl" ) ;
+				//accountLoginSvc.addEventListener(FaultEvent.FAULT, faultEvent_eventHandler);
+				//accountLoginSvc.send({login: usernameTI.text, password: passwordTI.text});
+			}
+			
+			private function faultEvent_eventHandler(event:FaultEvent):void
+			{
+				Alert.show("We're sorry, but the server seems to be down at this time.  Please try again later, or notify the administrator.");
+			}
+			
+			private function handleAccountLoginResult(event:ResultEvent):void
+			{
+				user = User.buildUser(loginBox.authenticateUserSvc.result["account"]);
+				viewStack.selectedIndex++;
+			}
+			
+			private function alertHandler(event:Event):void
+			{
+				
+			}
+			
+			protected function cancelButton_clickHandler(event:MouseEvent):void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function previousButton_clickHandler(event:MouseEvent):void
+			{
+				if(viewStack.selectedIndex > 0)
+				{
+					viewStack.selectedIndex--;
+				}
+			}
+			
+			protected function nextButton_clickHandler(event:MouseEvent):void
+			{
+				if(viewStack.selectedIndex == 0)
+				{
+					loginBox.login();
+					loginBox.authenticateUserSvc.addEventListener(ResultEvent.RESULT, handleAccountLoginResult);
+				}
+			}
+			
+			protected function finishButton_clickHandler(event:MouseEvent):void
+			{
+				var bodyStack:BodyStack = this.parentApplication.bodyStack as BodyStack;
+				newProject.createProject();
+				bodyStack.welcomeDashboard.readOnly = false;
+				bodyStack.objectManagement.readOnly = false;
+				bodyStack.objectManagement.cloudManagementSetup();
+
+				var headerBox:HeaderBox = this.parentApplication.headerBox; 
+				headerBox.management.visible = true;
+				headerBox.applicationMenuBar.visible = true;
+				headerBox.readOnly = false;
+				PopUpManager.removePopUp(this);			
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:HTTPService
+			id="accountLoginSvc"
+			url="{host}/sessions/account_login"
+			resultFormat="e4x"
+			method="POST"
+			showBusyCursor="true"
+			result="handleAccountLoginResult(event)"
+			fault="faultEvent_eventHandler(event)"/>
+	</fx:Declarations>
+	<s:VGroup height="100%" width="100%">
+		<mx:ViewStack id="viewStack" width="100%" height="100%" creationPolicy="all">
+			<s:NavigatorContent width="100%" height="100%">
+				<c9:LoginBox id="loginBox" height="100%" width="100%" loginButton="{nextButton}"/>
+			</s:NavigatorContent>
+			<s:NavigatorContent width="100%" height="100%">
+				<c9:NewProject id="newProject" width="100%" height="100%"
+							   user="{user}" readOnlyProjectCreate="true"
+							   newProject="@{shallowProject}"/>
+			</s:NavigatorContent>
+		</mx:ViewStack>
+		<s:HGroup width="100%" paddingBottom="10">
+			<s:HGroup width="100%" horizontalAlign="left">
+				<s:Button id="previousButton" label="Previous" click="previousButton_clickHandler(event)" enabled="{viewStack.selectedIndex == 1}"/>
+				<s:Button id="nextButton" label="Next" click="nextButton_clickHandler(event)" enabled="{viewStack.selectedIndex == 0}"/>
+				<s:Button id="finishButton" label="Finish" click="finishButton_clickHandler(event)" enabled="{viewStack.selectedIndex == 1}"/>
+			</s:HGroup>
+			<s:HGroup width="100%" horizontalAlign="right">
+				<s:Button id="cancelButton" label="Cancel" click="cancelButton_clickHandler(event)"/>				
+			</s:HGroup>
+		</s:HGroup>
+	</s:VGroup>
+</s:TitleWindow>

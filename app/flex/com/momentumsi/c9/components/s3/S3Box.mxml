@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components:DetailsBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%"
+		 creationComplete="init(event)"
+		 xmlns:diagrammer="fr.kapit.diagrammer.base.uicomponent.*" 
+		 xmlns:services="com.momentumsi.c9.services.*" xmlns:components="com.momentumsi.c9.components.*">
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.components.MainBox;
+			import com.momentumsi.c9.utils.Helpers;
+			import com.momentumsi.c9.models.ProvisionedInstance;
+			import com.momentumsi.c9.services.CloudApiService;
+			
+			import flash.net.FileReference;
+			import flash.net.URLRequestHeader;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.TextInput;
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+
+			[Bindable]
+			private var host:String;
+			[Bindable]
+			private var keyList:ArrayCollection = new ArrayCollection();
+			private var app:Object = FlexGlobals.topLevelApplication;
+			private var accountId:int;
+			[Bindable]
+			private var fileRef:FileReference = new FileReference();
+			private var uploadURLReq:URLRequest;
+			[Bindable]
+			public var s3Events:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var thisS3Events:ArrayCollection = new ArrayCollection();
+			public var s3BucketsRunningCollection:ArrayCollection = new ArrayCollection();
+			private var mainBox:MainBox;
+
+			[Bindable]
+			public var cloudService:CloudApiService;
+
+			
+			protected function init(event:FlexEvent):void
+			{
+				host = app.GetConfiguration( "serviceUrl" );
+				mainBox = Helpers.getMainBox(this);
+			}
+			
+			public function getS3BucketListInCloud():void
+			{
+				if(node.status == ProvisionedInstance.RUNNING)
+				{
+					listBucket.send();
+				}
+			}
+			
+			public function getEventsList():void
+			{
+				thisS3Events.removeAll();
+				for each (var item:Object in s3Events)
+				{
+					if(item.id == s3Instance.child('name'))
+					{
+						thisS3Events.addItem(item);
+					}
+				}
+			}
+			
+			protected function getS3BucketList_resultHandler(event:ResultEvent):void
+			{	
+				var name:String;
+				var size:int;
+				var lastModified:String;
+				keyList.removeAll();
+				for(var item:* in listBucket.result)
+				{
+					name = item.child('key');
+					size = item.child('size');
+					lastModified = item.child('last-modified');
+					
+					lastModified = dateFormatter.format(lastModified);
+					keyList.addItem({name: name, size: size, lastM: lastModified});
+				}		
+			}
+			
+			protected function deleteBucketButton_clickHandler(event:MouseEvent):void
+			{
+				//TODO Delete from cloud
+			}
+			
+			protected function uploadButton_clickHandler(event:MouseEvent):void
+			{
+				fileRef.addEventListener(Event.SELECT, uploadSelectHandler);
+				//fileRef.addEventListener(Event.COMPLETE, completeHandler);
+				try
+				{
+					var success:Boolean = fileRef.browse();
+				}
+				catch (error:Error)
+				{
+					Alert.show("Unable to browse for files.");
+				}
+			}
+			
+			protected function uploadSelectHandler(event:Event):void
+			{
+				doUpload(fileRef);
+			}
+			
+			protected function doUpload(file:FileReference):void
+			{
+				var URLString:String = Helpers.getHost() + "/provisioned_s3s/upload_file/" + s3Instance.child('id') + ".xml";
+				uploadURLReq = new URLRequest(URLString);
+				try
+				{
+					file.upload(uploadURLReq);
+				} catch (error:Error)
+				{
+					trace("Unable to upload file. " + error);
+				}
+			}
+			
+			protected function createFolderButton_clickHandler(event:MouseEvent):void
+			{
+				keyList.addItem({name: "New Folder", size: 0, lastM: "--"});
+			}
+			
+			protected function deleteButton_clickHandler(event:MouseEvent):void
+			{
+				if(bucketData.selectedItem)
+				{
+					var fileName:String = bucketData.selectedItem.name;
+					deleteS3ItemSvc.send({key_name: fileName});
+					keyList.removeItemAt(bucketData.selectedIndex);
+				}else
+					Alert.show("Nothing to delete.");
+			}
+			
+			protected function refreshButton_clickHandler(event:MouseEvent):void
+			{
+				listBucket.send();
+			}
+			
+			protected function bucketData_editHandler(event:Event):void
+			{
+				if(bucketData.selectedItem.name == "New Folder")
+				{
+				}else 
+					event.preventDefault();
+			}
+			
+			protected function bucketData_endEditting(event:Event):void
+			{
+				for each(var row:Object in keyList)
+				{
+					if(bucketData.selectedItem == row)
+					{
+						var myEditor:TextInput = TextInput(event.currentTarget.itemEditorInstance);
+						if(myEditor.text != "" && myEditor.text != "New Folder")
+						{
+							row.name = myEditor.text+"/";
+							uploadNewFolder.send({folder_name: row.name});
+						}else
+							myEditor.text = "New Folder";
+					}
+				}
+			}
+			
+			protected function default_faultHandler(event:FaultEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+			}
+			
+			[Bindable]
+			private var _s3Object:Object = new Object();
+			override public function set resourceObject(value:Object):void
+			{
+				_s3Object = value;
+			}
+			
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<fx:XML id="s3Instance"/>
+		<services:CloudApiService id="listBucket"
+								  cloudAccountId="{cloudAccountId}"
+								  action="list_bucket"
+								  serviceType="S3"
+								  request="{{physical_id: node.instanceId}}"
+								  result="getS3BucketList_resultHandler(event)"/>
+		
+		<s:HTTPService id="deleteS3ItemSvc"
+					   url="{host}/provisioned_s3s/delete_key/{s3Instance.child('id')}.xml"
+					   method="GET"
+					   showBusyCursor="true"
+					   fault="default_faultHandler(event)"/>
+		
+		<s:HTTPService id="uploadNewFolder"
+					   url="{host}/provisioned_s3s/upload_new_folder/{s3Instance.child('id')}.xml"
+					   resultFormat="e4x"
+					   method="GET"
+					   showBusyCursor="true"
+					   fault="default_faultHandler(event)"/>
+		
+	</fx:Declarations>
+	
+	<s:HGroup paddingLeft="10">
+			<s:Button id="deleteBucketButton" visible="false" label="Delete Bucket" click="deleteBucketButton_clickHandler(event)" />
+	</s:HGroup>
+	<s:BorderContainer height="100%" width="100%" alpha="1" borderVisible="false">
+		<components:DetailsBoxTabNavigator id="s3Details">
+			<s:NavigatorContent label="Contents" width="100%" height="100%">
+				<s:Panel  id="bucketPanel" width="100%" height="100%" title="{node.resourceId}">
+					<mx:HBox paddingLeft="10">
+						<s:Button id="uploadButton" label="Upload" click="uploadButton_clickHandler(event)"/>
+						<s:Button id="createFolderButton" label="Create Folder" click="createFolderButton_clickHandler(event)"/>
+						<s:Button id="deleteButton" label="Delete" click="deleteButton_clickHandler(event)"/>
+						<s:Button id="refreshButton" label="Refresh" click="refreshButton_clickHandler(event)"/>
+					</mx:HBox>
+					<mx:AdvancedDataGrid id="bucketData" x="0" y="29" width="100%" height="100%" dataProvider="{keyList}" editable="true" itemEditBeginning="bucketData_editHandler(event)" itemEditEnd="bucketData_endEditting(event)">
+						<mx:columns>
+								<mx:AdvancedDataGridColumn dataField="name" headerText="Name" width="300" editable="true"/>
+								<mx:AdvancedDataGridColumn dataField="size" headerText="Size" editable="false"/>
+								<mx:AdvancedDataGridColumn dataField="lastM" headerText="Last Modified" editable="false"/>
+						</mx:columns>
+					</mx:AdvancedDataGrid>		
+				</s:Panel>
+			</s:NavigatorContent>
+			<s:NavigatorContent label="Recent Events" width="100%" height="100%">
+				<s:BorderContainer borderVisible="false" id="recentEvents" height="100%" width="100%">
+					<mx:DataGrid id="s3EventsGrid" width="100%" height="100%" dataProvider="{thisS3Events}">
+						<mx:columns>
+							<mx:DataGridColumn headerText="Event Details" dataField="details" width="220"/>
+							<mx:DataGridColumn headerText="Event Type" dataField="type" width="100"/>
+							<mx:DataGridColumn headerText="Event Time" dataField="time"/>
+						</mx:columns>
+					</mx:DataGrid>
+				</s:BorderContainer>
+			</s:NavigatorContent>
+		</components:DetailsBoxTabNavigator>
+	</s:BorderContainer>
+</components:DetailsBox>

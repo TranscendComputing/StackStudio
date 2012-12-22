@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<c9:ObjectManagementDetailsBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:c9="com.momentumsi.c9.components.*"
+		  cloudAccountSet="objectmanagementdetailsbox2_cloudAccountSetHandler(event)">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.components.sqs.SqsModifyPopUp;
+			import com.momentumsi.c9.components.sqs.SqsSendMessageWindow;
+			import com.momentumsi.c9.components.sqs.SqsViewMessagesWindow;
+			import com.momentumsi.c9.events.CloudAccountSetEvent;
+			import com.momentumsi.c9.models.CloudAccount;
+			import com.momentumsi.c9.representers.MessageQueueRepresenter;
+			import com.momentumsi.c9.services.CloudApiService;
+			import com.momentumsi.c9.services.MonitoringService;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.collections.ArrayCollection;
+			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
+			import mx.events.IndexChangedEvent;
+			import mx.events.ListEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.StringUtil;
+			
+			[Bindable]
+			private var sqsData:MessageQueueRepresenter;
+			
+			[Bindable]
+			private var terminateEnabled:Boolean = true;
+			
+			override public function set resourceData(value:Object):void
+			{
+				sqsData = new MessageQueueRepresenter(value);
+				super.resourceData = sqsData;
+				if(sqsData.queueResourceName == null)
+				{
+					buttonsEnabled = false;
+				}else{
+					buttonsEnabled = true;
+				}
+				sqsDetails.selectedIndex = 0;
+			}
+			
+			protected function terminate_clickHandler(event:MouseEvent):void
+			{
+				if(terminateEnabled)
+				{
+					var destroyPopUp:DestroyResourceObjectManagement = DestroyResourceObjectManagement(PopUpManager.createPopUp(UIComponent(this.parentApplication), DestroyResourceObjectManagement, true));
+					destroyPopUp.cloudAccountId = cloudAccount.id;
+					destroyPopUp.region = region;
+					destroyPopUp.resourceType = CloudApiService.SQS_SERVICE;
+					destroyPopUp.resourceDisplayId = sqsData.name;
+					destroyPopUp.resourceId = sqsData.queueUrl;
+				}
+			}
+			
+			protected function sqsDetails_changeHandler(event:IndexChangedEvent):void
+			{
+				if(sqsDetails.selectedChild == monitoringContent)
+				{
+					monitorBox.objectManagement = true;
+					monitorBox.objectManagementResource = sqsData;
+					monitorBox.objectManagementResourceType = MonitoringService.SQS_DEFAULT;
+					monitorBox.getDefaultMonitorsCall(MonitoringService.SQS_DEFAULT);
+				}
+			}
+			
+			protected function sendMessageButton_clickHandler(event:MouseEvent):void
+			{
+				var sendMessageWindow:SqsSendMessageWindow = new SqsSendMessageWindow();
+				sendMessageWindow.queue = sqsData;
+				sendMessageWindow.cloudAccount = cloudAccount;
+				sendMessageWindow.region = region;
+				PopUpManager.addPopUp(sendMessageWindow, UIComponent(parentApplication), true);
+			}
+			
+			protected function configureButton_clickHandler(event:MouseEvent):void
+			{
+				var configureQueueWindow:SqsModifyPopUp = new SqsModifyPopUp();
+				configureQueueWindow.cloudAccount = cloudAccount;
+				configureQueueWindow.region = region;
+				configureQueueWindow.queue = sqsData;
+				PopUpManager.addPopUp(configureQueueWindow, UIComponent(parentApplication), true);
+			}
+			
+			protected function viewMessageButton_clickHandler(event:MouseEvent):void
+			{
+				var viewMessageWindow:SqsViewMessagesWindow = new SqsViewMessagesWindow();
+				viewMessageWindow.cloudAccount = cloudAccount;
+				viewMessageWindow.region = region;
+				viewMessageWindow.queue = sqsData;
+				PopUpManager.addPopUp(viewMessageWindow, UIComponent(parentApplication), true);
+			}
+			
+			private function set buttonsEnabled(value:Boolean):void
+			{
+				deleteButton.enabled = value;
+				sendMessageButton.enabled = value;
+				viewMessageButton.enabled = value;
+				configureButton.enabled = value;
+			}
+			
+			protected function objectmanagementdetailsbox2_cloudAccountSetHandler(event:CloudAccountSetEvent):void
+			{
+				if(event.provider != CloudAccount.AMAZON)
+				{
+					Helpers.disableTab(sqsDetails, monitoringContent);
+				}else{
+					Helpers.disableTab(sqsDetails, monitoringContent, true);
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>	
+		
+	</fx:Declarations>
+	
+	<s:HGroup paddingLeft="10" gap="20">
+		<c9:TextButton id="deleteButton"
+					   text="Delete"
+					   enabled="{terminateEnabled}"
+					   click="terminate_clickHandler(event)"/>
+		<c9:TextButton id="sendMessageButton"
+					   text="Send Message"
+					   click="sendMessageButton_clickHandler(event)"/>
+		<c9:TextButton id="viewMessageButton"
+					   text="View Message"
+					   click="viewMessageButton_clickHandler(event)"/>
+		<c9:TextButton id="configureButton"
+					   text="Configure Queue"
+					   click="configureButton_clickHandler(event)"/>
+	</s:HGroup>
+	<s:BorderContainer height="100%" width="100%" alpha="1" borderVisible="false">
+		<mx:TabNavigator id="sqsDetails" width="100%" height="100%" change="sqsDetails_changeHandler(event)">
+			<s:NavigatorContent label="Details" width="100%" height="100%">
+				<s:BorderContainer borderVisible="false" height="100%" width="100%">
+					<s:Scroller width="100%" height="100%">
+						<s:viewport>
+							<s:HGroup>
+								<s:Form>
+									<s:layout>
+										<s:FormLayout gap="-7"/>
+									</s:layout>
+									<s:FormItem label="Name:">
+										<mx:Text text="{sqsData.name}"/>
+									</s:FormItem>
+									<s:FormItem label="URL:">
+										<mx:Text text="{sqsData.queueUrl}"/>
+									</s:FormItem>
+									<s:FormItem label="Resource Name:">
+										<mx:Text text="{sqsData.queueResourceName}"/>
+									</s:FormItem>
+									<s:FormItem label="Creation Date:">
+										<mx:Text text="{sqsData.createdAt}"/>
+									</s:FormItem>
+									<s:FormItem label="Last Modified Date:">
+										<mx:Text text="{sqsData.lastModified}"/>
+									</s:FormItem>
+								</s:Form>
+								<s:Form>
+									<s:layout>
+										<s:FormLayout gap="-7"/>
+									</s:layout>
+									<s:FormItem label="Visibility Timeout:">
+										<mx:Text text="{sqsData.visibilityTimeout}"/>
+									</s:FormItem>
+									<s:FormItem label="Message Retention Period:">
+										<mx:Text text="{sqsData.messageRetentionPeriod}"/>
+									</s:FormItem>
+									<s:FormItem label="Maximum Message Size:">
+										<mx:Text text="{sqsData.maxMessageSize}"/>
+									</s:FormItem>
+									<s:FormItem label="Delay Seconds:">
+										<mx:Text text="{sqsData.delaySeconds}"/>
+									</s:FormItem>
+									<s:FormItem label="Messages Available (Visible):">
+										<mx:Text text="{sqsData.approximateNumberOfMessages}"/>
+									</s:FormItem>
+									<s:FormItem label="Messages in Flight (Not Visible):">
+										<mx:Text text="{sqsData.approximateNumberOfMessagesNotVisible}"/>
+									</s:FormItem>
+								</s:Form>
+							</s:HGroup>
+						</s:viewport>
+					</s:Scroller>
+				</s:BorderContainer>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="monitoringContent" label="Monitoring" width="100%" height="100%">
+				<c9:MonitoringBox id="monitorBox" cloudAccountId="{cloudAccount.id}" region="{region}"/>
+			</s:NavigatorContent>
+		</mx:TabNavigator>
+	</s:BorderContainer>
+</c9:ObjectManagementDetailsBox>

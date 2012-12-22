@@ -1,0 +1,762 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wizard:WizardWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:components="com.momentumsi.c9.components.*"
+		 width="700" height="566"
+		 wizardType="{ResourceTypeLabel.ELC}"
+		 creationComplete="creationCompleteHandler(event)"
+		 xmlns:services="com.momentumsi.c9.services.*"
+		 xmlns:wizard="com.momentumsi.c9.components.wizard.*">
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.constants.AlertMessage;
+			import com.momentumsi.c9.constants.ImagePath;
+			import com.momentumsi.c9.constants.InstanceTypes;
+			import com.momentumsi.c9.constants.ResourceType;
+			import com.momentumsi.c9.constants.ResourceTypeLabel;
+			import com.momentumsi.c9.events.cache.CreateCacheSecurityGroupResultEvent;
+			import com.momentumsi.c9.models.CloudAccount;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.collections.ArrayCollection;
+			import mx.collections.ArrayList;
+			import mx.controls.Alert;
+			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
+			import mx.events.IndexChangedEvent;
+			import mx.events.ListEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import spark.events.TextOperationEvent;
+
+			[Bindable]
+			private var maintenanceWindowString:String = new String();
+			[Bindable]
+			private var finalMaintenanceWindow:String =  new String();
+			[Bindable]
+			private var snsNotifications:String =  new String();
+			[Bindable]
+			private var securityGroupsDisplay:String =  new String();
+			[Bindable]
+			private var securityGroupsArray:Array = new Array();
+			[Bindable]
+			private var consumptionCost:String = "N/A";
+			public var clusterObject:Object;
+			private var currentClusterName:String;
+			
+			[Bindable]
+			private var nodeTypeCollection:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			private var daysOfWeek:ArrayCollection = new ArrayCollection([{label: "Monday", value: "mon"},
+																		{label: "Tuesday", value: "tue"},
+																		{label: "Wednesday", value: "wed"},
+																		{label: "Thursday", value: "thu"},
+																		{label: "Friday", value: "fri"},
+																		{label: "Saturday", value: "sat"},
+																		{label: "Sunday", value: "sun"}]);
+			[Bindable]
+			private var hoursOfDay:ArrayCollection = new ArrayCollection([{label: "00"},{label: "01"},{label: "02"},{label: "03"},
+																		{label: "04"},{label: "05"},{label: "06"},{label: "07"},
+																		{label: "08"},{label: "09"},{label: "10"},{label: "11"},
+																		{label: "12"},{label: "13"},{label: "14"},{label: "15"},
+																		{label: "16"},{label: "17"},{label: "18"},{label: "19"},
+																		{label: "20"},{label: "21"},{label: "22"},{label: "23"}]);
+			[Bindable]
+			private var minutesOfHour:ArrayCollection = new ArrayCollection([{label: "00"},{label: "01"},{label: "02"},{label: "03"},
+																		{label: "04"},{label: "05"},{label: "06"},{label: "07"},
+																		{label: "08"},{label: "09"},{label: "10"},{label: "11"},
+																		{label: "12"},{label: "13"},{label: "14"},{label: "15"},
+																		{label: "16"},{label: "17"},{label: "18"},{label: "19"},
+																		{label: "20"},{label: "21"},{label: "22"},{label: "23"},
+																		{label: "24"},{label: "25"},{label: "26"},{label: "27"},
+																		{label: "28"},{label: "29"},{label: "30"},{label: "31"},
+																		{label: "32"},{label: "33"},{label: "34"},{label: "35"},
+																		{label: "36"},{label: "37"},{label: "38"},{label: "39"},
+																		{label: "40"},{label: "41"},{label: "42"},{label: "43"},
+																		{label: "44"},{label: "45"},{label: "46"},{label: "47"},
+																		{label: "48"},{label: "49"},{label: "50"},{label: "51"},
+																		{label: "52"},{label: "53"},{label: "54"},{label: "55"},
+																		{label: "56"},{label: "57"},{label: "58"},{label: "59"}]);
+			[Bindable]
+			private var durationCollection:ArrayCollection = new ArrayCollection([{label: "1"},
+																				{label: "1.5"},
+																				{label: "2"},
+																				{label: "2.5"},
+																				{label: "3"}]);
+			
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				elcService.getElcResources();
+				if(cloudAccount.cloud_provider == CloudAccount.AMAZON)
+				{
+					snsService.listTopics();
+					nodeTypeCollection = InstanceTypes.AWS_NODE_SUPPORTED_TYPES;
+				}else{
+					nodeTypeCollection = InstanceTypes.TOPSTACK_NODE_SUPPORTED_TYPES;
+				}
+			}
+			
+			override public function applyConfigurations():void
+			{
+				if(element.id == null)
+				{
+					return;
+				}
+				currentClusterName = element.name;
+				
+				cacheName.text = currentClusterName;
+				clusterObject = element.properties;
+				var cacheProperties:Object = clusterObject['Properties'];
+				for each(var type:String in nodeTypeCollection)
+				{
+					if(type == cacheProperties['CacheNodeType'])
+					{
+						nodeType.selectedItem = type;
+						break;
+					}
+				}
+				engine.text = cacheProperties['Engine'];
+				nodeNumber.text = cacheProperties['NumCacheNodes'];
+				if(cacheProperties['AutoMinorVersionUpgrade'] == "true"){
+					autoUpYes.selected = true;
+				}else{
+					autoUpNo.selected = true;
+				}
+				engineVersion.text = cacheProperties['EngineVersion'];
+				cachePort.text = cacheProperties['Port'];
+				if(cacheProperties['NotificationTopicArn'] != null){
+					snsYes.selected = true;
+					for each(var topic:Object in snsService.topics)
+					{
+						if(topic.arn == cacheProperties['NotificationTopicArn'])
+						{
+							notificationTopicsCB.selectedIndex = snsService.topics.getItemIndex(topic);
+							break;
+						}
+					}
+				}
+			}
+			
+			private function setSecurityGroupSelection():void
+			{
+				if(clusterObject != null)
+				{
+					var currentSecGroups:Vector.<Object> = new Vector.<Object>();
+					for (var i:int; i < clusterObject['Properties']['CacheSecurityGroupNames'].length; i++)
+					{
+						for each(var secGroup:Object in elcService.securityGroups)
+						{
+							if(secGroup.id == clusterObject['Properties']['CacheSecurityGroupNames'][i])
+							{
+								currentSecGroups.push(secGroup);
+								break;
+							}
+						}					
+					}
+					securityGroups.selectedItems = currentSecGroups;
+				}	
+			}
+			
+			private function setParameterGroupSelection():void
+			{
+				if(clusterObject != null)
+				{
+					for each(var paramGroup:Object in elcService.parameterGroups)
+					{
+						if(paramGroup.id == clusterObject['Properties']['CacheParameterGroupName'])
+						{
+							parameterGroup.selectedItem = paramGroup;
+							return;
+						}
+					}
+				}
+			}
+			
+			protected function cacheWizard_changeHandler(event:IndexChangedEvent):void
+			{
+				if(cacheWizard.selectedChild == review)
+				{
+					if(maintNoPref.selected == true)
+					{
+						maintenanceWindowString = "No Preference";
+					}
+					else
+					{
+						var mwMinute:int = int(maintMinute.selectedItem.label);
+						var mwHour:int = int(maintHour.selectedItem.label);
+						var mwDurationLength:Number = Number(duration.selectedItem.label);
+						var mwDur:int;
+						switch(mwDurationLength)
+						{
+							case 0.5:
+								mwDur = 30;
+								break;
+							case 1:
+								mwDur = 60;
+								break;
+							case 1.5:
+								mwDur = 90;
+								break;
+							case 2:
+								mwDur = 120;
+								break;
+							case 2.5:
+								mwDur = 150;
+								break;
+							case 3:
+								mwDur = 180;
+								break;
+						}
+						var mwEndMinute:int = (mwMinute + mwDur) % 60;
+						var mwEndHour:int = (mwHour + int((mwMinute + mwDur) / 60)) % 24;
+						var mwDispEndMinute:String = mwEndMinute.toString();
+						var mwDispEndHour:String = mwEndHour.toString();
+						if(mwEndMinute < 10)
+						{
+							mwDispEndMinute = "0" + mwEndMinute.toString();
+						}
+						if(mwEndHour < 10)
+						{
+							mwDispEndHour = "0" + mwEndHour.toString();
+						}
+						var mwEndDay:String = maintDay.selectedItem.value;
+						if((Number(mwHour + Number((mwMinute + mwDur) / 60)) / 24) > 1)
+						{
+							var index:int = maintDay.selectedIndex;
+							index++;
+							index = index % 7;
+							mwEndDay = daysOfWeek[index].value;
+						}
+						maintenanceWindowString = maintDay.selectedItem.value + ":" + maintHour.selectedItem.label + ":" + maintMinute.selectedItem.label + "-" + mwEndDay + ":" + mwDispEndHour + ":" + mwEndMinute;
+					}
+				}
+			}
+			
+			private function getPropertiesObject():Object
+			{
+				var cacheProperties:Object = new Object();	
+				cacheProperties['CacheNodeType'] = nodeType.selectedItem;
+				cacheProperties['CacheSecurityGroupNames'] = securityGroupsArray; 
+				cacheProperties['Engine'] = engine.text.toLowerCase();
+				cacheProperties['NumCacheNodes'] = nodeNumber.text;
+				cacheProperties['AutoMinorVersionUpgrade'] = autoUpYes.selected.toString();
+				
+				if(engineVersion.text.replace(" ", "") != "")
+				{
+					cacheProperties['EngineVersion'] = engineVersion.text;
+				}
+				
+				if(cachePort.text.replace(" ", "") != "")
+				{
+					cacheProperties['Port'] = cachePort.text;
+				}
+				
+				if(snsYes.selected)
+				{
+					cacheProperties['NotificationTopicArn'] = notificationTopicsCB.selectedItem.arn;
+				}
+				
+				if(parameterGroup.selectedIndex != -1)
+				{
+					//Check for new parameter group, saved as 'data' in parameterGroup item
+					if(parameterGroup.selectedItem['data'] != null)
+					{
+						cacheProperties['CacheParameterGroupName'] = {Ref: parameterGroup.selectedItem.label};
+					}else{
+						cacheProperties['CacheParameterGroupName'] = parameterGroup.selectedItem.id;
+					}
+				}
+				
+				if(maintenanceWindowString != "No Preference")
+				{
+					cacheProperties['PreferredMaintenanceWindow'] = maintenanceWindowString;
+				}			
+
+				return cacheProperties;
+			}
+			
+			protected function nextButton_clickHandler(event:MouseEvent):void
+			{
+				var alerts:Boolean = false;
+				if(cacheWizard.selectedChild == clusterDetails)
+				{
+					if(cacheName.text == "")
+					{
+						alerts = true;
+						cacheNameAlert.text = AlertMessage.INVALID;
+						cacheNameAlert.visible = true;
+					}else
+					{
+						if(Helpers.validateAlphanumeric(cacheName.text))
+						{
+							if(objectManagementCreate)
+							{
+								cacheNameAlert.visible = false;						
+							}else
+							{
+								if(projectVersion.validateUniqueName(cacheName.text, element))
+								{
+									cacheNameAlert.visible = false;
+								}else
+								{
+									cacheNameAlert.text = AlertMessage.NOT_UNIQUE;
+									cacheNameAlert.visible = true;
+									alerts = true;
+								}
+							}
+						}else
+						{
+							alerts = true;
+							cacheNameAlert.text = AlertMessage.NOTALPHANUMERIC;
+							cacheNameAlert.visible = true;
+						}
+					}
+					if(nodeType.selectedIndex == -1)
+					{
+						alerts = true;
+					}
+					if(validNumberNode())
+					{
+						nodeNumberAlert.visible = false;
+					}else
+					{
+						alerts = true;
+						nodeNumberAlert.visible = true;
+					}
+					
+					if(cloudAccount.cloud_provider == CloudAccount.AMAZON && snsYes.selected)
+					{
+						if(notificationTopicsCB.selectedIndex != -1)
+						{
+							snsNotificationsAlert.visible = false;
+						}else
+						{
+							alerts = true;
+							snsNotificationsAlert.visible = true;
+						}
+					}
+				}else if(cacheWizard.selectedChild == additionalConfig)
+				{
+					if(securityGroups.selectedIndex == -1)
+					{
+						alerts = true;
+						securityGroupAlert.visible = true;
+					}else
+					{
+						securityGroupAlert.visible = false;
+						securityGroupsArray = new Array();
+						for each(var group:Object in securityGroups.selectedItems)
+						{
+							securityGroupsArray.push(group.id);
+						}
+						securityGroupsDisplay = securityGroupsArray.join(",\n");
+					}
+					if(parameterGroup.selectedIndex == -1)
+					{
+						alerts = true;
+						parameterGroupAlert.visible = true;
+					}else
+					{
+						parameterGroupAlert.visible = false;
+					}
+				}
+				
+				if(alerts)
+				{
+					return
+				}else{
+					cacheWizard.selectedIndex++;
+				}
+			}
+			
+			protected function validNumberNode():Boolean
+			{
+				var valid:Boolean = false;
+				try
+				{
+					if(nodeNumber.text != "")
+					{
+						var nodeNumberParse:int = parseInt(nodeNumber.text);
+						if(nodeNumberParse > 0 && nodeNumberParse <= 20)
+						{
+							valid = true;
+						}else
+						{
+							valid = false;
+						}
+					}else
+					{
+						valid = false;
+					}
+				}catch(e:Error)
+				{
+				 	valid = false;
+				}
+				
+				return valid;
+			}
+			
+			protected function setConsumptionCost():void
+			{
+				if(validNumberNode() && cloudAccount.cloud_provider == CloudAccount.AMAZON)
+				{
+					if(nodeType.selectedIndex != -1 && elcService.hasOwnProperty('prices'))
+					{
+						var found:Boolean = false;
+						for each(var price:Object in elcService.prices)
+						{
+							price = price.price;
+							if(!found)
+							{
+								if(cloudAccount.cloud_provider == CloudAccount.AMAZON)
+								{
+									if(nodeType.selectedItem == price.name)
+									{
+										found = true;
+										var priceNumber:Number = (price.effective_price as Number) * parseInt(nodeNumber.text);
+										consumptionCost = "$" + priceNumber.toFixed(2) + "/" + price.properties.denominator;
+									}
+								}
+							}
+						}
+						if(!found)
+						{
+							consumptionCost = "N/A";
+						}
+					}else
+					{
+						consumptionCost = "N/A";
+					}
+				}else
+				{
+					consumptionCost = "N/A";
+				}
+			}
+			
+			protected function submitButton_clickHandler(event:MouseEvent):void
+			{
+				submitButton.enabled = false;
+				submitButton.label = "Saving";
+				if(maintenanceWindowString == "No Preference")
+				{
+					finalMaintenanceWindow = "";
+				}else
+				{
+					finalMaintenanceWindow = maintenanceWindowString;
+				}
+				if(cloudAccount.cloud_provider == CloudAccount.AMAZON)
+				{
+					if(snsYes.selected)
+					{
+						snsNotifications = notificationTopicsCB.selectedItem.arn;
+					}else
+					{
+						snsNotifications = "";
+					}
+				}
+				
+				var cacheAttributes:Object = new Object();
+				cacheAttributes['Type'] = ResourceType.CACHE_CLUSTER;
+				cacheAttributes['Properties'] = getPropertiesObject();
+				
+				if(objectManagementCreate)
+				{
+					elcService.addEventListener(FaultEvent.FAULT, createCluster_faultHandler);
+					elcService.addEventListener(ResultEvent.RESULT, createCluster_resultHandler);
+					elcService.createCluster(cacheName.text, cacheAttributes['Properties']);
+				}else{					
+					saveElement(cacheName.text, cacheAttributes);
+					//createVariants(cacheName.text, statesToApply.ignoredEnvironments);
+				}
+			}
+			
+			private function createCluster_faultHandler(event:FaultEvent):void
+			{
+				elcService.removeEventListener(FaultEvent.FAULT, createCluster_faultHandler);
+				submitButton.enabled = true;
+				submitButton.label = "Finish";
+			}
+			
+			protected function createSecurityGroup_clickHandler(event:MouseEvent):void
+			{
+				var securityAdd:ElasticCacheCreateSecurityGroup = new ElasticCacheCreateSecurityGroup();
+				securityAdd.cloudAccount = cloudAccount;
+				securityAdd.addEventListener(CreateCacheSecurityGroupResultEvent.RESULT, cacheSecurityGroup_createHandler);
+				PopUpManager.addPopUp(securityAdd, UIComponent(parentApplication), true);
+			}
+			
+			private function cacheSecurityGroup_createHandler(event:ResultEvent):void
+			{
+				elcService.securityGroups.removeAll();
+				elcService.securityGroups.addItem({id: "Loading..."});
+				elcService.describeCacheSecurityGroups();
+			}
+			
+			protected function createCluster_resultHandler(event:ResultEvent):void
+			{
+				Helpers.getObjectManagement(this).refreshResourceList();
+				PopUpManager.removePopUp(this);
+			}
+
+			protected function elcService_resourceCompleteHandler(event:FlexEvent):void
+			{
+				setConsumptionCost();
+				setSecurityGroupSelection();
+				setParameterGroupSelection();
+			}
+			
+			protected function nodeNumber_changeHandler(event:TextOperationEvent):void
+			{
+				setConsumptionCost();
+			}
+			
+			protected function nodeType_changeHandler(event:ListEvent):void
+			{
+				setConsumptionCost();
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<fx:Object id="parameterGroupObject"/>
+		<fx:Object id="cacheObject"/>
+		<s:RadioButtonGroup id="snsRadioButtons"/>
+		<s:RadioButtonGroup id="autoUpgradeRadioButtons"/>
+		<s:RadioButtonGroup id="maintWindowRadioButtons"/>
+		
+		<services:ElcService id="elcService"
+							 cloudAccountId="{cloudAccount.id}"
+							 region="{region}"
+							 resourceComplete="elcService_resourceCompleteHandler(event)"/>
+		
+		<services:SnsService id="snsService"
+							 cloudAccountId="{cloudAccount.id}"
+							 region="{region}"/>
+		
+	</fx:Declarations>
+	
+	<s:VGroup height="95%" width="100%" gap="0">
+		<wizard:WizardWindowTitle id="elcWizardTitle" includeInLayout="false"
+								  width="100%"
+								  resourceImage="{ImagePath.NEW_ELC}"
+								  resourceLabel="{wizardDisplayName}"
+								  wizardStack="{cacheWizard}"/>
+		<wizard:CookieTrail id="elcCookieTrail"
+							wizardStack="{cacheWizard}"
+							width="100%"/>
+		<s:VGroup width="100%" height="100%">
+			<mx:ViewStack id="cacheWizard" width="100%" height="100%" change="cacheWizard_changeHandler(event)" creationPolicy="all" paddingTop="10" paddingLeft="20">
+				<s:NavigatorContent id="clusterDetails" label="Details" height="100%" width="100%">
+					<s:VGroup height="100%" width="100%" horizontalAlign="center">
+						<s:Form height="100%" width="100%">
+							<s:layout>
+								<s:FormLayout gap="-5"/>
+							</s:layout>
+							<s:FormItem label="Name*: " textAlign="right">
+								<s:HGroup>
+									<s:TextInput id="cacheName" textAlign="left"/>
+									<mx:Text id="cacheNameAlert" text="This field is required." color="red" visible="false"/>
+								</s:HGroup>
+							</s:FormItem>
+							<s:FormItem label="Node Type*: " textAlign="right">
+								<s:HGroup>
+									<mx:ComboBox id="nodeType" 
+												 dataProvider="{nodeTypeCollection}" 
+												 textAlign="left" 
+												 change="nodeType_changeHandler(event)"/>
+									<mx:Text text="Cost: {consumptionCost}" visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}" includeInLayout="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"/>
+								</s:HGroup>		
+							</s:FormItem>
+							<s:FormItem label="Number of Nodes*: " textAlign="right">
+								<s:VGroup>
+									<s:HGroup>
+										<s:TextInput id="nodeNumber" widthInChars="3" textAlign="left" text="1" change="nodeNumber_changeHandler(event)"/>
+										<mx:Text text="Value must be between 1 and 20"/>
+										<mx:Text id="nodeNumberAlert" text="Invalid Input." color="red" visible="false"/>
+									</s:HGroup>
+								</s:VGroup>
+							</s:FormItem>
+							<s:FormItem label="Engine: " textAlign="right">
+								<mx:Text id="engine" text="Memcached" textAlign="left"/>
+							</s:FormItem>
+							<s:FormItem label="Engine Version: " textAlign="right">
+								<mx:Text id="engineVersion" text="1.4.5" textAlign="left"/>
+							</s:FormItem>
+							<s:FormItem label="Cache Port: " textAlign="right">
+								<s:HGroup>
+									<s:TextInput id="cachePort" text="11211" textAlign="left"/>
+									<mx:Text text="(e.g. 11211)" textAlign="left"/>
+								</s:HGroup>
+							</s:FormItem>
+							<s:FormItem label="Notification Topic*:" textAlign="right" visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}" includeInLayout="{cloudAccount.cloud_provider == CloudAccount.AMAZON}">
+								<s:VGroup>
+									<s:HGroup>
+										<s:RadioButton id="snsYes" group="{snsRadioButtons}" label="Yes"/>
+										<s:RadioButton id="snsNo" group="{snsRadioButtons}" label="No" selected="true"/>
+									</s:HGroup>
+									<s:HGroup enabled="{snsYes.selected}" textAlign="left">
+										<!--<mx:Text text="Notification Topic*: "/>-->
+										<mx:ComboBox id="notificationTopicsCB"
+													 prompt="Select Topic"
+													 dataProvider="{snsService.topics}"
+													 labelField="name"/>
+										<mx:Text id="snsNotificationsAlert" text="Select a topic." color="red" visible="false"/>
+									</s:HGroup>
+								</s:VGroup>
+							</s:FormItem>
+							<s:FormItem id="autoMinorFI"
+										visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"
+										includeInLayout="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"
+										label="Auto Minor Version Upgrade: " 
+										textAlign="right">
+								<s:HGroup>
+									<s:RadioButton id="autoUpYes" group="{autoUpgradeRadioButtons}" label="Yes" selected="true"/>
+									<s:RadioButton id="autoUpNo" group="{autoUpgradeRadioButtons}" label="No"/>
+								</s:HGroup>
+							</s:FormItem>
+						</s:Form>
+					</s:VGroup>
+				</s:NavigatorContent>
+				<s:NavigatorContent id="additionalConfig" label="Additional Configurations">
+					<s:Form>
+						<s:FormItem label="Cache Security Group: " textAlign="right">
+							<s:VGroup>
+								<s:HGroup>
+									<s:List id="securityGroups"
+											allowMultipleSelection="true"
+											dataProvider="{elcService.securityGroups}" 
+											labelField="id" 
+											textAlign="left" 
+											maxHeight="125"
+											width="325"/>
+									<s:Image width="16" height="16"
+											 source="{ImagePath.HELPER_ICON}"
+											 toolTip="A Cache Security Group acts like a firewall the controls network access to your Cache Clusters."/>
+									<mx:Text id="securityGroupAlert" text="Selection Required" color="red" visible="false"/>
+								</s:HGroup>
+								<s:Button label="Create Security Group" click="createSecurityGroup_clickHandler(event)"/>
+							</s:VGroup>
+						</s:FormItem>
+						<s:FormItem label="Cache Parameter Group: " textAlign="right">
+							<s:VGroup>
+								<s:HGroup>
+									<mx:ComboBox id="parameterGroup" 
+												 textAlign="left" 
+												 dataProvider="{elcService.parameterGroups}"
+												 labelField="id"/>
+									<s:Image width="16" height="16"
+											 source="{ImagePath.HELPER_ICON}"
+											 toolTip="A Cache Parameter Group acts like a container for engine configuration values that can be applied to one or more Cache Clusters."/>
+									<mx:Text id="parameterGroupAlert" text="Invalid Input." color="red" visible="false"/>
+								</s:HGroup>
+							</s:VGroup>
+						</s:FormItem>
+						<s:FormItem label="Maintenance Window: " textAlign="right" visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}" includeInLayout="{cloudAccount.cloud_provider == CloudAccount.AMAZON}">
+							<s:VGroup>
+								<s:HGroup>
+									<s:RadioButton id="maintNoPref" group="{maintWindowRadioButtons}" label="No Preference" selected="true"/>
+									<s:RadioButton id="maintWindow" group="{maintWindowRadioButtons}" label="Select Window"/>
+									<s:Image width="16" height="16"
+											 source="{ImagePath.HELPER_ICON}"
+											 toolTip="Maintenance Window allows you to specify the time range during which any scheduled maintenance activities would occur."/>
+								</s:HGroup>
+								<s:VGroup id="maintenanceWindow" enabled="{maintWindow.selected}">
+									<s:HGroup>
+										<mx:Text text="Start Time: "/>
+										<mx:ComboBox id="maintDay" dataProvider="{daysOfWeek}" width="120" textAlign="left"/>
+										<mx:ComboBox id="maintHour" dataProvider="{hoursOfDay}" width="60" textAlign="left"/>
+										<mx:ComboBox id="maintMinute" dataProvider="{minutesOfHour}" width="60" textAlign="left"/>
+										<mx:Text text="UTC"/>
+									</s:HGroup>
+									<s:HGroup>
+										<mx:Text text="Duration: "/>
+										<mx:ComboBox id="duration" dataProvider="{durationCollection}" width="60" textAlign="left"/>
+										<mx:Text text="hours"/>
+									</s:HGroup>
+								</s:VGroup>
+							</s:VGroup>
+						</s:FormItem>
+					</s:Form>
+				</s:NavigatorContent>
+				<s:NavigatorContent id="review" label="Review">
+					<s:VGroup width="100%" height="100%">
+						<s:Label text="Please Review Your Cache Cluster" y="20" fontWeight="bold"/>
+						<s:HGroup width="100%">
+							<s:Form id="reviewForm1" width="100%">
+								<s:FormItem label="Name:">
+									<s:Label id="nameReview"
+											 text="{cacheName.text}"/>
+								</s:FormItem>
+								<s:FormItem label="Type:">
+									<s:Label id="typeReview"
+											 text="{nodeType.selectedItem}"/>
+								</s:FormItem>
+								<s:FormItem label="Engine:">
+									<s:Label id="engineReview"
+											 text="{engine.text.toLowerCase()}"/>
+								</s:FormItem>
+								<s:FormItem label="Engine Version:">
+									<s:Label id="engineVersionReview"
+											 text="{engineVersion.text}"/>
+								</s:FormItem>
+								<s:FormItem label="Number of Nodes:">
+									<s:Label id="numberOfNodesReview"
+											 text="{nodeNumber.text}"/>
+								</s:FormItem>
+								<s:FormItem label="Cache Port:">
+									<s:Label id="cachePortReview"
+											 text="{cachePort.text}"/>
+								</s:FormItem>
+							</s:Form>
+							<s:Form id="reviewForm2" width="100%">
+								<s:FormItem label="SNS Notifications:"
+											visible="{snsYes.selected}" 
+											includeInLayout="{snsYes.selected}">
+									<s:Label id="snsReview"
+											 text="{notificationTopicsCB.selectedLabel}"/>
+								</s:FormItem>
+								<s:FormItem label="Auto Minor Version Upgrade:" 
+											visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}" 
+											includeInLayout="{cloudAccount.cloud_provider == CloudAccount.AMAZON}">
+									<s:Label id="autoUpgradeReview"
+											 text="{autoUpgradeRadioButtons.selectedValue}"/>
+								</s:FormItem>
+								<s:FormItem label="Security Groups:">
+									<s:Label id="secReview"
+											 text="{securityGroupsDisplay}"/>
+								</s:FormItem>
+								<s:FormItem label="Parameter Group:">
+									<s:Label id="paramReview"
+											 text="{parameterGroup.selectedItem.id}"/>
+								</s:FormItem>
+								<s:FormItem label="Maintenance Window:" 
+											visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}" 
+											includeInLayout="{cloudAccount.cloud_provider == CloudAccount.AMAZON}">
+									<s:Label id="maintWindowReview"
+											 text="{maintenanceWindowString}"/>
+								</s:FormItem>
+							</s:Form>
+						</s:HGroup>
+						<s:Label text="Cost: {consumptionCost}" 
+								 fontWeight="bold" 
+								 visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"
+								 includeInLayout="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"/>
+					</s:VGroup>
+				</s:NavigatorContent>
+			</mx:ViewStack>
+		</s:VGroup>
+	</s:VGroup>
+			<s:Button x="10" y="503" label="Previous" click="cacheWizard.selectedIndex--"
+					  enabled="{cacheWizard.selectedChild != clusterDetails}"/>
+			<s:Button x="92" y="502" label="Next" click="nextButton_clickHandler(event)"
+					  enabled="{cacheWizard.selectedChild != review}"/>
+			<s:Button id="submitButton" x="169" y="502" label="Finish"
+					  click="submitButton_clickHandler(event)"
+					  enabled="{cacheWizard.selectedChild == review}"/>
+			<s:Button x="619" y="502" label="Cancel" click="PopUpManager.removePopUp(this);"/>
+</wizard:WizardWindow>

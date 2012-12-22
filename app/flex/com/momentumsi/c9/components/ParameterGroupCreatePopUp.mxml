@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   title="Create Parameter Group"
+			   creationComplete="creationCompleteHandler(event)"
+			   close="PopUpManager.removePopUp(this)"
+			   xmlns:mx="library://ns.adobe.com/flex/mx" 
+			   width="550" height="250"
+			   xmlns:components="com.momentumsi.c9.components.*"
+			   xmlns:rds="com.momentumsi.c9.components.rds.*" 
+			   xmlns:wizard="com.momentumsi.c9.components.wizard.*" 
+			   xmlns:services="com.momentumsi.c9.services.*">
+	
+	<fx:Metadata>
+		[Event(name="parameterGroupCreated", type="flash.events.Event")]
+	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.models.CloudAccount;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			public static const RDS:String = "rds";
+			public static const CACHE:String = "elc";
+			
+			[Bindable]
+			public var cloudAccount:CloudAccount;
+			[Bindable]
+			public var region:String;
+			[Bindable]
+			public var objectManagementCreate:Boolean = false;
+			[Bindable]
+			public var groupFamilyCollection:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public var resourceType:String = RDS;
+			public static const PARAMETER_GROUP_CREATED:String = "parameterGroupCreated";
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				PopUpManager.centerPopUp(this);
+				switch(resourceType)
+				{
+					case RDS:
+						getRdsEngineVersionsSvc.send();
+						break;
+					case CACHE:
+						groupFamilyCollection = new ArrayCollection([{label: "memcached1.4"}]);
+						groupFamily.selectedIndex = 0;
+				}
+			}
+			
+			protected function createGroupButton_clickHandler(event:MouseEvent):void
+			{
+				submitButton.enabled = false;
+				submitButton.label = "Saving";
+				if(groupName.text != "" && description.text != "" && groupFamily.selectedIndex != -1)
+				{
+					switch(resourceType)
+					{
+						case RDS:
+							createRdsParameterGroupSvc.send({name: groupName.text, description: description.text, family: groupFamily.selectedLabel});
+							break;
+						case CACHE:
+							createCacheParameterGroupSvc.send({name: groupName.text, description: description.text, family: groupFamily.selectedLabel});
+							break;
+					}
+				}else
+				{
+					submitButton.enabled = true;
+					submitButton.label = "Save";
+					Alert.show("Please provide all required fields.");
+				}
+			}
+
+			protected function getRdsEngineVersionsSvc_resultHandler(event:ResultEvent):void
+			{
+				groupFamilyCollection.removeAll();
+				var found:Boolean = false;
+				for each(var version:Object in getRdsEngineVersionsSvc.result)
+				{
+					found = false;
+					for each(var alreadyAddedVersion:Object in groupFamilyCollection)
+					{
+						if(!found && alreadyAddedVersion.label == version.DBParameterGroupFamily)
+						{
+							found = true;
+						}
+					}
+					if(!found)
+					{
+						groupFamilyCollection.addItem({label: version.DBParameterGroupFamily});
+					}
+				}
+				if(groupFamilyCollection.length > 0)
+				{
+					groupFamily.selectedIndex = 0;
+				}
+			}
+			
+			protected function createParameterGroupSvc_resultHandler(event:ResultEvent):void
+			{
+				dispatchEvent(new Event("parameterGroupCreated"));
+				if(objectManagementCreate)
+				{
+					Helpers.getObjectManagement(this).refreshResourceList();
+				}
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function faultHandler(event:FaultEvent):void
+			{
+				submitButton.enabled = true;
+				submitButton.label = "Save";
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<services:CloudApiService id="getRdsEngineVersionsSvc"
+								  action="describe_db_engine_versions"
+								  cloudAccountId="{cloudAccount.id}"
+								  region="{region}"
+								  serviceType="{CloudApiService.RDS_SERVICE}"
+								  result="getRdsEngineVersionsSvc_resultHandler(event)"/>
+		
+		<services:CloudApiService id="createRdsParameterGroupSvc"
+								  action="create_db_parameter_group"
+								  cloudAccountId="{cloudAccount.id}"
+								  region="{region}"
+								  serviceType="{CloudApiService.RDS_SERVICE}"
+								  result="createParameterGroupSvc_resultHandler(event)"
+								  fault="faultHandler(event)"/>
+		
+		<services:CloudApiService id="createCacheParameterGroupSvc"
+								  action="create_cache_parameter_group"
+								  cloudAccountId="{cloudAccount.id}"
+								  region="{region}"
+								  serviceType="{CloudApiService.CACHE_SERVICE}"
+								  result="createParameterGroupSvc_resultHandler(event)"
+								  fault="faultHandler(event)"/>
+	</fx:Declarations>
+	
+	<s:VGroup height="100%" width="100%">
+		<s:HGroup height="100%" width="100%" horizontalAlign="center">
+			<s:Form height="113" width="100%">
+				<s:FormItem label="Name:*" width="100%">
+					<s:TextInput id="groupName" width="50%"/>
+				</s:FormItem>
+				<s:FormItem label="Description:*" width="100%">
+					<s:TextInput id="description" width="100%"/>
+				</s:FormItem>
+				<s:FormItem label="Group Family:*">
+					<mx:ComboBox id="groupFamily" dataProvider="{groupFamilyCollection}" prompt="Loading Families"/>
+				</s:FormItem>
+			</s:Form>
+		</s:HGroup>
+		<s:HGroup width="100%" horizontalAlign="center" paddingBottom="10">
+			<s:Button id="submitButton" label="Save" click="createGroupButton_clickHandler(event)"/>
+			<s:Button label="Cancel" click="PopUpManager.removePopUp(this)"/>
+		</s:HGroup>
+	</s:VGroup>
+</s:TitleWindow>

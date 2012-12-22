@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components:ObjectManagementDetailsBox xmlns:fx="http://ns.adobe.com/mxml/2009"
+									   xmlns:s="library://ns.adobe.com/flex/spark" 
+									   xmlns:mx="library://ns.adobe.com/flex/mx"
+									   width="100%" height="100%"
+									   xmlns:diagrammer="fr.kapit.diagrammer.base.uicomponent.*"
+									   xmlns:components="com.momentumsi.c9.components.*">
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.utils.StringUtil;
+			import com.maccherone.json.*;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import fr.kapit.diagrammer.Diagrammer;
+			import fr.kapit.diagrammer.base.uicomponent.DiagramSprite;
+			
+			import mx.collections.ArrayCollection;
+			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			[Bindable]
+			private var cdnObject:Object = new Object();
+			[Bindable]
+			private var propertiesVisible:Boolean = false;
+			
+			public function displaySetups():void
+			{
+				if(cdnObject.hasOwnProperty('cdn') && cdnObject.cdn != null)
+				{
+					propertiesVisible = true;
+					
+					if(cdnObject.cdn.hasOwnProperty('LastModifiedTime'))
+					{
+						var modifiedDateDisplay:String = cdnObject.cdn.LastModifiedTime;
+						if(modifiedDateDisplay != "")
+						{
+							modifiedDateDisplay = dateFormatter.format(Helpers.formatDate(modifiedDateDisplay));
+						}
+						lastModifiedDate.text = modifiedDateDisplay;
+					}
+					
+					
+					if(cdnObject.cdn.hasOwnProperty('DistributionConfig'))
+					{
+						var distributionConfig:Object = cdnObject.cdn.DistributionConfig;
+						
+						if(distributionConfig.hasOwnProperty('Enabled'))
+						{
+							if(distributionConfig.Enabled == true)
+							{
+								state.text = "Enabled";
+							}else
+							{
+								state.text = "Disabled";
+							}
+						}
+						
+						if(distributionConfig.hasOwnProperty('S3Origin') && distributionConfig.S3Origin.hasOwnProperty('DNSName'))
+						{
+							origin.text = "DNS Name: " + distributionConfig.S3Origin.DNSName;
+							if(distributionConfig.S3Origin.hasOwnProperty('OriginAccessIdentity'))
+							{
+								origin.text = origin.text + "\nAccess Identity: " + distributionConfig.S3Origin.OriginAccessIdentity;
+							}
+						}else if(distributionConfig.hasOwnProperty('CustomOrigin') && distributionConfig.CustomOrigin.hasOwnProperty('DNSName'))
+						{
+							origin.text = "DNS Name: " + distributionConfig.CustomOrigin.DNSName;
+							if(distributionConfig.CustomOrigin.hasOwnProperty('HTTPPort'))
+							{
+								origin.text = origin.text = "\nHTTP Port: " + distributionConfig.CustomOrigin.HTTPPort.toString();
+							}
+							if(distributionConfig.CustomOrigin.hasOwnProperty('HTTPSPort'))
+							{
+								origin.text = origin.text = "\nHTTPS Port: " + distributionConfig.CustomOrigin.HTTPSPort.toString();
+							}
+							if(distributionConfig.CustomOrigin.hasOwnProperty('OriginProtocolPolicy'))
+							{
+								origin.text = origin.text = "\nOrigin Protocol Policy: " + distributionConfig.CustomOrigin.OriginProtocolPolicy.toString();
+							}
+						}
+						
+						if(distributionConfig.hasOwnProperty('Logging') && distributionConfig.Logging.hasOwnProperty('Bucket'))
+						{
+							logging.text = "Bucket: " + distributionConfig.Logging.Bucket;
+							if(distributionConfig.Logging.hasOwnProperty('Prefix'))
+							{
+								logging.text = logging.text + "\nPrefix: " + distributionConfig.Logging.Prefix;
+							}
+						}
+						
+						if(distributionConfig.hasOwnProperty('CNAME'))
+						{
+							for each(var c:String in distributionConfig.CNAME)
+							{
+								cnames.text = cnames.text + c + "\n";
+							}
+							cnames.text = StringUtil.trim(cnames.text);
+						}
+					}
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		
+	</fx:Declarations>
+	
+	<s:HGroup id="cdnGroupButtonBar" height="25" paddingLeft="10">
+	</s:HGroup>
+	<s:BorderContainer height="100%" width="100%" alpha="1" borderVisible="false">
+		<components:DetailsBoxTabNavigator id="cdnDetails">
+			<s:NavigatorContent label="Details" width="100%" height="100%">
+				<s:BorderContainer borderVisible="false"  id="details" height="100%" width="100%">
+					<s:Scroller width="100%" height="100%">
+						<s:viewport>
+							<s:HGroup>
+								<s:Form>
+									<s:layout>
+										<s:FormLayout gap="-7"/>
+									</s:layout>
+									<s:FormItem label="Name:">
+										<mx:Text text="{cdnObject.name}"/>
+									</s:FormItem>
+									<s:FormItem label="Physical ID:">
+										<mx:Text text="{cdnObject.name}"/>
+									</s:FormItem>
+									<s:FormItem label="Domain Name:" visible="{propertiesVisible}" includeInLayout="{propertiesVisible}">
+										<mx:Text text="{cdnObject.cdn.DomainName}"/>
+									</s:FormItem>
+									<s:FormItem label="Distribution ID:" visible="{propertiesVisible}" includeInLayout="{propertiesVisible}">
+										<mx:Text text="{cdnObject.cdn.Id}"/>
+									</s:FormItem>
+									<s:FormItem label="Status:" visible="{propertiesVisible}" includeInLayout="{propertiesVisible}">
+										<mx:Text text="{cdnObject.cdn.Status}"/>
+									</s:FormItem>
+									<s:FormItem label="State:" visible="{propertiesVisible}" includeInLayout="{propertiesVisible}">
+										<mx:Text id="state"/>
+									</s:FormItem>
+									<s:FormItem label="Invalidation Batches:" visible="{propertiesVisible}" includeInLayout="{propertiesVisible}">
+										<mx:Text text="{cdnObject.cdn.InProgressInvalidationBatches}"/>
+									</s:FormItem>
+									<s:FormItem label="Last Modified Date:" visible="{propertiesVisible}" includeInLayout="{propertiesVisible}">
+										<mx:Text id="lastModifiedDate"/>
+									</s:FormItem>
+								</s:Form>
+							</s:HGroup>
+						</s:viewport>
+					</s:Scroller>
+				</s:BorderContainer>
+			</s:NavigatorContent>
+			<s:NavigatorContent label="Distribution Configuration" width="100%" height="100%">
+				<s:BorderContainer borderVisible="false"  id="config" height="100%" width="100%">
+					<s:Scroller width="100%" height="100%">
+						<s:viewport>
+							<s:HGroup>
+								<s:Form>
+									<s:layout>
+										<s:FormLayout gap="-7"/>
+									</s:layout>
+									<s:FormItem label="Caller Reference:">
+										<mx:Text text="{cdnObject.cdn.DistributionConfig.CallerReference}"/>
+									</s:FormItem>
+									<s:FormItem label="Origin:">
+										<mx:Text id="origin"/>
+									</s:FormItem>
+									<s:FormItem label="Logging:">
+										<mx:Text id="logging"/>
+									</s:FormItem>
+									<s:FormItem label="CNAMEs:">
+										<mx:Text id="cnames"/>
+									</s:FormItem>
+									<s:FormItem label="Comment:">
+										<mx:Text text="{cdnObject.cdn.DistributionConfig.Comment}"/>
+									</s:FormItem>
+								</s:Form>
+							</s:HGroup>
+						</s:viewport>
+					</s:Scroller>
+				</s:BorderContainer>
+			</s:NavigatorContent>
+		</components:DetailsBoxTabNavigator>
+	</s:BorderContainer>
+</components:ObjectManagementDetailsBox>

@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 initialize="cloudService.getClouds()"
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" 
+		 xmlns:components="com.momentumsi.c9.components.*" 
+		 xmlns:itemRenderers="com.momentumsi.c9.itemRenderers.*" xmlns:services="com.momentumsi.c9.services.*">
+	<fx:Script>
+		<![CDATA[
+			import com.maccherone.json.JSON;
+			import com.momentumsi.c9.constants.PlatformConstants;
+			import com.momentumsi.c9.events.CloudResultEvent;
+			import com.momentumsi.c9.events.apiCloud.CloudQueryResultEvent;
+			import com.momentumsi.c9.models.Cloud;
+			import com.momentumsi.c9.models.CloudAccount;
+			import com.momentumsi.c9.models.CloudMapping;
+			import com.momentumsi.c9.models.ProjectVersion;
+			import com.momentumsi.c9.models.aws_types.BlockDeviceMapping;
+			import com.momentumsi.c9.models.aws_types.Ec2Image;
+			import com.momentumsi.c9.models.resources.ComputeWizardObjectRepresenter;
+			import com.momentumsi.c9.representers.ComputeRepresenter;
+			import com.momentumsi.c9.services.CloudService;
+			import com.momentumsi.c9.utils.Helpers;
+			import com.momentumsi.c9.utils.IntrinsicFunctionUtil;
+			
+			import mx.controls.Alert;
+			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			
+			import spark.events.IndexChangeEvent;
+			import spark.skins.spark.DefaultGridItemRenderer;
+			
+			[Bindable]
+			public var runningInstances:ArrayCollection;
+			[Bindable]
+			public var userImages:ArrayCollection;			
+			[Bindable]
+			private var selectedImage:Ec2Image;			
+			[Bindable]
+			public var imageSource:String;			
+			[Bindable]
+			public var selectedArchitecture:String;
+			[Bindable]
+			public var imageId:Object;
+			[Bindable]
+			public var cloudAccount:CloudAccount;
+			[Bindable]
+			public var projectVersion:ProjectVersion;
+			[Bindable]
+			public var platform:String;
+			
+			public function validateFieldInputs():Boolean
+			{
+				var valid:Boolean = true;
+				
+				if(images.selectedIndex != -1)
+				{
+					imagesAlert.visible = false;
+					imagesAlert.includeInLayout = false;
+				}else
+				{
+					imagesAlert.visible = true;
+					imagesAlert.includeInLayout = true;
+					valid = false;
+				}
+					
+				return valid;
+			}
+			
+			protected function getAccountInstancesSvc_faultHandler(event:FaultEvent):void
+			{
+				trace(event.message);
+			}
+			
+			public function setImageSelection():void
+			{
+				imageSelections.selectedIndex = -1;
+				if(imageId is String)
+				{					
+					for each(var instance:ComputeRepresenter in runningInstances)
+					{
+						if(instance.imageId == imageId)
+						{
+							imageSelections.selectedItem = runningInstancesSource;
+							imageSelections_changeHandler();
+							images.selectedIndex = runningInstances.getItemIndex(instance);
+							images_changeHandler();
+							return;
+						}
+					}
+					for each(var image:Ec2Image in userImages)
+					{
+						if(image.imageId == imageId)
+						{
+							imageSelections.selectedItem = myImagesSource;
+							imageSelections_changeHandler();
+							images.selectedIndex = userImages.getItemIndex(image);
+							images_changeHandler();
+							return;
+						}
+					}
+				}else{
+					if(imageId[IntrinsicFunctionUtil.FIND_IN_MAP] != null)
+					{
+						imageSelections.selectedItem = multiRegionSource;
+						imageSelections_changeHandler();
+						for each(var imageMap:CloudMapping in imageMappings)
+						{
+							if(IntrinsicFunctionUtil.getMapName(imageId) == imageMap.toString())
+							{
+								images.selectedIndex = imageMappings.getItemIndex(imageMap);
+								images_changeHandler();
+								return;
+							}
+						}
+						//If image map is not part of default mappings, add to collection
+						imageMappings.addItem(imageId);
+						images.selectedItem = imageId;
+						images_changeHandler();
+					}
+				} 							
+				
+				if(imageSelections.selectedIndex == -1 && !imageId.hasOwnProperty("Fn::FindInMap"))
+				{
+					Alert.show("Unable to locate current image or map.");
+				}
+			}
+			
+			protected function imageSelections_changeHandler():void
+			{
+				switch(imageSelections.selectedItem)
+				{
+					case multiRegionSource:
+						submittedByFormItem.visible = true;
+						images.labelFunction = setMappedImageDisplay;
+						images.dataProvider = imageMappings;
+						break;
+					case runningInstancesSource:
+						submittedByFormItem.visible = false;
+						mapArea.removeAllElements();
+						images.labelFunction = setInstanceImageDisplay;
+						images.dataProvider = runningInstances;
+						break;
+					case myImagesSource:
+						submittedByFormItem.visible = false;
+						mapArea.removeAllElements();
+						images.labelFunction = setUserImagesDisplay;
+						images.dataProvider = userImages;
+						break;
+						
+				}
+			}
+			
+			private function setInstanceImageDisplay(instance:Object):String
+			{
+				if(instance != null && instance is ComputeRepresenter)
+				{
+					return instance.imageId + " (" + instance.publicIpAddress + ")";
+				}else
+				{
+					return "";
+				}
+			}
+			
+			private function setMappedImageDisplay(map:Object):String
+			{
+				if(map is CloudMapping)
+				{
+					return map.name;
+				}else{
+					return IntrinsicFunctionUtil.getMapName(map);
+				}
+			}
+			
+			private function setUserImagesDisplay(image:Object):String
+			{
+				if(image != null && image is Ec2Image)
+				{	
+					if(image.name != null)
+					{
+						return image.imageId + " (" + image.name + ")";
+					}else
+					{
+						return image.imageId;
+					}
+				}else
+				{
+					return "";
+				}
+			}
+			
+			protected function images_changeHandler():void
+			{
+				switch(imageSelections.selectedItem)
+				{
+					case multiRegionSource:
+						if(images.selectedItem is CloudMapping)
+						{
+							mapArea.addElement(mappingImagesGrid);
+							var mapping:CloudMapping = images.selectedItem as CloudMapping;							
+							submittedByLabel.text = "Amazon"
+							platformLabel.text = mapping.operatingSystem;
+							backedByLabel.text = mapping.rootDeviceType;
+							architectureLabel.text = mapping.architecture;
+							selectedArchitecture = mapping.architecture;
+							
+							var imageCollection:ArrayCollection = mapping.entries;
+							cfTemplateMapObject = mapping.toTemplateObject();
+							mappingImagesGrid.dataProvider = imageCollection;
+							imageId = mapping.toImageReference();
+							imageSource = mapping.name + " (Map)";
+							if(mapping.name.search(PlatformConstants.UBUNTU) != -1)
+							{
+								this.platform = PlatformConstants.UBUNTU;
+							}else{
+								this.platform = PlatformConstants.AWS_LINUX;
+							}
+						}else{
+							mapArea.addElement(unavailableLabel);
+							imageId = images.selectedItem;
+							cfTemplateMapObject = projectVersion.getElementByName(IntrinsicFunctionUtil.getMapName(imageId));
+						}
+						break;
+					case runningInstancesSource:
+						var instance:ComputeRepresenter = images.selectedItem as ComputeRepresenter;
+						selectedArchitecture = instance.architecture;
+						platformLabel.text = instance.platform;
+						architectureLabel.text = instance.architecture;
+						descriptionText.text = "(No Description)"; 
+						backedByLabel.text = instance.rootDeviceType;
+						virtualizationLabel.text = instance.virtualizationType;
+						imageString = instance.imageId;
+						imageId = imageString;
+						imageSource = instance.imageId + " (" + instance.publicIpAddress + ")";
+						break;
+					case myImagesSource:
+						selectedImage = images.selectedItem as Ec2Image;
+						selectedArchitecture = selectedImage.architecture;
+						if(selectedImage.rootDeviceType == Ec2Image.S3_DEVICE_TYPE)
+						{
+							backedByLabel.text = Ec2Image.S3_DEVICE_TYPE;
+						}else{
+							var volumeDescriptor:String;
+							var deviceMapping:BlockDeviceMapping = selectedImage.blockDeviceMappings;
+							if(deviceMapping.volumeSize)
+							{
+								volumeDescriptor = deviceMapping.volumeSize + " GB";
+							}else{
+								volumeDescriptor = deviceMapping.volumeId;
+							}
+							backedByLabel.text = "EBS (" + volumeDescriptor + ")";
+						}
+						imageString = selectedImage.imageId;
+						imageId = imageString;
+						if(selectedImage.name)
+						{
+							imageSource = selectedImage.imageId + " (" + selectedImage.name + ")";
+						}else{
+							imageSource = selectedImage.imageId;
+						}
+						break;
+				}
+			}
+			
+			protected function newMapButton_clickHandler(event:MouseEvent):void
+			{
+				var newImageMapWindow:CloudFormationNewImageMap = CloudFormationNewImageMap(PopUpManager.createPopUp( UIComponent(this.parentApplication), CloudFormationNewImageMap , true));
+				newImageMapWindow.imageSelectionWindow = this;
+			}
+			
+			protected function cloudService_cloudQueryResultHandler(event:CloudQueryResultEvent):void
+			{
+				for each(var cloud:Cloud in cloudService.cloudCollection)
+				{
+					if(cloud.cloudProvider == cloudAccount.cloud_provider)
+					{
+						if(imageMappings.length == 0){
+							for each(var map:CloudMapping in cloud.cloudMappings)
+							{
+								if(map.type == CloudMapping.CF_IMAGE_MAP_TYPE)
+								{
+									 if(platform != null)
+									{
+										var mapPlatform:int = map.name.search(platform); 
+										if(mapPlatform != -1)
+										{
+											imageMappings.addItem(map);
+										}
+									}else{
+										imageMappings.addItem(map);
+									} 
+									//imageMappings.addItem(map);
+								}
+							}
+						}
+						imageSelections_changeHandler();
+						break;
+					}
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<services:CloudService id="cloudService"
+							   cloudQueryResult="cloudService_cloudQueryResultHandler(event)"/>
+		
+		<s:ArrayCollection id="imageMappings"/>
+		<fx:Object id="cfTemplateMapObject"/>
+		<fx:String id="imageString"/>
+		
+		<s:BorderContainer id="mappedImageInfo" height="{mappingImagesGrid.height}">
+			<s:Form textAlign="right">
+				<s:layout>
+					<s:FormLayout gap="-7"/>
+				</s:layout>
+				<s:FormItem label="Submitted By:">
+					<mx:Text id="submittedBy" textAlign="left"/>
+				</s:FormItem>
+				<s:FormItem label="Operating System:">
+					<mx:Text id="operatingSystem" textAlign="left"/>
+				</s:FormItem>
+				<s:FormItem label="Backed By:">
+					<mx:Text id="backedBy" textAlign="left"/>
+				</s:FormItem>
+			</s:Form>
+		</s:BorderContainer>
+
+		<s:DataGrid id="mappingImagesGrid"
+					editable="false" 
+					selectionMode="none"
+					skinClass="com.momentumsi.c9.skins.NoHeaderDataGridSkin" 
+					width="100%" 
+					minHeight="50">
+			<s:columns>
+				<s:ArrayList id="mappingImagesGridColumns">
+					<s:GridColumn width="200" dataField="region_display">
+						<s:itemRenderer>
+							<fx:Component>
+								<itemRenderers:SelectableLabelRenderer fontWeight="bold"/>
+							</fx:Component>
+						</s:itemRenderer>
+					</s:GridColumn>
+					<s:GridColumn dataField="image_id" 
+								  itemRenderer="com.momentumsi.c9.itemRenderers.SelectableLabelRenderer"/>
+				</s:ArrayList>
+			</s:columns>
+		</s:DataGrid>
+		
+		<s:Label id="unavailableLabel"
+				 text="Mapping Table Unavailable"/>
+	</fx:Declarations>
+	<s:VGroup height="100%" width="100%">
+		<s:Form height="100%" width="100%" textAlign="right">
+			<s:layout>
+				<s:FormLayout gap="-7"/>
+			</s:layout>
+			<s:FormItem label="Image Source:">
+				<s:HGroup textAlign="left">
+					<s:VGroup>
+						<s:HGroup>
+							<s:DropDownList id="imageSelections" width="164"
+											change="imageSelections_changeHandler()"
+											requireSelection="true">
+								<s:dataProvider>
+									<s:ArrayCollection>
+										<fx:Object id="multiRegionSource" label="Multi-Region"/>
+										<fx:Object id="runningInstancesSource" label="Running Instances"/>
+										<fx:Object id="myImagesSource" label="My Images"/>
+									</s:ArrayCollection>
+								</s:dataProvider>
+							</s:DropDownList>
+						</s:HGroup>
+					</s:VGroup>
+					<s:HGroup visible="false"
+							  paddingLeft="20"
+							  id="imageFilter"
+							  enabled="{imageSelections.selectedItem == myImagesSource}">
+						<s:CheckBox label="64-bit" selected="true"/>
+						<s:CheckBox label="32-bit" selected="true"/>
+						<s:CheckBox label="EBS Backed" selected="true"/>
+						<s:CheckBox label="S3 Backed" selected="true"/>
+					</s:HGroup>
+				</s:HGroup>
+			</s:FormItem>
+			<s:FormItem label="Image:" height="174" width="100%">
+				<s:HGroup width="100%" textAlign="left">
+					<s:VGroup height="100%" verticalAlign="middle">
+						<s:List id="images"
+							    selectedIndex="0"
+								change="images_changeHandler()"
+								minWidth="300" maxWidth="600"
+								minHeight="0" maxHeight="130">
+						</s:List>
+						<s:Label id="imagesAlert" text="Selection is required." color="red" visible="false" includeInLayout="false"/>
+						<s:Button label="Create New Map"
+								  id="newMapButton" 
+								  click="newMapButton_clickHandler(event)" 
+								  enabled="{imageSelections.selectedItem == multiRegionSource}"/>
+					</s:VGroup>
+					<s:Group id="mapArea"
+							 height="100%"
+							 width="100%"/>
+				</s:HGroup>	
+			</s:FormItem>
+			<s:FormItem label="Image Info:" 
+						width="100%">
+				<s:HGroup width="100%" 
+						  id="imageInfoForm">
+					<s:Form fontWeight="normal"
+							width="100%" 
+							textAlign="right">
+						<s:layout>
+							<s:FormLayout gap="-7"/>
+						</s:layout>
+						<s:FormItem label="Platform:">
+							<s:Label id="platformLabel" 
+									 text="{selectedImage.platform}"
+									 textAlign="left"/>
+						</s:FormItem>
+						<s:FormItem label="Architecture:">
+							<s:Label id="architectureLabel" 
+									 text="{selectedImage.architecture}" 
+									 textAlign="left"/>
+						</s:FormItem>
+						<s:FormItem label="Description:" width="100%">
+							<mx:Text id="descriptionText" 
+									 text="{selectedImage.description}"
+									 width="100%"
+									 textAlign="left"/>
+						</s:FormItem>
+					</s:Form>
+					<s:Form fontWeight="normal" textAlign="right">
+						<s:layout>
+							<s:FormLayout gap="-7"/>
+						</s:layout>
+						<s:FormItem label="Backed By:">
+							<s:Label id="backedByLabel" textAlign="left"/>
+						</s:FormItem>
+						<s:FormItem label="Virtualization:">
+							<s:Label id="virtualizationLabel" text="{selectedImage.virtualizationType}" textAlign="left"/>
+						</s:FormItem>
+						<s:FormItem visible="false" id="submittedByFormItem" label="Submitted By:">
+							<s:Label id="submittedByLabel" textAlign="left"/>
+						</s:FormItem>
+					</s:Form>
+				</s:HGroup>
+			</s:FormItem>
+		</s:Form>
+	</s:VGroup>
+</s:Group>

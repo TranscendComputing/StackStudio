@@ -1,0 +1,669 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wizard:WizardWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   xmlns:diagrammer="fr.kapit.diagrammer.base.uicomponent.*"
+			   creationComplete="creationCompleteHandler(event)"
+			   wizardType="{ResourceTypeLabel.CDN}"
+			   width="700" height="500" xmlns:components="com.momentumsi.c9.components.*" 
+			   xmlns:wizard="com.momentumsi.c9.components.wizard.*"
+			   xmlns:services="com.momentumsi.c9.services.*">
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.constants.AlertMessage;
+			import com.momentumsi.c9.constants.ImagePath;
+			import com.momentumsi.c9.constants.ResourceType;
+			import com.momentumsi.c9.constants.ResourceTypeLabel;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.StringUtil;
+			
+			public static const AWS_S3_ENDPOINT:String = ".s3.amazonaws.com";
+			
+			[Bindable]
+			private var existingBucketList:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var finalOrigin:String = "";
+			[Bindable]
+			private var finalCnames:String = "";
+			[Bindable]
+			private var finalLogBucket:String = "";
+			[Bindable]
+			private var cNamesArray:Array = new Array();
+			[Bindable]
+			private var cNameVisible:Boolean = false;
+			[Bindable]
+			private var defaultRootObjectVisible:Boolean = false;
+			[Bindable]
+			private var logBucketVisible:Boolean = false;
+			[Bindable]
+			private var logPrefixVisible:Boolean = false;
+			[Bindable]
+			private var commentsVisible:Boolean = false;
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				getResourcesSvc.send();
+			}
+			
+			override public function applyConfigurations():void
+			{
+				if(element.id == null)
+				{
+					loggingOff.selected = true;
+					logSelectBucket.selected = true;
+					return;
+				}
+				
+				resourceName.text = element.name;
+				
+				if(element.properties.hasOwnProperty('Properties') && element.properties['Properties'].hasOwnProperty('DistributionConfig'))
+				{
+					var distributionConfig:Object = element.properties['Properties']['DistributionConfig'];
+					if(distributionConfig.hasOwnProperty('S3Origin'))
+					{
+						originAccordion.selectedChild == s3Origin;
+						specifyBucket.selected = true;
+						if(distributionConfig['S3Origin']['DNSName'] is String)
+						{
+							specificBucket.text = distributionConfig['S3Origin']['DNSName'];
+						}else if(distributionConfig['S3Origin']['DNSName'].hasOwnProperty("Ref"))
+						{
+							specificBucket.text = "@" + distributionConfig['S3Origin']['DNSName']['Ref'];
+						}
+					}else if(distributionConfig.hasOwnProperty('CustomOrigin'))
+					{
+						originAccordion.selectedChild = customOrigin;
+						originDnsName.text = distributionConfig['CustomOrigin']['DNSName'];
+						if(distributionConfig['CustomOrigin'].hasOwnProperty('OriginProtocolPolicy'))
+						{
+							if(distributionConfig['CustomOrigin']['OriginProtocolPolicy'] == "match-viewer")
+							{
+								matchViewer.selected = true;
+							}
+							
+							if(distributionConfig['CustomOrigin'].hasOwnProperty('HTTPPort'))
+							{
+								httpPort.text = distributionConfig['CustomOrigin']['HTTPPort'];
+							}
+							if(distributionConfig['CustomOrigin'].hasOwnProperty('HTTPSPort'))
+							{
+								httpsPort.text = distributionConfig['CustomOrigin']['HTTPSPort'];
+							}
+						}
+					}
+					
+					if(distributionConfig.hasOwnProperty('RequiredProtocols'))
+					{
+						allowedHttpsOnly.selected = true;
+					}
+					
+					if(distributionConfig.hasOwnProperty('CNAMEs'))
+					{
+						for each(var c:String in distributionConfig['CNAMEs'])
+						{
+							cnamesTextArea.text = cnamesTextArea.text + c + "\n";
+						}
+						cnamesTextArea.text = StringUtil.trim(cnamesTextArea.text);
+					}
+					
+					if(distributionConfig.hasOwnProperty('DefaultRootObject'))
+					{
+						defaultRootObject.text = distributionConfig['DefaultRootObject'];
+					}
+					
+					if(distributionConfig.hasOwnProperty('Logging') && distributionConfig['Logging'].hasOwnProperty('Bucket'))
+					{
+						loggingOn.selected = true;
+						specifyLogBucket.selected = true;
+						logSpecificBucket.text = distributionConfig['Logging']['Bucket'];
+						if(distributionConfig['Logging'].hasOwnProperty('Prefix'))
+						{
+							logPrefix.text = distributionConfig['Logging']['Prefix'];
+						}
+					}else
+					{
+						loggingOff.selected = true;
+						logSelectBucket.selected = true;
+					}
+					
+					if(distributionConfig.hasOwnProperty('Comment'))
+					{
+						comments.text = distributionConfig['Comment'];
+					}
+					
+					if(distributionConfig.hasOwnProperty('Enabled') && distributionConfig['Enabled'] == "false")
+					{
+						distributionNo.selected = true;
+					}
+				}
+			}
+			
+			protected function previousButton_clickHandler(event:MouseEvent):void
+			{
+				if(cloudFrontWizard.selectedIndex > 0)
+				{
+					cloudFrontWizard.selectedIndex--;
+				}
+			}
+			
+			protected function nextButton_clickHandler(event:MouseEvent):void
+			{
+				var alert:Boolean = false;
+				
+				if(cloudFrontWizard.selectedChild == distributionTypeContent)
+				{
+					if(StringUtil.trim(resourceName.text) != "")
+					{
+						if(Helpers.validateAlphanumeric(resourceName.text))
+						{
+							if(objectManagementCreate)
+							{
+								resourceNameAlert.visible = false;						
+							}else
+							{
+								if(projectVersion.validateUniqueName(resourceName.text, element))
+								{
+									resourceNameAlert.visible = false;
+								}else
+								{
+									resourceNameAlert.text = AlertMessage.NOT_UNIQUE;
+									resourceNameAlert.visible = true;
+									alert = true;
+								}
+							}
+						}else
+						{
+							resourceNameAlert.text = AlertMessage.NOTALPHANUMERIC;
+							resourceNameAlert.visible = true;
+							alert = true;
+						}
+					}else
+					{
+						resourceNameAlert.text = AlertMessage.INVALID;
+						resourceNameAlert.visible = true;
+						alert = true;
+					}
+					
+					if(originAccordion.selectedChild == s3Origin)
+					{
+						if(existingBucket.selected)
+						{
+							if(originBucketSelection.selectedIndex != -1)
+							{
+								originBucketSelectionAlert.visible = false;
+								finalOrigin = originBucketSelection.selectedItem.name + AWS_S3_ENDPOINT;
+							}else
+							{
+								originBucketSelectionAlert.visible = true;
+								alert = true;
+							}
+						}else
+						{
+							if(StringUtil.trim(specificBucket.text) != "")
+							{
+								specificBucketAlert.visible = false;
+								finalOrigin = specificBucket.text;
+							}else
+							{
+								specificBucketAlert.visible = true;
+								alert = true;
+							}
+						}
+					}else if(originAccordion.selectedChild == customOrigin)
+					{
+						if(StringUtil.trim(originDnsName.text) != "")
+						{
+							originDnsNameAlert.visible = false;
+							finalOrigin = originDnsName.text;
+							try
+							{
+								var testNum:Number = Number(httpPort.text);
+								if(!isNaN(testNum))
+								{
+									httpPortAlert.visible = false;
+								}else
+								{
+									httpPortAlert.visible = true;
+									alert = true;
+								}
+							}catch(e:Error)
+							{
+								httpPortAlert.visible = true;
+								alert = true;
+								trace(e.message);
+							}
+							if(!httpProtocol.selected)
+							{
+								try
+								{
+									var testNum2:Number = Number(httpsPort.text);
+									if(!isNaN(testNum2))
+									{
+										httpsPortAlert.visible = false;
+									}else
+									{
+										httpsPortAlert.visible = true;
+										alert = true;
+									}
+								}catch(e:Error)
+								{
+									httpsPortAlert.visible = true;
+									alert = true;
+									trace(e.message);
+								}
+							}
+						}else
+						{
+							originDnsNameAlert.visible = true;
+							alert = true;
+						}
+					}
+				}else if(cloudFrontWizard.selectedChild == distributionDetailsContent)
+				{
+					if(StringUtil.trim(cnamesTextArea.text) != "")
+					{
+						cNameVisible = true;
+						cNamesArray = cnamesTextArea.text.split("\n");
+						finalCnames = "";
+						for each(var cName:String in cNamesArray)
+						{
+							finalCnames = finalCnames + cName + "\n";
+						}
+						finalCnames = StringUtil.trim(finalCnames);
+					}else
+					{
+						cNameVisible = false;
+						finalCnames = "";
+					}
+					
+					if(StringUtil.trim(defaultRootObject.text) != "")
+					{
+						defaultRootObjectVisible = true;	
+					}else
+					{
+						defaultRootObjectVisible = false;
+					}
+					
+					if(loggingOn.selected)
+					{
+						logBucketVisible = true;
+						
+						if(logSelectBucket.selected)
+						{
+							if(logBucketSelection.selectedIndex != -1)
+							{
+								finalLogBucket = logBucketSelection.selectedItem.name + AWS_S3_ENDPOINT;
+							}else
+							{
+								Alert.show("You must select a logging bucket if the logging feature is enabled.");
+								alert = true;
+							}
+						}else
+						{
+							if(StringUtil.trim(logSpecificBucket.text) != "")
+							{
+								finalLogBucket = logSpecificBucket.text;
+							}else
+							{
+								Alert.show("You must specify a logging bucket if the logging feature is enabled.");
+								alert = true;
+							}
+						}
+						
+						if(StringUtil.trim(logPrefix.text) != "")
+						{
+							logPrefixVisible = true;
+						}else
+						{
+							logPrefixVisible = false;
+						}
+					}else
+					{
+						finalLogBucket = "";
+						logBucketVisible = false;
+						logPrefixVisible = false;
+					}
+					
+					if(StringUtil.trim(comments.text) != "")
+					{
+						commentsVisible = true;
+					}else
+					{
+						commentsVisible = false;
+					}
+				}
+				
+				if(!alert)
+				{
+					cloudFrontWizard.selectedIndex++;
+				}
+			}
+			
+			protected function submitButton_clickHandler(event:MouseEvent):void
+			{
+				submitButton.enabled = false;
+				submitButton.label = "Saving";
+				
+				if(objectManagementCreate)
+				{
+					objectManagementLaunchSvc.send({cloud_account_id: cloudAccount.id,
+													object_type: "cdn"});
+				}else
+				{
+					var cdnAttributes:Object = new Object();
+					cdnAttributes['Type'] = ResourceType.CLOUD_FRONT;
+					cdnAttributes['Properties'] = {};
+					cdnAttributes['Properties']['DistributionConfig'] = {};
+					
+					//Origin JSON SetUp
+					if(originAccordion.selectedChild == s3Origin)
+					{
+						if(existingBucket.selected)
+						{
+							cdnAttributes['Properties']['DistributionConfig']['S3Origin'] = {"DNSName": originBucketSelection.selectedLabel.toLowerCase() + AWS_S3_ENDPOINT};
+						}else
+						{
+							if(specificBucket.text.charAt(0) != "@")
+							{
+								cdnAttributes['Properties']['DistributionConfig']['S3Origin'] = {"DNSName": specificBucket.text.toLowerCase()};
+							}else
+							{
+								cdnAttributes['Properties']['DistributionConfig']['S3Origin'] = {"DNSName": checkForReference(specificBucket.text)};
+							}	
+						}
+					}else //custom origin selected
+					{
+						cdnAttributes['Properties']['DistributionConfig']['CustomOrigin'] = {"DNSName": originDnsName.text.toLowerCase(), "HTTPPort": httpPort.text}
+						if(httpProtocol.selected)
+						{
+							cdnAttributes['Properties']['DistributionConfig']['CustomOrigin']['OriginProtocolPolicy'] = "http-only";
+						}else
+						{
+							cdnAttributes['Properties']['DistributionConfig']['CustomOrigin']['OriginProtocolPolicy'] = "match-viewer";
+							cdnAttributes['Properties']['DistributionConfig']['CustomOrigin']['HTTPSPort'] = httpsPort.text;
+						}
+					}
+					
+					//Viewer Protocol JSON SetUp *Optional*
+					if(allowedHttpsOnly.selected)
+					{
+						cdnAttributes['Properties']['DistributionConfig']['RequiredProtocols'] = ["https"];
+					}
+					
+					//CNAMES JSON SetUp *Optional*
+					if(cNamesArray.length > 0)
+					{
+						cdnAttributes['Properties']['DistributionConfig']['CNAMEs'] = cNamesArray;
+					}
+					
+					//Default Root Path JSON SetUp *Optional*
+					if(defaultRootObjectVisible)
+					{
+						cdnAttributes['Properties']['DistributionConfig']['DefaultRootObject'] = defaultRootObject.text;
+					}
+					
+					//Logging JSON SetUp *Optional*
+					if(loggingOn.selected)
+					{
+						if(logSelectBucket.selected)
+						{
+							cdnAttributes['Properties']['DistributionConfig']['Logging'] = {"Bucket": logBucketSelection.selectedLabel.toLowerCase() + AWS_S3_ENDPOINT};
+						}else
+						{
+							cdnAttributes['Properties']['DistributionConfig']['Logging'] = {"Bucket": logSpecificBucket.text.toLowerCase()};
+						}
+						
+						if(logPrefixVisible)
+						{
+							cdnAttributes['Properties']['DistributionConfig']['Logging']['Prefix'] = logPrefix.text;
+						}
+						
+						if(commentsVisible)
+						{
+							cdnAttributes['Properties']['DistributionConfig']['Comment'] = comments.text;
+						}	
+					}
+					
+					//Distribution Enabled JSON SetUp
+					if(distributionYes.selected)
+					{
+						cdnAttributes['Properties']['DistributionConfig']['Enabled'] = "true";
+					}else
+					{
+						cdnAttributes['Properties']['DistributionConfig']['Enabled'] = "false";
+					}
+					
+					saveElement(resourceName.text, cdnAttributes);
+					//createVariants(resourceName.text, statesToApply.ignoredEnvironments);
+				}
+			}
+
+			protected function getResourcesSvc_resultHandler(event:ResultEvent):void
+			{
+				var result:Array = getResourcesSvc.result as Array;
+				existingBucketList = new ArrayCollection(result);
+				
+				if(existingBucketList.length > 0)
+				{
+					originBucketSelection.selectedIndex = 0;
+					logBucketSelection.selectedIndex = 0;
+				}else
+				{
+					originBucketSelection.prompt = "No Resources";
+					originBucketSelection.selectedIndex = -1;
+					logBucketSelection.prompt = "No Resources";
+					logBucketSelection.selectedIndex = -1;
+				}
+			}
+			
+			protected function objectManagementLaunchSvc_resultHandler(event:ResultEvent):void
+			{
+				Helpers.getObjectManagement(this).refreshResourceList();
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function objectManagementLaunchSvc_faultHandler(event:FaultEvent):void
+			{
+				Alert.show("Unable to save content delivery network.");
+				submitButton.label = "Finish";
+				submitButton.enabled = true;
+				trace(event.fault);
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:RadioButtonGroup id="deliveryMethodGroup"/>
+		<s:RadioButtonGroup id="s3BucketGroup"/>
+		<s:RadioButtonGroup id="protocolPolicyGroup"/>
+		<s:RadioButtonGroup id="allowedConnectionsGroup"/>
+		<s:RadioButtonGroup id="loggingGroup"/>
+		<s:RadioButtonGroup id="logBucketSelectionGroup"/>
+		<s:RadioButtonGroup id="distributionStatusGroup"/>
+		
+		<services:CloudApiService id="getResourcesSvc"
+								  action="describe_storage"
+								  cloudAccountId="{cloudAccount.id}"
+								  region="{region}"
+								  serviceType="{CloudApiService.S3_SERVICE}"
+								  result="getResourcesSvc_resultHandler(event)"/>
+		
+		<s:HTTPService id="objectManagementLaunchSvc"
+					   url="{Helpers.getHost()}/launch_resource"
+					   resultFormat="e4x"
+					   method="POST"
+					   showBusyCursor="true"
+					   result="objectManagementLaunchSvc_resultHandler(event)"
+					   fault="objectManagementLaunchSvc_faultHandler(event)"/>
+
+	</fx:Declarations>
+	
+	<s:VGroup width="100%" height="90%" gap="0">
+		<wizard:WizardWindowTitle id="cdnWizardTitle" includeInLayout="false"
+								  width="100%"
+								  resourceImage="{ImagePath.NEW_CDN}"
+								  resourceLabel="{wizardDisplayName}"
+								  wizardStack="{cloudFrontWizard}"/>
+		<wizard:CookieTrail id="cdnCookieTrail"
+							wizardStack="{cloudFrontWizard}"
+							width="100%"/>
+		<mx:ViewStack id="cloudFrontWizard" width="100%" height="100%" paddingLeft="20" paddingRight="20" paddingTop="10" creationPolicy="all">
+			<s:NavigatorContent id="distributionTypeContent" label="Distribution Type" width="100%" height="100%">
+				<s:VGroup width="100%" height="100%">
+					<s:Form textAlign="right">
+						<s:layout>
+							<s:FormLayout gap="-7"/>
+						</s:layout>
+						<s:FormItem label="Resource Name*:">
+							<s:HGroup textAlign="left">
+								<s:TextInput id="resourceName" width="250"/>
+								<mx:Text id="resourceNameAlert" text="Invalid Input." color="red" visible="false"/>
+							</s:HGroup>
+						</s:FormItem>
+						<!-- Commented out as it is not used in cloud formation json 
+						<s:FormItem label="Delivery Method*:">
+							<s:HGroup>
+								<s:RadioButton id="downloadMethod" label="Download" group="{deliveryMethodGroup}" selected="true"/>
+								<s:RadioButton id="streamingMethod" label="Streaming" group="{deliveryMethodGroup}"/>
+							</s:HGroup>
+						</s:FormItem>
+						-->
+					</s:Form>
+					<mx:Accordion id="originAccordion" width="100%" height="100%">
+						<s:NavigatorContent id="s3Origin" label="S3 Origin" width="100%" height="100%">
+							<s:Form>
+								<s:HGroup gap="12">
+									<s:RadioButton id="existingBucket" label="Select Bucket:" group="{s3BucketGroup}" selected="true"/>
+									<mx:ComboBox id="originBucketSelection" width="250" dataProvider="{existingBucketList}" labelField="key" enabled="{existingBucket.selected}" prompt="Loading Buckets"/>
+									<mx:Text id="originBucketSelectionAlert" text="Invalid." color="red" visible="false"/>
+								</s:HGroup>
+								<s:HGroup>
+									<s:RadioButton id="specifyBucket" label="Specify Bucket:" group="{s3BucketGroup}"/>
+									<components:InputComboBox id="specificBucket"
+															  width="250"
+															  projectVersion="{projectVersion}"
+															  textInputField="true"
+															  enabled="{specifyBucket.selected}"/>
+									<s:Image height="16" width="16" toolTip="(e.g. bucketname.s3.example.com)" source="{ImagePath.HELPER_ICON}"/>
+									<mx:Text id="specificBucketAlert" text="Invalid Input." color="red" visible="false"/>
+								</s:HGroup>
+							</s:Form>
+						</s:NavigatorContent>
+						<s:NavigatorContent id="customOrigin" label="Custom Origin" width="100%" height="100%">
+							<s:Form textAlign="right">
+								<s:layout>
+									<s:FormLayout gap="-11"/>
+								</s:layout>
+								<s:FormItem label="Origin DNS Name*:">
+									<s:HGroup textAlign="left">
+										<s:TextInput id="originDnsName" width="250"/>
+										<mx:Text id="originDnsNameAlert" text="Invalid Input." color="red" visible="false"/>
+									</s:HGroup>
+								</s:FormItem>
+								<s:FormItem label="Protocol Policy*:">
+									<s:HGroup>
+										<s:RadioButton id="httpProtocol" label="HTTP Only" group="{protocolPolicyGroup}" selected="true"/>
+										<s:RadioButton id="matchViewer" label="Match Viewer" group="{protocolPolicyGroup}"/>
+									</s:HGroup>
+								</s:FormItem>
+								<s:FormItem label="HTTP Port*:">
+									<s:HGroup textAlign="left">
+										<s:TextInput id="httpPort" text="80"/>
+										<mx:Text id="httpPortAlert" text="Invalid Input." color="red" visible="false"/>
+									</s:HGroup>
+								</s:FormItem>
+								<s:FormItem label="HTTPS Port:" enabled="{matchViewer.selected}">
+									<s:HGroup textAlign="left">
+										<s:TextInput id="httpsPort" text="443"/>
+										<mx:Text id="httpsPortAlert" text="Invalid Input." color="red" visible="false"/>
+									</s:HGroup>
+								</s:FormItem>
+							</s:Form>
+						</s:NavigatorContent>
+					</mx:Accordion>
+				</s:VGroup>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="distributionDetailsContent" label="Distribution Details" width="100%" height="100%">
+				<s:Form textAlign="right">
+					<s:layout>
+						<s:FormLayout gap="-5"/>
+					</s:layout>
+					<s:FormItem label="Viewer Protocol*:">
+						<s:HGroup>
+							<s:RadioButton id="allowedHttpAndHttps" label="HTTP and HTTPS" group="{allowedConnectionsGroup}" selected="true"/>
+							<s:RadioButton id="allowedHttpsOnly" label="HTTPS Only" group="{allowedConnectionsGroup}"/>
+						</s:HGroup>
+					</s:FormItem>
+					<s:FormItem label="CNAMEs:">
+						<s:HGroup textAlign="left" width="100%">
+							<s:TextArea id="cnamesTextArea" heightInLines="2" width="100%"/>
+							<s:Image height="16" width="16" toolTip="Separate CNAMEs by new lines." source="{ImagePath.HELPER_ICON}"/>
+						</s:HGroup>
+					</s:FormItem>
+					<s:FormItem label="Default Root Object:">
+						<s:TextInput id="defaultRootObject" width="250" textAlign="left"/>
+					</s:FormItem>
+					<s:FormItem label="Logging:">
+						<s:HGroup>
+							<s:RadioButton id="loggingOn" label="On" group="{loggingGroup}"/>
+							<s:RadioButton id="loggingOff" label="Off" group="{loggingGroup}"/>
+						</s:HGroup>
+						<s:HGroup enabled="{loggingOn.selected}" gap="12" textAlign="left">
+							<s:RadioButton id="logSelectBucket" label="Select Log Bucket:" group="{logBucketSelectionGroup}"/>
+							<mx:ComboBox id="logBucketSelection" width="250" dataProvider="{existingBucketList}" labelField="key" prompt="Loading Buckets" enabled="{logSelectBucket.selected}"/>
+						</s:HGroup>
+						<s:HGroup enabled="{loggingOn.selected}" textAlign="left">
+							<s:RadioButton id="specifyLogBucket" label="Specify Log Bucket:" group="{logBucketSelectionGroup}"/>
+							<s:TextInput id="logSpecificBucket" width="250" enabled="{specifyLogBucket.selected}"/>
+						</s:HGroup>
+						<s:HGroup enabled="{loggingOn.selected}" textAlign="left">
+							<mx:Text text="Log Prefix:"/>
+							<s:TextInput id="logPrefix" width="250"/>
+						</s:HGroup>
+					</s:FormItem>
+					<s:FormItem label="Comments:">
+						<s:TextArea id="comments" heightInLines="2" textAlign="left" width="100%"/>
+					</s:FormItem>
+					<s:FormItem label="Distribution Status*:">
+						<s:HGroup textAlign="left">
+							<s:RadioButton id="distributionYes" label="Enabled" group="{distributionStatusGroup}" selected="true"/>
+							<s:RadioButton id="distributionNo" label="Disabled" group="{distributionStatusGroup}"/>
+						</s:HGroup>
+					</s:FormItem>
+				</s:Form>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="reviewContent" label="Review" width="100%" height="100%">
+				<s:VGroup paddingLeft="20" height="100%" width="100%" paddingTop="10">
+					<mx:Text text="Please Review Your CloudFront Distribution" y="20" fontWeight="bold"/>
+					<s:VGroup x="25" y="60" paddingLeft="20">
+						<mx:Text text="Name: {resourceName.text}"/>
+						<mx:Text text="Origin: {finalOrigin}"/>
+						<mx:Text text="Allowed Connections: {allowedConnectionsGroup.selection.label}"/>
+						<s:HGroup visible="{cNameVisible}" includeInLayout="{cNameVisible}">
+							<mx:Text text="CNAMEs:"/>
+							<mx:Text text="{finalCnames}"/>
+						</s:HGroup>
+						<mx:Text text="Default Root Object: {defaultRootObject.text}" visible="{defaultRootObjectVisible}" includeInLayout="{defaultRootObjectVisible}"/>
+						<mx:Text text="Log Bucket: {finalLogBucket}" visible="{logBucketVisible}" includeInLayout="{logBucketVisible}"/>
+						<mx:Text text="Log Prefix: {logPrefix.text}" visible="{logPrefixVisible}" includeInLayout="{logPrefixVisible}"/>
+						<s:HGroup visible="{commentsVisible}" includeInLayout="{commentsVisible}" width="100%">
+							<mx:Text text="Comments:"/>
+							<mx:Text text="{comments.text}" width="530"/>
+						</s:HGroup>
+						<mx:Text text="Distribution Status: {distributionStatusGroup.selection.label}"/>
+					</s:VGroup>
+				</s:VGroup>
+			</s:NavigatorContent>
+		</mx:ViewStack>
+	</s:VGroup>
+	<s:Button id="previousButton" x="10" y="436" label="Previous" click="previousButton_clickHandler(event)" enabled="{cloudFrontWizard.selectedIndex != 0}"/>
+	<s:Button id="nextButton" x="92" y="436" label="Next" click="nextButton_clickHandler(event)" enabled="{cloudFrontWizard.selectedChild != reviewContent}"/>
+	<s:Button id="submitButton" x="169" y="436" label="Finish" click="submitButton_clickHandler(event)" enabled="{cloudFrontWizard.selectedChild == reviewContent}"/>
+	<s:Button id="cancelButton" x="619" y="436" label="Cancel" click="{PopUpManager.removePopUp(this)}"/>
+</wizard:WizardWindow>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+   <settings>
+		<serviceUrl>@env.stack-web.endpoint@</serviceUrl>
+        <userName></userName>
+        <userPassword></userPassword>
+	<apiHost>@env.stackplace.endpoint@</apiHost>
+   </settings>

@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="utf-8"?>
+<c9:ObjectManagementDetailsBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:c9="com.momentumsi.c9.components.*" xmlns:services="com.momentumsi.c9.services.*" xmlns:rds="com.momentumsi.c9.components.rds.*">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.components.rds.RdsCreateReadReplicaPopUp;
+			import com.momentumsi.c9.components.rds.RdsCreateSnapshot;
+			import com.momentumsi.c9.components.rds.RdsDeleteSnapshot;
+			import com.momentumsi.c9.components.rds.RdsRebootPopUp;
+			import com.momentumsi.c9.components.rds.RdsRestoreFromSnapshot;
+			import com.momentumsi.c9.models.CloudAccount;
+			import com.momentumsi.c9.representers.DbInstanceRepresenter;
+			import com.momentumsi.c9.representers.DbSnapshotRepresenter;
+			import com.momentumsi.c9.services.CloudApiService;
+			import com.momentumsi.c9.services.MonitoringService;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.collections.ArrayCollection;
+			import mx.containers.Grid;
+			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
+			import mx.events.IndexChangedEvent;
+			import mx.events.ListEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.StringUtil;
+			
+			[Bindable]
+			private var rdsData:DbInstanceRepresenter;
+			[Bindable]
+			private var actionsEnabled:Boolean = true;
+			
+			override public function set resourceData(value:Object):void
+			{
+				rdsData = new DbInstanceRepresenter(value);
+				super.resourceData = rdsData;
+				rdsDetails.selectedIndex = 0;
+				refresh();
+			}
+			
+			private function refresh():void
+			{
+				if(cloudAccount.cloud_provider != CloudAccount.AMAZON)
+				{
+					if(rdsDetails.contains(monitoringContent))
+					{
+						rdsDetails.removeElement(monitoringContent);
+					}
+				}else{
+					if(rdsDetails.contains(monitoringContent))
+						{
+							rdsDetails.addElement(monitoringContent);
+						}
+				}
+				if(rdsData.state == "available")
+				{
+					actionsEnabled = true;
+				}else
+				{
+					actionsEnabled = false;
+				}
+				rdsService.snapshots.removeAll();
+				rdsService.addEventListener(ResultEvent.RESULT, sendNextRequest);
+				rdsService.describeEvents();
+			}
+			
+			//Function is required in order to get multiple, "simultaneous" results back from rdsService
+			private function sendNextRequest(event:ResultEvent):void
+			{
+				rdsService.removeEventListener(ResultEvent.RESULT, sendNextRequest);
+				rdsService.describeDbSnapshots();
+			}
+			
+			protected function terminate_clickHandler(event:MouseEvent):void
+			{
+				var destroyPopUp:DestroyResourceObjectManagement = new DestroyResourceObjectManagement();
+				destroyPopUp.cloudAccountId = cloudAccount.id;
+				destroyPopUp.region = region;
+				destroyPopUp.resourceType = CloudApiService.RDS_SERVICE;
+				destroyPopUp.resourceDisplayId = rdsData.id;
+				destroyPopUp.resourceId = rdsData.id;
+				PopUpManager.addPopUp(destroyPopUp, UIComponent(parentApplication), true);
+			}
+			
+			protected function rdsDetails_changeHandler(event:IndexChangedEvent):void
+			{
+				if(rdsDetails.selectedChild == monitoringContent)
+				{
+					monitorBox.objectManagement = true;
+					monitorBox.objectManagementResource = rdsData;
+					monitorBox.objectManagementResourceType = MonitoringService.RDS_DEFAULT;
+					monitorBox.getDefaultMonitorsCall(MonitoringService.RDS_DEFAULT);
+				}
+			}
+			
+			protected function actionButton_clickHandler(event:MouseEvent):void
+			{
+				var actionButton:TextButton = event.target as TextButton;
+				if(actionButton.enabled)
+				{
+					var rdsActionWindow:RdsActionWindow;
+					switch(actionButton.action)
+					{
+						case RdsService.DELETE_SNAPSHOT:
+							rdsActionWindow = new RdsDeleteSnapshot();
+							rdsActionWindow.snapshot = snapshotsComboBox.selectedItem as DbSnapshotRepresenter;
+							break;
+						case RdsService.CREATE_SNAPSHOT:
+							rdsActionWindow = new RdsCreateSnapshot();
+							break;
+						case RdsService.RESTORE_FROM_SNAPSHOT:
+							rdsActionWindow = new RdsRestoreFromSnapshot();
+							rdsActionWindow.snapshot = snapshotsComboBox.selectedItem as DbSnapshotRepresenter;
+							break;
+						case RdsService.REBOOT_DB:
+							rdsActionWindow = new RdsRebootPopUp();
+							break;
+					}
+					rdsActionWindow.cloudAccount = cloudAccount;
+					rdsActionWindow.region = region;
+					rdsActionWindow.rdsResource = rdsData;
+					rdsActionWindow.title = TextButton(event.target).text;
+					PopUpManager.addPopUp(rdsActionWindow, UIComponent(parentApplication), true);
+				}
+			}
+			
+			private function dateFormatFunction(item:Object, column:GridColumn):String
+			{
+				return dateFormatter.format(Helpers.formatDate(String(item.date)));
+			}
+			
+			protected function createReadReplicaButton_clickHandler(event:MouseEvent):void
+			{
+				var readReplicaWindow:RdsCreateReadReplicaPopUp = new RdsCreateReadReplicaPopUp();
+				readReplicaWindow.cloudAccount = cloudAccount;
+				readReplicaWindow.region = region;
+				readReplicaWindow.rdsResource = rdsData;
+				readReplicaWindow.title = TextButton(event.target).text;
+				PopUpManager.addPopUp(readReplicaWindow, UIComponent(parentApplication), true);
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>	
+		<s:DateTimeFormatter id="dateFormatter" dateTimePattern="MM/dd/yyyy hh:mm:ss a"/>
+		<services:RdsService id="rdsService"
+							 cloudAccountId="{cloudAccount.id}"
+							 region="{region}"
+							 dbIdentifier="{rdsData.id}"/>
+							 
+	</fx:Declarations>
+	<s:HGroup paddingLeft="10" gap="20">
+		<c9:TextButton click="terminate_clickHandler(event)"
+					   text="Delete"/>
+		<c9:TextButton text="Take Snapshot"
+					   action="{RdsService.CREATE_SNAPSHOT}"
+					   click="actionButton_clickHandler(event)"
+					   enabled="{actionsEnabled}"/>
+		<c9:TextButton text="Reboot"
+					   action="{RdsService.REBOOT_DB}"
+					   click="actionButton_clickHandler(event)"
+					   enabled="{actionsEnabled}"/>
+		<c9:TextButton id="createReadReplicaButton"
+					   text="Create Read Replica"
+					   action="{RdsService.CREATE_READ_REPLICA}"
+					   click="createReadReplicaButton_clickHandler(event)"
+					   enabled="{actionsEnabled}"/>
+	</s:HGroup>
+	<s:BorderContainer height="100%" width="100%" alpha="1" borderVisible="false">
+		<mx:TabNavigator id="rdsDetails" width="100%" height="100%" change="rdsDetails_changeHandler(event)">
+			<s:NavigatorContent label="Details" width="100%" height="100%">
+				<s:BorderContainer borderVisible="false" height="100%" width="100%">
+					<s:Scroller width="100%" height="100%">
+						<s:viewport>
+							<s:HGroup>
+								<s:Form>
+									<s:layout>
+										<s:FormLayout gap="-7"/>
+									</s:layout>
+									<s:FormItem label="DB Instance Name:">
+										<s:Label text="{rdsData.id}"/>
+									</s:FormItem>
+									<s:FormItem label="Endpoint:">
+										<s:Label text="{rdsData.endpoint}"/>
+									</s:FormItem>
+									<s:FormItem label="Availability Zone:">
+										<s:Label text="{rdsData.availabilityZone}"/>
+									</s:FormItem>
+									<s:FormItem label="Allocated Storage:">
+										<s:Label text="{rdsData.allocatedStorage} GB"/>
+									</s:FormItem>
+									<s:FormItem label="Instance Class:">
+										<s:Label text="{rdsData.instanceType}"/>
+									</s:FormItem>
+									<s:FormItem label="State:">
+										<s:Label text="{rdsData.state}"/>
+									</s:FormItem>
+									<s:FormItem label="Auto Minor Version Upgrade:">
+										<s:Label text="{rdsData.autoMinorVersionUpgrade}"/>
+									</s:FormItem>
+									<s:FormItem label="Maintenance Window:">
+										<s:Label text="{rdsData.preferredMaintenanceWindow}"/>
+									</s:FormItem>
+									<s:FormItem label="Backup Retention Period:">
+										<s:Label text="{rdsData.backupRetentionPeriod}"/>
+									</s:FormItem>
+									<s:FormItem label="Backup Window:">
+										<s:Label text="{rdsData.preferredBackupWindow}"/>
+									</s:FormItem>
+									<s:FormItem label="Creation Date:">
+										<s:Label text="{rdsData.createdAt}"/>
+									</s:FormItem>
+								</s:Form>
+								<s:Form>
+									<s:layout>
+										<s:FormLayout gap="-7"/>
+									</s:layout>
+									<s:FormItem label="DB Engine:">
+										<s:Label text="{rdsData.engine} {rdsData.engineVersion}"/>
+									</s:FormItem>
+									<s:FormItem label="Master Username:">
+										<s:Label text="{rdsData.masterUsername}"/>
+									</s:FormItem>
+									<s:FormItem label="Multi-Az Deployment:">
+										<s:Label text="{rdsData.multiAz}"/>
+									</s:FormItem>
+									<s:FormItem label="Latest Restorable Time:">
+										<s:Label text="{rdsData.lastRestorableTime}"/>
+									</s:FormItem>
+									<s:FormItem label="Parameter Group:">
+										<s:Label text="{rdsData.dbParameterGroupDisplay}"/>
+									</s:FormItem>
+									<s:FormItem label="Security Groups:">
+										<mx:Text text="{rdsData.dbSecurityGroupsDisplay}"/>
+									</s:FormItem>
+									<s:FormItem label="Read Replica(s):">
+										<mx:Text text="{rdsData.readReplicasDisplay}"/>
+									</s:FormItem>
+								</s:Form>
+							</s:HGroup>
+						</s:viewport>
+					</s:Scroller>
+				</s:BorderContainer>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="snapshotsContent" label="Snapshots" height="100%" width="100%">
+				<s:BorderContainer borderVisible="false" height="100%" width="100%">
+					<s:Scroller width="100%" height="100%">
+						<s:viewport>
+							<s:VGroup>
+								<s:FormItem label="Snapshot:">
+									<s:HGroup>
+										<mx:ComboBox id="snapshotsComboBox" 
+													 width="315"
+													 dataProvider="{rdsService.snapshots}"
+													 labelField="id" 
+													 prompt="Select Snapshot"/>
+										<c9:TextButton text="Delete Snapshot"
+													   action="{RdsService.DELETE_SNAPSHOT}"
+													   click="actionButton_clickHandler(event)"
+													   enabled="{actionsEnabled}"/>
+										<c9:TextButton text="Restore from Snapshot"
+													   enabled="{actionsEnabled}"
+													   action="{RdsService.RESTORE_FROM_SNAPSHOT}"
+													   click="actionButton_clickHandler(event)"/>
+									</s:HGroup>
+								</s:FormItem>
+								<rds:RdsSnapshotForm id="selectedSnapshotForm"
+													 snapshot="{snapshotsComboBox.selectedItem as DbSnapshotRepresenter}"/>
+							</s:VGroup>
+						</s:viewport>
+					</s:Scroller>
+				</s:BorderContainer>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="eventsContent" label="Events" width="100%" height="100%">
+				<s:BorderContainer borderVisible="false" id="events" height="100%" width="100%">
+					<s:DataGrid id="eventsDataGrid" width="100%" height="100%" dataProvider="{rdsService.events}">
+						<s:columns>
+							<s:ArrayList id="eventColumns">
+								<s:GridColumn headerText="Time" labelFunction="dateFormatFunction" dataField="date" width="200"/>
+								<s:GridColumn headerText="Source" dataField="aws_id" width="100"/>
+								<s:GridColumn headerText="Message" dataField="message"/>
+							</s:ArrayList>
+						</s:columns>
+					</s:DataGrid>
+				</s:BorderContainer>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="monitoringContent" label="Monitoring" width="100%" height="100%">
+				<c9:MonitoringBox id="monitorBox" cloudAccountId="{cloudAccount.id}" region="{region}"/>
+			</s:NavigatorContent>
+		</mx:TabNavigator>
+	</s:BorderContainer>
+</c9:ObjectManagementDetailsBox>

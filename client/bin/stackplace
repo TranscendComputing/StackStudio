@@ -1,0 +1,35 @@
+#!/usr/bin/env ruby
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'cli'))
+require 'optparse'
+
+options = { }
+OptionParser.new do |opts|
+  opts.banner = "Usage: stackplace [options]"
+
+   opts.on( '-h', '--help', 'Display this screen' ) do
+     puts opts
+     exit
+   end
+
+  opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
+    options[:verbose] = v
+  end
+
+  opts.on("-url", "--url HOST", "Set the base URL") do |u|
+    options[:url] = u
+  end
+end.parse!
+
+command = ARGV[0]
+args = ARGV[1..-1]
+
+if options[:verbose]
+  puts "Options: #{options} | Command: #{command} | Args: #{args}"
+end
+
+StackPlace::Config.host = options[:url] || ENV["STACK_PLACE_SERVICE_ENDPOINT"]
+cli = StackPlace::CLI::StackPlace.new(options[:verbose])
+# transfer options into CLI instance
+cli.verbose = true if options[:verbose]
+
+cli.run(command, args)

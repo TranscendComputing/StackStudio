@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   title="Network and Security Management"
+			   initialize="init(event)"
+			   close="titlewindow1_closeHandler(event)"
+			   creationComplete="titlewindow1_creationCompleteHandler(event)"
+			   move="Helpers.doMove(this)"
+			   width="1060" height="644" xmlns:components="com.momentumsi.c9.components.*" xmlns:dns="com.momentumsi.c9.components.dns.*">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
+			[Bindable]
+			private var dnsLabel:String;
+			
+			protected function init(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+			}
+			
+			protected function titlewindow1_creationCompleteHandler(event:FlexEvent):void
+			{
+				PopUpManager.centerPopUp(this);
+				if(Helpers.currentCloud(this) == "AWS")
+					dnsLabel = "Route 53";
+				else
+					dnsLabel = "DNS 53";
+			}
+			
+			protected function titlewindow1_closeHandler(event:CloseEvent):void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+
+	</fx:Declarations>
+	<s:VGroup height="100%" width="100%" color="black">
+		<mx:TabNavigator height="100%" width="100%">
+			<s:NavigatorContent id="securityGroupManagerContent" label="Security Groups" width="100%" height="100%">
+				<components:SecurityGroupManagerPopUp id="securityGroupManager" height="100%" width="100%"/>
+			</s:NavigatorContent>
+			<s:NavigatorContent label="Elastic IPs" id="elasticIPManagerContent" height="100%" width="100%">
+				<components:ElasticIPManagement id="elasticIPManager" height="100%" width="100%"/>
+			</s:NavigatorContent>
+			<s:NavigatorContent label="{dnsLabel}" id="dns53Content" height="100%" width="100%">
+				<dns:Dns53Management id="dns53Manager" height="100%" width="100%"/>
+			</s:NavigatorContent>
+		</mx:TabNavigator>
+		<s:HGroup width="100%" horizontalAlign="center" verticalAlign="middle" paddingBottom="5">
+			<s:Button label="Close" click="PopUpManager.removePopUp(this)"/>
+		</s:HGroup>
+	</s:VGroup>
+</s:TitleWindow>

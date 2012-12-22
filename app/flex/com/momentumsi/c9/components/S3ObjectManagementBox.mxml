@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<c9:ObjectManagementDetailsBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:c9="com.momentumsi.c9.components.*"
+		  xmlns:services="com.momentumsi.c9.services.*">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.maccherone.json.JSON;
+			import com.momentumsi.c9.services.CloudApiService;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import flash.net.FileReference;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.UIComponent;
+			import mx.events.IndexChangedEvent;
+			import mx.events.ListEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.StringUtil;
+			
+			[Bindable]
+			private var s3Data:Object;
+			[Bindable]
+			public var accountId:int;
+			[Bindable]
+			private var terminateEnabled:Boolean = true;
+			[Bindable]
+			private var objectsList:ArrayCollection = new ArrayCollection();
+			private var fileRef:FileReference = new FileReference();
+			
+			override public function set resourceData(value:Object):void
+			{
+				s3Data = value;
+				super.resourceData = s3Data;
+				s3Details.selectedIndex = 0;
+				convertDisplay();
+			}
+			
+			private function convertDisplay():void
+			{
+				refreshBucketList();
+				objectsViewStack.selectedChild = loading;
+			}
+			
+			protected function terminate_clickHandler(event:MouseEvent):void
+			{
+				if(terminateEnabled)
+				{
+					var destroyPopUp:DestroyResourceObjectManagement = DestroyResourceObjectManagement(PopUpManager.createPopUp(UIComponent(this.parentApplication), DestroyResourceObjectManagement, true));
+					destroyPopUp.cloudAccountId = cloudAccount.id;
+					destroyPopUp.region = region;
+					destroyPopUp.resourceType = CloudApiService.S3_SERVICE;
+					destroyPopUp.resourceDisplayId = s3Data.key;
+					destroyPopUp.resourceId = s3Data.key;
+				}
+			}
+			
+			protected function listBucket_resultHandler(event:ResultEvent):void
+			{
+				objectsList.removeAll();
+				for each(var item:Object in s3Service.bucketContents)
+				{
+					var size:Number;
+					var sizeString:String;
+					var unit:String;
+					if(item.content_length > 1073741824)
+					{
+						unit = "GB"
+						size = item.content_length/1073741824;
+						sizeString = size.toFixed(1);
+					}
+					else if(item.content_length > 1048576)
+					{
+						unit = "MB"
+						size = item.content_length/1048576;
+						sizeString = size.toFixed(1);
+					}
+					else if(item.content_length > 1024)
+					{
+						unit = "KB"
+						size = item.content_length/1024;
+						sizeString = size.toFixed(1);
+					}else
+					{
+						unit = "Bytes";
+						size = item.content_length;
+						sizeString = size.toString();
+					}
+					
+					var lastModified:String = dateFormatter.format(Helpers.formatDate(item.last_modified));
+					objectsList.addItem({name: item.key, size: sizeString + " " + unit, lastM: lastModified});
+				}
+				
+				if(objectsList.length > 0)
+				{
+					objectsViewStack.selectedChild = objects;
+				}else
+				{
+					objectsViewStack.selectedChild = noObjects;
+				}
+				
+				s3Service.removeEventListener(ResultEvent.RESULT, listBucket_resultHandler);
+			}
+			
+			protected function upload_clickHandler(event:MouseEvent):void
+			{
+				fileRef.addEventListener(Event.SELECT, uploadSelectHandler);
+				try
+				{
+					var success:Boolean = fileRef.browse();
+				}
+				catch (error:Error)
+				{
+					Alert.show("Unable to browse for files.");
+				}
+			}
+			
+			protected function uploadSelectHandler(event:Event):void
+			{
+				doUpload(fileRef);
+			}
+			
+			protected function doUpload(file:FileReference):void
+			{
+				var urlString:String = Helpers.getHost() + "/s3_upload/" + this.parentApplication.user.id + "/" + cloudAccount.id + "/S3/" + s3Data.key + "/upload_file_to_bucket";
+				var uploadURLReq:URLRequest = new URLRequest(urlString);
+				try
+				{
+					file.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, uploadComplete_resultHandler);
+					file.upload(uploadURLReq);
+				} catch (error:Error)
+				{
+					trace("Unable to upload file. " + error);
+				}
+			}
+			
+			protected function uploadComplete_resultHandler(event:DataEvent):void
+			{
+				refreshBucketList();
+			}
+			
+			protected function download_clickHandler(event:MouseEvent):void
+			{
+				if(objectsDataGrid.selectedIndex != -1)
+				{
+					var keyString:String = objectsDataGrid.selectedItem.name;
+					var keyArray:Array = keyString.split("/");
+					var nameIndex:Number = keyArray.length - 1;
+					var downloadedFileName:String = keyArray[nameIndex];
+					
+					var urlString:String = Helpers.getHost() + "/s3_download/" + this.parentApplication.user.id + "/" + cloudAccount.id + "/S3/" + s3Data.key + "/" + "/get_object?key=" + objectsDataGrid.selectedItem.name;
+					var downloadURLReq:URLRequest = new URLRequest(urlString);
+					
+					var file:FileReference = new FileReference();
+					file.download(downloadURLReq, downloadedFileName);
+				}
+			}
+			
+			protected function deleteObject_clickHandler(event:MouseEvent):void
+			{
+				if(objectsDataGrid.selectedIndex!=-1)
+				{
+					var deleteObjectPopUp:DeleteS3ObjectPopUp = DeleteS3ObjectPopUp(PopUpManager.createPopUp(UIComponent(this.parentApplication), DeleteS3ObjectPopUp, true));
+					deleteObjectPopUp.cloudAccountId = cloudAccount.id;
+					deleteObjectPopUp.region = region;
+					deleteObjectPopUp.s3Data = s3Data;
+					deleteObjectPopUp.key = objectsDataGrid.selectedItem.name;
+					deleteObjectPopUp.bucketBox = this;
+				}
+			}
+			
+			public function refreshBucketList():void
+			{
+				s3Service.listBucket(s3Data.key);
+				s3Service.addEventListener(ResultEvent.RESULT, listBucket_resultHandler);
+				objectsViewStack.selectedChild = loading;
+				objectsDataGrid.selectedIndex = -1;
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>	
+		<s:DateTimeFormatter id="dateFormatter" dateTimePattern="MM/dd/yyyy hh:mm:ss a"/>
+		
+		<services:S3Service id="s3Service"
+						 	cloudAccountId="{cloudAccount.id}"
+							region="{region}"/>
+	</fx:Declarations>
+	
+	<s:HGroup paddingLeft="10" gap="20">
+		<c9:TextButton text="Delete Bucket" click="terminate_clickHandler(event)" enabled="{terminateEnabled}"/>
+		<c9:TextButton text="Download Object" click="download_clickHandler(event)" enabled="{objectsDataGrid.selectedIndex!=-1}"/>
+		<c9:TextButton text="Upload Object" click="upload_clickHandler(event)"/>
+		<c9:TextButton text="Delete Object" click="deleteObject_clickHandler(event)" enabled="{objectsDataGrid.selectedIndex!=-1}"/>
+		<c9:TextButton text="Refresh Objects" click="refreshBucketList()"/>
+	</s:HGroup>
+	<s:BorderContainer height="100%" width="100%" alpha="1" borderVisible="false">
+		<mx:TabNavigator id="s3Details" width="100%" height="100%">
+			<s:NavigatorContent label="Objects" width="100%" height="100%">
+				<mx:ViewStack id="objectsViewStack" width="100%" height="100%">
+					<s:NavigatorContent id="loading" width="100%" height="100%">
+						<s:BusyIndicator width="50" height="50"/>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="objects" width="100%" height="100%">
+						<s:VGroup width="100%" height="100%" paddingLeft="10" paddingRight="10">
+							<s:DataGrid id="objectsDataGrid" width="100%" height="100%" dataProvider="{objectsList}" selectionMode="singleRow">
+								<s:columns>
+									<s:ArrayList id="objectsGridColumns">
+										<s:GridColumn headerText="Name" dataField="name"/>
+										<s:GridColumn headerText="Size" dataField="size" width="150"/>
+										<s:GridColumn headerText="Last Modified" dataField="lastM" width="200"/>
+									</s:ArrayList>
+								</s:columns>
+							</s:DataGrid>
+						</s:VGroup>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="noObjects" width="100%" height="100%">
+						<s:VGroup width="100%" height="100%" paddingLeft="10" paddingRight="10">
+							<mx:Text text="This bucket is empty"/>
+						</s:VGroup>
+					</s:NavigatorContent>
+				</mx:ViewStack>
+			</s:NavigatorContent>
+		</mx:TabNavigator>
+	</s:BorderContainer>
+</c9:ObjectManagementDetailsBox>

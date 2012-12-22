@@ -1,0 +1,617 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   xmlns:diagrammer="fr.kapit.diagrammer.base.uicomponent.*"
+			   title="Record Set Group Wizard"
+			   initialize="init(event)"
+			   move="Helpers.doMove(this)"
+			   creationComplete="creationCompleteHandler(event)"
+			   close="PopUpManager.removePopUp(this);"
+			   width="800" height="600">
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import fr.kapit.diagrammer.Diagrammer;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.events.IndexChangedEvent;
+			import mx.events.ListEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.StringUtil;
+			
+			[Bindable]
+			private var projectId:int;
+			[Bindable]
+			private var accountId:int;
+			[Bindable]
+			private var hostedZoneCollection:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var typeCollection:ArrayCollection = new ArrayCollection([{label: "A - IPv4 address", value: "A"},
+				{label: "CNAME - Canonical name", value: "CNAME"},
+				{label: "MX - Mail exchange", value: "MX"},
+				{label: "AAAA - IPv6 address", value: "AAAA"},
+				{label: "TXT - Text", value: "TXT"},
+				{label: "PTR - Pointer", value: "PTR"},
+				{label: "SRV - Service locator", value: "SRV"},
+				{label: "SPF - Sender Policy Framework", value: "SPF"},
+				{label: "NS - Name server", value: "NS"}]);
+			[Bindable]
+			private var timePeriod:ArrayCollection = new ArrayCollection([{label: "Second(s)", value: 1},
+				{label: "Minute(s)", value: 60},
+				{label: "Hour(s)", value: 3600},
+				{label: "Day(s)", value: 86400}]);
+			[Bindable]
+			private var resourceTypes:ArrayCollection = new ArrayCollection([{label: "Compute Cloud", value: "EC2"},
+				{label: "Load Balancer", value: "ELB"}]);
+			[Bindable]
+			private var attributes:ArrayCollection = new ArrayCollection([{label: "Public IP", value: "PublicIp"},
+				{label: "Public DNS Name", value: "PublicDnsName"}]);
+			[Bindable]
+			private var resourceListCollection:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var recordListCollection:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var hostedZoneNameFinal:String = "";
+			[Bindable]
+			private var hostedZoneIdFinal:String = "";
+			[Bindable]
+			private var recordNameFinal:String = "";
+			[Bindable]
+			private var recordTypeFinal:String = "";
+			[Bindable]
+			private var ttlFinal:int = 0;
+			[Bindable]
+			private var resourcesFinal:String = "";
+			[Bindable]
+			private var weightFinal:String = "";
+			[Bindable]
+			private var recordsFinal:String = "";
+			public var configure:int = 0;
+			
+			
+			protected function init(event:FlexEvent):void
+			{
+				projectId = Helpers.currentProject(this);
+				accountId = Helpers.currentAccount(this);
+				getHostedZonesSvc.send();
+			}
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				PopUpManager.centerPopUp(this);
+			}
+			
+			protected function dns53Wizard_changeHandler(event:IndexChangedEvent):void
+			{
+				switch(dns53Wizard.selectedChild)
+				{
+					case groupDetails:
+						circleTrail.x = 90;
+						break;
+					case resourceConfig:
+						circleTrail.x = 408;
+						break;
+					case review:
+						circleTrail.x = 705;
+						break;
+				}
+			}
+			
+			protected function previousButton_clickHandler(event:MouseEvent):void
+			{
+				dns53Wizard.selectedIndex--;
+			}
+			
+			protected function nextButton_clickHandler(event:MouseEvent):void
+			{
+				var alert:Boolean = false;
+				switch(dns53Wizard.selectedChild)
+				{
+					case groupDetails:
+						if(resourceName.text.replace(" ", "") != "")
+						{
+							resourceNameAlert.visible = false;
+						}else
+						{
+							resourceNameAlert.visible = true;
+							alert = true;
+						}
+						
+						if(hostedZone.selectedIndex != -1)
+						{
+							hostedZoneAlert.visible = false;
+							hostedZoneNameFinal = hostedZone.selectedItem.name;
+							hostedZoneIdFinal = hostedZone.selectedItem.zoneId;
+						}else
+						{
+							hostedZoneAlert.visible = true;
+							alert = true;
+						}
+						break;
+					case resourceConfig:
+						if(recordListCollection.length > 0)
+						{
+							recordsFinal = "[ ";
+							for each(var r:Object in recordListCollection)
+							{
+								recordsFinal = recordsFinal + r.name + ", ";
+							}
+							recordsFinal = recordsFinal.substr(0, -2) + " ]";
+						}else
+						{
+							alert = true;
+							Alert.show("At least one record must be added to a record set group to continue.");
+						}
+				}
+				
+				if(!alert)
+				{
+					dns53Wizard.selectedIndex++;
+				}
+			}
+			
+			protected function submitButton_clickHandler(event:MouseEvent):void
+			{
+				submitButton.enabled = false;
+
+				if(configure == 1)
+				{
+					/*
+					editDnsRecordSetGroup.send({id: dnsRecordInstance.child('id'),
+						hosted_zone_id: hostedZoneIdFinal,
+						hosted_zone_name: hostedZoneNameFinal,
+						name: recordName.text,
+						type: recordTypeFinal,
+						ttl: ttlFinal,
+						weight: weightValue.text,
+						set_identifier: setIdValue.text});
+					*/
+				}else
+				{
+					recordAttributes = new Object();
+					
+					recordObject = new Object();
+					var name:String = resourceName.text;
+					recordAttributes['Type'] = ResourceType.RECORD_SET;
+					recordAttributes['Properties'] = getPropertiesObject();
+					recordObject[name] = recordAttributes;
+					
+					Helpers.getMainBox(this).jsonViewer.reviewObject = recordObject;
+					
+					Helpers.getMainBox(this).jsonViewer.addToTemplateSource();
+					
+					//createDnsRecordSetGroup.send();
+				}
+			}
+			
+			private function getPropertiesObject():Object
+			{
+				var recordProperties:Object = new Object();	
+				recordProperties['HostedZoneName'] = hostedZoneNameFinal;
+				recordProperties['Name'] = recordNameFinal;
+				recordProperties['Type'] = recordTypeFinal;
+				recordProperties['TTL'] = ttlFinal;
+				recordProperties['ResourceRecords'] = [];
+				for each(var r:Object in resourceListCollection)
+				{
+					if(r.type == "template")
+					{
+						recordProperties['ResourceRecords'].push({"Fn::GetAtt":[r.label, r.attribute]});
+					}else
+					{
+						recordProperties['ResourceRecords'].push(r.label);
+					}
+				}
+				
+				if(weightCheck.selected)
+				{
+					recordProperties['Weight'] = weightValue.text;
+					recordProperties['SetIdentifier'] = setIdValue.text;
+				}
+				
+				return recordProperties;
+			}
+			
+			protected function cancelButton_clickHandler(event:MouseEvent):void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function resourcetype_changeHandler(event:ListEvent):void
+			{
+				attributes.removeAll();
+				var ec2Attributes:ArrayCollection = new ArrayCollection([{label: "Public IP", value: "PublicIp"}, {label: "Public DNS Name", value: "PublicDnsName"}]);
+				var elbAttributes:ArrayCollection = new ArrayCollection([{label: "DNS Name", value: "DNSName"}]);
+				switch(resourceType.selectedItem.value)
+				{
+					case "EC2":
+						attributes.addAll(ec2Attributes);
+						break;
+					case "ELB":
+						attributes.addAll(elbAttributes);
+						break;
+				}
+			}
+			
+			protected function addTemplateResourceButton_clickHandler(event:MouseEvent):void
+			{
+				if(templateResourceValue.text.replace(" ", "") != "")
+				{
+					resourceListCollection.addItem({label: templateResourceValue.text, type: "template", attribute: attribute.selectedItem.value});
+				}else
+				{
+					Alert.show("Invalid Input.");
+				}
+			}
+			
+			protected function addExternalResourceButton_clickHandler(event:MouseEvent):void
+			{
+				if(externalResourceValue.text.replace(" ", "") != "")
+				{
+					resourceListCollection.addItem({label: externalResourceValue.text, type: "external"});
+				}else
+				{
+					Alert.show("Invalid Input.");
+				}
+			}
+			
+			protected function RemoveResourceButton_clickHandler(event:MouseEvent):void
+			{
+				if(resourceList.selectedIndex != -1)
+				{
+					resourceListCollection.removeItemAt(resourceList.selectedIndex);
+				}
+			}
+			
+			protected function createDnsRecordSet_resultHandler(event:ResultEvent):void
+			{
+				dnsRecordInstance = event.result as XML;
+				var p:Point = new Point(node.x, node.y);
+				var designDiagram:Diagrammer = Helpers.getDesignDiagram(this);
+				var newNode:DiagramSprite = designDiagram.addNodeElement(dnsRecordInstance, null, null, p) as DiagramSprite;
+				newNode.isSizeFixed = true;
+				designDiagram.removeNodeElement(node.itemID);
+				Helpers.getMainBox(this).jsonViewer.updateTemplateSource();
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function getHostedZonesSvc_resultHandler(event:ResultEvent):void
+			{
+				var result:XMLList = Helpers.xmlChildrenFromEvent(event);
+				hostedZoneCollection.removeAll();
+				for each(var zone:XML in result.children())
+				{
+					if(zone.name() == "HostedZone")
+					{
+						hostedZoneCollection.addItem({label: zone.child('Name'), name: zone.child('Name'), zoneId: zone.child('Id'), comment: zone.child('Comment')});
+					}
+				}
+			}
+			
+			protected function faultHandler(event:FaultEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+			}
+			
+			protected function editDnsRecordSetSvc_resultHandler(event:ResultEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+			}
+			
+			protected function addRecord_clickHandler(event:MouseEvent):void
+			{
+				var alert:Boolean = false;
+				
+				if(recordName.text.replace(" ", "") != "")
+				{	
+					recordNameFinal = recordName.text;
+					if(recordNameFinal.substr(-1, 1) != '.')
+					{
+						recordNameFinal = recordNameFinal + "." + hostedZoneNameFinal;
+					}
+					recordNameAlert.visible = false;
+				}else
+				{
+					recordNameAlert.visible = true;
+					alert = true;
+				}
+				
+				recordTypeFinal = recordType.selectedItem.value;
+				
+				if(ttl.text.replace(" ", "") != "")
+				{
+					try
+					{
+						var ttlInt:int = parseInt(ttl.text);
+						if(ttlInt >= 0)
+						{
+							ttlAlert.visible = false;
+							ttlFinal = ttlInt * ttlPeriod.selectedItem.value;
+						}else
+						{
+							ttlAlert.visible = true;
+							alert = true;
+						}
+					}catch(e:Error)
+					{
+						ttlAlert.visible = true;
+						alert = true;
+					}
+				}else
+				{
+					ttlAlert.visible = true;
+					alert = true;
+				}
+				
+				if(resourceListCollection.length > 0)
+				{
+					resourcesFinal = "[ ";
+					for each(var r:Object in resourceListCollection)
+					{
+						resourcesFinal = resourcesFinal + r.label + ", ";
+					}
+					resourcesFinal = resourcesFinal.substr(0, -2) + " ]";
+				}else
+				{
+					Alert.show("Please provide at least one resource.");
+					alert = true;
+				}
+				
+				if(weightCheck.selected)
+				{
+					if(weightValue.text.replace(" ", "") != "" && setIdValue.text.replace(" ", "") != "")
+					{
+						try
+						{
+							var weightInt:int = parseInt(weightValue.text);
+							if(weightInt >= 0 && weightInt < 256)
+							{
+								weightFinal = weightValue.text + " : " + setIdValue.text;
+								weightAlert.visible = false;
+							}else
+							{
+								weightAlert.visible = true;
+								alert = true;
+							}
+						}catch(e:Error)
+						{
+							weightAlert.visible = true;
+							alert = true;
+						}
+					}else
+					{
+						weightAlert.visible = true;
+						alert = true;
+					}
+				}else
+				{
+					weightValue.text = "";
+					setIdValue.text = "";
+					weightFinal = "N/A";
+				}
+				
+				if(!alert)
+				{
+					weightAlert.visible = false;
+				}
+				
+				if(!alert)
+				{
+					var valueString:String = "";
+					for each(var resource:Object in resourceListCollection)
+					{
+						valueString = valueString + resource.label + "\n";
+					}
+					valueString = StringUtil.trim(valueString);
+					recordListCollection.addItem({name: recordName.text, type: recordTypeFinal, ttl: ttlFinal, resources: valueString, realResources: resourceListCollection, weight: weightValue.text, setId: setIdValue.text});
+					
+					//Reset fields for new record entry
+					recordName.text = "";
+					recordType.selectedIndex = 0;
+					ttl.text = "900";
+					ttlPeriod.selectedIndex = 0;
+					weightCheck.selected = false;
+					weightValue.text = "";
+					setIdValue.text = "";
+					externalResourceValue.text = "";
+					templateResourceValue.text = "";
+					resourceType.selectedIndex = 0;
+					attribute.selectedIndex = 0;
+					resourceListCollection.removeAll();
+				}
+			}
+			
+			protected function removeRecord_clickHandler(event:MouseEvent):void
+			{
+				if(recordSets.selectedIndex != -1)
+				{
+					recordListCollection.removeItemAt(recordSets.selectedIndex);
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<diagrammer:DiagramSprite id="node"/>
+		<fx:XML id="dnsRecordInstance"/>
+		<s:RadioButtonGroup id="hostedZoneGroup"/>
+		<s:RadioButtonGroup id="resourceRecordsGroup"/>
+		<fx:Object id="recordObject"/>
+		<fx:Object id="recordAttributes"/>
+		<!--
+		<s:HTTPService id="createDnsRecordSetGroup"
+					   url="{Helpers.getHost()}/create_new_dns_record_set"
+					   contentType="application/xml"
+					   resultFormat="e4x"
+					   method="POST"
+					   result="createDnsRecordSet_resultHandler(event)"
+					   fault="faultHandler(event)">
+			<s:request>
+				<dns_record_set>
+					<hosted_zone_id>{hostedZoneIdFinal}</hosted_zone_id>
+					<hosted_zone_name>{hostedZoneNameFinal}</hosted_zone_name>
+					<name>{resourceName.text}</name>
+					<record_name>{recordNameFinal}</record_name>
+					<record_type>{recordTypeFinal}</record_type>
+					<ttl>{ttlFinal}</ttl>
+					<weight>{weightValue.text}</weight>
+					<set_identifier>{setIdValue.text}</set_identifier>
+					<x_coordinate>{node.x}</x_coordinate>
+					<y_coordinate>{node.y}</y_coordinate>
+					<project_id>{projectId}</project_id>
+				</dns_record_set>
+			</s:request>
+		</s:HTTPService>
+		-->
+		<s:HTTPService id="getHostedZonesSvc"
+					   url="{Helpers.getHost()}/ec2_accounts/get_dns_hosted_zones/{accountId}.xml"
+					   resultFormat="e4x"
+					   method="GET"
+					   showBusyCursor="true"
+					   result="getHostedZonesSvc_resultHandler(event)"
+					   fault="faultHandler(event)"/>
+
+	</fx:Declarations>
+	
+	<s:VGroup>
+		<s:Group height="40" width="100%">
+			<s:Line xFrom="50" xTo="750" y="10">
+				<s:stroke>
+					<s:SolidColorStroke color="0x000000" weight="2"/>
+				</s:stroke>
+			</s:Line>
+			<s:Line x="750" yFrom="5" yTo="15">
+				<s:stroke>
+					<s:SolidColorStroke color="0x000000" weight="2"/>
+				</s:stroke>
+			</s:Line>
+			<s:Image id="circleTrail" x="90" y="3" source="/com/momentumsi/c9/assets/circle_trail.gif" width="16" height="16"/>
+			<s:HGroup x="50" y="20" gap="195">
+				<mx:Text text="Group Details" fontWeight="bold" enabled="{dns53Wizard.selectedIndex == 0}" textAlign="center"/>
+				<mx:Text text="Record Configurations" fontWeight="bold" enabled="{dns53Wizard.selectedIndex == 1}" textAlign="center"/>
+				<mx:Text text="Review" fontWeight="bold" enabled="{dns53Wizard.selectedIndex == 2}"/>
+			</s:HGroup>
+		</s:Group>	
+		<mx:ViewStack id="dns53Wizard" change="dns53Wizard_changeHandler(event)" paddingTop="20" paddingLeft="20" width="775" height="100%" creationPolicy="all">
+			<s:NavigatorContent id="groupDetails">
+				<s:Form textAlign="right">
+					<s:FormItem label="Group Name*: ">
+						<s:HGroup>
+							<s:TextInput id="resourceName" textAlign="left"/>
+							<mx:Text id="resourceNameAlert" text="Invalid Input." color="red" visible="false"/>
+						</s:HGroup>
+					</s:FormItem>
+					<s:FormItem label="Hosted Zone*: ">
+						<s:HGroup>
+							<mx:ComboBox id="hostedZone" dataProvider="{hostedZoneCollection}" prompt="Select Zone" enabled="{hostedZoneCollection.length > 0}" width="200" textAlign="left"/>
+							<mx:Text id="hostedZoneAlert" text="Invalid Input." color="red" visible="false"/>
+						</s:HGroup>
+					</s:FormItem>
+					<s:FormItem label="Comment: ">
+						<s:TextInput id="comment" textAlign="left" width="300"/>
+					</s:FormItem>
+				</s:Form>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="resourceConfig">
+				<s:VGroup>
+					<s:HGroup width="852">
+						<s:VGroup width="420">
+							<s:FormItem label="Record Name*: ">
+								<s:HGroup>
+									<s:TextInput id="recordName" textAlign="left" width="200"/>
+									<mx:Text id="recordNameAlert" text="Invalid Input." color="red" visible="false"/>
+								</s:HGroup>
+							</s:FormItem>
+							<s:FormItem label="Record Type*: ">
+								<mx:ComboBox id="recordType" textAlign="left" dataProvider="{typeCollection}" width="200"/>
+							</s:FormItem>
+							<s:FormItem label="TTL*: ">
+								<s:HGroup>
+									<s:TextInput id="ttl" textAlign="left" text="900"/>
+									<mx:ComboBox id="ttlPeriod" textAlign="left" dataProvider="{timePeriod}" width="100"/>
+									<mx:Text id="ttlAlert" text="Invalid Input." color="red" visible="false"/>
+								</s:HGroup>
+							</s:FormItem>
+							<s:FormItem label="Weight: " textAlign="right">
+								<s:CheckBox id="weightCheck" label="Enable" selected="false"/>
+								<s:HGroup enabled="{weightCheck.selected}">
+									<mx:Text text="Weight: "/>
+									<s:TextInput id="weightValue" textAlign="left" widthInChars="3"/>
+									<mx:Text text="Set ID: "/>
+									<s:TextInput id="setIdValue" textAlign="left"/>
+									<mx:Text id="weightAlert" text="Invalid Input." color="red" visible="false"/>
+								</s:HGroup>
+							</s:FormItem>
+						</s:VGroup>
+						<s:VGroup paddingTop="10">
+							<mx:Text text="Resources*: " fontWeight="bold"/>
+							<s:RadioButton id="externalResource" label="Non-Template Resource" group="{resourceRecordsGroup}" selected="true"/>
+							<s:HGroup paddingLeft="20" enabled="{externalResource.selected}">
+								<s:TextInput id="externalResourceValue" width="202"/>
+								<s:Image width="16" height="16"
+										 source="{ImagePath.HELPER_ICON}"
+										 toolTip="(e.g. www.example.com)"/>
+								<s:Button id="addExternalResourceButton" label="Add" click="addExternalResourceButton_clickHandler(event)"/>
+							</s:HGroup>
+							<s:RadioButton id="templateResource" label="Template Resource" group="{resourceRecordsGroup}"/>
+							<s:HGroup paddingLeft="20" enabled="{templateResource.selected}">
+								<mx:Text text="Name: " textAlign="right" width="70"/>
+								<s:TextInput id="templateResourceValue"/>
+								<s:Image width="16" height="16"
+										 source="{ImagePath.HELPER_ICON}"
+										 toolTip="(e.g. &quot;MyEc2Instance&quot;)"/>
+								<s:Button id="addTemplateResourceButton" label="Add" click="addTemplateResourceButton_clickHandler(event)"/>
+							</s:HGroup>
+							<s:HGroup paddingLeft="20" enabled="{templateResource.selected}">
+								<mx:Text text="Type: " textAlign="right" width="70"/>
+								<mx:ComboBox id="resourceType" dataProvider="{resourceTypes}" change="resourcetype_changeHandler(event)"/>
+							</s:HGroup>
+							<s:HGroup paddingLeft="20" enabled="{templateResource.selected}">
+								<mx:Text text="Attribute: " textAlign="right" width="70"/>
+								<mx:ComboBox id="attribute" dataProvider="{attributes}"/>
+							</s:HGroup>
+							<s:List id="resourceList" width="300" height="60" dataProvider="{resourceListCollection}" />
+							<s:Button id="RemoveResourceButton" label="Remove Resource" click="RemoveResourceButton_clickHandler(event)"/>
+						</s:VGroup>
+					</s:HGroup>
+					<s:HGroup>
+						<s:Button label="Add Record" click="addRecord_clickHandler(event)"/>
+						<s:Button label="Remove Record" click="removeRecord_clickHandler(event)"/>
+					</s:HGroup>
+						<s:DataGrid id="recordSets" width="755" height="125" selectionMode="singleRow" dataProvider="{recordListCollection}" variableRowHeight="true">
+							<s:columns>
+								<s:ArrayList id="recordSetColumns">
+									<s:GridColumn headerText="Name" dataField="name"/>
+									<s:GridColumn headerText="Type" dataField="type" width="60"/>
+									<s:GridColumn headerText="TTL" dataField="ttl" width="60"/>
+									<s:GridColumn headerText="Resource(s)" dataField="resources"/>
+									<s:GridColumn headerText="Weight" dataField="weight"/>
+									<s:GridColumn headerText="Set ID" dataField="setId"/>
+								</s:ArrayList>
+							</s:columns>
+						</s:DataGrid>
+				</s:VGroup>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="review">
+				<mx:Text text="Please Review Your Record Set Group" y="20" fontWeight="bold"/>
+				<s:VGroup x="25" y="60">
+					<mx:Text text="Name: {resourceName.text}"/>
+					<mx:Text text="Hosted Zone: {hostedZoneNameFinal}"/>
+					<mx:Text text="Records: {recordsFinal}" width="450"/>
+				</s:VGroup>
+			</s:NavigatorContent>
+		</mx:ViewStack>
+	</s:VGroup>
+	<s:Button id="previousButton" x="10" y="536" label="Previous" click="previousButton_clickHandler(event)" enabled="{dns53Wizard.selectedChild != groupDetails}"/>
+	<s:Button id="nextButton" x="92" y="536" label="Next" click="nextButton_clickHandler(event)" enabled="{dns53Wizard.selectedChild != review}"/>
+	<s:Button id="submitButton" x="169" y="536" label="Finish" click="submitButton_clickHandler(event)" enabled="{dns53Wizard.selectedChild == review}"/>
+	<s:Button id="cancelButton" x="719" y="536" label="Cancel" click="cancelButton_clickHandler(event)"/>
+</s:TitleWindow>

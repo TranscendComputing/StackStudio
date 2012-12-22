@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wizard:WizardWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   xmlns:wizard="com.momentumsi.c9.components.wizard.*"
+			   creationComplete="customtitlewindow1_creationCompleteHandler(event)"
+			   width="562" height="{buttonGroup.y + 65}" 
+			   title="Assign Version" 
+			   xmlns:components="com.momentumsi.c9.components.*">
+	<fx:Metadata>
+		[Event(name="freezeVersionResult", type="com.momentumsi.c9.events.project.FreezeVersionResultEvent")]
+	</fx:Metadata>
+	<fx:Script>
+		<![CDATA[	
+			import com.momentumsi.c9.constants.ImagePath;
+			import com.momentumsi.c9.events.ProjectEvent;
+			import com.momentumsi.c9.events.project.FreezeVersionResultEvent;
+			import com.momentumsi.c9.models.Version;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.events.ValidationResultEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			
+			import spark.events.TextOperationEvent;
+			
+			[Bindable]
+			private var versionToolTip:String = "New version must be larger than latest version.";
+			private var newVersion:String;
+			
+			protected function wizardbuttongroup1_finishButtonClickHandler(event:MouseEvent):void
+			{
+				if(isValidVersion() == true)
+				{
+					newVersion = majorTI.text + "." + minorTI.text + "." + patchTI.text;
+					buttonGroup.createButton.enabled = false;
+					project.addEventListener(ProjectEvent.PROJECT_RESULT, projectUpdated);
+					project.freezeVersion(newVersion, description.text);
+				}
+			}
+			
+			private function isValidVersion():Boolean
+			{
+				var current:Array = project.mostRecentVersion.split(".");
+				if(parseInt(majorTI.text) >  parseInt(current[0]))
+				{
+					return true;
+				}
+				
+				if(parseInt(majorTI.text) ==  parseInt(current[0]) && parseInt(minorTI.text) >  parseInt(current[1]))
+				{
+					return true;
+				}
+				
+				if(parseInt(majorTI.text) ==  parseInt(current[0]) && parseInt(minorTI.text) ==  parseInt(current[1]) && parseInt(patchTI.text) >  parseInt(current[2]))
+				{
+					return true;
+				}
+				
+				//Validations all failed, prompt error and return false
+				versionValidationAlert.visible = true;
+				versionValidationAlert.includeInLayout = true;
+				return false;
+			}
+			
+			
+			private function projectUpdated(event:ProjectEvent):void
+			{
+				project.removeEventListener(ProjectEvent.PROJECT_RESULT, projectUpdated);
+				project.versions = event.project.versions;
+				project.currentVersion = event.project.currentVersion;
+				dispatchEvent(new FreezeVersionResultEvent(event.project, newVersion));
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function customtitlewindow1_creationCompleteHandler(event:FlexEvent):void
+			{
+				buttonGroup.nextButton.visible = false;
+				buttonGroup.previousButton.visible = false;
+				buttonGroup.nextButton.includeInLayout = false;
+				buttonGroup.previousButton.includeInLayout = false;
+				buttonGroup.createButton.enabled = false;
+				latestVersionLabel.text = project.mostRecentVersion;
+			}
+			
+			protected function version_changeHandler(event:TextOperationEvent):void
+			{
+				if(!(Helpers.isEmptyTextField(majorTI) || Helpers.isEmptyTextField(minorTI) || Helpers.isEmptyTextField(patchTI)))
+				{
+					buttonGroup.createButton.enabled = true;
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<!--<mx:RegExpValidator expression="\d+\.\d+\.\d+"
+						    id="formatValidator"
+							required="true"
+						    valid="regexpvalidator1_validHandler(event)"
+						    invalid="regexpvalidator1_invalidHandler(event)"
+						    property="text"
+						    source="{version.input}"/>-->
+	</fx:Declarations>
+	<s:VGroup width="100%">
+		<wizard:WizardWindowTitle id="freezeVersionWindowTitle"
+								  resourceImage="{ImagePath.NEW_STACK}"
+								  visible="true"
+								  includeInLayout="true"
+								  width="100%"
+								  resourceLabel="Assign Version"/>
+		<s:Form width="100%">
+			<s:FormItem label="Latest Version:">
+				<s:Label id="latestVersionLabel"/>
+			</s:FormItem>
+			<s:FormItem width="100%" label="New Version:">
+				<s:VGroup>
+					<s:HGroup>
+						<s:TextInput id="majorTI"
+									 prompt="major"
+									 change="version_changeHandler(event)"
+									 width="50"/>
+						<s:TextInput id="minorTI" 
+									 width="50" 
+									 change="version_changeHandler(event)"
+									 prompt="minor"/>
+						<s:TextInput id="patchTI" 
+									 width="50"
+									 change="version_changeHandler(event)"
+									 prompt="patch"/>
+					</s:HGroup>
+					<s:Label text="New version must be greater than latest version."
+							 fontWeight="bold"
+							 color="red"
+							 id="versionValidationAlert"
+							 includeInLayout="false"
+							 visible="false"/>
+				</s:VGroup>
+			</s:FormItem>
+			<s:FormItem label="Description:">
+				<s:TextArea id="description" width="387"/>
+			</s:FormItem>
+		</s:Form>
+		<wizard:WizardButtonGroup id="buttonGroup"
+								  finishButtonClick="wizardbuttongroup1_finishButtonClickHandler(event)"
+								  width="100%"/>
+	</s:VGroup>
+</wizard:WizardWindow>

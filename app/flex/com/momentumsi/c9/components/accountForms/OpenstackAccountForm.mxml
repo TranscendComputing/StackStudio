@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<accountForms:CloudFormBase xmlns:fx="http://ns.adobe.com/mxml/2009" 
+							xmlns:s="library://ns.adobe.com/flex/spark" 
+							xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" 
+							xmlns:accountForms="com.momentumsi.c9.components.accountForms.*" 
+							xmlns:models="com.momentumsi.c9.models.*"
+							creationComplete="creationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.utils.StringUtil;
+			import com.momentumsi.c9.constants.PermissionType;
+			import com.momentumsi.c9.models.Cloud;
+			
+			import mx.events.FlexEvent;
+			override public function saveAccount():void
+			{
+				account.name = accountName.text;
+				account.description = accountDescription.text;
+				account.access_key = StringUtil.trim(accessKeyTA.text);
+				account.secret_key = StringUtil.trim(secretKeyTA.text);
+				var selectedCloud:Cloud = cloudVersion.selectedItem as Cloud;
+				account.cloud_id = selectedCloud.id;
+				account.cloud_name = selectedCloud.name;
+				account.cloud_provider = selectedCloud.cloudProvider;
+				
+				var attributes:Object = new Object();
+				attributes["openstack_api_key"] = passwordTI.text;
+				attributes["openstack_username"] = usernameTI.text;
+				attributes["openstack_tenant"] = openstackTenantTA.text;
+				attributes["openstack_auth_url"] = selectedCloud.url;
+				account.cloudAttributes = attributes;
+				
+				if(account.id == null)
+				{					
+					identityService.createNewCloudAccount(user.id, account);
+				}else{
+					identityService.updateCloudAccount(user.id, account);
+				}
+			}
+
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				if(account != null)
+				{
+					accountName.text = account.name;
+					accountDescription.text = account.description;
+					accessKeyTA.text = account.access_key;
+					secretKeyTA.text = account.secret_key;
+					identityService.oldAccessKey = account.access_key;
+					identityService.oldSecretKey = account.secret_key;
+					if(account.cloudAttributes != null)
+					{
+						if(account.cloudAttributes.hasOwnProperty("openstack_username"))
+							usernameTI.text = account.cloudAttributes.openstack_username;
+						if(account.cloudAttributes.hasOwnProperty("openstack_api_key"))
+							passwordTI.text = account.cloudAttributes.openstack_api_key;
+						if(account.cloudAttributes.hasOwnProperty("openstack_tenant"))
+							openstackTenantTA.text = account.cloudAttributes.openstack_tenant;
+					}
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:FormItem label="Account Name:">
+		<s:TextInput id="accountName"
+					 width="198"/>
+	</s:FormItem>
+	<s:FormItem label="Description">
+		<s:TextArea id="accountDescription"
+					width="362"
+					height="44"/>
+	</s:FormItem>
+	<s:FormItem label="Username:">
+		<s:TextInput id="usernameTI" width="200"/>
+	</s:FormItem>
+	<s:FormItem label="Password:">
+		<s:VGroup>
+			<s:CheckBox id="hideSecretKeyCB" label="Hide Password/Key" selected="true"/>
+			<s:TextInput id="passwordTI" width="200" displayAsPassword="{hideSecretKeyCB.selected}"/>
+		</s:VGroup>
+	</s:FormItem>
+	<s:FormItem label="Access Key:">
+		<s:TextArea id="accessKeyTA"
+					width="362"
+					height="44"/>
+	</s:FormItem>
+	<s:FormItem label="Secret Key:">
+		<s:TextArea id="secretKeyTA"
+					width="362"
+					height="44"
+					displayAsPassword="{hideSecretKeyCB.selected}"/>
+	</s:FormItem>
+	<s:FormItem label="Tenant Name:">
+		<s:TextArea id="openstackTenantTA" 
+					width="362"
+					height="20"/>
+	</s:FormItem>
+	<s:FormItem label="Version:">
+		<mx:ComboBox id="cloudVersion"
+					 dataProvider="{cloudVersionCollection}"
+					 selectedIndex="{selectedVersion}"
+					 labelField="name"
+					 width="362"/>
+	</s:FormItem>
+	<s:FormItem>
+		<s:HGroup width="100%" horizontalAlign="center">
+			<s:Button id="cloudServicesButton"
+					  visible="{user.hasPermission(PermissionType.ADMIN, PermissionType.TRANSCEND)}"
+					  label="Manage Cloud Endpoints"
+					  click="cloudServicesButton_clickHandler(event)"/>
+			<s:Button id="imageServicesButton"
+					  visible="{user.hasPermission(PermissionType.ADMIN, PermissionType.TRANSCEND)}"
+					  label="Manage Cloud Images"
+					  click="imageServicesButton_clickHandler(event)"/>
+		</s:HGroup>
+	</s:FormItem>
+</accountForms:CloudFormBase>

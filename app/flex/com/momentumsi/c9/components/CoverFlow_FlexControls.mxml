@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:coverflow="*"
+	horizontalAlign="center" verticalAlign="middle"
+	xmlns:containers="com.momentumsi.c9.containers.*"
+	height="100%" xmlns:s="library://ns.adobe.com/flex/spark">
+	<mx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			
+			public function createNewVersion(verion:ByteArray):void
+			{
+				var panel:Panel = new Panel();
+				var versionLoader:SWFLoader = new SWFLoader();
+				var shadow:spark.filters.DropShadowFilter = new spark.filters.DropShadowFilter();
+				panel.width = 200;
+				panel.height = 200;
+				var num:int = coverflow.numChildren;
+				panel.title = "Version " + num + 1;
+				versionLoader.width = 190;
+				versionLoader.height = 190;
+				versionLoader.filters = [shadow];
+				versionLoader.load(version);
+				panel.addElement(versionLoader);
+				coverflow.addElement(panel);
+			}
+		]]>
+	</mx:Script>
+	<!--
+	<mx:Style>
+		Panel {
+		   borderColor: #99CDEE;
+		   borderAlpha: 1;
+		   borderThickness: 1;
+		   borderThicknessLeft: 1;
+		   borderThicknessTop: 0;
+		   borderThicknessBottom: 1;
+		   borderThicknessRight: 1;
+		   roundedBottomCorners: false;
+		   cornerRadius: 5;
+		   headerColors: #b5e6f3, #81b3e6;
+		   dropShadowEnabled: false;
+		   titleStyleName: "mypanelTitle";
+		   vertical-align:middle;
+		   horizontal-align:center;
+		}
+		
+		.mypanelTitle {
+		   letterSpacing: 1;
+		   color: #333333;
+		   fontSize: 12;
+		   fontWeight: bold;
+		}
+	</mx:Style>
+	-->
+	
+		<mx:HBox id="box" x="452" y="3" width="294" height="100%" maxWidth="600" maxHeight="300"
+				 verticalGap="0">
+			
+			<containers:VCoverFlowContainer id="coverflow" width="270" height="100%" 
+				horizontalGap="40" borderStyle="inset" backgroundColor="0x000000"
+				segments="6" reflectionEnabled="true">
+				
+					<mx:Panel width="200" height="200" title="Version 1" >
+						<mx:SWFLoader id="version" width="100%" height="100%">
+							<mx:filters>
+								<s:DropShadowFilter />
+							</mx:filters>
+						</mx:SWFLoader>
+						<!--
+						<mx:NumericStepper/>
+						<s:Button label="Button"/>
+						<s:CheckBox label="Checkbox"/>
+						<s:RadioButton label="Radio"/>
+						<s:HSlider/>
+						-->
+					</mx:Panel>
+
+				
+				<mx:Panel width="200" height="200" title="Version 2">
+					<mx:Image height="100%" width="100%" source="/com/momentumsi/c9/assets/SampleVersion2.PNG"/>
+					<!--
+					<mx:DateChooser width="90%" height="90%"/>
+					-->
+				</mx:Panel>
+				
+				<mx:Panel width="200" height="200" title="Version 3">
+					<mx:Image height="100%" width="100%" source="/com/momentumsi/c9/assets/SampleVersion3.PNG"/>
+					<!--
+					<mx:Form width="100%">
+						<mx:FormItem label="Background color">
+							<mx:ColorPicker change="coverflow.setStyle('backgroundColor', event.color)"/>
+						</mx:FormItem>
+						<mx:FormItem label="Spacing" width="100%">
+							<mx:HSlider minimum="0" maximum="200" liveDragging="true" width="50" 
+								value="40" change="coverflow.setStyle('horizontalSpacing', event.value)" />
+						</mx:FormItem>
+					</mx:Form>
+					-->
+				</mx:Panel>
+				<!--
+				<mx:Panel width="200" height="200" title="DataGrid Example">
+					<mx:DataGrid width="100%" height="100%">
+						<mx:columns>
+							<mx:DataGridColumn headerText="Column 1" dataField="col1"/>
+							<mx:DataGridColumn headerText="Column 2" dataField="col2"/>
+							<mx:DataGridColumn headerText="Column 3" dataField="col3"/>
+						</mx:columns>
+					</mx:DataGrid>
+				</mx:Panel>
+				-->
+				<!-- here we're dispatching an UPDATE_COMPLETE event every frame. This is so our PV3D material will
+					 update itself properly for this component, since we want the animation to show correctly.
+				  -->
+				<!--
+				<mx:Panel width="200" height="200" title="Showing Animation" 
+					enterFrame="event.currentTarget.dispatchEvent(new FlexEvent(FlexEvent.UPDATE_COMPLETE))">
+					<mx:ProgressBar width="90%" indeterminate="true" trackHeight="30" labelPlacement="center" />
+				</mx:Panel>
+				-->
+			</containers:VCoverFlowContainer>
+			
+			<mx:VScrollBar id="scrollbar" width="100%" height="705" visible="false"
+						   maxScrollPosition="{coverflow.numChildren - 1}" pageSize="1"
+						   scroll="coverflow.selectedIndex = Math.round(scrollbar.scrollPosition)"
+						   scrollPosition="{coverflow.selectedIndex}"/>
+				
+		</mx:HBox>
+		
+	
+</mx:Box>

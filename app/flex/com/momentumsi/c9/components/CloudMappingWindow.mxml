@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components:CustomTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+							  xmlns:s="library://ns.adobe.com/flex/spark" 
+							  xmlns:mx="library://ns.adobe.com/flex/mx" 
+							  xmlns:components="com.momentumsi.c9.components.*"
+							  xmlns:services="com.momentumsi.c9.services.*"
+							  xmlns:models="com.momentumsi.c9.models.*"
+							  width="1084" height="545"
+							  title="Mappings"
+							  creationComplete="customtitlewindow1_creationCompleteHandler(event)"
+							  initialize="refreshMappings()">
+	<fx:Script>
+		<![CDATA[
+			import com.maccherone.json.JSON;
+			import com.maccherone.json.JSONParseError;
+			import com.momentumsi.c9.constants.Color;
+			import com.momentumsi.c9.events.apiCloud.CloudQueryResultEvent;
+			import com.momentumsi.c9.events.org.GetOrgDetailsResultEvent;
+			import com.momentumsi.c9.models.*;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.UIComponent;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			
+			import spark.events.GridItemEditorEvent;
+			
+			[Bindable]
+			private var selectedCloud:Cloud;
+			[Bindable]
+			private var selectedMapping:CloudMapping;
+			[Bindable]
+			private var clouds:ArrayCollection = new ArrayCollection([
+				{name: "All"}
+			]);
+			[Bindable]
+			private var cloudMappings:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var otherMappings:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var mappingEntries:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var imageMaps:ArrayCollection;
+			public var user:User;
+			
+			
+			protected function refreshMappings():void
+			{
+				cloudMappings.removeAll();
+				cloudService.addEventListener(CloudQueryResultEvent.RESULT, setCloudList);
+				cloudService.getClouds();
+				orgService.addEventListener(GetOrgDetailsResultEvent.RESULT, addOrgMappings)
+				orgService.getOrgDetails(user.org_id);
+			}
+			
+			
+			
+			//-----------------------------
+			//component functions/handlers
+			//-----------------------------
+			
+			
+			//-----------------------
+			//service event handlers
+			//-----------------------
+			
+			private function addOrgMappings(event:GetOrgDetailsResultEvent):void
+			{
+				var orgDetails:Org = event.organization;
+				cloudMappings.addAll(orgDetails.cloud_mappings);
+			}
+			
+			private function setCloudList(event:CloudQueryResultEvent):void
+			{
+				clouds.addAll(cloudService.cloudCollection);
+				for each(var cloud:Cloud in cloudService.cloudCollection)
+				{
+					cloudMappings.addAll(cloud.cloudMappings);
+				}
+			}
+			
+			private function saveMapping_resultHandler(event:GetOrgDetailsResultEvent):void
+			{
+				Alert.show("Mapping has been saved.");
+			}
+			
+			//---------------------------
+			//user action event handlers
+			//---------------------------
+			
+			private function addNewMapping(event:CloseEvent):void
+			{
+				refreshMappings();
+				PopUpManager.removePopUp(event.target as NewMappingWindow);
+			}
+			
+			protected function newButton_clickHandler(event:MouseEvent):void
+			{
+				var newMappingWindow:NewMappingWindow = new NewMappingWindow();
+				newMappingWindow.orgId = user.org_id;
+				newMappingWindow.addEventListener(CloseEvent.CLOSE, addNewMapping);
+				PopUpManager.addPopUp(newMappingWindow, UIComponent(parentApplication), true);
+			}
+			
+			protected function cloudMappingsTree_changeHandler(event:ListEvent):void
+			{
+				var item:Object = cloudMappingsTree.selectedItem;
+				if(cloudMappingsTree.dataDescriptor.isBranch(item) == false)
+				{
+					selectedMapping = item as CloudMapping;
+					mappingEntries = selectedMapping.entries;
+				}
+			}
+			
+			protected function saveButton_clickHandler(event:MouseEvent):void
+			{
+				orgService.addEventListener(GetOrgDetailsResultEvent.RESULT, saveMapping_resultHandler);
+				orgService.editOrgMapping(user.org_id, selectedMapping);
+			}
+			
+			protected function cloudsComboBox_changeHandler(event:ListEvent):void
+			{
+				selectedCloud = cloudsComboBox.selectedItem as Cloud;
+				if(selectedCloud != null)
+				{
+					cloudMappings = selectedCloud.cloudMappings;
+				}
+			}
+			
+			
+			protected function customtitlewindow1_creationCompleteHandler(event:FlexEvent):void
+			{
+				mappingEntriesGrid.addEventListener(GridItemEditorEvent.GRID_ITEM_EDITOR_SESSION_STARTING, mappingEntriesGrid_editHandler);
+				mappingEntriesGrid.addEventListener(GridItemEditorEvent.GRID_ITEM_EDITOR_SESSION_START, mappingEntriesGrid_editHandler);
+				mappingEntriesGrid.addEventListener(GridItemEditorEvent.GRID_ITEM_EDITOR_SESSION_SAVE, mappingEntriesGrid_editHandler);
+				mappingEntriesGrid.addEventListener(GridItemEditorEvent.GRID_ITEM_EDITOR_SESSION_CANCEL, mappingEntriesGrid_editHandler);
+			}
+			
+			private function mappingEntriesGrid_editHandler(event:GridItemEditorEvent):void
+			{
+				var fieldValue:String = event.column.dataField;
+				if(event.type == GridItemEditorEvent.GRID_ITEM_EDITOR_SESSION_STARTING)
+				{
+					
+				}else if(event.type == GridItemEditorEvent.GRID_ITEM_EDITOR_SESSION_START){
+					
+				}else if(event.type == GridItemEditorEvent.GRID_ITEM_EDITOR_SESSION_SAVE){
+					
+				}else if(event.type == GridItemEditorEvent.GRID_ITEM_EDITOR_SESSION_CANCEL){
+					
+				}
+			}
+				
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<services:CloudService id="cloudService"/>
+		<services:OrgService id="orgService"/>
+	</fx:Declarations>
+	<s:HGroup width="100%" height="470" gap="0" paddingTop="20">
+		<s:Form width="320" skinClass="spark.skins.spark.StackedFormSkin">
+			<s:FormItem id="cloudSelectionFI"
+						skinClass="spark.skins.spark.StackedFormItemSkin"
+						label="Cloud Filters:">
+				<mx:ComboBox id="cloudsComboBox" width="277"
+							 change="cloudsComboBox_changeHandler(event)"
+							 labelField="name"
+							 dataProvider="{clouds}">
+				</mx:ComboBox>
+			</s:FormItem>
+			<s:FormItem id="mappingsFI" width="326" label="Mappings:"
+						skinClass="spark.skins.spark.StackedFormItemSkin">
+				<s:BorderContainer cornerRadius="4" height="332" width="277">
+					<s:Rect width="100%" height="100%">
+						<s:fill>
+							<s:SolidColor>
+								<s:color>{Color.GRAY}</s:color>
+							</s:SolidColor>
+						</s:fill>
+					</s:Rect>
+					<components:CustomTree id="cloudMappingsTree"
+										   itemRenderer="com.momentumsi.c9.itemRenderers.LeftMenuTreeItemRenderer"
+										   change="cloudMappingsTree_changeHandler(event)"
+										   width="100%" height="100%">
+						<components:dataProvider>
+							<fx:Object name="Multi-Cloud Image Maps" children="{cloudMappings}"/>
+							<fx:Object name="Others" children="{otherMappings}"/>
+						</components:dataProvider>
+					</components:CustomTree>
+				</s:BorderContainer>
+			</s:FormItem>
+		</s:Form>
+		<s:BorderContainer borderWeight="3"
+						   width="747" height="441">
+			<s:backgroundFill>
+				<s:SolidColor alpha="0"/>
+			</s:backgroundFill>
+			<s:Form width="732" skinClass="spark.skins.spark.StackedFormSkin">
+				<s:FormHeading label="{selectedMapping.name} Mapping"/>
+				<s:HGroup gap="0" width="723" paddingTop="32">
+					<components:GeneratedForm id="mappingProperties"
+											  width="40%"
+											  editable="false"
+											  dataProvider="{selectedMapping.properties}">
+						<s:FormHeading textAlign="left"
+									   label="Properties"/>
+					</components:GeneratedForm>
+					<s:Form width="421">
+						<s:FormHeading textAlign="left"
+									   label="Values"/>
+						<s:DataGrid id="mappingEntriesGrid"
+									width="405"
+									maxHeight="257" minHeight="0"
+									dataProvider="{mappingEntries}"
+									editable="true" selectionMode="singleRow">
+							<s:columns>
+								<s:ArrayList>
+									<s:GridColumn headerText="Key" 
+												  id="keyColumn"
+												  width="120"
+												  itemEditor="spark.components.gridClasses.DefaultGridItemEditor"
+												  dataField="key"/>
+									<s:GridColumn headerText="Value" 
+												  id="valueColumn" 
+												  itemEditor="spark.components.gridClasses.DefaultGridItemEditor" 
+												  dataField="value"/>
+								</s:ArrayList>
+							</s:columns>
+						</s:DataGrid>
+						<s:HGroup id="buttonGroup">
+							<s:Button label="Add"
+									  id="addButton"
+									  click="mappingEntries.addItemAt(['Key','Value'], 0)"/>
+							<s:Button label="Remove" 
+									  id="removeButton" 
+									  enabled="{mappingEntriesGrid.selectedItem != null}"
+									  click="mappingEntries.removeItemAt(mappingEntriesGrid.selectedIndex)"/>
+						</s:HGroup>
+					</s:Form>
+				</s:HGroup>
+			</s:Form>
+		</s:BorderContainer>
+	</s:HGroup>
+	<s:Button x="20" y="478" label="New" click="newButton_clickHandler(event)"/>
+	<s:Button id="saveButton"
+			  x="900" y="476" 
+			  label="Save"
+			  click="saveButton_clickHandler(event)"/>
+	<s:Button x="989" y="476" label="Cancel"
+			  click="PopUpManager.removePopUp(this)"/>
+</components:CustomTitleWindow>

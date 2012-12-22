@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<c9:DetailsBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:c9="com.momentumsi.c9.components.*"
+		 width="100%" height="100%"
+		 initialize="init(event)"
+		 xmlns:diagrammer="fr.kapit.diagrammer.base.uicomponent.*">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.utils.Helpers;
+			import com.momentumsi.c9.models.ProvisionedInstance;
+			import com.momentumsi.c9.services.MonitoringService;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
+			import mx.events.IndexChangedEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import spark.components.BusyIndicator;
+			
+			[Bindable]
+			private var host:String;
+			[Bindable]
+			public var accountId:int;
+			[Bindable]
+			public var sqs:XML;
+			[Bindable]
+			public var message:XML;
+			[Bindable]
+			public var sqsID:int;
+			[Bindable]
+			public var sqsEvents:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var thisSqsEvents:ArrayCollection = new ArrayCollection();
+			private var app:Object = FlexGlobals.topLevelApplication;
+			public var sqsMessagesRunningCollection:ArrayCollection = new ArrayCollection();
+
+			
+			protected function init(event:FlexEvent):void
+			{
+				host = app.GetConfiguration( "serviceUrl" ) ;
+			}
+			
+			
+			public function getSqsQueueAttributesCall():void
+			{
+				//sqsForm.visible=false;
+				//busy.visible=true;
+				//getSqsQueueAttributesInCloud.send();
+			}
+			
+			public function getEventsList():void
+			{
+				thisSqsEvents.removeAll();
+				for each (var item:Object in sqsEvents)
+				{
+					if(item.id == sqs.child('name'))
+					{
+						thisSqsEvents.addItem(item);
+					}
+				}
+			}
+			
+			protected function getSqsQueueAttributesInCloud_resultHandler(event:ResultEvent):void
+			{
+				var result:XML = event.result as XML;
+				busy.visible=false;
+				sqsForm.visible=true;
+
+				//enomText.text = result.child('ApproximateNumberOfMessages');				
+			}
+
+
+			
+			protected function getSqsQueueAttributesInCloud_faultHandler(event:FaultEvent):void
+			{
+				return;
+			}
+			
+			protected function sqsDetails_changeHandler(event:IndexChangedEvent):void
+			{
+				if(sqsDetails.selectedIndex == 1)
+				{
+					monitoringBox.resource = node;
+					monitoringBox.getDefaultMonitorsCall(MonitoringService.SQS_DEFAULT);
+				}
+			}
+			
+			[Bindable]
+			private var _sqsObject:Object;
+			override public function set resourceObject(value:Object):void
+			{
+				_sqsObject = value;
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+
+	</fx:Declarations>
+	<s:HGroup>
+		<!--<s:Button id="modifyBtn" label="Modify" click="modifyBtn_clickHandler(event)"/>-->
+		<!--<s:Button id="deleteBtn" label="Delete" click="deleteBtn_clickHandler(event)" visible="false"/>-->
+	</s:HGroup>
+	<s:BorderContainer height="100%" width="100%" alpha="1" borderVisible="false">
+		<c9:DetailsBoxTabNavigator id="sqsDetails" change="sqsDetails_changeHandler(event)">
+			<s:NavigatorContent label="Description" width="100%" height="100%">
+				<s:BusyIndicator id="busy" width="100" height="100" visible="false"/>
+				<s:Form id="sqsForm">
+					<s:FormItem label="Name:" fontSize="14" fontWeight="bold">
+						<mx:Text id="nameText" text="{node.resourceId}" color="black"/>
+					</s:FormItem>
+					<s:FormItem label="Visibility Timeout:" fontSize="14" fontWeight="bold">
+						<mx:Text id="vtText" text="{_sqsObject.visibility_timeout}" color="black"/>
+					</s:FormItem>
+					<s:FormItem label="Max Message Size:" fontSize="14" fontWeight="bold">
+						<mx:Text id="mmsText" text="{_sqsObject.max_message_size}" color="black"/>
+					</s:FormItem>
+					<s:FormItem label="Retention Period:" fontSize="14" fontWeight="bold">
+						<mx:Text id="rpText" text="{_sqsObject.retention_period}" color="black"/>
+					</s:FormItem>
+					<!--
+					<s:FormItem label="Est. Number of Messages:" fontSize="14" fontWeight="bold">
+						<mx:Text id="enomText" color="black" text="unavailable"/>
+					</s:FormItem>
+					-->
+				</s:Form>
+			</s:NavigatorContent>
+			<s:NavigatorContent label="Monitoring" width="100%" height="100%">
+				<c9:MonitoringBox id="monitoringBox" cloudAccountId="{cloudAccountId}" width="100%" height="100%"/>
+			</s:NavigatorContent>
+			<s:NavigatorContent label="Recent Events" width="100%" height="100%">
+				<s:BorderContainer borderVisible="false" id="recentEvents" height="100%" width="100%">
+					<mx:DataGrid id="sqsEventsGrid" width="100%" height="100%" dataProvider="{thisSqsEvents}">
+						<mx:columns>
+							<mx:DataGridColumn headerText="Event Details" dataField="details" width="220"/>
+							<mx:DataGridColumn headerText="Event Type" dataField="type" width="100"/>
+							<mx:DataGridColumn headerText="Event Time" dataField="time"/>
+						</mx:columns>
+					</mx:DataGrid>
+				</s:BorderContainer>
+			</s:NavigatorContent>
+		</c9:DetailsBoxTabNavigator>
+	</s:BorderContainer>
+</c9:DetailsBox>

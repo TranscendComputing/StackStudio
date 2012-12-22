@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="utf-8"?>
+<diagrammer:Diagrammer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx" 
+					   xmlns:diagrammer="fr.kapit.diagrammer.*" 
+					   layout="animatedForceDirected"
+					   width="100%" height="100%"
+					   nodeDeleteRequest="diagrammer1_nodeDeleteRequestHandler(event)"
+					   initialize="designDiagrammer_initializeHandler(event)"
+					   nodeRendererFunction="{customNodeRendererFunction}"
+					   elementDoubleClicked="diagrammer1_elementDoubleClickedHandler(event)"
+					   elementsDeleted="diagrammer1_elementsDeletedHandler(event)"
+					   elementsDragFinished="elementsDragFinishedHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.constants.AlertMessage;
+			import com.momentumsi.c9.constants.ImagePath;
+			import com.momentumsi.c9.constants.PermissionType;
+			import com.momentumsi.c9.constants.ResourceType;
+			import com.momentumsi.c9.events.ProjectEvent;
+			import com.momentumsi.c9.itemRenderers.CustomNodeRenderer;
+			import com.momentumsi.c9.itemRenderers.InstallsNodeRenderer;
+			import com.momentumsi.c9.models.Element;
+			import com.momentumsi.c9.models.Member;
+			import com.momentumsi.c9.models.Node;
+			import com.momentumsi.c9.models.Project;
+			import com.momentumsi.c9.models.ProjectVariant;
+			import com.momentumsi.c9.models.ProjectVersion;
+			import com.momentumsi.c9.models.User;
+			import com.momentumsi.c9.models.resources.*;
+			import com.momentumsi.c9.services.ProjectService;
+			
+			import fr.kapit.diagrammer.base.sprite.DiagramLink;
+			import fr.kapit.diagrammer.base.uicomponent.DiagramSprite;
+			import fr.kapit.diagrammer.events.DiagrammerRequestEvent;
+			import fr.kapit.visualizer.events.VisualizerEvent;
+			import fr.kapit.visualizer.renderers.IRenderer;
+			
+			import mx.collections.ArrayCollection;
+			import mx.collections.ArrayList;
+			import mx.controls.Alert;
+			import mx.core.BitmapAsset;
+			import mx.events.FlexEvent;
+			
+			[Bindable]
+			public var user:User;
+			[Bindable]
+			public var project:Project;
+			[Bindable]
+			public var projectVersion:ProjectVersion;
+			private var projectService:ProjectService;
+			public var selectedNode:DiagramSprite;
+			[Bindable]
+			public var environment:String;
+			
+			protected function designDiagrammer_initializeHandler(event:FlexEvent):void
+			{
+				project.addEventListener(ProjectEvent.VERSION_SET, addCollectionOfNodes);
+			}
+			
+			protected function elementsDragFinishedHandler(event:VisualizerEvent):void
+			{
+				try{
+					var draggedNode:DiagramSprite = DiagramSprite(event.items[0]);
+					if(draggedNode.data is String)
+					{
+						return;
+					}
+					projectService = new ProjectService();
+					projectService.projectId = project.project_id;
+					var node:Node = Node(draggedNode.data);
+					node.x = draggedNode.x;
+					node.y = draggedNode.y;
+					projectService.updateNode(node, projectVersion.version);
+				}catch(error:Error){}
+			}
+			
+			private function addCollectionOfNodes(event:ProjectEvent):void
+			{
+				removeAll();
+				var nodes:ArrayCollection = projectVersion.nodes;
+				var nodeLinkCollection:ArrayCollection = new ArrayCollection();
+				var node:Node;
+				var nodeElement:Element;
+				var diagramNode:DiagramSprite;
+				var loadBalancerNodesCollection:ArrayCollection = new ArrayCollection();
+				var rdsNodesCollection:ArrayCollection = new ArrayCollection();
+				var ebsNodesCollection:ArrayCollection = new ArrayCollection();
+				var nodeCoordinates:Object = {loadBalancerY: 20, loadBalancerX: 650, serverY: 120, serverX: 550, storageY: 220, storageX: 550, defaultY: 20, defaultX: 100};
+				var addNode:Boolean;
+				for each(node in nodes)
+				{
+					addNode = true;
+					for each(var variant:ProjectVariant in projectVersion.variants)
+					{
+						if(variant.environment == environment && variant.ruleType == ProjectVariant.REMOVE_TYPE && variant.rules.name == node.name)
+						{
+							addNode = false;
+							break;
+						}
+					}
+					if(addNode)
+					{
+						if(node.view == Node.DESIGN_VIEW)
+						{
+							if(node.nodeLinks != null){
+								nodeLinkCollection.addAll(new ArrayList(node.nodeLinks));
+							}
+							
+							nodeElement = projectVersion.getElementByName(node.name);
+							var p:Point = null;
+							if(node.x != 0){
+								p = new Point(node.x, node.y);
+							}
+							if(nodeElement.elementType == ResourceType.LOAD_BALANCER)
+							{
+								if(p == null)
+								{
+									p = new Point(nodeCoordinates.loadBalancerX, nodeCoordinates.loadBalancerY);
+								}
+								nodeCoordinates.loadBalancerX = nodeCoordinates.loadBalancerX + 100; 
+							}else if(nodeElement.elementType == ResourceType.DB_INSTANCE || nodeElement.elementType == ResourceType.EBS_VOLUME)
+							{
+								if(p == null)
+								{
+									p = new Point(nodeCoordinates.storageX, nodeCoordinates.storageY);
+								}
+								nodeCoordinates.storageX = nodeCoordinates.storageX + 100; 
+							}else if(nodeElement.elementType == ResourceType.EC2_INSTANCE || nodeElement.elementType == ResourceType.AS_GROUP)
+							{
+								if(p == null)
+								{
+									p = new Point(nodeCoordinates.serverX, nodeCoordinates.serverY);
+								}
+								nodeCoordinates.serverX = nodeCoordinates.serverX + 100;
+							}else{
+								if(p == null)
+								{
+									p = new Point(nodeCoordinates.defaultX, nodeCoordinates.defaultY);
+								}
+								nodeCoordinates.defaultY = nodeCoordinates.defaultY + 100;
+								if(nodeCoordinates.defaultY > 300)
+								{
+									nodeCoordinates.defaultX = nodeCoordinates.defaultX + 100;
+									nodeCoordinates.defaultY = 20;
+								}
+							}
+							diagramNode = addNodeElement(node, null, null, p, node.id) as DiagramSprite;
+							diagramNode.isSizeFixed = true;
+							node.x = diagramNode.x;
+							node.y = diagramNode.y;
+							
+							//If this is an initial template load, the nodes will need to be assigned coordinates
+							//Otherwise, no data has changed
+							if(project.project_id != null && p != null)
+							{
+								node.save(projectVersion, diagramNode);
+							}
+						}
+					}
+				}
+				
+				for each(var nodeLink:Object in nodeLinkCollection)
+				{
+					nodeLink = nodeLink["node_link"];
+					for each(var item:DiagramSprite in nodesMap)
+					{
+						if(item.itemID == nodeLink["source_id"]){
+							for each(var itemToLinkTo:DiagramSprite in nodesMap)
+							{
+								if(itemToLinkTo.itemID == nodeLink["target_id"])
+								{
+									addLinkElement(new Object, item, itemToLinkTo);
+									break;
+								}
+							}
+							break;
+						}
+					}
+				}
+					
+			}	
+			
+			protected function diagrammer1_elementDoubleClickedHandler(event:VisualizerEvent):void
+			{
+				if (event.items[0] is DiagramSprite)
+				{
+					selectedNode = DiagramSprite(event.items[0]);
+				}
+			}
+			
+			protected function diagrammer1_elementsDeletedHandler(event:VisualizerEvent):void
+			{
+				var deletedObjectsArray:Array = event.items;
+				var node:DiagramSprite;
+				var deletedObjects:ArrayCollection = new ArrayCollection();
+				for(var i:int = 0; i < deletedObjectsArray.length; i++)
+				{
+					if (deletedObjectsArray[i] is DiagramSprite)
+					{
+						deletedObjects.addItem(deletedObjectsArray[i]);
+					}
+				}
+				var deletedNode:Node;
+				for each(node in deletedObjects)
+				{
+					if(node.data is String || !(node.data is Node))
+					{
+						removeNodeElement(node.itemID);
+					}else{
+						deletedNode = Node(node.data);
+						if(deletedNode.elementId == null)
+						{
+							removeNodeElement(node.itemID);
+						}else
+						{
+							projectService = new ProjectService();
+							projectService.projectId = project.project_id;
+							projectService.deleteNode(deletedNode.id, projectVersion.version);
+							deleteElementAndReferences(deletedNode.elementId);
+						}
+					}
+				}
+			}
+			
+			private function deleteElementAndReferences(elementId:String):void
+			{
+				var elementToDelete:Element;
+				for each(var element:Element in projectVersion.elements){
+					if(element.id == elementId)
+					{
+						elementToDelete = element;
+						break;
+					}
+				}
+				var type:String = elementToDelete.elementType;
+				elementToDelete.removeMappings(projectVersion);
+				switch(type)
+				{
+					case ResourceType.AS_GROUP:
+						var asGroup:ASGroup = new ASGroup(elementToDelete);
+						asGroup.removeASGroupResources(projectVersion);
+						break;
+					case ResourceType.CACHE_CLUSTER:
+						var cluster:ElastiCacheCluster = new ElastiCacheCluster(elementToDelete);
+						cluster.removeClusterResources(projectVersion);
+						break;
+					case ResourceType.EC2_INSTANCE:
+						var instance:Ec2Instance = new Ec2Instance(elementToDelete);
+						instance.removeInstanceResources(projectVersion);
+						break;
+					case ResourceType.BEANSTALK_APP:
+						var application:ElasticBeanstalkApplication = new ElasticBeanstalkApplication(elementToDelete);
+						application.removeApplicationResources(projectVersion);
+						break;
+					case ResourceType.DB_INSTANCE:
+						var database:DbInstance = new DbInstance(elementToDelete);
+						database.removeDbResources(projectVersion);
+						break;
+					case ResourceType.IAM_GROUP:
+						var group:IamGroup = new IamGroup(elementToDelete);
+						group.removeGroupResources(projectVersion);
+						break;
+					case ResourceType.IAM_USER:
+						var user:IamUser = new IamUser(elementToDelete);
+						user.removeUserResources(projectVersion);
+						break;
+					default:
+						projectVersion.deleteElementByName(elementToDelete.name);
+						break;
+				}
+				projectVersion.dispatchEvent(new Event(ProjectVersion.REFRESH));
+			}
+			
+			private function customNodeRendererFunction(data:Object):IRenderer
+			{
+				var element:Element;
+				var renderer:CustomNodeRenderer = new CustomNodeRenderer();
+				var type:String;
+				var imgType:String = "";
+				var name:String;
+				if(!(data is String) && !((data.hasOwnProperty('type'))))
+				{
+					var node:Node = Node(data);
+					if(node.id != null)
+					{
+						element = projectVersion.getElementByName(node.name);
+						imgType = ImagePath.CONFIGURED;
+					}
+					name = node.name.replace(/\s/g, "");
+					type = node.properties.Type;
+					switch(type)
+					{
+						case ResourceType.DB_INSTANCE:
+							renderer.image.source = ImagePath.RDS + imgType + ImagePath.PNG_FILE;
+							break;
+						case ResourceType.LOAD_BALANCER:
+							renderer.image.source = ImagePath.ELB + imgType + ImagePath.PNG_FILE;
+							break;
+						case ResourceType.S3_BUCKET:
+							renderer.image.source = ImagePath.S3 + imgType + ImagePath.PNG_FILE;
+							break;
+						case ResourceType.SQS_QUEUE:
+							renderer.image.source = ImagePath.SQS + imgType + ImagePath.PNG_FILE;
+							break;
+						case ResourceType.SNS_TOPIC:
+							renderer.image.source = ImagePath.SNS + imgType + ImagePath.PNG_FILE;
+							break;
+						case ResourceType.BEANSTALK_APP:
+							renderer.image.source = ImagePath.BEAN + imgType + ImagePath.PNG_FILE;
+							break;
+						case ResourceType.EBS_VOLUME:
+							renderer.image.source = ImagePath.EBS + imgType + ImagePath.PNG_FILE;
+							break;
+						case ResourceType.CACHE_CLUSTER:
+							renderer.image.source = ImagePath.CACHE  + imgType + ImagePath.PNG_FILE;
+							break;
+						case ResourceType.RECORD_SET:
+							renderer.image.source = ImagePath.DNS + imgType + ImagePath.PNG_FILE;
+							break;
+						case ResourceType.EC2_SECURITY_GROUP:
+						case ResourceType.DB_SECURITY_GROUP:
+							renderer.image.source = ImagePath.SECURITY_GROUP + imgType + ImagePath.PNG_FILE;
+							break;
+						case ResourceType.S3_BUCKET_POLICY:
+						case ResourceType.SQS_POLICY:
+						case ResourceType.SNS_POLICY:
+							renderer.image.source = ImagePath.RESOURCE_POLICY + imgType + ImagePath.PNG_FILE;
+							break;
+						case ResourceType.IAM_GROUP:
+							renderer.image.source = ImagePath.IAM_GROUP + imgType + ImagePath.PNG_FILE;
+							break;
+						case ResourceType.IAM_USER:
+							renderer.image.source = ImagePath.IAM_USER + imgType + ImagePath.PNG_FILE;
+							break;
+						case ResourceType.CW_ALARM:
+							renderer.image.source = ImagePath.ALARM + imgType + ImagePath.PNG_FILE;
+							break;
+						case ResourceType.CLOUD_FRONT:
+							renderer.image.source = ImagePath.CDN + imgType + ImagePath.PNG_FILE;
+							break;
+						case ResourceType.SIMPLE_DB_INSTANCE:
+							renderer.image.source = ImagePath.SDB + imgType + ImagePath.PNG_FILE;
+							break;
+						case ResourceType.EMBEDDED_STACK:
+							renderer.image.source = ImagePath.STACK + imgType + ImagePath.PNG_FILE;
+							renderer.label.text = node.name + " Embedded";
+							break;
+						case "documentation":
+							renderer.image.source = "com/momentumsi/c9/assets/IconPNGs/Internet.png";
+							break;
+						case ResourceType.AS_GROUP:
+							/* var min:String = element.properties["Properties"]["MinSize"];
+							var max:String = element.properties["Properties"]["MaxSize"];
+							if(min == "1" && max == "1"){
+								renderer.image.source = ImagePath.NEW_AUTORECOVER;
+							}
+							else if(min == max){
+								renderer.image.source = ImagePath.NEW_AUTOSCALE;
+							}
+							else{
+								renderer.image.source = ImagePath.NEW_AUTOSCALE;
+							}
+							break; */
+						case ResourceType.EC2_INSTANCE:
+							/* renderer.image.source = ImagePath.EC2 + imgType + ImagePath.PNG_FILE;
+							break; */
+						case ResourceType.CHEF_ROLE:
+						case ResourceType.PUPPET_MODULE:
+							var installRenderer:InstallsNodeRenderer = new InstallsNodeRenderer();
+							var installs:Object = node.properties.roles || node.properties.modules;
+							if(installs != null)
+							{
+								installs = new ArrayCollection(installs as Array);
+							}
+							installRenderer.installsCollection = installs as ArrayCollection; 
+							installRenderer.platform = String(node.properties.platform);
+							installRenderer.isFixed = false;
+							installRenderer.data = node;
+							if(node.id != null)
+							{
+								installRenderer.title = node.name;
+							}else{
+								installRenderer.title = "New Server";
+							}
+							return installRenderer;
+					}
+					renderer.label.text = name;
+				}else{
+					if(data is String)
+					{
+						switch(data)
+						{
+							case "User":
+								renderer.image.source = "com/momentumsi/c9/assets/IconPNGs/User.png";
+								renderer.label.text = "User";
+								node = new Node(null, renderer.label.text.replace(/\s/g, ""), 0, 0, "design", "Documentation");
+								break;
+							case "Users":
+								renderer.image.source = "com/momentumsi/c9/assets/IconPNGs/Users.png";
+								renderer.label.text = "Users";
+								node = new Node(null, renderer.label.text.replace(/\s/g, ""), 0, 0, "design", "Documentation");
+								break;
+							case "Client":
+								renderer.image.source = "com/momentumsi/c9/assets/IconPNGs/Client.png";
+								renderer.label.text = "Client";
+								node = new Node(null, renderer.label.text.replace(/\s/g, ""), 0, 0, "design", "Documentation");
+								break;
+							case "Mobile Client":
+								renderer.image.source = "com/momentumsi/c9/assets/IconPNGs/MobileClient.png";
+								renderer.label.text = "Mobile Client";
+								node = new Node(null, renderer.label.text.replace(/\s/g, ""), 0, 0, "design", "Documentation");
+								break;
+							case "Internet":
+								renderer.image.source = "com/momentumsi/c9/assets/IconPNGs/Internet.png";
+								renderer.label.text = "Internet";
+								node = new Node(null, renderer.label.text.replace(/\s/g, ""), 0, 0, "design", "Documentation");
+								break;
+							default:
+								return null;
+								
+						}
+					}
+					node.projectId = project.project_id;
+					node.projectVersion = projectVersion;
+				}
+				renderer.data = node;
+				renderer.isFixed = false;
+				renderer.label.toolTip = null;
+				return renderer;
+			}
+			
+			protected function diagrammer1_nodeDeleteRequestHandler(event:DiagrammerRequestEvent):void
+			{
+				event.preventDefault();
+				trace("node delete requested");
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+</diagrammer:Diagrammer>

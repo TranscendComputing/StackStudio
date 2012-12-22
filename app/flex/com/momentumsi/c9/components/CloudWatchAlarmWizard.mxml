@@ -1,0 +1,1004 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wizard:WizardWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					     xmlns:s="library://ns.adobe.com/flex/spark" 
+					     xmlns:mx="library://ns.adobe.com/flex/mx"
+					     xmlns:diagrammer="fr.kapit.diagrammer.base.uicomponent.*"
+					     xmlns:components="com.momentumsi.c9.components.*"
+						 xmlns:services="com.momentumsi.c9.services.*"
+					     close="PopUpManager.removePopUp(this)"
+					     creationComplete="creationCompleteHandler(event)"
+						 wizardType="{ResourceTypeLabel.ALARM}"						 
+						 xmlns:wizard="com.momentumsi.c9.components.wizard.*"
+					     width="700" height="500">
+	<fx:Script>
+		<![CDATA[
+			import com.maccherone.json.*;
+			import com.momentumsi.c9.constants.AlertMessage;
+			import com.momentumsi.c9.constants.CloudWatchNamespace;
+			import com.momentumsi.c9.constants.Dimension;
+			import com.momentumsi.c9.constants.ImagePath;
+			import com.momentumsi.c9.constants.ResourceType;
+			import com.momentumsi.c9.constants.ResourceTypeLabel;
+			import com.momentumsi.c9.constants.ResourceTypeMetricList;
+			import com.momentumsi.c9.models.CloudAccount;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.IVisualElement;
+			import mx.events.CollectionEvent;
+			import mx.events.DropdownEvent;
+			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			public static const ALARM:String = "ALARM";
+			public static const OK:String = "OK";
+			public static const INSUFFICIENT_DATA:String = "INSUFFICIENT_DATA";
+			
+			[Bindable]
+			private var projectId:int = 0;
+			private var setAttributesForReconfigure:Boolean = false;
+			[Bindable]
+			private var descriptionVisible:Boolean = false;
+			[Bindable]
+			private var resourceList:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var metricList:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var topicList:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var actionList:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var consumptionCost:String = "N/A";
+			[Bindable]
+			private var resourceTypeList:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var comparisonList:ArrayCollection = new ArrayCollection([{label: ">=", value: "GreaterThanOrEqualToThreshold"},
+																			  {label: "<=", value: "LessThanOrEqualToThreshold"},
+																			  {label: ">", value: "GreaterThanThreshold"},
+																			  {label: "<", value: "LessThanThreshold"}]);
+			[Bindable]
+			private var statisticList:ArrayCollection = new ArrayCollection([{label: "Average", value: "Average"},
+																			{label: "Minimum", value: "Minimum"},
+																			{label: "Maximum", value: "Maximum"},
+																			{label: "Sample Count", value: "SampleCount"},
+																			{label: "Sum", value: "Sum"}]);
+			[Bindable]
+			private var periodList:ArrayCollection = new ArrayCollection([{label: "1 minute", period: 60, evaluation: 1},
+																		  {label: "5 minutes", period: 300, evaluation: 1},
+																		  {label: "10 minutes", period: 300, evaluation: 2},
+																		  {label: "15 minutes", period: 300, evaluation: 3},
+																		  {label: "20 minutes", period: 300, evaluation: 4},
+																		  {label: "25 minutes", period: 300, evaluation: 5},
+																		  {label: "30 minutes", period: 300, evaluation: 6},
+																		  {label: "1 hour", period: 3600, evaluation: 1},
+																		  {label: "3 hours", period: 3600, evaluation: 3},
+																		  {label: "6 hours", period: 3600, evaluation: 6},
+																		  {label: "12 hours", period: 3600, evaluation: 12},
+																		  {label: "24 hours", period: 3600, evaluation: 24}]);
+			[Bindable]
+			private var alarmStateList:ArrayCollection = new ArrayCollection([{label: ALARM},
+																			  {label: OK},
+																			  {label: INSUFFICIENT_DATA}]);
+
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				PopUpManager.centerPopUp(this);
+				projectId = Helpers.currentProject(this);
+				getAlarmResourcesSvc.send();
+				setResourceTypeList();
+				resourceTypeSelection_changeHandler();
+			}
+			
+			protected function setResourceTypeList():void
+			{
+				resourceTypeList = new ArrayCollection([{label: ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.AUTOSCALE]},
+														{label: ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.EBS]},
+														{label: ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.EC2]},
+														{label: ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.ELB]},
+														{label: ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.RDS]},
+														{label: ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.SNS]},
+														{label: ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.SQS]}]);
+			}
+			
+			override public function applyConfigurations():void
+			{
+				if(element.id == null)
+				{
+					return;
+				}
+				
+				setAttributesForReconfigure = true;
+				
+				alarmName.text = element.name;
+				if(element.properties.hasOwnProperty('Properties'))
+				{
+					var i:int = 0;
+					var found:Boolean = false;
+					if(element.properties['Properties'].hasOwnProperty('AlarmDescription'))
+					{
+						description.text = element.properties['Properties']['AlarmDescription'];
+					}
+					
+					if(element.properties['Properties'].hasOwnProperty('Namespace'))
+					{
+						var typeLabel:String = ""; 
+						switch(element.properties['Properties']['Namespace'])
+						{
+							case CloudWatchNamespace.AUTOSCALE:
+								typeLabel = ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.AUTOSCALE]
+								break;
+							case CloudWatchNamespace.EBS:
+								typeLabel = ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.EBS];
+								break;
+							case CloudWatchNamespace.EC2:
+								typeLabel = ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.EC2];
+								break;
+							case CloudWatchNamespace.ELB:
+								typeLabel = ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.ELB];
+								break;
+							case CloudWatchNamespace.RDS:
+								typeLabel = ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.RDS];
+								break;
+							case CloudWatchNamespace.SNS:
+								typeLabel = ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.SNS];
+								break;
+							case CloudWatchNamespace.SQS:
+								typeLabel = ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.SQS];
+								break;
+						}
+						
+						i = 0;
+						found = false;
+						for each(var t:Object in resourceTypeList)
+						{
+							if(!found && t.label == typeLabel)
+							{
+								resourceTypeSelection.selectedIndex = i;
+								found = true;
+							}
+							i++;
+						}
+					}
+					
+					//Set Resource and metric name is in resourceTypeSelection_changeHandler()
+					
+					if(element.properties['Properties'].hasOwnProperty('ComparisonOperator'))
+					{
+						switch(element.properties['Properties']['ComparisonOperator'])
+						{
+							case "GreaterThanOrEqualToThreshold":
+								comparisonSelection.selectedIndex = 0;
+								break;
+							case "LessThanOrEqualToThreshold":
+								comparisonSelection.selectedIndex = 1;
+								break;
+							case "GreaterThanThreshold":
+								comparisonSelection.selectedIndex = 2;
+								break;
+							case "LessThanThreshold":
+								comparisonSelection.selectedIndex = 3;
+								break;
+						}
+					}
+					
+					if(element.properties['Properties'].hasOwnProperty('Threshold'))
+					{
+						threshold.text = element.properties['Properties']['Threshold'];	
+					}
+					
+					if(element.properties['Properties'].hasOwnProperty('Statistic'))
+					{
+						switch(element.properties['Properties']['Statistic'])
+						{
+							case "Average":
+								statisticSelection.selectedIndex = 0;
+								break;
+							case "Minimum":
+								statisticSelection.selectedIndex = 1;
+								break;
+							case "Maximum":
+								statisticSelection.selectedIndex = 2;
+								break;
+							case "SampleCount":
+								statisticSelection.selectedIndex = 3;
+								break;
+							case "Sum":
+								statisticSelection.selectedIndex = 4;
+								break;
+						}
+					}
+					
+					if(element.properties['Properties'].hasOwnProperty('Period') && element.properties['Properties'].hasOwnProperty('EvaluationPeriods'))
+					{
+						try
+						{
+							var periodInt:Number = element.properties['Properties']['Period'] as Number;
+							var evaluationInt:Number = element.properties['Properties']['EvaluationPeriods'] as Number;
+							
+							i = 0;
+							found = false;
+							for each(var p:Object in periodList)
+							{
+								if(!found && periodInt == p.period && evaluationInt == p.evaluation)
+								{
+									periodSelection.selectedIndex = i;
+									found = true;
+								}
+								i++;
+							}
+							
+							if(!found)
+							{
+								periodSelection.selectedIndex = 1;
+							}
+						}catch(e:Error)
+						{
+							trace(e.message);
+						}
+					}
+					
+					//Set Action list is in getResourcesSvc_resultHandler()
+				}
+			}
+			
+			protected function previousButton_clickHandler(event:MouseEvent):void
+			{
+				if(alarmWizardViewStack.selectedIndex > 0)
+				{
+					alarmWizardViewStack.selectedIndex--;
+				}
+			}
+			
+			protected function nextButton_clickHandler(event:MouseEvent):void
+			{
+				var alert:Boolean = false;
+				
+				if(alarmWizardViewStack.selectedChild == alarmSpecificationsContent)
+				{
+					if(Helpers.StringReplaceAll(alarmName.text, " ", "") != "")
+					{
+						if(Helpers.validateAlphanumeric(alarmName.text))
+						{
+							if(objectManagementCreate)
+							{
+								alarmNameAlert.visible = false;								
+							}else
+							{
+								if(projectVersion.validateUniqueName(alarmName.text, element))
+								{
+									alarmNameAlert.visible = false;
+								}else
+								{
+									alarmNameAlert.text = AlertMessage.NOT_UNIQUE;
+									alarmNameAlert.visible = true;
+									alert = true;
+								}
+							}
+						}else
+						{
+							alarmNameAlert.text = AlertMessage.NOTALPHANUMERIC;
+							alarmNameAlert.visible = true;
+							alert = true;
+						}
+					}else
+					{
+						alarmNameAlert.text = AlertMessage.INVALID;
+						alarmNameAlert.visible = true;
+						alert = true;
+					}
+					
+					if(resourceSelection.selectedIndex == -1)
+					{
+						resourceSelectionAlert.visible = true;
+						alert = true;
+					}else
+					{
+						resourceSelectionAlert.visible = false;
+						alarmDetails_changeHandler();
+					}
+					
+					if(description.text != "")
+					{
+						descriptionVisible = true;
+					}else
+					{
+						descriptionVisible = false;
+					}
+					
+					resourceReview.text = "Resource: " + resourceTypeSelection.selectedLabel + " - " + resourceSelection.selectedLabel;
+				}else if(alarmWizardViewStack.selectedChild == alarmDetailsContent)
+				{
+					if(Helpers.StringReplaceAll(threshold.text, " ", "") != "")
+					{
+						var numberCheck:Number = Number(threshold.text);
+						if(isNaN(numberCheck))
+						{
+							alert = true;
+							thresholdAlert.visible = true;
+						}else
+						{
+							thresholdAlert.visible = false;
+						}
+						
+					}else
+					{
+						alert = true;
+						thresholdAlert.visible = true;
+					}
+					
+					setConsumptionCost();
+				}
+				
+				if(!alert)
+				{
+					alarmWizardViewStack.selectedIndex++;
+				}
+			}
+			
+			protected function setConsumptionCost():void
+			{
+				if(getAlarmResourcesSvc.result != null && getAlarmResourcesSvc.result.hasOwnProperty('prices') && cloudAccount.cloud_provider == CloudAccount.AMAZON)
+				{
+					var found:Boolean = false;
+					for each(var price:Object in getAlarmResourcesSvc.result.prices)
+					{
+						price = price.price;
+						if(!found)
+						{
+							if("alarm" == price.name)
+							{
+								found = true;
+								consumptionCost = "$" + (price.effective_price as Number).toFixed(2) + "/" + price.properties.denominator;
+							}
+						}
+					}
+					if(!found)
+					{
+						consumptionCost = "N/A";
+					}
+				}else
+				{
+					consumptionCost = "N/A";
+				}
+			}
+			
+			protected function submitButton_clickHandler(event:MouseEvent):void
+			{
+				submitButton.enabled = false;
+				submitButton.label = "Saving";
+				
+				if(objectManagementCreate)
+				{
+					if(actionList.length > 0)
+					{
+						var aActions:Array = [];
+						var oActions:Array = [];
+						var iActions:Array = [];
+						
+						for each(var a:Object in actionList)
+						{
+							var tResource:String = a.resourceName;
+							
+							switch(a.state)
+							{
+								case ALARM:
+									aActions.push(tResource);
+									break;
+								case OK:
+									oActions.push(tResource);
+									break;
+								case INSUFFICIENT_DATA:
+									iActions.push(tResource);
+									break;
+							}
+						}
+					}
+						
+					var alarmActionsString:String = JSON.encode(aActions);
+					var okActionsString:String = JSON.encode(oActions);
+					var insufficientActionsString:String = JSON.encode(iActions);
+				
+					objectManagementLaunchSvc.send({name: alarmName.text,
+													description: description.text,
+													alarm_actions: alarmActionsString,
+													ok_actions: okActionsString,
+													insufficient_actions: insufficientActionsString,
+													dimension_name: resourceSelection.selectedItem.dimension,
+													dimension_value: resourceSelection.selectedItem.resourceId,
+													comparison: comparisonSelection.selectedItem.value,
+													eval_periods: periodSelection.selectedItem.evaluation,
+													period: periodSelection.selectedItem.period,
+													metric_name: metricSelection.selectedItem.metricName,
+													namespace: resourceSelection.selectedItem.namespace,
+													statistic: statisticSelection.selectedItem.value,
+													threshold: threshold.text,
+													unit: metricSelection.selectedItem.unit});
+				}else
+				{
+					var alarmAttributes:Object = new Object();
+					alarmAttributes['Type'] = ResourceType.CW_ALARM;
+					alarmAttributes['Properties'] = {};
+					
+					if(Helpers.StringReplaceAll(description.text, " ", "") != "")
+					{
+						alarmAttributes['Properties']['AlarmDescription'] = description.text;
+					}
+					
+					switch(resourceTypeSelection.selectedLabel)
+					{
+						case ResourceTypeLabel.AUTOSCALE:
+							alarmAttributes['Properties']['Namespace'] = CloudWatchNamespace.AUTOSCALE;
+							alarmAttributes['Properties']['Dimensions'] = [{"Name": Dimension.AUTOSCALE_GROUPNAME, "Value": {"Ref": resourceSelection.selectedItem.name}}];
+							break;
+						case ResourceTypeLabel.EBS:
+							alarmAttributes['Properties']['Namespace'] = CloudWatchNamespace.EBS;
+							alarmAttributes['Properties']['Dimensions'] = [{"Name": Dimension.EBS_VOLUMEID, "Value": {"Ref": resourceSelection.selectedItem.name}}];
+							break;
+						case ResourceTypeLabel.EC2:
+							alarmAttributes['Properties']['Namespace'] = CloudWatchNamespace.EC2;
+							alarmAttributes['Properties']['Dimensions'] = [{"Name": Dimension.EC2_INSTANCEID, "Value": {"Ref": resourceSelection.selectedItem.name}}];
+							break;
+						case ResourceTypeLabel.ELB:
+							alarmAttributes['Properties']['Namespace'] = CloudWatchNamespace.ELB;
+							alarmAttributes['Properties']['Dimensions'] = [{"Name": Dimension.ELB_LOADBALANCERNAME, "Value": {"Ref": resourceSelection.selectedItem.name}}];
+							break;
+						case ResourceTypeLabel.RDS:
+							alarmAttributes['Properties']['Namespace'] = CloudWatchNamespace.RDS;
+							alarmAttributes['Properties']['Dimensions'] = [{"Name": Dimension.RDS_INSTANCEIDENTIFIER, "Value": {"Ref": resourceSelection.selectedItem.name}}];
+							break;
+						case ResourceTypeLabel.SNS:
+							alarmAttributes['Properties']['Namespace'] = CloudWatchNamespace.SNS;
+							alarmAttributes['Properties']['Dimensions'] = [{"Name": Dimension.SNS_TOPICNAME, "Value": {"Ref": resourceSelection.selectedItem.name}}];
+							break;
+						case ResourceTypeLabel.SQS:
+							alarmAttributes['Properties']['Namespace'] = CloudWatchNamespace.SQS;
+							alarmAttributes['Properties']['Dimensions'] = [{"Name": Dimension.SQS_QUEUENAME, "Value": {"Ref": resourceSelection.selectedItem.name}}];
+							break;
+					}
+					
+					alarmAttributes['Properties']['MetricName'] = metricSelection.selectedItem.metricName;
+					alarmAttributes['Properties']['Unit'] = metricSelection.selectedItem.unit;
+					alarmAttributes['Properties']['Statistic'] = statisticSelection.selectedItem.value;
+					alarmAttributes['Properties']['Period'] = periodSelection.selectedItem.period;
+					alarmAttributes['Properties']['EvaluationPeriods'] = periodSelection.selectedItem.evaluation;
+					alarmAttributes['Properties']['Threshold'] = threshold.text;
+					alarmAttributes['Properties']['ComparisonOperator'] = comparisonSelection.selectedItem.value;
+					
+					if(actionList.length > 0)
+					{
+						var alarmActions:Array = new Array();
+						var okActions:Array = new Array();
+						var insufficientActions:Array = new Array();
+						
+						for each(var b:Object in actionList)
+						{
+							var topicResource:*;
+							if(b.type == "template")
+							{
+								topicResource = {"Ref": b.resourceName};
+							}else
+							{
+								topicResource = b.resourceName;
+							}
+							
+							switch(b.state)
+							{
+								case ALARM:
+									alarmActions.push(topicResource);
+									break;
+								case OK:
+									okActions.push(topicResource);
+									break;
+								case INSUFFICIENT_DATA:
+									insufficientActions.push(topicResource);
+									break;
+							}
+						}
+						
+						if(alarmActions.length > 0)
+						{
+							alarmAttributes['Properties']['AlarmActions'] = alarmActions;
+						}
+						if(okActions.length > 0)
+						{
+							alarmAttributes['Properties']['OKActions'] = okActions;
+						}
+						if(insufficientActions.length > 0)
+						{
+							alarmAttributes['Properties']['InsufficientDataActions'] = insufficientActions;
+						}
+					}
+						
+					saveElement(alarmName.text, alarmAttributes);
+				}
+			}
+			
+			protected function objectManagementLaunchSvc_resultHandler(event:ResultEvent):void
+			{
+				Helpers.getObjectManagement(this).refreshResourceList();
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function objectManagementLaunchSvc_faultHandler(event:FaultEvent):void
+			{
+				Alert.show("Unable to save cloud watch alarm.");
+				submitButton.label = "Finish";
+				submitButton.enabled = true;
+				trace(event.fault);
+			}
+			
+			protected function resourceTypeSelection_changeHandler():void
+			{
+				if(objectManagementCreate)
+				{
+					resourceList.removeAll();
+					resourceTypeSelection.enabled = false;
+					resourceSelection.prompt = "Loading Resources";
+					resourceSelection.selectedIndex = -1;
+					var objectSelection:String;
+					switch(resourceTypeSelection.selectedLabel)
+					{
+						case ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.AUTOSCALE]:
+							getResourceSvc.action = "describe_auto_scaling_groups";
+							getResourceSvc.serviceType = CloudApiService.AS_SERVICE;
+							metricList = ResourceTypeMetricList.AUTOSCALEMETRICLIST;
+							break;
+						case ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.EBS]:
+							getResourceSvc.action = "describe_volumes";
+							getResourceSvc.serviceType = CloudApiService.EBS_SERVICE;
+							metricList = ResourceTypeMetricList.EBSMETRICLIST;
+							break;
+						case ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.EC2]:
+							getResourceSvc.action = "describe_instances";
+							getResourceSvc.serviceType = CloudApiService.EC2_SERVICE;
+							metricList = ResourceTypeMetricList.EC2METRICLIST;
+							break;
+						case ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.ELB]:
+							getResourceSvc.action = "describe_load_balancers";
+							getResourceSvc.serviceType = CloudApiService.ELB_SERVICE;
+							metricList = ResourceTypeMetricList.ELBMETRICLIST;
+							break;
+						case ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.RDS]:
+							getResourceSvc.action = "describe_db_instances";
+							getResourceSvc.serviceType = CloudApiService.RDS_SERVICE;
+							metricList = ResourceTypeMetricList.RDSMETRICLIST;
+							break;
+						case ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.SNS]:
+							getResourceSvc.action = "describe_topics";
+							getResourceSvc.serviceType = CloudApiService.SNS_SERVICE;
+							metricList = ResourceTypeMetricList.SNSMETRICLIST;
+							break;
+						case ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.SQS]:
+							getResourceSvc.action = "describe_message_queues";
+							getResourceSvc.serviceType = CloudApiService.SQS_SERVICE;
+							metricList = ResourceTypeMetricList.SQSMETRICLIST;
+							break;
+					}
+					getResourceSvc.send();
+				}else
+				{
+					var resourceType:String = "";
+					
+					switch(resourceTypeSelection.selectedLabel)
+					{
+						case ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.AUTOSCALE]:
+							resourceType = "AWS::AutoScaling::AutoScalingGroup";
+							metricList = ResourceTypeMetricList.AUTOSCALEMETRICLIST;
+							break;
+						case ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.EBS]:
+							resourceType = "AWS::EC2::Volume";
+							metricList = ResourceTypeMetricList.EBSMETRICLIST;
+							break;
+						case ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.EC2]:
+							resourceType = "AWS::EC2::Instance";
+							metricList = ResourceTypeMetricList.EC2METRICLIST;
+							break;
+						case ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.ELB]:
+							resourceType = "AWS::ElasticLoadBalancing::LoadBalancer";
+							metricList = ResourceTypeMetricList.ELBMETRICLIST;
+							break;
+						case ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.RDS]:
+							resourceType = "AWS::RDS::DBInstance";
+							metricList = ResourceTypeMetricList.RDSMETRICLIST;
+							break;
+						case ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.SNS]:
+							resourceType = "AWS::SNS::Topic";
+							metricList = ResourceTypeMetricList.SNSMETRICLIST;
+							break;
+						case ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.SQS]:
+							resourceType = "AWS::SQS::Queue";
+							metricList = ResourceTypeMetricList.SQSMETRICLIST;
+							break;
+					}
+					
+					resourceList = projectVersion.getElementByType(resourceType);
+					
+					if(resourceList.length > 0)
+					{
+						resourceSelection.selectedIndex = 0;
+					}else
+					{
+						resourceSelection.prompt = "No Template Resources";
+						resourceSelection.selectedIndex = -1;
+					}
+					
+					if(setAttributesForReconfigure)
+					{
+						var i:int = 0
+						var found:Boolean = false;
+						if(element.properties['Properties'].hasOwnProperty('Dimensions'))
+						{
+							var dimension:* = element.properties['Properties']['Dimensions'][0];
+							if (dimension.hasOwnProperty('Value') && dimension['Value'].hasOwnProperty('Ref'))
+							{
+								var stackResourceName:String = dimension['Value']['Ref'];
+								i = 0;
+								found = false;
+								for each(var r:* in resourceList)
+								{
+									if(!found && r.name == stackResourceName)
+									{
+										resourceSelection.selectedIndex = i;
+										found = true;
+									}
+									i++;
+								}
+							}
+						}
+						
+						if(element.properties['Properties'].hasOwnProperty('MetricName'))
+						{
+							i = 0;
+							found = false;
+							for each(var metric:* in metricList)
+							{
+								if(!found && metric.metricName == element.properties['Properties']['MetricName'])
+								{
+									metricSelection.selectedIndex = i;
+									found = true;
+								}
+								i++;
+							}
+						}
+						setAttributesForReconfigure = false;
+					}
+				}
+			}
+			
+			protected function alarmDetails_changeHandler():void
+			{
+				if(Helpers.StringReplaceAll(threshold.text, " ", "") != "")
+				{
+					var numberCheck:Number = Number(threshold.text);
+					if(isNaN(numberCheck))
+					{
+						alarmSentence.text = "This alarm will enter the ALARM state when the " + statisticSelection.selectedLabel + " " + metricSelection.selectedLabel + " is " + 
+							comparisonSelection.selectedLabel + " <Threshold> for " + periodSelection.selectedLabel;
+					}else
+					{
+						alarmSentence.text = "This alarm will enter the ALARM state when the " + statisticSelection.selectedLabel + " " + metricSelection.selectedLabel + " is " + 
+							comparisonSelection.selectedLabel + " " + threshold.text + " for " + periodSelection.selectedLabel;
+					}
+
+				}else
+				{
+					alarmSentence.text = "This alarm will enter the ALARM state when the " + statisticSelection.selectedLabel + " " + metricSelection.selectedLabel + " is " + 
+						comparisonSelection.selectedLabel + " <Threshold> for " + periodSelection.selectedLabel;
+				}
+			}
+			
+			protected function getAlarmResourcesSvc_resultHandler(event:ResultEvent):void
+			{
+				var topic:*;
+				var existingTopicList:ArrayCollection = new ArrayCollection(getAlarmResourcesSvc.result.topics as Array);
+				for each(topic in existingTopicList)
+				{
+					topicList.addItem({label: topic.name, type: "existing", resourceName: topic.arn});
+				}
+				
+				if(!objectManagementCreate)
+				{
+					var templateTopicList:ArrayCollection = projectVersion.getElementByType(ResourceType.SNS_TOPIC);
+					for each(topic in templateTopicList)
+					{
+						topicList.addItem({label: topic.name + " (Stack Resource)", type: "template", resourceName: topic.name});
+					}
+				}
+				
+				if(topicList.length > 0)
+				{
+					topicSelection.selectedIndex = 0;
+				}else
+				{
+					topicSelection.prompt = "No Topics Available";
+					topicSelection.selectedIndex = -1;
+				}
+				
+				//Set Action list if reconfiguring
+				if(!objectManagementCreate && element.id != null)
+				{
+					searchActionArrayToBuildActionList("AlarmActions");
+					searchActionArrayToBuildActionList("InsufficientDataActions");
+					searchActionArrayToBuildActionList("OKActions");
+				}
+				
+			}
+			
+			protected function searchActionArrayToBuildActionList(arrayName:String):void
+			{
+				var action:String = "";
+				switch(arrayName)
+				{
+					case "AlarmActions":
+						action = ALARM;
+						break;
+					case "InsufficientDataActions":
+						action = INSUFFICIENT_DATA;
+						break;
+					case "OKActions":
+						action = OK;
+						break;
+				}
+				
+				if(element.properties['Properties'].hasOwnProperty(arrayName))
+				{
+					for each(var a:* in element.properties['Properties'][arrayName])
+					{
+						if(a is String)
+						{
+							for each(var t:Object in topicList)
+							{
+								if(a == t.resourceName)
+								{
+									addToActionList(action, alarmAction.text, t.label, "existing", t.resourceName);		
+								}
+							}
+						}else
+						{
+							var topicString:String = "";
+							if(a.hasOwnProperty('Ref'))
+							{
+								topicString = a['Ref']
+							}
+							addToActionList(action, alarmAction.text, topicString + " (Stack Resource)", "template", topicString);
+						}
+					}
+				}
+			}
+			
+			protected function addToActionList(state:String, action:String, topic:String, type:String, resourceName:String):void
+			{
+				actionList.addItem({state: state, action: action, topic: topic, type: type, resourceName: resourceName});
+			}
+			
+			protected function addActionButton_clickHandler(event:MouseEvent):void
+			{
+				if(topicSelection.selectedIndex != -1)
+				{
+					topicSelectionAlert.visible = false;
+					addToActionList(stateSelection.selectedLabel, alarmAction.text, topicSelection.selectedLabel, topicSelection.selectedItem.type, topicSelection.selectedItem.resourceName);
+				}else
+				{
+					topicSelectionAlert.visible = true;
+				}
+			}
+			
+			protected function removeActionButton_clickHandler(event:MouseEvent):void
+			{
+				if(actionDataGrid.selectedIndex != -1)
+				{
+					actionList.removeItemAt(actionDataGrid.selectedIndex);
+				}
+			}
+			
+			protected function getResourceSvc_resultHandler(event:ResultEvent):void
+			{
+				resourceList.removeAll();
+				for each(var r:Object in getResourceSvc.result)
+				{
+					switch(getResourceSvc.serviceType)
+					{
+						case CloudApiService.AS_SERVICE:
+							resourceList.addItem({	name: r.AutoScalingGroupName,
+													resourceId: r.AutoScalingGroupName,
+													dimension: Dimension.AUTOSCALE_GROUPNAME,
+													namespace: CloudWatchNamespace.AUTOSCALE
+												});
+							break;
+						case CloudApiService.EC2_SERVICE:
+							resourceList.addItem({	name: r.id,
+													resourceId: r.id,
+													dimension: Dimension.EC2_INSTANCEID,
+													namespace: CloudWatchNamespace.EC2
+												});
+							break;
+						case CloudApiService.ELB_SERVICE:
+							resourceList.addItem({	name: r.LoadBalancerName,
+													resourceId: r.LoadBalancerName,
+													dimension: Dimension.ELB_LOADBALANCERNAME,
+													namespace: CloudWatchNamespace.ELB
+												});
+							break;
+						case CloudApiService.RDS_SERVICE:
+							resourceList.addItem({	name: r.id,
+													resourceId: r.id,
+													dimension: Dimension.RDS_INSTANCEIDENTIFIER,
+													namespace: CloudWatchNamespace.RDS
+												});
+							break;
+						case CloudApiService.EBS_SERVICE:
+							resourceList.addItem({	name: r.id,
+													resourceId: r.id,
+													dimension: Dimension.EBS_VOLUMEID,
+													namespace: CloudWatchNamespace.EBS
+												});
+							break;
+						case CloudApiService.SQS_SERVICE:
+							resourceList.addItem({	name: r.QueueName,
+													resourceId: r.QueueArn,
+													dimension: Dimension.SQS_QUEUENAME,
+													namespace: CloudWatchNamespace.SQS
+												});
+							break;
+						case CloudApiService.SNS_SERVICE:
+							resourceList.addItem({	name: r.TopicName,
+													resourceId: r.TopicArn,
+													dimension: Dimension.SNS_TOPICNAME,
+													namespace: CloudWatchNamespace.SNS
+												});
+							break;
+					}
+				}
+				
+				if(resourceList.length > 0)
+				{
+					resourceSelection.selectedIndex = 0;
+				}else
+				{
+					resourceSelection.prompt = "No Resources";
+					resourceSelection.selectedIndex = -1;
+				}
+				resourceTypeSelection.enabled = true;
+			}
+			
+			protected function getResourceSvc_faultHandler(event:FaultEvent):void
+			{
+				resourceTypeSelection.enabled = true;
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<services:CloudApiService id="objectManagementLaunchSvc"
+								  action="put_metric_alarm"
+								  cloudAccountId="{cloudAccount.id}"
+								  region="{region}"
+								  serviceType="{CloudApiService.ACW_SERVICE}"
+								  result="objectManagementLaunchSvc_resultHandler(event)"
+								  fault="objectManagementLaunchSvc_faultHandler(event)"/>
+		
+		<services:CloudApiService id="getAlarmResourcesSvc"
+								  action="get_alarm_resources"
+								  cloudAccountId="{cloudAccount.id}"
+								  region="{region}"
+								  serviceType="{CloudApiService.SNS_SERVICE}"
+								  result="getAlarmResourcesSvc_resultHandler(event)"/>
+		
+		<services:CloudApiService id="getResourceSvc"
+								  action="describe_auto_scaling_groups"
+								  cloudAccountId="{cloudAccount.id}"
+								  region="{region}"
+								  serviceType="{CloudApiService.AS_SERVICE}"
+								  result="getResourceSvc_resultHandler(event)"
+								  fault="getResourceSvc_faultHandler(event)"/>
+	</fx:Declarations>
+	
+	<s:VGroup width="100%" height="90%" gap="0">
+		<wizard:WizardWindowTitle id="alarmWizardWindowTitle"
+								  resourceImage="{ImagePath.NEW_ALARM}"
+								  resourceLabel="{wizardDisplayName}"
+								  wizardStack="{alarmWizardViewStack}"/>
+		<wizard:CookieTrail wizardStack="{alarmWizardViewStack}"/>
+		<mx:ViewStack id="alarmWizardViewStack" width="100%" height="100%" paddingTop="10" paddingLeft="20" paddingRight="20" creationPolicy="all">
+			<s:NavigatorContent id="alarmSpecificationsContent" label="Alarm Specifications" width="100%" height="100%">
+				<s:Form textAlign="right">
+					<s:FormItem label="Alarm Name*:">
+						<s:HGroup textAlign="left">
+							<s:TextInput id="alarmName" width="200"/>
+							<mx:Text id="alarmNameAlert" text="Invalid Input." color="red" visible="false"/>
+						</s:HGroup>
+					</s:FormItem>
+					<s:FormItem label="Description:">
+						<s:TextInput id="description" width="400" textAlign="left"/>
+					</s:FormItem>
+					<s:FormItem label="Resource Type*:">
+						<mx:ComboBox id="resourceTypeSelection" width="200" dataProvider="{resourceTypeList}" textAlign="left" change="resourceTypeSelection_changeHandler()" selectedIndex="0"/>
+					</s:FormItem>
+					<s:FormItem label="Resource*:">
+						<s:HGroup>
+							<mx:ComboBox id="resourceSelection" width="200" dataProvider="{resourceList}" labelField="name" textAlign="left" prompt="Loading Resources"/>
+							<mx:Text id="resourceSelectionAlert" text="{AlertMessage.INVALID}" color="red" visible="false"/>
+						</s:HGroup>
+					</s:FormItem>
+				</s:Form>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="alarmDetailsContent" label="Alarm Details" width="100%" height="100%">
+				<s:Form textAlign="right">
+					<s:FormItem label="Metric*:">
+						<mx:ComboBox id="metricSelection" dataProvider="{metricList}" textAlign="left" width="300" change="alarmDetails_changeHandler()"/>
+					</s:FormItem>
+					<s:FormItem label="Comparison*:">
+						<mx:ComboBox id="comparisonSelection" dataProvider="{comparisonList}" textAlign="left" width="60" change="alarmDetails_changeHandler()"/>
+					</s:FormItem>
+					<s:FormItem label="Threshold*:">
+						<s:HGroup>
+							<s:TextInput id="threshold" textAlign="left" change="alarmDetails_changeHandler()"/>
+							<mx:Text id="thresholdAlert" text="{AlertMessage.NOTNUMBER}" color="red" visible="false"/>
+						</s:HGroup>
+					</s:FormItem>
+					<s:FormItem label="Statistic*:">
+						<mx:ComboBox id="statisticSelection" dataProvider="{statisticList}" textAlign="left" width="150" change="alarmDetails_changeHandler()"/>
+					</s:FormItem>
+					<s:FormItem label="Period*:">
+						<mx:ComboBox id="periodSelection" dataProvider="{periodList}" textAlign="left" width="150" selectedIndex="1" change="alarmDetails_changeHandler()"/>
+					</s:FormItem>
+					<mx:Text id="alarmSentence" width="640" textAlign="left"/> 
+				</s:Form>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="configureActionContent" label="Configure Action" width="100%" height="100%">
+				<s:VGroup width="100%" height="100%">
+					<s:Form textAlign="right">
+						<s:layout>
+							<s:FormLayout gap="-10"/>
+						</s:layout>
+						<s:FormItem label="Alarm State*:">
+							<mx:ComboBox id="stateSelection" dataProvider="{alarmStateList}" textAlign="left" selectedIndex="0"/>
+						</s:FormItem>
+						<s:FormItem label="Action*:">
+							<mx:Text id="alarmAction" text="Send Notification" textAlign="left"/>
+						</s:FormItem>
+						<s:FormItem label="SNS Topic*:">
+							<s:HGroup textAlign="left">
+								<mx:ComboBox id="topicSelection" width="300" dataProvider="{topicList}" prompt="Loading Resources"/>
+								<mx:Text id="topicSelectionAlert" text="{AlertMessage.INVALID}" color="red" visible="false"/> 
+							</s:HGroup>
+						</s:FormItem>
+						<s:FormItem>
+							<s:Button id="addActionButton" label="Add Action" click="addActionButton_clickHandler(event)"/>
+						</s:FormItem>
+					</s:Form>
+					<s:DataGrid id="actionDataGrid" minHeight="0" maxHeight="160" width="100%" dataProvider="{actionList}" selectionMode="singleRow">
+						<s:columns>
+							<s:ArrayList id="actionGridColumns">
+								<s:GridColumn headerText="State" dataField="state"/>
+								<s:GridColumn headerText="Action" dataField="action"/>
+								<s:GridColumn headerText="Topic" dataField="topic"/>
+							</s:ArrayList>
+						</s:columns>
+					</s:DataGrid>
+					<s:Button id="removeActionButton" label="Remove Action" click="removeActionButton_clickHandler(event)"/>
+				</s:VGroup>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="reviewContent" label="Review" width="100%" height="100%">
+				<s:VGroup paddingLeft="20" height="100%" width="100%" paddingTop="10">
+					<mx:Text text="Please Review Your Alarm" y="20" fontWeight="bold"/>
+					<s:VGroup x="25" y="60" paddingLeft="20">
+						<mx:Text text="Alarm Name: {alarmName.text}"/>
+						<mx:Text text="Description: {description.text}" visible="{descriptionVisible}" includeInLayout="{descriptionVisible}"/>
+						<mx:Text id="resourceReview"/>
+						<mx:Text text="{alarmSentence.text}" width="600"/>
+					</s:VGroup>
+					<mx:Text text="Cost: {consumptionCost}" y="20" fontWeight="bold" visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}" includeInLayout="{cloudAccount.cloud_provider == CloudAccount.AMAZON}}"/>
+				</s:VGroup>
+			</s:NavigatorContent>
+		</mx:ViewStack>
+	</s:VGroup>
+	<s:Button id="previousButton" x="10" y="436" label="Previous" click="previousButton_clickHandler(event)" enabled="{alarmWizardViewStack.selectedIndex != 0}"/>
+	<s:Button id="nextButton" x="92" y="436" label="Next" click="nextButton_clickHandler(event)" enabled="{alarmWizardViewStack.selectedChild != reviewContent}"/>
+	<s:Button id="submitButton" x="169" y="436" label="Finish" click="submitButton_clickHandler(event)" enabled="{alarmWizardViewStack.selectedChild == reviewContent}"/>
+	<s:Button id="cancelButton" x="619" y="436" label="Cancel" click="{PopUpManager.removePopUp(this)}"/>
+</wizard:WizardWindow>

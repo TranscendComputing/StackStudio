@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" 
+			   title="Disaster Recover Cloud Settings"
+			   creationComplete="creationCompleteHandler(event)"
+			   close="PopUpManager.removePopUp(this);"
+			   move="Helpers.doMove(this)"
+			   width="400" height="142"
+			   defaultButton="{createButton}">
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import fr.kapit.diagrammer.Diagrammer;
+			import fr.kapit.diagrammer.base.sprite.DiagramLink;
+			import fr.kapit.diagrammer.base.uicomponent.DiagramSprite;
+			
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			[Bindable]
+			private var host:String;
+			[Bindable]
+			private var accountId:int;
+			
+			protected function getRegionsSvc_resultHandler(event:ResultEvent):void
+			{
+				var result:XMLList = Helpers.xmlChildrenFromEvent(event);
+				//for each(var element:XML in result)
+				//{
+				//	regions.addItem({label: element.toString()});
+				//}
+				drCloud.enabled = true;
+				drCloud.selectedIndex = 0;
+				createButton.enabled = true;
+			}
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				host = Helpers.getHost();
+				accountId = Helpers.currentAccount(this);
+				PopUpManager.centerPopUp(this);
+				drCloud.setFocus();
+				getRegionsSvc.send();
+			}
+			
+			protected function createButton_clickHandler(event:MouseEvent):void
+			{
+				var mainBox:MainBox = Helpers.getMainBox(this);
+				mainBox.designView.workspace.addElementAt(mainBox.designView.recoverCloudBox, 1);
+				mainBox.designView.drLabel.text = "Disaster Recovery Cloud: " + drCloud.selectedItem.label.toUpperCase();
+				var nodes:Array = mainBox.designView.vis.graph.nodes;
+				var nodesMap:Dictionary = mainBox.designView.vis.nodesMap;
+				var linksMap:Dictionary = mainBox.designView.vis.linksMap;
+				var node:DiagramSprite;
+				if(nodes.length != 0)
+				{
+					for each(node in nodesMap)
+					{
+						var p:Point = new Point(node.x, node.y);
+						mainBox.designView.recoverCloud.addNodeElement(node.data, null, null, p, node.itemID);
+					}
+
+					var mirrorSource:DiagramSprite;
+					var mirrorTarget:DiagramSprite;
+					for each(var link:DiagramLink in linksMap)
+					{
+						for each(node in mainBox.designView.recoverCloud.nodesMap)
+						{
+							if(node.itemID == link.source.itemID)
+							{
+								mirrorSource = node;
+							}
+							if(node.itemID == link.target.itemID)
+							{
+								mirrorTarget = node;
+							}
+						}
+						var mirrorLink:DiagramLink  = DiagramLink(mainBox.designView.recoverCloud.addLinkElement(null, mirrorSource,
+							mirrorTarget, null, -1,
+							-1, link.itemID, link.linkStyle));
+						mirrorLink.linkLine = 4;
+						mirrorLink.linkStyle.lineColor = 0x000000;
+					}
+
+					mainBox.designView.recoverCloud.alpha = 1;
+					//mainBox.designView.recoverCloudCompletion();
+				}
+				PopUpManager.removePopUp(this);
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<s:HTTPService id="getRegionsSvc"
+					   url="{host}/ec2_accounts/get_regions/{accountId}.xml"
+					   method="GET"
+					   resultFormat="e4x"
+					   showBusyCursor="true"
+					   result="getRegionsSvc_resultHandler(event)"/>
+	</fx:Declarations>
+	<s:FormItem horizontalCenter="0" label="Select a new DR Cloud:">
+		<mx:ComboBox id="drCloud" width="133" color="black" enabled="true" selectedIndex="0">
+			<mx:dataProvider>
+				<s:ArrayCollection id="regions">
+					<fx:Object label="us-east-1"/>
+					<fx:Object label="us-west-1"/>
+				</s:ArrayCollection>
+			</mx:dataProvider>
+		</mx:ComboBox>
+	</s:FormItem>
+	<s:Button id="createButton" x="126" y="78" label="Create" click="createButton_clickHandler(event)" enabled="true"/>
+	<s:Button x="202" y="78" label="Cancel" click="PopUpManager.removePopUp(this)"/>
+	
+	
+</s:TitleWindow>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="800" height="375"
+		 move="Helpers.doMove(this)"
+		 title="Create New Account"
+		 close="PopUpManager.removePopUp(this);"
+		 creationComplete="creationCompleteHandler(event)"
+		 xmlns:components="com.momentumsi.c9.components.*" xmlns:services="com.momentumsi.c9.services.*">
+	
+	<fx:Metadata>
+		[Event(name="userCreated", type="flash.events.Event")]
+	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.constants.PermissionType;
+			import com.momentumsi.c9.models.Permission;
+			import com.momentumsi.c9.models.User;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			
+			[Bindable]
+			public var orgUser:User;
+			private var newUser:User;
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				PopUpManager.centerPopUp(this);
+			}
+			
+			protected function create_clickHandler(event:MouseEvent):void
+			{
+				if(accountCreateBox.validateAccountFields())
+				{
+					submitButton.label = "Saving";
+					submitButton.enabled = false;
+					
+					newUser = new User();
+					newUser.org_id = orgUser.org_id;
+					newUser.login = accountCreateBox.usernameTI.text;
+					newUser.email = accountCreateBox.emailTI.text;
+					newUser.firstName = accountCreateBox.firstNameTI.text;
+					newUser.lastName = accountCreateBox.lastNameTI.text;
+					newUser.company = orgUser.company;
+					newUser.termsOfService = accountCreateBox.termsAgreement.selected;
+					newUser.password = accountCreateBox.passwordTI.text;
+					newUser.passwordConfirmation = accountCreateBox.confirmPasswordTI.text;
+					newUser.country_code = accountCreateBox.countryComboBox.selectedLabel;
+					
+					newUser.create();
+					newUser.addEventListener(ResultEvent.RESULT, newUserCreated_resultHandler);
+				}
+			}
+			
+			protected function newUserCreated_resultHandler(event:ResultEvent):void
+			{
+				if(accountCreateBox.adminCheck.selected)
+				{
+					var permission:Permission = new Permission(null, PermissionType.ADMIN, PermissionType.TRANSCEND);
+					identityService.addNewPermission(event.result.account.id, permission);
+				}else
+				{
+					finished();
+				}
+			}
+			
+			protected function identityService_resultHandler(event:ResultEvent):void
+			{
+				finished();
+			}
+			
+			protected function finished():void
+			{
+				dispatchEvent(new Event("userCreated"));
+				PopUpManager.removePopUp(this);
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<services:IdentityService id="identityService"
+								  result="identityService_resultHandler(event)"/>
+	</fx:Declarations>
+	
+	<components:AccountCreateBox id="accountCreateBox" orgUser="{orgUser}"/>
+	<s:Button x="326" y="311" id="submitButton" label="Create" click="create_clickHandler(event)"/>
+	<s:Button x="404" y="311" label="Cancel" click="PopUpManager.removePopUp(this);"/>
+</s:TitleWindow>

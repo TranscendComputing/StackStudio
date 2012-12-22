@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" 
+			   width="350" height="250"
+			   title="Add Node(s)"
+			   move="Helpers.doMove(this)"
+			   creationComplete="creationCompleteHandler(event)"
+			   close="PopUpManager.removePopUp(this)"
+			   xmlns:uicomponent="fr.kapit.diagrammer.base.uicomponent.*"
+			   xmlns:diagrammer="fr.kapit.diagrammer.base.uicomponent.*">
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.components.MainBox;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import fr.kapit.diagrammer.Diagrammer;
+			
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			protected function add_clickHandler(event:MouseEvent):void
+			{
+				var alerts:int = 0;
+				
+				try
+				{
+					var currentNumber:int = parseInt(cacheInstance.child('node-number'));
+					var addNumberInt:int = parseInt(addNumber.text);
+					if(addNumberInt > 0 && (addNumberInt + currentNumber) <= 20)
+					{
+						alerts = 0;
+					}else
+					{
+						alerts = 1;
+					}
+				}
+				catch(e:Error)
+				{
+					alerts = 1;
+				}
+				
+				if(alerts == 0)
+				{
+					addNumberAlert.visible = false;
+					AddCacheNodeSvc.send({add_number: addNumberInt, apply_immediately: immediately.selected});
+				}else
+				{
+					addNumberAlert.visible = true;
+				}
+			}
+			
+
+			protected function faultHandler(event:FaultEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+			}
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				PopUpManager.centerPopUp(this);
+			}
+
+			
+			protected function AddCacheNodeSvc_resultHandler(event:ResultEvent):void
+			{
+				PopUpManager.removePopUp(this);
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<fx:XML id="cacheInstance"/>
+		
+		<s:HTTPService id="AddCacheNodeSvc"
+					   url="{Helpers.getHost()}/provisioned_elastic_caches/add_nodes/{cacheInstance.child('id')}.xml"
+					   method="GET"
+					   resultFormat="e4x"
+					   showBusyCursor="true"
+					   result="AddCacheNodeSvc_resultHandler(event)"
+					   fault="faultHandler(event)"/>
+	</fx:Declarations>
+	<s:VGroup paddingTop="15">
+		<mx:Text text="You currently have {cacheInstance.child('node-number')} active nodes." paddingLeft="15"/>
+		<s:Form>
+			<s:FormItem label="Number of Nodes to add*: " textAlign="right">
+				<s:HGroup>
+					<s:TextInput id="addNumber" textAlign="left" widthInChars="3"/>
+					<mx:Text id="addNumberAlert" text="Invalid." color="red" visible="false"/>
+				</s:HGroup>
+			</s:FormItem>
+			<s:FormItem label="Apply Immediately: " textAlign="right">
+				<s:CheckBox id="immediately"/>
+			</s:FormItem>
+		</s:Form>
+	</s:VGroup>
+		<s:HGroup x="102" y="186">
+			<s:Button label="Add" click="add_clickHandler(event)"/>
+			<s:Button label="Cancel" click="PopUpManager.removePopUp(this)"/>
+		</s:HGroup>
+</s:TitleWindow>

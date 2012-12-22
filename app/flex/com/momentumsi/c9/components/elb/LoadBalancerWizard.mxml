@@ -1,0 +1,670 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wizard:WizardWindow
+	xmlns:fx="http://ns.adobe.com/mxml/2009" 
+	xmlns:s="library://ns.adobe.com/flex/spark" 
+	xmlns:mx="library://ns.adobe.com/flex/mx" 
+	xmlns:containers="com.momentumsi.c9.containers.*"
+	xmlns:c9="com.momentumsi.c9.components.*"
+	width="790" height="555"
+ 	wizardType="{ResourceTypeLabel.ELB}"
+ 	creationComplete="creationCompleteHandler(event)"
+    xmlns:components="com.momentumsi.c9.components.*"
+ 	xmlns:diagrammer="fr.kapit.diagrammer.base.uicomponent.*" xmlns:elb="com.momentumsi.c9.components.elb.*"
+	xmlns:wizard="com.momentumsi.c9.components.wizard.*" xmlns:services="com.momentumsi.c9.services.*">
+
+	<fx:Script>
+		<![CDATA[			
+			import com.maccherone.json.JSON;
+			import com.momentumsi.c9.components.elb.LoadBalancerConfigurations;
+			import com.momentumsi.c9.constants.AlertMessage;
+			import com.momentumsi.c9.constants.ImagePath;
+			import com.momentumsi.c9.constants.ResourceType;
+			import com.momentumsi.c9.constants.ResourceTypeLabel;
+			import com.momentumsi.c9.events.CloudResourceCreateEvent;
+			import com.momentumsi.c9.events.elb.CreateLoadBalancerResultEvent;
+			import com.momentumsi.c9.events.elb.ElbServiceFaultEvent;
+			import com.momentumsi.c9.models.CloudAccount;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.events.CloseEvent;
+			import mx.events.DropdownEvent;
+			import mx.events.FlexEvent;
+			import mx.events.IndexChangedEvent;
+			import mx.events.ListEvent;
+			import mx.events.MoveEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.InvokeEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.http.mxml.HTTPService;
+
+			//Container displays multiple listeners to be congifured
+			[Bindable]
+			public var savedListenersView:ArrayCollection = new ArrayCollection([{Protocol: 'HTTP', LoadBalancerPort: '80', InstanceProtocol: 'HTTP', InstancePort: '80'}]);														
+			[Bindable]
+			private var lbPortsCheck:ArrayCollection = new ArrayCollection(['80']);
+			[Bindable]
+			private var protocols:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var instanceProtocols:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var instancePorts:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var listenersReview:Array;
+			[Bindable]
+			private var consumptionCost:String = "N/A";
+
+			public var loadBalancerObject:Object;
+			private var currentLoadBalancerName:String;
+
+			[Bindable]
+			private var defProtocol:ArrayCollection = new ArrayCollection(
+				[ 	{label:"HTTP"},
+					{label:"HTTPS"},
+					{label: "TCP"},
+					{label: "SSL"}]);
+			
+			[Bindable]
+			private var confProtocol:ArrayCollection = new ArrayCollection(
+				[ {label:"HTTP"}, 
+					{label:"TCP"}]);
+			[Bindable]
+			private var healthyThreshold:ArrayCollection = new ArrayCollection([ {label: "2"}, 
+																					{label: "3"}, {label: "4"}, 
+																					{label: "5"}, {label: "6"}, 
+																					{label: "7"}, {label: "8"}, 
+																					{label: "9"}, {label: "10"} ]);
+			[Bindable]
+			private var unhealthyThreshold:ArrayCollection = new ArrayCollection([ {label: "2"}, 
+																						{label: "3"}, {label: "4"}, 
+																						{label: "5"}, {label: "6"}, 
+																						{label: "7"}, {label: "8"}, 
+																						{label: "9"}, {label: "10"} ]);
+			
+			
+			override public function applyConfigurations():void
+			{	
+				if(element.id == null)
+				{
+					return;
+				}
+				lbWizard.selectedChild = configureBalancerContent;
+				currentLoadBalancerName = element.name;
+				lbName.text = currentLoadBalancerName;
+				loadBalancerObject = element.properties;
+				var listenersArray:Array = loadBalancerObject['Properties']['Listeners'];
+				savedListenersView.removeAll();
+				for each(var l:Object in listenersArray)
+				{
+					if(!l.hasOwnProperty("InstanceProtocol"))
+					{
+						l["InstanceProtocol"] = l.Protocol;
+					}
+					savedListenersView.addItem(l);
+					protocols.addItem(l.Protocol);
+					instancePorts.addItem(l.InstancePort);
+				}
+				try{
+					var healthCheck:Object = loadBalancerObject['Properties']['HealthCheck'];
+					try{
+						var targetParam:String = "@" + healthCheck['Target']['Ref'];
+						elbResourceTarget.text = targetParam;
+						useTargetCheckbox.selected = true;						
+					}catch(error:Error){
+						var target:String = healthCheck['Target'];
+						if(target.split(":")[0] == "TCP")
+						{
+							pingProtocol.selectedIndex = 1;
+						}else{
+							pingProtocol.selectedIndex = 0;
+						}
+						try{
+							pingPort.text = target.match(/:[0-9]*\//)[0];
+							pingPort.text = pingPort.text.replace(":","");
+							pingPort.text = pingPort.text.replace("/","");					
+							pingPath.text = "/" + target.split("/")[1];
+						}catch(error:Error){
+							//Target unavailable
+						}
+					}
+					healthyThresh.value = Number(healthCheck['HealthyThreshold']);
+					unhealthyThresh.value = Number(healthCheck['UnhealthyThreshold']);
+					healthCheckInt.text = healthCheck['Interval'];
+					respTimeout.text = healthCheck['Timeout'];
+					
+				}catch(error:Error){
+					//No health check available
+				}
+			}
+
+			
+			public function saveConfigs():void
+			{
+				var protocol:String = this.protocol.text.toString();
+				var lbPort:String = this.lbPort.text.toString();
+				var instanceProtocol:String = this.instanceProtocol.text.toString();
+				var instancePort:Object;
+				if(this.instancePort.text.length > 0 && this.instancePort.text.charAt(0) == "@")
+				{
+					instancePort = {"Ref" : this.instancePort.text.substr(1, this.instancePort.text.length-1)};
+				}else
+				{
+					instancePort = this.instancePort.text;	
+				}
+				
+				if(lbPortsCheck.contains(lbPort))
+				{
+					Alert.show("You cannot have duplicate load balancer ports. Please fix.");
+				}
+				else{
+					lbPortsCheck.addItem(lbPort);
+					if(protocol == "HTTPS")
+					{
+						protocol = "HTTPS";
+					}else if(protocol == "SSL")
+					{
+						protocol = "SSL";
+					}
+					if(instanceProtocol == "HTTPS")
+					{
+						instanceProtocol = "HTTPS";
+					}else if(instanceProtocol == "SSL")
+					{
+						instanceProtocol = "SSL";
+					}
+					savedListenersView.addItem({ 
+						Protocol: protocol, 
+						LoadBalancerPort: lbPort, 
+						InstanceProtocol: instanceProtocol,
+						InstancePort: instancePort});
+					protocols.addItem(protocol);
+					instancePorts.addItem(instancePort);
+				}
+				this.lbPort.text = "";
+				this.instancePort.text = "";
+				this.instanceProtocol.selectedIndex = 0;
+				this.protocol.selectedIndex = 0;
+			}
+			
+			private function getListenersForReview():Array
+			{
+				var a:Array = new Array;
+				var lbPortReview:Object;
+				var lbProtocolReview:Object;
+				var instancePortReview:Object;
+				for(var i:int = 0; i < savedListenersView.length; i++)
+				{
+					lbPortReview = savedListenersView.getItemAt(i)['LoadBalancerPort'];
+					lbProtocolReview = savedListenersView.getItemAt(i)['Protocol'];
+					instancePortReview = savedListenersView.getItemAt(i)['InstancePort'];
+					if(!(instancePortReview is String))
+					{
+						if(instancePortReview.hasOwnProperty("Ref"))
+						{
+							instancePortReview = "@" + instancePortReview.Ref;
+						}
+					}
+					a.push(lbPortReview + " (" + lbProtocolReview + ")" + " forwarding to " + instancePortReview + "\n");
+				}
+				return a;
+			}
+			
+			private function removeListeners():void
+			{
+				if(savedListenersBox.selectedIndex != -1)
+				{
+					var selectedListener:Object = savedListenersBox.selectedItem;
+					var i:int;
+					if(lbPortsCheck.contains(selectedListener.LoadBalancerPort))
+					{
+						i = lbPortsCheck.getItemIndex(selectedListener.LoadBalancerPort);
+						lbPortsCheck.removeItemAt(i);
+					}
+					if(instanceProtocols.contains(selectedListener.InstanceProtocol))
+					{
+						i = instanceProtocols.getItemIndex(selectedListener.InstanceProtocol);
+						instanceProtocols.removeItemAt(i);
+					}
+					if(instancePorts.contains(selectedListener.InstancePort))
+					{
+						i = instancePorts.getItemIndex(selectedListener.InstancePort);
+						instancePorts.removeItemAt(i);
+					}
+					if(protocols.contains(selectedListener.Protocol))
+					{
+						i = protocols.getItemIndex(selectedListener.Protocol);
+						protocols.removeItemAt(i);
+					}
+					savedListenersView.removeItemAt(savedListenersBox.selectedIndex);
+				}
+				/*
+				var index:int = savedListenersView.getItemIndex(savedListenersBox.selectedItem);
+				savedListenersView.removeItemAt(index);
+				var i:int;
+				if(lbPortsCheck.contains(removeLBPort))
+				{
+					i = lbPortsCheck.getItemIndex(removeLBPort);
+					lbPortsCheck.removeItemAt(i);
+				}
+				if(instanceProtocols.contains(removeInstanceProtocol))
+				{
+					i = instanceProtocols.getItemIndex(removeInstanceProtocol);
+					instanceProtocols.removeItemAt(i);
+				}
+				if(instancePorts.contains(removeInstancePort))
+				{
+					i = instancePorts.getItemIndex(removeInstancePort);
+					instancePorts.removeItemAt(i);
+				}
+				if(protocols.contains(removeProtocol))
+				{
+					i = protocols.getItemIndex(removeProtocol);
+					protocols.removeItemAt(i);
+				}
+					*/
+			}
+			
+			public function nextStep():void
+			{
+				if(lbWizard.selectedChild == configureBalancerContent)
+				{	
+					var alert:Boolean = false;
+					if(lbName.text == "")
+					{
+						alert = true;
+						lbNameAlert.text = AlertMessage.INVALID;
+						lbNameAlert.visible = true;
+					}else
+					{
+						if(Helpers.validateAlphanumeric(lbName.text))
+						{
+							if(objectManagementCreate)
+							{
+								lbNameAlert.visible = false;						
+							}else
+							{
+								if(projectVersion.validateUniqueName(lbName.text, element))
+								{
+									lbNameAlert.visible = false;
+								}else
+								{
+									lbNameAlert.text = AlertMessage.NOT_UNIQUE;
+									lbNameAlert.visible = true;
+									alert = true;
+								}
+							}
+						}else
+						{
+							alert = true;
+							lbNameAlert.text = AlertMessage.NOTALPHANUMERIC;
+							lbNameAlert.visible = true;
+						}
+						
+						if(cloudAccount.cloud_provider == CloudAccount.AMAZON)
+						{
+							setConsumptionCost();
+						}
+					}
+					if(savedListenersView.length == 0 || lbPort.text != "" || instancePort.text != "" || protocol.selectedIndex != 0)
+					{
+						Alert.show("You have unsaved port listener configuration. Click Save or clear fields before clicking Next");
+						alert = true;
+					}
+				}else if(lbWizard.selectedChild == stickinessContent)
+				{
+					
+				}
+				
+				if(!alert)
+				{
+					lbWizard.selectedIndex++;
+				}
+			}
+			
+			protected function setConsumptionCost():void
+			{
+				var found:Boolean = false;
+				for each(var price:Object in elbService.prices)
+				{
+					price = price.price;
+					if(!found)
+					{
+						if(cloudAccount.cloud_provider == CloudAccount.AMAZON)
+						{
+							if("load_balancer" == price.name)
+							{
+								found = true;
+								consumptionCost = "$" + (price.effective_price as Number).toFixed(2) + "/" + price.properties.denominator;
+							}
+						}
+					}
+				}
+				if(!found)
+				{
+					consumptionCost = "N/A";
+				}
+			}
+			
+			/**
+			 * Event Handlers
+			 * */
+			
+			public function createLB(event:MouseEvent):void
+			{
+				finishButton.label = "Saving";
+				finishButton.enabled = false;
+				
+				var loadBalancerAttributes:Object = new Object();
+				loadBalancerObject = new Object();
+				loadBalancerAttributes['Type'] = ResourceType.LOAD_BALANCER;
+				loadBalancerAttributes['Properties'] = new Object();
+				loadBalancerAttributes['Properties']['AvailabilityZones'] = {"Fn::GetAZs" : ""};
+				var listenersArray:Array = new Array();
+				for each(var listener:Object in savedListenersView)
+				{
+					listenersArray.push({LoadBalancerPort: listener['LoadBalancerPort'], InstancePort: listener['InstancePort']
+						, Protocol: listener['Protocol']});
+				}
+				loadBalancerAttributes['Properties']['Listeners'] = listenersArray;
+				var healthCheck:Object = new Object();
+				if(useTargetCheckbox.selected){
+					healthCheck['Target'] = {Ref: elbResourceTarget.text.replace("@","")};
+				}else{
+					healthCheck['Target'] = pingProtocol.selectedLabel + ":" + pingPort.text + pingPath.text;
+				}
+				healthCheck['HealthyThreshold'] = healthyThresh.value.toString();
+				healthCheck['UnhealthyThreshold'] = unhealthyThresh.value.toString();
+				healthCheck['Interval'] = healthCheckInt.text;
+				healthCheck['Timeout'] = respTimeout.text;
+				loadBalancerAttributes['Properties']['HealthCheck'] = healthCheck;
+				var stickinessPolicy:Object = stickinessConfiguration.getStickinessPolicy();
+				if(stickinessPolicy != null)
+				{
+					for(var s:* in stickinessPolicy)
+					{
+						loadBalancerAttributes['Properties'][s] = stickinessPolicy[s];
+					}
+				}
+				
+				if(!objectManagementCreate)
+				{
+					saveElement(lbName.text, loadBalancerAttributes);
+					//createVariants(lbName.text, statesToApply.ignoredEnvironments);
+					return;
+				}else
+				{					
+					var listenersArrayString:String = JSON.encode(listenersArray);
+					var healthCheckString:String = JSON.encode(healthCheck);
+					var parameters:Object = {
+						name: lbName.text,
+						listeners: listenersArrayString,
+						health_check: healthCheckString
+					};
+					
+					elbService.addEventListener(ElbServiceFaultEvent.FAULT, createElb_faultHandler);
+					elbService.addEventListener(CreateLoadBalancerResultEvent.RESULT, createLoadBalancer_resultHandler);
+					elbService.createLoadBalancer(parameters);
+				}
+			}
+			
+			protected function lbWizard_changeHandler(event:IndexChangedEvent):void
+			{
+				
+				if(lbWizard.selectedChild == reviewContent)
+				{
+					listenersReview = getListenersForReview();
+				}
+			}
+			
+			protected function createLoadBalancer_resultHandler(event:CreateLoadBalancerResultEvent):void
+			{
+				removeElbServiceListeners();
+				dispatchEvent(new CloudResourceCreateEvent());
+			}
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				elbService.getElbPrices();
+			}
+			
+			protected function createElb_faultHandler(event:Event):void
+			{
+				removeElbServiceListeners();
+				finishButton.label = "Finish";
+				finishButton.enabled = true;
+			}
+			
+			private function instacePortLabelFunction(value:Object, column:GridColumn):String
+			{
+				var label:String = "";
+				if(value.hasOwnProperty("InstancePort"))
+				{
+					if(value.InstancePort is String)
+					{
+						label = value.InstancePort;
+					}else if(value.InstancePort.hasOwnProperty("Ref"))
+					{
+						label = "@" + value.InstancePort.Ref;
+					}
+				}
+				return label;
+			}
+			
+			private function removeElbServiceListeners():void
+			{
+				elbService.removeEventListener(CreateLoadBalancerResultEvent.RESULT, createLoadBalancer_resultHandler);
+				elbService.removeEventListener(ElbServiceFaultEvent.FAULT, createElb_faultHandler);
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<services:ElbService id="elbService"
+							 cloudAccountId="{cloudAccount.id}"
+							 region="{region}"/>
+	</fx:Declarations>
+
+	<s:VGroup height="90%" width="100%" gap="0">
+		<wizard:WizardWindowTitle id="elbWindowTitle"
+								  wizardStack="{lbWizard}"
+								  resourceImage="{ImagePath.NEW_ELB}"
+								  resourceLabel="{wizardDisplayName}"/>
+		<wizard:CookieTrail id="elbCookieTrail"
+							wizardStack="{lbWizard}"
+							gap="85"/>
+		<mx:ViewStack id="lbWizard"
+					  width="100%" height="100%"
+					  change="lbWizard_changeHandler(event)" 
+					  creationPolicy="all" 
+					  paddingTop="10" paddingLeft="20">
+			<s:NavigatorContent id="configureBalancerContent" 
+								width="100%" height="100%"
+								label="Configure Balancer">
+				<s:Form textAlign="right" width="100%">
+					<s:FormItem label="Name*:">
+						<s:HGroup>
+							<s:TextInput id="lbName" width="200" textAlign="left"/>
+							<mx:Text id="lbNameAlert" text="This field is required." color="red" visible="false"/>
+						</s:HGroup>
+					</s:FormItem>
+					<s:FormItem label="Listeners:" width="745">
+						<mx:Box id="listenerConfigurations" direction="horizontal" borderStyle="none" width="100%" height="25" textAlign="left">
+							<s:HGroup width="100%">
+								<s:HGroup>
+									<mx:ComboBox id="protocol" dataProvider="{defProtocol}" width="130"/>
+									<s:TextInput id="lbPort" width="150"/>
+								</s:HGroup>
+								<s:HGroup>
+									<mx:ComboBox id="instanceProtocol" dataProvider="{defProtocol}" width="130"/>
+									<components:InputComboBox id="instancePort"
+															  projectVersion="{projectVersion}"
+															  width="150"
+															  textInputField="true"/>
+									<s:Button id="action" label="Save" click="saveConfigs()" enabled="{(lbPort.text != '' || instancePort.text != '')}"/>
+								</s:HGroup>
+							</s:HGroup>
+						</mx:Box>
+						<s:DataGrid id="savedListenersBox" width="650" textAlign="left"
+									 dataProvider="{savedListenersView}" editable="false"
+									 sortableColumns="false" maxHeight="300">
+							<s:columns>
+								<s:ArrayCollection>
+									<s:GridColumn dataField="Protocol" headerText="Balancer Protocol" width="135"/>
+									<s:GridColumn dataField="LoadBalancerPort" headerText="Balancer Port" width="155"/>
+									<s:GridColumn dataField="InstanceProtocol" headerText="Instance Protocol" width="135"/>
+									<s:GridColumn dataField="InstancePort" headerText="Instance Port" labelFunction="instacePortLabelFunction"/>
+								</s:ArrayCollection>
+							</s:columns>
+						</s:DataGrid>
+						<s:Button id="removeListenerButton" click="removeListeners()" 
+								  enabled="{savedListenersBox.selectedItem != null}"
+								  label="Remove Listener"/>
+					</s:FormItem>
+				</s:Form>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="configureHealthContent"
+								height="100%" width="100%"
+								label="Configure Health">
+				<s:VGroup paddingLeft="20" textAlign="right">
+					<s:HGroup gap="60">
+						<mx:Text text="Configuration Options:" fontWeight="bold" width="160"/>
+						<s:Form>
+							<s:layout>
+								<s:FormLayout gap="-5"/>
+							</s:layout>
+							<s:FormItem label="Ping Protocol:">
+								<mx:ComboBox id="pingProtocol" color="black" dataProvider="{confProtocol}" enabled="{useTargetCheckbox.selected == false}" textAlign="left"/>
+							</s:FormItem>
+							<s:FormItem label="Ping Port:">
+								<s:TextInput id="pingPort" text="80" color="black" enabled="{useTargetCheckbox.selected == false}" textAlign="left"/>
+							</s:FormItem>
+							<s:FormItem label="Ping Path:">
+								<s:TextInput id="pingPath" color="black" text="/index.html" width="126" enabled="{useTargetCheckbox.selected == false}" textAlign="left"/>
+							</s:FormItem>
+							<s:FormItem visible="{objectManagementCreate == false}" id="hcTarget" label="Target:">
+								<s:HGroup textAlign="left">
+									<s:TextInput id="elbResourceTarget" enabled="{useTargetCheckbox.selected}"/>
+									<s:Image width="16" height="16" source="{ImagePath.HELPER_ICON}" toolTip="Health Check Target&#13;Target health check endpoint.  Use this OR separate fields above.&#13;[PingProtocol]:[PingPort][PingPath]"/>
+									<s:CheckBox id="useTargetCheckbox" label="Use Target"/>
+								</s:HGroup>
+							</s:FormItem>
+						</s:Form>
+					</s:HGroup>
+					<s:HGroup>
+						<mx:Text text="Advanced Options:" fontWeight="bold" width="160"/>
+						<s:Form>
+							<s:layout>
+								<s:FormLayout gap="-5"/>
+							</s:layout>
+							<s:FormItem label="Response Timeout:" x="26" y="266">
+								<s:HGroup verticalAlign="middle" textAlign="left">
+									<s:TextInput id="respTimeout" color="black" text="5"/>
+									<mx:Text text="seconds"/>
+								</s:HGroup>
+							</s:FormItem>
+							<s:FormItem label="Health Check Interval:">
+								<s:HGroup verticalAlign="middle" textAlign="left">
+									<s:TextInput id="healthCheckInt" color="black" text="30" width="88"/>
+									<mx:Text text="seconds"/>
+									<s:Image width="16" height="16" source="{ImagePath.HELPER_ICON}" toolTip="Health Check Interval&#13;The number of seconds before the load balancer will perform the next health check."/>
+								</s:HGroup>
+							</s:FormItem>	
+							<s:FormItem label="Unhealthy Threshold:">
+								<s:HGroup textAlign="left">
+									<mx:HSlider id="unhealthyThresh"
+												dataTipPlacement="left"
+												minimum="2"
+												maximum="10"
+												labels="[2,3,4,5,6,7,8,9,10]"
+												snapInterval="1"
+												tickInterval="1"
+												liveDragging="true"
+												value = "2"
+												width="172"/>
+									<s:VGroup height="100%" verticalAlign="middle" textAlign="left">
+										<s:Image x="521" y="279" width="16" height="16"
+												 source="{ImagePath.HELPER_ICON}"
+												 toolTip="Unhealthy Threshold&#xd;The number of consecutive health probe failures before moving the instance to the Unhealthy state."/>
+									</s:VGroup>									
+								</s:HGroup>								
+							</s:FormItem>
+							<s:FormItem label="Healthy Threshold:">
+								<s:HGroup textAlign="left">
+									<mx:HSlider id="healthyThresh" 
+												dataTipPlacement="right"
+												minimum="2" 
+												maximum="10" 
+												labels="[2,3,4,5,6,7,8,9,10]" 
+												liveDragging="true"
+												snapInterval="1"
+												tickInterval="1"
+												value="10"
+												width="172"/>
+									<s:VGroup height="100%" verticalAlign="middle">
+										<s:Image x="521" y="331" width="16" height="16"
+												 source="{ImagePath.HELPER_ICON}"
+												 toolTip="Healthy Threshold&#xd;The number of consecutive health probe successes required before moving the instance to the Healthy state."/>
+									</s:VGroup>									
+								</s:HGroup>
+							</s:FormItem>
+						</s:Form>
+					</s:HGroup>
+				</s:VGroup>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="stickinessContent"
+								label="Configure Stickiness">
+				<s:VGroup width="100%" height="100%">
+					<elb:LoadBalancerStickiness id="stickinessConfiguration" width="50%" height="50%"/>
+				</s:VGroup>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="reviewContent"
+								width="100%" height="100%"
+								label="Review">
+				<s:VGroup>
+					<mx:Text text="Please Review Your Load Balancer" y="20" fontWeight="bold"/>
+					<s:HGroup x="25" y="60" paddingLeft="20" gap="20">
+						<s:VGroup>		
+							<mx:Text text="Name: {lbName.text}"/>
+							<mx:Text text="Port Configuration: {listenersReview}"/>
+							<mx:Text text="Ping Protocol: {pingProtocol.text}"/>
+							<mx:Text text="Ping Port: {pingPort.text}"/>
+							<mx:Text text="Response Timeout: {respTimeout.text}"/>
+							<mx:Text text="Health Check Interval: {healthCheckInt.text}"/>
+							<mx:Text text="Unhealthy Theshold: {unhealthyThreshold.getItemAt(unhealthyThresh.value - 2).label}"/>
+							<mx:Text text="Healthy Threshold: {healthyThreshold.getItemAt(healthyThresh.value - 2).label}"/>
+						</s:VGroup>		
+						<s:VGroup>
+							<mx:Text text="Stickiness: {stickinessConfiguration.policyButtons.selectedValue}"/>
+							<s:HGroup visible="{!stickinessConfiguration.noSticky.selected}" includeInLayout="{!stickinessConfiguration.noSticky.selected}">
+								<mx:Text text="LB Stickiness: "/>
+								<s:VGroup>
+									<mx:Text text="Policy Name: {stickinessConfiguration.lbPolicyName.text}" width="250"/>
+									<mx:Text text="Expiration: {stickinessConfiguration.cookieExpirationPeriod.text}" width="250"/>
+								</s:VGroup>
+							</s:HGroup>
+							<s:HGroup visible="{stickinessConfiguration.lbAppSticky.selected}" includeInLayout="{stickinessConfiguration.lbAppSticky.selected}">
+								<mx:Text text="App Stickiness: "/>
+								<s:VGroup>
+									<mx:Text text="Policy Name: {stickinessConfiguration.appPolicyName.text}" width="250"/>
+									<mx:Text text="Cookie Name: {stickinessConfiguration.appCookieName.text}" width="250"/>
+								</s:VGroup>
+							</s:HGroup>
+						</s:VGroup>			
+					</s:HGroup>
+					<mx:Text text="Cost: {consumptionCost}" y="20" fontWeight="bold" visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}" includeInLayout="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"/>
+				</s:VGroup>
+			</s:NavigatorContent>
+		</mx:ViewStack>
+	</s:VGroup>
+		<s:Button x="10" y="491" label="Previous" click="lbWizard.selectedIndex = lbWizard.selectedIndex - 1"
+				  enabled="{lbWizard.selectedIndex != 0}"/>
+		<s:Button x="92" y="491" label="Next" click="nextStep()"
+				  enabled="{lbWizard.selectedIndex != lbWizard.length - 1}"/>
+		<s:Button id="finishButton" x="169" y="491" label="Finish" click="createLB(event)"
+				  enabled="{lbWizard.selectedIndex == lbWizard.length - 1}"/>
+		<s:Button id="cancel" x="709" y="491" label="Cancel" click="PopUpManager.removePopUp(this);"/>	
+</wizard:WizardWindow>

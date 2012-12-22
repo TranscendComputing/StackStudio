@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   xmlns:diagram="com.ibm.ilog.elixir.diagram.*"
+			   width="702" height="582" close="PopUpManager.removePopUp(this)"
+			   title="Load Balancer Properties"
+			   initialize="init(event)">
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			[Bindable]
+			private var host:String;
+			private var app:Object = FlexGlobals.topLevelApplication;
+			
+
+			protected function init(event:FlexEvent):void
+			{
+				host = app.GetConfiguration( "serviceUrl" ) ;
+				trace(this.lbInstance.child('id'));
+				getListeners.send();	
+			}		
+			
+			private function handleGetLoadBalancerInstances(event:ResultEvent):void
+			{
+				var lbInstances:XMLList = Helpers.xmlChildrenFromEvent(event);
+			}
+			
+			private function handleListenersResult(event:ResultEvent):void
+			{
+				var listeners:XMLList = Helpers.xmlChildrenFromEvent(event);
+				var index:int = 0;
+				for each( var listener:XML in listeners)
+				{
+					var listenerItem:FormItem = new FormItem();
+					listenerItem.label = "[" + index + "]";
+					//listenerItem.fontWeight = 'bold';
+					var listenerProperties:Form = new Form();
+					//listenerProperties.textAlign = 'right';
+					var protocolItem:FormItem = new FormItem();
+					protocolItem.label = 'Protocol:';
+					var protocol:Text = listener.child('protocol');
+					listenerProperties.addChild(protocol);
+					listenerItem.addChild(listenerProperties);
+					listenersForm.addChild(listenerItem);
+				}
+				/**
+					<s:Form x="294" y="10">
+						<s:Label text="Listeners" fontWeight="bold" fontStyle="italic"/>
+						<s:FormItem label="One:" fontWeight="bold">
+							<s:Form textAlign="right">
+								<s:layout>
+									<s:FormLayout gap="1"/>
+								</s:layout>
+								<s:FormItem label="Protocol:">
+									<mx:Text text="test" fontWeight="normal"/>
+								</s:FormItem>
+								<s:FormItem label="Load Balancer Port:">
+									<mx:Text text="test2" fontWeight="normal"/>
+								</s:FormItem>
+								<s:FormItem label="Instance Port:">
+									<mx:Text text="test3" fontWeight="normal"/>
+								</s:FormItem>
+							</s:Form>
+						</s:FormItem>
+					</s:Form>
+					 * */
+			}
+
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		
+		<fx:XML id="lbInstance"/>
+
+		<s:HTTPService id="getListeners"
+					   url="{host}/load_balancers/get_listeners/{lbInstance.child('id')}.xml"
+					   resultFormat="e4x"
+					   method="GET"
+					   showBusyCursor="true"
+					   result="handleListenersResult(event)"/>
+		
+		<s:HTTPService id="getLoadBalancerInstances"
+					   url="{host}/load_balancers/get_all_instances"
+					   resultFormat="e4x"
+					   method="POST"
+					   showBusyCursor="true"
+					   result="handleGetLoadBalancerInstances(event)"/>
+		
+	</fx:Declarations>
+	<s:Form>
+		<s:layout>
+			<s:FormLayout gap="2"/>
+		</s:layout>
+		<s:FormItem label="Name:" fontWeight="bold" textAlign="right">
+			<mx:Text text="{lbInstance.child('name')}" fontWeight="normal"/>
+		</s:FormItem>
+		<s:FormItem label="DNS Name:" fontWeight="bold" textAlign="right">
+			<mx:Text text="{lbInstance.child('dns-name')}" fontWeight="normal"/>
+		</s:FormItem>
+		<s:Form textAlign="right">
+			<s:layout>
+				<s:FormLayout gap="2"/>
+			</s:layout>
+			<s:Label text="Health Check" fontWeight="bold" fontStyle="italic"/>
+			<s:FormItem  label="Interval:" fontWeight="bold">
+				<mx:Text text="{lbInstance.child('health-check-interval')}" fontWeight="normal"/>
+			</s:FormItem>
+			<s:FormItem label="Healthy Threshold:" fontWeight="bold">
+				<mx:Text text="{lbInstance.child('healthy-thresh')}" fontWeight="normal"/>
+			</s:FormItem>
+			<s:FormItem label="Unhealthy Threshold:" fontWeight="bold">
+				<mx:Text text="{lbInstance.child('unhealthy-thresh')}" fontWeight="normal"/>
+			</s:FormItem>
+			<s:FormItem label="Target:" fontWeight="bold">
+				<mx:Text text="{lbInstance.child('ping-protocol')}:{lbInstance.child('ping-port')}" fontWeight="normal"/>
+			</s:FormItem>
+			<s:FormItem label="Response Timeout:" fontWeight="bold">
+				<mx:Text text="{lbInstance.child('resp-timeout')}" fontWeight="normal"/>
+			</s:FormItem>
+		</s:Form>	
+	</s:Form>
+	<s:Form x="294" y="10" id="listenersForm">
+		<s:Label text="Listeners" fontWeight="bold" fontStyle="italic"/>
+	</s:Form>
+
+</s:TitleWindow>

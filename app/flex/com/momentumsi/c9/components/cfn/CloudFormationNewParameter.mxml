@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   width="100%" height="100%"
+			   xmlns:components="com.momentumsi.c9.components.*">
+	<fx:Metadata>
+		[Event(name="resultElement", type="com.momentumsi.c9.events.ElementSaveEvent")]
+	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.utils.StringUtil;
+			import com.maccherone.json.JSON;
+			import com.momentumsi.c9.components.MainBox;
+			import com.momentumsi.c9.constants.ImagePath;
+			import com.momentumsi.c9.events.ElementSaveEvent;
+			import com.momentumsi.c9.models.Parameter;
+			import com.momentumsi.c9.models.ProjectVersion;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.controls.Alert;
+			import mx.controls.Button;
+			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
+			import mx.managers.PopUpManager;
+			
+			import spark.components.Button;
+			import spark.components.RichEditableText;
+			import spark.events.TextOperationEvent;
+			
+			public var editingParam:Boolean = false;
+			
+			[Bindable]
+			public var parameter:Parameter = new Parameter();
+			[Bindable]
+			public var projectVersion:ProjectVersion;
+			
+			/*
+			public function setParamFields(currentParamName:String=null):void
+			{
+				if(currentParamName == null){
+					parameterName = "";
+					parameterProperties = new Object();
+				}else{
+					parameterName = selectedParameter.selectedItem['parameter']['parameter'];
+					parameterProperties = selectedParameter.selectedItem['parameter']['properties'];
+					if(parameterProperties['NoEcho'] == "true"){
+						noEcho.selected = true;
+					}
+					if(parameterProperties['Type'] == "String")
+					{
+						paramType.selectedIndex = 0;
+					}else if(parameterProperties['Type'] == "Number"){
+						paramType.selectedIndex = 1;			
+					}else if(parameterProperties['Type'] == "CommaDelimitedList"){
+						paramType.selectedIndex = 2;
+					}
+				}
+			}
+			*/
+			
+			public function save():String
+			{
+				var alerts:Array = new Array();
+				parameter = new Parameter();
+				
+				if(paramName.text != "")
+				{
+					if(Helpers.validateAlphanumeric(paramName.text))
+					{
+						if(projectVersion.validateUniqueName(paramName.text))
+						{
+							parameter.name = paramName.text;	
+						}else
+						{
+							alerts.push("Name must be unique within the template.");
+						}
+					}else
+					{
+						alerts.push("Name must be alphanumberic.");
+					}
+				}else
+				{
+					alerts.push("Name is a required field.");
+				}
+				
+				if(noEcho.selected)
+				{
+					parameter.noEcho = true;
+				}else
+				{
+					parameter.noEcho = false;
+				}
+				
+				var newParamProperties:Object = new Object();
+				newParamProperties['Type'] = paramType.selectedLabel;
+				if(defaultValue.text.replace(/\s/g,"") != "")
+				{
+					newParamProperties['Default'] = defaultValue.text;
+				}
+				if(noEcho.selected)
+				{
+					newParamProperties['NoEcho'] = 'true';
+				}
+				if(paramDescription.text.replace(/\s/g,"") != "")
+				{
+					newParamProperties['Description'] = paramDescription.text;
+				}
+				if(constraintDescription.text.replace(/\s/g,"") != "")
+				{
+					newParamProperties['ConstraintDescription'] = constraintDescription.text;
+				}
+				if(min.text.replace(/\s/g,"") != "")
+				{
+					if(paramType.selectedLabel == "String")
+					{
+						newParamProperties['MinLength'] = min.text;
+					}else if(paramType.selectedLabel == "Number")
+					{
+						newParamProperties['MinValue'] = min.text;
+					}
+				}
+				if(max.text.replace(/\s/g,"") != "")
+				{
+					if(paramType.selectedLabel == "String")
+					{
+						newParamProperties['MaxLength'] = max.text;
+					}else if(paramType.selectedLabel == "Number")
+					{
+						newParamProperties['MaxValue'] = max.text;
+					}
+				}
+				if(allowedValues.text.replace(/\s/g,"") != "")
+				{
+					var allowedValuesArray:Array = allowedValues.text.split(",");
+					for(var i:int=0; i < allowedValuesArray.length; i++)
+					{
+						allowedValuesArray[i] = StringUtil.trim(allowedValuesArray[i].toString());
+					}
+					newParamProperties['AllowedValues'] = allowedValuesArray;
+				}
+				if(allowedPattern.text.replace(/\s/g,"") != "")
+				{
+					newParamProperties['AllowedPattern'] = allowedPattern.text;
+				}
+				
+				if(alerts.length > 0)
+				{
+					var alertMessages:String = alerts.join(",\n");
+					return alertMessages;
+				}else
+				{				
+					parameter.properties = newParamProperties;
+					parameter.addEventListener(ElementSaveEvent.RESULT, parameter_saveHandler);
+					parameter.save(projectVersion);
+					
+					return "saved";
+				}
+			}
+			
+			private function parameter_saveHandler(event:ElementSaveEvent):void
+			{
+				dispatchEvent(new ElementSaveEvent(event.element));
+			}
+
+			public function resetButton_clickHandler(event:MouseEvent):void
+			{
+				paramName.text = "";
+				paramType.selectedIndex = 0;
+				noEcho.selected = false;
+				defaultValue.text = "";
+				paramDescription.text = "";
+				constraintDescription.text = "";
+				min.text = "";
+				max.text = "";
+				allowedValues.text = "";
+				allowedPattern.text = "";
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<s:ArrayCollection id="templateParameters"/>
+		<fx:Object id="parentTemplateParameters"/>
+		<s:TextArea id="parentInputsDisplay"/>
+		<fx:Object id="selectedGridParameter"/>
+		<fx:Object id="selectedParameter"/>
+		<components:NewPropertyValue id="parentWindow"/>
+	</fx:Declarations>
+	<s:VGroup width="100%">
+		<s:Form width="100%" defaultButton="{parentWindow.saveButton}">
+				<s:VGroup width="100%">
+					<s:HGroup width="100%" gap="-50">
+						<s:FormItem label="Name:*" minWidth="150" width="100%">
+							<s:TextInput id="paramName" width="100%"/>
+						</s:FormItem>
+						<s:FormItem label="Type:">
+							<mx:ComboBox id="paramType"
+										 dataProvider="{Parameter.TYPES}">
+							</mx:ComboBox>
+						</s:FormItem>
+						<s:FormItem label="Hide Text:">
+							<s:CheckBox id="noEcho"/>
+						</s:FormItem>
+					</s:HGroup>
+					<s:FormItem label="Default:" width="100%">
+						<s:TextInput id="defaultValue" width="100%" prompt="optional"/>
+					</s:FormItem>
+					<s:FormItem label="Description:" width="100%">
+						<s:TextInput id="paramDescription" prompt="optional" width="100%"/>
+					</s:FormItem>
+					<s:FormItem label="Constraint Description:" width="100%">
+						<s:HGroup width="100%">
+							<s:TextInput id="constraintDescription" width="100%" prompt="optional"/>
+							<s:Image height="16" width="16" toolTip="Displayed when user specifies parameter that does not meet constraints." source="{ImagePath.HELPER_ICON}"/>
+						</s:HGroup>
+					</s:FormItem>
+					<s:HGroup height="100%">
+						<s:FormItem label="Min:">
+							<s:TextInput id="min" prompt="optional"/>
+						</s:FormItem>
+						<s:FormItem label="Max:">
+							<s:TextInput id="max" prompt="optional"/>
+						</s:FormItem>
+					</s:HGroup>
+					<s:FormItem label="Allowed Values:" height="100%" width="100%">
+						<s:HGroup width="100%">
+							<s:TextInput id="allowedValues" width="100%" prompt="optional"/>
+							<s:Image 
+								toolTip="Values must be separated with a comma (,)." 
+								height="16" width="16" 
+								source="{ImagePath.HELPER_ICON}"/>
+						</s:HGroup>
+					</s:FormItem>
+					<s:FormItem height="100%" label="Allowed Pattern:" enabled="{paramType.selectedLabel == Parameter.STRING_TYPE}" width="100%">
+						<s:TextInput id="allowedPattern" width="100%" prompt="optional"/>
+					</s:FormItem>
+				</s:VGroup>
+		</s:Form>
+	</s:VGroup>
+</s:Group>

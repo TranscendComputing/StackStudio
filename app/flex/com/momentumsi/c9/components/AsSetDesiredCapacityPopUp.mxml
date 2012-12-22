@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" width="240" height="175"
+			   title="Set Desired Capacity"
+			   move="Helpers.doMove(this)"
+			   close="PopUpManager.removePopUp(this)"
+			   creationComplete="creationCompleteHandler(event)"
+			   defaultButton="{submitButton}"
+			   xmlns:diagrammer="fr.kapit.diagrammer.base.uicomponent.*">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import fr.kapit.diagrammer.Diagrammer;
+			
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			
+			private var capacity:int = 0;
+			private var capacityCheck:int = 0;
+			
+			protected function cancel_clickHandler(event:MouseEvent):void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function submitButton_clickHandler(event:MouseEvent):void
+			{
+				try
+				{	
+					var min:int = parseInt(autoscaleInstance.child('min-size'));
+					var max:int = parseInt(autoscaleInstance.child('max-size'));
+					capacity = parseInt(desiredCapacity.text);
+					if(min <= capacity && max >= capacity)
+					{
+						capacityCheck = 1;
+					}else
+						Alert.show("The desired capacity is not within the auto scales min and max range, please update the auto scale group first.");
+				}
+				catch (error:Error)
+				{
+					capacityCheck = 0;
+				}
+				
+				if(capacityCheck == 1)
+				{
+					if(autoscaleInstance.child('desired-capacity') != desiredCapacity.text)
+					{
+						setDesiredCapacitySvc.send({desired_capacity: capacity});
+					}else
+						PopUpManager.removePopUp(this);
+				}
+			}
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				PopUpManager.centerPopUp(this);
+				desiredCapacity.setFocus();
+				if(autoscaleInstance != "")
+				{
+					desiredCapacity.text = autoscaleInstance.child('desired-capacity');
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<fx:XML id="autoscaleInstance"/>
+		<diagrammer:DiagramSprite id="node"/>
+		<s:NumberValidator id="numValid"
+						   source="{desiredCapacity}"
+						   property="text"
+						   minValue="0"
+						   maxValue="255"
+						   domain="int"/>
+		
+		<s:HTTPService id="setDesiredCapacitySvc"
+					   url="{Helpers.getHost()}/auto_scales/set_desired_capacity/{autoscaleInstance.child('id')}.xml"
+					   method="GET"
+					   resultFormat="e4x"
+					   showBusyCursor="true"/>
+	</fx:Declarations>
+	
+	<s:Form x="14" y="29">
+		<mx:FormItem label="Desired Capacity:*" fontWeight="bold">
+			<s:TextInput id="desiredCapacity" widthInChars="3" fontWeight="normal"/>
+		</mx:FormItem>
+	</s:Form>
+	<s:Button id="submitButton" x="46" y="111" label="Save" click="submitButton_clickHandler(event)"/>
+	<s:Button id="cancelButton" x="123" y="111" label="Cancel" click="cancel_clickHandler(event)"/>
+</s:TitleWindow>

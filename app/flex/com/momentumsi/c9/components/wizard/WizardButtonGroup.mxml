@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" 
+		  width="100%" 
+		  bottom="10"
+		  verticalAlign="middle"
+		  paddingLeft="10" 
+		  paddingRight="10"
+		  paddingBottom="10">
+	<fx:Metadata>
+		[Event(name="nextButtonClick", type="flash.events.MouseEvent")]
+		[Event(name="previousButtonClick", type="flash.events.MouseEvent")]
+		[Event(name="finishButtonClick", type="flash.events.MouseEvent")]
+	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			protected function cancel_clickHandler(event:MouseEvent):void
+			{
+				PopUpManager.removePopUp(event.target.parentDocument.parentDocument);
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<mx:ViewStack id="wizardStack"/>
+	</fx:Declarations>
+	<s:HGroup id="buttonHG"
+			  horizontalAlign="left"
+			  height="100%"
+			  verticalAlign="middle"
+			  width="50%">
+		<s:Button id="previousButton"
+				  label="Previous" click="dispatchEvent(new MouseEvent('previousButtonClick'))"
+				  enabled="{wizardStack.selectedIndex != 0}"/>
+		<s:Button id="nextButton"
+				  label="Next"
+				  click="dispatchEvent(new MouseEvent('nextButtonClick'))"
+				  enabled="{wizardStack.selectedIndex != wizardStack.length - 1}"/>
+		<s:Button id="createButton"
+				  label="Finish"
+				  owner="{wizardStack}"
+				  click="dispatchEvent(new MouseEvent('finishButtonClick'))"
+				  enabled="{wizardStack.selectedIndex == (wizardStack.length - 1)}"/>
+	</s:HGroup>
+	<s:HGroup horizontalAlign="right" 
+			  width="50%"
+			  height="100%"
+			  verticalAlign="middle">
+		<s:Button id="cancel" 
+				  label="Cancel" click="cancel_clickHandler(event)"/>				
+	</s:HGroup>
+</s:HGroup>

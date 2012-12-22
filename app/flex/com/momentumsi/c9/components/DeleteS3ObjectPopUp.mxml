@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   width="400" height="200"
+			   title="Destroy Resource"
+			   creationComplete="creationCompleteHandler()"
+			   close="PopUpManager.removePopUp(this)" xmlns:services="com.momentumsi.c9.services.*" xmlns:components="com.momentumsi.c9.components.*">
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.services.CloudApiService;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			[Bindable]
+			public var cloudAccountId:String;
+			[Bindable]
+			public var region:String;
+			[Bindable]
+			public var s3Data:Object;
+			[Bindable]
+			public var key:String;
+			
+			public function creationCompleteHandler():void
+			{
+				PopUpManager.centerPopUp(this);
+			}
+			
+			protected function destroyButton_clickHandler(event:MouseEvent):void
+			{
+				destroyButton.enabled = false;
+				deleteS3Object.send();
+			}
+
+			protected function deleteS3Object_resultHandler(event:ResultEvent):void
+			{
+				bucketBox.refreshBucketList();
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function deleteS3Object_faultHandler(event:FaultEvent):void
+			{
+				Alert.show("Error deleting the file.");
+				destroyButton.enabled = true;
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<components:S3ObjectManagementBox id="bucketBox"/>
+		
+		<services:CloudApiService id="deleteS3Object"
+								  serviceType="{CloudApiService.S3_SERVICE}"
+								  action="delete_object"
+								  cloudAccountId="{cloudAccountId}"
+								  region="{region}"
+								  request="{{physical_id: s3Data.key, key: key}}"
+								  result="deleteS3Object_resultHandler(event)"
+								  fault="deleteS3Object_faultHandler(event)"/>
+	</fx:Declarations>
+	
+	<s:VGroup paddingLeft="15">
+		<mx:Text id="destroyMessage" text="Are you sure you want to delete the following file?" width="380"/>
+		<mx:Text text="- {key}" paddingLeft="15" width="370"/>
+	</s:VGroup>
+	<s:HGroup y="136" horizontalAlign="center" width="100%">
+		<s:Button id="destroyButton" label="Delete" click="destroyButton_clickHandler(event)"/>
+		<s:Button label="Cancel" click="PopUpManager.removePopUp(this)"/>
+	</s:HGroup>
+</s:TitleWindow>

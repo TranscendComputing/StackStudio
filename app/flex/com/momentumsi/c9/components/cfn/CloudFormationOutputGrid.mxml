@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%">
+	
+	<fx:Script>
+		<![CDATA[			
+			import com.momentumsi.c9.constants.AlertMessage;
+			import com.momentumsi.c9.constants.PermissionType;
+			import com.momentumsi.c9.models.Element;
+			import com.momentumsi.c9.models.Member;
+			import com.momentumsi.c9.models.Output;
+			import com.momentumsi.c9.models.Project;
+			import com.momentumsi.c9.models.User;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+
+			[Bindable]
+			public var project:Project;
+			[Bindable]
+			public var user:User;
+			
+			private var _outputs:ArrayCollection;
+			public function get templateOutputs():ArrayCollection
+			{
+				return _outputs;
+			}
+			
+			public function set templateOutputs(value:ArrayCollection):void
+			{
+				_outputs = new ArrayCollection();
+				var output:Output;
+				for each(var element:Element in value)
+				{
+					output = new Output(element);
+					output.properties = element.properties;
+					_outputs.addItem(output);
+				}
+				dispatchEvent(new Event("templateOutputsUpdated"));
+			}
+			
+			[Bindable(event="templateOutputsUpdated")]
+			private function get outputs():ArrayCollection
+			{
+				return _outputs;
+			}
+			
+			protected function newOuputsButton_clickHandler(event:MouseEvent):void
+			{
+				if(project.userHasPermission(user.id, PermissionType.EDIT_SOURCE, PermissionType.DEVELOPMENT))
+				{
+					_outputs.addItemAt(new Output, 0);
+					dispatchEvent(new Event("templateOutputsUpdated"));
+				}else
+				{
+					Alert.show(AlertMessage.PERMISSION_DENIED);
+				}
+			}
+			
+			protected function removeOutputButton_clickHandler(event:MouseEvent):void
+			{
+				if(project.userHasPermission(user.id, PermissionType.EDIT_SOURCE, PermissionType.DEVELOPMENT))
+				{
+					_outputs.removeItemAt(outputsGrid.selectedIndex);			
+					dispatchEvent(new Event("templateOutputsUpdated"));
+				}else
+				{
+					Alert.show(AlertMessage.PERMISSION_DENIED);
+				}
+			}
+			
+			/*
+			protected function saveOutputsButton_clickHandler(event:MouseEvent):void
+			{
+				var tempOutputs:Object = new Object();
+				var attributes:Object;
+				var valueString:String;
+				var valueObject:Object;
+				for each(var obj:Object in tempOutputsCollection)
+				{
+					attributes = new Object();
+					for(var a:* in obj)
+					{
+						if(a == 'output' || a == 'Value')
+						{
+							if(obj[a] == (null || "" || undefined))
+							{
+								Alert.show("Output name and value cannot be empty.");
+								return;
+							}
+						}
+						if(a == 'Value')
+						{
+							valueString = obj[a];
+							//valueString = "{" + valueString + "}";
+							try{
+								valueObject = JSON.decode(valueString);
+							}catch(e:Error){
+								if(valueString.substr(0,1) == "{")
+								{
+									Alert.show("Invalid JSON format for " + obj['output']);
+									return;
+								}else{
+									valueObject = valueString;
+								}
+							}
+							attributes[a] = valueObject;
+						}else if(a == 'Description'){
+							if(!(obj[a] == null || obj[a] == undefined || obj[a] == ""))
+							{
+								attributes[a] = obj[a];
+							}
+						}
+					}
+					tempOutputs[obj['output']] = attributes;
+				}
+			}
+			*/
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:DataGrid id="outputsGrid" fontSize="11" width="100%" minHeight="0" visible="true" editable="true" dataProvider="{outputs}">
+		<s:columns>
+			<s:ArrayList id="outputsGridColumns">
+				<s:GridColumn headerRenderer="com.momentumsi.c9.itemRenderers.TranscendGridHeaderRenderer" itemEditor="spark.components.gridClasses.DefaultGridItemEditor" headerText="Field Name" dataField="name"/>
+				<s:GridColumn headerRenderer="com.momentumsi.c9.itemRenderers.TranscendGridHeaderRenderer" itemEditor="spark.components.gridClasses.DefaultGridItemEditor" headerText="Description" dataField="description"/>
+				<s:GridColumn headerRenderer="com.momentumsi.c9.itemRenderers.TranscendGridHeaderRenderer" itemEditor="spark.components.gridClasses.DefaultGridItemEditor" headerText="Value" dataField="value"/>
+			</s:ArrayList>
+		</s:columns>
+	</s:DataGrid>
+	<s:HGroup>
+		<s:Button label="New" click="newOuputsButton_clickHandler(event)"/>
+		<s:Button label="Remove" id="removeButton" click="removeOutputButton_clickHandler(event)" enabled="{!(outputsGrid.selectedItem == null || outputs.length == 0)}"/>
+		<!--<s:Button label="Save" click="saveOutputsButton_clickHandler(event)" toolTip="Must click to update template source."/>-->
+	</s:HGroup>
+</s:VGroup>

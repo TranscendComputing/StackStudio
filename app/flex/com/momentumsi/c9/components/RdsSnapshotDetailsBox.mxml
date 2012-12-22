@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components:ObjectManagementDetailsBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+									   xmlns:s="library://ns.adobe.com/flex/spark" 
+									   xmlns:mx="library://ns.adobe.com/flex/mx" 
+									   xmlns:components="com.momentumsi.c9.components.*" 
+									   xmlns:rds="com.momentumsi.c9.components.rds.*">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.components.rds.RdsDeleteSnapshot;
+			import com.momentumsi.c9.components.rds.RdsRestoreFromSnapshot;
+			import com.momentumsi.c9.representers.DbSnapshotRepresenter;
+			import com.momentumsi.c9.services.RdsService;
+			
+			import mx.core.UIComponent;
+			import mx.managers.PopUpManager;
+			
+			[Bindable]
+			private var snapshot:DbSnapshotRepresenter;
+			
+			override public function set resourceData(value:Object):void
+			{
+				if(value is DbSnapshotRepresenter)
+				{
+					snapshot = value as DbSnapshotRepresenter;
+				}else{
+					snapshot = new DbSnapshotRepresenter(value);
+				}
+				super.resourceData = snapshot;
+			}
+			
+			protected function actionButton_clickHandler(event:MouseEvent):void
+			{
+				var actionButton:TextButton = event.target as TextButton;
+				if(actionButton.enabled)
+				{
+					var rdsActionWindow:RdsActionWindow;
+					switch(actionButton.action)
+					{
+						case RdsService.DELETE_SNAPSHOT:
+							rdsActionWindow = new RdsDeleteSnapshot();
+							rdsActionWindow.snapshot = snapshot;
+							break;
+						case RdsService.RESTORE_FROM_SNAPSHOT:
+							rdsActionWindow = new RdsRestoreFromSnapshot();
+							rdsActionWindow.snapshot = snapshot;
+							break;
+					}
+					rdsActionWindow.cloudAccount = cloudAccount;
+					rdsActionWindow.region = region;
+					rdsActionWindow.rdsResourceId = snapshot.instanceId;
+					rdsActionWindow.title = TextButton(event.target).text;
+					PopUpManager.addPopUp(rdsActionWindow, UIComponent(parentApplication), true);
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:HGroup>
+		<components:TextButton id="deleteSnapshotButton"
+							   text="Delete Snapshot"
+							   action="{RdsService.DELETE_SNAPSHOT}"
+							   click="actionButton_clickHandler(event)"
+							   enabled="{snapshot.isAvailable()}"/>
+		
+		<components:TextButton id="restoreFromSnapshotButton"
+							   text="Restore from Snapshot"
+							   enabled="{snapshot.isAvailable()}"
+							   action="{RdsService.RESTORE_FROM_SNAPSHOT}"
+							   click="actionButton_clickHandler(event)"/>
+	</s:HGroup>
+	<rds:RdsSnapshotForm id="snapshotForm"
+						 snapshot="{snapshot}"/>
+</components:ObjectManagementDetailsBox>

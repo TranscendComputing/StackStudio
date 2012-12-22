@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:c9="com.momentumsi.c9.components.*"
+		 width="100%" height="55" xmlns:cfn="com.momentumsi.c9.components.cfn.*"
+		>
+	<fx:Metadata>
+		[Event(name="login",type="com.momentumsi.c9.events.LoginEvent")]
+	</fx:Metadata>
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.serialization.json.JSON;
+			import com.flexspy.FlexSpy;
+			import com.momentumsi.c9.components.cfn.CloudFormationTemplateLoad;
+			import com.momentumsi.c9.components.cfn.CloudFormationTemplateUpload;
+			import com.momentumsi.c9.components.wizard.FreezeVersion;
+			import com.momentumsi.c9.constants.AlertMessage;
+			import com.momentumsi.c9.constants.PermissionType;
+			import com.momentumsi.c9.events.AccountCreateEvent;
+			import com.momentumsi.c9.events.LoginEvent;
+			import com.momentumsi.c9.events.ProjectEvent;
+			import com.momentumsi.c9.models.Member;
+			import com.momentumsi.c9.models.Project;
+			import com.momentumsi.c9.models.User;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import flexlib.containers.SuperTabNavigator;
+			
+			import fr.kapit.diagrammer.Diagrammer;
+			import fr.kapit.diagrammer.base.uicomponent.DiagramSprite;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.Menu;
+			import mx.controls.menuClasses.MenuBarItem;
+			import mx.core.FlexGlobals;
+			import mx.core.IFlexDisplayObject;
+			import mx.core.UIComponent;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.events.MenuEvent;
+			import mx.managers.CursorManager;
+			import mx.managers.PopUpManager;
+			import mx.messaging.management.ObjectInstance;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import spark.components.TitleWindow;
+			
+			[Bindable]
+			private var host:String
+			public var projectId:String;
+			public var cloud:String;
+			public var currentEnvironmentId:int = 0;
+			public var currentEnvironmentName:String = "";
+			public var accountId:int;
+			public var availabilityZone:String;
+			public var tagId:int = -1;
+			[Bindable]
+			public var readOnly:Boolean = false;
+			[Bindable]
+			public var userProjectRelationships:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public var environmentRolesCollection:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public var stackPlaceTemplates:Array = new Array();
+			[Bindable]
+			public var accounts:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public var user:User;
+			
+			/**
+			 * Shallow project is to be used to load into LoginPopUp wizard 
+			 * when loading a template straight from StackPlace
+			 * */
+			[Bindable]
+			public var shallowProject:Project;
+			
+			public function logoutButton_clickHandler():void
+			{
+				host = Helpers.getHost();
+				logoutSvc.send();
+				navigateToURL(new URLRequest("javascript:location.reload(true)"), "_self");
+			}
+			
+			protected function logoutSvc_resultHandler(event:ResultEvent):void
+			{
+				
+			}
+			
+			protected function applicationMenuBar_itemClickHandler(event:MenuEvent):void
+			{
+				var action:String = event.label;
+				var bodyStack:BodyStack = parentApplication.bodyStack;
+				var mainBox:MainBox;
+				var selectedProject:Project;
+				switch(action)
+				{
+					case "Users And Groups":
+						if(user.hasPermission(PermissionType.ADMIN, PermissionType.TRANSCEND))
+						{
+							var usersAndGroups:UsersAndGroupsView = UsersAndGroupsView(PopUpManager.createPopUp(UIComponent(parentApplication), UsersAndGroupsView , true));
+							usersAndGroups.user = user;
+						}else
+						{
+							Alert.show(AlertMessage.PERMISSION_DENIED);
+						}
+						break;
+					case "Open":
+						var openProjectWindow:ProjectsOpenPopUp = ProjectsOpenPopUp(PopUpManager.createPopUp( UIComponent(parentApplication), ProjectsOpenPopUp , true));
+						break;
+					case "New":
+						var newProjectWindow:NewProjectWindow = new NewProjectWindow();
+						PopUpManager.addPopUp(newProjectWindow, UIComponent(parentApplication), true);
+						newProjectWindow.newProjectGroup.addEventListener(ProjectEvent.PROJECT_RESULT, projectCreate_resultHandler);
+						break;
+					case "Edit":
+						if(bodyStack.globalTabs.length == 2)
+						{
+							return;
+						}
+						var editProjectWindow:NewProjectWindow = new NewProjectWindow();
+						mainBox = Helpers.getMainBox(this);
+						editProjectWindow.title = "Edit Project";
+						editProjectWindow.project = mainBox.project;
+						PopUpManager.addPopUp(editProjectWindow, UIComponent(parentApplication) , true);
+						editProjectWindow.newProjectGroup.addEventListener(ProjectEvent.PROJECT_RESULT, projectUpdate_resultHandler);
+						break;
+					case "Permissions":
+						selectedProject = getSelectedProject();
+						if(selectedProject != null && selectedProject.userIsProjectAdmin(user.id))
+						{
+							var manageUsersPermissions:ProjectManagePermissions = new ProjectManagePermissions();
+							manageUsersPermissions.user = user;
+							manageUsersPermissions.project = selectedProject;
+							PopUpManager.addPopUp(manageUsersPermissions, UIComponent(parentApplication), true);
+						}else
+						{
+							Alert.show(AlertMessage.PERMISSION_DENIED);
+						}
+						break;
+					case "Close":
+						bodyStack.closeProjectTab();
+						bodyStack.headerBoxReference = this;
+    					break;
+					case "Delete":
+						var deleteProjectWindow:ProjectDeletePopUp = ProjectDeletePopUp(PopUpManager.createPopUp( UIComponent(this.parentApplication), ProjectDeletePopUp , true));
+						deleteProjectWindow.user = this.user;
+						break;
+					case "Manage Cloud Accounts":
+						var accountManagementWindow:CloudAccountManagement = new CloudAccountManagement();
+						accountManagementWindow.user = user;
+						accountManagementWindow.addEventListener(CloseEvent.CLOSE, cloudAccountsUpdated);
+						PopUpManager.addPopUp(accountManagementWindow, UIComponent(parentApplication), true);
+						break;
+					case "Cloud Account Preferences":
+						var accountPreferences:CloudAccountPreferences = new CloudAccountPreferences();
+						accountPreferences.user = user;
+						accountPreferences.addEventListener(CloseEvent.CLOSE, window_closeHandler);
+						PopUpManager.addPopUp(accountPreferences, UIComponent(parentApplication), true);
+						break;
+					case "View Audit Trails":
+						var auditTrailsWindow:AuditTrailsWindow = new AuditTrailsWindow();
+						auditTrailsWindow.currentUser = user;
+						PopUpManager.addPopUp(auditTrailsWindow, UIComponent(parentApplication), true);
+						break;
+					case "Load Template":
+						var loadTemplateWindow:CloudFormationTemplateLoad = CloudFormationTemplateLoad(PopUpManager.createPopUp( UIComponent(this.parentApplication), CloudFormationTemplateLoad , true));
+						loadTemplateWindow.addEventListener(ProjectEvent.PROJECT_RESULT, projectCreate_resultHandler);
+						loadTemplateWindow.user = user;
+						loadTemplateWindow.owner = this;
+						loadTemplateWindow.getTemplates();
+						break;
+					case "Publish Stack":
+						selectedProject = getSelectedProject();
+						if(selectedProject != null && selectedProject.userHasPermission(user.id, PermissionType.EDIT_SOURCE, PermissionType.DEVELOPMENT))
+						{
+							var uploadTemplateWindow:CloudFormationTemplateUpload = CloudFormationTemplateUpload(PopUpManager.createPopUp( UIComponent(this.parentApplication), CloudFormationTemplateUpload , true));
+							uploadTemplateWindow.project = selectedProject;
+							uploadTemplateWindow.user = user;
+						}else
+						{
+							Alert.show(AlertMessage.PERMISSION_DENIED);
+						}
+						break;
+					case "Save Template":
+						break;
+					case "Logout":
+						logoutButton_clickHandler();
+						break;
+					case "Manage Subscription":
+						PopUpManager.createPopUp( UIComponent(this.parentApplication), PaidAccountManagement , true);						
+						break;
+					case "Manage Cloud Mappings":
+						var cloudMappingWindow:CloudMappingWindow = new CloudMappingWindow();
+						cloudMappingWindow.user = user;
+						PopUpManager.addPopUp(cloudMappingWindow, UIComponent(parentApplication), true);
+						break;
+				}
+			}
+			
+			protected function getSelectedProject():Project
+			{
+				var bodyStack:BodyStack = parentApplication.bodyStack;
+				if(bodyStack.globalTabs.selectedChild is ProjectTab)
+				{
+					var selectedProject:Project;
+					var found:Boolean = false;
+					for each(var proj:Project in user.project_memberships)
+					{
+						if(!found && proj.project_name == bodyStack.globalTabs.selectedChild.label)
+						{
+							found = true;
+							selectedProject = proj;
+						}
+					}
+					return selectedProject;
+				}else
+				{
+					return null;
+				}
+			}
+
+			private function cloudAccountsUpdated(event:CloseEvent):void
+			{
+				var cloudAcctMgmtWindow:CloudAccountManagement = event.currentTarget as CloudAccountManagement;
+				user = cloudAcctMgmtWindow.user;
+				PopUpManager.removePopUp(cloudAcctMgmtWindow);
+			}
+			
+			private function loginHandler(event:LoginEvent):void
+			{
+				dispatchEvent(new LoginEvent(event.user));
+				try
+				{
+					PopUpManager.removePopUp(IFlexDisplayObject(event.currentTarget.owner));
+				} 
+				catch(error:Error) 
+				{
+					PopUpManager.removePopUp(IFlexDisplayObject(event.currentTarget));
+				}
+				
+			}
+			
+			private function window_closeHandler(event:CloseEvent):void
+			{
+				var window:TitleWindow = event.currentTarget as TitleWindow;
+				PopUpManager.removePopUp(window);
+			}
+			
+			protected function logoutSvc_faultHandler(event:FaultEvent):void
+			{
+				//Alert.show("Logout failed.");
+			}
+			
+			protected function projectCreate_resultHandler(event:ProjectEvent):void
+			{
+				var bodyStack:BodyStack = parentApplication.bodyStack;
+				bodyStack.newProjectToGlobalTabs(event.project);
+				PopUpManager.removePopUp(IFlexDisplayObject(event.currentTarget));
+			}
+			
+			private function projectUpdate_resultHandler(event:ProjectEvent):void
+			{
+				PopUpManager.removePopUp(IFlexDisplayObject(event.currentTarget));
+			}
+			
+			protected function freeTrialButton_clickHandler(event:MouseEvent):void
+			{
+				var newAcctWindow:AccountCreateWizard = new AccountCreateWizard();
+				newAcctWindow.freeTrial = true;
+				newAcctWindow.addEventListener(ResultEvent.RESULT, acctCreateHandler);
+				PopUpManager.addPopUp(newAcctWindow, UIComponent(parentApplication), true);
+			}
+			
+			private function loginLinkButton_clickHandler(event:MouseEvent):void
+			{
+				var loginBox:LoginBox = new LoginBox();
+				loginBox.addEventListener(LoginEvent.LOGIN, loginHandler);
+				var loginWindow:CustomTitleWindow = new CustomTitleWindow();
+				loginWindow.height = 460;
+				loginWindow.width = 600;
+				loginWindow.title = "Login";
+				loginWindow.addElement(loginBox);
+				PopUpManager.addPopUp(loginWindow, UIComponent(parentApplication), true);
+			}
+			
+			private function acctCreateHandler(event:ResultEvent):void
+			{
+				dispatchEvent(new LoginEvent(event.result));
+				PopUpManager.removePopUp(IFlexDisplayObject(event.currentTarget));
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:HTTPService
+			id="logoutSvc"
+			url="{host}/sessions/destroy"
+			resultFormat="e4x"
+			method="POST"
+			showBusyCursor="true"
+			result="logoutSvc_resultHandler(event)"
+		 	fault="logoutSvc_faultHandler(event)"/>
+		
+		<!-- Menu item windows -->
+		<c9:PaidAccountManagement id="subscriptionsWindow"/>
+		
+		<fx:XML id="appMenuItems" xmlns="">
+			<Menu>
+				<menuitem label="Admin" enabled="{user != null}">
+					<menuitem label="Users And Groups" enabled="{user.hasPermission(PermissionType.ADMIN, PermissionType.TRANSCEND)}"/>
+				</menuitem>
+				<menuitem label="Project" enabled="{user != null}">
+					<menuitem label="New"/>
+					<menuitem label="Open"/>
+					<menuitem label="Edit"/> 
+					<menuitem label="Permissions"/>
+					<menuitem label="Close"/>
+					<menuitem label="Delete"/>
+				</menuitem>
+				<menuitem label="Account" enabled="{user != null}">
+					<menuitem label="Manage Cloud Accounts"/>
+					<menuitem label="Manage Cloud Mappings"/>
+					<menuitem label="Cloud Account Preferences"/>
+					<menuitem label="Manage Subscription"/>
+					<menuitem label="View Audit Trails"/>
+				</menuitem>
+				<menuitem label="Template" enabled="{user != null}">
+					<menuitem label="Load Template"/>
+					<menuitem label="Publish Stack"/>
+				</menuitem>
+				<!--
+				<menuitem label="Settings">
+					<menuitem label="Manage Cloud Mappings"/>
+				</menuitem>
+				-->
+			</Menu>
+		</fx:XML>
+		
+	</fx:Declarations>
+	
+	
+	<s:BorderContainer borderVisible="false" height="65" width="100%" borderColor="#ffffff">
+		<s:backgroundFill>
+			<s:LinearGradient rotation="90">
+				<s:GradientEntry color="#FFFFFF"/>
+				<s:GradientEntry color="#A7A9AD"/>
+				<s:GradientEntry color="#A7A9AD"/>
+			</s:LinearGradient>
+		</s:backgroundFill>
+		<s:HGroup  verticalAlign="middle" width="100%">
+			<s:HGroup width="100%" horizontalAlign="left">
+				<s:Image width="169" height="59" source="@Embed('/com/momentumsi/c9/assets/TranscendLogoVerySmall.png')"/>
+			</s:HGroup>
+			<s:HGroup width="100%" horizontalAlign="center" height="100%" verticalAlign="middle">
+				<s:Button label="Start Free Trial"
+						  visible="{user == null}"
+						  includeInLayout="{user == null}"
+						  click="freeTrialButton_clickHandler(event)"
+						  fontWeight="bold"
+						  fontSize="20"
+						  height="40"/>
+				<s:Button label="Login"
+						  visible="{user == null}"
+						  includeInLayout="{user == null}"
+						  click="loginLinkButton_clickHandler(event)"
+						  fontSize="20"
+						  height="40"
+						  fontWeight="bold"/>
+			</s:HGroup>
+			<s:HGroup id="management" width="100%" height="100%" horizontalAlign="right" verticalAlign="bottom">
+				<mx:MenuBar labelField="@label"
+							id="applicationMenuBar"
+							itemClick="applicationMenuBar_itemClickHandler(event)" 
+							cornerRadius="3" 
+							color="#330066" 
+							fillAlphas="[1,.5]"
+						    dataProvider="{appMenuItems}"
+						   	showRoot="false"
+							backgroundSkin="com.momentumsi.c9.components.MenuBarCustomSkin"/>
+
+				<!--<mx:Button id="flexSpyButton" label="FlexSpy" click="FlexSpy.show()"/>-->
+				<mx:LinkButton id="logoutButton"
+							   skin="{null}" 
+							   click="logoutButton_clickHandler()"
+							   color="#330066" 
+							   label="Logout"
+							   fontSize="12" 
+							   enabled="{user != null}"
+							   visible="{!readOnly}"/>
+			</s:HGroup>
+		</s:HGroup>
+	</s:BorderContainer>
+</s:Group>

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" width="728" height="334"
+			   title="Log an Incedent"
+			   creationComplete="titlewindow1_creationCompleteHandler(event)"
+			   move="Helpers.doMove(this)"
+			   initialize="titlewindow1_initializeHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import fr.kapit.diagrammer.Diagrammer;
+			
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+						
+			protected function titlewindow1_creationCompleteHandler(event:FlexEvent):void
+			{
+				PopUpManager.centerPopUp(this);
+				switch(problemObject.name().toString())
+				{
+					case "provisioned-ec2-instance":
+						elementType.text = "Instance";
+						break;
+					case "provisioned-load-balancer":
+						elementType.text = "Elastic Load Balancer";
+						break;
+					case "provisioned-rds-db-instance":
+						elementType.text = "Database Instance";
+						break;
+					case "provisioned-ebs-volume":
+						elementType.text = "Block Storage";
+						break;
+					case "provisioned-sqs-message":
+						elementType.text = "Message Queue";
+						break;
+					case "provisioned-s3":
+						elementType.text = "Simple Storage Bucket";
+						break;
+					case "provisioned-elastic-beanstalk-app":
+						elementType.text = "Beanstalk Application";
+						break;
+					case "provisioned-auto-scale":
+						elementType.text = "Auto Scale Group";
+						break;
+				}
+			}
+			
+			protected function titlewindow1_initializeHandler(event:FlexEvent):void
+			{ 
+				var runningDiagram:Diagrammer = Helpers.getRunningDiagram(this);
+				problemObject = runningDiagram.selection[0].data;
+			}
+			
+			protected function submitButton_clickHandler(event:MouseEvent):void
+			{
+				var incident:Object = new Object();
+				incident['project_id'] = Helpers.currentProject(this);
+				incident['element_type'] = problemObject.name().toString();
+				incident['provision_id'] = problemObject.child('id').toString();
+				incident['issue_state'] = issueState.selectedLabel;
+				incident['description'] = description.text;
+				incident['action'] = actionRequested.selectedValue;
+				
+				submitIncidentSvc.send({user_incident: incident});
+			}
+			
+			protected function submitIncidentSvc_resultHandler(event:ResultEvent):void
+			{
+				PopUpManager.removePopUp(this);
+				Alert.show("Your incident has been submitted.");
+			}
+			
+			protected function submitIncidentSvc_faultHandler(event:FaultEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<s:HTTPService id="submitIncidentSvc"
+					   url="{Helpers.getHost()}/user_incidents.xml"
+					   contentType="application/xml"
+					   method="POST"
+					   resultFormat="e4x"
+					   showBusyCursor="true"
+					   result="submitIncidentSvc_resultHandler(event)"
+					   fault="submitIncidentSvc_faultHandler(event)">
+		</s:HTTPService>
+		
+		<fx:XML id="problemObject"/>
+		<s:RadioButtonGroup id="actionRequested"/>
+	</fx:Declarations>
+	<s:VGroup width="100%" paddingRight="15" paddingLeft="10">
+		<s:HGroup width="100%">
+			<s:Form width="50%">
+				<s:FormItem label="Project Name:" width="100%">
+					<s:TextInput id="projectName" text="{Helpers.currentProjectName(this)}" enabled="false" width="170"/>
+				</s:FormItem>
+				<s:FormItem label="Element Type:" width="100%">
+					<s:TextInput id="elementType" enabled="false" width="170"/>
+				</s:FormItem>
+				<s:FormItem label="Object ID:" width="100%">
+					<s:TextInput id="itemIdentifier" text="{problemObject.child('item-identifier')}" enabled="false" width="170"/>
+				</s:FormItem>
+				<s:FormItem label="Issue State:">
+					<mx:ComboBox id="issueState" width="165">
+						<mx:dataProvider>
+							<s:ArrayCollection>
+								<fx:Object label="On Launch"/>
+								<fx:Object label="While Running"/>
+								<fx:Object label="While Stopping"/>
+							</s:ArrayCollection>
+						</mx:dataProvider>
+					</mx:ComboBox>
+				</s:FormItem>
+				<s:FormItem label="Action Requested:">
+					<s:HGroup>
+						<s:RadioButton id="noAction" group="{actionRequested}" label="None" selected="true"/>
+						<s:RadioButton id="investigate" group="{actionRequested}" label="Investigate"/>
+					</s:HGroup>
+				</s:FormItem>
+			</s:Form>
+			<s:VGroup width="50%">
+				<s:FormItem label="Incident Nbr:">
+					<s:TextInput id="incedentNumber" enabled="false"/>
+				</s:FormItem>
+			    <s:FormItem label="Description:"/>
+				<s:TextArea id="description" width="100%"/>
+			</s:VGroup>
+		</s:HGroup>
+		<s:HGroup width="100%" horizontalAlign="right" gap="15">
+			<s:Button id="submitButton" label="Submit" click="submitButton_clickHandler(event)"/>
+			<s:Button label="Cancel" click="PopUpManager.removePopUp(this)"/>
+		</s:HGroup>
+	</s:VGroup>
+</s:TitleWindow>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cloud-monitor-defaults type="array">
+  <cloud-monitor-default>
+    <monitor-description>asDefault</monitor-description>
+    <monitor-metric-name>CPUUtilization</monitor-metric-name>
+    <monitor-period type="integer">300</monitor-period>
+    <monitor-statistic-name>Average</monitor-statistic-name>
+    <monitor-unit>Percent</monitor-unit>
+  </cloud-monitor-default>
+  <cloud-monitor-default>
+    <monitor-description>asDefault</monitor-description>
+    <monitor-metric-name>DiskReadBytes</monitor-metric-name>
+    <monitor-period type="integer">300</monitor-period>
+    <monitor-statistic-name>Average</monitor-statistic-name>
+    <monitor-unit>Bytes</monitor-unit>
+  </cloud-monitor-default>
+  <cloud-monitor-default>
+    <monitor-description>asDefault</monitor-description>
+    <monitor-metric-name>DiskReadOps</monitor-metric-name>
+    <monitor-period type="integer">300</monitor-period>
+    <monitor-statistic-name>Average</monitor-statistic-name>
+    <monitor-unit>Count</monitor-unit>
+  </cloud-monitor-default>
+  <cloud-monitor-default>
+    <monitor-description>asDefault</monitor-description>
+    <monitor-metric-name>DiskWriteBytes</monitor-metric-name>
+    <monitor-period type="integer">300</monitor-period>
+    <monitor-statistic-name>Average</monitor-statistic-name>
+    <monitor-unit>Bytes</monitor-unit>
+  </cloud-monitor-default>
+  <cloud-monitor-default>
+    <monitor-description>asDefault</monitor-description>
+    <monitor-metric-name>DiskWriteOps</monitor-metric-name>
+    <monitor-period type="integer">300</monitor-period>
+    <monitor-statistic-name>Average</monitor-statistic-name>
+    <monitor-unit>Count</monitor-unit>
+  </cloud-monitor-default>
+  <cloud-monitor-default>
+  	<monitor-description>asDefault</monitor-description>
+    <monitor-metric-name>NetworkIn</monitor-metric-name>
+    <monitor-period type="integer">300</monitor-period>
+    <monitor-statistic-name>Average</monitor-statistic-name>
+    <monitor-unit>Bytes</monitor-unit>
+  </cloud-monitor-default>
+  <cloud-monitor-default>
+  	<monitor-description>asDefault</monitor-description>
+    <monitor-metric-name>NetworkOut</monitor-metric-name>
+    <monitor-period type="integer">300</monitor-period>
+    <monitor-statistic-name>Average</monitor-statistic-name>
+    <monitor-unit>Bytes</monitor-unit>
+  </cloud-monitor-default>
+</cloud-monitor-defaults>

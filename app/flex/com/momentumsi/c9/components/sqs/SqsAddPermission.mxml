@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.constants.ImagePath;
+			public function getPermission():Array
+			{
+				var statements:Array = new Array();
+
+				var actions:Array = new Array();
+				if(allActions.selected)
+				{
+					actions.push("sqs:*");
+				}else{
+					if(sendMessage.selected){
+						actions.push("sqs:SendMessage");
+					}
+					if(receiveMessage.selected){
+						actions.push("sqs:ReceiveMessage");
+					}
+					if(deleteMessage.selected){
+						actions.push("sqs:DeleteMessage");
+					}
+					if(changeVisibility.selected){
+						actions.push("sqs:ChangeMessageVisibility");
+					}
+					if(getAttributes.selected){
+						actions.push("sqs:GetQueueAttributes");
+					}
+					if(getUrl.selected){
+						actions.push("sqs:GetQueueUrl");
+					}
+				}
+				statement = new Object();
+				statement['Sid'] = "DefaultStatement";
+				statement['Effect'] = effectButtons.selectedValue;
+				statement['Principal'] = {AWS: "*"};
+				if(actions.length != 0){
+					statement['Action'] = actions;	
+				}
+				statement['Resource'] =  "*";
+				statements.push(statement);
+				return statements;
+				
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<fx:Object id="statement"/>
+		<fx:String id="queueName"/>
+		<s:RadioButtonGroup id="effectButtons"/>
+	</fx:Declarations>
+	<s:VGroup width="100%" height="100%" horizontalAlign="center">
+		<s:Form>
+			<s:FormItem label="Effect:">
+				<s:HGroup>
+					<s:RadioButton label="Allow" group="{effectButtons}" selected="true"/>
+					<s:RadioButton label="Deny" group="{effectButtons}"/>
+				</s:HGroup>
+			</s:FormItem>
+			<s:FormItem label="Principal:">
+				<s:HGroup>
+					<s:TextInput id="accountNumbers" width="267"
+								 enabled="{checkEverybody.selected == false}"
+								 prompt="account number(s)"/>
+					<s:CheckBox label="Everybody(*)" id="checkEverybody" selected="true" enabled="false"/>
+					<s:Image 
+						width="16" height="16" 
+						source="{ImagePath.HELPER_ICON}"
+						toolTip="Comma-separated list of Account IDs."/>
+				</s:HGroup>
+			</s:FormItem>
+			<s:FormItem label="Actions:">
+				<s:VGroup>
+					<s:CheckBox id="allActions" label="All SQS Actions (SQS:*)"/>
+					<s:HGroup enabled="{allActions.selected == false}">
+						<s:VGroup>
+							<s:CheckBox id="sendMessage" label="SendMessage"/>
+							<s:CheckBox id="receiveMessage" label="ReceiveMessage"/>
+						</s:VGroup>
+						<s:VGroup>
+							<s:CheckBox id="deleteMessage" label="DeleteMessage"/>
+							<s:CheckBox id="changeVisibility" label="ChangeMessageVisibility"/>
+						</s:VGroup>
+						<s:VGroup>
+							<s:CheckBox id="getAttributes" label="GetQueueAttributes"/>
+							<s:CheckBox id="getUrl" label="GetQueueUrl"/>
+						</s:VGroup>
+					</s:HGroup>
+				</s:VGroup>
+			</s:FormItem>
+		</s:Form>
+	</s:VGroup>
+</s:Group>

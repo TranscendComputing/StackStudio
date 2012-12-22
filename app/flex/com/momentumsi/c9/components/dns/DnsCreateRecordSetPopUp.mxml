@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wizard:WizardWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				   xmlns:s="library://ns.adobe.com/flex/spark" 
+				   xmlns:mx="library://ns.adobe.com/flex/mx" 
+				   width="700" height="500"
+				   title="Create Record Set"
+				   move="Helpers.doMove(this)"
+				   creationComplete="creationCompleteHandler(event)"
+				   close="PopUpManager.removePopUp(this)"
+				   xmlns:dns="com.momentumsi.c9.components.dns.*" xmlns:services="com.momentumsi.c9.services.*" xmlns:wizard="com.momentumsi.c9.components.wizard.*">
+	<fx:Metadata>
+		[Event(name="complete", type="mx.rpc.events.ResultEvent")]
+	</fx:Metadata>
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.constants.ImagePath;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			[Bindable]
+			public var configure:Boolean = false;
+			[Bindable]
+			private var typeCollection:ArrayCollection = new ArrayCollection([{label: "A - IPv4 address", value: "A"},
+																			{label: "CNAME - Canonical name", value: "CNAME"},
+																			{label: "MX - Mail exchange", value: "MX"},
+																			{label: "AAAA - IPv6 address", value: "AAAA"},
+																			{label: "TXT - Text", value: "TXT"},
+																			{label: "PTR - Pointer", value: "PTR"},
+																			{label: "SRV - Service locator", value: "SRV"},
+																			{label: "SPF - Sender Policy Framework", value: "SPF"},
+																			{label: "NS - Name server", value: "NS"}]);
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				PopUpManager.centerPopUp(this);
+				
+				if(configure)
+				{
+					submitButton.label = "Edit";
+						
+					if(previousRecord.type == "SOA")
+					{
+						typeCollection.addItemAt({label: "SOA - Start of authority", value: "SOA"}, 0);
+						recordType.selectedIndex = 0;
+						recordType.enabled = false;
+						valueExample.toolTip = "Start of authority." + "\n" +
+							"Start of authority record. Enter all time values in seconds." + "\n" +
+							"Format: " + "\n" +
+							"[authority-domain] [domain-of-zone-admin] [zone-serial-number] [refresh-time] [retry-time] [expire-time] [minimum TTL]" + "\n" +
+							"Example:" + "\n" +
+							"ns.example.net. hostmaster.example.com. 1 7200 900 1209600 86400";
+					}else if(previousRecord.type == "NS" && domainName == previousRecord.name)
+					{
+						recordType.selectedIndex = 8;
+						recordType.enabled = false;
+						recordType_changeHandler();
+					}else
+					{
+						//Fill in correct record type
+						var found:Boolean = false;
+						var i:int = 0;
+						while(found == false && i < typeCollection.length)
+						{
+							var type:String = typeCollection[i].value;
+							if(type == previousRecord.type)
+							{
+								found = true;
+								recordType.selectedIndex = i;
+								recordType_changeHandler();
+							}else
+								i++;
+						}
+					}
+					
+					domainName = previousRecord.name;
+					recordName.visible = false;
+					recordName.width = 0;
+					ttl.text = previousRecord.ttl;
+					recordValue.text = previousRecord.value;
+				}
+			}
+			
+			protected function submitButton_clickHandler(event:MouseEvent):void
+			{
+				var alert:Boolean = false;
+				var finalName:String = "";
+				var finalAliasHostedZone:String = "";
+				var finalAliasTarget:String = "";
+				var finalTtl:int = -1;
+				var finalWeight:int = -1;
+				var finalSetId:String = "";
+				var finalValue:String = "";
+				
+				//Sets Final Name
+				if(recordName.text == "")
+				{
+					finalName = domainName;
+				}else
+				{
+					finalName = recordName.text + "." + domainName;
+				}
+				/* Commented out till gem is updated
+				//Sets Final Alias Fields
+				if(aliasYes.selected)
+				{
+					if(aliasHostedZoneId.text != "")
+					{
+						finalAliasHostedZone = aliasHostedZoneId.text;
+					}else
+					{
+						alert = true;
+						aliasHostedZoneIdAlert.visible = true;
+					}
+					
+					if(aliasDnsName.text != "")
+					{
+						finalAliasTarget = aliasDnsName.text;
+					}else
+					{
+						alert = true;
+						aliasDnsNameAlert.visible = true;
+					}
+				}
+				*/
+				//Sets TTL and Value Fields
+				try
+				{
+					finalTtl = parseInt(ttl.text);
+					if(finalTtl >= 0)
+					{
+						
+					}else
+					{
+						alert = true;
+						ttlAlert.visible = true;
+					}
+				}catch(e:Error)
+				{
+					alert = true;
+					ttlAlert.visible = true;
+				}
+				
+				if(recordValue.text != "")
+				{
+					finalValue = recordValue.text;
+				}else
+				{
+					alert = true;
+					recordValueAlert.visible = true;
+				}
+				/*
+				//Sets Weight Fields
+				if(weightYes.selected)
+				{
+					try
+					{
+						finalWeight = parseInt(weight.text);
+						if(finalWeight >= 0)
+						{
+							
+						}else
+						{
+							alert = true;
+							weightAlert.visible = true;
+						}
+					}catch(e:Error)
+					{
+						alert = true;
+						weightAlert.visible = true;
+					}
+					
+					if(setId.text != "")
+					{
+						
+					}else
+					{
+						alert = true;
+						setIdAlert.visible = true;
+					}
+				}
+				*/
+				if(!alert)
+				{
+					submitButton.enabled = false;
+					//aliasHostedZoneIdAlert.visible = false;
+					//aliasDnsNameAlert.visible = false;
+					ttlAlert.visible = false;
+					recordValueAlert.visible = false;
+					//weightAlert.visible = false;
+					//setIdAlert.visible = false;
+					if(configure)
+					{
+						editRecordSetSvc.send({zone_id: zoneId,
+												previous_name: previousRecord.name, 
+												previous_type: previousRecord.type,
+												previous_ttl: previousRecord.ttl,
+												previous_value: previousRecord.value,
+												name: finalName, 
+												type: recordType.selectedItem.value,
+												ttl: finalTtl, 
+												value: finalValue});	
+					}else
+					{
+						createRecordSetSvc.send({zone_id: zoneId,
+												name: finalName, 
+												type: recordType.selectedItem.value,
+												ttl: finalTtl, 
+												value: finalValue});
+					}
+				}
+			}
+			
+			protected function recordType_changeHandler():void
+			{
+				switch(recordType.selectedIndex)
+				{
+					case 0:
+						valueExample.toolTip = "IPv4 address." + "\n" +
+							"Enter multiple addresses on separate lines." + "\n" +
+							"Example:" + "\n" +
+							"192.0.2.235" + "\n" +
+							"192.0.3.234";
+						break;
+					case 1:
+						valueExample.toolTip = "Canonical name." + "\n" +
+							"The domain name that you want to resolve to instead of the value in the Name field." + "\n" +
+							"Example:" + "\n" +
+							"www.example.com";
+						break;
+					case 2:
+						valueExample.toolTip = "Mail Exchange." + "\n" +
+							"A priority and a domain name that specifies a mail server. Enter multiple values on separate lines." + "\n" +
+							"Format:" + "\n" +
+							"[priority] [mail server host name]" + "\n" +
+							"Example:" + "\n" +
+							"10 mailserver.example.com." + "\n" +
+							"20 mailserver2.example.com.";
+						break;
+					case 3:
+						valueExample.toolTip = "IPv6 address." + "\n" +
+							"Enter multiple addresses on separate lines." + "\n" +
+							"Example:" + "\n" +
+							"2001:0db8:85a3:0:0:8a2e:0370:7334" + "\n" +
+							"fe80:0:0:0:202:b3ff:fe1e:8329";
+						break;
+					case 4:
+						valueExample.toolTip = "Text." + "\n" +
+							"A text record. Enter multiple values on separate lines. Enclose text in quotation marks." + "\n" +
+							"Example:" + "\n" +
+							"\"Sample Text Entries\"" + "\n" +
+							"\"Enclose entries in quotation marks\"";
+						break;
+					case 5:
+						valueExample.toolTip = "Pointer." + "\n" +
+							"The domain name that you want to return." + "\n" +
+							"Example:" + "\n" +
+							"www.example.com";
+						break;
+					case 6:
+						valueExample.toolTip = "Service locator." + "\n" +
+							"An SRV record. For information about SRV record format, refer to the applicable documentation. Enter multiple values on separate lines." + "\n" +
+							"Format:" + "\n" +
+							"[priority] [weight] [port] [server host name]" + "\n" +
+							"Example:" + "\n" +
+							"1 10 5269 xmpp-server.example.com." + "\n" +
+							"2 12 5060 sip-server.example.com.";
+						break;
+					case 7:
+						valueExample.toolTip = "Sender Policy Framework." + "\n" +
+							"An SPF record. For information about SPF record format, refer to the applicable documentation. Enter multiple values on separate lines. Enclose values in quotation marks." + "\n" +
+							"Example:" + "\n" +
+							"\"v=spf1 ip4:192.168.0.1/16-all\"";
+						break;
+					case 8:
+						valueExample.toolTip = "Name server." + "\n" +
+							"The domain name of a name server. Enter multiple name servers on separate lines." + "\n" +
+							"Example:" + "\n" +
+							"ns1.amazon.com" + "\n" +
+							"ns2.amazon.org" + "\n" +
+							"ns3.amazon.net" + "\n" +
+							"ns4.amazon.co.uk";
+						break;
+				}
+			}
+			
+			protected function createRecordSetSvc_resultHandler(event:ResultEvent):void
+			{
+				dispatchEvent(new ResultEvent("complete", false, true, event.result));
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function faultHandler(event:FaultEvent):void
+			{
+				submitButton.enabled = true;
+			}
+			
+			protected function editRecordSetSvc_resultHandler(event:ResultEvent):void
+			{
+				dispatchEvent(new ResultEvent("complete", false, true, event.result));
+				PopUpManager.removePopUp(this);
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<fx:String id="domainName"/>
+		<fx:String id="zoneId"/>
+		<fx:Object id="previousRecord"/>
+		
+		<s:RadioButtonGroup id="aliasGroup"/>
+		<s:RadioButtonGroup id="weightGroup"/>
+		
+		<services:CloudApiService id="createRecordSetSvc"
+								  action="create_record_set"
+								  cloudAccountId="{cloudAccount.id}"
+								  region="{region}"
+								  serviceType="{CloudApiService.DNS_SERVICE}"
+								  result="createRecordSetSvc_resultHandler(event)"
+								  fault="faultHandler(event)"/>
+		
+		<services:CloudApiService id="editRecordSetSvc"
+								  action="edit_record_set"
+								  cloudAccountId="{cloudAccount.id}"
+								  region="{region}"
+								  serviceType="{CloudApiService.DNS_SERVICE}"
+								  result="editRecordSetSvc_resultHandler(event)"
+								  fault="faultHandler(event)"/>
+	</fx:Declarations>
+	
+	<s:VGroup width="100%" height="90%">
+		<s:Group width="100%" height="60">
+			<s:Rect width="100%" height="100%">
+				<s:fill>
+					<s:SolidColor color="#FFFFFF"/>
+				</s:fill>
+			</s:Rect>
+			<s:HGroup width="100%" height="60" verticalAlign="middle" paddingTop="10" paddingBottom="10" paddingLeft="20"  gap="15">
+				<s:Image source="{ImagePath.NEW_DNS}"/>		
+				<s:Label text="Record Set" fontWeight="bold" fontSize="24"/>		
+			</s:HGroup>
+		</s:Group>
+		<s:Form textAlign="right">
+			<s:FormItem label="Name:">
+				<s:HGroup>
+					<s:TextInput id="recordName" width="200" textAlign="left"/>
+					<mx:Text text="{domainName}" textAlign="left"/>
+				</s:HGroup>
+			</s:FormItem>
+			<s:FormItem label="Type:">
+				<mx:ComboBox id="recordType" dataProvider="{typeCollection}" textAlign="left" selectedIndex="0" change="recordType_changeHandler()"/>
+			</s:FormItem>
+			<!--
+			<s:FormItem label="Alias:">
+				<s:HGroup>
+					<s:RadioButton id="aliasYes" group="{aliasGroup}" label="Yes"/>
+					<s:RadioButton id="aliasNo" group="{aliasGroup}" label="No" selected="true"/>
+				</s:HGroup>
+			</s:FormItem>
+			<s:FormItem label="Alias Hosted Zone ID: " enabled="{aliasYes.selected}">
+				<s:HGroup>
+					<s:TextInput id="aliasHostedZoneId" textAlign="left"/>
+					<mx:Text id="aliasHostedZoneIdAlert" text="This field is required" color="red" visible="false"/>
+				</s:HGroup>
+			</s:FormItem>
+			<s:FormItem label="Alias DNS Name: " enabled="{aliasYes.selected}">
+				<s:HGroup>
+					<s:TextInput id="aliasDnsName" textAlign="left"/>
+					<mx:Text id="aliasDnsNameAlert" text="This field is required" color="red" visible="false"/>
+				</s:HGroup>
+			</s:FormItem>
+			-->
+			<s:FormItem label="TTL (seconds):">
+				<s:HGroup>
+					<s:TextInput id="ttl" textAlign="left"/>
+					<mx:Text id="ttlAlert" text="Invalid Input" color="red" visible="false"/>
+				</s:HGroup>
+			</s:FormItem>
+			<s:FormItem label="Value:">
+				<s:HGroup>
+					<s:TextArea id="recordValue" width="250" lineBreak="explicit" textAlign="left" heightInLines="5"/>
+					<s:Image id="valueExample" width="16" height="16" source="{ImagePath.HELPER_ICON}" 
+							 toolTip="IPv4 address.&#13;Enter multiple addresses on separate lines.&#13;Example:&#13;192.0.2.235&#13;192.0.3.234"/>
+					<mx:Text id="recordValueAlert" text="This field is required" color="red" visible="false"/>
+				</s:HGroup>
+			</s:FormItem>
+			<!--
+			<s:FormItem label="Weighted Set:">
+				<s:HGroup>
+					<s:RadioButton id="weightYes" group="{weightGroup}" label="Yes"/>
+					<s:RadioButton id="weightNo" group="{weightGroup}" label="No" selected="true"/>
+				</s:HGroup>
+			</s:FormItem>
+			<s:FormItem label="Weight: " enabled="{weightYes.selected}">
+				<s:HGroup>
+					<s:TextInput id="weight" textAlign="left"/>
+					<mx:Text id="weightAlert" text="This field is required" color="red" visible="false"/>
+				</s:HGroup>
+			</s:FormItem>
+			<s:FormItem label="Set ID:" enabled="{weightYes.selected}">
+				<s:HGroup>
+					<s:TextInput id="setId" textAlign="left"/>
+					<mx:Text id="setIdAlert" text="This field is required" color="red" visible="false"/>
+				</s:HGroup>
+			</s:FormItem>
+			-->
+		</s:Form>
+	</s:VGroup>
+	<s:Button id="submitButton" x="277" y="436" label="Create"
+			  click="submitButton_clickHandler(event)"/>
+	<s:Button x="352" y="436" label="Cancel" click="PopUpManager.removePopUp(this)"/>
+</wizard:WizardWindow>

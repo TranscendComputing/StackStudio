@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<c9:ObjectManagementDetailsBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:c9="com.momentumsi.c9.components.*">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.representers.NotificationTopicRepresenter;
+			import com.momentumsi.c9.services.CloudApiService;
+			import com.momentumsi.c9.services.MonitoringService;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.collections.ArrayCollection;
+			import mx.core.UIComponent;
+			import mx.events.IndexChangedEvent;
+			import mx.events.ListEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.StringUtil;
+			
+			[Bindable]
+			private var snsData:NotificationTopicRepresenter;
+			[Bindable]
+			public var accountId:int;
+			[Bindable]
+			private var terminateEnabled:Boolean = true;
+			[Bindable]
+			private var subsCollection:ArrayCollection = new ArrayCollection();
+			
+			override public function set resourceData(value:Object):void
+			{
+				snsData = new NotificationTopicRepresenter(value);
+				super.resourceData = snsData;
+				snsDetails.selectedIndex = 0;
+			}
+			
+			protected function terminate_clickHandler(event:MouseEvent):void
+			{
+				if(terminateEnabled)
+				{
+					var destroyPopUp:DestroyResourceObjectManagement = DestroyResourceObjectManagement(PopUpManager.createPopUp(UIComponent(this.parentApplication), DestroyResourceObjectManagement, true));
+					destroyPopUp.cloudAccountId = cloudAccount.id;
+					destroyPopUp.region = region;
+					destroyPopUp.resourceType = CloudApiService.SNS_SERVICE;
+					destroyPopUp.resourceDisplayId = snsData.name;
+					destroyPopUp.resourceId = snsData.topicArn;
+				}
+			}
+			
+			protected function snsDetails_changeHandler(event:IndexChangedEvent):void
+			{
+				if(snsDetails.selectedChild == monitoringContent)
+				{
+					monitorBox.objectManagement = true;
+					monitorBox.objectManagementResource = snsData;
+					monitorBox.ec2_account_id = accountId;
+					monitorBox.objectManagementResourceType = MonitoringService.SNS_DEFAULT;
+					monitorBox.getDefaultMonitorsCall(MonitoringService.SNS_DEFAULT);
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>	
+		
+	</fx:Declarations>
+	
+	<s:HGroup paddingLeft="10" gap="20">
+		<mx:Text text="Delete" color="blue" textDecoration="underline" click="terminate_clickHandler(event)" useHandCursor="true" buttonMode="true" mouseChildren="false" enabled="{terminateEnabled}"/>
+	</s:HGroup>
+	<s:BorderContainer height="100%" width="100%" alpha="1" borderVisible="false">
+		<mx:TabNavigator id="snsDetails" width="100%" height="100%" change="snsDetails_changeHandler(event)">
+			<s:NavigatorContent label="Details" width="100%" height="100%">
+				<s:BorderContainer borderVisible="false" height="100%" width="100%">
+					<s:Scroller width="100%" height="100%">
+						<s:viewport>
+							<s:HGroup>
+								<s:Form>
+									<s:layout>
+										<s:FormLayout gap="-7"/>
+									</s:layout>
+									<s:FormItem label="Topic Resource Name:">
+										<mx:Text text="{snsData.name}"/>
+									</s:FormItem>
+									<s:FormItem label="Owner ID:">
+										<mx:Text text="{snsData.owner}"/>
+									</s:FormItem>
+									<s:FormItem label="Subscriptions Confirmed:">
+										<mx:Text text="{snsData.subscriptionsConfirmed}"/>
+									</s:FormItem>
+									<s:FormItem label="Subscriptions Pending:">
+										<mx:Text text="{snsData.subscriptionsPending}"/>
+									</s:FormItem>
+									<s:FormItem label="Subscriptions Deleted:">
+										<mx:Text text="{snsData.subscriptionsDeleted}"/>
+									</s:FormItem>
+								</s:Form>
+							</s:HGroup>
+						</s:viewport>
+					</s:Scroller>
+				</s:BorderContainer>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="subsContent" label="Subscriptions" width="100%" height="100%">
+				<s:BorderContainer borderVisible="false" height="100%" width="100%">
+					<s:DataGrid id="subscriptions" width="100%" height="100%" dataProvider="{snsData.subscriptionsCollection}">
+						<s:columns>
+							<s:ArrayList id="subGridColumns">
+								<s:GridColumn headerText="Subscription ID" dataField="SubscriptionArn"/>
+								<s:GridColumn headerText="Protocol" dataField="Protocol"/>
+								<s:GridColumn headerText="Endpoint" dataField="Endpoint"/>
+								<s:GridColumn headerText="Subscriber" dataField="Owner"/>
+							</s:ArrayList>
+						</s:columns>
+					</s:DataGrid>
+				</s:BorderContainer>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="monitoringContent" label="Monitoring" width="100%" height="100%">
+				<c9:MonitoringBox id="monitorBox" cloudAccountId="{cloudAccount.id}" region="{region}"/>
+			</s:NavigatorContent>
+		</mx:TabNavigator>
+	</s:BorderContainer>
+</c9:ObjectManagementDetailsBox>

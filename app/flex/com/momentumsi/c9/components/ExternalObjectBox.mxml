@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%">
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			[Bindable]
+			public var accountId:int;
+			
+			public function getExternalObjects(accountId:int):void
+			{
+				this.accountId = accountId;
+				getExternalObjectsSvc.send();
+			}
+			
+			protected function faultHandler(event:FaultEvent):void
+			{
+				Helpers.handleFault(event);
+			}
+			
+			protected function getExternalObjects_resultHandler(event:ResultEvent):void
+			{
+				var result:XMLList = Helpers.xmlChildrenFromEvent(event);
+				var mainBox:MainBox = Helpers.getMainBox(this);
+				var y:int = 50;
+				for each(var externalObject:XML in result)
+				{		
+					if(Helpers.currentProject(this) == externalObject.child('project-id'))
+					{
+						mainBox.runningView.initialAdd = true;
+						mainBox.runningView.addNode(800, y, externalObject);
+						y = y + 75;
+					}
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:HTTPService id="getExternalObjectsSvc"
+					   url="{Helpers.getHost()}/external_objects.xml"
+					   resultFormat="e4x"
+					   method="GET"
+					   showBusyCursor="true"
+					   result="getExternalObjects_resultHandler(event)"
+					   fault="faultHandler(event)"/>
+	</fx:Declarations>
+</s:Group>

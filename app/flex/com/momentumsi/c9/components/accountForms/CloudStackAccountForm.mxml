@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<accountForms:CloudFormBase xmlns:fx="http://ns.adobe.com/mxml/2009" 
+							xmlns:s="library://ns.adobe.com/flex/spark" 
+							xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" 
+							xmlns:accountForms="com.momentumsi.c9.components.accountForms.*"
+							creationComplete="creationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.utils.StringUtil;
+			import com.momentumsi.c9.models.Cloud;
+			
+			import mx.events.FlexEvent;
+			override public function saveAccount():void
+			{
+				account.name = accountName.text;
+				account.description = accountDescription.text;
+				account.access_key = StringUtil.trim(cloudstackAccessKeyTA.text);
+				account.secret_key = StringUtil.trim(cloudstackSecretKeyTA.text);
+				cloud = cloudVersion.selectedItem as Cloud;
+				account.cloud_id = cloud.id;
+				account.cloud_name = cloud.name;
+				account.cloud_provider = cloud.cloudProvider;
+				
+				var attributes:Object = new Object();
+				attributes["cloudstack_api_key"] = cloudstackAccessKeyTA.text;
+				attributes["cloudstack_secret_access_key"] = cloudstackSecretKeyTA.text;
+				attributes["domain"] = cloudstackDomain.text;
+				account.cloudAttributes = attributes;
+				if(account.id == null)
+				{					
+					identityService.createNewCloudAccount(user.id, account);
+				}else{
+					identityService.updateCloudAccount(user.id, account);
+				}
+			}
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				if(account != null)
+				{
+					accountName.text = account.name;
+					accountDescription.text = account.description;
+					cloudstackAccessKeyTA.text = account.access_key;
+					cloudstackSecretKeyTA.text = account.secret_key;
+					if(account.cloudAttributes != null && account.cloudAttributes.hasOwnProperty("domain"))
+					{
+						cloudstackDomain.text = account.cloudAttributes.domain;
+					}
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:FormItem label="Account Name:">
+		<s:TextInput id="accountName" width="198"/>
+	</s:FormItem>
+	<s:FormItem label="Description">
+		<s:TextArea id="accountDescription" width="362" height="44"/>
+	</s:FormItem>
+	<s:FormItem label="Access Key:">
+		<s:TextArea id="cloudstackAccessKeyTA" width="362" height="44"/>
+	</s:FormItem>
+	<s:FormItem label="Secret Key:">
+		<s:VGroup>
+			<s:CheckBox id="hideSecretKeyCB" label="Hide Key" selected="true"/>
+			<s:TextArea id="cloudstackSecretKeyTA" width="362" height="44" displayAsPassword="{hideSecretKeyCB.selected}"/>
+		</s:VGroup>
+	</s:FormItem>
+	<s:FormItem label="Domain:">
+		<s:TextArea id="cloudstackDomain" width="362" height="44"/>
+	</s:FormItem>
+	<s:FormItem label="Version:">
+		<mx:ComboBox id="cloudVersion"
+					 dataProvider="{cloudVersionCollection}" 
+					 labelField="name"
+					 selectedIndex="{selectedVersion}"
+					 width="362"/>
+	</s:FormItem>
+</accountForms:CloudFormBase>

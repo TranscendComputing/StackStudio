@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cloud-monitor-defaults type="array">
+  <cloud-monitor-default>
+    <monitor-description>elcNodeDefault</monitor-description>
+    <monitor-metric-name>CPUUtilization</monitor-metric-name>
+    <monitor-period type="integer">300</monitor-period>
+    <monitor-statistic-name>Average</monitor-statistic-name>
+    <monitor-unit>Percent</monitor-unit>
+  </cloud-monitor-default>
+  <cloud-monitor-default>
+    <monitor-description>elcNodeDefault</monitor-description>
+    <monitor-metric-name>SwapUsage</monitor-metric-name>
+    <monitor-period type="integer">300</monitor-period>
+    <monitor-statistic-name>Average</monitor-statistic-name>
+    <monitor-unit>Bytes</monitor-unit>
+  </cloud-monitor-default>
+  <cloud-monitor-default>
+    <monitor-description>elcNodeDefault</monitor-description>
+    <monitor-metric-name>FreeableMemory</monitor-metric-name>
+    <monitor-period type="integer">300</monitor-period>
+    <monitor-statistic-name>Average</monitor-statistic-name>
+    <monitor-unit>Bytes</monitor-unit>
+  </cloud-monitor-default>
+  <cloud-monitor-default>
+    <monitor-description>elcNodeDefault</monitor-description>
+    <monitor-metric-name>NetworkBytesIn</monitor-metric-name>
+    <monitor-period type="integer">300</monitor-period>
+    <monitor-statistic-name>Average</monitor-statistic-name>
+    <monitor-unit>Bytes</monitor-unit>
+  </cloud-monitor-default>
+  <cloud-monitor-default>
+    <monitor-description>elcNodeDefault</monitor-description>
+    <monitor-metric-name>NetworkBytesOut</monitor-metric-name>
+    <monitor-period type="integer">300</monitor-period>
+    <monitor-statistic-name>Average</monitor-statistic-name>
+    <monitor-unit>Bytes</monitor-unit>
+  </cloud-monitor-default>
+</cloud-monitor-defaults>

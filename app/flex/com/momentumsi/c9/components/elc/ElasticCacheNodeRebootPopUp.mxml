@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" 
+			   width="326" height="172"
+			   title="Reboot Cache Node"
+			   move="Helpers.doMove(this)"
+			   creationComplete="creationCompleteHandler(event)"
+			   close="PopUpManager.removePopUp(this)"
+			   xmlns:uicomponent="fr.kapit.diagrammer.base.uicomponent.*"
+			   xmlns:diagrammer="fr.kapit.diagrammer.base.uicomponent.*">
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.components.MainBox;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import fr.kapit.diagrammer.Diagrammer;
+			
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			
+			protected function reboot_clickHandler(event:MouseEvent):void
+			{
+				rebootCacheNodeSvc.send();
+			}
+			
+			protected function faultHandler(event:FaultEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+			}
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				PopUpManager.centerPopUp(this);
+			}
+			
+			protected function rebootCacheNodeSvc_resultHandler(event:ResultEvent):void
+			{
+				var result:XML = event.result as XML;
+				node.data = result;
+				PopUpManager.removePopUp(this);
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<fx:XML id="cacheNode"/>
+		<diagrammer:DiagramSprite id="node"/>
+		
+		<s:HTTPService id="rebootCacheNodeSvc"
+					   url="{Helpers.getHost()}/provisioned_elastic_cache_nodes/reboot_node/{cacheNode.child('id')}.xml"
+					   method="GET"
+					   resultFormat="e4x"
+					   showBusyCursor="true"
+					   result="rebootCacheNodeSvc_resultHandler(event)"
+					   fault="faultHandler(event)"/>
+		
+	</fx:Declarations>
+	<s:VGroup paddingLeft="15">
+		<mx:Text text="Are you sure you want to reboot the following{'\n'}cache node?"/>
+		<mx:Text text=" - {cacheNode.child('node-id')}" paddingLeft="15"/>
+	</s:VGroup>
+	<s:Line y="-84" width="290" horizontalCenter="-5" xFrom="5" xTo="150" yFrom="180" yTo="180">
+		<s:stroke>
+			<s:SolidColorStroke color="white"/>
+		</s:stroke>
+	</s:Line>
+	<s:HGroup x="90" y="108">
+		<s:Button label="Reboot" click="reboot_clickHandler(event)"/>
+		<s:Button label="Cancel" click="PopUpManager.removePopUp(this)"/>
+	</s:HGroup>
+</s:TitleWindow>

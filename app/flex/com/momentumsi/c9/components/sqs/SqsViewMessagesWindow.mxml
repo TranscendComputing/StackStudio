@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components:CustomTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+							  xmlns:s="library://ns.adobe.com/flex/spark" 
+							  xmlns:mx="library://ns.adobe.com/flex/mx"
+							  xmlns:components="com.momentumsi.c9.components.*"
+							  title="View Messages in {queue.name}"
+							  width="630" height="424" xmlns:services="com.momentumsi.c9.services.*"
+							  initialize="customtitlewindow1_initializeHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.events.sqs.ReceiveMessageResultEvent;
+			import com.momentumsi.c9.models.CloudAccount;
+			import com.momentumsi.c9.representers.MessageQueueRepresenter;
+			
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			[Bindable]
+			public var queue:MessageQueueRepresenter;
+			[Bindable]
+			public var cloudAccount:CloudAccount;
+			[Bindable]
+			public var region:String;
+			
+			protected function customtitlewindow1_initializeHandler(event:FlexEvent):void
+			{
+				sqsService.addEventListener(ReceiveMessageResultEvent.RESULT, receiveMessage_resultHandler);
+				sqsService.receiveMessage();
+			}
+			
+			private function receiveMessage_resultHandler(event:ReceiveMessageResultEvent):void
+			{
+				if(event.result != null)
+				{
+					messageBodyTA.text = event.body;
+					messageIdLabel.text = event.receivedMessageId;
+					md5OfBodyLabel.text = event.md5OfBody;
+					receiveCountLabel.text = event.receiveCount;
+					senderIdLabel.text = event.senderId;
+				}else{
+					Alert.show("No available messages in queue.");
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<services:SqsService id="sqsService"
+							 queueUrl="{queue.queueUrl}"
+							 cloudAccountId="{cloudAccount.id}"
+							 region="{region}"/>
+	</fx:Declarations>
+	<!--<s:DataGrid id="messagesGridt"
+				x="10" y="10" width="608" height="168" requestedRowCount="4">
+		<s:columns>
+			<s:ArrayList>
+				<s:GridColumn dataField="body" headerText="Body"></s:GridColumn>
+				<s:GridColumn dataField="sentTimestamp" headerText="Sent"></s:GridColumn>
+				<s:GridColumn dataField="receiveCount" headerText="Receive Count"></s:GridColumn>
+			</s:ArrayList>
+		</s:columns>
+	</s:DataGrid>-->
+	<s:TextArea id="messageBodyTA" x="10" y="10" width="607" height="172" editable="false"/>
+	<s:Form id="messageDetailsForm"
+			x="74" y="184">
+		<s:layout>
+			<s:FormLayout gap="-10"/>
+		</s:layout>
+		<s:FormItem id="messageIdFI"
+					textAlign="right"
+					label="Message ID:">
+			<s:Label id="messageIdLabel"
+					 textAlign="left"/>
+		</s:FormItem>
+		<s:FormItem id="md5OfBodyFI"
+					textAlign="right"
+					label="MD5 of Body:">
+			<s:Label id="md5OfBodyLabel"
+					 textAlign="left"/>
+		</s:FormItem>
+		<s:FormItem id="receiveCountFI"
+					textAlign="right"
+					label="Receive Count">
+			<s:Label id="receiveCountLabel"
+					 textAlign="left"/>
+		</s:FormItem>
+		<s:FormItem id="senderIdFI"
+					textAlign="right"
+					label="Sender Account ID:">
+			<s:Label id="senderIdLabel"
+					 textAlign="left"/>
+		</s:FormItem>
+	</s:Form>
+	<s:Button id="closeButton"
+			  click="PopUpManager.removePopUp(this)"
+			  x="549" y="360" 
+			  label="Close"/>
+</components:CustomTitleWindow>

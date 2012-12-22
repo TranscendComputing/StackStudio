@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<c9:ObjectManagementDetailsBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:c9="com.momentumsi.c9.components.*" xmlns:services="com.momentumsi.c9.services.*">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.representers.CacheClusterRepresenter;
+			import com.momentumsi.c9.services.CloudApiService;
+			import com.momentumsi.c9.services.MonitoringService;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.collections.ArrayCollection;
+			import mx.core.UIComponent;
+			import mx.events.IndexChangedEvent;
+			import mx.events.ListEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.StringUtil;
+			
+			[Bindable]
+			private var elcData:CacheClusterRepresenter;
+			[Bindable]
+			private var monitorShow:Boolean = false;
+			
+			override public function set resourceData(value:Object):void
+			{
+				if(value is CacheClusterRepresenter)
+				{
+					elcData = value as CacheClusterRepresenter;
+				}else{
+					elcData = new CacheClusterRepresenter(value);
+				}
+				super.resourceData = elcData;
+				elcDetails.selectedIndex = 0;
+			}
+			
+			protected function terminate_clickHandler(event:MouseEvent):void
+			{
+				var destroyPopUp:DestroyResourceObjectManagement = DestroyResourceObjectManagement(PopUpManager.createPopUp(UIComponent(this.parentApplication), DestroyResourceObjectManagement, true));
+				destroyPopUp.cloudAccountId = cloudAccount.id;
+				destroyPopUp.region = region;
+				destroyPopUp.resourceType = CloudApiService.CACHE_SERVICE;
+				destroyPopUp.resourceDisplayId = elcData.name;
+				destroyPopUp.resourceId = elcData.name;
+			}
+			
+			protected function nodes_changeHandler():void
+			{
+				if(elcData.nodesCollection.length > 0)
+				{
+					if(nodeSeparation.contains(monitoringContent))
+					{
+						nodeSeparation.removeElement(monitoringContent);
+						monitorToggle.text = "Show";
+						monitorShow = false;
+					}
+					nodeId.text = nodes.selectedItem.CacheNodeId;
+					nodeAddress.text = nodes.selectedItem.Address;
+					nodePort.text = nodes.selectedItem.Port;
+					nodeState.text = nodes.selectedItem.CacheNodeStatus;
+					nodeCreationDate.text = nodes.selectedItem.CacheNodeCreateTime;
+				}else
+				{
+					nodeId.text = "";
+					nodeAddress.text = "";
+					nodePort.text = "";
+					nodeState.text = "";
+					nodeCreationDate.text = "";
+				}
+			}
+			
+			protected function monitorView_clickHandler(event:MouseEvent):void
+			{
+				if(monitorToggle.text == "Show")
+				{
+					monitorToggle.text = "Hide";
+					monitorShow = true;
+					nodeSeparation.addChildAt(monitoringContent, 1);
+					nodeDetails.percentWidth = 40;
+					monitorOptions_changeHandler();
+					
+				}else
+				{
+					monitorToggle.text = "Show";
+					monitorShow = false;
+					if(nodeSeparation.contains(monitoringContent))
+					{
+						nodeSeparation.removeElement(monitoringContent);
+					}
+				}
+			}
+			
+			protected function monitorOptions_changeHandler():void
+			{
+				monitorBox.objectManagement = true;
+				monitorBox.objectManagementResource = nodes.selectedItem;
+				if(nodeMonitor.selected)
+				{
+					monitorBox.objectManagementResourceType = MonitoringService.ELC_NODE_DEFAULT;
+					monitorBox.getDefaultMonitorsCall(MonitoringService.ELC_NODE_DEFAULT);
+				}else if(nodeStatsMonitor.selected)
+				{
+					monitorBox.objectManagementResourceType = MonitoringService.ELC_NODE_STATS;
+					monitorBox.getDefaultMonitorsCall(MonitoringService.ELC_NODE_STATS);
+				}else
+				{
+					monitorBox.objectManagementResourceType = MonitoringService.ELC_DEFAULT;
+					monitorBox.getDefaultMonitorsCall(MonitoringService.ELC_DEFAULT);
+				}
+			}
+			
+			protected function elcDetails_changeHandler(event:IndexChangedEvent):void
+			{
+				elcService.describeEvents(elcData.name);
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<services:ElcService id="elcService"
+							 cloudAccountId="{cloudAccount.id}"
+							 region="{region}"/>
+		
+		<s:RadioButtonGroup id="monitorOptions" change="monitorOptions_changeHandler()"/>
+		
+		<s:NavigatorContent id="monitoringContent" label="Monitoring" width="100%" height="100%">
+			<c9:MonitoringBox id="monitorBox" cloudAccountId="{cloudAccount.id}" clusterId="{elcData.name}" region="{region}"/>
+		</s:NavigatorContent>
+	</fx:Declarations>
+	
+	<s:HGroup paddingLeft="10" gap="20">
+		<c9:TextButton text="Delete"
+					   click="terminate_clickHandler(event)"/>
+	</s:HGroup>
+	<s:BorderContainer height="100%" width="100%" alpha="1" borderVisible="false">
+		<mx:TabNavigator id="elcDetails"
+						 change="elcDetails_changeHandler(event)"
+						 width="100%" height="100%">
+			<s:NavigatorContent label="Details" width="100%" height="100%">
+				<s:BorderContainer borderVisible="false" height="100%" width="100%">
+					<s:Scroller width="100%" height="100%">
+						<s:viewport>
+							<s:HGroup>
+								<s:Form>
+									<s:layout>
+										<s:FormLayout gap="-7"/>
+									</s:layout>
+									<s:FormItem label="Cache Cluster ID:">
+										<mx:Text text="{elcData.name}"/>
+									</s:FormItem>
+									<s:FormItem label="State:">
+										<mx:Text text="{elcData.state}"/>
+									</s:FormItem>
+									<s:FormItem label="Creation Date:">
+										<mx:Text text="{elcData.createdAt}"/>
+									</s:FormItem>
+									<s:FormItem label="Cluster Type:">
+										<mx:Text text="{elcData.nodeType}"/>
+									</s:FormItem>
+									<s:FormItem label="Engine:">
+										<mx:Text text="{elcData.engine} {elcData.engineVersion}"/>
+									</s:FormItem>
+									<s:FormItem label="Preferred Zone:">
+										<mx:Text text="{elcData.zone}"/>
+									</s:FormItem>
+									<s:FormItem label="Node Count:">
+										<mx:Text text="{elcData.numNodes}"/>
+									</s:FormItem>
+									<s:FormItem label="Auto Minor Version Upgrade:">
+										<mx:Text text="{elcData.autoUpgrade}"/>
+									</s:FormItem>
+									<s:FormItem label="Security Groups:">
+										<mx:Text text="{elcData.securityGroups}"/>
+									</s:FormItem>
+									<s:FormItem label="Parameter Group:">
+										<mx:Text text="{elcData.parameterGroup}"/>
+									</s:FormItem>
+									<s:FormItem label="Maintenance Window:">
+										<mx:Text text="{elcData.maintenanceWindow}"/>
+									</s:FormItem>
+								</s:Form>
+							</s:HGroup>
+						</s:viewport>
+					</s:Scroller>
+				</s:BorderContainer>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="nodesContent" label="Nodes" width="100%" height="100%">
+				<mx:HDividedBox id="nodeSeparation" width="100%" height="100%">
+					<s:BorderContainer id="nodeDetails" borderVisible="false" height="100%" width="100%">
+						<s:Scroller width="100%" height="100%">
+							<s:viewport>
+								<s:VGroup>
+									<s:HGroup width="100%" paddingLeft="20" paddingBottom="2" paddingTop="2">
+										<mx:ComboBox id="nodes" 
+													 labelField="CacheNodeId" 
+													 change="nodes_changeHandler()"
+													 dataProvider="{elcData.nodesCollection}"
+													 prompt="Select Node"/>
+									</s:HGroup>
+									<s:Form>
+										<s:layout>
+											<s:FormLayout gap="-7"/>
+										</s:layout>
+										<s:FormItem label="Node ID:">
+											<mx:Text id="nodeId"/>
+										</s:FormItem>
+										<s:FormItem label="Address:">
+											<mx:Text id="nodeAddress"/>
+										</s:FormItem>
+										<s:FormItem label="Port:">
+											<mx:Text id="nodePort"/>
+										</s:FormItem>
+										<s:FormItem label="State:">
+											<mx:Text id="nodeState"/>
+										</s:FormItem>
+										<s:FormItem label="Creation Date:">
+											<mx:Text id="nodeCreationDate"/>
+										</s:FormItem>
+										<s:FormItem label="Monitoring:">
+											<s:VGroup visible="{nodes.selectedIndex!=-1}" includeInLayout="{nodes.selectedIndex!=-1}">
+												<mx:Text id="monitorToggle" text="Show"  color="blue" textDecoration="underline" click="monitorView_clickHandler(event)" useHandCursor="true" buttonMode="true" mouseChildren="false"/>
+												<s:VGroup id="monitorRadios" enabled="{monitorShow}">
+													<s:RadioButton id="nodeMonitor" label="Node Monitoring" group="{monitorOptions}" selected="true" enabled="{monitorShow}"/>
+													<s:RadioButton id="nodeStatsMonitor" label="Node Statistics Monitoring" group="{monitorOptions}" enabled="{monitorShow}"/>
+													<s:RadioButton id="nodeCacheMonitor" label="Cache Monitoring" group="{monitorOptions}" enabled="{monitorShow}"/>
+												</s:VGroup>
+										</s:VGroup>
+										</s:FormItem>
+									</s:Form>
+								</s:VGroup>
+							</s:viewport>
+						</s:Scroller>
+					</s:BorderContainer>
+				</mx:HDividedBox>
+			</s:NavigatorContent>
+			<s:NavigatorContent label="Events" width="100%" height="100%">
+				<s:VGroup width="100%" height="100%" paddingLeft="10" paddingRight="10">
+					<s:DataGrid id="eventsDataGrid"
+								width="100%" height="100%"
+								dataProvider="{elcService.events}">
+						<s:columns>
+							<s:ArrayList id="eventColumns">
+								<s:GridColumn headerText="Date" dataField="Date"/>
+								<s:GridColumn headerText="Cluster ID" dataField="SourceIdentifier"/>
+								<s:GridColumn headerText="Event" dataField="Message"/>
+							</s:ArrayList>
+						</s:columns>
+					</s:DataGrid>
+				</s:VGroup>
+			</s:NavigatorContent>
+		</mx:TabNavigator>
+	</s:BorderContainer>
+</c9:ObjectManagementDetailsBox>

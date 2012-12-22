@@ -1,0 +1,2091 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:c9="com.momentumsi.c9.components.*"
+		 xmlns:services="com.momentumsi.c9.services.*"
+		 xmlns:flexlib="http://code.google.com/p/flexlib/"
+		 width="100%" height="100%"
+		 creationComplete="cloudManagementSetup()"
+		 initialize="init(event)">
+
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.serialization.json.JSON;
+			import com.momentumsi.c9.components.dns.DnsCreateHostedZonePopUp;
+			import com.momentumsi.c9.components.ebs.EbsCreateVolumePopUp;
+			import com.momentumsi.c9.components.elb.LoadBalancerWizard;
+			import com.momentumsi.c9.components.elc.ElasticCacheCreateSecurityGroup;
+			import com.momentumsi.c9.components.elc.ElasticCacheWizard;
+			import com.momentumsi.c9.components.rds.RdsSecurityGroupAddPopUp;
+			import com.momentumsi.c9.components.s3.SimpleStorageWizard;
+			import com.momentumsi.c9.components.sns.SnsCreateTopic;
+			import com.momentumsi.c9.components.wizard.RDSWizard;
+			import com.momentumsi.c9.components.wizard.SqsCreateQueueTitleWindow;
+			import com.momentumsi.c9.components.wizard.WizardWindow;
+			import com.momentumsi.c9.constants.*;
+			import com.momentumsi.c9.events.CloudResourceCreateEvent;
+			import com.momentumsi.c9.events.apiCloud.CloudQueryFaultEvent;
+			import com.momentumsi.c9.events.apiCloud.CloudQueryResultEvent;
+			import com.momentumsi.c9.events.cache.CreateCacheSecurityGroupResultEvent;
+			import com.momentumsi.c9.events.compute.CreateSecurityGroupResultEvent;
+			import com.momentumsi.c9.models.Cloud;
+			import com.momentumsi.c9.models.CloudAccount;
+			import com.momentumsi.c9.models.CloudServiceModel;
+			import com.momentumsi.c9.models.User;
+			import com.momentumsi.c9.representers.*;
+			import com.momentumsi.c9.services.CloudApiService;
+			import com.momentumsi.c9.services.CloudService;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import flash.utils.setTimeout;
+			
+			import mx.collections.ArrayCollection;
+			import mx.containers.Panel;
+			import mx.controls.Alert;
+			import mx.controls.Button;
+			import mx.core.BitmapAsset;
+			import mx.core.UIComponent;
+			import mx.events.CloseEvent;
+			import mx.events.CollectionEvent;
+			import mx.events.FlexEvent;
+			import mx.events.IndexChangedEvent;
+			import mx.events.ListEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import spark.events.GridSelectionEvent;
+
+			[Bindable]
+			private var resourceButtonClicked:ObjectManagementServiceButton;
+			[Bindable]
+			private var createButtonsEnabled:Boolean = true;
+			[Bindable]
+			public var publicImages:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public var securityGroupsList:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public var keyPairsList:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public var availabilityZoneList:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public var readOnly:Boolean = false;
+			[Bindable]
+			public var user:User;
+			[Bindable]
+			public var cloudAccount:CloudAccount;
+			[Bindable]
+			public var region:String;
+			[Bindable]
+			private var amazonCloudAccounts:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var eucalyptusCloudAccounts:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var openstackCloudAccounts:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var hpCloudAccounts:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var azureCloudAccounts:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var rackspaceCloudAccounts:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var cloudstackCloudAccounts:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var pistonCloudAccounts:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var joyentCloudAccounts:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var errorLabelText:String = AlertMessage.ERROR_CONNECTING_CLOUD;
+			[Bindable]
+			private var regionVisible:Boolean = false;
+			private var creationComplete:Boolean = false;
+			private var initialLoad:Boolean = true;
+			private var clouds:ArrayCollection = new ArrayCollection();
+			private var cloudService:CloudService;
+			private var cloudQueryTimer:Timer = new Timer(5000, 3);
+			private var selectedGrid:DataGrid;
+			
+			protected function init(event:FlexEvent):void
+			{
+				accountsCoverFlow.coverflow.addEventListener(IndexChangedEvent.CHANGE, coverFlowChanged);
+			}
+			
+			public function cloudManagementSetup():void
+			{			
+				if(user == null)
+				{
+					noCloudAccounts();
+					return;
+				}else
+				{
+					if(initialLoad)
+					{
+						initialLoad = false;
+						user.addEventListener("cloudAccountsUpdated", userCloudAccounts_changeHandler);
+					}
+				}
+				
+				if(!readOnly)
+				{
+					if(user.cloud_accounts.length > 0)
+					{
+						buildAccountCoverFlow();
+						determineSelectedCloud();
+						if(cloudAccountComboBox.selectedIndex == -1 && ArrayCollection(cloudAccountComboBox.dataProvider).length > 0)
+						{
+							cloudAccountComboBox.selectedIndex = 0;
+						}
+						cloudAccount = cloudAccountComboBox.selectedItem as CloudAccount;
+						setDisplayNames();
+						resourceButtonClicked = ec2;
+						ec2.getObjectManagementItemsSvc.send();
+						cloudService = new CloudService();
+						cloudService.addEventListener(CloudQueryResultEvent.RESULT, cloudService_cloudQueryResultHandler);
+						cloudService.addEventListener(CloudQueryFaultEvent.FAULT, cloudService_cloudQueryFaultHandler);
+						runCloudQuery();
+						resource_changeHandler();
+					}else{
+						noCloudAccounts();
+						return;
+					}
+				}
+			}
+			
+			private function noCloudAccounts():void
+			{
+				loadIndicator.visible = false;
+				viewStack.selectedChild = busy;
+				busyLabel.text = "No Available Accounts";
+				resourceDetails.selectedChild = preSelection;
+				cloudAccountComboBox.selectedIndex = -1;
+				accountsCoverFlow.coverflow.removeAll();
+				topstackServicesGroup.visible = false;
+				topstackServicesGroup.includeInLayout = false;
+			}
+			
+			protected function userCloudAccounts_changeHandler(event:Event=null):void
+			{
+				cloudManagementSetup();	
+			}
+
+			protected function buildAccountCoverFlow():void
+			{
+				accountsCoverFlow.coverflow.removeAll();
+				removeAllAccounts();
+				for each(var c:CloudAccount in user.cloud_accounts)
+				{
+					if(!accountsCoverFlow.hasCloudPanel(c.cloud_provider))
+					{
+						accountsCoverFlow.addPanel(c.cloud_provider, c.coverFlow);
+					}
+					switch(c.cloud_provider)
+					{
+						case CloudAccount.AMAZON:
+							amazonCloudAccounts.addItem(c);
+							break;
+						case CloudAccount.AZURE:
+							azureCloudAccounts.addItem(c);
+							break;
+						case CloudAccount.CLOUDSTACK:
+							cloudstackCloudAccounts.addItem(c);
+							break;
+						case CloudAccount.EUCALYPTUS:
+							eucalyptusCloudAccounts.addItem(c);
+							break;
+						case CloudAccount.HP:
+							hpCloudAccounts.addItem(c);
+							break;
+						case CloudAccount.JOYENT:
+							joyentCloudAccounts.addItem(c);
+							break;
+						case CloudAccount.OPENSTACK:
+							openstackCloudAccounts.addItem(c);
+							break;
+						case CloudAccount.PISTON:
+							pistonCloudAccounts.addItem(c);
+							break;
+						case CloudAccount.RACKSPACE:
+							rackspaceCloudAccounts.addItem(c);
+							break;
+					}
+				}
+			}
+			
+			protected function removeAllAccounts():void
+			{
+				amazonCloudAccounts.removeAll();
+				eucalyptusCloudAccounts.removeAll();
+				openstackCloudAccounts.removeAll();
+				hpCloudAccounts.removeAll();
+				azureCloudAccounts.removeAll();
+				rackspaceCloudAccounts.removeAll();
+				cloudstackCloudAccounts.removeAll();
+				pistonCloudAccounts.removeAll();
+				joyentCloudAccounts.removeAll();
+			}
+			
+			public function refreshResourceList(event:ResultEvent=null):void
+			{
+				if(resourceButtonClicked == null)
+				{
+					resourceButtonClicked = ec2;
+				}
+				ObjectManagementServiceButton(resourceButtonClicked).getObjectManagementItemsSvc.send();
+				resource_changeHandler();
+			}
+			
+			protected function resource_changeHandler():void
+			{
+				loadIndicator.visible = true;
+				busyLabel.text = "Loading Cloud Objects...";
+				viewStack.selectedChild = busy;
+				resourceDetails.selectedIndex = 0;
+			}
+
+			public function createButton_clickHandler(event:MouseEvent):void
+			{
+				switch(event.target)
+				{
+					case asCreateButton:
+						var asWizard:Ec2ObjectManagementWizard = Ec2ObjectManagementWizard(PopUpManager.createPopUp(UIComponent(this.parentApplication), Ec2ObjectManagementWizard, true));
+						asWizard.cloudAccount = cloudAccount;
+						if(cloudAccount.cloud_provider == CloudAccount.AMAZON && regionSelection.selectedIndex != -1)
+						{
+							asWizard.region = regionSelection.selectedItem.value;
+						}
+						asWizard.objectManagementCreate = true;
+						asWizard.objectManagement = this;
+						break;
+					case beanCreateButton:
+						var beanstalkWizard:BeanstalkApplicationWizard = BeanstalkApplicationWizard(PopUpManager.createPopUp( UIComponent(this.parentApplication), BeanstalkApplicationWizard , true));
+						beanstalkWizard.cloudAccount = cloudAccount;
+						if(cloudAccount.cloud_provider == CloudAccount.AMAZON && regionSelection.selectedIndex != -1)
+						{
+							beanstalkWizard.region = regionSelection.selectedItem.value;
+						}
+						beanstalkWizard.objectManagementCreate = true;
+						break;
+					case ebsCreateButton:
+						var ebsVolume:EbsCreateVolumePopUp = new EbsCreateVolumePopUp();
+						ebsVolume.cloudAccount = cloudAccount;
+						if(cloudAccount.cloud_provider == CloudAccount.AMAZON && regionSelection.selectedIndex != -1)
+						{
+							ebsVolume.region = regionSelection.selectedItem.value;
+						}
+						ebsVolume.objectManagementCreate = true;
+						PopUpManager.addPopUp(ebsVolume, UIComponent(parentApplication), true);
+						break;
+					case elcCreateButton:
+						var cacheCluster:ElasticCacheWizard = ElasticCacheWizard(PopUpManager.createPopUp(UIComponent(this.parentApplication), ElasticCacheWizard, true));
+						cacheCluster.cloudAccount = cloudAccount;
+						if(cloudAccount.cloud_provider == CloudAccount.AMAZON && regionSelection.selectedIndex != -1)
+						{
+							cacheCluster.region = regionSelection.selectedItem.value;
+						}
+						cacheCluster.objectManagementCreate = true;
+						break;
+					case elcParameterCreateButton:
+						var elcParamGroupWizard:ParameterGroupCreatePopUp = ParameterGroupCreatePopUp(PopUpManager.createPopUp( UIComponent(this.parentApplication), ParameterGroupCreatePopUp , true));
+						elcParamGroupWizard.cloudAccount = cloudAccount;
+						if(cloudAccount.cloud_provider == CloudAccount.AMAZON && regionSelection.selectedIndex != -1)
+						{
+							elcParamGroupWizard.region = regionSelection.selectedItem.value;
+						}
+						elcParamGroupWizard.objectManagementCreate = true;
+						elcParamGroupWizard.resourceType = ParameterGroupCreatePopUp.CACHE;
+						break;
+					case ec2CreateButton:
+					case spotRequestCreateButton:
+						var ec2Wizard:Ec2ObjectManagementWizard = new Ec2ObjectManagementWizard();
+						ec2Wizard.cloudAccount = cloudAccount;
+						if(cloudAccount.cloud_provider == CloudAccount.AMAZON && regionSelection.selectedIndex != -1)
+						{
+							ec2Wizard.region = regionSelection.selectedItem.value;
+						}
+						ec2Wizard.objectManagementCreate = true;
+						ec2Wizard.objectManagement = this;
+						PopUpManager.addPopUp(ec2Wizard, UIComponent(this.parentApplication), true);
+						break;
+					case ec2ReservedCreateButton:
+						var reservedInstancesOfferingsWindow:ReservedInstancesPurchaseWindow = new ReservedInstancesPurchaseWindow();
+						reservedInstancesOfferingsWindow.addEventListener(CloudResourceCreateEvent.CREATED, cloudResource_createHandler);
+						reservedInstancesOfferingsWindow.cloudAccount = cloudAccount;
+						reservedInstancesOfferingsWindow.region = region;
+						PopUpManager.addPopUp(reservedInstancesOfferingsWindow, UIComponent(parentApplication), true);
+						break;
+					case ec2ElasticIpCreateButton:
+						var elasticIpAllocateAddress:ElasticIPAllocateAddress = new ElasticIPAllocateAddress();
+						elasticIpAllocateAddress.cloudAccount = cloudAccount;
+						elasticIpAllocateAddress.region = region;
+						PopUpManager.addPopUp(elasticIpAllocateAddress, UIComponent(parentApplication), true);
+						break;
+					case ec2KeyPairCreateButton:
+						var ec2CreateKeyPair:Ec2CreateKeyPair = new Ec2CreateKeyPair();
+						ec2CreateKeyPair.cloudAccount = cloudAccount;
+						ec2CreateKeyPair.region = region;
+						PopUpManager.addPopUp(ec2CreateKeyPair, UIComponent(parentApplication), true);
+						break;
+					case ec2KeyPairImportButton:
+						var ec2ImportKeyPair:Ec2ImportKeyPair = new Ec2ImportKeyPair();
+						ec2ImportKeyPair.cloudAccount = cloudAccount;
+						ec2ImportKeyPair.region = region;
+						PopUpManager.addPopUp(ec2ImportKeyPair, UIComponent(parentApplication), true);
+						break;
+					case elbCreateButton:
+						var lbWizard:LoadBalancerWizard = LoadBalancerWizard(PopUpManager.createPopUp( UIComponent(this.parentApplication), LoadBalancerWizard , true));
+						if(cloudAccount.cloud_provider == CloudAccount.AMAZON && regionSelection.selectedIndex != -1)
+						{
+							lbWizard.region = regionSelection.selectedItem.value;
+						}
+						lbWizard.cloudAccount = cloudAccount;
+						lbWizard.objectManagementCreate = true;
+						lbWizard.addEventListener(CloudResourceCreateEvent.CREATED, cloudResource_createHandler);
+						break;
+					case rdsCreateButton:
+						if(rds.secondaryCollection.length == 0 && rds.collectionFour.length == 0)
+						{
+							Alert.show("Create a db security group and db parameter group before creating a db instance.");
+							return;
+						}else if(rds.secondaryCollection.length == 0)
+						{
+							Alert.show("Create a db parameter group before creating a db instance.");
+							return;
+						}else if(rds.collectionFour.length == 0)
+						{
+							Alert.show("Create a db security group before creating a db instance.");
+							return;
+						}
+						var rdsWizard:RDSWizard = new RDSWizard();
+						rdsWizard.cloudAccount = cloudAccount;
+						if(cloudAccount.cloud_provider == CloudAccount.AMAZON && regionSelection.selectedIndex != -1)
+						{
+							rdsWizard.region = regionSelection.selectedItem.value;
+						}
+						rdsWizard.objectManagementCreate = true;
+						PopUpManager.addPopUp(rdsWizard, UIComponent(parentApplication), true);
+						break;
+					case rdsParameterCreateButton:
+						var rdsParamGroupWizard:ParameterGroupCreatePopUp = ParameterGroupCreatePopUp(PopUpManager.createPopUp( UIComponent(this.parentApplication), ParameterGroupCreatePopUp , true));
+						rdsParamGroupWizard.cloudAccount = cloudAccount;
+						if(cloudAccount.cloud_provider == CloudAccount.AMAZON && regionSelection.selectedIndex != -1)
+						{
+							rdsParamGroupWizard.region = regionSelection.selectedItem.value;
+						}
+						rdsParamGroupWizard.objectManagementCreate = true;
+						rdsParamGroupWizard.resourceType = ParameterGroupCreatePopUp.RDS;
+						break;
+					case snsCreateButton:
+						var snsTopic:SnsCreateTopic = SnsCreateTopic(PopUpManager.createPopUp(UIComponent(this.parentApplication), SnsCreateTopic, true));
+						snsTopic.cloudAccount = cloudAccount;
+						if(cloudAccount.cloud_provider == CloudAccount.AMAZON && regionSelection.selectedIndex != -1)
+						{
+							snsTopic.region = regionSelection.selectedItem.value;
+						}
+						snsTopic.objectManagementCreate = true;
+						break;
+					case s3CreateButton:
+						var simpleStorage:SimpleStorageWizard = SimpleStorageWizard(PopUpManager.createPopUp(UIComponent(this.parentApplication), SimpleStorageWizard, true));
+						simpleStorage.cloudAccount = cloudAccount;
+						if(cloudAccount.cloud_provider == CloudAccount.AMAZON && regionSelection.selectedIndex != -1)
+						{
+							simpleStorage.region = regionSelection.selectedItem.value;
+						}
+						simpleStorage.objectManagementCreate = true;
+						break;
+					case sqsCreateButton:
+						var messageQueue:SqsCreateQueueTitleWindow = SqsCreateQueueTitleWindow(PopUpManager.createPopUp(UIComponent(this.parentApplication), SqsCreateQueueTitleWindow, true));
+						messageQueue.cloudAccount = cloudAccount;
+						if(cloudAccount.cloud_provider == CloudAccount.AMAZON && regionSelection.selectedIndex != -1)
+						{
+							messageQueue.region = regionSelection.selectedItem.value;
+						}
+						messageQueue.objectManagementCreate = true;
+						break;
+					case iamGroupCreateButton:
+						var iamGroup:IamWizard = IamWizard(PopUpManager.createPopUp(UIComponent(this.parentApplication), IamWizard, true));
+						iamGroup.cloudAccount = cloudAccount;
+						iamGroup.objectManagementCreate = true;
+						break;
+					case iamUserCreateButton:
+						var iamUser:IamUserWizard = IamUserWizard(PopUpManager.createPopUp(UIComponent(this.parentApplication), IamUserWizard, true));
+						iamUser.cloudAccount = cloudAccount;
+						iamUser.objectManagementCreate = true;
+						break;
+					case cfnContent:
+						Alert.show("Coming Soon!");
+						break;
+					case alarmCreateButton:
+						var alarmWizard:CloudWatchAlarmWizard = CloudWatchAlarmWizard(PopUpManager.createPopUp(UIComponent(this.parentApplication), CloudWatchAlarmWizard, true));
+						alarmWizard.cloudAccount = cloudAccount;
+						if(cloudAccount.cloud_provider == CloudAccount.AMAZON && regionSelection.selectedIndex != -1)
+						{
+							alarmWizard.region = regionSelection.selectedItem.value;
+						}
+						alarmWizard.objectManagementCreate = true;
+						break;
+					case sdbCreateButton:
+						var sdbWizard:SimpleDBWizard = SimpleDBWizard(PopUpManager.createPopUp(UIComponent(this.parentApplication), SimpleDBWizard, true));
+						sdbWizard.cloudAccount = cloudAccount;
+						if(cloudAccount.cloud_provider == CloudAccount.AMAZON && regionSelection.selectedIndex != -1)
+						{
+							sdbWizard.region = regionSelection.selectedItem.value;
+						}
+						sdbWizard.objectManagementCreate = true;
+						break;
+					case cdnWizard:
+						var cdnWizard:CloudFrontWizard = CloudFrontWizard(PopUpManager.createPopUp(UIComponent(this.parentApplication), CloudFrontWizard, true));
+						cdnWizard.cloudAccount = cloudAccount;
+						if(cloudAccount.cloud_provider == CloudAccount.AMAZON && regionSelection.selectedIndex != -1)
+						{
+							cdnWizard.region = regionSelection.selectedItem.value;
+						}
+						cdnWizard.objectManagementCreate = true;
+						break;
+					case ec2SecurityGroupCreateButton:
+						var ec2SecurityGroupWizard:CreateSecurityGroupWindow = new CreateSecurityGroupWindow();						
+						ec2SecurityGroupWizard.cloudAccountId = cloudAccount.id;
+						if(cloudAccount.cloud_provider == CloudAccount.AMAZON && regionSelection.selectedIndex != -1)
+						{
+							ec2SecurityGroupWizard.region = regionSelection.selectedItem.value;
+						}
+						ec2SecurityGroupWizard.serviceType = CloudApiService.EC2_SERVICE;
+						ec2SecurityGroupWizard.addEventListener(CreateSecurityGroupResultEvent.RESULT, refreshResourceList);
+						PopUpManager.addPopUp(ec2SecurityGroupWizard, UIComponent(parentApplication), true);
+						break;
+					case dnsCreateButton:
+						var hostedZoneWizard:DnsCreateHostedZonePopUp = DnsCreateHostedZonePopUp(PopUpManager.createPopUp(UIComponent(this.parentApplication), DnsCreateHostedZonePopUp, true));
+						hostedZoneWizard.cloudAccount = cloudAccount;
+						if(cloudAccount.cloud_provider == CloudAccount.AMAZON && regionSelection.selectedIndex != -1)
+						{
+							hostedZoneWizard.region = regionSelection.selectedItem.value;
+						}
+						break;
+					case rdsSecurityGroupCreateButton:
+						var rdsSecGroupPopUp:RdsSecurityGroupAddPopUp = new RdsSecurityGroupAddPopUp();
+						rdsSecGroupPopUp.cloudAccountId = cloudAccount.id;
+						if(cloudAccount.cloud_provider == CloudAccount.AMAZON && regionSelection.selectedIndex != -1)
+						{
+							rdsSecGroupPopUp.region = regionSelection.selectedItem.value;
+						}
+						PopUpManager.addPopUp(rdsSecGroupPopUp, UIComponent(parentApplication), true);
+						break;
+					case elcSecurityGroupCreateButton:
+						var elcSecGroupPopUp:ElasticCacheCreateSecurityGroup = new ElasticCacheCreateSecurityGroup();
+						elcSecGroupPopUp.cloudAccount = cloudAccount;
+						if(cloudAccount.cloud_provider == CloudAccount.AMAZON && regionSelection.selectedIndex != -1)
+						{
+							elcSecGroupPopUp.region = regionSelection.selectedItem.value;
+						}
+						elcSecGroupPopUp.addEventListener(CreateCacheSecurityGroupResultEvent.RESULT, refreshResourceList);
+						PopUpManager.addPopUp(elcSecGroupPopUp, UIComponent(parentApplication), true);
+						break;
+				}
+			}
+			
+			private function cloudResource_createHandler(event:Event):void
+			{
+				var resourceWizard:WizardWindow = event.currentTarget as WizardWindow;
+				resourceWizard.removeEventListener(CloudResourceCreateEvent.CREATED, cloudResource_createHandler);
+				PopUpManager.removePopUp(resourceWizard);
+				refreshResourceList();
+			}
+			
+			private function resourceWizard_closeHandler(event:CloseEvent):void
+			{
+				var resourceWizard:WizardWindow = event.currentTarget as WizardWindow;
+				resourceWizard.removeEventListener(CloudResourceCreateEvent.CREATED, cloudResource_createHandler);
+				PopUpManager.removePopUp(resourceWizard);
+			}
+				
+			
+			protected function resourceSelection_clickHandler(event:MouseEvent):void
+			{
+				if(cloudAccount.cloud_provider == CloudAccount.AMAZON && regionSelection.selectedIndex != -1)
+				{
+					ObjectManagementServiceButton(event.target).region = regionSelection.selectedItem.value;
+				}else
+				{
+					ObjectManagementServiceButton(event.target).region = null;
+				}
+				ObjectManagementServiceButton(event.target).dispatchEvent(new Event(ObjectManagementServiceButton.CLOUD_SET_EVENT));				
+				resourceButtonClicked = event.target as ObjectManagementServiceButton;
+				resource_changeHandler();
+			}
+			
+			protected function selectionChangeHandler(event:GridSelectionEvent):void
+			{
+				selectedGrid = event.currentTarget as DataGrid;
+				refreshSelectionView();
+			}
+			
+			protected function viewTabNavigator_changeHandler(event:IndexChangedEvent):void
+			{
+				// Tab navigator must have be setup as follows:
+				// TabNavigator ==> NavigatorContent ==> VGroup ==> DataGrid
+				var content:NavigatorContent = event.relatedObject as NavigatorContent;
+				var gridVG:VGroup = content.getElementAt(0) as VGroup; 
+				selectedGrid = gridVG.getElementAt(0) as DataGrid;
+				refreshSelectionView();
+			}
+			
+			protected function hasSelectedItem(grid:DataGrid):Boolean
+			{
+				if(grid.selectedItem == null)
+				{
+					resourceDetails.selectedChild = preSelection;
+					return false;
+				}else
+				{
+					return true;
+				}
+			}
+			
+			protected function refreshSelectionView():void
+			{
+				if(cloudAccount.cloud_provider == CloudAccount.AMAZON && regionSelection.selectedIndex != -1)
+				{
+					region = regionSelection.selectedItem.value;
+				}else
+				{
+					region = null;
+				}
+				if(selectedGrid != null && hasSelectedItem(selectedGrid))
+				{
+					setDisplayView();
+				}
+			}
+			
+			private function setDisplayView():void
+			{
+				var objMgmtBox:ObjectManagementDetailsBox;
+				
+				switch(resourceButtonClicked)
+				{
+					case autoscale:
+						resourceDetails.selectedChild = asContent;
+						objMgmtBox = asDetails;
+						break;
+					case bean:
+						resourceDetails.selectedChild = beanContent;
+						objMgmtBox = beanDetails;
+						break;
+					case ebs:
+						resourceDetails.selectedChild = ebsContent;
+						objMgmtBox = ebsDetails;
+						break;
+					case ec2:
+						switch(ec2TabNavigator.selectedChild)
+						{
+							case ec2Instances:
+								resourceDetails.selectedChild = ec2Content;
+								objMgmtBox = ec2Details;
+								break;
+							case ec2SecurityGroups:
+								resourceDetails.selectedChild = computeSecurityGroupContent;
+								objMgmtBox = computeSecurityGroupDetails;
+								(objMgmtBox as ComputeSecGrpDetailsBox).securityGroupsCollection = ec2SecurityGroupList.dataProvider as ArrayCollection;
+								break;
+							case ec2SpotInstances:
+								resourceDetails.selectedChild = spotInstanceContent;
+								objMgmtBox = spotInstanceDetails;
+								break;
+							case ec2ReservedInstances:
+								resourceDetails.selectedChild = reservedInstanceContent;
+								objMgmtBox = reservedInstanceDetails;
+								break;
+							case ec2ElasticIps:
+								resourceDetails.selectedChild = elasticIpContent;
+								elasticIpDetails.instanceCollection = ec2.resourceCollection;
+								objMgmtBox = elasticIpDetails;
+								break;
+							case ec2KeyPairs:
+								resourceDetails.selectedChild = keyPairContent;
+								objMgmtBox = keyPairDetails;
+								break;
+						}
+						break;
+					case elb:
+						resourceDetails.selectedChild = elbContent;
+						objMgmtBox = elbDetails;
+						break;
+					case rds:
+						if(rdsTabNavigator.selectedChild == rdsDatabases)
+						{
+							resourceDetails.selectedChild = rdsContent;
+							objMgmtBox = rdsDetails;
+						}else if(rdsTabNavigator.selectedChild == rdsParameters)
+						{
+							resourceDetails.selectedChild = parameterGroupContent;
+							parameterGroupDetails.parameterGroupType = ParameterGroupObjectManagementBox.RDS;
+							objMgmtBox = parameterGroupDetails;
+						}else if(rdsTabNavigator.selectedChild == rdsSnapshots)
+						{
+							resourceDetails.selectedChild = rdsSnapshotsContent;
+							objMgmtBox = rdsSnapshotDetails;
+						}else if(rdsTabNavigator.selectedChild == rdsSecurityGroups)
+						{
+							resourceDetails.selectedChild = rdsSecurityGroupContent;
+							objMgmtBox = rdsSecurityGroupDetails;
+						}
+						break;
+					case s3:
+						resourceDetails.selectedChild = s3Content;
+						objMgmtBox = s3Details;
+						break;
+					case sqs:
+						resourceDetails.selectedChild = sqsContent;
+						objMgmtBox = sqsDetails;
+						break;
+					case elc:
+						if(elcTabNavigator.selectedChild == elcClusters)
+						{
+							resourceDetails.selectedChild = elcContent;
+							objMgmtBox = elcDetails;
+						}else if(elcTabNavigator.selectedChild == elcParameters)
+						{
+							resourceDetails.selectedChild = parameterGroupContent;
+							parameterGroupDetails.parameterGroupType = ParameterGroupObjectManagementBox.CACHE;
+							objMgmtBox = parameterGroupDetails;
+						}else if(elcTabNavigator.selectedChild == elcSecurityGroups)
+						{
+							resourceDetails.selectedChild = elcSecurityGroupContent;
+							objMgmtBox = elcSecurityGroupDetails;
+						}
+						break;
+					case sns:
+						resourceDetails.selectedChild = snsContent;
+						objMgmtBox = snsDetails;
+						break;
+					case iam:
+						if(iamGroupTabNavigator.selectedChild == iamGroupTab)
+						{
+							resourceDetails.selectedChild = iamGroupContent;
+							objMgmtBox = iamGroupDetails;
+						}else if(iamGroupTabNavigator.selectedChild == iamUserTab)
+						{
+							resourceDetails.selectedChild = iamUserContent;
+							objMgmtBox = iamUserDetails;
+						}
+						break;
+					case alarm:
+						resourceDetails.selectedChild = alarmContent;
+						objMgmtBox = alarmDetails;
+						break;
+					case sdb:
+						resourceDetails.selectedChild = sdbContent;
+						objMgmtBox = sdbDetails;
+						break;
+					case dns:
+						resourceDetails.selectedChild = dnsContent;
+						objMgmtBox = dnsDetails;
+						break;
+				}
+				
+				if(objMgmtBox != null)
+				{
+					objMgmtBox.resourceData = selectedGrid.selectedItem;
+				}
+			}
+			
+			public function displayUserAccessKeys(accessKey:Object):void
+			{
+				var iamKeyDisplay:IamUserAccessKeysDisplay = new IamUserAccessKeysDisplay();
+				iamKeyDisplay.iamKeys = accessKey;
+				PopUpManager.addPopUp(iamKeyDisplay, UIComponent(parentApplication), true);
+			}
+
+			protected function coverFlowChanged(event:IndexChangedEvent):void
+			{
+				setDefaultView(true);
+			}
+			
+			protected function setDefaultView(cloudChange:Boolean):void
+			{
+				resourceButtonClicked.getObjectManagementItemsSvc.cancel();
+				if(cloudChange)
+				{
+					determineSelectedCloud();
+				}
+				cloudAccount = cloudAccountComboBox.selectedItem as CloudAccount;
+				setDisplayNames();
+				viewStack.selectedChild = contents;
+				contentsViewStack.selectedChild = introView;
+				resourceDetails.selectedChild = preSelection;
+			}
+			
+			protected function setDisplayNames():void
+			{
+				autoScaleDisplayName.text = ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.AUTOSCALE] + ": ";
+				beanstalkDisplayName.text = ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.BEANSTALK] + ": ";
+				ebsDisplayName.text = ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.EBS] + ": ";
+				elcDisplayName.text = ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.ELC] + ": ";
+				ec2DisplayName.text = ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.EC2] + ": ";
+				elbDisplayName.text = ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.ELB] + ": ";
+				rdsDisplayName.text = ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.RDS] + ": ";
+				snsDisplayName.text = ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.SNS] + ": ";
+				s3DisplayName.text = ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.S3] + ": ";
+				sqsDisplayName.text = ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.SQS] + ": ";
+				iamGroupDisplayName.text = ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.IAM_GROUP] + ": ";
+				iamUserDisplayName.text = ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.IAM_USER] + ": ";
+				alarmDisplayName.text = ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.ALARM] + ": ";
+				sdbDisplayName.text = ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.SDB] + ": ";
+				dnsDisplayName.text = ResourceTypeLabel.RESOURCE_NAME[cloudAccount.cloud_provider][ResourceTypeLabel.DNS] + ": ";
+			}
+			
+			protected function determineSelectedCloud():void
+			{
+				if(accountsCoverFlow.coverflow.selectedIndex != -1)
+				{
+					var selectedPanel:Panel = accountsCoverFlow.coverflow.selectedChild as Panel;
+					var length:int = 0;
+					if (selectedPanel.id == CloudAccount.AMAZON)
+					{
+						nativeServices.requestedRowCount = 3;
+						regionVisible = true;
+					}
+					else
+					{
+						regionVisible = false;
+						nativeServices.requestedRowCount = 4;
+					}
+					length = setAccountComboDataProvider(selectedPanel.id);
+					enableCloudServices(selectedPanel.id);
+					if(length > 0)
+					{
+						cloudAccountComboBox.selectedIndex = 0;
+					}else
+					{
+						cloudAccountComboBox.selectedIndex = -1;
+					}
+				}
+			}
+			
+			protected function setAccountComboDataProvider(cloudProvider:String):int
+			{
+				var length:int = 0;
+				switch(cloudProvider)
+				{
+					case CloudAccount.AMAZON:
+						length = amazonCloudAccounts.length;
+						cloudAccountComboBox.dataProvider = amazonCloudAccounts;
+						break;
+					case CloudAccount.AZURE:
+						length = azureCloudAccounts.length;
+						cloudAccountComboBox.dataProvider = azureCloudAccounts;
+						break;
+					case CloudAccount.CLOUDSTACK:
+						length = cloudstackCloudAccounts.length;
+						cloudAccountComboBox.dataProvider = cloudstackCloudAccounts;
+						break;
+					case CloudAccount.EUCALYPTUS:
+						length = eucalyptusCloudAccounts.length;
+						cloudAccountComboBox.dataProvider = eucalyptusCloudAccounts;
+						break;
+					case CloudAccount.HP:
+						length = hpCloudAccounts.length;
+						cloudAccountComboBox.dataProvider = hpCloudAccounts;
+						break;
+					case CloudAccount.JOYENT:
+						length = joyentCloudAccounts.length;
+						cloudAccountComboBox.dataProvider = joyentCloudAccounts;
+						break;
+					case CloudAccount.OPENSTACK:
+						length = openstackCloudAccounts.length;
+						cloudAccountComboBox.dataProvider = openstackCloudAccounts;
+						break;
+					case CloudAccount.PISTON:
+						length = pistonCloudAccounts.length;
+						cloudAccountComboBox.dataProvider = pistonCloudAccounts;
+						break;
+					case CloudAccount.RACKSPACE:
+						length = rackspaceCloudAccounts.length;
+						cloudAccountComboBox.dataProvider = rackspaceCloudAccounts;
+						break;
+				}
+				return length;
+			}
+			
+			protected function resourceComplete_resultHandler(event:ResultEvent):void
+			{
+				switch(resourceButtonClicked)
+				{
+					case autoscale:
+						contentsViewStack.selectedChild = asView;
+						break;
+					case bean:
+						contentsViewStack.selectedChild = beanView;
+						break;
+					case ebs:
+						contentsViewStack.selectedChild = ebsView;
+						break;
+					case ec2:
+						removeUnsupportedTabs();
+						contentsViewStack.selectedChild = ec2View;
+						break;
+					case elb:
+						contentsViewStack.selectedChild = elbView;
+						break;
+					case rds:
+						contentsViewStack.selectedChild = rdsView;
+						break;
+					case s3:
+						contentsViewStack.selectedChild = s3View;
+						break;
+					case sqs:
+						contentsViewStack.selectedChild = sqsView;
+						break;
+					case elc:
+						contentsViewStack.selectedChild = elcView;
+						break;
+					case sns:
+						contentsViewStack.selectedChild = snsView;
+						break;
+					case iam:
+						contentsViewStack.selectedChild = iamView;
+						break;
+					case alarm:
+						contentsViewStack.selectedChild = alarmView;
+						break;
+					case sdb:
+						contentsViewStack.selectedChild = sdbView;
+						break;
+					case dns:
+						contentsViewStack.selectedChild = dnsView;
+						break;
+				}
+				viewStack.selectedChild = contents;
+			}
+			
+			protected function resourceFailed_resultHandler(event:FaultEvent):void
+			{
+				var selectedButton:ObjectManagementServiceButton = event.currentTarget as ObjectManagementServiceButton;
+				var fault:Object = selectedButton.getObjectManagementItemsSvc.fault;
+				if(fault && fault.message)
+				{
+					errorLabelText = fault.title + ": " + fault.message + ".";
+				}else{
+					//errorLabelText = AlertMessage.ERROR_CONNECTING_CLOUD;
+				}
+				viewStack.selectedChild = error;
+			}
+			
+			protected function enableCloudServices(cloud:String):void
+			{
+				nativeServices.removeAllElements();
+				topstackServices.removeAllElements();
+				
+				var firstCloudAccount:CloudAccount = (cloudAccountComboBox.dataProvider as ArrayCollection).getItemAt(0) as CloudAccount;
+				
+				switch(cloud)
+				{
+					case CloudAccount.AMAZON:
+						nativeServices.addElement(alarm);
+						nativeServices.addElement(autoscale);
+						nativeServices.addElement(bean);
+						nativeServices.addElement(ebs);
+						nativeServices.addElement(elc);
+						nativeServices.addElement(ec2);
+						nativeServices.addElement(dns);
+						nativeServices.addElement(iam);
+						nativeServices.addElement(elb);
+						nativeServices.addElement(rds);
+						nativeServices.addElement(sdb);
+						nativeServices.addElement(sns);
+						nativeServices.addElement(s3);
+						nativeServices.addElement(sqs);
+						break;
+					case CloudAccount.OPENSTACK:
+					case CloudAccount.EUCALYPTUS:
+					case CloudAccount.PISTON:
+						nativeServices.addElement(ebs);
+						nativeServices.addElement(ec2);
+						nativeServices.addElement(iam);
+						nativeServices.addElement(s3);					
+						break;
+					case CloudAccount.HP:
+						//nativeServices.addElement(ebs);
+						nativeServices.addElement(ec2);
+						nativeServices.addElement(s3);
+						break;
+					case CloudAccount.JOYENT:
+						nativeServices.addElement(ec2);
+						break;
+					case CloudAccount.RACKSPACE:
+						nativeServices.addElement(ec2);
+						//nativeServices.addElement(elb);
+						nativeServices.addElement(s3);
+						//nativeServices.addElement(rds);
+						break;
+					case CloudAccount.AZURE:
+						nativeServices.addElement(ec2);
+						break;
+					case CloudAccount.CLOUDSTACK:
+						nativeServices.addElement(ebs);
+						nativeServices.addElement(ec2);
+						//nativeServices.addElement(s3);
+						break;
+				}
+				if(firstCloudAccount.topstackEnabled)
+				{
+					if(clouds.length > 0)
+					{
+						for each(var cloudItem:Cloud in clouds)
+						{
+							if(cloudItem.cloudProvider == cloud && firstCloudAccount.cloud_name == cloudItem.name)
+							{
+								for each(var service:CloudServiceModel in cloudItem.cloudServices)
+								{
+									if(service.enabled)
+									{
+										switch(service.actualType)
+										{
+											case CloudApiService.ELB_SERVICE:
+												topstackServices.addElement(elb);
+												break;
+											case CloudApiService.BEANSTALK_SERVICE:
+												topstackServices.addElement(bean);
+												break;
+											case CloudApiService.CACHE_SERVICE:
+												topstackServices.addElement(elc);
+												break;
+											case CloudApiService.RDS_SERVICE:
+												topstackServices.addElement(rds);
+												break;
+											case CloudApiService.SQS_SERVICE:
+												topstackServices.addElement(sqs);
+												break;
+											case CloudApiService.DNS_SERVICE:
+												topstackServices.addElement(dns);
+												break;
+										}
+									}
+								}
+								break;
+							}
+						}
+					}
+				}
+				
+				if(topstackServices.numElements > 0)
+				{
+					topstackServicesGroup.visible = true;
+					topstackServicesGroup.includeInLayout = true;
+				}else
+				{
+					topstackServicesGroup.visible = false;
+					topstackServicesGroup.includeInLayout = false;
+				}
+			}
+			
+			private function securityGroupsName_labelFunction(item:Object, column:GridColumn):String
+			{
+				if(item.name == null)
+				{
+					return item.id;
+				}else{
+					return item.name;
+				}
+			}
+			
+			private function getInstanceCount_labelFunction(item:Object, column:GridColumn):String
+			{
+				if(item.Instances == null)
+				{
+					return "0";
+				}else
+				{
+					return item.Instances.length;
+				}
+			}
+			
+			private function dateColumn_labelFunction(item:Object, column:GridColumn):String
+			{
+				var dateString:String;
+				if(item.created_at != null)
+				{
+					dateString = item.created_at;					
+				}else if(item.created != null)
+				{
+					dateString = item.created;
+				}else if(item.create_time != null)
+				{
+					dateString = item.create_time;
+				}else if(item.CreatedTime != null)
+				{
+					dateString = item.CreatedTime
+				}else if(item.CreatedTimestamp)
+				{
+					dateString = item.CreatedTimestamp;
+				}
+				
+				if(dateString != null)
+				{
+					return dateFormatter.format(Helpers.formatDate(dateString));
+				}else{
+					return new String;
+				}
+			}
+			
+			private function threshold_labelFunction(item:Object, column:GridColumn):String
+			{
+				var comparisonSign:String = "";
+				switch(item.ComparisonOperator)
+				{
+					case "GreaterThanOrEqualToThreshold":
+						comparisonSign = ">="
+						break;
+					case "LessThanOrEqualToThreshold":
+						comparisonSign = "<="
+						break;
+					case "GreaterThanThreshold":
+						comparisonSign = ">"
+						break;
+					case "LessThanThreshold":
+						comparisonSign = "<"
+						break;
+				}
+				var timeLength:String = (item.Period * item.EvaluationPeriods/60).toString();
+				return item.MetricName + " " + comparisonSign + " " + item.Threshold.toString() + " " + item.Unit + " for " + timeLength + " minutes."
+			}
+			
+			private function removeUnsupportedTabs():void
+			{
+				//Only show reserved instances tab and spot request tab against amazon
+				if(cloudAccount.cloud_provider == CloudAccount.AMAZON)
+				{
+					Helpers.disableTab(ec2TabNavigator, ec2ReservedInstances, true);
+					Helpers.disableTab(ec2TabNavigator, ec2SpotInstances, true);
+					Helpers.disableTab(ec2TabNavigator, ec2ElasticIps, true);
+				}else{
+					Helpers.disableTab(ec2TabNavigator, ec2ReservedInstances);
+					Helpers.disableTab(ec2TabNavigator, ec2SpotInstances);
+					Helpers.disableTab(ec2TabNavigator, ec2ElasticIps);
+				}
+				
+				//Remove security groups from display for rackspace and joyent
+				if(cloudAccount.cloud_provider == CloudAccount.RACKSPACE || cloudAccount.cloud_provider == CloudAccount.JOYENT)
+				{
+					Helpers.disableTab(ec2TabNavigator, ec2SecurityGroups);
+				}else
+				{
+					Helpers.disableTab(ec2TabNavigator, ec2SecurityGroups, true);
+				}
+				
+				//Remove key pairs from display for rackspace
+				if(cloudAccount.cloud_provider == CloudAccount.RACKSPACE)
+				{
+					Helpers.disableTab(ec2TabNavigator, ec2KeyPairs);
+				}else
+				{
+					Helpers.disableTab(ec2TabNavigator, ec2KeyPairs, true);
+				}
+			}
+			
+			protected function cloudService_cloudQueryResultHandler(event:CloudQueryResultEvent):void
+			{
+				cloudQueryTimer.stop();
+				clouds = cloudService.cloudCollection;
+				determineSelectedCloud();
+			}
+			
+			protected function cloudService_cloudQueryFaultHandler(event:CloudQueryFaultEvent):void
+			{
+				if(cloudQueryTimer.currentCount == 0)
+				{
+					cloudQueryTimer.addEventListener(TimerEvent.TIMER, runCloudQuery);
+					cloudQueryTimer.start();
+				}else if(cloudQueryTimer.currentCount == 5){
+					cloudQueryTimer.stop();
+					trace("unable to load clouds");
+				}
+			}
+			
+			public function runCloudQuery(event:TimerEvent=null):void
+			{
+				cloudService.getClouds();
+			}
+			
+			/*
+			public function showRunningResource(cloudAccount:CloudAccount, resourceType:String, resourceId:String):void
+			{
+				var cloudPanelFound:Boolean = accountsCoverFlow.selectCloudPanel(cloudAccount.cloud_provider);
+				if(cloudPanelFound)
+				{
+					var length:int = setAccountComboDataProvider(cloudAccount.cloud_provider);
+					var cloudAccountFound:Boolean = false;
+					for each(var account:CloudAccount in cloudAccountComboBox.dataProvider)
+					{
+						
+					}
+				}else
+				{
+					cloudUnavilable();
+				}
+			}
+			
+			protected function cloudUnavilable():void
+			{
+				errorLabelText = AlertMessage.CLOUD_UNAVAILABLE;
+				viewStack.selectedChild = error;
+				resourceDetails.selectedChild = preSelection;
+			}
+			*/
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:ArrayCollection id="accounts"/>
+		<s:DateTimeFormatter id="dateFormatter" dateTimePattern="MM/dd/yyyy hh:mm:ss a"/>
+	</fx:Declarations>
+	<s:VGroup width="100%" height="100%">
+		<s:HGroup width="100%">
+			<s:VGroup paddingLeft="10">
+				<c9:CloudAccountsHorizontalCoverFlow id="accountsCoverFlow" width="500" height="175" scaleX=".5" scaleY=".5"/>
+				<s:HGroup>
+					<mx:Text text="Account:" fontWeight="bold"/>
+					<mx:ComboBox id="cloudAccountComboBox"
+								 prompt="No Accounts"
+								 enabled="{accountsCoverFlow.coverflow.selectedIndex!=-1}" 
+								 width="182"
+								 change="setDefaultView(false)"/>
+				</s:HGroup>
+			</s:VGroup>
+			<s:HGroup height="100%">
+				<s:VGroup height="100%" visible="{cloudAccountComboBox.selectedIndex != -1}" includeInLayout="{cloudAccountComboBox.selectedIndex != -1}">
+					<s:Group id="nativeServicesGroup" height="100%">
+						<s:Rect width="100%" height="100%">
+							<s:fill>
+								<s:SolidColor color="{Color.LIGHT_GRAY}"/>
+							</s:fill>
+							<s:stroke>
+								<s:SolidColorStroke color="{Color.PURPLE}"/>
+							</s:stroke>
+						</s:Rect>
+						<s:HGroup height="100%" width="100%" 
+								  verticalAlign="middle"
+								  paddingLeft="5" 
+								  paddingRight="5"
+								  paddingTop="5">
+							<s:Label text="Native"
+									 rotation="270"
+									 fontFamily="Times New Roman"
+									 color="purple"
+									 fontSize="16"
+									 fontWeight="bold"/>
+							<s:TileGroup id="nativeServices" 
+										 orientation="columns"
+										 requestedRowCount="4"
+										 width="100%" height="100%">
+								<c9:ObjectManagementServiceButton id="alarm"
+																  resourceComplete="resourceComplete_resultHandler(event)"
+																  resourceFailed="resourceFailed_resultHandler(event)"
+																  click="resourceSelection_clickHandler(event)"
+																  resourceType="{ResourceTypeLabel.ALARM}"
+																  imageSource="{ImagePath.NEW_ALARM}"
+																  action="describe_alarms"
+																  serviceType="{CloudApiService.ACW_SERVICE}"
+																  cloudAccount="{cloudAccount}"/>
+								<c9:ObjectManagementServiceButton id="autoscale"
+																  resourceComplete="resourceComplete_resultHandler(event)"
+																  resourceFailed="resourceFailed_resultHandler(event)"
+																  click="resourceSelection_clickHandler(event)"
+																  resourceType="{ResourceTypeLabel.AUTOSCALE}"
+																  imageSource="{ImagePath.NEW_AUTOSCALE}"
+																  action="describe_auto_scaling_groups"
+																  serviceType="{CloudApiService.AS_SERVICE}"
+																  cloudAccount="{cloudAccount}"/>
+								<c9:ObjectManagementServiceButton id="bean"
+																  resourceComplete="resourceComplete_resultHandler(event)"
+																  resourceFailed="resourceFailed_resultHandler(event)"
+																  click="resourceSelection_clickHandler(event)"
+																  resourceType="{ResourceTypeLabel.BEANSTALK}"
+																  imageSource="{ImagePath.NEW_BEAN}"
+																  action="describe_applications"
+																  serviceType="{CloudApiService.BEANSTALK_SERVICE}"
+																  cloudAccount="{cloudAccount}"/>
+								<c9:ObjectManagementServiceButton id="ebs"
+																  resourceComplete="resourceComplete_resultHandler(event)"
+																  resourceFailed="resourceFailed_resultHandler(event)"
+																  click="resourceSelection_clickHandler(event)"
+																  resourceType="{ResourceTypeLabel.EBS}"
+																  imageSource="{ImagePath.NEW_EBS}"
+																  action="describe_volumes"
+																  serviceType="{CloudApiService.EBS_SERVICE}"
+																  cloudAccount="{cloudAccount}"/>
+								<c9:ObjectManagementServiceButton id="elc"
+																  resourceComplete="resourceComplete_resultHandler(event)"
+																  resourceFailed="resourceFailed_resultHandler(event)"
+																  click="resourceSelection_clickHandler(event)"
+																  resourceType="{ResourceTypeLabel.ELC}"
+																  imageSource="{ImagePath.NEW_ELC}"
+																  action="describe_cache_clusters"
+																  serviceType="{CloudApiService.CACHE_SERVICE}"
+																  cloudAccount="{cloudAccount}"/>
+								<c9:ObjectManagementServiceButton id="ec2"
+																  resourceComplete="resourceComplete_resultHandler(event)"
+																  resourceFailed="resourceFailed_resultHandler(event)"
+																  click="resourceSelection_clickHandler(event)"
+																  resourceType="{ResourceTypeLabel.EC2}"
+																  imageSource="{ImagePath.NEW_EC2}"
+																  action="describe_instances"
+																  serviceType="{CloudApiService.EC2_SERVICE}"
+																  cloudAccount="{cloudAccount}"/>
+								<c9:ObjectManagementServiceButton id="dns"
+																  resourceComplete="resourceComplete_resultHandler(event)"
+																  resourceFailed="resourceFailed_resultHandler(event)"
+																  click="resourceSelection_clickHandler(event)"
+																  resourceType="{ResourceTypeLabel.DNS}"
+																  imageSource="{ImagePath.NEW_DNS}"
+																  action="list_hosted_zones"
+																  serviceType="{CloudApiService.DNS_SERVICE}"
+																  cloudAccount="{cloudAccount}"/>
+								<!--
+								<c9:ImageTextButton id="cdn"
+								resourceComplete="resourceComplete_resultHandler(event)"
+								resourceFailed="resourceFailed_resultHandler(event)"
+								click="resourceSelection_clickHandler(event)"
+								resourceType="{ResourceTypeLabel.CDN}"
+								imageSource="{ImagePath.NEW_CDN}"
+								action="describe_distributions"
+								serviceType="{CloudApiService.CDN_SERVICE}"
+								cloudAccount="{cloudAccount}"/>
+								-->
+								<c9:ObjectManagementServiceButton id="iam"
+																  resourceComplete="resourceComplete_resultHandler(event)"
+																  resourceFailed="resourceFailed_resultHandler(event)"
+																  click="resourceSelection_clickHandler(event)"
+																  resourceType="{ResourceTypeLabel.IAM}"
+																  imageSource="{ImagePath.NEW_IAM_GROUP}"
+																  action="list_groups_and_users"
+																  serviceType="{CloudApiService.IAM_SERVICE}"
+																  cloudAccount="{cloudAccount}"/>
+								<c9:ObjectManagementServiceButton id="elb"
+																  resourceComplete="resourceComplete_resultHandler(event)"
+																  resourceFailed="resourceFailed_resultHandler(event)"
+																  click="resourceSelection_clickHandler(event)"
+																  resourceType="{ResourceTypeLabel.ELB}"
+																  imageSource="{ImagePath.NEW_ELB}"
+																  action="describe_load_balancers"
+																  serviceType="{CloudApiService.ELB_SERVICE}"
+																  cloudAccount="{cloudAccount}"/>
+								<c9:ObjectManagementServiceButton id="s3"
+																  resourceComplete="resourceComplete_resultHandler(event)"
+																  resourceFailed="resourceFailed_resultHandler(event)"
+																  click="resourceSelection_clickHandler(event)"
+																  resourceType="{ResourceTypeLabel.S3}"
+																  imageSource="{ImagePath.NEW_S3}"
+																  action="describe_storage"
+																  serviceType="{CloudApiService.S3_SERVICE}"
+																  cloudAccount="{cloudAccount}"/>
+								<c9:ObjectManagementServiceButton id="rds"
+																  resourceComplete="resourceComplete_resultHandler(event)"
+																  resourceFailed="resourceFailed_resultHandler(event)"
+																  click="resourceSelection_clickHandler(event)"
+																  resourceType="{ResourceTypeLabel.RDS}"
+																  imageSource="{ImagePath.NEW_RDS}"
+																  action="describe_db_instances"
+																  serviceType="{CloudApiService.RDS_SERVICE}"
+																  cloudAccount="{cloudAccount}"/>
+								<c9:ObjectManagementServiceButton id="sdb"
+																  resourceComplete="resourceComplete_resultHandler(event)"
+																  resourceFailed="resourceFailed_resultHandler(event)"
+																  click="resourceSelection_clickHandler(event)"
+																  resourceType="{ResourceTypeLabel.SDB}"
+																  imageSource="{ImagePath.NEW_SDB}"
+																  action="describe_simple_db_instances"
+																  serviceType="{CloudApiService.SIMPLE_DB_SERVICE}"
+																  cloudAccount="{cloudAccount}"/>
+								<c9:ObjectManagementServiceButton id="sns"
+																  resourceComplete="resourceComplete_resultHandler(event)"
+																  resourceFailed="resourceFailed_resultHandler(event)"
+																  click="resourceSelection_clickHandler(event)"
+																  resourceType="{ResourceTypeLabel.SNS}"
+																  imageSource="{ImagePath.NEW_SNS}"
+																  action="describe_topics"
+																  serviceType="{CloudApiService.SNS_SERVICE}"
+																  cloudAccount="{cloudAccount}"/>
+								<c9:ObjectManagementServiceButton id="sqs"
+																  resourceComplete="resourceComplete_resultHandler(event)"
+																  resourceFailed="resourceFailed_resultHandler(event)"
+																  click="resourceSelection_clickHandler(event)"
+																  resourceType="{ResourceTypeLabel.SQS}"
+																  imageSource="{ImagePath.NEW_SQS}"
+																  action="describe_message_queues"
+																  serviceType="{CloudApiService.SQS_SERVICE}"
+																  cloudAccount="{cloudAccount}"/>
+								<!--
+								<c9:ImageTextButton id="cfn"
+								resourceComplete="resourceComplete_resultHandler(event)"
+								resourceFailed="resourceFailed_resultHandler(event)"
+								click="resourceSelection_clickHandler(event)"
+								resourceType="{ResourceTypeLabel.CFN}"
+								imageSource="{ImagePath.NEW_STACK}"
+								action="describe_stacks"
+								serviceType="{CloudApiService.CFN_SERVICE}"
+								cloudAccount="{cloudAccount}"/>
+								-->
+							</s:TileGroup>
+						</s:HGroup>		
+					</s:Group>
+					<s:HGroup visible="{regionVisible}" includeInLayout="{regionVisible}">
+						<mx:Text text="Region:" fontWeight="bold"/>					
+						<mx:ComboBox id="regionSelection" dataProvider="{Region.AMAZON}" width="250" change="setDefaultView(false)"/>
+					</s:HGroup>
+				</s:VGroup>
+				<s:Group id="topstackServicesGroup" height="100%">
+					<s:Rect width="100%" height="100%">
+						<s:fill>
+							<s:SolidColor color="{Color.MEDIUM_GRAY}"/>
+						</s:fill>
+						<s:stroke>
+							<s:SolidColorStroke color="{Color.PURPLE}"/>
+						</s:stroke>
+					</s:Rect>
+					<s:HGroup height="100%" width="100%" 
+							  verticalAlign="middle"
+							  paddingLeft="5"
+							  paddingRight="5"
+							  paddingTop="5">
+						<s:Label fontWeight="bold"
+								 text="TopStack" 
+								 fontFamily="Times New Roman"
+								 fontSize="16" 
+								 rotation="270" 
+								 color="purple"/>
+						<s:TileGroup id="topstackServices" 
+									 orientation="columns" 
+									 requestedRowCount="4"
+									 width="100%" height="100%"/>
+					</s:HGroup>
+				</s:Group>
+			</s:HGroup>
+		</s:HGroup>
+		<s:Group width="100%" height="100%">
+			<mx:VDividedBox width="100%" height="100%" backgroundColor="0x330066">
+				<mx:ViewStack id="viewStack" width="100%" height="100%" creationPolicy="all" backgroundColor="#FFFFFF">
+					<s:NavigatorContent id="busy" width="100%" height="100%">
+						<s:BusyIndicator id="loadIndicator" width="100" height="100" horizontalCenter="0" verticalCenter="-20"/>
+						<s:Label fontSize="16" id="busyLabel" text="Loading Cloud Objects..." horizontalCenter="0" verticalCenter="50"/>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="error" width="100%" height="100%">
+						<s:Label id="errorLabel"
+								 fontSize="16" 
+								 text="{errorLabelText}" 
+								 horizontalCenter="0" verticalCenter="50"/>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="contents" width="100%" height="100%">
+						<mx:ViewStack id="contentsViewStack" paddingLeft="10" paddingRight="10" width="100%" height="100%" paddingTop="10">
+							<s:NavigatorContent id="introView" width="100%" height="100%">
+								<mx:Text text="Select a cloud service to view service resources." paddingLeft="10"/>
+							</s:NavigatorContent>
+							<s:NavigatorContent id="asView" width="100%" height="100%">
+								<s:VGroup width="100%" height="100%" paddingBottom="5">
+									<s:DataGrid id="asList" width="100%" height="100%" dataProvider="{autoscale.resourceCollection}" selectionChange="selectionChangeHandler(event)">
+										<s:columns>
+											<s:ArrayList id="asGridColumns">
+												<s:GridColumn headerText="Name" dataField="AutoScalingGroupName"/>
+												<s:GridColumn headerText="Launch Configuration" dataField="LaunchConfigurationName"/>
+												<s:GridColumn headerText="Desired Capacity" dataField="DesiredCapacity"/>
+												<s:GridColumn headerText="Min Size" dataField="MinSize"/>
+												<s:GridColumn headerText="Max Size" dataField="MaxSize"/>
+												<s:GridColumn headerText="Date Created" labelFunction="dateColumn_labelFunction"/>
+											</s:ArrayList>
+										</s:columns>
+									</s:DataGrid>
+									<s:HGroup>
+										<mx:Text id="autoScaleDisplayName" fontWeight="bold"/>
+										<s:Button id="asCreateButton" label="Create New" click="createButton_clickHandler(event)" enabled="{createButtonsEnabled}"/>
+									</s:HGroup>
+								</s:VGroup>
+							</s:NavigatorContent>
+							<s:NavigatorContent id="beanView" width="100%" height="100%">
+								<s:VGroup width="100%" height="100%" paddingBottom="5">
+									<s:DataGrid id="beanList" width="100%" height="100%" dataProvider="{bean.resourceCollection}" selectionChange="selectionChangeHandler(event)">
+										<s:columns>
+											<s:ArrayList id="beanGridColumns">
+												<s:GridColumn headerText="Name" dataField="name"/>
+												<s:GridColumn headerText="Date Created" labelFunction="dateColumn_labelFunction"/>
+											</s:ArrayList>
+										</s:columns>
+									</s:DataGrid>
+									<s:HGroup>
+										<mx:Text id="beanstalkDisplayName" fontWeight="bold"/>
+										<s:Button id="beanCreateButton" label="Create New" click="createButton_clickHandler(event)" enabled="{createButtonsEnabled}"/>
+									</s:HGroup>
+								</s:VGroup>
+							</s:NavigatorContent>
+							<s:NavigatorContent id="ebsView" width="100%" height="100%">
+								<s:VGroup width="100%" height="100%" paddingBottom="5">
+									<s:DataGrid id="ebsList" width="100%" height="100%" dataProvider="{ebs.resourceCollection}" selectionChange="selectionChangeHandler(event)">
+										<s:columns>
+											<s:ArrayList id="ebsGridColumns">
+												<s:GridColumn headerText="Name" dataField="name"/>
+												<s:GridColumn headerText="Stack Name" dataField="stack_name" visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"/>
+												<s:GridColumn headerText="Resource Name" dataField="stack_resource_name" visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"/>
+												<s:GridColumn headerText="Date Created" labelFunction="dateColumn_labelFunction"/>
+												<s:GridColumn headerText="Volume Id" dataField="id"/>
+												<s:GridColumn headerText="Volume Type" dataField="type" visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"/>
+												<s:GridColumn headerText="Size" dataField="size"/>
+												<s:GridColumn headerText="Snapshot" dataField="snapshot_id"/>
+												<s:GridColumn headerText="Zone" dataField="availability_zone"/>
+												<s:GridColumn headerText="State" dataField="state" itemRenderer="com.momentumsi.c9.components.StatusColumn"/>
+											</s:ArrayList>
+										</s:columns>
+									</s:DataGrid>
+									<s:HGroup>
+										<mx:Text id="ebsDisplayName" fontWeight="bold"/>
+										<s:Button id="ebsCreateButton" label="Create New" click="createButton_clickHandler(event)" enabled="{createButtonsEnabled}"/>
+									</s:HGroup>
+								</s:VGroup>
+							</s:NavigatorContent>
+							<s:NavigatorContent id="elcView" width="100%" height="100%">
+								<s:VGroup width="100%" height="100%" paddingBottom="5">
+									<mx:TabNavigator id="elcTabNavigator" width="100%" height="100%" change="viewTabNavigator_changeHandler(event)">
+										<s:NavigatorContent id="elcClusters" label="Clusters" width="100%" height="100%">
+											<s:VGroup width="100%" height="100%">
+												<s:DataGrid id="elcList" width="100%" height="100%" dataProvider="{elc.resourceCollection}" selectionChange="selectionChangeHandler(event)">
+													<s:columns>
+														<s:ArrayList id="elcGridColumns">
+															<s:GridColumn headerText="Cluster ID" dataField="id"/>
+															<s:GridColumn headerText="Node Number" dataField="num_nodes"/>
+															<s:GridColumn headerText="Node Type" dataField="node_type"/>
+															<s:GridColumn headerText="Engine" dataField="engine"/>
+															<s:GridColumn headerText="Zone" dataField="zone"/>
+															<s:GridColumn headerText="State" dataField="state" itemRenderer="com.momentumsi.c9.components.StatusColumn"/>
+														</s:ArrayList>
+													</s:columns>
+												</s:DataGrid>
+												<s:HGroup>
+													<mx:Text id="elcDisplayName" fontWeight="bold"/>
+													<s:Button id="elcCreateButton" label="Create New" click="createButton_clickHandler(event)" enabled="{createButtonsEnabled}"/>
+												</s:HGroup>
+											</s:VGroup>
+										</s:NavigatorContent>
+										<s:NavigatorContent id="elcParameters" 
+															label="Parameter Groups"
+															width="100%" height="100%">
+											<s:VGroup width="100%" height="100%">
+												<s:DataGrid id="elcParameterList"
+															width="100%" height="100%" 
+															dataProvider="{elc.secondaryCollection}"
+															selectionChange="selectionChangeHandler(event)">
+													<s:columns>
+														<s:ArrayList id="elcParameterGridColumns">
+															<s:GridColumn headerText="Group Name" dataField="id"/>
+															<s:GridColumn headerText="Group Family" dataField="family"/>
+															<s:GridColumn headerText="Description" dataField="description"/>
+														</s:ArrayList>
+													</s:columns>
+												</s:DataGrid>
+												<s:HGroup>
+													<mx:Text text="Parameter Group:" fontWeight="bold"/>
+													<s:Button id="elcParameterCreateButton" label="Create New" click="createButton_clickHandler(event)" enabled="{createButtonsEnabled}"/>
+												</s:HGroup>
+											</s:VGroup>
+										</s:NavigatorContent>
+										<s:NavigatorContent id="elcSecurityGroups" 
+															label="Security Groups" 
+															width="100%" height="100%">
+											<s:VGroup width="100%" height="100%">
+												<s:DataGrid id="elcSecurityGroupsList" 
+															width="100%" height="100%" 
+															dataProvider="{elc.collectionThree}"
+															selectionChange="selectionChangeHandler(event)">
+													<s:columns>
+														<s:ArrayList id="elcSecurityGroupColumns">
+															<s:GridColumn headerText="Name" dataField="id"/>
+															<s:GridColumn headerText="Description" dataField="description"/>
+														</s:ArrayList>
+													</s:columns>
+												</s:DataGrid>
+												<s:HGroup>
+													<mx:Text text="Security Group:" fontWeight="bold"/>
+													<s:Button id="elcSecurityGroupCreateButton" label="Create New" click="createButton_clickHandler(event)" enabled="{createButtonsEnabled}"/>
+												</s:HGroup>
+											</s:VGroup>
+										</s:NavigatorContent>
+									</mx:TabNavigator>
+								</s:VGroup>
+							</s:NavigatorContent>
+							<s:NavigatorContent id="ec2View" width="100%" height="100%">
+								<s:VGroup width="100%" height="100%" paddingBottom="5">
+									<mx:TabNavigator id="ec2TabNavigator" 
+													 width="100%" height="100%" 
+													 change="viewTabNavigator_changeHandler(event)">
+										<s:NavigatorContent id="ec2Instances" label="Instances" width="100%" height="100%">
+											<s:VGroup width="100%" height="100%">
+												<s:DataGrid id="ec2List" 
+															width="100%" height="100%"
+															dataProvider="{ec2.resourceCollection}" 
+															selectionChange="selectionChangeHandler(event)">
+													<s:columns>
+														<s:ArrayList id="ec2GridColumns">
+															<s:GridColumn headerText="Name" dataField="name"/>
+															<s:GridColumn headerText="Stack Name" dataField="stack_name" visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"/>
+															<s:GridColumn headerText="Resource Name" dataField="stack_resource_name" visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"/>
+															<s:GridColumn headerText="Date Created" labelFunction="dateColumn_labelFunction"/>
+															<s:GridColumn headerText="Instance ID" dataField="id"/>		
+															<s:GridColumn headerText="Root Device" dataField="root_device_type" visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"/>
+															<s:GridColumn headerText="Zone" dataField="availability_zone"/>
+															<s:GridColumn headerText="Key Pair" dataField="key_name"/>
+															<s:GridColumn headerText="State" dataField="state" itemRenderer="com.momentumsi.c9.components.StatusColumn"/>
+														</s:ArrayList>
+													</s:columns>
+												</s:DataGrid>
+												<s:HGroup>
+													<mx:Text id="ec2DisplayName" fontWeight="bold"/>
+													<s:Button id="ec2CreateButton" label="Create New" click="createButton_clickHandler(event)" enabled="{createButtonsEnabled}"/>
+												</s:HGroup>
+											</s:VGroup>
+										</s:NavigatorContent>
+										<s:NavigatorContent id="ec2SpotInstances"
+															label="Spot Requests"
+															width="100%" height="100%">
+											<s:VGroup width="100%" height="100%">
+												<s:DataGrid id="ec2SpotInstanceList" 
+															width="100%" height="100%"
+															dataProvider="{ec2.collectionFour}"
+															selectionChange="selectionChangeHandler(event)">
+													<s:columns>
+														<s:ArrayList id="ec2SpotInstanceGridColumns">
+															<s:GridColumn headerText="Request ID" dataField="spotInstanceRequestId"/>
+															<s:GridColumn headerText="Max Price" dataField="spotPrice"/>
+															<s:GridColumn headerText="AMI ID" dataField="launchSpecification.imageId"/>
+															<s:GridColumn headerText="Instance" dataField="instanceId"/>
+															<s:GridColumn headerText="Type" dataField="launchSpecification.instanceType"/>
+															<s:GridColumn headerText="State" dataField="state" itemRenderer="com.momentumsi.c9.components.StatusColumn"/>
+														</s:ArrayList>
+													</s:columns>
+												</s:DataGrid>
+												<s:HGroup>
+													<mx:Text text="Spot Request:" fontWeight="bold"/>
+													<s:Button id="spotRequestCreateButton" label="Create New" click="createButton_clickHandler(event)" enabled="{createButtonsEnabled}"/>
+												</s:HGroup>
+											</s:VGroup>
+										</s:NavigatorContent>
+										<s:NavigatorContent id="ec2ReservedInstances"
+															label="Reserved Instances" 
+															width="100%" height="100%">
+											<s:VGroup width="100%" height="100%">
+												<s:DataGrid id="ec2ReservedList" 
+															width="100%" height="100%"
+															dataProvider="{ec2.collectionThree}" 
+															selectionChange="selectionChangeHandler(event)">
+													<s:columns>
+														<s:ArrayList id="ec2ReservedGridColumns">
+															<s:GridColumn headerText="ID" dataField="reservedInstancesId"/>
+															<s:GridColumn headerText="Zone" dataField="availabilityZone"/>
+															<s:GridColumn headerText="State" dataField="state" itemRenderer="com.momentumsi.c9.components.StatusColumn"/>
+														</s:ArrayList>
+													</s:columns>
+												</s:DataGrid>
+												<s:HGroup>
+													<mx:Text text="Reserved Instances:" fontWeight="bold"/>
+													<s:Button id="ec2ReservedCreateButton" 
+															  label="Purchase Reserved Instances" 
+															  click="createButton_clickHandler(event)" 
+															  enabled="{createButtonsEnabled}"/>
+												</s:HGroup>
+											</s:VGroup>
+										</s:NavigatorContent>
+										<s:NavigatorContent id="ec2ElasticIps"
+															label="Elastic IPs" 
+															width="100%" height="100%">
+											<s:VGroup width="100%" height="100%">
+												<s:DataGrid id="ec2ElasticIpsList" 
+															width="100%" height="100%"
+															dataProvider="{ec2.collectionFive}" 
+															selectionChange="selectionChangeHandler(event)">
+													<s:columns>
+														<s:ArrayList id="ec2ElasticIpGridColumns">
+															<s:GridColumn headerText="Address" dataField="publicIp"/>
+															<s:GridColumn headerText="Instance ID" dataField="instanceId"/>
+															<s:GridColumn headerText="Scope" dataField="domain"/>
+														</s:ArrayList>
+													</s:columns>
+												</s:DataGrid>
+												<s:HGroup>
+													<mx:Text text="Elastic IPs:" fontWeight="bold"/>
+													<s:Button id="ec2ElasticIpCreateButton" 
+															  label="Allocate New Address" 
+															  click="createButton_clickHandler(event)" 
+															  enabled="{createButtonsEnabled}"/>
+												</s:HGroup>
+											</s:VGroup>
+										</s:NavigatorContent>
+										<s:NavigatorContent id="ec2SecurityGroups" label="Security Groups" width="100%" height="100%">
+											<s:VGroup width="100%" height="100%">
+												<s:DataGrid id="ec2SecurityGroupList" 
+															width="100%" height="100%" 
+															dataProvider="{ec2.secondaryCollection}" 
+															selectionChange="selectionChangeHandler(event)">
+													<s:columns>
+														<s:ArrayList id="ec2SecurityGroupGridColumns">
+															<s:GridColumn headerText="Name" dataField="name"/>
+															<s:GridColumn headerText="Description" dataField="description"/>
+														</s:ArrayList>
+													</s:columns>
+												</s:DataGrid>
+												<s:HGroup>
+													<mx:Text text="Security Group:" fontWeight="bold"/>
+													<s:Button id="ec2SecurityGroupCreateButton" label="Create New" click="createButton_clickHandler(event)" enabled="{createButtonsEnabled}"/>
+												</s:HGroup>
+											</s:VGroup>
+										</s:NavigatorContent>
+										<s:NavigatorContent id="ec2KeyPairs" label="Key Pairs" width="100%" height="100%">
+											<s:VGroup width="100%" height="100%">
+												<s:DataGrid id="ec2KeyPairList" 
+															width="100%" height="100%" 
+															dataProvider="{ec2.collectionSix}" 
+															selectionChange="selectionChangeHandler(event)">
+													<s:columns>
+														<s:ArrayList id="ec2KeyPairGridColumns">
+															<s:GridColumn headerText="Name" dataField="name"/>
+														</s:ArrayList>
+													</s:columns>
+												</s:DataGrid>
+												<s:HGroup>
+													<mx:Text text="Key Pair:" fontWeight="bold"/>
+													<s:Button id="ec2KeyPairCreateButton" label="Create New" click="createButton_clickHandler(event)" enabled="{createButtonsEnabled}"
+															  visible="{cloudAccount.cloud_provider != CloudAccount.JOYENT}"
+															  includeInLayout="{cloudAccount.cloud_provider != CloudAccount.JOYENT}"/>
+													<s:Button id="ec2KeyPairImportButton" label="Import New" click="createButton_clickHandler(event)" enabled="{createButtonsEnabled}"
+															  visible="{cloudAccount.cloud_provider != CloudAccount.CLOUDSTACK}"
+															  includeInLayout="{cloudAccount.cloud_provider != CloudAccount.CLOUDSTACK}"/>
+												</s:HGroup>
+											</s:VGroup>
+										</s:NavigatorContent>
+									</mx:TabNavigator>
+								</s:VGroup>
+							</s:NavigatorContent>
+							<s:NavigatorContent id="elbView" width="100%" height="100%">
+								<s:VGroup width="100%" height="100%" paddingBottom="5">
+									<s:DataGrid id="elbList" width="100%" height="100%" dataProvider="{elb.resourceCollection}" selectionChange="selectionChangeHandler(event)">
+										<s:columns>
+											<s:ArrayList id="elbGridColumns">
+												<s:GridColumn headerText="Name" dataField="LoadBalancerName"/>
+												<s:GridColumn headerText="DNS Name" dataField="DNSName"/>
+												<s:GridColumn headerText="Instance Count" labelFunction="getInstanceCount_labelFunction"/>
+												<s:GridColumn headerText="Date Created" labelFunction="dateColumn_labelFunction"/>
+											</s:ArrayList>
+										</s:columns>
+									</s:DataGrid>
+									<s:HGroup>
+										<mx:Text id="elbDisplayName" fontWeight="bold"/>
+										<s:Button id="elbCreateButton" label="Create New" click="createButton_clickHandler(event)" enabled="{createButtonsEnabled}"/>
+									</s:HGroup>
+								</s:VGroup>
+							</s:NavigatorContent>
+							<s:NavigatorContent id="rdsView" width="100%" height="100%">
+								<s:VGroup width="100%" height="100%" paddingBottom="5">
+									<mx:TabNavigator id="rdsTabNavigator" width="100%" height="100%" change="viewTabNavigator_changeHandler(event)">
+										<s:NavigatorContent id="rdsDatabases" label="Databases" width="100%" height="100%">
+											<s:VGroup width="100%" height="100%">
+												<s:DataGrid id="rdsList" width="100%" height="100%" dataProvider="{rds.resourceCollection}" selectionChange="selectionChangeHandler(event)">
+													<s:columns>
+														<s:ArrayList id="rdsGridColumns">
+															<s:GridColumn headerText="DB Instance" dataField="id"/>
+															<s:GridColumn headerText="Multi AZ" dataField="multi_az"/>
+															<s:GridColumn headerText="Class" dataField="flavor_id"/>
+															<s:GridColumn headerText="Storage (GB)" dataField="allocated_storage"/>
+															<s:GridColumn headerText="Engine" dataField="engine"/>
+															<s:GridColumn headerText="Zone" dataField="availability_zone"/>
+															<s:GridColumn headerText="State" dataField="state" itemRenderer="com.momentumsi.c9.components.StatusColumn"/>
+														</s:ArrayList>
+													</s:columns>
+												</s:DataGrid>
+												<s:HGroup>
+													<mx:Text id="rdsDisplayName" fontWeight="bold"/>
+													<s:Button id="rdsCreateButton" 
+															  label="Create New"
+															  click="createButton_clickHandler(event)"
+															  enabled="{createButtonsEnabled}"/>
+												</s:HGroup>
+											</s:VGroup>
+										</s:NavigatorContent>
+										<s:NavigatorContent id="rdsParameters" label="Parameter Groups" width="100%" height="100%">
+											<s:VGroup width="100%" height="100%">
+												<s:DataGrid id="rdsParameterList" 
+															width="100%" height="100%"
+															dataProvider="{rds.secondaryCollection}"
+															selectionChange="selectionChangeHandler(event)">
+													<s:columns>
+														<s:ArrayList id="rdsParametersGridColumns">
+															<s:GridColumn headerText="Group Name" dataField="id"/>
+															<s:GridColumn headerText="Group Family" dataField="family"/>
+															<s:GridColumn headerText="Description" dataField="description"/>
+														</s:ArrayList>
+													</s:columns>
+												</s:DataGrid>
+												<s:HGroup>
+													<mx:Text text="Parameter Group:" fontWeight="bold"/>
+													<s:Button id="rdsParameterCreateButton" label="Create New" click="createButton_clickHandler(event)" enabled="{createButtonsEnabled}"/>
+												</s:HGroup>
+											</s:VGroup>
+										</s:NavigatorContent>
+										<s:NavigatorContent id="rdsSnapshots" label="Snapshots" width="100%" height="100%">
+											<s:VGroup width="100%" height="100%">
+												<s:DataGrid id="rdsSnapshotsList" 
+															width="100%" height="100%" 
+															dataProvider="{rds.collectionThree}"
+															selectionChange="selectionChangeHandler(event)">
+													<s:columns>
+														<s:ArrayList id="rdsSnapshotColumns">
+															<s:GridColumn headerText="Snapshot ID" dataField="id"/>
+															<s:GridColumn headerText="DB Instance Identifier" dataField="instanceId"/>
+															<s:GridColumn headerText="Status" dataField="state"/>
+															<s:GridColumn headerText="Engine" dataField="engine"/>
+															<s:GridColumn headerText="Storage" dataField="allocatedStorage"/>
+														</s:ArrayList>
+													</s:columns>
+												</s:DataGrid>
+											</s:VGroup>
+										</s:NavigatorContent>
+										<s:NavigatorContent id="rdsSecurityGroups" 
+															label="Security Groups" 
+															width="100%" height="100%">
+											<s:VGroup width="100%" height="100%">
+												<s:DataGrid id="rdsSecurityGroupsList" 
+															width="100%" height="100%" 
+															dataProvider="{rds.collectionFour}"
+															selectionChange="selectionChangeHandler(event)">
+													<s:columns>
+														<s:ArrayList id="rdsSecurityGroupColumns">
+															<s:GridColumn headerText="Name" dataField="id"/>
+															<s:GridColumn headerText="Description" dataField="description"/>
+														</s:ArrayList>
+													</s:columns>
+												</s:DataGrid>
+												<s:HGroup>
+													<mx:Text text="Security Group:" fontWeight="bold"/>
+													<s:Button id="rdsSecurityGroupCreateButton" label="Create New" click="createButton_clickHandler(event)" enabled="{createButtonsEnabled}"/>
+												</s:HGroup>
+											</s:VGroup>
+										</s:NavigatorContent>
+									</mx:TabNavigator>
+								</s:VGroup>
+							</s:NavigatorContent>
+							<s:NavigatorContent id="snsView" width="100%" height="100%">
+								<s:VGroup width="100%" height="100%" paddingBottom="5">
+									<s:DataGrid id="snsList" width="100%" height="100%" dataProvider="{sns.resourceCollection}" selectionChange="selectionChangeHandler(event)">
+										<s:columns>
+											<s:ArrayList id="snsGridColumns">
+												<s:GridColumn headerText="Topic Name" dataField="TopicName"/>
+												<s:GridColumn headerText="Resource Name" dataField="TopicArn"/>
+											</s:ArrayList>
+										</s:columns>
+									</s:DataGrid>
+									<s:HGroup>
+										<mx:Text id="snsDisplayName" fontWeight="bold"/>
+										<s:Button id="snsCreateButton" label="Create New" click="createButton_clickHandler(event)" enabled="{createButtonsEnabled}"/>
+									</s:HGroup>
+								</s:VGroup>
+							</s:NavigatorContent>
+							<s:NavigatorContent id="s3View" width="100%" height="100%">
+								<s:VGroup width="100%" height="100%" paddingBottom="5">
+									<s:DataGrid id="s3List" width="100%" height="100%" dataProvider="{s3.resourceCollection}" selectionChange="selectionChangeHandler(event)">
+										<s:columns>
+											<s:ArrayList id="s3GridColumns">
+												<s:GridColumn headerText="Container Name" dataField="key"/>
+											</s:ArrayList>
+										</s:columns>
+									</s:DataGrid>
+									<s:HGroup>
+										<mx:Text id="s3DisplayName" fontWeight="bold"/>
+										<s:Button id="s3CreateButton" label="Create New" click="createButton_clickHandler(event)" enabled="{createButtonsEnabled}"/>
+									</s:HGroup>
+								</s:VGroup>
+							</s:NavigatorContent>
+							<s:NavigatorContent id="sqsView" width="100%" height="100%">
+								<s:VGroup width="100%" height="100%" paddingBottom="5">
+									<s:DataGrid id="sqsList" width="100%" height="100%" dataProvider="{sqs.resourceCollection}" selectionChange="selectionChangeHandler(event)">
+										<s:columns>
+											<s:ArrayList id="sqsGridColumns">
+												<s:GridColumn headerText="Name" dataField="QueueName"/>
+												<s:GridColumn headerText="Messages Available" dataField="ApproximateNumberOfMessages"/>
+												<s:GridColumn headerText="Messages in Flight" dataField="ApproximateNumberOfMessagesNotVisible"/>
+												<s:GridColumn headerText="Date Created" labelFunction="dateColumn_labelFunction"/>
+											</s:ArrayList>
+										</s:columns>
+									</s:DataGrid>
+									<s:HGroup>
+										<mx:Text id="sqsDisplayName" fontWeight="bold"/>
+										<s:Button id="sqsCreateButton" label="Create New" click="createButton_clickHandler(event)" enabled="{createButtonsEnabled}"/>
+									</s:HGroup>
+								</s:VGroup>
+							</s:NavigatorContent>
+							<s:NavigatorContent id="iamView" width="100%" height="100%">
+								<s:VGroup width="100%" height="100%">
+									<mx:TabNavigator id="iamGroupTabNavigator" width="100%" height="100%" change="viewTabNavigator_changeHandler(event)">
+										<s:NavigatorContent id="iamGroupTab" label="Groups">
+											<s:VGroup width="100%" height="100%">
+												<s:DataGrid id="iamGroupList" width="100%" height="100%" dataProvider="{iam.resourceCollection}" selectionChange="selectionChangeHandler(event)">
+													<s:columns>
+														<s:ArrayList id="iamGroupGridColumns">
+															<s:GridColumn headerText="Name" dataField="name"/>
+															<s:GridColumn headerText="Arn" 
+																		  dataField="arn"
+																		  visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"/>
+															<s:GridColumn headerText="Description" 
+																		  dataField="description"
+																		  visible="{cloudAccount.cloud_provider != CloudAccount.AMAZON}"/>
+															<s:GridColumn headerText="Group Id" dataField="groupId"/>
+															<s:GridColumn headerText="User Count" dataField="groupUsers.length"/>
+														</s:ArrayList>
+													</s:columns>
+												</s:DataGrid>
+												<s:HGroup>
+													<mx:Text id="iamGroupDisplayName" fontWeight="bold"/>
+													<s:Button id="iamGroupCreateButton" label="Create New" click="createButton_clickHandler(event)" enabled="{createButtonsEnabled}"/>
+												</s:HGroup>
+											</s:VGroup>
+										</s:NavigatorContent>
+										<s:NavigatorContent id="iamUserTab" label="Users">
+											<s:VGroup width="100%" height="100%">
+												<s:DataGrid id="iamUserList" width="100%" height="100%" dataProvider="{iam.secondaryCollection}" selectionChange="selectionChangeHandler(event)">
+													<s:columns>
+														<s:ArrayList id="iamUserGridColumns">
+															<s:GridColumn headerText="Name" dataField="name"/>
+															<s:GridColumn headerText="Group Count" dataField="userGroups.length"/>
+														</s:ArrayList>
+													</s:columns>
+												</s:DataGrid>
+												<s:HGroup>
+													<mx:Text id="iamUserDisplayName" fontWeight="bold"/>
+													<s:Button id="iamUserCreateButton" label="Create New" click="createButton_clickHandler(event)" enabled="{createButtonsEnabled}"/>
+												</s:HGroup>
+											</s:VGroup>
+										</s:NavigatorContent>
+									</mx:TabNavigator>
+								</s:VGroup>
+							</s:NavigatorContent>
+							<!--
+							<s:NavigatorContentid="cfnView" width="100%" height="100%">
+								<s:VGroup width="100%" height="100%">
+									<s:HGroup>
+										<mx:Text text="{ResourceTypeLabel.CFN}:" fontWeight="bold"/>
+										<s:Button id="cfnCreateButton" label="Create New" click="createButton_clickHandler(event)" enabled="{createButtonsEnabled}"/>
+									</s:HGroup>
+									<s:DataGrid id="cfnList" width="100%" height="100%" dataProvider="{cfn.resourceCollection}" selectionChange="selectionChangeHandler(event)">
+										<s:columns>
+											<s:ArrayList id="cfnGridColumns">
+												<s:GridColumn headerText="Name" dataField="name"/>
+												<s:GridColumn headerText="State" dataField="state" itemRenderer="com.momentumsi.c9.components.StatusColumn"/>
+											</s:ArrayList>
+										</s:columns>
+									</s:DataGrid>
+								</s:VGroup>
+							</s:NavigatorContent>
+							-->
+							<s:NavigatorContent id="alarmView" width="100%" height="100%">
+								<s:VGroup width="100%" height="100%" paddingBottom="5">
+									<s:DataGrid id="alarmList" width="100%" height="100%" dataProvider="{alarm.resourceCollection}" selectionChange="selectionChangeHandler(event)">
+										<s:columns>
+											<s:ArrayList id="alarmGridColumns">
+												<s:GridColumn headerText="Name" dataField="AlarmName"/>
+												<s:GridColumn headerText="Threshold" labelFunction="threshold_labelFunction"/>
+												<s:GridColumn headerText="State" dataField="StateValue" itemRenderer="com.momentumsi.c9.components.StatusColumn"/>
+											</s:ArrayList>
+										</s:columns>
+									</s:DataGrid>
+									<s:HGroup>
+										<mx:Text id="alarmDisplayName" fontWeight="bold"/>
+										<s:Button id="alarmCreateButton" label="Create New" click="createButton_clickHandler(event)" enabled="{createButtonsEnabled}"/>
+									</s:HGroup>
+								</s:VGroup>
+							</s:NavigatorContent>
+							<s:NavigatorContent id="sdbView" width="100%" height="100%">
+								<s:VGroup width="100%" height="100%" paddingBottom="5">
+									<s:DataGrid id="sdbList" width="100%" height="100%" dataProvider="{sdb.resourceCollection}" selectionChange="selectionChangeHandler(event)">
+										<s:columns>
+											<s:ArrayList id="sdbGridColumns">
+												<s:GridColumn headerText="Name" dataField="DomainName"/>
+											</s:ArrayList>
+										</s:columns>
+									</s:DataGrid>
+									<s:HGroup>
+										<mx:Text id="sdbDisplayName" fontWeight="bold"/>
+										<s:Button id="sdbCreateButton" label="Create New" click="createButton_clickHandler(event)" enabled="{createButtonsEnabled}"/>
+									</s:HGroup>
+								</s:VGroup>
+							</s:NavigatorContent>
+							<s:NavigatorContent id="dnsView" width="100%" height="100%">
+								<s:VGroup width="100%" height="100%" paddingBottom="5">
+									<s:DataGrid id="dnsList" 
+												width="100%" height="100%"
+												dataProvider="{dns.resourceCollection}"
+												selectionChange="selectionChangeHandler(event)">
+										<s:columns>
+											<s:ArrayList id="dnsGridColumns">
+												<s:GridColumn headerText="Name" dataField="Name"/>
+												<s:GridColumn headerText="Hosted Zone Id" dataField="Id"/>
+												<s:GridColumn headerText="Comment" dataField="Comment"/>
+											</s:ArrayList>
+										</s:columns>
+									</s:DataGrid>
+									<s:HGroup>
+										<mx:Text id="dnsDisplayName" fontWeight="bold"/>
+										<s:Button id="dnsCreateButton" label="Create New" click="createButton_clickHandler(event)" enabled="{createButtonsEnabled}"/>
+									</s:HGroup>
+								</s:VGroup>
+							</s:NavigatorContent>
+							<!--
+							<s:NavigatorContent id="cdnView" width="100%" height="100%">
+								<s:VGroup width="100%" height="100%">
+									<s:HGroup>
+										<mx:Text text="{ResourceTypeLabel.CDN}:" fontWeight="bold"/>
+										<s:Button id="cdnCreateButton" label="Create New" click="createButton_clickHandler(event)" enabled="{createButtonsEnabled}"/>
+									</s:HGroup>
+									<s:DataGrid id="cdnList" width="100%" height="100%" dataProvider="{cdn.resourceCollection}" selectionChange="selectionChangeHandler(event)">
+										<s:columns>
+											<s:ArrayList id="cdnGridColumns">
+												<s:GridColumn headerText="ID" dataField="id"/>
+												<s:GridColumn headerText="Domain Name" dataField="domainName"/>
+												<s:GridColumn headerText="Origin" dataField="origin"/>
+												<s:GridColumn headerText="Status" dataField="status"/>
+												<s:GridColumn headerText="State" dataField="state" itemRenderer="com.momentumsi.c9.components.StatusColumn"/>
+												<s:GridColumn headerText="Last Modified" dataField="lastModified"/>
+											</s:ArrayList>
+										</s:columns>
+									</s:DataGrid>
+								<s:VGroup>
+							</s:NavigatorContent>
+							-->
+						</mx:ViewStack>
+					</s:NavigatorContent>
+				</mx:ViewStack>
+				<mx:ViewStack id="resourceDetails" width="100%" height="100%" backgroundColor="#FFFFFF">
+					<s:NavigatorContent id="preSelection">
+						<mx:Text text="Select a resource above for additional information." paddingLeft="10"/>
+					 </s:NavigatorContent>
+					<s:NavigatorContent id="ec2Content">
+						<c9:Ec2ObjectManagementBox id="ec2Details" 
+												   cloudAccount="{cloudAccount}"
+												   region="{region}"/>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="asContent">
+						<c9:AsObjectManagementBox id="asDetails" 
+												  cloudAccount="{cloudAccount}"
+												  region="{region}"/>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="beanContent">
+						<c9:BeanObjectManagementBox id="beanDetails"
+													cloudAccount="{cloudAccount}"
+													region="{region}"/>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="ebsContent">
+						<c9:EbsObjectManagementBox id="ebsDetails" 
+												   cloudAccount="{cloudAccount}"
+												   region="{region}"/>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="elcContent">
+						<c9:ElcObjectManagementBox id="elcDetails" 
+												   cloudAccount="{cloudAccount}"
+												   region="{region}"/>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="elbContent">
+						<c9:ElbObjectManagementBox id="elbDetails" 
+												   cloudAccount="{cloudAccount}"
+												   region="{region}"/>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="rdsContent">
+						<c9:RdsObjectManagementBox id="rdsDetails" 
+												   cloudAccount="{cloudAccount}"
+												   region="{region}"/>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="snsContent">
+						<c9:SnsObjectManagementBox id="snsDetails" 
+												   cloudAccount="{cloudAccount}"
+												   region="{region}"/>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="s3Content">
+						<c9:S3ObjectManagementBox id="s3Details" 
+												  cloudAccount="{cloudAccount}"
+												  region="{region}"/>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="sqsContent">
+						<c9:SqsObjectManagementBox id="sqsDetails" 
+												   cloudAccount="{cloudAccount}"
+												   region="{region}"/>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="iamGroupContent">
+						<c9:IamGroupObjectManagementBox id="iamGroupDetails" 
+														cloudAccount="{cloudAccount}"
+														region="{region}"/>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="iamUserContent">
+						<c9:IamUserObjectManagementBox id="iamUserDetails" 
+													   cloudAccount="{cloudAccount}"
+													   region="{region}"/>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="cfnContent">
+						<c9:CfnObjectManagementBox id="cfnDetails" 
+												   cloudAccount="{cloudAccount}"
+												   region="{region}"/>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="alarmContent">
+						<c9:AlarmObjectManagementBox id="alarmDetails"
+													 cloudAccount="{cloudAccount}"
+													 region="{region}"/>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="sdbContent">
+						<c9:SimpleDbObjectManagementBox id="sdbDetails" 
+														cloudAccount="{cloudAccount}"
+														region="{region}"/>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="dnsContent">
+						<c9:DnsObjectManagementBox id="dnsDetails" 
+												   cloudAccount="{cloudAccount}"
+												   region="{region}"/>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="parameterGroupContent">
+						<c9:ParameterGroupObjectManagementBox id="parameterGroupDetails" 
+															  cloudAccount="{cloudAccount}"
+															  region="{region}"/>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="computeSecurityGroupContent">
+						<c9:ComputeSecGrpDetailsBox id="computeSecurityGroupDetails" 
+													cloudAccount="{cloudAccount}"
+													region="{region}"/>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="rdsSecurityGroupContent">
+						<c9:RdsSecurityGroupDetailsBox id="rdsSecurityGroupDetails" 
+													   cloudAccount="{cloudAccount}"
+													   region="{region}"/>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="rdsSnapshotsContent">
+						<c9:RdsSnapshotDetailsBox id="rdsSnapshotDetails" 
+												  cloudAccount="{cloudAccount}"
+												  region="{region}"/>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="elcSecurityGroupContent">
+						<c9:ElcSecurityGroupDetailsBox id="elcSecurityGroupDetails" 
+													   cloudAccount="{cloudAccount}"
+													   region="{region}"/>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="reservedInstanceContent">
+						<c9:ReservedInstanceDetailsBox id="reservedInstanceDetails"
+													   cloudAccount="{cloudAccount}"
+													   region="{region}"/>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="spotInstanceContent">
+						<c9:Ec2SpotInstanceDetailsBox id="spotInstanceDetails"
+													  cloudAccount="{cloudAccount}"
+													  region="{region}"/>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="elasticIpContent">
+						<c9:Ec2ElasticIpDetailsBox id="elasticIpDetails"
+												   cloudAccount="{cloudAccount}"
+												   region="{region}"/>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="keyPairContent">
+						<c9:Ec2KeyPairDetailsBox id="keyPairDetails"
+												 cloudAccount="{cloudAccount}"
+												 region="{region}"/>
+					</s:NavigatorContent>
+				</mx:ViewStack>
+			</mx:VDividedBox>
+		</s:Group>
+	</s:VGroup>
+</s:Group>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   title="Create Group"
+			   creationComplete="creationCompleteHandler(event)"
+			   close="PopUpManager.removePopUp(this)"
+			   xmlns:mx="library://ns.adobe.com/flex/mx" 
+			   width="550" height="200" xmlns:services="com.momentumsi.c9.services.*">
+	
+	<fx:Metadata>
+		[Event(name="groupCreated", type="flash.events.Event")]
+	</fx:Metadata>
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.constants.AlertMessage;
+		]]>
+	</fx:Script>
+	
+	<fx:Script>
+		<![CDATA[		
+			import org.flexunit.internals.matchers.Each;
+			import com.momentumsi.c9.models.Group;
+			import com.momentumsi.c9.models.Org;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			
+			[Bindable]
+			public var orgId:String;
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				PopUpManager.centerPopUp(this);
+			}
+			
+			protected function createGroupButton_clickHandler(event:MouseEvent):void
+			{
+				enableSubmitButton(false);
+				var alert:Boolean = false;
+				var group:Group = new Group();
+				if(Helpers.StringReplaceAll(groupName.text, " ", "") != "")
+				{
+					if(Helpers.validateAlphanumeric(groupName.text))
+					{
+						groupNameAlert.visible = false;
+						group.name = groupName.text;
+						group.description = description.text;
+					}else
+					{
+						alert = true;
+						groupNameAlert.visible = true;
+						enableSubmitButton(true);
+					}
+				}else
+				{
+					alert = true;
+					groupNameAlert.visible = true;
+					enableSubmitButton(true);
+				}
+				
+				if(!alert)
+				{
+					orgService.createGroup(orgId, group);
+				}
+			}
+			
+			protected function enableSubmitButton(toggle:Boolean):void
+			{
+				if(toggle)
+				{
+					submitButton.enabled = true;
+					submitButton.label = "Create";
+				}else
+				{
+					submitButton.enabled = false;
+					submitButton.label = "Creating";
+				}
+			}
+			
+			protected function orgService_resultHandler(event:ResultEvent):void
+			{
+				dispatchEvent(new Event("groupCreated"));
+				PopUpManager.removePopUp(this);
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+			<services:OrgService id="orgService"
+								 result="orgService_resultHandler(event)"/>
+	</fx:Declarations>
+	
+	<s:VGroup height="100%" width="100%">
+		<s:HGroup height="100%" width="100%" horizontalAlign="center">
+			<s:Form width="100%">
+				<s:FormItem label="Name:*" width="100%">
+					<s:HGroup>
+						<s:TextInput id="groupName" width="200"/>
+						<mx:Text id="groupNameAlert" text="This field is required." color="red" visible="false"/>
+					</s:HGroup>
+				</s:FormItem>
+				<s:FormItem label="Description:" width="100%">
+					<s:TextInput id="description" width="100%"/>
+				</s:FormItem>
+			</s:Form>
+		</s:HGroup>
+		<s:HGroup width="100%" horizontalAlign="center" paddingBottom="10">
+			<s:Button id="submitButton" label="Create" click="createGroupButton_clickHandler(event)"/>
+			<s:Button label="Cancel" click="PopUpManager.removePopUp(this)"/>
+		</s:HGroup>
+	</s:VGroup>
+</s:TitleWindow>

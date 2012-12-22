@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<c9:ObjectManagementDetailsBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+							   xmlns:s="library://ns.adobe.com/flex/spark" 
+							   xmlns:mx="library://ns.adobe.com/flex/mx"
+							   xmlns:c9="com.momentumsi.c9.components.*" xmlns:services="com.momentumsi.c9.services.*">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.serialization.json.JSON;
+			import com.momentumsi.c9.models.CloudAccount;
+			import com.momentumsi.c9.models.resources.ParameterGroupParam;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.UIComponent;
+			import mx.events.CloseEvent;
+			import mx.events.IndexChangedEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.StringUtil;
+			
+			public static const CACHE:String = "elc";
+			public static const RDS:String = "rds";
+			
+			[Bindable]
+			private var parameterGroupData:Object;	
+			[Bindable]
+			public var parameterGroupType:String = CACHE;
+			[Bindable]
+			private var parameterCollection:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var action:String = "describe_cache_parameters";
+			[Bindable]
+			private var serviceType:String = CloudApiService.CACHE_SERVICE;
+			private var parameterGroupName:String;
+			
+			override public function set resourceData(value:Object):void
+			{
+				parameterGroupData = value;
+				super.resourceData = parameterGroupData;
+				parameterDetails.selectedIndex = 0;
+				if(value != null)
+				{
+					refreshParameters();
+				}
+			}
+			
+			private function refreshParameters():void
+			{
+				parameterViewStack.selectedChild = loading;
+				
+				switch(parameterGroupType)
+				{
+					case CACHE:
+						applyTypeField.visible = false;
+						action = "describe_cache_parameters"
+						serviceType = CloudApiService.CACHE_SERVICE;
+						break;
+					case RDS:
+						applyTypeField.visible = true;
+						action = "describe_db_parameters";
+						serviceType = CloudApiService.RDS_SERVICE;
+						break;
+				}
+				parameterGroupName = parameterGroupData.id;
+				getParametersSvc.send({resource_id: parameterGroupName});
+			}
+			
+			protected function getParametersSvc_resultHandler(event:ResultEvent):void
+			{
+				parameterCollection.removeAll();
+				for each(var param:Object in getParametersSvc.result as Array)
+				{
+					parameterCollection.addItem(new ParameterGroupParam(param));
+				}
+				
+				parameterViewStack.selectedChild = parameterContents;
+			}
+			
+			protected function getParametersSvc_faultHandler(event:FaultEvent):void
+			{
+				parameterViewStack.selectedChild = parameterContents;
+			}
+			
+			protected function editParameters_clickHandler(event:MouseEvent):void
+			{
+				var editParams:EditParameterGroupWindow = new EditParameterGroupWindow();
+				editParams.region = region;
+				editParams.parametersCollection = parameterCollection;
+				switch(parameterGroupType)
+				{
+					case CACHE:
+						editParams.paramGroupType = "cache";
+						editParams.cacheService = cacheService;
+						break;
+					case RDS:
+						editParams.paramGroupType = "rds";
+						editParams.rdsService = rdsService;
+						break;
+				}
+				editParams.parameterGroup = parameterGroupName;
+				PopUpManager.addPopUp(editParams, UIComponent(parentApplication), true);
+			}
+			
+			/* protected function resetParameters_clickHandler(event:MouseEvent):void
+			{
+				Alert.show("This will reset ALL parameters.  Are you sure you want to continue with the reset?", "Reset Parameters", Alert.YES|Alert.NO, this, resetParameters_alertClickHandler);
+			}
+			
+			private function resetParameters_alertClickHandler(event:CloseEvent):void
+			{
+				if(event.detail == Alert.YES)
+				{
+					if(parameterGroupType == "rds")
+					{
+						rdsService.resetParameterGroup(parameterGroupName);
+					}else{
+						cacheService.resetParameterGroup(parameterGroupName);
+					}
+				}
+			} */
+			
+			protected function deleteGroup_clickHandler(event:MouseEvent):void
+			{
+				var destroyPopUp:DestroyResourceObjectManagement = new DestroyResourceObjectManagement();
+				destroyPopUp.cloudAccountId = cloudAccount.id;
+				destroyPopUp.region = region;
+				destroyPopUp.resourceType = parameterGroupType + "Parameter";
+				destroyPopUp.resourceDisplayId = parameterGroupData.id;
+				destroyPopUp.resourceId = parameterGroupData.id;
+				PopUpManager.addPopUp(destroyPopUp, UIComponent(parentApplication), true);
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<services:CloudApiService id="getParametersSvc"
+								  action="{action}"
+								  cloudAccountId="{cloudAccount.id}"
+								  region="{region}"
+								  serviceType="{serviceType}"
+								  result="getParametersSvc_resultHandler(event)"
+								  fault="getParametersSvc_faultHandler(event)"/>
+		
+		<services:RdsService id="rdsService"
+							 cloudAccountId="{cloudAccount.id}"
+							 region="{region}"/>
+		
+		<services:ElcService id="cacheService"
+							 cloudAccountId="{cloudAccount.id}"
+							 region="{region}"/>
+	</fx:Declarations>
+	
+	<s:HGroup paddingLeft="10" gap="20">
+		<c9:TextButton text="Delete Parameter Group"
+					   click="deleteGroup_clickHandler(event)"/>
+		<c9:TextButton text="Edit Parameters"
+					   click="editParameters_clickHandler(event)"/>
+		<!--<c9:TextButton id="resetParameters"
+					   text="Reset Parameters"
+					   click="resetParameters_clickHandler(event)"/>-->
+	</s:HGroup>
+	<s:BorderContainer height="100%" width="100%" alpha="1" borderVisible="false">
+		<mx:TabNavigator id="parameterDetails" width="100%" height="100%">
+			<s:NavigatorContent label="Parameters" width="100%" height="100%">
+				<mx:ViewStack id="parameterViewStack" width="100%" height="100%">
+					<s:NavigatorContent id="loading" width="100%" height="100%">
+						<s:BusyIndicator width="50" height="50"/>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="parameterContents" width="100%" height="100%">
+						<s:VGroup width="100%" height="100%" paddingLeft="10" paddingRight="10">
+							<s:DataGrid id="parametersDataGrid"
+										width="100%" height="100%"
+										dataProvider="{parameterCollection}">
+								<s:columns>
+									<s:ArrayList id="parameterGridColumns">
+										<s:GridColumn headerText="Name" dataField="name"/>
+										<s:GridColumn headerText="Value" dataField="value"/>
+										<s:GridColumn headerText="Allowed Values" dataField="allowedValues"/>
+										<s:GridColumn headerText="Modifiable" dataField="isModifiable"/>
+										<s:GridColumn headerText="Source" dataField="source"/>
+										<s:GridColumn headerText="Type" dataField="type"/>
+										<s:GridColumn id="applyTypeField" headerText="Apply Type" dataField="applyType"/> 
+										<s:GridColumn headerText="Description" dataField="description"/>
+									</s:ArrayList>
+								</s:columns>
+							</s:DataGrid>
+						</s:VGroup>
+					</s:NavigatorContent>
+				</mx:ViewStack>
+			</s:NavigatorContent>
+		</mx:TabNavigator>
+	</s:BorderContainer>
+</c9:ObjectManagementDetailsBox>

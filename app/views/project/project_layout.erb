@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>StackPlace :: Stack Browser</title>
+  <% if @meta_description %>
+  <meta description="<%=@meta_description%>"/>
+  <% end %>
+  <% if @meta_author %>
+  <meta name="author" content="<%=@meta_author%>">
+  <% end %>
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- link href="/favicon.png" rel="shortcut icon" / -->
+  <link href="<%=root%>stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="<%=root%>stylesheets/screen_custom.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="<%=root%>stylesheets/style.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="<%=root%>stylesheets/browse.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="<%=root%>stylesheets/jquery-ui-1.8.17.custom.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="<%=root%>javascripts/modernizr-2.0.js"></script>
+  <script src="<%=root%>javascripts/jquery-1.7.1.min.js" type="text/javascript"></script>
+  <script src="<%=root%>javascripts/jquery-ui-1.8.17.custom.min.js" type="text/javascript"></script>
+  <script src="<%=root%>javascripts/template_support.js" type="text/javascript"></script>
+  <script src="<%=root%>javascripts/form_support.js" type="text/javascript"></script>
+  <script src="<%=root%>javascripts/browse_support.js" type="text/javascript"></script>
+</head>
+
+<body>
+  <header>
+    <hgroup>
+      <h1>&nbsp;</h1>
+    </hgroup>
+  </header>
+
+  <%= erb :nav%>
+
+    <div id="main">
+      <div id="content">
+	<%=yield %>
+      </div>
+    </div>
+
+</body>
+</html>

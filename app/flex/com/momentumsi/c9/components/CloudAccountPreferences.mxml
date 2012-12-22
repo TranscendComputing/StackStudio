@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components:CustomTitleWindow  xmlns:fx="http://ns.adobe.com/mxml/2009"
+							   xmlns:s="library://ns.adobe.com/flex/spark"
+							   xmlns:mx="library://ns.adobe.com/flex/mx"
+							   xmlns:services="com.momentumsi.c9.services.*"
+							   xmlns:components="com.momentumsi.c9.components.*"
+							   width="990" height="460"
+							   initialize="customtitlewindow1_initializeHandler(event)"
+							   closeButton="{acctPrefCloseButton}"
+							   title="Account Preferences">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.constants.ImagePath;
+			import com.momentumsi.c9.events.apiIdentity.UpdateCloudAccountResultEvent;
+			import com.momentumsi.c9.events.storage.DescribeBucketsResultEvent;
+			import com.momentumsi.c9.models.CloudAccount;
+			import com.momentumsi.c9.models.User;
+			import com.momentumsi.c9.services.IdentityService;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			
+			import spark.events.IndexChangeEvent;
+			
+			[Bindable]
+			public var user:User;
+			[Bindable]
+			public var account:CloudAccount;
+			[Bindable]
+			private var buckets:ArrayCollection = new ArrayCollection([{key: "Loading..."}]);
+
+			protected function accountsList_changeHandler(event:FlexEvent):void
+			{
+				buckets.removeAll();
+				buckets.addItem({key: "Loading..."});
+				chefBucketDL.selectedIndex = 0;
+				puppetBucketDDL.selectedIndex = 0;
+				account = accountsList.selectedItem as CloudAccount;
+				if(account.stackPreferences == null)
+				{
+					account.stackPreferences = new Object();
+				}
+				bucketService.describeBuckets();
+			}
+			
+			protected function saveButton_clickHandler(event:MouseEvent):void
+			{
+				if(chefBucketDL.selectedIndex != 0)
+				{
+					account.stackPreferences.chef_bucket = chefBucketDL.selectedItem.key;
+				}else{
+					delete account.stackPreferences.chef_bucket;
+				}
+				if(puppetBucketDDL.selectedIndex != 0)
+				{
+					account.stackPreferences.puppet_bucket = puppetBucketDDL.selectedItem.key;
+				}else{
+					delete account.stackPreferences.puppet_bucket;
+				}
+				
+				
+				if(Helpers.isEmptyTextField(chefServerUrlTI))
+				{
+					delete account.stackPreferences.chef_server_url;
+				}else{
+					account.stackPreferences.chef_server_url = chefServerUrlTI.text;
+				}
+				
+				if(Helpers.isEmptyTextField(puppetServerUrlTI))
+				{
+					delete account.stackPreferences.puppet_server_url;
+				}else{
+					account.stackPreferences.puppet_server_url = puppetServerUrlTI.text;
+				}
+				identityService.updateCloudAccount(user.id, account);
+			}
+			
+			protected function bucketService_describeBucketsResultHandler(event:DescribeBucketsResultEvent):void
+			{
+				buckets = new ArrayCollection(event.result as Array);
+				buckets.addItemAt({key: "None"}, 0);
+				
+				chefBucketDL.selectedIndex = 0;
+				puppetBucketDDL.selectedIndex = 0;
+				
+				if(account.stackPreferences != null)
+				{
+					if(account.chefBucket != null || account.puppetBucket != null)
+					{
+						for each(var bucket:Object in buckets)
+						{
+							if(bucket.key == account.chefBucket)
+							{
+								chefBucketDL.selectedItem = bucket;
+							}
+							if(bucket.key == account.puppetBucket)
+							{
+								puppetBucketDDL.selectedItem = bucket;
+							}
+						}
+					}
+				}
+			}
+			
+			protected function identityService_updateCloudAccountResultHandler(event:UpdateCloudAccountResultEvent):void
+			{
+				var updatedAccount:CloudAccount = CloudAccount.buildCloudAccount(event.result.cloud_account); 
+				Alert.show("Account has been updated.");
+				user.cloud_accounts.setItemAt(updatedAccount, user.cloud_accounts.getItemIndex(account));
+				account = updatedAccount;
+			}
+			
+			protected function acctPrefCloseButton_clickHandler(event:MouseEvent):void
+			{
+				dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
+			}
+			
+			protected function customtitlewindow1_initializeHandler(event:FlexEvent):void
+			{
+				if(account != null)
+				{
+					for each(var acct:CloudAccount in user.cloud_accounts)
+					{
+						if(acct.id == account.id)
+						{
+							accountsList.selectedItem = acct;
+							break;
+						}
+					}
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<services:IdentityService id="identityService"
+								  updateCloudAccountResult="identityService_updateCloudAccountResultHandler(event)"/>
+		
+		<services:S3Service id="bucketService"
+							cloudAccountId="{account.id}"
+						    describeBucketsResult="bucketService_describeBucketsResultHandler(event)"/>
+	</fx:Declarations>
+	
+	<s:VGroup paddingBottom="10" paddingLeft="15" paddingRight="15" paddingTop="5">
+		<mx:Text text="Select an account to edit preferences."
+				 fontWeight="bold"/>
+		<s:HGroup gap="5">
+			<s:VGroup width="193" height="100%">
+				<mx:Text text="Existing Accounts" fontWeight="bold" color="black"/>
+				<s:BorderContainer cornerRadius="4" height="100%" width="100%">
+					<s:Rect width="100%" height="100%">
+						<s:fill>
+							<s:SolidColor>
+								<s:color>0x330066</s:color>
+							</s:SolidColor>
+						</s:fill>
+					</s:Rect>
+					<s:List id="accountsList" 
+							styleName="transparentList"
+							labelField="account-name"
+							dataProvider="{user.cloud_accounts}" 
+							height="100%" width="100%" 
+							color="white"
+							selectedIndex="0"
+						    valueCommit="accountsList_changeHandler(event)"/>
+				</s:BorderContainer>
+			</s:VGroup>
+			<s:VGroup width="100%" height="100%">
+				<mx:Text text="{accountsList.selectedItem.name} Preferences" fontWeight="bold" color="black"/>
+				<s:BorderContainer>
+					<s:Scroller width="752" height="320">
+						<s:VGroup>
+							<s:Form>
+								<s:HGroup verticalAlign="middle">
+									<s:VGroup y="5" width="80" height="65" horizontalAlign="center"
+											  verticalAlign="middle">
+										<s:Image height="55%" width="55%" 
+												 scaleMode="letterbox" 
+												 smoothingQuality="high" smooth="true" 
+												 source="{ImagePath.CHEF_LOGO}"/>
+									</s:VGroup>
+									<s:FormItem label="Chef Bucket:">
+										<s:DropDownList id="chefBucketDL"
+														labelField="key"
+														selectedIndex="0"
+														dataProvider="{buckets}"													
+														width="435"/>
+										<s:Label width="435"
+												 text="Container storing Chef setup and configuration files such as your Chef validation.pem"/>
+									</s:FormItem>
+								</s:HGroup>
+								<s:HGroup>
+									<s:VGroup width="80" height="65" 
+											  verticalAlign="middle" horizontalAlign="center">
+										<s:Image height="55%" width="55%" 
+												 scaleMode="letterbox" 
+												 smoothingQuality="high" smooth="true" 
+												 source="{ImagePath.CHEF_LOGO}"/>
+									</s:VGroup>
+									<s:FormItem label="Chef Server URL:">
+										<s:TextInput id="chefServerUrlTI"
+													 text="{account.stackPreferences.chef_server_url}"
+													 width="430"/>
+										<s:Label text="Endpoint URL for your hosted Chef server."/>
+									</s:FormItem>
+								</s:HGroup>
+								<s:HGroup>
+									<s:VGroup width="80" height="65" 
+											  verticalAlign="middle" horizontalAlign="center">
+										<s:Image source="{ImagePath.PUPPET_LOGO}"
+												 smoothingQuality="high"
+												 smooth="true"
+												 scaleX=".50" scaleY=".50"/>
+									</s:VGroup>
+									<s:FormItem label="Puppet Bucket:">
+										<s:DropDownList id="puppetBucketDDL" 
+														width="435"
+														selectedIndex="0"
+														labelField="key"
+														dataProvider="{buckets}"/>
+										<s:Label width="435" text="Container storing Puppet setup and configuration files such as your Puppet Enterprise installation tarball."/>
+									</s:FormItem>
+								</s:HGroup>
+								<s:HGroup>
+									<s:VGroup width="80" height="65" 
+											  verticalAlign="middle" horizontalAlign="center">
+										<s:Image source="{ImagePath.PUPPET_LOGO}"
+												 smoothingQuality="high"
+												 smooth="true"
+												 scaleX=".50" scaleY=".50"/>
+									</s:VGroup>
+									<s:FormItem label="Puppet Server URL:">
+										<s:TextInput id="puppetServerUrlTI"
+													 text="{account.stackPreferences.puppet_server_url}"
+													 width="430"/>
+										<s:Label text="Endpoint URL for your Puppet master."/>
+									</s:FormItem>
+								</s:HGroup>
+							</s:Form>
+						</s:VGroup>
+					</s:Scroller>
+				</s:BorderContainer>
+			</s:VGroup>
+		</s:HGroup>
+		<s:HGroup width="100%" paddingTop="10" verticalAlign="middle">
+			<s:HGroup horizontalAlign="left" width="100%">
+				<s:Button id="saveButton" 
+						  label="Save" 
+						  click="saveButton_clickHandler(event)"/>
+			</s:HGroup>
+			<s:HGroup horizontalAlign="right" width="100%">
+				<s:Button id="acctPrefCloseButton" label="Close" 
+						  click="acctPrefCloseButton_clickHandler(event)"/>
+			</s:HGroup>			
+		</s:HGroup>
+	</s:VGroup>
+</components:CustomTitleWindow>

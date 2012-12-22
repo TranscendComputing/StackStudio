@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components:CustomTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   initialize="wizardWindow_initializeHandler(event)"
+			   xmlns:wizard="com.momentumsi.c9.components.wizard.*" 
+			   xmlns:components="com.momentumsi.c9.components.*">
+	<fx:Metadata>
+		[Event(name="cloudResourceCreated", type="com.momentumsi.c9.events.CloudResourceCreateEvent")]
+	</fx:Metadata>
+	<fx:Script>
+		<![CDATA[
+			import com.maccherone.json.JSON;
+			import com.momentumsi.c9.components.InputComboBox;
+			import com.momentumsi.c9.constants.ResourceTypeLabel;
+			import com.momentumsi.c9.events.CloudAccountSetEvent;
+			import com.momentumsi.c9.events.ElementSaveEvent;
+			import com.momentumsi.c9.events.NodeEvent;
+			import com.momentumsi.c9.models.CloudAccount;
+			import com.momentumsi.c9.models.Element;
+			import com.momentumsi.c9.models.Node;
+			import com.momentumsi.c9.models.Project;
+			import com.momentumsi.c9.models.ProjectVariant;
+			import com.momentumsi.c9.models.ProjectVersion;
+			import com.momentumsi.c9.models.User;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import fr.kapit.diagrammer.base.uicomponent.DiagramSprite;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.ComboBox;
+			import mx.core.mx_internal;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.events.MoveEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.CallResponder;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.StringUtil;
+			
+			import spark.components.ComboBox;
+			import spark.components.List;
+
+			[Bindable]
+			public var user:User;
+			[Bindable]
+			public var project:Project;
+			[Bindable]
+			public var node:Node;
+			[Bindable]
+			public var element:Element;
+			[Bindable]
+			public var projectVersion:ProjectVersion;
+			[Bindable]
+			public var region:String;
+			[Bindable]
+			public var diagramNode:DiagramSprite;
+			[Bindable]
+			public var wizardDisplayName:String;
+			[Bindable]
+			public var objectManagementCreate:Boolean = false;
+			public var promptedFromWindow:Boolean = false;
+			public var wizardType:int;
+			private var _cloudAccount:CloudAccount;
+			
+			public var createElementResponder:CallResponder = new CallResponder();
+			
+			protected function wizardWindow_initializeHandler(event:FlexEvent):void
+			{
+				createElementResponder.addEventListener(ResultEvent.RESULT, elementCreatedUpdatedHandler);				
+			}
+			
+			public function createVariants(name:String, environments:ArrayCollection):void
+			{
+				var variant:ProjectVariant = new ProjectVariant();
+				for each(var stage:Object in environments)
+				{
+					variant.environment = stage.name;
+					if(element.id == null)
+					{
+						variant.ruleType = ProjectVariant.REMOVE_TYPE;
+						variant.rules = {name: name};
+					}else{
+						variant.ruleType = ProjectVariant.MODIFY_TYPE;
+						variant.rules = {name: name, properties: element.properties}
+					}
+					project.createVariant(variant);
+				}
+			}
+			
+			public function saveElement(elementName:String, elementProperties:Object, type:String=null):void
+			{
+				element.name = elementName;
+				element.properties = elementProperties;
+				
+				// Used specifically for installs (instance and autoscale group) where
+				// elementType will be instance(or autoscale) but node will be install type (e.g. Chef::Role)
+				if(type == null)
+				{
+					node.properties.Type = element.elementType;
+				}else{
+					node.properties.Type = type;
+					node.properties.elementProperties = elementProperties;
+				}
+				
+				element.addEventListener(ElementSaveEvent.RESULT, elementCreatedUpdatedHandler);
+				element.save(projectVersion);
+			}
+			
+			private function elementCreatedUpdatedHandler(event:ElementSaveEvent):void
+			{
+				node.name = element.name;
+				if(node.id == null)
+				{
+					node.elementId = element.id;
+				}
+				node.save(projectVersion, diagramNode);
+				node.addEventListener(NodeEvent.UPDATE, nodeSaved_eventHandler);
+			}
+			
+			private function nodeSaved_eventHandler(event:NodeEvent):void
+			{
+				project.getProjectVersion(projectVersion.version);
+				PopUpManager.removePopUp(this);
+			}
+			
+			public function applyConfigurations():void
+			{
+				// Overridden in each wizard component
+			}
+			
+			/**
+			 * Sets the list selected items to dataCollection (adds the 
+			 * dataCollection items if not already in the list).
+			 * 
+			 * @param dataCollection The item(s) to set as selected
+			 * @param list The list to set
+			 * @param labelProperty The possible label property which will be displayed
+			 * @param defaultSelectionLabel (optional) If no items are found, use this as the
+			 * default selection
+			 * 
+			 **/
+			protected function setListSelections(dataCollection:Array, list:List, labelProperty:String, defaultSelectionLabel:String=null):void
+			{
+				var listCollection:ArrayCollection = new ArrayCollection(list.dataProvider.toArray());
+				var listItem:Object;
+				
+				//If editing, datacollection will represent current items in set
+				if(dataCollection && dataCollection.length > 0)
+				{
+					var selectedIndexes:Vector.<int> = new Vector.<int>;
+					var itemIndex:int;
+					for(var index:int=0; index < dataCollection.length; index++)
+					{
+						for each(listItem in listCollection)
+						{
+							if(!(dataCollection[index] is String))
+							{
+								if(listItem.Ref == dataCollection[index].Ref)
+								{
+									itemIndex = listCollection.getItemIndex(listItem);
+									selectedIndexes.push(itemIndex);
+									break;
+								}
+							}else{
+								if(listItem[labelProperty] == dataCollection[index])
+								{
+									itemIndex = listCollection.getItemIndex(listItem);
+									selectedIndexes.push(itemIndex);
+									break;
+								}
+							}
+						}
+					}
+					if(selectedIndexes.length > 0)
+					{
+						list.selectedIndices = selectedIndexes;
+						return;
+					}
+				}
+
+				//Reached this loop when creating a new resource and looking for a default value to select initially
+				for each(listItem in listCollection)
+				{
+					if(listItem[labelProperty] == defaultSelectionLabel)
+					{
+						list.selectedItem = listItem;
+						return;
+					}
+				}
+				
+				//If nothing has been selected yet, select 0th item by default
+				list.selectedIndex = 0;
+			}
+			
+			/**
+			 * Sets the comboBox selected item to currentItem	
+			 * 
+			 * @param currentItem The item to set as selected
+			 * @param comboBox The comboBox to set
+			 * @param labelProperty The possible label property which will be displayed
+			 * 
+			 **/
+			protected function setComboBoxSelection(currentItem:Object, comboBox:mx.controls.ComboBox, labelProperty:String=null):void
+			{
+				if(currentItem)
+				{
+					for each(var listItem:Object in comboBox.dataProvider)
+					{
+						if(listItem is String || listItem is Number)
+						{
+							if(listItem.toString().toLowerCase() == currentItem)
+							{
+								comboBox.selectedItem = listItem;
+								return;
+							}
+						}else{
+							if(listItem == currentItem || listItem[labelProperty] == currentItem)
+							{
+								comboBox.selectedItem = listItem;
+								return;
+							}				
+						}
+					}
+					comboBox.selectedIndex = 0;
+				}
+			}
+			
+			protected function setInputComboBoxSelection(currentItem:Object, comboBox:InputComboBox, labelProperty:String=null):void
+			{				
+				if(currentItem)
+				{
+					var item:Object;
+					if(currentItem.hasOwnProperty("Ref") && projectVersion != null)
+					{
+						comboBox.dataProvider = projectVersion.getParameters();
+						comboBox.setParameterLabelFunction();
+						for each(item in comboBox.dataProvider)
+						{
+							if(item.name == currentItem["Ref"])
+							{
+								comboBox.selectedItem = item;
+							}
+						}
+					}else if(currentItem.hasOwnProperty("Fn::FindInMap") && projectVersion != null)
+					{
+						comboBox.dataProvider = projectVersion.getMappings();
+						comboBox.setMappingLabelFunction();
+						for each(item in comboBox.dataProvider)
+						{
+							if(item.name == currentItem["Fn::FindInMap"])
+							{
+								comboBox.selectedItem = item;
+							}
+						}
+					}else
+					{
+						comboBox.dataProvider = comboBox.defaultDataProvider;
+						comboBox.setRegularLabelFunction();
+						for each(item in comboBox.dataProvider)
+						{
+							if(item is String || item is Number)
+							{
+								if(item.toString().toLowerCase() == currentItem)
+								{
+									comboBox.selectedItem = item;
+								}
+							}else{
+								if(item[labelProperty] == currentItem)
+								{
+									comboBox.selectedItem = item;
+								}				
+							}
+						}
+					}
+				}else
+				{
+					if(comboBox.dataProvider.length > 0)
+					{
+						comboBox.selectedIndex = 0;
+					}
+				}
+			}
+			
+			/**
+			 * Universal labelFunction for displaying objects
+			 * in all compenents in wizards.  Below are possible
+			 * properties to be displayed and what type the property belongs to.
+			 * <p>If another property can be added, please add to list<p>
+			 * 
+			 * @param Ref parameter
+			 * @param groupName EC2 security group
+			 * @param name key pair
+			 * @param id RDS security group, RDS parameter group
+			 * @param public_ip EC2 elastic ip
+			 * */			
+			protected function wizardLabelFunction(item:Object):String
+			{
+				if(item is String)
+				{
+					return item.toString();
+				}
+				if(item.Ref)
+				{
+					return "@" + item.Ref;
+				}
+				if(item.groupName)
+				{
+					return item.groupName;
+				}
+				if(item.name)
+				{
+					return item.name;
+				}
+				if(item.public_ip)
+				{
+					return item.public_ip;
+				}
+				if(item.id)
+				{
+					return item.id;
+				}
+				return "<unavailable>";
+			}
+			
+			/**
+			 * Determines if value in text field references a parameter.
+			 * If so, return a Ref object (after removing @ sign)
+			 * 
+			 * @param value String being set as value
+			 * */
+			protected function checkForReference(value:String):Object
+			{
+				if(value == null || StringUtil.trim(value) == "")
+				{
+					return null;
+				}
+				if(value.substr(0, 1) == "@")
+				{
+					return {Ref: value.slice(1)};
+				}else{
+					return value;
+				}
+			}
+			
+			[Bindable("accountSet")]
+			public function get cloudAccount():CloudAccount 
+			{
+				return _cloudAccount;
+			}
+
+			public function set cloudAccount(value:CloudAccount):void 
+			{
+				wizardDisplayName = ResourceTypeLabel.RESOURCE_NAME[value.cloud_provider][wizardType];
+				title = wizardDisplayName + " Wizard";
+				_cloudAccount = value;
+				var event:Event = new Event("accountSet");
+				dispatchEvent(event);
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+</components:CustomTitleWindow>

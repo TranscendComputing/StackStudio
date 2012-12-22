@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cloud-monitor-defaults type="array">
+  <cloud-monitor-default>
+    <monitor-description>ebsDefault</monitor-description>
+    <monitor-metric-name>VolumeIdleTime</monitor-metric-name>
+    <monitor-period type="integer">300</monitor-period>
+    <monitor-statistic-name>Average</monitor-statistic-name>
+    <monitor-unit>Seconds</monitor-unit>
+  </cloud-monitor-default>
+  <cloud-monitor-default>
+    <monitor-description>ebsDefault</monitor-description>
+    <monitor-metric-name>VolumeQueueLength</monitor-metric-name>
+    <monitor-period type="integer">300</monitor-period>
+    <monitor-statistic-name>Average</monitor-statistic-name>
+    <monitor-unit>Count</monitor-unit>
+  </cloud-monitor-default>
+  <cloud-monitor-default>
+    <monitor-description>ebsDefault</monitor-description>
+    <monitor-metric-name>VolumeReadBytes</monitor-metric-name>
+    <monitor-period type="integer">300</monitor-period>
+    <monitor-statistic-name>Average</monitor-statistic-name>
+    <monitor-unit>Bytes</monitor-unit>
+  </cloud-monitor-default>
+  <cloud-monitor-default>
+    <monitor-description>ebsDefault</monitor-description>
+    <monitor-metric-name>VolumeReadOps</monitor-metric-name>
+    <monitor-period type="integer">300</monitor-period>
+    <monitor-statistic-name>Average</monitor-statistic-name>
+    <monitor-unit>Count</monitor-unit>
+  </cloud-monitor-default>
+  <cloud-monitor-default>
+    <monitor-description>ebsDefault</monitor-description>
+    <monitor-metric-name>VolumeTotalReadTime</monitor-metric-name>
+    <monitor-period type="integer">300</monitor-period>
+    <monitor-statistic-name>Average</monitor-statistic-name>
+    <monitor-unit>Seconds</monitor-unit>
+  </cloud-monitor-default>
+  <cloud-monitor-default>
+    <monitor-description>ebsDefault</monitor-description>
+    <monitor-metric-name>VolumeTotalWriteTime</monitor-metric-name>
+    <monitor-period type="integer">300</monitor-period>
+    <monitor-statistic-name>Average</monitor-statistic-name>
+    <monitor-unit>Seconds</monitor-unit>
+  </cloud-monitor-default>
+  <cloud-monitor-default>
+    <monitor-description>ebsDefault</monitor-description>
+    <monitor-metric-name>VolumeWriteBytes</monitor-metric-name>
+    <monitor-period type="integer">300</monitor-period>
+    <monitor-statistic-name>Average</monitor-statistic-name>
+    <monitor-unit>Bytes</monitor-unit>
+  </cloud-monitor-default>
+  <cloud-monitor-default>
+    <monitor-description>ebsDefault</monitor-description>
+    <monitor-metric-name>VolumeWriteOps</monitor-metric-name>
+    <monitor-period type="integer">300</monitor-period>
+    <monitor-statistic-name>Average</monitor-statistic-name>
+    <monitor-unit>Count</monitor-unit>
+  </cloud-monitor-default>
+</cloud-monitor-defaults>

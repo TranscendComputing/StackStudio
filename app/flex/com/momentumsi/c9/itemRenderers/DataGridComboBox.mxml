@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:GridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					xmlns:s="library://ns.adobe.com/flex/spark" 
+					xmlns:mx="library://ns.adobe.com/flex/mx"
+					clipAndEnableScrolling="true" 
+					width="100%">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.events.ListEvent;
+			
+			override public function set data(value:Object):void
+			{
+				if(value!=null)
+				{
+					super.data = value;
+					for(var i:int = 0; i < super.data.comboBoxCollection; i++)
+					{
+						if(super.data.comboBoxSelection == super.data.comboBoxCollection[i].label)
+						{
+							comboBox.selectedIndex = i;
+						}
+					}
+				}
+			}	
+			
+			protected function comboBox_changeHandler(event:ListEvent):void
+			{
+				super.data.comboBoxSelection = comboBox.selectedLabel;
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<mx:ComboBox id="comboBox" change="comboBox_changeHandler(event)" dataProvider="{data.comboBoxollection}" width="100%"/>
+</s:GridItemRenderer>

@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components:CustomTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+							  xmlns:s="library://ns.adobe.com/flex/spark"
+							  xmlns:mx="library://ns.adobe.com/flex/mx"
+							  width="751" height="322"
+							  title="Modify Queue"
+							  initialize="customtitlewindow1_initializeHandler(event)"
+							  defaultButton="{submitButton}" 
+							  xmlns:components="com.momentumsi.c9.components.*" xmlns:services="com.momentumsi.c9.services.*">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.events.sqs.SetQueueAttributesResultEvent;
+			import com.momentumsi.c9.events.sqs.SqsServiceFaultEvent;
+			import com.momentumsi.c9.models.CloudAccount;
+			import com.momentumsi.c9.representers.MessageQueueRepresenter;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			import mx.events.MoveEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			[Bindable]
+			public var cloudAccount:CloudAccount;
+			[Bindable]
+			public var region:String;
+			[Bindable]
+			public var queue:MessageQueueRepresenter;
+			
+			private var visibilityTimeout:int;
+			private var retentionPeriod:int;
+			private var messageSize:int;
+			private var deliveryDelay:int;
+			
+			protected function customtitlewindow1_initializeHandler(event:FlexEvent):void
+			{
+				setVisibilityTimout();
+				setMaxRetentionPeriod();
+				setMaxMessageSize();
+				setDelaySeconds();
+			}
+			
+			private function setVisibilityTimout():void
+			{
+				if(queue.visibilityTimeout < 60)
+				{
+					visibilityTimoutTimeUnitDDL.selectedIndex = 0;
+					visibilityTimeoutTI.text = queue.visibilityTimeout.toString();
+				}else if(queue.visibilityTimeout > 60 && queue.visibilityTimeout < 3600)
+				{
+					visibilityTimoutTimeUnitDDL.selectedIndex = 1;
+					visibilityTimeoutTI.text = (queue.visibilityTimeout / 60).toString();
+				}else{
+					visibilityTimoutTimeUnitDDL.selectedIndex = 2;
+					visibilityTimeoutTI.text = (queue.visibilityTimeout / 3600).toString();
+				}
+			}
+			
+			private function setMaxRetentionPeriod():void
+			{
+				if(queue.messageRetentionPeriod < 3600)
+				{
+					retentionPeriodTimeUnitDDL.selectedIndex = 0;
+					retentionPeriodTI.text = (queue.messageRetentionPeriod / 60).toString();
+				}else if(queue.messageRetentionPeriod > 3600 && queue.messageRetentionPeriod < 86400)
+				{
+					retentionPeriodTimeUnitDDL.selectedIndex = 1;
+					retentionPeriodTI.text = (queue.messageRetentionPeriod / 3600).toString();
+				}else{
+					retentionPeriodTimeUnitDDL.selectedIndex = 2;
+					retentionPeriodTI.text = (queue.messageRetentionPeriod / 86400).toString();
+				}
+				
+			}
+			
+			private function setMaxMessageSize():void
+			{
+				maxMessageSizeTI.text = (queue.maxMessageSize / 1024).toString();
+			}
+			
+			private function setDelaySeconds():void
+			{
+				if(queue.delaySeconds < 60)
+				{
+					deliveryDelayTimeUnitDDL.selectedIndex = 0;
+					deliveryDelayTI.text = queue.delaySeconds.toString();
+				}else{
+					deliveryDelayTimeUnitDDL.selectedIndex = 1;
+					deliveryDelayTI.text = (queue.delaySeconds / 60).toString();
+				}
+			}
+			
+			protected function submitButton_clickHandler(event:MouseEvent):void
+			{	
+				submitButton.enabled = false;
+				
+				setAndValidateVisibilityTimeout();
+				setAndValidateRetentionPeriod();
+				setAndValidateMessageSize();
+				setAndValidateDelaySeconds();
+				
+				var attributes:Object = {
+					VisibilityTimeout: visibilityTimeout,
+					MaximumMessageSize: messageSize,
+					MessageRetentionPeriod: retentionPeriod,
+					DelaySeconds: deliveryDelay
+				};
+				
+				sqsService.addEventListener(SetQueueAttributesResultEvent.RESULT, sqsService_setQueueAttributesResult);
+				sqsService.addEventListener(SqsServiceFaultEvent.FAULT, sqsService_faultHandler);
+				sqsService.setAttributes(attributes);
+			}
+			
+			//Check visible timeout input
+			private function setAndValidateVisibilityTimeout():void
+			{
+				try
+				{
+					visibilityTimeout = parseInt(visibilityTimeoutTI.text);
+					if(visibilityTimoutTimeUnitDDL.selectedIndex == 0 && visibilityTimeout >= 0 && visibilityTimeout <= 43200)
+					{
+						// Do not convert, already in seconds
+					}else if(visibilityTimoutTimeUnitDDL.selectedIndex == 1 && visibilityTimeout >= 0 && visibilityTimeout <= 720)
+					{
+						visibilityTimeout = visibilityTimeout * 60;
+					}else if(visibilityTimoutTimeUnitDDL.selectedIndex == 2 && visibilityTimeout >= 0 && visibilityTimeout <= 12)
+					{
+						visibilityTimeout = visibilityTimeout * 60 * 60;
+					}else
+					{
+						Alert.show("Invalid visible timeout input.");
+					}
+				}					
+				catch (e:Error)
+				{
+					Alert.show("Invalid visible timeout input.");
+				}
+			}
+			
+			//Check retention period input
+			private function setAndValidateRetentionPeriod():void
+			{
+				try
+				{
+					retentionPeriod = parseInt(retentionPeriodTI.text);
+					if (retentionPeriodTimeUnitDDL.selectedIndex == 0 && retentionPeriod >= 1 && retentionPeriod <= 336)
+					{
+						retentionPeriod = retentionPeriod * 60 * 60;
+					}else if (retentionPeriodTimeUnitDDL.selectedIndex == 1 && retentionPeriod >= 1 && retentionPeriod <= 14)
+					{
+						retentionPeriod = retentionPeriod * 60 * 60 * 24;
+					}else
+					{
+						Alert.show("Invalid retention period input.");
+					}
+				}
+				catch (e:Error)
+				{
+					Alert.show("Invalid  retention period input.");					
+				}
+			}
+			
+			//Check max message size input
+			private function setAndValidateMessageSize():void
+			{
+				try
+				{
+					messageSize = parseInt(maxMessageSizeTI.text);
+					if (messageSize >= 1 && messageSize <= 64)
+					{
+						messageSize = messageSize * 1024;
+					}else
+					{
+						Alert.show("Invalid max message size input.");
+					}
+				}
+				catch (e:Error)
+				{
+					Alert.show("Invalid max message size input.");
+				}
+			}
+			
+			//Check delay seconds input
+			private function setAndValidateDelaySeconds():void
+			{
+				try
+				{
+					deliveryDelay = parseInt(deliveryDelayTI.text);
+					if(deliveryDelayTimeUnitDDL.selectedIndex == 0 && deliveryDelay >= 0 && deliveryDelay <= 900)
+					{
+						//Do not convert, already in seconds
+					}else if (deliveryDelayTimeUnitDDL.selectedIndex == 1 && deliveryDelay >=0 && deliveryDelay <= 15)
+					{
+						deliveryDelay = deliveryDelay * 60;
+					}else
+					{
+						Alert.show("Invalid delivery delay input.");
+					}
+				}
+				catch (e:Error)
+				{
+					Alert.show("Invalid delivery delay input.");
+				}
+			}
+			
+			
+			//Result Handlers
+			private function sqsService_setQueueAttributesResult(event:SetQueueAttributesResultEvent):void
+			{
+				Helpers.getObjectManagement(this).refreshResourceList();
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function sqsService_faultHandler(event:FaultEvent):void
+			{
+				submitButton.enabled = true;
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<services:SqsService id="sqsService"
+							 queueUrl="{queue.queueUrl}"
+							 cloudAccountId="{cloudAccount.id}"
+							 region="{region}"/>
+	</fx:Declarations>
+	
+	<s:Form width="598" textAlign="right">
+		<s:FormItem width="428" label="Visibility Timeout:">
+			<s:HGroup verticalAlign="middle">
+				<s:TextInput id="visibilityTimeoutTI" 
+							 width="80"
+							 textAlign="left"/>
+				<s:DropDownList id="visibilityTimoutTimeUnitDDL" 
+								width="90" 
+								fontWeight="normal"
+								selectedIndex="0" 
+								textAlign="left">
+					<s:dataProvider>
+						<s:ArrayCollection>
+							<fx:String>seconds</fx:String>
+							<fx:String>minutes</fx:String>
+							<fx:String>hours</fx:String>
+						</s:ArrayCollection>
+					</s:dataProvider>
+				</s:DropDownList>
+				<s:Label text="Value must be between 0 seconds and 12 hours." verticalAlign="middle" textAlign="left"/>
+			</s:HGroup>
+		</s:FormItem>
+		<s:FormItem width="428" label="Message Retention Period:">
+			<s:HGroup verticalAlign="middle">
+				<s:TextInput id="retentionPeriodTI"
+							 width="80"
+							 textAlign="left"/>
+				<s:DropDownList id="retentionPeriodTimeUnitDDL"
+								textAlign="left"
+								width="90" 
+								fontWeight="normal"
+								selectedIndex="2">
+					<s:dataProvider>
+						<s:ArrayCollection>
+							<fx:String>minutes</fx:String>
+							<fx:String>hours</fx:String>
+							<fx:String>days</fx:String>
+						</s:ArrayCollection>
+					</s:dataProvider>
+				</s:DropDownList>
+				<s:Label id="retentionPeriodLabel"
+						 text="Value must be between 1 hour and 14 days." 
+						 verticalAlign="middle"
+						 textAlign="left"/>
+			</s:HGroup>	
+		</s:FormItem>
+		<s:FormItem width="428" label="Maximum Message Size:">
+			<s:HGroup verticalAlign="middle">
+				<s:TextInput id="maxMessageSizeTI"
+							 width="80"
+							 text="{queue.maxMessageSize}"
+							 textAlign="left"/>
+				<s:Label id="unitLabel"
+						 textAlign="left"
+						 width="90"
+						 text="KB"/>
+				<s:Label id="maxMessageSizeLabel" 
+						 text="Value must be between 1 and 64 KB."
+						 verticalAlign="middle" 
+						 textAlign="left"/>
+			</s:HGroup>
+		</s:FormItem>
+		<s:FormItem width="428" label="Delivery Delay:">
+			<s:HGroup verticalAlign="middle">
+				<s:TextInput id="deliveryDelayTI"
+							 width="80" 
+							 textAlign="left"/>
+				<s:DropDownList id="deliveryDelayTimeUnitDDL"
+								textAlign="left"
+								width="90" 
+								fontWeight="normal"
+								selectedIndex="1">
+					<s:dataProvider>
+						<s:ArrayCollection>
+							<fx:String>seconds</fx:String>
+							<fx:String>minutes</fx:String>
+						</s:ArrayCollection>
+					</s:dataProvider>
+				</s:DropDownList>
+				<s:Label id="deliveryDelayLabel"
+						 text="Value must be between 0 seconds and 15 minutes." 
+						 verticalAlign="middle" 
+						 textAlign="left"/>
+			</s:HGroup>
+		</s:FormItem>
+		<s:FormItem visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"
+					includeInLayout="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"
+					width="428" label="Receive Message Wait Time:">
+			<s:HGroup verticalAlign="middle">
+				<s:TextInput id="receiveMessageWaitTimeTI"
+							 width="80" 
+							 textAlign="left"/>
+				<s:Label text="seconds"
+						 textAlign="left"
+						 width="90"/>
+				<s:Label id="receiveMessageWaitTimeLabel"
+						 text="Value must be between 0 and 20 seconds." 
+						 verticalAlign="middle" 
+						 textAlign="left"/>
+			</s:HGroup>
+		</s:FormItem>
+	</s:Form>
+	
+	<s:Button id="submitButton" x="288" y="255" label="Submit"
+			  click="submitButton_clickHandler(event)"/>
+	<s:Button id="cancelButton" x="366" y="255" label="Cancel"
+			  click="PopUpManager.removePopUp(this)"/>
+</components:CustomTitleWindow>

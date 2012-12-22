@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" 
+			   width="100%" height="100%">
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
+			private var cookiePolicy:Object = new Object();
+			
+			/*
+			protected function saveButton_clickHandler(event:MouseEvent):void
+			{
+				var policy:String;
+				if(stickinessPolicies.selectedIndex == 0)
+				{
+					policy = "Disabled";
+				}else if(stickinessPolicies.selectedIndex == 1)
+				{
+					if(cookieExpirationPeriod.text == "")
+					{
+						policy = "LBCookieStickinessPolicy";
+					}else{
+						policy = "LBCookieStickinessPolicy, expiration period: " + cookieExpirationPeriod.text;
+					}
+				}else if(stickinessPolicies.selectedIndex == 2)
+				{
+					policy = "AppCookieStickinessPolicy, cookieName: " + cookieName.text;
+				}
+			    mainBox.runningView.loadBalancerBox.stickinessPolicy.text = policy;
+				PopUpManager.removePopUp(this);
+			}
+			*/
+			
+			public function getStickinessPolicy():Object
+			{
+				if(policyButtons.selectedValue == "Load Balancer Only")
+				{
+					return {LBCookieStickinessPolicy: [{PolicyName: lbPolicyName.text, CookieExpirationPeriod: cookieExpirationPeriod.text}]};
+				}else if(policyButtons.selectedValue == "Load Balancer and Application")
+				{
+					return {AppCookieStickinessPolicy: [{CookieName: appCookieName.text, PolicyName: appPolicyName.text}],
+					        LBCookieStickinessPolicy: [{PolicyName: lbPolicyName.text, CookieExpirationPeriod: cookieExpirationPeriod.text}]};						
+				}else{
+					return null;
+				}
+			}
+			
+			protected function policyButtons_changeHandler(event:Event):void
+			{
+				if(noSticky.selected)
+				{
+					lbPolicyForm.enabled = false;
+					appPolicyForm.enabled = false;
+				}else if(lbSticky.selected)
+				{
+					lbPolicyForm.enabled = true;
+					appPolicyForm.enabled = false;
+				}else if(lbAppSticky.selected)
+				{
+					lbPolicyForm.enabled = true;
+					appPolicyForm.enabled = true;
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<fx:XML id="loadBalancer"/>
+		<fx:XML id="listener"/>
+		<s:RadioButtonGroup id="policyButtons" change="policyButtons_changeHandler(event)"/>
+	</fx:Declarations>
+	<s:VGroup height="100%" width="100%">
+		<s:Form height="100%" width="100%" textAlign="right">
+			<s:FormItem label="Session Stickiness:" width="100%">
+				<s:VGroup width="100%" textAlign="left">
+					<s:RadioButton id="noSticky" group="{policyButtons}" label="None" selected="true"/>
+					<s:RadioButton id="lbSticky" group="{policyButtons}" label="Load Balancer Only"/>
+					<s:RadioButton id="lbAppSticky" group="{policyButtons}" label="Load Balancer and Application"/>
+				</s:VGroup>
+			</s:FormItem>
+			<s:FormItem id="lbPolicyForm" label="Load Balancer Stickiness Policy:" enabled="false">
+				<s:HGroup textAlign="left">
+					<s:HGroup>
+						<mx:Text text="Policy Name:"/>
+						<s:TextInput id="lbPolicyName" text="MyLBPolicy"/>
+					</s:HGroup>
+					<s:HGroup textAlign="left">
+						<mx:Text text="Expiration Period:"/>
+						<s:TextInput id="cookieExpirationPeriod" text="180"/>
+					</s:HGroup>
+				</s:HGroup>
+			</s:FormItem>
+			<s:FormItem id="appPolicyForm" label="Application Stickiness Policy:" enabled="false">
+				<s:HGroup textAlign="left">
+					<s:HGroup>
+						<mx:Text text="Policy Name:"/>
+						<s:TextInput id="appPolicyName" text="MyAppPolicy"/>
+					</s:HGroup>
+					<s:HGroup>
+						<mx:Text text="Cookie Name:"/>
+						<s:TextInput id="appCookieName" text="MyAppCookie"/>
+					</s:HGroup>
+				</s:HGroup>
+			</s:FormItem>
+		</s:Form>
+		<!--
+		<mx:Accordion id="stickinessPolicies" width="100%" height="228" selectedIndex="0" color="black">
+			<s:NavigatorContent id="disabled" label="Disable Stickiness" width="100%">
+				<s:HGroup width="100%" horizontalAlign="center">
+					<mx:Text text="I do not want stickiness enabled for this load balancer."/>
+				</s:HGroup>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="lbCookie" label="Enable Load Balancer Generated Cookie Stickiness" width="100%" height="100%">
+				<s:BorderContainer width="339" borderVisible="false" horizontalCenter="0"
+								   verticalCenter="0">
+					<mx:Form width="100%" verticalCenter="0" horizontalCenter="0">
+						<mx:FormItem id="lbcookie" label="Policy Name:" fontWeight="bold">
+							<s:TextInput id="lbPolicyName" width="189"
+										 text="LBCookieStickinessPolicy"/>
+						</mx:FormItem>
+						<mx:FormItem label="Expiration Period:" fontWeight="bold">
+							<s:TextInput id="cookieExpirationPeriod"/>
+						</mx:FormItem>
+					</mx:Form>
+				</s:BorderContainer>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="appCookie" label="Enable Application Generated Cookie Stickiness" width="100%" height="100%">
+				<s:BorderContainer borderVisible="false" horizontalCenter="0" verticalCenter="0">
+					<mx:Form>
+						<mx:FormItem label="Policy Name:" fontWeight="bold">
+							<s:TextInput id="appPolicyName" width="174"
+										 text="AppCookieStickinessPolicy"/>
+						</mx:FormItem>
+						<mx:FormItem label="Cookie Name:" fontWeight="bold">
+							<s:TextInput id="cookieName" width="174"/>
+						</mx:FormItem>
+					</mx:Form>
+				</s:BorderContainer>
+			</s:NavigatorContent>
+		</mx:Accordion>
+		-->
+	</s:VGroup>
+</s:Group>

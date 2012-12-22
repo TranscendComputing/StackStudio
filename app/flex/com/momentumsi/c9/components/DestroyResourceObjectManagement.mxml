@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 width="400" height="200"
+		 title="Destroy Resource"
+		 creationComplete="creationCompleteHandler()"
+		 close="PopUpManager.removePopUp(this)" xmlns:services="com.momentumsi.c9.services.*">
+	
+	<fx:Metadata>
+		[Event(name="destroyComplete", type="mx.rpc.events.ResultEvent")]
+	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.serialization.json.JSON;
+			import com.momentumsi.c9.services.CloudApiService;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			[Bindable]
+			public var cloudAccountId:String;
+			[Bindable]
+			public var region:String;
+			[Bindable]
+			public var resourceType:String;
+			public var resourceDisplayId:String;
+			public var resourceId:String;
+			public var childId:String;
+			public var resourceObject:Object;
+			public var refreshObjectManagement:Boolean = true;
+			[Bindable]
+			public var action:String = "destroy";
+			public var service:String;
+			
+			public function creationCompleteHandler():void
+			{
+				PopUpManager.centerPopUp(this);
+				
+				switch(resourceType)
+				{
+					case CloudApiService.EC2_SERVICE:
+						destroyMessage.text = "Are you sure you want to terminate the following instance?";
+						destroyButton.label = "Terminate";
+						action = "terminate_instances";
+						break;
+					case CloudApiService.AS_SERVICE:
+						destroyMessage.text = "Are you sure you want to delete the following auto scale group?";
+						action = "delete_auto_scaling_group";
+						break;
+					case "asSpinDown":
+						resourceType = CloudApiService.AS_SERVICE;
+						destroyMessage.text = "Spinning an auto scale group down will set its minimum size, maximum size, and desired capacity to zero. Are you sure you want to spin down the following auto scale group?";
+						destroyButton.label = "Spin Down";
+						action = "spin_down_auto_scale";
+						break;
+					case CloudApiService.BEANSTALK_SERVICE:
+						destroyMessage.text = "Beanstalk application environments will be terminated in the process. Are you sure you want to delete the following beanstalk application?";
+						action = "destroy_beanstalk";
+						break;
+					case CloudApiService.EBS_SERVICE:
+						destroyMessage.text = "Are you sure you want to delete the following volume?";
+						action = "delete_volume";
+						break;
+					case "ebsDetach":
+						resourceType = CloudApiService.EBS_SERVICE;
+						destroyMessage.text = "Are you sure you want to detach the following volume?";
+						destroyButton.label = "Detach";
+						action = "detach_volume";
+						break;
+					case "ebsForceDetach":
+						resourceType = CloudApiService.EBS_SERVICE;
+						destroyMessage.text = "Are you sure you want to force detach the following volume?";
+						destroyButton.label = "Detach";
+						action = "force_detach_volume";
+						break;
+					case CloudApiService.CACHE_SERVICE:
+						destroyMessage.text = "Are you sure you want to delete the following cache cluster?";
+						action = "delete_cache_cluster";
+						break;
+					case CloudApiService.ELB_SERVICE:
+						destroyMessage.text = "Are you sure you want to delete the following load balancer?";
+						action = "delete_load_balancer";
+						break;
+					case CloudApiService.RDS_SERVICE:
+						destroyMessage.text = "Are you sure you want to delete the following relational database?";
+						action = "delete_db_instance";
+						break;
+					case CloudApiService.SNS_SERVICE:
+						destroyMessage.text = "Are you sure you want to delete the following notification topic?";
+						action = "delete_topic";
+						break;
+					case CloudApiService.S3_SERVICE:
+						destroyMessage.text = "Any contents in the bucket will also be removed. Are you sure you want to delete the following bucket?";
+						action = "force_delete_bucket";
+						break;
+					case CloudApiService.SQS_SERVICE:
+						destroyMessage.text = "Are you sure you want to delete the following message queue?";
+						action = "delete_queue"
+						break;
+					case "iamGroup":
+						resourceType = CloudApiService.IAM_SERVICE;
+						action = "delete_group";
+						destroyMessage.text = "Identity access management will also delete any policies with the group. Are you sure you want to delete the following identity access management group?"
+						break;
+					case "iamUser":
+						resourceType = CloudApiService.IAM_SERVICE;
+						action = "delete_user";
+						destroyMessage.text = "Identity access management will also delete any policies, access keys, and signing certificates with the user. Are you sure you want to delete the following identity access management user?"
+						break;
+					case CloudApiService.ACW_SERVICE:
+						destroyMessage.text = "Are you sure you want to delete the following alarm?"
+						action = "delete_alarm";
+						break;
+					case CloudApiService.SIMPLE_DB_SERVICE:
+						destroyMessage.text = "Are you sure you want to delete the following simple database?";
+						action = "delete_domain";
+						break;
+					case CloudApiService.SECURITY_GROUP:
+						resourceType = service;
+						destroyMessage.text = "Are you sure you want to delete the following security group?";
+						action = "delete_security_group";
+						break;
+					case "hostedZone":
+						resourceType = CloudApiService.DNS_SERVICE;
+						destroyMessage.text = "Are you sure you want to delete the following hosted zone?";
+						action = "delete_hosted_zone";
+						break;
+					case "recordSet":
+						resourceType = CloudApiService.DNS_SERVICE;
+						destroyMessage.text = "Are you sure you want to delete the following record set?";
+						action = "delete_record_set";
+						break;
+					case "rdsParameter":
+						resourceType = CloudApiService.RDS_SERVICE;
+						destroyMessage.text = "Are you sure you want to delete the following database parameter group?";
+						action = "delete_db_parameter_group";
+						break;
+					case "elcParameter":
+						resourceType = CloudApiService.CACHE_SERVICE;
+						destroyMessage.text = "Are you sure you want to delete the following cache parameter group?";
+						action = "delete_cache_parameter_group";
+						break;
+					case "rdsSecurityGroup":
+						resourceType = CloudApiService.RDS_SERVICE;
+						destroyMessage.text = "Are you sure you want to delete the following db security group?";
+						action = "delete_db_security_group";
+						break;
+					case "computeSecurityGroup":
+						resourceType = CloudApiService.EC2_SERVICE;
+						destroyMessage.text = "Are you sure you want to delete the following security group?";
+						action = "delete_security_group";
+						break;
+					case "spotInstance":
+						resourceType = CloudApiService.EC2_SERVICE;
+						destroyMessage.text = "Are you sure you want to cancel the following spot request?";
+						action = "cancel_spot_instance_requests";
+						break;
+					case "elasticIpRelease":
+						resourceType = CloudApiService.EC2_SERVICE;
+						destroyMessage.text = "Are you sure you want to release the following address?";
+						destroyButton.label = "Release";
+						action = "release_address";
+						break;
+					case "elasticIpDisassociate":
+						resourceType = CloudApiService.EC2_SERVICE;
+						destroyMessage.text = "Are you sure you want to disassociate the following address?";
+						destroyButton.label = "Disassociate";
+						action = "disassociate_address";
+						break;
+					case "keyPair":
+						resourceType = CloudApiService.EC2_SERVICE;
+						destroyMessage.text = "Are you sure you want to delete the following key pair?";
+						action = "delete_key_pair";
+						break;
+				}
+				resourceReference.text = "- " + resourceDisplayId;
+			}
+			
+			protected function destroyButton_clickHandler(event:MouseEvent):void
+			{
+				destroyButton.enabled = false;
+				if(resourceObject == null)
+				{
+					terminateService.request = {physical_id: resourceId, child_id: childId};
+					terminateService.send();
+				}else
+				{
+					var resourceObjectString:String = JSON.encode(resourceObject);
+					terminateService.request = {resource_object: resourceObjectString};
+					terminateService.send();
+				}
+			}
+			
+			protected function objectManagementDestroySvc_resultHandler(event:ResultEvent):void
+			{
+				if(refreshObjectManagement)
+				{
+					Helpers.getObjectManagement(this).refreshResourceList();
+				}else
+				{
+					dispatchEvent(new ResultEvent("destroyComplete", false, true, event.result));
+				}
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function terminateService_faultHandler(event:FaultEvent):void
+			{
+				destroyButton.enabled = true;
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<services:CloudApiService id="terminateService"
+								  serviceType="{resourceType}"
+								  action="{action}"
+								  cloudAccountId="{cloudAccountId}"
+								  region="{region}"
+								  result="objectManagementDestroySvc_resultHandler(event)"
+								  fault="terminateService_faultHandler(event)"/>
+	</fx:Declarations>
+	
+	<s:VGroup paddingTop="10" paddingLeft="20" paddingRight="20">
+		<mx:Text id="destroyMessage" text="Are you sure you want to destroy the following resource?" width="380"/>
+		<mx:Text id="resourceReference" paddingLeft="15" width="370"/>
+	</s:VGroup>
+	<s:HGroup y="136" horizontalAlign="center" width="100%">
+		<s:Button id="destroyButton" 
+				  label="Delete"
+				  click="destroyButton_clickHandler(event)"/>
+		<s:Button label="Cancel" click="PopUpManager.removePopUp(this)"/>
+	</s:HGroup>
+</s:TitleWindow>

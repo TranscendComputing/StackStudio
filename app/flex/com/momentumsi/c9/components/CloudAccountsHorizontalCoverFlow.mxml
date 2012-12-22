@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box xmlns:mx="http://www.adobe.com/2006/mxml"
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:coverflow="*"
+		horizontalAlign="center" verticalAlign="top"
+		xmlns:containers="com.momentumsi.c9.containers.*"
+		width="100%" height="100%">
+	
+	<mx:Metadata>
+		[Event(name="viewStackChanged", type="flash.events.Event")]
+	</mx:Metadata>
+	
+	<mx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.constants.Color;
+			import com.momentumsi.c9.constants.ImagePath;
+			
+			import mx.containers.Panel;
+			import mx.core.BitmapAsset;
+			import mx.events.FlexEvent;
+			import mx.events.IndexChangedEvent;
+			
+			public function addPanel(panelId:String=null, imageSource:BitmapAsset=null):void
+			{
+				var newPanel:CoverFlowPanel = new CoverFlowPanel();
+				if(panelId!=null)
+				{
+					newPanel.id = panelId;
+					if(!hasCloudPanel(panelId))
+					{
+						coverflow.addItem(newPanel);
+						if(imageSource!=null)
+						{
+							//newPanel.image.source = imagePath;
+							newPanel.image.source = imageSource;
+						}
+					}
+				}
+			}
+			
+			public function hasCloudPanel(cloudProvider:String):Boolean
+			{
+				var found:Boolean = false;
+				var children:Array = coverflow.getChildren();
+				for each(var c:Panel in children)
+				{
+					if(c.id == cloudProvider)
+					{
+						found = true;
+					}
+				}
+				return found;
+			}
+			
+			public function selectCloudPanel(cloudProvider:String):Boolean
+			{
+				var found:Boolean = false;
+				var children:Array = coverflow.getChildren();
+				for each(var c:Panel in children)
+				{
+					if(c.id == cloudProvider)
+					{
+						found = true;
+						coverflow.selectedChild = c;
+					}
+				}
+				return found;
+			}
+			
+			protected function coverflow_changeHandler(event:IndexChangedEvent):void
+			{
+				dispatchEvent(new Event("viewStackChanged", false, false));
+			}
+			
+		]]>
+	</mx:Script>
+
+	<s:VGroup id="box" width="100%" height="100%">
+		<containers:CoverFlowContainer id="coverflow" 
+									   width="100%" height="100%"
+									   horizontalGap="50"
+									   borderStyle="inset"
+									   backgroundColor="{Color.PURPLE}"
+									   segments="10"
+									   reflectionEnabled="true"
+									   disabledOverlayAlpha="0"
+									   horizontalSpacing="100"
+									   change="coverflow_changeHandler(event)">
+		</containers:CoverFlowContainer>
+	</s:VGroup>
+</mx:Box>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:MXDataGridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+						  xmlns:s="library://ns.adobe.com/flex/spark" 
+						  xmlns:mx="library://ns.adobe.com/flex/mx" 
+						  focusEnabled="true">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+
+				
+				override public function set data(value:Object):void
+				{
+					super.data = value;
+					if(value.child('status') == 'creating' || value.child('status') == 'backing-up')
+					{
+						statusIcon.source = "/com/momentumsi/c9/assets/creating.png";
+					}else if(value.child('status') == 'available')
+					{
+						statusIcon.source = "/com/momentumsi/c9/assets/available.png";
+					}else if(value.child('status') == 'deleting')
+					{
+						statusIcon.source = "/com/momentumsi/c9/assets/deleting.png";
+					}else{
+						statusIcon.source = "/com/momentumsi/c9/assets/creating.png";
+					}
+				}
+			
+		]]>
+	</fx:Script>
+	<s:Image id="statusIcon" width="15" height="15"/>
+</s:MXDataGridItemRenderer>

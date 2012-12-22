@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 width="100%" height="100%"
+		 xmlns:services="com.momentumsi.c9.services.*"
+		 creationComplete="creationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.constants.Color;
+			import com.momentumsi.c9.constants.ResourceType;
+			import com.momentumsi.c9.constants.ResourceTypeLabel;
+			import com.momentumsi.c9.events.ProjectEvent;
+			import com.momentumsi.c9.models.Element;
+			import com.momentumsi.c9.models.Environment;
+			import com.momentumsi.c9.models.Project;
+			import com.momentumsi.c9.models.ProvisionedInstance;
+			import com.momentumsi.c9.models.ProvisionedVersion;
+			import com.momentumsi.c9.models.User;
+			import com.momentumsi.c9.models.Version;
+			
+			import mx.collections.ArrayCollection;
+			import mx.core.IFlexDisplayObject;
+			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			
+			import spark.events.IndexChangeEvent;
+			
+			[Bindable]
+			public var user:User; 
+			[Bindable]
+			private var project:Project;
+			[Bindable]
+			private var resourceCollection:ArrayCollection = new ArrayCollection();
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				projectsList.setStyle("borderVisible", false);
+			}
+			
+			protected function projectsList_changeHandler(event:IndexChangeEvent):void
+			{
+				//Disable to prevent quick switching that causes issues when loading the data
+				projectsList.enabled = false;
+				resetDisplays();
+				if(projectsList.selectedIndex != -1)
+				{
+					project = projectsList.selectedItem as Project;
+					project.removeEventListener(ProjectEvent.PROJECT_RESULT, getProject_resultHandler);
+					project.removeEventListener(ProjectEvent.PROVISIONED_VERSION_SET, provisionedVersionSet_resultHandler);
+					project.removeEventListener(ProjectEvent.VERSION_SET, versionSet_resultHandler);
+					project.addEventListener(ProjectEvent.PROJECT_RESULT, getProject_resultHandler);
+					project.get();
+				}
+				projectResourceDataGrid.selectedChild = load;
+				resourceCollection.removeAll();
+			}
+			
+			protected function getProject_resultHandler(event:ProjectEvent):void
+			{
+				project.removeEventListener(ProjectEvent.PROJECT_RESULT, getProject_resultHandler);
+				versionDisplay.text = project.mostRecentVersion;
+				environmentDisplay.text = Environment.DEVELOPMENT;
+				//Get most recent project version for development environment
+				var found:Boolean = false;
+				for each(var pv:ProvisionedVersion in project.provisionedVersions)
+				{
+					if(!found && pv.version == project.mostRecentVersion)
+					{
+						found = true;
+						project.addEventListener(ProjectEvent.PROVISIONED_VERSION_SET, provisionedVersionSet_resultHandler);
+						projectService.project = project;
+						projectService.getProvisionedVersion(pv.id);
+					}
+				}
+				
+				if(!found)
+				{
+					for each(var v:Version in project.versions)
+					{
+						if(v.number == project.mostRecentVersion)
+						{
+							found = true;
+							project.addEventListener(ProjectEvent.VERSION_SET, versionSet_resultHandler);
+							project.getProjectVersion(v.number, Environment.DEVELOPMENT);
+						}
+					}
+				}
+				
+			}
+			
+			protected function provisionedVersionSet_resultHandler(event:ProjectEvent):void
+			{
+				project.removeEventListener(ProjectEvent.PROVISIONED_VERSION_SET, provisionedVersionSet_resultHandler);
+				resourceCollection.removeAll();
+				for each(var pi:ProvisionedInstance in project.currentProvisionedVersion.provisionedInstances)
+				{
+					var displayType:String = getDisplayName(pi.type);
+					if(displayType != "")
+					{
+						resourceCollection.addItem({name: pi.resourceId, displayType: displayType, type: pi.type, id: pi.instanceId, state: "running"});
+					}
+				}
+				finishingHandler();
+			}
+			
+			protected function versionSet_resultHandler(event:ProjectEvent):void
+			{
+				project.removeEventListener(ProjectEvent.VERSION_SET, versionSet_resultHandler);
+				resourceCollection.removeAll();
+				for each(var e:Element in project.currentVersion.elements)
+				{
+					var displayType:String = getDisplayName(e.elementType);
+					if(displayType != "")
+					{
+						resourceCollection.addItem({name: e.name, displayType: displayType, state: "not running"});
+					}
+				}
+				finishingHandler();
+			}
+			
+			protected function finishingHandler():void
+			{
+				projectResourceDataGrid.selectedChild = resourceContent;
+				projectsList.enabled = true;
+			}
+			
+			protected function getDisplayName(type:String):String
+			{
+				var displayName:String = "";
+				switch(type)
+				{
+					case ResourceType.AS_GROUP:
+						displayName = ResourceTypeLabel.RESOURCE_NAME[project.cloud_account.cloud_provider][ResourceTypeLabel.AUTOSCALE];	
+						break;
+					case ResourceType.BEANSTALK_APP:
+						displayName = ResourceTypeLabel.RESOURCE_NAME[project.cloud_account.cloud_provider][ResourceTypeLabel.BEANSTALK];
+						break;
+					case ResourceType.CACHE_CLUSTER:
+						displayName = ResourceTypeLabel.RESOURCE_NAME[project.cloud_account.cloud_provider][ResourceTypeLabel.ELC];
+						break;
+					case ResourceType.CLOUD_FRONT:
+						displayName = ResourceTypeLabel.RESOURCE_NAME[project.cloud_account.cloud_provider][ResourceTypeLabel.CDN];
+						break;
+					case ResourceType.CW_ALARM:
+						displayName = ResourceTypeLabel.RESOURCE_NAME[project.cloud_account.cloud_provider][ResourceTypeLabel.ALARM];
+						break;
+					case ResourceType.DB_INSTANCE:
+						displayName = ResourceTypeLabel.RESOURCE_NAME[project.cloud_account.cloud_provider][ResourceTypeLabel.RDS];
+						break;
+					case ResourceType.EBS_VOLUME:
+						displayName = ResourceTypeLabel.RESOURCE_NAME[project.cloud_account.cloud_provider][ResourceTypeLabel.EBS];
+						break;
+					case ResourceType.EC2_INSTANCE:
+						displayName = ResourceTypeLabel.RESOURCE_NAME[project.cloud_account.cloud_provider][ResourceTypeLabel.EC2];
+						break;
+					case ResourceType.IAM_GROUP:
+						displayName = ResourceTypeLabel.RESOURCE_NAME[project.cloud_account.cloud_provider][ResourceTypeLabel.IAM_GROUP];
+						break;
+					case ResourceType.IAM_USER:
+						displayName = ResourceTypeLabel.RESOURCE_NAME[project.cloud_account.cloud_provider][ResourceTypeLabel.IAM_USER];
+						break;
+					case ResourceType.LOAD_BALANCER:
+						displayName = ResourceTypeLabel.RESOURCE_NAME[project.cloud_account.cloud_provider][ResourceTypeLabel.ELB];
+						break;
+					case ResourceType.S3_BUCKET:
+						displayName = ResourceTypeLabel.RESOURCE_NAME[project.cloud_account.cloud_provider][ResourceTypeLabel.S3];
+						break;
+					case ResourceType.SIMPLE_DB_INSTANCE:
+						displayName = ResourceTypeLabel.RESOURCE_NAME[project.cloud_account.cloud_provider][ResourceTypeLabel.SDB];
+						break;
+					case ResourceType.SNS_TOPIC:
+						displayName = ResourceTypeLabel.RESOURCE_NAME[project.cloud_account.cloud_provider][ResourceTypeLabel.SNS];
+						break;
+					case ResourceType.SQS_QUEUE:
+						displayName = ResourceTypeLabel.RESOURCE_NAME[project.cloud_account.cloud_provider][ResourceTypeLabel.SQS];
+						break;
+					case ResourceType.EC2_SECURITY_GROUP:
+						displayName = ResourceTypeLabel.RESOURCE_NAME[project.cloud_account.cloud_provider][ResourceTypeLabel.SECURITY_GROUP];
+						break;
+					case ResourceType.DB_SECURITY_GROUP:
+						displayName = ResourceTypeLabel.RESOURCE_NAME[project.cloud_account.cloud_provider][ResourceTypeLabel.SECURITY_GROUP];
+						break;
+					case ResourceType.CACHE_SECURITY_GROUP:
+						displayName = ResourceTypeLabel.RESOURCE_NAME[project.cloud_account.cloud_provider][ResourceTypeLabel.SECURITY_GROUP];
+						break;
+				}
+				return displayName;
+			}
+			
+			protected function resetDisplays():void
+			{
+				descriptionDisplay.text = "";
+				versionDisplay.text = "";
+				environmentDisplay.text = "";
+			}
+			
+			protected function projectsList_doubleClickHandler(event:MouseEvent):void
+			{
+				if(projectsList.selectedIndex != -1)
+				{
+					var bodyStack:BodyStack = parentApplication.bodyStack;
+					bodyStack.addProjectToGlobalTabs(project);
+				}
+			}
+			
+			protected function openProject():void
+			{
+				if(projectsList.selectedIndex != -1)
+				{
+					project = projectsList.selectedItem as Project;
+					var bodyStack:BodyStack = parentApplication.bodyStack;
+					bodyStack.addProjectToGlobalTabs(project);
+				}
+			}
+			
+			protected function resourceDataGrid_doubleClickHandler(event:MouseEvent):void
+			{
+				
+			}
+			
+			protected function createNewProject_clickHandler(event:MouseEvent):void
+			{
+				var newProjectWindow:NewProjectWindow = new NewProjectWindow();
+				PopUpManager.addPopUp(newProjectWindow, UIComponent(parentApplication), true);
+				newProjectWindow.newProjectGroup.addEventListener(ProjectEvent.PROJECT_RESULT, projectCreate_resultHandler);
+			}
+			
+			protected function projectCreate_resultHandler(event:ProjectEvent):void
+			{
+				var bodyStack:BodyStack = parentApplication.bodyStack;
+				bodyStack.newProjectToGlobalTabs(event.project);
+				PopUpManager.removePopUp(IFlexDisplayObject(event.currentTarget));
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<services:ProjectService id="projectService"/>
+	</fx:Declarations>
+	
+	<s:VGroup gap="10" paddingTop="10" paddingLeft="10" paddingRight="10" paddingBottom="10">
+		<s:Label color="{Color.SHARP_ORANGE}" fontSize="20" text="My Projects"/>
+		<s:HGroup gap="20" width="100%" height="100%">
+			<s:BorderContainer cornerRadius="4" height="135" width="200">
+				<s:Rect width="100%" height="100%">
+					<s:fill>
+						<s:SolidColor>
+							<s:color>{Color.LIGHT_GRAY}</s:color>
+						</s:SolidColor>
+					</s:fill>
+				</s:Rect>
+				<s:VGroup width="100%" height="100%" gap="0">
+					<s:List id="projectsList"
+							styleName="transparentList"
+							dataProvider="{user.project_memberships}" 
+							height="100%" width="100%"
+							allowMultipleSelection="false"
+							change="projectsList_changeHandler(event)"
+							doubleClickEnabled="true"
+							doubleClick="projectsList_doubleClickHandler(event)"/>
+					<s:HGroup width="100%" horizontalAlign="center" paddingTop="5" paddingBottom="5">
+						<s:Button label="Create New Project" click="createNewProject_clickHandler(event)" enabled="{user != null}"/>
+					</s:HGroup>
+				</s:VGroup>
+				
+			</s:BorderContainer>
+			<s:BorderContainer cornerRadius="4" height="135" width="400">
+				<s:Rect width="100%" height="100%">
+					<s:fill>
+						<s:SolidColor>
+							<s:color>{Color.LIGHT_GRAY}</s:color>
+						</s:SolidColor>
+					</s:fill>
+				</s:Rect>
+				<s:VGroup width="100%" height="100%" paddingTop="5" paddingLeft="5" paddingRight="5" paddingBottom="5">
+					<s:HGroup width="100%" height="100%">
+						<mx:Text text="Description: " fontWeight="bold"/>
+						<mx:Text id="descriptionDisplay" text="{project.description}" width="275"/>
+					</s:HGroup>
+					<s:HGroup width="100%" height="100%">
+						<mx:Text text="Version: " fontWeight="bold"/>
+						<mx:Text id="versionDisplay" width="275"/>
+					</s:HGroup>
+					<s:HGroup width="100%" height="100%">
+						<mx:Text text="Environment: " fontWeight="bold"/>
+						<mx:Text id="environmentDisplay" width="275"/>
+					</s:HGroup>
+				</s:VGroup>
+			</s:BorderContainer>
+		</s:HGroup>	
+		<mx:ViewStack id="projectResourceDataGrid" width="100%" height="100%" creationPolicy="all" visible="{projectsList.selectedIndex != -1}">
+			<s:NavigatorContent id="load" width="100%" height="100%">
+				<s:VGroup width="100%" height="100%" horizontalAlign="center" verticalAlign="middle">
+					<s:BusyIndicator width="50" height="50"/>
+				</s:VGroup>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="resourceContent" width="100%" height="100%">
+				<s:VGroup width="100%" height="100%">
+					<s:DataGrid id="resourceDataGrid" dataProvider="{resourceCollection}" width="100%" height="200" doubleClickEnabled="true" doubleClick="resourceDataGrid_doubleClickHandler(event)">
+						<s:columns>
+							<s:ArrayList id="resourceColumns">
+								<s:GridColumn headerText="Resource" dataField="name"/>
+								<s:GridColumn headerText="Type" dataField="displayType"/>
+								<s:GridColumn headerText="State" dataField="state" itemRenderer="com.momentumsi.c9.components.StatusColumn"/>
+							</s:ArrayList>
+						</s:columns>
+					</s:DataGrid>
+				</s:VGroup>
+			</s:NavigatorContent>
+		</mx:ViewStack>
+	</s:VGroup>
+</s:Group>

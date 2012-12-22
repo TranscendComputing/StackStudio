@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx">
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			
+			import spark.components.TextArea;
+			
+			[Bindable]
+			public var mainTextArea:TextArea;
+			protected var oldSearchResult:int = 0;
+			
+			protected function findText():void
+			{
+				var searchStr:String = searchText.text;
+
+				// truncate the text using substring; this gives you everything in mainTextField after your previous search results
+				var truncatedText : String;
+				truncatedText = mainTextArea.text.substring(oldSearchResult);
+				
+				var search_result:int = truncatedText.search(searchStr);
+				mainTextArea.setFocus();
+				// when you select the range, you want to offset your result index w/ the characters your chopped off  
+				if(search_result != -1){
+					mainTextArea.selectRange(oldSearchResult+search_result,oldSearchResult+search_result+searchStr.length);
+					mainTextArea.scrollToRange(oldSearchResult+search_result,oldSearchResult+search_result+searchStr.length);
+					oldSearchResult = oldSearchResult+search_result+searchStr.length;
+				} else {
+					if(oldSearchResult > 0)
+					{
+						oldSearchResult = 0;
+						findText();
+					}else{
+						Alert.show("Text not found.");
+					}
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:Button id="findButton"
+			  label="Find"
+			  click="findText()"/>
+	<s:TextInput id="searchText" width="151"/>
+</s:HGroup>

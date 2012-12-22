@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 implements="mx.core.IToolTip"
+		 creationComplete="vbox1_creationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.models.ProvisionedInstance;
+			
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+			
+			//  Implement required methods of the IToolTip interface
+			public var _text:String;
+			[Bindable]
+			public var tooltipContent:String = "";
+			[Bindable]
+			public var data:ProvisionedInstance;
+			
+			public function get text():String
+			{ 
+				return _text; 
+			} 
+			public function set text(value:String):void
+			{
+			}
+			
+			protected function vbox1_creationCompleteHandler(event:FlexEvent):void
+			{
+				try
+				{
+					this.x = this.parent.mouseX + 10;
+					this.y = this.parent.mouseY + 10;
+				}
+				catch(e:Error)
+				{
+					
+				}
+				if(data == null)
+				{
+					tooltipText.text = tooltipContent;
+				}else{
+					if(data.properties != null && data.properties.roles != null)
+					{
+						var roles:ArrayCollection = new ArrayCollection(data.properties.roles as Array);
+						var rolesArray:Array = [];
+						for each(var role:Object in roles)
+						{
+							rolesArray.push(role.name);
+						}
+						var rolesDisplay:String = rolesArray.join(",\n");
+						tooltipText.text = data.type + "\n" + rolesDisplay;
+					}else{
+						tooltipText.text = data.type;
+					}
+				}
+				
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<mx:VBox  backgroundColor="#330066"
+			  borderThickness="2"
+			  borderStyle="solid"
+			  cornerRadius="10" 
+			  horizontalAlign="center" 
+			  paddingTop="10"
+			  paddingBottom="10"
+			  paddingLeft="10"
+ 			  paddingRight="10"
+			  alpha=".6">
+		<mx:Text id="tooltipText" textAlign="left" color="#FFFFFF"/>
+	</mx:VBox>
+</s:Group>

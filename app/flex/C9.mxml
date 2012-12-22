@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application
+	xmlns:fx="http://ns.adobe.com/mxml/2009"  
+	xmlns:s="library://ns.adobe.com/flex/spark"
+	xmlns:mx="library://ns.adobe.com/flex/mx"
+    xmlns:c9="com.momentumsi.c9.components.*"
+    name="Transcend StackStudio"
+    creationComplete="setInitialFocus();"
+    height="100%" width="100%"
+	initialize="initializeApp(event)">
+	<fx:Style>
+		@namespace s "library://ns.adobe.com/flex/spark";
+		@namespace mx "library://ns.adobe.com/flex/mx";
+		
+		/* Spark CSS */
+		
+		s|Button { 
+			skinClass: ClassReference("com.momentumsi.c9.skins.RoundedButtonSkin");
+			fontSize: 12;
+			fontStyle: normal;
+			fontFamily: Verdana;
+			color: #FFFFFF;
+		}
+		s|Button.emphasized
+		{
+			skinClass: ClassReference("com.momentumsi.c9.skins.RoundedButtonSkin");
+		}
+		s|Button.customButton {
+			skinClass: ClassReference("com.momentumsi.c9.skins.RoundedButtonSkin");
+			font-size: 12;
+			fint-weight: normal;
+		}
+		s|TitleWindow {
+			skinClass: ClassReference("com.momentumsi.c9.skins.CustomTitleWindowSkin");
+			backgroundColor: #E6E9ED;
+			fontSize: 12;
+			FontFamily: Verdana;
+		}
+		s|RadioButton {
+			color: #000000;
+		}
+		s|ComboBox {
+			color: #000000;
+			symbolColor: #FF800D;
+		}
+		s|NavigatorContent {
+			color: #000000;
+		}
+		s|Form {
+			color: #000000;
+		}
+		s|List.transparentList{
+			contentBackgroundAlpha : 0;
+		}
+		s|DropDownList{
+			symbolColor: #FF800D;
+		}
+		s|TextInput {
+			color: #000000;
+		}
+		
+		/* Halo CSS */
+		
+		mx|Canvas {
+			fontSize: 12;
+			FontFamily: Verdana;
+			color: #000000;
+		}
+		mx|ComboBox {
+			fillAlphas: 1,1;
+			fillColors: #FFFFFF, #FFFFFF;
+			cornerRadius: 6;
+			fontSize: 11;
+			fontFamily: Verdana;
+			fontWeight: normal;
+			iconColor: #FF800D;
+			color: #000000;
+		}
+		mx|TabNavigator {
+			color: #330066;
+			text-roll-over-color: #330066;
+		}
+		mx|Form {
+			color: #000000;
+		}
+		mx|Box {
+			color: #000000;
+		}
+		mx|Text {
+			selectable: true;
+		}
+		global
+		{
+			color: #000000;
+		}
+		
+	</fx:Style>
+        
+    <fx:Script>
+        <![CDATA[
+			import com.maccherone.json.JSON;
+			import com.momentumsi.c9.components.ConfigManager;
+			import com.momentumsi.c9.components.DesignDiagram;
+			import com.momentumsi.c9.components.MainBox;
+			import com.momentumsi.c9.components.ProjectTab;
+			import com.momentumsi.c9.components.cfn.CloudFormationTemplate;
+			import com.momentumsi.c9.events.*;
+			import com.momentumsi.c9.models.*;
+			import com.momentumsi.c9.services.ProjectService;
+			import com.momentumsi.c9.services.TemplatesService;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.collections.ArrayCollection;
+			import mx.containers.Box;
+			import mx.controls.Alert;
+			import mx.core.Container;
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			import mx.managers.IFocusManagerComponent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.http.mxml.HTTPService;
+			
+			import spark.components.TextArea;
+			import spark.components.TitleWindow;
+
+			private var cm:ConfigManager;
+			
+			[Bindable]
+			private var serviceUrl:String;
+			[Bindable]
+			private var mainBox:MainBox;
+			private var designItems:XMLList;
+			
+			[Bindable]
+			public var user:User;
+			
+            // This event fires before creationComplete() which
+			// will fire AFTER all the component's creationComplete()
+			// has occurred.
+			public function initializeApp(event:FlexEvent):void
+			{
+				init();
+			}
+			
+            protected function setInitialFocus():void
+            {
+				/*
+            	if(ExternalInterface.available)
+				{
+					ExternalInterface.call("eval", "document.getElementById('" + ExternalInterface.objectID + "').tabIndex=0");
+					ExternalInterface.call("eval", "document.getElementById('" + ExternalInterface.objectID + "').focus()");
+				}
+				*/
+            }
+			
+			private function init():void
+			{
+				cm = new ConfigManager("config/config.xml");
+				cm.addEventListener(ConfigManagerEvent.COMPLETE,ConfigManagerEventResultHandler);
+				cm.addEventListener(ConfigManagerEvent.FAULT, configManagerFaultHandler);
+				cm.loadConfig();
+			}
+			
+			private function shallowLoadTemplate(templateId:String, url:String):void
+			{
+				var templatesService:TemplatesService = new TemplatesService();
+				templatesService.addEventListener(LoadTemplateEvent.LOADED, shallowLoadTemplateSvc_resultHandler);
+				templatesService.getRawJsonTemplate(templateId);
+			}
+			
+			private function shallowLoadTemplateSvc_resultHandler(event:LoadTemplateEvent):void
+			{
+				bodyStack.globalTabs.createDeferredContent();
+				var selectedTab:Object = bodyStack.globalTabs.getElementAt(bodyStack.globalTabs.length - 1);
+				try{
+					mainBox = selectedTab.getElementAt(0) as MainBox;
+					var nodesCollection:ArrayCollection = new ArrayCollection();
+					for each(var element:Element in event.elements)
+					{
+						if(ProjectVersion.SUPPORTED_NODE_ELEMENTS.contains(element.elementType))
+						{
+							nodesCollection.addItem(new Node(null, element.name, 0, 0, "design", element.properties));
+						}
+					}
+					var shallowProject:Project = mainBox.project;
+					var initialVersion:ProjectVersion = new ProjectVersion();
+					initialVersion.elements = event.elements;
+					initialVersion.nodes = nodesCollection;
+					shallowProject.currentVersion = initialVersion;
+					shallowProject.dispatchEvent(new ProjectEvent(ProjectEvent.VERSION_SET));
+					headerBox.shallowProject = shallowProject;
+					bodyStack.loadingFromStackPlace = false;
+					headerBox.management.visible = true;
+					headerBox.applicationMenuBar.visible = false;
+				}catch(error:Error){
+					// new project tab not loaded yet
+				}				
+			}
+			
+		
+			private function ConfigManagerEventResultHandler( event:ConfigManagerEvent):void
+			{
+				serviceUrl = cm.getValue("serviceUrl") ;
+				
+				bodyStack.globalTabs.createComponentsFromDescriptors();
+				
+				var params:Object = FlexGlobals.topLevelApplication.parameters["template"];
+				
+				//For Testing Purposes
+				//if((FlexGlobals.topLevelApplication.parameters.template == null || FlexGlobals.topLevelApplication.parameters.template == ""))
+				//{
+				if(!(FlexGlobals.topLevelApplication.parameters.template == null || FlexGlobals.topLevelApplication.parameters.template == ""))
+				{
+					
+					headerBox.management.visible = false;
+					headerBox.readOnly = true;
+					bodyStack.loadingFromStackPlace = true;
+					var newProject:Project = new Project();
+					newProject.project_name = "NewProject";
+					var newProjectTab:ProjectTab = new ProjectTab();
+					newProjectTab.project = newProject;
+					bodyStack.globalTabs.addElement(newProjectTab);
+
+					//Proper line for checking for template id
+					shallowLoadTemplate(FlexGlobals.topLevelApplication.parameters.template, serviceUrl);
+					
+					//For testing load template
+					//FlexGlobals.topLevelApplication.parameters.template = "4f7f2de8a7212719c20000f8";
+					//shallowLoadTemplate("4f7f2de8a7212719c20000f8", serviceUrl);
+				}			
+			}
+			
+			private function configManagerFaultHandler(event:ConfigManagerEvent):void
+			{
+				trace("unable to load config file");
+			}
+			
+			
+			public function GetConfiguration( setting:String ) : String
+			{
+				try
+				{
+					return cm.getValue( setting ) ;	
+				}catch(e:Error){}
+				return null;
+			}
+			
+            private function handleAccountCreate(event:AccountCreateEvent):void
+            {
+				this.user = event.user;
+				openWorkspace();
+            }
+            
+            private function handleLogin(event:LoginEvent):void
+            {
+				this.user = event.user;
+				openWorkspace();
+            }
+			
+			private function openWorkspace():void
+			{
+				bodyStack.selectedChild = bodyStack.globalTabs;
+				bodyStack.objectManagement.cloudManagementSetup();
+				headerBox.management.visible = true;
+			}
+			
+		]]>
+    </fx:Script>
+	<fx:Declarations>
+		<!--<s:TraceTarget fieldSeparator="->" includeCategory="true" includeDate="true" includeLevel="true" includeTime="true"/>-->
+	</fx:Declarations>
+	<s:VGroup id="application" height="100%" width="100%" fontFamily="Verdana" fontSize="12">
+		<c9:HeaderBox id="headerBox" user="@{this.user}" 
+					  login="handleLogin(event)"
+					  visible="{bodyStack.selectedChild != bodyStack.landingBoxContent}" 
+					  includeInLayout="{bodyStack.selectedChild != bodyStack.landingBoxContent}"/>
+		<c9:BodyStack id="bodyStack" height="100%" width="100%" 
+					  accountCreate="handleAccountCreate(event)"
+					  borderStyle="none" creationPolicy="auto" 
+					  login="handleLogin(event)"
+					  user="@{user}"/>
+	</s:VGroup>
+</s:Application>

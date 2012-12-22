@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components:ObjectManagementDetailsBox xmlns:fx="http://ns.adobe.com/mxml/2009"
+									   xmlns:s="library://ns.adobe.com/flex/spark" 
+									   xmlns:mx="library://ns.adobe.com/flex/mx"
+									   width="100%" height="100%"
+									   xmlns:diagrammer="fr.kapit.diagrammer.base.uicomponent.*"
+									   xmlns:components="com.momentumsi.c9.components.*">
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.utils.StringUtil;
+			import com.maccherone.json.*;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import fr.kapit.diagrammer.Diagrammer;
+			import fr.kapit.diagrammer.base.uicomponent.DiagramSprite;
+			
+			import mx.collections.ArrayCollection;
+			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			[Bindable]
+			private var alarmObject:Object = new Object();
+			[Bindable]
+			private var thresholdVisible:Boolean = false;
+			
+			override public function set resourceData(value:Object):void
+			{
+				alarmObject = value;
+				if(alarmObject["Properties"] == null)
+				{
+					displaySetups();
+				}
+			}
+			
+			public function displaySetups():void
+			{
+				if(alarmObject.hasOwnProperty('alarm'))
+				{
+					if(alarmObject.alarm.hasOwnProperty('MetricName') &&
+					   alarmObject.alarm.hasOwnProperty('Threshold') && 
+					   alarmObject.alarm.hasOwnProperty('Period') && 
+					   alarmObject.alarm.hasOwnProperty('EvaluationPeriods') && 
+					   alarmObject.alarm.hasOwnProperty('ComparisonOperator'))
+					{
+						var comparison:String = "";
+						switch(alarmObject.alarm.ComparisonOperator)
+						{
+							case "GreaterThanOrEqualToThreshold":
+								comparison = ">=";
+								break;
+							case "LessThanOrEqualToThreshold":
+								comparison = "<=";
+								break;
+							case "GreaterThanThreshold":
+								comparison = ">";
+								break;
+							case "LessThanThreshold":
+								comparison = "<";
+								break;
+						}
+						
+						try
+						{
+							var periodNumber:Number = alarmObject.alarm.Period as Number;
+							var evalPeriods:Number = alarmObject.alarm.EvaluationPeriods as Number;
+							
+							var timeLength:String = ((periodNumber * evalPeriods)/60).toString();
+						}catch(e:Error)
+						{
+							trace(e.message);
+						}
+						
+						threshold.text = alarmObject.alarm.MetricName + " " + comparison + " " + alarmObject.alarm.Threshold + " for " + timeLength + " minutes.";
+						thresholdVisible = true;
+					}
+					
+					if(alarmObject.alarm.hasOwnProperty('Dimensions'))
+					{
+						var dimensionString:String = "";
+						for each(var d:* in alarmObject.alarm.Dimensions)
+						{
+							dimensionString = dimensionString + d.Name + " : " + d.Value + "\n";
+						}
+						dimensionString = StringUtil.trim(dimensionString);
+						dimensions.text = dimensionString;
+					}
+					
+					var actionsString:String = "";
+					if(alarmObject.alarm.hasOwnProperty('AlarmActions') && alarmObject.alarm.AlarmActions != "")
+					{
+						actionsString = actionsString + "Alarm State: send message to topic " + alarmObject.alarm.AlarmActions + "\n";
+					}
+					if(alarmObject.alarm.hasOwnProperty('OKActions') && alarmObject.alarm.OKActions != "")
+					{
+						actionsString = actionsString + "OK State: send message to topic " + alarmObject.alarm.OKActions + "\n";
+					}
+					if(alarmObject.alarm.hasOwnProperty('InsufficientDataActions') && alarmObject.alarm.InsufficientDataActions != "")
+					{
+						actionsString = actionsString + "Insufficient Data State: send message to topic " + alarmObject.alarm.InsufficientDataActions + "\n";
+					}
+					
+					if(actionsString != "")
+					{
+						actionsString = StringUtil.trim(actionsString);
+						actions.text = actionsString;
+					}else
+					{
+						actionsFormItem.visible = false;
+					}
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		
+	</fx:Declarations>
+	
+	<s:HGroup id="alarmGroupButtonBar" height="25" paddingLeft="10">
+	</s:HGroup>
+	<s:BorderContainer height="100%" width="100%" alpha="1" borderVisible="false">
+		<components:DetailsBoxTabNavigator id="alarmDetails">
+			<s:NavigatorContent label="Details" width="100%" height="100%">
+				<s:BorderContainer borderVisible="false"  id="details" height="100%" width="100%">
+					<s:Scroller width="100%" height="100%">
+						<s:viewport>
+							<s:HGroup>
+								<s:Form>
+									<s:layout>
+										<s:FormLayout gap="-7"/>
+									</s:layout>
+									<s:FormItem label="Name:">
+										<mx:Text text="{alarmObject.resourceId}"/>
+									</s:FormItem>
+									<s:FormItem label="Physical Name:">
+										<mx:Text text="{alarmObject.alarm.AlarmName}"/>
+									</s:FormItem>
+									<s:FormItem label="Description:" visible="{alarmObject.hasOwnProperty('AlarmDescription')}" includeInLayout="{alarmObject.alarm.hasOwnProperty('AlarmDescription')}">
+										<mx:Text text="{alarmObject.alarm.AlarmDescription}"/>
+									</s:FormItem>
+									<s:FormItem label="Threshold:" visible="{thresholdVisible}" includeInLayout="{thresholdVisible}">
+										<mx:Text id="threshold"/>
+									</s:FormItem>
+									<s:FormItem label="State Value:">
+										<mx:Text text="{alarmObject.alarm.StateValue}"/>
+									</s:FormItem>
+									<s:FormItem label="State Reason:">
+										<mx:Text text="{alarmObject.alarm.StateReason}"/>
+									</s:FormItem>
+									<s:FormItem label="Actions:" id="actionsFormItem">
+										<mx:Text id="actions"/>
+									</s:FormItem>
+								</s:Form>
+							</s:HGroup>
+						</s:viewport>
+					</s:Scroller>
+				</s:BorderContainer>
+			</s:NavigatorContent>
+			<s:NavigatorContent label="Metric" width="100%" height="100%">
+				<s:BorderContainer borderVisible="false"  id="metric" height="100%" width="100%">
+					<s:Scroller width="100%" height="100%">
+						<s:viewport>
+							<s:HGroup>
+								<s:Form>
+									<s:layout>
+										<s:FormLayout gap="-7"/>
+									</s:layout>
+									<s:FormItem label="Namespace:">
+										<mx:Text text="{alarmObject.alarm.Namespace}"/>
+									</s:FormItem>
+									<s:FormItem label="Metric Name:">
+										<mx:Text text="{alarmObject.alarm.MetricName}"/>
+									</s:FormItem>
+									<s:FormItem label="Dimensions:">
+										<mx:Text id="dimensions"/>
+									</s:FormItem>
+									<s:FormItem label="Unit:">
+										<mx:Text text="{alarmObject.alarm.Unit}"/>
+									</s:FormItem>
+									<s:FormItem label="Statistic:">
+										<mx:Text text="{alarmObject.alarm.Statistic}"/>
+									</s:FormItem>
+									<s:FormItem label="Period:">
+										<mx:Text text="{alarmObject.alarm.Period}"/>
+									</s:FormItem>
+								</s:Form>
+							</s:HGroup>
+						</s:viewport>
+					</s:Scroller>
+				</s:BorderContainer>
+			</s:NavigatorContent>
+		</components:DetailsBoxTabNavigator>
+	</s:BorderContainer>
+</components:ObjectManagementDetailsBox>

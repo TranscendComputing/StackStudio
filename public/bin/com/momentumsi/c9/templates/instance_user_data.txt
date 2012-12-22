@@ -1,0 +1,33 @@
+{
+          "Fn::Base64":
+          { "Fn::Join": [ "", [
+            "#!/bin/bash -v\n",
+            "# Update the image if necessary\n",
+            "if ! [ -f /root/.tfubuntu ]; then\n",
+            "  apt-get -y update\n",
+            "  apt-get -y upgrade\n",
+            "  apt-get install -y python-setuptools\n",
+            "  easy_install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz\n",
+            "fi\n",
+            "# Helper function\n",
+            "function error_exit\n",
+            "{\n",
+            "  /usr/local/bin/cfn-signal -e 1 -r \"$1\" '", { "Ref": "WAITHANDLE" }, "'\n",
+            "  cat /tmp/cfn-error.txt | tee /root/cfn-error.txt\n",
+            "  exit 1\n",
+            "}\n",
+            "\n",
+            "# Run cloudformation init\n",
+            "trap \"rm -f /tmp/cfn-error.txt\" 0 1 2 3 15\n",
+            "/usr/local/bin/cfn-init",
+              " -s ", { "Ref": "AWS::StackName" },
+              " -r", {"Ref":"SELF" },
+              " --access-key ", { "Ref": "HostKeys" },
+              " --secret-key ", {"Fn::GetAtt": ["HostKeys", "SecretAccessKey"]},
+              " --region ", { "Ref": "AWS::Region" },
+              " 2>/tmp/cfn-error.txt || error_exit \"$(</tmp/cfn-error.txt)\"\n",
+            "\n",
+            "# All is well so signal success\n",
+            "/usr/local/bin/cfn-signal -e 0 -r \" server setup complete\" '", { "Ref": "WAITHANDLE" }, "'\n"
+          ]]}
+}

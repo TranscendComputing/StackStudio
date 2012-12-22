@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wizard:WizardWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   xmlns:components="com.momentumsi.c9.components.*"
+			   width="725" height="450"
+			   wizardType="{ResourceTypeLabel.SQS}"
+			   xmlns:sqs="com.momentumsi.c9.components.sqs.*"
+			   xmlns:wizard="com.momentumsi.c9.components.wizard.*"
+			   xmlns:services="com.momentumsi.c9.services.*"
+			   creationComplete="wizardwindow1_creationCompleteHandler(event)">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.constants.AlertMessage;
+			import com.momentumsi.c9.constants.ImagePath;
+			import com.momentumsi.c9.constants.ResourceType;
+			import com.momentumsi.c9.constants.ResourceTypeLabel;
+			import com.momentumsi.c9.events.sqs.CreateQueueResultEvent;
+			import com.momentumsi.c9.events.sqs.SqsServiceFaultEvent;
+			import com.momentumsi.c9.models.CloudAccount;
+			import com.momentumsi.c9.models.Element;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			import mx.events.MoveEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;			
+
+			//Final Data Declarations
+			[Bindable]
+			public var queueName:String = "";
+			[Bindable]
+			private var visibleTimeout:int = 30;
+			[Bindable]
+			public var maxMessageSize:int = 8192;
+			[Bindable]
+			public var retentionPeriod:int = 345600;
+			public var receiveWaitTime:int = 0;
+			public var delaySeconds:int = 0;
+
+			public var queueObject:Object;
+			private var currentQueueName:String;
+			
+			override public function applyConfigurations():void
+			{
+				qName.setFocus();
+				if(element.id == null)
+				{
+					return;
+				}
+				currentQueueName = element.name;
+				qName.text = currentQueueName;
+				queueObject = element.properties;
+				if(queueObject['Properties']['VisibilityTimeout'] != null)
+				{
+					visibleTime.text = queueObject['Properties']['VisibilityTimeout'];
+				}
+			}
+			
+			protected function submitButton_clickHandler(event:MouseEvent):void
+			{	
+				submitButton.label = "Saving";
+				submitButton.enabled = false;
+				
+				if(objectManagementCreate)
+				{
+					var parameters:Object = {
+						name: queueName,
+						attributes: {
+							VisibilityTimeout: visibleTimeout,
+							MaximumMessageSize: maxMessageSize,
+							MessageRetentionPeriod: retentionPeriod,
+							//ReceiveMessageWaitTimeSeconds: receiveWaitTime,
+							DelaySeconds: delaySeconds
+						}
+					};
+					sqsService.addEventListener(CreateQueueResultEvent.RESULT, createQueue_resultHandler);
+					sqsService.addEventListener(SqsServiceFaultEvent.FAULT, createQueue_faultHandler);
+					sqsService.createQueue(parameters);
+				}else
+				{	
+					var queueAttributes:Object = new Object();
+					queueAttributes['Type'] = ResourceType.SQS_QUEUE;
+					queueAttributes['Properties'] = getPropertiesObject();
+					saveElement(qName.text, queueAttributes);
+				}
+			}
+			
+			private function getPropertiesObject():Object
+			{
+				var queueProperties:Object = new Object();
+				queueProperties['VisibilityTimeout'] = visibleTimeout;
+				
+				return queueProperties;
+			}
+			
+			protected function objectManagementLaunchSvc_faultHandler(event:FaultEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+			}
+			
+			protected function createQueue_resultHandler(event:ResultEvent):void
+			{
+				Helpers.getObjectManagement(this).refreshResourceList();
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function previousButton_clickHandler(event:MouseEvent):void
+			{
+				if(queueStack.selectedIndex != 0)
+				{
+					queueStack.selectedIndex--;
+				}
+			}
+			
+			protected function nextButton_clickHandler(event:MouseEvent):void
+			{
+				var alert:Boolean = false;
+				
+				if(queueStack.selectedChild == queueConfiguration)
+				{
+					//Check queue name input
+					if(qName.text != "" && qName.text.length < 80)
+					{
+						if(Helpers.validateAlphanumeric(qName.text))
+						{
+							if(objectManagementCreate)
+							{
+								queueName = qName.text;
+								nameAlert.visible = false;					
+							}else
+							{
+								if(projectVersion.validateUniqueName(qName.text, element))
+								{
+									queueName = qName.text;
+									nameAlert.visible = false;
+								}else
+								{
+									nameAlert.text = AlertMessage.NOT_UNIQUE;
+									nameAlert.visible = true;
+									alert = true;
+								}
+							}
+						}else
+						{
+							alert = true;
+							nameAlert.text = AlertMessage.NOTALPHANUMERIC;
+							nameAlert.visible = true;
+						}	
+					}
+					else
+					{
+						alert = true;
+						nameAlert.text = AlertMessage.INVALID;
+						nameAlert.visible = true;
+					}
+					//Check visible timeout input
+					try
+					{
+	
+						var visibleTimeoutNumber:Number = Number(visibleTime.text);
+						if(visibleTime.text != "" && !isNaN(visibleTimeoutNumber))
+						{
+							visibilityAlert.visible = false;
+						}else
+						{
+							alert = true;
+							visibilityAlert.visible = true;
+						}
+	
+						if(visibleTimeCombo.selectedIndex == 0 && visibleTimeoutNumber >= 0 && visibleTimeoutNumber <= 43200)
+						{
+							visibleTimeout = visibleTimeoutNumber;
+						}else if(visibleTimeCombo.selectedIndex == 1 && visibleTimeoutNumber >= 0 && visibleTimeoutNumber <= 720)
+						{
+							visibleTimeout = visibleTimeoutNumber * 60;
+						}else if(visibleTimeCombo.selectedIndex == 2 && visibleTimeoutNumber >= 0 && visibleTimeoutNumber <= 12)
+						{
+							visibleTimeout = visibleTimeoutNumber * 60 * 60;
+						}else
+						{
+							alert = true;
+							visibilityAlert.visible = true;
+						}
+					}					
+					catch (e:Error)
+					{
+						alert = true;
+						visibilityAlert.visible = true;
+					}
+					//Check retention period input
+					try
+					{
+						var retentionPeriodNumber:Number = Number(retention.text);
+						if(retention.text != "" && !isNaN(retentionPeriodNumber))
+						{
+							retentionAlert.visible = false;
+						}else
+						{
+							alert = true;
+							retentionAlert.visible = true;
+						}
+						
+						if (retentionCombo.selectedIndex == 0 && retentionPeriodNumber >= 1 && retentionPeriodNumber <= 336)
+						{
+							retentionPeriod = retentionPeriodNumber * 60 * 60;
+						}else if (retentionCombo.selectedIndex == 1 && retentionPeriodNumber >= 1 && retentionPeriodNumber <= 14)
+						{
+							retentionPeriod = retentionPeriodNumber * 60 * 60 * 24;
+						}else
+						{
+							alert = true;
+						}
+					}
+					catch (e:Error)
+					{
+						alert = true;
+						retentionAlert.visible = true;			
+					}
+					//Check max message size input
+					try
+					{
+						var maxMessageSizeNumber:Number = Number(mMSize.text);
+						if(mMSize.text != "" && !isNaN(maxMessageSizeNumber))
+						{
+							mmSizeAlert.visible = false;
+						}else
+						{
+							alert = true;
+							mmSizeAlert.visible = true;
+						}
+	
+						if (maxMessageSizeNumber >= 1 && maxMessageSizeNumber <= 64)
+						{
+							maxMessageSize = maxMessageSizeNumber * 1024;
+						}else
+						{
+							alert = true;
+							mmSizeAlert.visible = true;
+						}
+					}
+					catch (e:Error)
+					{
+						alert = true;
+						mmSizeAlert.visible = true;
+					}
+					
+					delaySeconds = Number(delayTI.text);
+					if(delayDDL.selectedIndex == 1)
+					{
+						delaySeconds = delaySeconds * 60;
+					}
+					
+					receiveWaitTime = Number(receiveWaitTimeTI.text);
+				}
+				
+				if(!alert)
+				{
+					queueStack.selectedIndex++;
+				}
+			}
+			
+			private function createQueue_faultHandler(event:SqsServiceFaultEvent):void
+			{
+				submitButton.enabled = true;
+				submitButton.label = "Save";
+			}
+			
+			protected function wizardwindow1_creationCompleteHandler(event:FlexEvent):void
+			{
+				if(cloudAccount.cloud_provider != CloudAccount.AMAZON)
+				{
+					waitTimeFI.visible = false;
+					waitTimeFI.includeInLayout = false;
+					waitTimeReviewFI.visible = false;
+					waitTimeReviewFI.includeInLayout = false;
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>	
+		<services:SqsService id="sqsService"
+							 cloudAccountId="{cloudAccount.id}"
+							 region="{region}"/>
+	</fx:Declarations>
+	<s:VGroup height="90%" width="100%" gap="0">
+		<wizard:WizardWindowTitle id="sqsWindowTitle"
+								  wizardStack="{queueStack}"
+								  resourceImage="{ImagePath.NEW_SQS}"
+								  resourceLabel="{wizardDisplayName}"/>
+		<wizard:CookieTrail id="sqsCookieTrail"
+							wizardStack="{queueStack}"
+							gap="430"/>
+		<mx:ViewStack id="queueStack"
+					  creationPolicy="all"
+					  height="100%" width="100%" 
+					  paddingTop="10" paddingLeft="20">
+			<s:NavigatorContent id="queueConfiguration" label="Queue Configuration" height="100%" width="100%">
+				<s:VGroup width="100%">
+					<s:Form width="598" textAlign="right" defaultButton="{submitButton}">
+						<s:layout>
+							<s:FormLayout gap="-7"/>
+						</s:layout>
+						<s:FormItem width="428" label="Name:*">
+							<s:HGroup textAlign="left">
+								<s:TextInput id="qName" width="150"/>
+								<mx:Text id="nameAlert" color="red" text="{AlertMessage.INVALID}" visible="false"/>
+							</s:HGroup>
+						</s:FormItem>
+						<s:FormItem width="428" label="Visibility Timeout:">
+							<s:HGroup textAlign="left">
+								<s:TextInput id="visibleTime" width="80" text="30"/>
+								<s:DropDownList id="visibleTimeCombo" width="90" fontWeight="normal"
+												selectedIndex="0">
+									<s:dataProvider>
+										<s:ArrayCollection id="visibleTimeCollection">
+											<fx:String>seconds</fx:String>
+											<fx:String>minutes</fx:String>
+											<fx:String>hours</fx:String>
+										</s:ArrayCollection>
+									</s:dataProvider>
+								</s:DropDownList>
+								<mx:Text text="between 0 seconds - 12 hours"/>
+								<mx:Text id="visibilityAlert" color="red" text="{AlertMessage.INVALID}" visible="false"/>
+							</s:HGroup>
+						</s:FormItem>
+						<s:FormItem width="428" label="Message Retention Period:" visible="{objectManagementCreate}" includeInLayout="{objectManagementCreate}">
+							<s:HGroup textAlign="left">
+								<s:TextInput id="retention" width="80" text="4"/>
+								<s:DropDownList id="retentionCombo" width="90" fontWeight="normal"
+												selectedIndex="1">
+									<s:dataProvider>
+										<s:ArrayCollection id="retentionCollection">
+											<fx:String>hours</fx:String>
+											<fx:String>days</fx:String>
+										</s:ArrayCollection>
+									</s:dataProvider>
+								</s:DropDownList>
+								<mx:Text height="100%" text="between 1 hour - 14 days"/>
+								<mx:Text id="retentionAlert" color="red" text="{AlertMessage.INVALID}" visible="false"/>
+							</s:HGroup>	
+						</s:FormItem>
+						<s:FormItem width="428" label="Maximum Message Size:" visible="{objectManagementCreate}" includeInLayout="{objectManagementCreate}">
+							<s:HGroup verticalAlign="middle" textAlign="left">
+								<s:TextInput id="mMSize" width="80" text="8"/>
+								<s:Label width="90" text="KB"/>
+								<s:Label text="between 1 - 64 KB"/>
+								<mx:Text id="mmSizeAlert" color="red" text="{AlertMessage.INVALID}" visible="false"/>
+							</s:HGroup>
+						</s:FormItem>
+						<s:FormItem width="428"
+									label="Delivery Delay:" 
+									visible="{objectManagementCreate}" 
+									includeInLayout="{objectManagementCreate}">
+							<s:HGroup textAlign="left"
+									  verticalAlign="middle">
+								<s:TextInput id="delayTI" 
+											 width="80"
+											 text="0"/>
+								<s:DropDownList id="delayDDL"
+												width="90"
+												fontWeight="normal"
+												selectedIndex="1">
+									<s:dataProvider>
+										<s:ArrayCollection id="delayTimeUnitCollection">
+											<fx:String>seconds</fx:String>
+											<fx:String>minutes</fx:String>
+										</s:ArrayCollection>
+									</s:dataProvider>
+								</s:DropDownList>
+								<s:Label text="between 0 seconds and 15 minutes."/>
+								<s:Label id="delayAlert"
+										 color="red"
+										 text="{AlertMessage.INVALID}"
+										 visible="false"/>
+							</s:HGroup>	
+						</s:FormItem>
+						<s:FormItem id="waitTimeFI" 
+									width="428"
+									label="Receive Message Wait Time:" 
+									visible="{objectManagementCreate}" 
+									includeInLayout="{objectManagementCreate}">
+							<s:HGroup verticalAlign="middle" textAlign="left">
+								<s:TextInput id="receiveWaitTimeTI" 
+											 width="80"
+											 text="0"/>
+								<s:Label text="seconds" width="90"/>
+								<s:Label text="between 0 and 20 seconds."/>
+								<s:Label id="receiveWaitTimeAlert"
+										 color="red"
+										 text="{AlertMessage.INVALID}"
+										 visible="false"/>
+							</s:HGroup>	
+						</s:FormItem>
+					</s:Form>
+				</s:VGroup>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="reviewContent" width="100%" height="100%" label="Review">
+				<s:VGroup>
+					<s:Label text="Please Review Your Message Queue" y="20" fontWeight="bold"/>
+					<s:Form>
+						<s:FormItem label="Name:">
+							<s:Label text="{qName.text}"/>
+						</s:FormItem>
+						<s:FormItem label="Visibility Timeout:">
+							<s:Label text="{visibleTime.text} {visibleTimeCombo.selectedItem}"/>
+						</s:FormItem>
+						<s:FormItem label="Message Retention Period:"
+									visible="{objectManagementCreate}" 
+									includeInLayout="{objectManagementCreate}">
+							<s:Label text="{retention.text} {retentionCombo.selectedItem}"/>
+						</s:FormItem>
+						<s:FormItem label="Delivery Delay:"
+									visible="{objectManagementCreate}" 
+									includeInLayout="{objectManagementCreate}">
+							<s:Label text="{delayTI.text} {delayDDL.selectedItem}"/>
+						</s:FormItem>
+						<s:FormItem id="waitTimeReviewFI"
+									label="Receive Message Wait time:"
+									visible="{objectManagementCreate}" 
+									includeInLayout="{objectManagementCreate}">
+							<s:Label text="{receiveWaitTimeTI.text} seconds"/>
+						</s:FormItem>
+					</s:Form>	
+				</s:VGroup>
+			</s:NavigatorContent>
+		</mx:ViewStack>
+	</s:VGroup>
+	<s:Button id="previousButton" x="10" y="386" label="Previous"
+			  click="previousButton_clickHandler(event)"
+			  enabled="{queueStack.selectedIndex != 0}"/>
+	<s:Button id="nextButton" x="92" y="386" label="Next"
+			  click="nextButton_clickHandler(event)"
+			  enabled="{queueStack.selectedChild != reviewContent}"/>
+	<s:Button id="submitButton" x="169" y="386" label="Finish"
+			  click="submitButton_clickHandler(event)"
+			  enabled="{queueStack.selectedChild == reviewContent}"/>
+	<s:Button id="cancelButton" x="644" y="386" label="Cancel"
+			  click="PopUpManager.removePopUp(this)"/>
+</wizard:WizardWindow>

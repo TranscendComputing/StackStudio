@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" width="616" height="376"
+			   title="{dbInstance.child('rds-db-instance-identifier')} Properties"
+			   close="PopUpManager.removePopUp(this)"
+			   initialize="init(event)">
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.components.MainBox;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import fr.kapit.layouts.model.Node;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.core.IUITextField;
+			import mx.core.mx_internal;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			
+			[Bindable]
+			private var awsConsole:String = "<a href='https://console.aws.amazon.com/rds/home?region=us-east-1&#s=DBInstances'>here</a>";
+			[Bindable]
+			private var host:String;
+			private var app:Object = FlexGlobals.topLevelApplication;
+			[Bindable]
+			public var accountId:int;
+			[Bindable]
+			private var s:String;
+			private var mainBox:MainBox;
+			
+			protected function init(event:FlexEvent):void
+			{
+				accountId = this.accountId;	
+				host = app.GetConfiguration( "serviceUrl" ) ;	
+				mainBox = Helpers.getMainBoxt(this);
+			}
+			
+			protected function launchClickHandler():void
+			{
+				createDbInstanceInCloudSvc.send();
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function alterDbInstanceInCloudSvc_resultHandler(event:ResultEvent):void
+			{
+				var result:XML = XML(event.result);
+				Alert.show("Go to https://console.aws.amazon.com/rds/home?region=us-east-1&#s=DBInstances to see instance.");
+				mainBox.designView.updatedInstancesCollection.addItem(result);
+				mainBox.designView.refreshDbInstances();
+				mainBox.designView.updateDbInstances();
+			}
+			
+			public function textHandler(event:Event):void
+			{
+				var styleSheet:StyleSheet = new StyleSheet();
+				styleSheet.setStyle("a:link", { textDecoration: "underline", color: "#30F" });
+				event.currentTarget.mx_internal::styleSheet = styleSheet;
+			}
+
+			protected function delete_clickHandler(event:MouseEvent):void
+			{
+				if(dbInstance.child('status') == 'available')
+				{
+					
+				}
+				deleteRdsInstanceSvc.send({_method: 'DELETE'});
+				PopUpManager.removePopUp(this);
+				mainBox.designView.removeNode(dbInstance.id);
+				var coll:ArrayCollection = mainBox.designView.dbInstancesCollection;
+				coll.removeItemAt(coll.getItemIndex(dbInstance));
+			}
+			
+			
+			
+			protected function terminate_clickHandler(event:MouseEvent):void
+			{
+				deleteRdsInstanceInCloudSvc.send();
+				PopUpManager.removePopUp(this);
+				
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		
+		<fx:XML id="dbInstance"/>
+				
+		<s:HTTPService id="createDbInstanceInCloudSvc"
+					   url="{host}/rds_db_instances/create_db_instance_in_cloud/{dbInstance.child('id')}.xml"
+					   resultFormat="e4x"
+					   method="GET"
+					   showBusyCursor="true"
+					   result="alterDbInstanceInCloudSvc_resultHandler(event)"/>
+		
+		<s:HTTPService id="deleteRdsInstanceSvc"
+					   url="{host}/rds_db_instances/{dbInstance.child('id')}.xml"
+					   resultFormat="e4x"
+					   method="POST"
+					   showBusyCursor="true"/>
+		
+		<s:HTTPService id="deleteRdsInstanceInCloudSvc"
+					   url="{host}/rds_db_instances/delete_db_instance_in_cloud/{dbInstance.child('id')}.xml"
+					   resultFormat="e4x"
+					   method="GET"
+					   showBusyCursor="true"
+					   result="alterDbInstanceInCloudSvc_resultHandler(event)"/>
+	</fx:Declarations>
+
+	<mx:Form x="10" y="10">
+		<mx:FormItem label="DB Instance Identifier:" fontWeight="bold">
+			<mx:Text text="{dbInstance.child('rds-db-instance-identifier')}" fontWeight="normal"/>
+		</mx:FormItem>
+		<mx:FormItem label="Master User Name:" fontWeight="bold">
+			<mx:Text text="{dbInstance.child('rds-master-username')}" fontWeight="normal"/>
+		</mx:FormItem>
+		<mx:FormItem label="Master User Password:" fontWeight="bold">
+			<mx:Text text="{dbInstance.child('rds-master-user-password')}"  fontWeight="normal"/>
+		</mx:FormItem>
+		<mx:FormItem label="Database Name:" fontWeight="bold">
+			<mx:Text text="{dbInstance.child('rds-db-name')}" fontWeight="normal"/>
+		</mx:FormItem>
+		<mx:FormItem label="Database Port:" fontWeight="bold">
+			<mx:Text text="{dbInstance.child('rds-port')}" fontWeight="normal"/>
+		</mx:FormItem>
+		<!--<mx:FormItem label="Availability Zone:" fontWeight="bold">
+			<mx:Text text="" fontWeight="normal"/>
+		</mx:FormItem>
+		<mx:FormItem label="DB Parameter Group:" fontWeight="bold">
+			<mx:Text text="{parameterGroups.selectedItem.name}" fontWeight="normal"/>
+		</mx:FormItem>
+		<mx:FormItem label="DB Security Group(s):" fontWeight="bold">
+			<mx:Text text="{securityGroups.selectedItem.name}" fontWeight="normal"/>
+		</mx:FormItem>-->
+		<mx:FormItem label="Backup Retention Period:" fontWeight="bold">
+			<mx:Text text="{dbInstance.child('rds-backup-retention-period')}" fontWeight="normal"/>
+		</mx:FormItem>
+		<mx:FormItem label="Backup Window:" fontWeight="bold">
+			<mx:Text text="{dbInstance.child('rds-preferred-backup-window')}" fontWeight="normal"/>
+		</mx:FormItem>
+		<mx:FormItem label="Maintenance Window:" fontWeight="bold">
+			<mx:Text text="{dbInstance.child('rds-preferred-maintenance-window')}" fontWeight="normal"/>
+		</mx:FormItem>
+	</mx:Form>
+	<mx:Form x="271" y="10">
+		<mx:FormItem label="Engine:" fontWeight="bold">
+			<mx:Text text="{dbInstance.child('rds-engine')}" fontWeight="normal"/>
+		</mx:FormItem>
+		<mx:FormItem label="Engine Version:" fontWeight="bold">
+			<mx:Text text="{dbInstance.child('rds-db-engine-version')}" fontWeight="normal"/>
+		</mx:FormItem>
+		<mx:FormItem label="Auto Minor Ver. Upgrade" fontWeight="bold">
+			<mx:Text text="{dbInstance.child('auto-minor-version-upgrade')}" fontWeight="normal"/>
+		</mx:FormItem>
+		<mx:FormItem label="DB Instance Class:" fontWeight="bold">
+			<mx:Text text="{dbInstance.child('rds-db-instance-class')}" fontWeight="normal"/>
+		</mx:FormItem>
+		<mx:FormItem label="Multi-AZ Deployment:" fontWeight="bold">
+			<mx:Text text="{dbInstance.child('multiple-availability-zones')}" fontWeight="normal"/>
+		</mx:FormItem>
+		<mx:FormItem label="Allocated Storage:" fontWeight="bold">
+			<mx:Text text="{dbInstance.child('rds-allocated-storage')}" fontWeight="normal"/>
+		</mx:FormItem>
+	</mx:Form>
+	<s:FormItem x="369" y="203" label="Status:" fontWeight="bold">
+		<mx:Text text="{dbInstance.child('status')}" fontWeight="normal"/>
+	</s:FormItem>
+	<s:HGroup x="298" y="299">
+		<s:Button id="delete" label="Delete" toolTip="Must be in 'unlaunched' state to delete" 
+				  click="delete_clickHandler(event)" enabled="{dbInstance.child('status') == 'unlaunched'}"/>
+		<s:Button id="terminate" label="Terminate" toolTip="Terminate in Cloud" 
+				  click="terminate_clickHandler(event)" enabled="{dbInstance.child('status') == 'available'}"/>
+		<s:Button id="launch" label="Launch" click="launchClickHandler()"/>
+		<s:Button label="Close" click="PopUpManager.removePopUp(this)"/>
+	</s:HGroup>
+</s:TitleWindow>

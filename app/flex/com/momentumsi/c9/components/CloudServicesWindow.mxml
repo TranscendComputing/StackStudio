@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components:CustomTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+							  xmlns:s="library://ns.adobe.com/flex/spark" 
+							  xmlns:mx="library://ns.adobe.com/flex/mx"
+							  xmlns:components="com.momentumsi.c9.components.*"
+							  xmlns:services="com.momentumsi.c9.services.*"
+							  width="972" height="416"
+							  title="Manage Cloud Endpoints"
+							  close="customtitlewindow1_closeHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.events.CloudResultEvent;
+			import com.momentumsi.c9.models.Cloud;
+			import com.momentumsi.c9.models.CloudServiceModel;
+			import com.momentumsi.c9.services.CloudApiService;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.collections.ArrayCollection;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
+			[Bindable]
+			public var cloud:Cloud;
+			
+			protected function addButton_clickHandler(event:MouseEvent):void
+			{
+				addButton.enabled = false;
+				
+				var newService:CloudServiceModel = new CloudServiceModel();
+				newService.type = serviceDDL.selectedItem;
+				newService.protocol = protocolDDL.selectedItem;
+				newService.host = hostTI.text;
+				newService.port = portTI.text;
+				newService.path = pathTI.text;
+				newService.enabled = enabledDDL.selectedItem as Boolean;
+				
+				cloudService.addEventListener(CloudResultEvent.SERVICE_ADDED, cloudService_serviceAddedHandler);
+				cloudService.addService(newService);
+			}
+			
+			protected function removeButton_clickHandler(event:MouseEvent):void
+			{
+				removeButton.enabled = false;
+				
+				var serviceToRemove:CloudServiceModel = cloudServicesGrid.selectedItem as CloudServiceModel;
+				cloudService.addEventListener(CloudResultEvent.SERVICE_REMOVED, cloudService_serviceRemovedHandler);
+				cloudService.removeService(serviceToRemove.id);
+			}
+			
+			protected function cloudService_serviceAddedHandler(event:CloudResultEvent):void
+			{
+				cloudService.removeEventListener(CloudResultEvent.SERVICE_ADDED, cloudService_serviceAddedHandler);
+				
+				//Reset input fields
+				serviceDDL.selectedIndex = 0;
+				protocolDDL.selectedIndex = 0;
+				hostTI.text = "";
+				portTI.text = "";
+				pathTI.text = "";
+				enabledDDL.selectedIndex = 0;
+				
+				addButton.enabled = true;
+			}
+			
+			protected function cloudService_serviceRemovedHandler(event:CloudResultEvent):void
+			{
+				cloudService.removeEventListener(CloudResultEvent.SERVICE_REMOVED, cloudService_serviceRemovedHandler);
+				removeButton.enabled = false;
+			}
+			
+			protected function customtitlewindow1_closeHandler(event:CloseEvent):void
+			{
+				var objMgmt:ObjectManagementTab = Helpers.getObjectManagement(this);
+				objMgmt.runCloudQuery();
+				PopUpManager.removePopUp(this);
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<services:CloudService id="cloudService"
+							   cloud="{cloud}"/>
+	</fx:Declarations>
+	<s:VGroup height="100%" width="970"
+			  paddingTop="10" paddingLeft="5" paddingRight="5" paddingBottom="10">
+		<s:Label text="Set valid endpoints for the available services below, then click Add."/>
+		<s:HGroup id="newServiceHG"
+				  gap="-35">
+			<s:FormItem skinClass="spark.skins.spark.StackedFormItemSkin"
+						label="Service">
+				<s:DropDownList id="serviceDDL"
+								selectedIndex="0"
+								width="173"
+								dataProvider="{CloudApiService.AVAILABLE_SERVICES}">
+				</s:DropDownList>
+			</s:FormItem>
+			<s:FormItem skinClass="spark.skins.spark.StackedFormItemSkin"
+						label="Protocol">
+				<s:DropDownList id="protocolDDL"
+								selectedIndex="0"
+								width="71">
+					<s:dataProvider>
+						<s:ArrayCollection>
+							<fx:String>http</fx:String>
+							<fx:String>https</fx:String>
+						</s:ArrayCollection>
+					</s:dataProvider>
+				</s:DropDownList>
+			</s:FormItem>
+			<s:FormItem skinClass="spark.skins.spark.StackedFormItemSkin"
+						label="Host">
+				<s:TextInput id="hostTI"
+							 width="206"/>
+			</s:FormItem>
+			<s:FormItem skinClass="spark.skins.spark.StackedFormItemSkin"
+						label="Port">
+				<s:TextInput id="portTI"
+							 width="90"/>
+			</s:FormItem>
+			<s:FormItem skinClass="spark.skins.spark.StackedFormItemSkin"
+						label="Path">
+				<s:TextInput id="pathTI"
+							 width="218"/>
+			</s:FormItem>
+			<s:FormItem width="115" label="Enabled" skinClass="spark.skins.spark.StackedFormItemSkin">
+				<s:DropDownList id="enabledDDL"
+								selectedIndex="0"
+								width="69">
+					<s:dataProvider>
+						<s:ArrayCollection>
+							<fx:Boolean>true</fx:Boolean>
+							<fx:Boolean>false</fx:Boolean>
+						</s:ArrayCollection>
+					</s:dataProvider>
+				</s:DropDownList>
+			</s:FormItem>
+		</s:HGroup>
+		<s:HGroup paddingLeft="10">
+			<s:Button id="addButton"
+					  label="Add" 
+					  click="addButton_clickHandler(event)"/>
+		</s:HGroup>
+		<s:VGroup width="100%" paddingLeft="10" paddingRight="10">
+			<s:DataGrid id="cloudServicesGrid" 
+						dataProvider="{cloud.cloudServices}"
+						editable="true"
+						height="227" width="100%"
+						minHeight="0">
+				<s:columns>
+					<s:ArrayList>
+						<s:GridColumn headerText="Service"
+									  editable="false"
+									  dataField="type"
+									  width="180"/>
+						<s:GridColumn headerText="Protocol"
+									  editable="false"
+									  dataField="protocol"
+									  width="75"/>
+						<s:GridColumn headerText="Host"
+									  editable="false"
+									  dataField="host"/>
+						<s:GridColumn headerText="Port"
+									  editable="false" 
+									  width="75"
+									  dataField="port"/>
+						<s:GridColumn headerText="Path"
+									  editable="false"
+									  dataField="path"/>
+						<s:GridColumn headerText="Enabled"
+									  editable="false"
+									  dataField="enabled"
+									  width="75"/>
+					</s:ArrayList>
+				</s:columns>
+			</s:DataGrid>
+		</s:VGroup>
+		<s:HGroup width="100%">
+			<s:HGroup width="100%" horizontalAlign="left" paddingLeft="10">
+				<s:Button id="removeButton"
+						  label="Remove"
+						  enabled="{cloudServicesGrid.selectedItem != null}"
+						  click="removeButton_clickHandler(event)"/>
+			</s:HGroup>
+			<s:HGroup width="100%" horizontalAlign="right" paddingRight="10">
+				<s:Button label="Close" click="dispatchEvent(new CloseEvent(CloseEvent.CLOSE))"/>
+			</s:HGroup>
+		</s:HGroup>
+	</s:VGroup>
+</components:CustomTitleWindow>

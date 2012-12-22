@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" 
+			   width="640" height="525"
+			   title="Restore DB Instance"
+			   close="PopUpManager.removePopUp(this)"
+			   move="Helpers.doMove(this)"
+			   initialize="init(event)"
+			   creationComplete="creationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.components.MainBox;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.controls.Alert;
+			import mx.events.CalendarLayoutChangeEvent;
+			import mx.events.DropdownEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			
+			[Bindable]
+			private var host:String;
+			[Bindable]
+			private var accountId:int;
+			[Bindable]
+			private var dateRange:Object = new Object();
+			private var customRestoreTime:String;
+			private var mainBox:MainBox;
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				mainBox = Helpers.getMainBox(this);
+				var engine:String = dbInstance.child('rds-engine');
+				if(engine == "mysql")
+				{
+					licenseList.addItem({label: "general-public-license"});
+				}
+				license.selectedIndex = 0;
+				var date:String = dbInstance.child('rds-latest-restorable-time');
+				var backupPeriod:int = dbInstance.child('rds-backup-retention-period');
+				latestRestoreTimeText.text = dateFormatter.format(Helpers.formatDate(date)) + " UTC";
+				var startDate:Date = Helpers.formatDate(date);
+				startDate.setDate(startDate.getDate() - backupPeriod);
+				dateRange['rangeStart'] = startDate;
+				var today:Date = new Date();
+				dateRange['rangeEnd'] = today;
+				PopUpManager.centerPopUp(this);
+			}
+			
+			private function doDateLabel(item:Date):String
+			{
+				return dateFormatter2.format(item);
+			}
+			
+			protected function init(event:FlexEvent):void
+			{
+				host = Helpers.getHost();
+				accountId = Helpers.currentAccount(this);
+				getAvailabilityZonesSvc.send();
+			}
+			
+			protected function getAvailabilityZonesSvc_resultHandler(event:ResultEvent):void
+			{
+				var result:XMLList = Helpers.xmlChildrenFromEvent(event);
+				for each(var zone:XML in result)
+				{
+					zones.addItem({label: zone.child("zone-name")});
+				}
+			}
+			
+			protected function date_changeHandler(date:Date):void
+			{
+				var temp:String = returnDateFormatter.format(date);
+				//customReturnDate = temp;
+			}
+			
+			protected function launchButton_clickHandler(event:MouseEvent):void
+			{
+				if(!Helpers.isValid([portValidator]))
+				{
+					Alert.show("Please enter a valid port number (1115-65535).");
+					return;
+				}
+				var params:Object = new Object();
+				if(customTime.selected)
+				{
+					params['restore_time'] = customRestoreTime + hr.text + ":" + min.text + ":" + sec.text + "Z";
+				}
+				params['aws_id'] = awsId.text;
+				params['use_latest_restorable_time'] = useLatestRestoreTimeRadioButtons.selectedValue;
+				params['instance_class'] = instanceClass.selectedItem.label;
+				params['multi_az'] = multiAZRadioButtons.selectedValue;
+				params['endpoint_port'] = dbPort.text;
+				if(zone.selectedIndex != 0)
+				{
+					var selectedZone:String = zone.selectedItem.label;
+					params['availability_zone'] = selectedZone;
+				}
+				params['auto_minor_version_upgrade'] = upgradeRadioButtons.selectedValue;
+				restoreInstanceSvc.send(params);
+				
+			}
+			
+			protected function date_valueCommitHandler(event:FlexEvent):void
+			{
+				var testDate:Date = new Date();
+				testDate.setDate(date.selectedDate.getDate() -4);
+				customRestoreTime = returnDateFormatter.format(date.selectedDate);
+			}
+			
+			
+			protected function restoreInstanceSvc_resultHandler(event:ResultEvent):void
+			{
+				var returnXML:XML = XML(event.result);
+				if(returnXML.toString() == "DBInstanceAlreadyExists: DB Instance already exists")
+				{
+					Alert.show("DB Instance already exists, please choose another name.");
+					return;
+				}else{
+					PopUpManager.removePopUp(this);
+				}
+				var children:XMLList = returnXML.children();
+				var result:XML = <rds_db_instance></rds_db_instance>
+				for each(var child:XML in children)
+				{
+					result.appendChild(child);
+				}
+				var ec2AccountId:int = dbInstance.child('ec2-account-id');
+				var awsId:String  = result.child('aws-id');
+				var storage:int = result.child('allocated-storage');
+				var username:String = result.child('master-username');
+				var passwd:String = dbInstance.child('rds-master-user-password');
+				var instanceClass:String = result.child('instance-class');
+				var engine:String = result.child('engine');
+				var version:String = result.child('engine-version');
+				var multiAz:Boolean = result.child('multi-az');
+				var mw:String = result.child('preferred-maintenance-window');
+				var bPeriod:int = result.child('backup-retention-period');
+				var bw:String = result.child('preferred-backup-window');
+				var upgrade:Boolean = result.child('auto-minor-version-upgrade');
+				var replicas:String = result.child('read-replica-db-instance-identifiers');
+				var secGroup:String = dbInstance.child('rds-security-group');
+				var status:String = result.child('status');
+				var restoreDb:XML = <rds_db_instance>
+									   <rds_db_instance_identifier>{awsId}</rds_db_instance_identifier>
+									   <rds_allocated_storage>{storage}</rds_allocated_storage>
+									   <rds_master_username>{username}</rds_master_username>
+									   <rds_master_user_password>{passwd}</rds_master_user_password>
+									   <rds_db_instance_class>{instanceClass}</rds_db_instance_class>
+									   <rds_engine>{engine}</rds_engine>
+									   <rds_db_engine_version>{version}</rds_db_engine_version>
+									   <multiple_availability_zones>{multiAz}</multiple_availability_zones>
+									   <rds_preferred_maintenance_window>{mw}</rds_preferred_maintenance_window>
+									   <rds_backup_retention_period>{bPeriod}</rds_backup_retention_period>
+									   <rds_preferred_backup_window>{bw}</rds_preferred_backup_window>
+									   <auto_minor_version_upgrade>{upgrade}</auto_minor_version_upgrade>
+									   <rds_read_replicas>{replicas}</rds_read_replicas>
+									   <rds_security_group>{secGroup}</rds_security_group>
+									   <status>{status}</status>
+								  </rds_db_instance>;
+				
+				saveRestoreDbSvc.request = restoreDb;
+				saveRestoreDbSvc.send();
+				
+			}
+			
+			protected function saveRestoreDbSvc_resultHandler(event:ResultEvent):void
+			{
+				var result:XML = XML(event.result);	
+				//mainBox.runningView.rdsBox.updateDbInstanceSvc.send();
+				//mainBox.runningView.rdsBox.updateDbInstance();
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<fx:XML id="dbInstance"/>
+		<s:RadioButtonGroup id="useLatestRestoreTimeRadioButtons"/>
+		<s:RadioButtonGroup id="multiAZRadioButtons"/>
+		<s:RadioButtonGroup id="upgradeRadioButtons"/>
+		
+		<s:HTTPService id="getAvailabilityZonesSvc"
+					   url="{host}/ec2_accounts/get_availability_zones/{accountId}.xml"
+					   method="GET"
+					   resultFormat="e4x"
+					   showBusyCursor="true"
+					   result="getAvailabilityZonesSvc_resultHandler(event)"/>
+		
+		<s:HTTPService id="restoreInstanceSvc"
+					   url="{host}/rds_db_instances/restore_to_point_in_time/{dbInstance.child('id')}.xml"
+					   method="GET"
+					   resultFormat="e4x"
+					   showBusyCursor="true"
+					   result="restoreInstanceSvc_resultHandler(event)"/>
+		
+		<s:HTTPService id="saveRestoreDbSvc"
+					   url="{host}/rds_db_instances.xml"
+					   contentType="application/xml"
+					   resultFormat="e4x"
+					   method="POST"
+					   showBusyCursor="true"
+					   result="saveRestoreDbSvc_resultHandler(event)"/>
+		
+		<s:NumberValidator id="portValidator"
+						   source="{dbPort}"
+						   property="text"
+						   minValue="1115"
+						   required="true"
+						   maxValue="65535"
+						   domain="int"/>
+		
+		<s:DateTimeFormatter id="dateRangeFormatter" dateTimePattern="yyyy','MM','dd"/>
+		<s:DateTimeFormatter id="dateFormatter" dateTimePattern="yyyy-MM-dd  HH:mm:ss"/>
+		<s:DateTimeFormatter id="dateFormatter2" dateTimePattern="dd MMMM yyyy"/>
+		<s:DateTimeFormatter id="returnDateFormatter" dateTimePattern="yyyy'-'MM'-'dd'T'"/>
+		
+	</fx:Declarations>
+	<s:VGroup width="100%" height="411" paddingLeft="15">
+		<mx:Text horizontalCenter="0" text="You are creating a new DB Instance from a source DB Instance at a specified time.  This new DB {'\n'}Instance will have the default DB Security Group and DB Parameter Groups."/>
+		<s:VGroup paddingLeft="25">
+			<s:HGroup>
+				<s:RadioButton id="latestRestoreTime" group="{useLatestRestoreTimeRadioButtons}" label="Use Latest Restorable Time: {}" value="{true}" selected="true"/>
+				<mx:Text id="latestRestoreTimeText"/>
+			</s:HGroup>
+			<s:HGroup gap="0">
+				<s:RadioButton id="customTime" group="{useLatestRestoreTimeRadioButtons}" value="{false}" label="Use Custom Restore Time:"/>
+				<mx:DateField color="black"  id="date" valueCommit="date_valueCommitHandler(event)" change="date_changeHandler(DateField(event.target).selectedDate)" width="115" editable="false" labelFunction="doDateLabel" enabled="{customTime.selected}"/>
+				<s:TextInput id="hr" width="40" enabled="{customTime.selected}"/>
+				<mx:Text text=":"/>
+				<s:TextInput id="min" width="40" enabled="{customTime.selected}"/>
+				<mx:Text text=":"/>
+				<s:TextInput id="sec" width="40" enabled="{customTime.selected}"/>
+				<mx:Text text="UTC"/>
+			</s:HGroup>
+		</s:VGroup>
+		<s:Line horizontalCenter="0" x="11" y="-39" width="95%" xFrom="5" xTo="150" yFrom="180" yTo="180">
+			<s:stroke>
+				<s:SolidColorStroke color="white"/>
+			</s:stroke>
+		</s:Line>
+		<s:Form>
+			<s:layout>
+				<s:FormLayout gap="-7"/>
+			</s:layout>
+			<s:FormItem label="Source DB Instance:">
+				<mx:Text text="{dbInstance.child('rds-db-instance-identifier')}"/>
+			</s:FormItem>
+			<s:FormItem label="DB Instance Identifier:*">
+				<s:TextInput id="awsId" width="201"/>
+			</s:FormItem>
+			<s:FormItem label="DB Engine:">
+				<mx:Text text="{dbInstance.child('rds-engine')}"/>
+			</s:FormItem>
+			<s:FormItem label="License Model:">
+				<mx:ComboBox id="license" width="150" color="black">
+					<mx:dataProvider>
+						<s:ArrayCollection id="licenseList"/>
+					</mx:dataProvider>
+				</mx:ComboBox>
+			</s:FormItem>
+			<s:FormItem label="DB Instance Class:">
+				<mx:ComboBox id="instanceClass" width="150" selectedIndex="0" labelField="label" color="black">
+					<mx:dataProvider>
+						<s:ArrayCollection>
+							<fx:Object label="db.m1.small"/>
+							<fx:Object label="db.m1.large"/>
+							<fx:Object label="db.m1.xlarge"/>
+							<fx:Object label="db.m2.xlarge"/>
+							<fx:Object label="db.m2.2xlarge"/>
+							<fx:Object label="db.m2.4xlarge"/>
+						</s:ArrayCollection>
+					</mx:dataProvider>
+				</mx:ComboBox>
+			</s:FormItem>
+			<s:FormItem label="Multi-AZ Deployment:">
+				<s:HGroup>
+					<s:RadioButton group="{multiAZRadioButtons}" label="Yes" value="{true}"/>
+					<s:RadioButton group="{multiAZRadioButtons}" label="No" value="{false}" selected="true"/> 
+				</s:HGroup>
+			</s:FormItem>
+			<s:FormItem label="Auto Minor Version Upgrade:">
+				<s:HGroup>
+					<s:RadioButton group="{upgradeRadioButtons}" label="Yes" value="{true}" selected="true"/>
+					<s:RadioButton group="{upgradeRadioButtons}" label="No" value="{false}"/>
+				</s:HGroup>
+			</s:FormItem>
+			<s:FormItem label="Database Port:">
+				<s:TextInput id="dbPort" text="3306"/>
+			</s:FormItem>
+			<s:FormItem label="Availability Zone:">
+				<mx:ComboBox id="zone" width="150" color="black" labelField="label" selectedIndex="0" enabled="{multiAZRadioButtons.selectedValue == false}">
+					<mx:dataProvider>
+						<s:ArrayCollection id="zones">
+							<fx:Object label="No Preference"/>
+						</s:ArrayCollection>
+					</mx:dataProvider>
+				</mx:ComboBox>
+			</s:FormItem>
+		</s:Form>
+		<s:Line width="95%" horizontalCenter="0" xFrom="5" xTo="150" yFrom="180" yTo="180">
+			<s:stroke>
+				<s:SolidColorStroke color="white"/>
+			</s:stroke>
+		</s:Line>
+	</s:VGroup>
+	<s:Button id="launchButton" x="208" y="461" label="Launch DB Instance"
+			  click="launchButton_clickHandler(event)"/>
+	<s:Button x="361" y="461" label="Cancel" click="PopUpManager.removePopUp(this)"/>
+</s:TitleWindow>

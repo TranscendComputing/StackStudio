@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:components="com.momentumsi.c9.components.*"
+		 xmlns:ns="http://code.google.com/p/flexlib/"
+		 xmlns:services="com.momentumsi.c9.services.*"
+		 width="100%" height="100%"
+		 initialize="welcomeDashboard_initializeHandler(event)"
+		 creationComplete="welcomeDashboard_creationCompleteHandler(event)">
+
+	
+	<fx:Script>
+		<![CDATA[	
+			import com.momentumsi.c9.constants.Color;
+			import com.momentumsi.c9.events.ProjectEvent;
+			import com.momentumsi.c9.models.Environment;
+			import com.momentumsi.c9.models.Project;
+			import com.momentumsi.c9.models.User;
+			
+			import flash.net.navigateToURL;
+			
+			import flashx.textLayout.conversion.TextConverter;
+			
+			import flexlib.containers.SuperTabNavigator;
+			
+			import mx.collections.ArrayCollection;
+			import mx.core.FlexGlobals;
+			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+
+			[Bindable]
+			public var events:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public var readOnly:Boolean;
+			[Bindable]
+			public var user:User;
+			private var newsEvents:URLRequest = new URLRequest("../news_events.html");
+			private var loader:URLLoader;
+			[Bindable]
+			private var newsEventsString:String
+			[Bindable]
+			private var selectedProject:Project;
+			
+			protected function welcomeDashboard_initializeHandler(event:FlexEvent):void
+			{
+				loader = new URLLoader(newsEvents);
+				loader.addEventListener(Event.COMPLETE, newEventsLoader);
+			}
+			
+			protected function welcomeDashboard_creationCompleteHandler(event:FlexEvent):void
+			{
+				if(!readOnly){
+					newsAndEventsSvc.url = C9(FlexGlobals.topLevelApplication).GetConfiguration("serviceUrl") + "/events_and_news";
+					newsAndEventsSvc.send();
+				}
+			}
+			
+			public function newEventsLoader(ev:Event):void 
+			{
+				newsEventsString = String(loader.data);
+			}
+			
+			private function newWin(url:String):void 
+			{
+				ExternalInterface.call("window.open", url, "_blank", "");
+			}
+			
+			protected function newsAndEventsSvc_faultHandler(event:FaultEvent):void
+			{
+				trace(event.fault.faultDetail);
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		
+		<services:ApiService id="newsAndEventsSvc"
+							 method="GET"
+							 resultFormat="text"
+							 fault="newsAndEventsSvc_faultHandler(event)"/>
+		
+	</fx:Declarations>
+	<s:BorderContainer width="100%" height="100%" borderVisible="false">
+		<s:Scroller width="100%" height="100%">
+			<s:viewport>
+				<s:HGroup width="100%" height="100%" paddingTop="20" paddingLeft="20" paddingRight="20" paddingBottom="20">
+					<components:MyProjectsWidget id="myProjectsWidget" user="{user}"/>
+					<!--
+					<s:VGroup gap="10">
+						<s:Label color="#FF800D" fontSize="20" text="Learning Center"/>
+						<s:HGroup>
+							<s:Label text="Explore Transcend's supported clouds." fontWeight="bold"/>
+						</s:HGroup>
+						<s:VGroup paddingLeft="15" gap="15">
+							<s:HGroup>
+								<s:Label text="I.  "/>
+								<s:Label buttonMode="true" click="newWin('http://aws.amazon.com/')" color="blue"
+										 mouseChildren="false" text="Amazon Web Services" textDecoration="underline"
+										 useHandCursor="true"/>
+							</s:HGroup>
+							<s:HGroup>
+								<s:Label text="II. "/>
+								<s:Label buttonMode="true" click="newWin('http://open.eucalyptus.com/')" color="blue"
+										 mouseChildren="false" text="Eucalyptus" textDecoration="underline"
+										 useHandCursor="true"/>
+							</s:HGroup>
+							<s:HGroup>
+								<s:Label text="III."/>
+								<s:Label buttonMode="true" click="newWin('http://www.openstack.org/')" color="blue"
+										 mouseChildren="false" text="OpenStack" textDecoration="underline"
+										 useHandCursor="true"/>
+							</s:HGroup>
+						</s:VGroup>	
+						<s:VGroup gap="10">
+							<s:HGroup>
+								<s:Label text="Getting started with the Transcend StackStudio is easy!" fontWeight="bold"/>
+							</s:HGroup>
+							<s:VGroup paddingLeft="15" gap="15">
+								<s:HGroup>
+									<s:Label text="I.  "/>
+									<s:Label buttonMode="true" click="newWin('http://transcendcomputing.com/beta/uiguide/')" color="blue"
+											 mouseChildren="false" text="Transcend StackStudio User Guide" textDecoration="underline"
+											 useHandCursor="true"/>
+								</s:HGroup>
+								<s:HGroup>
+									<s:Label text="II. "/>
+									<s:Label text="Select Project -> New to create your first project."/>
+								</s:HGroup>
+								<s:HGroup>
+									<s:Label text="III."/>
+									<s:Label width="450" text="Give your project a name and description then create a new cloud account with a set of cloud credentials from one of our supported clouds."/>
+								</s:HGroup>
+								<s:HGroup>
+									<s:Label text="IV. "/>
+									<s:Label width="450"
+											 text="Save your new project and you will be taken to the design workspace where you can begin creating your cloud infrastructure."/>
+								</s:HGroup>
+							</s:VGroup>
+						</s:VGroup>
+					</s:VGroup>
+					-->
+					<s:VGroup width="100%" height="100%" paddingTop="10" paddingLeft="10" paddingRight="10" paddingBottom="10">
+						<s:Label text="News &amp; Events" fontSize="20" color="{Color.SHARP_ORANGE}"/>
+						<s:RichEditableText id="htmlDisplay"
+											editable="false"
+											selectable="false"
+											textFlow="{TextConverter.importToFlow(newsEventsString, TextConverter.TEXT_FIELD_HTML_FORMAT)}"/>
+					</s:VGroup>		
+				</s:HGroup>	
+			</s:viewport>
+		</s:Scroller>
+	</s:BorderContainer>
+</s:Group>

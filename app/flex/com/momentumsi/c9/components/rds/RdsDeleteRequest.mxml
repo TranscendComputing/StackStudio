@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" 
+			   close="PopUpManager.removePopUp(this)"
+			   creationComplete="creationCompleteHandler(event)"
+			   initialize="init(event)"
+			   move="Helpers.doMove(this)"
+			   title="Delete DB Instance"
+			   width="392" height="210">
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.components.MainBox;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import fr.kapit.diagrammer.Diagrammer;
+			import fr.kapit.diagrammer.base.uicomponent.DiagramSprite;
+			
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import spark.events.IndexChangeEvent;
+			
+			[Bindable]
+			public var host:String;
+			private var app:Object = FlexGlobals.topLevelApplication;
+			public var nodeId:String;
+			private var runningDiagram:Diagrammer;
+			[Bindable]
+			private var rdsDbInstanceId:int;
+			private var mainBox:MainBox;
+
+			
+			protected function init(event:FlexEvent):void
+			{
+				host = app.GetConfiguration( "serviceUrl" ) ;
+				runningDiagram = Helpers.getRunningDiagram(this);
+				mainBox = Helpers.getMainBox(this);
+			}
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				if(rdsInstance['data'].child('rds-read-replica-source') != "")
+				{
+					finalSnapshotForm.visible = false;
+				}
+				PopUpManager.centerPopUp(this);					
+			}
+			
+			protected function deleteInstance_clickHandler(event:MouseEvent):void
+			{
+				rdsDbInstanceId = rdsInstance['data'].child('id');
+				if(rdsInstance['data'].child('rds-read-replica-source') != "")
+				{
+					deleteRdsDbInstanceSvc.send({skip_final_snapshot: true});
+				}else{
+					if(finalSnapshotRequest.selectedIndex == 0)
+					{
+						if(finalSnapshotName.text == "")
+						{
+							nameAlert.visible = true;
+							return;
+						}
+						deleteRdsDbInstanceSvc.send({skip_final_snapshot: false, snapshot_aws_id: finalSnapshotName.text});
+					}else{
+						deleteRdsDbInstanceSvc.send({skip_final_snapshot: true});
+					}
+				}
+				PopUpManager.removePopUp(this);
+								
+				mainBox.runningView.runningObjectDescriptions.selectedIndex = 0;
+			}
+			
+			protected function deleteRdsDbInstanceSvc_resultHandler(event:ResultEvent):void
+			{
+				rdsDbInstancesRunningCollection.removeItemAt(rdsDbInstancesRunningCollection.getItemIndex(rdsInstance));
+
+				runningDiagram.removeNodeElement(rdsInstance['node'].itemID);								
+			}
+			
+			protected function deleteRdsDbInstanceSvc_faultHandler(event:FaultEvent):void
+			{
+				trace(event.message);
+			}
+			
+			protected function finalSnapshotRequest_changeHandler(event:ListEvent):void
+			{
+				if(finalSnapshotRequest.selectedIndex == 1)
+				{
+					nameItem.visible = false;
+					nameAlert.visible = false;
+				}else{
+					nameItem.visible = true;
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<fx:Object id="rdsInstance"/>
+		<s:ArrayCollection id="rdsDbInstancesRunningCollection"/>
+		
+		<s:HTTPService id="deleteRdsDbInstanceSvc"
+					   url="{host}/rds_db_instances/delete_db_instance/{rdsDbInstanceId}.xml"
+					   resultFormat="e4x"
+					   method="GET"
+					   showBusyCursor="true"
+					   result="deleteRdsDbInstanceSvc_resultHandler(event)"
+					   fault="deleteRdsDbInstanceSvc_faultHandler(event)"/>
+		
+	</fx:Declarations>
+	<s:VGroup id="deleteRequestGroup" height="136" width="100%">
+		<mx:Text text="Are you sure you want to delete {rdsInstance.child('rds-db-instance-identifier')}&#xd; DB instance?"/>
+		<s:Form id="finalSnapshotForm">
+			<s:FormItem label="Create final snapshot?">
+				<mx:ComboBox color="black" id="finalSnapshotRequest" labelField="label" selectedIndex="0" change="finalSnapshotRequest_changeHandler(event)">
+					<mx:dataProvider>
+						<s:ArrayCollection>
+							<fx:Object label="Yes"/>
+							<fx:Object label="No"/>
+						</s:ArrayCollection>
+					</mx:dataProvider>
+				</mx:ComboBox>
+			</s:FormItem>
+			<s:FormItem id="nameItem" label="Final snapshot name:">
+				<s:TextInput id="finalSnapshotName"/>
+			</s:FormItem>
+		</s:Form>
+	</s:VGroup>
+	<mx:Text id="nameAlert" x="20" y="115" text="This field is required" visible="false" color="red"/>
+	<s:Line x="11" y="-39" width="270" xFrom="5" xTo="150" yFrom="180" yTo="180">
+		<s:stroke>
+			<s:SolidColorStroke color="white"/>
+		</s:stroke>
+	</s:Line>
+	<s:Button id="deleteInstance" x="122" y="146" label="Delete"
+			  click="deleteInstance_clickHandler(event)"/> 
+	<s:Button x="199" y="146" label="Cancel" click="PopUpManager.removePopUp(this)"/>
+</s:TitleWindow>

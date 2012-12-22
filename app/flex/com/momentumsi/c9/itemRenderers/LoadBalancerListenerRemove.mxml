@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:GridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					xmlns:s="library://ns.adobe.com/flex/spark" 
+					xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:services="com.momentumsi.c9.services.*">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.components.ObjectManagementTab;
+			import com.momentumsi.c9.events.DataGridButtonClickEvent;
+			import com.momentumsi.c9.models.CloudAccount;
+			import com.momentumsi.c9.representers.LoadBalancerRepresenter;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			private var listenerData:Object;
+			
+			override public function set data(value:Object):void
+			{
+				if(value)
+				{
+					listenerData = value;
+				}
+			}
+			
+			protected function clickHandler(event:MouseEvent):void
+			{
+				grid.dataGrid.dispatchEvent(new DataGridButtonClickEvent(listenerData));
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+
+	</fx:Declarations>
+	
+	<s:HGroup width="100%" height="100%" verticalAlign="middle" paddingLeft="5">
+		<s:Label text="Remove from Load Balancer" color="blue" click="clickHandler(event)" useHandCursor="true" buttonMode="true" mouseChildren="false"/>
+	</s:HGroup>	
+</s:GridItemRenderer>

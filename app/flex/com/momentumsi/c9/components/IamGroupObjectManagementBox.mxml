@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<c9:ObjectManagementDetailsBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:c9="com.momentumsi.c9.components.*">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.models.CloudAccount;
+			import com.momentumsi.c9.representers.IdentityGroupRepresenter;
+			
+			import mx.collections.ArrayCollection;
+			import mx.core.UIComponent;
+			import mx.managers.PopUpManager;
+			import mx.utils.StringUtil;
+			
+			[Bindable]
+			private var iamGroupData:IdentityGroupRepresenter;
+			[Bindable]
+			private var policiesList:ArrayCollection = new ArrayCollection();
+			
+			override public function set resourceData(value:Object):void
+			{
+				if(value is IdentityGroupRepresenter)
+				{
+					iamGroupData = value as IdentityGroupRepresenter;
+				}else{
+					iamGroupData = new IdentityGroupRepresenter(value);
+				}
+				super.resourceData = iamGroupData;
+				iamGroupDetails.selectedIndex = 0;
+			}
+			
+			protected function delete_clickHandler(event:MouseEvent):void
+			{
+				var destroyPopUp:DestroyResourceObjectManagement = new DestroyResourceObjectManagement();
+				destroyPopUp.cloudAccountId = cloudAccount.id;
+				destroyPopUp.resourceType = "iamGroup";
+				destroyPopUp.resourceDisplayId = iamGroupData.name;
+				if(cloudAccount.cloud_provider == CloudAccount.AMAZON)
+				{
+					destroyPopUp.resourceId = iamGroupData.name;
+				}else{
+					destroyPopUp.resourceId = iamGroupData.groupId;
+				}
+				PopUpManager.addPopUp(destroyPopUp, UIComponent(parentApplication), true);
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<s:HGroup paddingLeft="10" gap="20">
+		<c9:TextButton text="Delete" 
+					   click="delete_clickHandler(event)"/>
+	</s:HGroup>
+	<s:BorderContainer height="100%" width="100%" alpha="1" borderVisible="false">
+		<mx:TabNavigator id="iamGroupDetails" width="100%" height="100%">
+			<s:NavigatorContent label="Details" width="100%" height="100%">
+				<s:BorderContainer borderVisible="false"  id="details" height="100%" width="100%">
+					<s:Scroller width="100%" height="100%">
+						<s:viewport>
+							<s:HGroup>
+								<s:Form>
+									<s:layout>
+										<s:FormLayout gap="-7"/>
+									</s:layout>
+									<s:FormItem label="Group Name:">
+										<mx:Text text="{iamGroupData.name}"/>
+									</s:FormItem>
+									<s:FormItem label="Group ID:">
+										<mx:Text text="{iamGroupData.groupId}"/>
+									</s:FormItem>
+									<s:FormItem label="Path:"
+												includeInLayout="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"
+												visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}">
+										<mx:Text text="{iamGroupData.path}"/>
+									</s:FormItem>
+									<s:FormItem label="Resource Name:"
+												includeInLayout="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"
+												visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}">
+										<mx:Text/>
+									</s:FormItem>
+									<s:FormItem label="Number of Users:">
+										<s:Label text="{iamGroupData.groupUsers.length}"/>
+									</s:FormItem>
+								</s:Form>
+							</s:HGroup>
+						</s:viewport>
+					</s:Scroller>
+				</s:BorderContainer>
+			</s:NavigatorContent>
+			<s:NavigatorContent label="Users" width="100%" height="100%">
+				<s:VGroup width="100%" height="100%" paddingLeft="10" paddingRight="10">
+					<s:DataGrid id="usersDataGrid" 
+								width="100%" height="100%"
+								dataProvider="{iamGroupData.groupUsers}">
+						<s:columns>
+							<s:ArrayList id="usersGridColumns">
+								<s:GridColumn headerText="User Name" dataField="name"/>
+							</s:ArrayList>
+						</s:columns>
+					</s:DataGrid>
+				</s:VGroup>
+			</s:NavigatorContent>
+			<s:NavigatorContent label="Policies" width="100%" height="100%">
+				<s:VGroup width="100%" height="100%" paddingLeft="10" paddingRight="10">
+					<s:DataGrid id="policiesDataGrid" width="100%" height="100%" dataProvider="{policiesList}">
+						<s:columns>
+							<s:ArrayList id="policiesGridColumns">
+								<s:GridColumn headerText="Policy Name" dataField="name"/>
+							</s:ArrayList>
+						</s:columns>
+					</s:DataGrid>
+				</s:VGroup>
+			</s:NavigatorContent>
+		</mx:TabNavigator>
+	</s:BorderContainer>
+</c9:ObjectManagementDetailsBox>

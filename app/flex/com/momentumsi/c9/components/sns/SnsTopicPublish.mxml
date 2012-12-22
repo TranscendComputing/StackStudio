@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   width="558" height="420"
+			   title="Publish"
+			   close="PopUpManager.removePopUp(this)"
+			   move="Helpers.doMove(this)"
+			   creationComplete="titlewindow1_creationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			protected function titlewindow1_creationCompleteHandler(event:FlexEvent):void
+			{
+				PopUpManager.centerPopUp(this);
+			}
+			
+			protected function publish_clickHandler(event:MouseEvent):void
+			{
+				publishSvc.send({subject: subject.text, message: message.text});
+			}
+			
+			protected function publishSvc_resultHandler(event:ResultEvent):void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function publishSvc_faultHandler(event:FaultEvent):void
+			{
+				Alert.show("Unable to publish message");
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<fx:XML id="topic"/>
+		
+		<s:HTTPService id="publishSvc"
+					   url="{Helpers.getHost()}/provisioned_sns_topics/publish_message/{topic.child('id')}.xml"
+					   method="GET"
+					   resultFormat="e4x"
+					   showBusyCursor="true"
+					   result="publishSvc_resultHandler(event)"
+					   fault="publishSvc_faultHandler(event)"/>
+		
+	</fx:Declarations>
+	<s:VGroup height="100%" width="100%">
+		<s:Form height="100%" width="100%">
+			<s:FormItem label="Topic Name:">
+				<mx:Text text="{topic.child('name')}"/>
+			</s:FormItem>
+			<s:FormItem label="Subject:">
+				<s:VGroup width="100%">
+					<s:TextInput id="subject" width="100%"/>
+					<mx:Text text="Up to 100 printable ASCII charachters (optional)" enabled="false" fontStyle="italic"/>
+				</s:VGroup>
+			</s:FormItem>
+			<s:FormItem label="Message:">
+				<s:VGroup width="100%">
+					<s:TextArea id="message" width="100%"/>
+					<mx:Text text="Up to 8KB of Unicode text" enabled="false" fontStyle="italic"/>
+				</s:VGroup>
+			</s:FormItem>
+		</s:Form>
+		<s:HGroup width="100%" horizontalAlign="right" paddingRight="10" paddingBottom="15">
+			<s:Button label="Publish" click="publish_clickHandler(event)"/>
+			<s:Button label="Cancel" click="PopUpManager.removePopUp(this)"/>
+		</s:HGroup>
+	</s:VGroup>
+</s:TitleWindow>

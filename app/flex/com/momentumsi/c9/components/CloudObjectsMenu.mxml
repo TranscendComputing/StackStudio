@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:services="com.momentumsi.c9.services.*"
+		 xmlns:models="com.momentumsi.c9.models.*"
+		 width="100%" height="100%" color="{Color.PURPLE}"
+		 creationComplete="creationCompleteHandler(event)" initialize="init(event)" xmlns:components="com.momentumsi.c9.components.*">
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.constants.Color;
+			import com.momentumsi.c9.constants.PlatformConstants;
+			import com.momentumsi.c9.constants.ResourceType;
+			import com.momentumsi.c9.constants.ResourceTypeLabel;
+			import com.momentumsi.c9.events.compute.ComputeServiceFaultEvent;
+			import com.momentumsi.c9.events.compute.GetPuppetClassesResultEvent;
+			import com.momentumsi.c9.events.compute.GetRolesFaultEvent;
+			import com.momentumsi.c9.events.compute.GetRolesResultEvent;
+			import com.momentumsi.c9.models.CloudAccount;
+			import com.momentumsi.c9.models.Node;
+			import com.momentumsi.c9.models.Project;
+			import com.momentumsi.c9.models.User;
+			import com.momentumsi.c9.models.resources.ChefRole;
+			import com.momentumsi.c9.models.resources.PuppetClass;
+			import com.momentumsi.c9.models.resources.PuppetModule;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.core.UIComponent;
+			import mx.events.CloseEvent;
+			import mx.events.CollectionEvent;
+			import mx.events.DragEvent;
+			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
+			import mx.events.TreeEvent;
+			import mx.managers.DragManager;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import spark.components.TitleWindow;
+
+			[Bindable]
+			public var user:User;
+			[Bindable]
+			public var project:Project;
+			[Bindable]
+			private var otherProjectsList:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var lastTreeItem:Object;
+			[Bindable]
+			private var treeMenu:ContextMenu = new ContextMenu();
+			[Bindable]
+			private var dataObjects:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			private var awsCloudObjects:ArrayCollection = new ArrayCollection();		
+			[Bindable]
+			private var iaasCloudObjects:ArrayCollection = new ArrayCollection();		
+			[Bindable]
+			private var topstackCloudObjects:ArrayCollection = new ArrayCollection();	
+			[Bindable]
+			private var chefRolesCollection:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var puppetModulesCollection:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var ubuntuRolesCollection:ArrayCollection;
+			[Bindable]
+			private var awsLinuxRolesCollection:ArrayCollection;
+
+			protected function init(event:FlexEvent):void
+			{
+				treeMenu.hideBuiltInItems();
+				user.project_memberships.addEventListener(CollectionEvent.COLLECTION_CHANGE, projectListChanged);
+				queryChefAndPuppet();
+			}
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{				
+				setCloudObjectCollections();
+				leftMenu.contextMenu = treeMenu;
+				leftMenu.enabled = true;
+				dataObjects.removeAll();
+				var cloudData:Object = new Object();
+				if(project.cloud_account.cloud_provider == CloudAccount.AMAZON)
+				{
+					cloudData.name = "Amazon Services";
+					cloudData.children = awsCloudObjects;
+					dataObjects.addItem(cloudData);
+					leftMenu.expandItem(cloudData, true);
+				}else
+				{
+					switch(project.cloud_account.cloud_provider)
+					{
+						case CloudAccount.OPENSTACK:
+							cloudData.name = "OpenStack";
+							break;
+						case CloudAccount.EUCALYPTUS:
+							cloudData.name = "Eucalyptus";
+							break;
+					}
+					cloudData.children = iaasCloudObjects;
+					dataObjects.addItem(cloudData);
+					var topstackData:Object = new Object();
+					topstackData.name = "TopStack";
+					topstackData.children = topstackCloudObjects;
+					dataObjects.addItem(topstackData);
+					leftMenu.expandItem(cloudData, true);
+					leftMenu.expandItem(topstackData, true);
+				}
+				addOtherFolders();
+				updateOtherProjectsList();
+				for each(var node:Node in cloudData.children)
+				{
+					node.projectId = project.project_id;
+				}
+			}
+			
+			protected function setCloudObjectCollections():void
+			{
+				awsCloudObjects = new ArrayCollection([
+						new Node(null, ResourceTypeLabel.RESOURCE_NAME[CloudAccount.AMAZON][ResourceTypeLabel.ALARM], 0, 0, Node.DESIGN_VIEW, {Type: ResourceType.CW_ALARM}),
+						new Node(null, ResourceTypeLabel.RESOURCE_NAME[CloudAccount.AMAZON][ResourceTypeLabel.CDN], 0, 0, Node.DESIGN_VIEW, {Type: ResourceType.CLOUD_FRONT}),
+						new Node(null, ResourceTypeLabel.RESOURCE_NAME[CloudAccount.AMAZON][ResourceTypeLabel.EC2], 0, 0, Node.DESIGN_VIEW, {Type: ResourceType.EC2_INSTANCE}),
+						new Node(null, ResourceTypeLabel.RESOURCE_NAME[CloudAccount.AMAZON][ResourceTypeLabel.BEANSTALK], 0, 0, Node.DESIGN_VIEW, {Type: ResourceType.BEANSTALK_APP}),
+						new Node(null, ResourceTypeLabel.RESOURCE_NAME[CloudAccount.AMAZON][ResourceTypeLabel.EBS], 0, 0, Node.DESIGN_VIEW, {Type: ResourceType.EBS_VOLUME}),
+						new Node(null, ResourceTypeLabel.RESOURCE_NAME[CloudAccount.AMAZON][ResourceTypeLabel.ELB], 0, 0, Node.DESIGN_VIEW, {Type: ResourceType.LOAD_BALANCER}),
+						new Node(null, ResourceTypeLabel.RESOURCE_NAME[CloudAccount.AMAZON][ResourceTypeLabel.ELC], 0, 0, Node.DESIGN_VIEW, {Type: ResourceType.CACHE_CLUSTER}),
+						new Node(null, ResourceTypeLabel.RESOURCE_NAME[CloudAccount.AMAZON][ResourceTypeLabel.IAM_GROUP], 0, 0, Node.DESIGN_VIEW, {Type: ResourceType.IAM_GROUP}),
+						new Node(null, ResourceTypeLabel.RESOURCE_NAME[CloudAccount.AMAZON][ResourceTypeLabel.IAM_USER], 0, 0, Node.DESIGN_VIEW, {Type: ResourceType.IAM_USER}),
+						new Node(null, ResourceTypeLabel.RESOURCE_NAME[CloudAccount.AMAZON][ResourceTypeLabel.RDS], 0, 0, Node.DESIGN_VIEW, {Type: ResourceType.DB_INSTANCE}),
+						new Node(null, ResourceTypeLabel.RESOURCE_NAME[CloudAccount.AMAZON][ResourceTypeLabel.RESOURCE_POLICY], 0, 0, Node.DESIGN_VIEW, {Type: ResourceType.S3_BUCKET_POLICY}),
+						new Node(null, ResourceTypeLabel.RESOURCE_NAME[CloudAccount.AMAZON][ResourceTypeLabel.DNS], 0, 0, Node.DESIGN_VIEW, {Type: ResourceType.RECORD_SET}),
+						new Node(null, ResourceTypeLabel.RESOURCE_NAME[CloudAccount.AMAZON][ResourceTypeLabel.SECURITY_GROUP], 0, 0, Node.DESIGN_VIEW, {Type: ResourceType.EC2_SECURITY_GROUP}),
+						new Node(null, ResourceTypeLabel.RESOURCE_NAME[CloudAccount.AMAZON][ResourceTypeLabel.SDB], 0, 0, Node.DESIGN_VIEW, {Type: ResourceType.SIMPLE_DB_INSTANCE}),
+						new Node(null, ResourceTypeLabel.RESOURCE_NAME[CloudAccount.AMAZON][ResourceTypeLabel.SNS], 0, 0, Node.DESIGN_VIEW, {Type: ResourceType.SNS_TOPIC}),
+						new Node(null, ResourceTypeLabel.RESOURCE_NAME[CloudAccount.AMAZON][ResourceTypeLabel.SQS], 0, 0, Node.DESIGN_VIEW, {Type: ResourceType.SQS_QUEUE}),
+						new Node(null, ResourceTypeLabel.RESOURCE_NAME[CloudAccount.AMAZON][ResourceTypeLabel.S3], 0, 0, Node.DESIGN_VIEW, {Type: ResourceType.S3_BUCKET})]);
+				
+				iaasCloudObjects = new ArrayCollection([
+						new Node(null, ResourceTypeLabel.RESOURCE_NAME[project.cloud_account.cloud_provider][ResourceTypeLabel.EBS], 0, 0, Node.DESIGN_VIEW, {Type: ResourceType.EBS_VOLUME}),
+						new Node(null, ResourceTypeLabel.RESOURCE_NAME[project.cloud_account.cloud_provider][ResourceTypeLabel.EC2], 0, 0, Node.DESIGN_VIEW, {Type: ResourceType.EC2_INSTANCE}),
+						new Node(null, ResourceTypeLabel.RESOURCE_NAME[project.cloud_account.cloud_provider][ResourceTypeLabel.IAM_GROUP], 0, 0, Node.DESIGN_VIEW, {Type: ResourceType.IAM_GROUP}),
+						new Node(null, ResourceTypeLabel.RESOURCE_NAME[project.cloud_account.cloud_provider][ResourceTypeLabel.IAM_USER], 0, 0, Node.DESIGN_VIEW, {Type: ResourceType.IAM_USER}),
+						new Node(null, ResourceTypeLabel.RESOURCE_NAME[project.cloud_account.cloud_provider][ResourceTypeLabel.S3], 0, 0, Node.DESIGN_VIEW, {Type: ResourceType.S3_BUCKET}),
+						new Node(null, ResourceTypeLabel.RESOURCE_NAME[project.cloud_account.cloud_provider][ResourceTypeLabel.RESOURCE_POLICY], 0, 0, Node.DESIGN_VIEW, {Type: ResourceType.S3_BUCKET_POLICY}),
+						new Node(null, ResourceTypeLabel.RESOURCE_NAME[project.cloud_account.cloud_provider][ResourceTypeLabel.SECURITY_GROUP], 0, 0, Node.DESIGN_VIEW, {Type: ResourceType.EC2_SECURITY_GROUP})]);
+				
+				topstackCloudObjects = new ArrayCollection([
+						new Node(null, ResourceTypeLabel.RESOURCE_NAME[project.cloud_account.cloud_provider][ResourceTypeLabel.ALARM], 0, 0, Node.DESIGN_VIEW, {Type: ResourceType.CW_ALARM}),
+						new Node(null, ResourceTypeLabel.RESOURCE_NAME[project.cloud_account.cloud_provider][ResourceTypeLabel.DNS], 0, 0, Node.DESIGN_VIEW, {Type: ResourceType.RECORD_SET}),			
+						new Node(null, ResourceTypeLabel.RESOURCE_NAME[project.cloud_account.cloud_provider][ResourceTypeLabel.ELC], 0, 0, Node.DESIGN_VIEW, {Type: ResourceType.CACHE_CLUSTER}),
+						new Node(null, ResourceTypeLabel.RESOURCE_NAME[project.cloud_account.cloud_provider][ResourceTypeLabel.RDS], 0, 0, Node.DESIGN_VIEW, {Type: ResourceType.DB_INSTANCE}),
+						new Node(null, ResourceTypeLabel.RESOURCE_NAME[project.cloud_account.cloud_provider][ResourceTypeLabel.BEANSTALK], 0, 0, Node.DESIGN_VIEW, {Type: ResourceType.BEANSTALK_APP}),
+						new Node(null, ResourceTypeLabel.RESOURCE_NAME[project.cloud_account.cloud_provider][ResourceTypeLabel.ELB], 0, 0, Node.DESIGN_VIEW, {Type: ResourceType.LOAD_BALANCER}),
+						new Node(null, ResourceTypeLabel.RESOURCE_NAME[project.cloud_account.cloud_provider][ResourceTypeLabel.SQS], 0, 0, Node.DESIGN_VIEW, {Type: ResourceType.SQS_QUEUE})]);
+			}
+			
+			protected function addOtherFolders():void
+			{
+				dataObjects.addItem(chefRoles);
+				dataObjects.addItem(puppetModules);
+				dataObjects.addItem(embeddableStacks);
+			}
+			
+			private function queryChefAndPuppet():void
+			{
+				chefRolesCollection.removeAll();
+				puppetModulesCollection.removeAll();
+				if(project.cloud_account.chefServerUrl == null)
+				{
+					chefRolesCollection.addItem({name: "Double-click to configure", enabled: false, type: "config"});
+				}else{
+					chefRolesCollection.addItem({name: "Loading Roles...", enabled: false});
+					chefService.addEventListener(GetRolesResultEvent.RESULT, chefService_getRolesResultHandler);
+					chefService.addEventListener(GetRolesFaultEvent.FAULT, chefService_getRolesFaultHandler);
+					chefService.getRoles();
+				}
+				
+				if(project.cloud_account.puppetServerUrl == null)
+				{
+					puppetModulesCollection.addItem({name: "Double-click to configure", enabled: false, type: "config"});
+				}else{
+					puppetModulesCollection.addItem({name: "Loading Modules...", enabled: false});
+					puppetService.addEventListener(GetPuppetClassesResultEvent.RESULT, puppetService_getClassesResultHandler);
+					puppetService.addEventListener(ComputeServiceFaultEvent.FAULT, puppetService_getPuppetClassesFaultHandler);
+					puppetService.getPuppetClasses();
+				}
+			}
+			
+			protected function projectListChanged(event:CollectionEvent):void
+			{
+				updateOtherProjectsList();
+			}
+			
+			protected function updateOtherProjectsList():void
+			{
+				otherProjectsList.removeAll();
+				var node:Node;
+				for each(var project:Project in user.project_memberships)
+				{
+					if(project.project_name != this.project.project_name && project.type == Project.EMBEDDABLE)
+					{
+						node = new Node(null, project.project_name, 0, 0, Node.DESIGN_VIEW, {Type: ResourceType.EMBEDDED_STACK});
+						otherProjectsList.addItem(node);
+					}
+				}
+			}
+			
+			protected function checkDragable(event:DragEvent):void
+			{
+				var item:Object = event.currentTarget.selectedItem;
+				if (leftMenu.dataDescriptor.isBranch(item)) 
+				{
+					event.preventDefault();
+				}
+			}
+			
+			protected function setLastTreeItem(event:ListEvent):void
+			{
+				lastTreeItem = event.itemRenderer.data;	
+			}
+
+			
+			protected function leftMenu_doubleClickHandler(event:MouseEvent):void
+			{
+				var item:Object = event.currentTarget.selectedItem;
+				if(item.hasOwnProperty("type") && item.type == "config"){
+					var accountPreferences:CloudAccountPreferences = new CloudAccountPreferences();
+					accountPreferences.user = user;
+					accountPreferences.account = project.cloud_account;
+					accountPreferences.addEventListener(CloseEvent.CLOSE, accountPreferences_closeHandler);
+					PopUpManager.addPopUp(accountPreferences, UIComponent(parentApplication), true);
+				}
+			}
+			
+			private function accountPreferences_closeHandler(event:CloseEvent):void
+			{
+				var window:CloudAccountPreferences = event.currentTarget as CloudAccountPreferences;
+				project.cloud_account = window.account;
+				PopUpManager.removePopUp(window);
+				queryChefAndPuppet();
+			}
+			
+			private function addRoleToCollections(role:ChefRole, nodeProperties:Object):void
+			{
+				if(role.availablePlatforms.contains(PlatformConstants.AWS_LINUX.toLocaleLowerCase()))
+				{
+					if(awsLinuxRolesCollection == null)
+					{
+						awsLinuxRolesCollection = new ArrayCollection();
+						var awsLinuxRoles:Object = {name: PlatformConstants.AWS_LINUX, children: awsLinuxRolesCollection};
+						chefRolesCollection.addItem(awsLinuxRoles);
+					}
+					var awsNode:Node = new Node(null, role.name, 0, 0, Node.DESIGN_VIEW, nodeProperties);
+					awsNode.properties.platform = PlatformConstants.AWS_LINUX;
+					awsNode.properties.roles = [role.nodeFormattedProperties];
+					awsLinuxRolesCollection.addItem(awsNode);
+				}else if(role.availablePlatforms.contains(PlatformConstants.UBUNTU.toLocaleLowerCase()))
+				{
+					if(ubuntuRolesCollection == null)
+					{
+						ubuntuRolesCollection = new ArrayCollection();
+						var ubuntuRoles:Object = {name: PlatformConstants.UBUNTU, children: ubuntuRolesCollection};
+						chefRolesCollection.addItem(ubuntuRoles);
+					}
+					var ubuntuNode:Node = new Node(null, role.name, 0, 0, Node.DESIGN_VIEW, nodeProperties);
+					ubuntuNode.properties.platform = PlatformConstants.UBUNTU;
+					ubuntuNode.properties.roles = [role.nodeFormattedProperties];
+					ubuntuRolesCollection.addItem(ubuntuNode);
+				}
+			}
+			
+			protected function chefService_getRolesResultHandler(event:GetRolesResultEvent):void
+			{
+				chefService.removeEventListener(GetRolesFaultEvent.FAULT, chefService_getRolesFaultHandler);
+				chefService.removeEventListener(GetRolesResultEvent.RESULT , chefService_getRolesResultHandler);
+				
+				//Remove default 'Loading...' object
+				chefRolesCollection.removeAll();
+				
+				var nodeProperties:Object;
+				for each(var role:ChefRole in chefService.roles)
+				{
+					nodeProperties = {
+						Type: ResourceType.CHEF_ROLE, 
+						role_properties: role.nodeFormattedProperties
+					}
+					addRoleToCollections(role, nodeProperties);
+				}
+				
+				leftMenu.dispatchEvent(new TreeEvent(TreeEvent.ITEM_OPEN, false, false, chefRoles));
+				
+				//Add to cloud account roles collection 
+				project.cloud_account.chefRoles = chefService.roles;
+				
+				if(chefRolesCollection.length == 0)
+				{
+					chefRolesCollection.addItem({name: "No Roles Available", enabled: false});
+				}
+			}
+			
+			protected function chefService_getRolesFaultHandler(event:GetRolesFaultEvent):void
+			{
+				chefService.removeEventListener(GetRolesFaultEvent.FAULT, chefService_getRolesFaultHandler);
+				chefService.removeEventListener(GetRolesResultEvent.RESULT , chefService_getRolesResultHandler);
+				chefRolesCollection.removeAll();
+				chefRolesCollection.addItem({name: "Chef Connection Error", enabled: false});
+			}
+			
+			private function puppetService_getClassesResultHandler(event:GetPuppetClassesResultEvent):void
+			{
+				puppetService.removeEventListener(GetPuppetClassesResultEvent.RESULT, puppetService_getClassesResultHandler);
+				puppetService.removeEventListener(ComputeServiceFaultEvent.FAULT, puppetService_getPuppetClassesFaultHandler);
+				puppetModulesCollection.removeAll();
+				var node:Node;
+				for each(var module:PuppetClass in puppetService.puppetClasses)
+				{
+					node = new Node();
+					node.name = module.name;
+					node.view = Node.DESIGN_VIEW;
+					node.properties = {Type: ResourceType.PUPPET_MODULE, module_properties: module.toObject(), modules: [module.toObject()], puppet_type: "module", platform: PlatformConstants.AWS_LINUX};
+					puppetModulesCollection.addItem(node);
+				}
+				project.cloud_account.puppetModules = puppetService.puppetClasses;
+				
+				if(puppetModulesCollection.length == 0)
+				{
+					puppetModulesCollection.addItem({name: "No Classes Available", enabled: false});
+				}
+			}
+			
+			private function puppetService_getPuppetClassesFaultHandler(event:ComputeServiceFaultEvent):void
+			{
+				puppetService.removeEventListener(GetPuppetClassesResultEvent.RESULT, puppetService_getClassesResultHandler);
+				puppetService.removeEventListener(ComputeServiceFaultEvent.FAULT, puppetService_getPuppetClassesFaultHandler);
+				puppetModulesCollection.removeAll();
+				puppetModulesCollection.addItem({name: "Puppet Connection Error", enabled: false});
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<services:Ec2Service id="chefService"
+							 cloudAccountId="{project.cloud_account.id}"/>
+		
+		<services:Ec2Service id="puppetService"
+							 cloudAccountId="{project.cloud_account.id}"/>
+		
+		<fx:Object id="treeData" label="Diagram Elements" children="{dataObjects}"/>
+		<fx:Object id="chefRoles" name="Chef" children="{chefRolesCollection}"/>
+		<fx:Object id="puppetModules" name="Puppet" children="{puppetModulesCollection}"/>
+		<fx:Object id="embeddableStacks" name="Embeddable Stacks" children="{otherProjectsList}"/>
+	</fx:Declarations>
+	<s:BorderContainer cornerRadius="13"
+					   width="100%"
+					   height="100%">
+		<s:backgroundFill>
+			<s:SolidColor>
+				<s:color>{Color.GRAY}</s:color>
+			</s:SolidColor>
+		</s:backgroundFill>
+		<s:VGroup width="100%" height="100%" paddingTop="15">
+			<components:CustomTree id="leftMenu"
+								   width="100%" height="100%"
+								   itemRenderer="com.momentumsi.c9.itemRenderers.LeftMenuTreeItemRenderer"
+								   dataProvider="{dataObjects}"
+								   doubleClick="leftMenu_doubleClickHandler(event)" doubleClickEnabled="true"
+								   dragEnabled="true" dragStart="checkDragable(event)"
+								   itemRollOver="setLastTreeItem(event)" 
+								   labelField="name"/>
+		</s:VGroup>
+	</s:BorderContainer>
+</s:Group>

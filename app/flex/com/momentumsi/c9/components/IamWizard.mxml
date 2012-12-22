@@ -1,0 +1,1881 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wizard:WizardWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+					 xmlns:s="library://ns.adobe.com/flex/spark"
+					 xmlns:mx="library://ns.adobe.com/flex/mx"
+					 xmlns:diagrammer="fr.kapit.diagrammer.base.uicomponent.*"
+					 xmlns:components="com.momentumsi.c9.components.*"
+					 xmlns:services="com.momentumsi.c9.services.*"
+					 xmlns:wizard="com.momentumsi.c9.components.wizard.*"
+					 width="700" height="488" creationComplete="creationCompleteHandler(event)"
+					 wizardType="{ResourceTypeLabel.IAM_GROUP}">
+	<fx:Script>
+		<![CDATA[
+			import com.maccherone.json.*;
+			import com.momentumsi.c9.components.wizard.CookieTrailKnob;
+			import com.momentumsi.c9.constants.AlertMessage;
+			import com.momentumsi.c9.constants.ImagePath;
+			import com.momentumsi.c9.constants.ResourceType;
+			import com.momentumsi.c9.constants.ResourceTypeLabel;
+			import com.momentumsi.c9.models.CloudAccount;
+			import com.momentumsi.c9.models.Element;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.IVisualElement;
+			import mx.events.CollectionEvent;
+			import mx.events.DropdownEvent;
+			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.StringUtil;
+			
+			[Bindable]
+			private var usersList:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var usersToAdd:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var existingUsersFromReconfigure:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var finalUsersString:String = new String();
+			[Bindable]
+			private var reconfigure:Boolean = false;
+			[Bindable]
+			public var selectAll:Boolean = false;
+			[Bindable]
+			public var iamGroupXML:XML;
+			public var iamGroupObject:Object;
+			private var currentGroupName:String;
+			private var getIamUsersCallComplete:Boolean = false;
+			[Bindable]
+			private var actionsAddList:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var statementAddList:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var awsServiceList:ArrayCollection = new ArrayCollection([{label: "Auto Scaling", value: "autoscaling"},
+																			{label: "AWS Website", value: "aws-portal"},
+																			{label: "CloudFormation", value: "cloudformation"},
+																			{label: "CloudFront", value: "cloudfront"},
+																			{label: "CloudWatch", value: "cloudwatch"},
+																			{label: "DynamoDB", value: "dynamodb"},
+																			{label: "EC2", value: "ec2"},
+																			{label: "Elasticache", value: "elasticache"},
+																			{label: "Elastic Beanstalk", value: "elasticbeanstalk"},
+																			{label: "Elastic Load Balancing", value: "elasticloadbalancing"},
+																			{label: "Elastic MapReduce", value: "elasticmapreduce"},
+																			{label: "IAM", value: "iam"},
+																			{label: "RDS", value: "rds"},
+																			{label: "Route 53", value: "route53"},
+																			{label: "S3", value: "s3"},
+																			{label: "Security Token Service", value: "sts"},
+																			{label: "SES", value: "ses"},
+																			{label: "SimpleDB", value: "sdb"},
+																			{label: "SNS", value: "sns"},
+																			{label: "SQS", value: "sqs"}]);
+			[Bindable]
+			private var autoscaleActionList:ArrayCollection = new ArrayCollection([{label: "CreateAutoScalingGroup", add: false},{label: "CreateLaunchConfiguration", add: false},
+																					{label: "CreateOrUpdateScalingTrigger", add: false},{label: "CreateOrUpdateTags", add: false},
+																					{label: "DeleteAutoScalingGroup", add: false},{label: "DeleteLaunchConfiguration", add: false},
+																					{label: "DeleteNotificationConfiguration", add: false},{label: "DeletePolicy", add: false},
+																					{label: "DeleteScheduledAction", add: false},{label: "DeleteTags", add: false},
+																					{label: "DeleteTrigger", add: false},{label: "DescribeAdjustmentTypes", add: false},
+																					{label: "DescribeAutoScalingGroups", add: false},{label: "DescribeAutoScalingInstances", add: false},
+																					{label: "DescribeAutoScalingNotificationTypes", add: false},{label: "DescribeLaunchConfigurations", add: false},
+																					{label: "DescribeMetricCollectionTypes", add: false},{label: "DescribeNotificationConfigurations", add: false},
+																					{label: "DescribePolicies", add: false},{label: "DescribeScalingActivities", add: false},
+																					{label: "DescribeScalingProcessTypes", add: false},{label: "DescribeScheduledActions", add: false},
+																					{label: "DescribeTags", add: false},{label: "DescribeTriggers", add: false},
+																					{label: "DisableMetricsCollection", add: false},{label: "EnableMetricsCollection", add: false},
+																					{label: "ExecutePolicy", add: false},{label: "PutNotificationConfiguration", add: false},
+																					{label: "PutScalingPolicy", add: false},{label: "PutScheduledUpdateGroupAction", add: false},
+																					{label: "ResumeProcesses", add: false},{label: "SetDesiredCapacity", add: false},
+																					{label: "SetInstanceHealth", add: false},{label: "SuspendProcesses", add: false},
+																					{label: "TerminateInstanceInAutoScalingGroup", add: false},{label: "UpdateAutoScalingGroup", add: false}]);
+			[Bindable]
+			private var awswebActionList:ArrayCollection = new ArrayCollection([{label: "ViewBilling", add: false},{label: "ViewUsage", add: false}]);
+			[Bindable]
+			private var cfnActionList:ArrayCollection = new ArrayCollection([{label: "CreateStack", add: false},{label: "DeleteStack", add: false},
+																			{label: "DescribeStackEvents", add: false},{label: "DescribeStackResource", add: false},
+																			{label: "DescribeStackResources", add: false},{label: "DescribeStacks", add: false},
+																			{label: "EstimateTemplateCost", add: false},{label: "GetTemplate", add: false},
+																			{label: "ListStackResources", add: false},{label: "ListStacks", add: false},
+																			{label: "UpdateStack", add: false},{label: "ValidateTemplate", add: false}]);
+			[Bindable]
+			private var cftActionList:ArrayCollection = new ArrayCollection([{label: "CreateCloudFrontOriginAccessIdentity", add: false},{label: "CreateDistribution", add: false},
+																			{label: "CreateInvalidation", add: false},{label: "CreateStreamingDistribution", add: false},
+																			{label: "DeleteCloudFrontOriginAccessIdentity", add: false},{label: "DeleteDistribution", add: false},
+																			{label: "DeleteStreamingDistribution", add: false},{label: "GetCloudFrontOriginAccessIdentity", add: false},
+																			{label: "GetCloudFrontOriginAccessIdentityConfig", add: false},{label: "GetDistribution", add: false},
+																			{label: "GetDistributionConfig", add: false},{label: "GetInvalidation", add: false},
+																			{label: "GetStreamingDistribution", add: false},{label: "GetStreamingDistributionConfig", add: false},
+																			{label: "ListCloudFrontOriginAccessIdentities", add: false},{label: "ListDistributions", add: false},
+																			{label: "ListInvalidations", add: false},{label: "ListStreamingDistributions", add: false},
+																			{label: "UpdateCloudFrontOriginAccessIdentity", add: false},{label: "UpdateDistribution", add: false},
+																			{label: "UpdateStreamingDistribution", add: false}]);
+			[Bindable]
+			private var acwActionList:ArrayCollection = new ArrayCollection([{label: "DeleteAlarms", add: false},{label: "DescribeAlarmHistory", add: false},
+																			{label: "DescribeAlarms", add: false},{label: "DescribeAlarmsForMetric", add: false},
+																			{label: "DisableAlarmActions", add: false},{label: "EnableAlarmActions", add: false},
+																			{label: "GetMetricStatistics", add: false},{label: "ListMetrics", add: false},
+																			{label: "PutMetricAlarm", add: false},{label: "PutMetricData", add: false},
+																			{label: "SetAlarmState", add: false}]);
+			[Bindable]
+			private var ddbActionList:ArrayCollection = new ArrayCollection([{label: "BatchGetItem", add: false},{label: "CreateTable", add: false},
+																			{label: "DeleteItem", add: false},{label: "DeleteTable", add: false},
+																			{label: "DescribeTable", add: false},{label: "GetItem", add: false},
+																			{label: "ListTables", add: false},{label: "PutItem", add: false},
+																			{label: "Query", add: false},{label: "Scan", add: false},
+																			{label: "UpdateItem", add: false},{label: "UpdateTable", add: false}]);
+			[Bindable]
+			private var ec2ActionList:ArrayCollection = new ArrayCollection([{label: "ActivateLicense", add: false},{label: "AllocateAddress", add: false},
+																			{label: "AssociateAddress", add: false},{label: "AssociateDhcpOptions", add: false},
+																			{label: "AssociateRouteTable", add: false},{label: "AttachInternetGateway", add: false},
+																			{label: "AttachNetworkInterface", add: false},{label: "AttachVolume", add: false},
+																			{label: "AttachVpnGateway", add: false},{label: "AuthorizeSecurityGroupEgress", add: false},
+																			{label: "AuthorizeSecurityGroupIngress", add: false},{label: "BundleInstance", add: false},
+																			{label: "CancelBundleTask", add: false},{label: "CancelConversionTask", add: false},
+																			{label: "CancelSpotInstanceRequests", add: false},{label: "ConfirmProductInstance", add: false},
+																			{label: "CreateCustomerGateway", add: false},{label: "CreateDhcpOptions", add: false},
+																			{label: "CreateImage", add: false},{label: "CreateInternetGateway", add: false},
+																			{label: "CreateKeyPair", add: false},{label: "CreateNetworkAcl", add: false},
+																			{label: "CreateNetworkAclEntry", add: false},{label: "CreateNetworkInterface", add: false},
+																			{label: "CreatePlacementGroup", add: false},{label: "CreateRoute", add: false},
+																			{label: "CreateRouteTable", add: false},{label: "CreateSecurityGroup", add: false},
+																			{label: "CreateSnapshot", add: false},{label: "CreateSpotDatafeedSubscription", add: false},
+																			{label: "CreateSubnet", add: false},{label: "CreateTags", add: false},
+																			{label: "CreateVolume", add: false},{label: "CreateVpc", add: false},
+																			{label: "CreateVpnConnection", add: false},{label: "CreateVpnGateway", add: false},
+																			{label: "DeactivateLicense", add: false},{label: "DeleteCustomerGateway", add: false},
+																			{label: "DeleteDhcpOptions", add: false},{label: "DeleteInternetGateway", add: false},
+																			{label: "DeleteKeyPair", add: false},{label: "DeleteNetworkAcl", add: false},
+																			{label: "DeleteNetworkAclEntry", add: false},{label: "DeleteNetworkInterface", add: false},
+																			{label: "DeletePlacementGroup", add: false},{label: "DeleteRoute", add: false},
+																			{label: "DeleteRouteTable", add: false},{label: "DeleteSecurityGroup", add: false},
+																			{label: "DeleteSnapshot", add: false},{label: "DeleteSpotDatafeedSubscription", add: false},
+																			{label: "DeleteSubnet", add: false},{label: "DeleteTags", add: false},
+																			{label: "DeleteVolume", add: false},{label: "DeleteVpc", add: false},
+																			{label: "DeleteVpnConnection", add: false},{label: "DeleteVpnGateway", add: false},
+																			{label: "DeregisterImage", add: false},{label: "DescribeAddresses", add: false},
+																			{label: "DescribeAvailabilityZones", add: false},{label: "DescribeBundleTasks", add: false},
+																			{label: "DescribeConversionTasks", add: false},{label: "DescribeCustomerGateways", add: false},
+																			{label: "DescribeDhcpOptions", add: false},{label: "DescribeImageAttribute", add: false},
+																			{label: "DescribeImages", add: false},{label: "DescribeInstanceAttribute", add: false},
+																			{label: "DescribeInstanceStatus", add: false},{label: "DescribeInstances", add: false},
+																			{label: "DescribeInternetGateways", add: false},{label: "DescribeKeyPairs", add: false},
+																			{label: "DescribeLicenses", add: false},{label: "DescribeNetworkAcls", add: false},
+																			{label: "DescribeNetworkInterfaceAttribute", add: false},{label: "DescribeNetworkInterfaces", add: false},
+																			{label: "DescribePlacementGroups", add: false},{label: "DescribeRegions", add: false},
+																			{label: "DescribeReservedInstances", add: false},{label: "DescribeReservedInstancesOfferings", add: false},
+																			{label: "DescribeRouteTables", add: false},{label: "DescribeSecurityGroups", add: false},
+																			{label: "DescribeSnapshotAttribute", add: false},{label: "DescribeSnapshots", add: false},
+																			{label: "DescribeSpotDatafeedSubscription", add: false},{label: "DescribeSpotInstanceRequests", add: false},
+																			{label: "DescribeSpotPriceHistory", add: false},{label: "DescribeSubnets", add: false},
+																			{label: "DescribeTags", add: false},{label: "DescribeVolumes", add: false},
+																			{label: "DescribeVpcs", add: false},{label: "DescribeVpnConnections", add: false},
+																			{label: "DescribeVpnGateways", add: false},{label: "DetachInternetGateway", add: false},
+																			{label: "DetachNetworkInterface", add: false},{label: "DetachVolume", add: false},
+																			{label: "DetachVpnGateway", add: false},{label: "DisassociateAddress", add: false},
+																			{label: "DisassociateRouteTable", add: false},{label: "GetConsoleOutput", add: false},
+																			{label: "GetPasswordData", add: false},{label: "ImportInstance", add: false},
+																			{label: "ImportKeyPair", add: false},{label: "ImportVolume", add: false},
+																			{label: "ModifyImageAttribute", add: false},{label: "ModifyInstanceAttribute", add: false},
+																			{label: "ModifyNetworkInterfaceAttribute", add: false},{label: "ModifySnapshotAttribute", add: false},
+																			{label: "MonitorInstances", add: false},{label: "PurchaseReservedInstancesOffering", add: false},
+																			{label: "RebootInstances", add: false},{label: "RegisterImage", add: false},
+																			{label: "ReleaseAddress", add: false},{label: "ReplaceNetworkAclAssociation", add: false},
+																			{label: "ReplaceNetworkAclEntry", add: false},{label: "ReplaceRoute", add: false},
+																			{label: "ReplaceRouteTableAssociation", add: false},{label: "ReportInstanceStatus", add: false},
+																			{label: "RequestSpotInstances", add: false},{label: "ResetImageAttribute", add: false},
+																			{label: "ResetInstanceAttribute", add: false},{label: "ResetNetworkInterfaceAttribute", add: false},
+																			{label: "ResetSnapshotAttribute", add: false},{label: "RevokeSecurityGroupEgress", add: false},
+																			{label: "RevokeSecurityGroupIngress", add: false},{label: "RunInstances", add: false},
+																			{label: "StartInstances", add: false},{label: "StopInstances", add: false},
+																			{label: "TerminateInstances", add: false},{label: "UnmonitorInstances", add: false}]);
+			[Bindable]
+			private var elcActionList:ArrayCollection = new ArrayCollection([{label: "AuthorizeCacheSecurityGroupIngress", add: false},{label: "CreateCacheCluster", add: false},
+																			{label: "CreateCacheParameterGroup", add: false},{label: "CreateCacheSecurityGroup", add: false},
+																			{label: "DeleteCacheCluster", add: false},{label: "DeleteCacheParameterGroup", add: false},
+																			{label: "DeleteCacheSecurityGroup", add: false},{label: "DescribeCacheClusters", add: false},
+																			{label: "DescribeCacheParameterGroups", add: false},{label: "DescribeCacheParameters", add: false},
+																			{label: "DescribeCacheSecurityGroups", add: false},{label: "DescribeEngineDefaultParameters", add: false},
+																			{label: "DescribeEvents", add: false},{label: "ModifyCacheCluster", add: false},
+																			{label: "ModifyCacheParameterGroup", add: false},{label: "RebootCacheCluster", add: false},
+																			{label: "ResetCacheParameterGroup", add: false},{label: "RevokeCacheSecurityGroupIngress", add: false}]);
+			[Bindable]
+			private var beanActionList:ArrayCollection = new ArrayCollection([{label: "CheckDNSAvailability", add: false},{label: "CreateApplication", add: false},
+																				{label: "CreateApplicationVersion", add: false},{label: "CreateConfigurationTemplate", add: false},
+																				{label: "CreateEnvironment", add: false},{label: "CreateStorageLocation", add: false},
+																				{label: "DeleteApplication", add: false},{label: "DeleteApplicationVersion", add: false},
+																				{label: "DeleteConfigurationTemplate", add: false},{label: "DeleteEnvironmentConfiguration", add: false},
+																				{label: "DescribeApplicationVersions", add: false},{label: "DescribeApplications", add: false},
+																				{label: "DescribeConfigurationOptions", add: false},{label: "DescribeConfigurationSettings", add: false},
+																				{label: "DescribeEnvironmentResources", add: false},
+																				{label: "DescribeEnvironments", add: false},{label: "DescribeEvents", add: false},
+																				{label: "ListAvailableSolutionStacks", add: false},
+																				{label: "RebuildEnvironment", add: false},{label: "RequestEnvironmentInfo", add: false},
+																				{label: "RestartAppServer", add: false},{label: "RetrieveEnvironmentInfo", add: false},
+																				{label: "SwapEnvironmentCNAMEs", add: false},{label: "TerminateEnvironment", add: false},
+																				{label: "UpdateApplication", add: false},{label: "UpdateApplicationVersion", add: false},
+																				{label: "UpdateConfigurationTemplate", add: false},{label: "UpdateEnvironment", add: false},
+																				{label: "ValidateConfigurationSettings", add: false}]);
+			[Bindable]
+			private var elbActionList:ArrayCollection = new ArrayCollection([{label: "ConfigureHealthCheck", add: false},{label: "CreateAppCookieStickinessPolicy", add: false},
+																			{label: "CreateLBCookieStickinessPolicy", add: false},{label: "CreateLoadBalancer", add: false},
+																			{label: "CreateLoadBalancerListeners", add: false},{label: "DeleteLoadBalancer", add: false},
+																			{label: "DeleteLoadBalancerListeners", add: false},{label: "DeleteLoadBalancerPolicy", add: false},
+																			{label: "DeregisterInstancesFromLoadBalancer", add: false},{label: "DescribeInstanceHealth", add: false},
+																			{label: "DescribeLoadBalancers", add: false},{label: "DisableAvailabilityZonesForLoadBalancer", add: false},
+																			{label: "EnableAvailabilityZonesForLoadBalancer", add: false},{label: "RegisterInstancesWithLoadBalancer", add: false},
+																			{label: "SetLoadBalancerListenerSSLCertificate", add: false},{label: "SetLoadBalancerPoliciesOfListener", add: false}]);
+			[Bindable]
+			private var emrActionList:ArrayCollection = new ArrayCollection([{label: "AddInstanceGroups", add: false},{label: "AddJobFlowSteps", add: false},
+																			{label: "DescribeJobFlows", add: false},{label: "ModifyInstanceGroups", add: false},
+																			{label: "RunJobFlow", add: false},{label: "SetTerminationProtection", add: false},
+																			{label: "TerminateJobFlows", add: false}]);
+			[Bindable]
+			private var iamActionList:ArrayCollection = new ArrayCollection([{label: "AddUserToGroup", add: false},{label: "ChangePassword", add: false},
+																				{label: "CreateAccessKey", add: false},{label: "CreateAccountAlias", add: false},
+																				{label: "CreateGroup", add: false},{label: "CreateLoginProfile", add: false},
+																				{label: "CreateUser", add: false},{label: "CreateVirtualMFADevice", add: false},
+																				{label: "DeactivateMFADevice", add: false},{label: "DeleteAccessKey", add: false},
+																				{label: "DeleteAccountAlias", add: false},{label: "DeleteAccountPasswordPolicy", add: false},
+																				{label: "DeleteGroup", add: false},{label: "DeleteGroupPolicy", add: false},
+																				{label: "DeleteLoginProfile", add: false},{label: "DeleteServerCertificate", add: false},
+																				{label: "DeleteSigningCertificate", add: false},{label: "DeleteUser", add: false},
+																				{label: "DeleteUserPolicy", add: false},{label: "DeleteVirtualMFADevice", add: false},
+																				{label: "EnableMFADevice", add: false},{label: "GetAccountPasswordPolicy", add: false},
+																				{label: "GetAccountSummary", add: false},{label: "GetGroup", add: false},
+																				{label: "GetGroupPolicy", add: false},{label: "GetLoginProfile", add: false},
+																				{label: "GetServerCertificate", add: false},{label: "GetUser", add: false},
+																				{label: "GetUserPolicy", add: false},{label: "ListAccessKeys", add: false},
+																				{label: "ListAccountAliases", add: false},{label: "ListGroupPolicies", add: false},
+																				{label: "ListGroups", add: false},{label: "ListGroupsForUser", add: false},
+																				{label: "ListMFADevices", add: false},{label: "ListServerCertificates", add: false},
+																				{label: "ListSigningCertificates", add: false},{label: "ListUserPolicies", add: false},
+																				{label: "ListUsers", add: false},{label: "ListVirtualMFADevices", add: false},
+																				{label: "PutGroupPolicy", add: false},{label: "PutUserPolicy", add: false},
+																				{label: "RemoveUserFromGroup", add: false},{label: "ResyncMFADevice", add: false},
+																				{label: "UpdateAccessKey", add: false},{label: "UpdateAccountPasswordPolicy", add: false},
+																				{label: "UpdateGroup", add: false},{label: "UpdateLoginProfile", add: false},
+																				{label: "UpdateServerCertificate", add: false},{label: "UpdateSigningCertificate", add: false},
+																				{label: "UpdateUser", add: false},{label: "UploadServerCertificate", add: false},
+																				{label: "UploadSigningCertificate", add: false}]);
+			[Bindable]
+			private var rdsActionList:ArrayCollection = new ArrayCollection([{label: "AuthorizeDBSecurityGroupIngress", add: false},{label: "CreateDBInstance", add: false},
+																			{label: "CreateDBInstanceReadReplica", add: false},{label: "CreateDBParameterGroup", add: false},
+																			{label: "CreateDBSecurityGroup", add: false},{label: "CreateDBSnapshot", add: false},
+																			{label: "DeleteDBInstance", add: false},{label: "DeleteDBParameterGroup", add: false},
+																			{label: "DeleteDBSecurityGroup", add: false},{label: "DeleteDBSnapshot", add: false},
+																			{label: "DescribeDBEngineVersions", add: false},{label: "DescribeDBInstances", add: false},
+																			{label: "DescribeDBParameterGroups", add: false},{label: "DescribeDBParameters", add: false},
+																			{label: "DescribeDBSecurityGroups", add: false},{label: "DescribeDBSnapshots", add: false},
+																			{label: "DescribeEngineDefaultParameters", add: false},{label: "DescribeEvents", add: false},
+																			{label: "DescribeReservedDBInstances", add: false},{label: "DescribeReservedDBInstancesOfferings", add: false},
+																			{label: "ModifyDBInstance", add: false},{label: "ModifyDBParameterGroup", add: false},
+																			{label: "PurchaseReservedDBInstancesOffering", add: false},{label: "RebootDBInstance", add: false},
+																			{label: "ResetDBParameterGroup", add: false},{label: "RestoreDBInstanceFromDBSnapshot", add: false},
+																			{label: "RestoreDBInstanceToPointInTime", add: false},{label: "RevokeDBSecurityGroupIngress", add: false}]);
+			[Bindable]
+			private var r53ActionList:ArrayCollection = new ArrayCollection([{label: "ChangeResourceRecordSets", add: false},{label: "CreateHostedZone", add: false},
+																			{label: "DeleteHostedZone", add: false},{label: "GetChange", add: false},
+																			{label: "GetHostedZone", add: false},{label: "ListHostedZones", add: false},
+																			{label: "ListResourceRecordSets", add: false}]);
+			[Bindable]
+			private var s3ActionList:ArrayCollection = new ArrayCollection([{label: "AbortMultipartUpload", add: false},{label: "CopyObject", add: false},
+																			{label: "CreateBucket", add: false},{label: "DeleteBucket", add: false},
+																			{label: "DeleteObject", add: false},{label: "DeleteObjectVersion", add: false},
+																			{label: "GetBucketAccessControlPolicy", add: false},{label: "GetBucketAcl", add: false},
+																			{label: "GetBucketLocation", add: false},{label: "GetBucketLogging", add: false},
+																			{label: "GetBucketNotification", add: false},{label: "GetBucketPolicy", add: false},
+																			{label: "GetBucketRequestPayment", add: false},{label: "GetBucketVersioning", add: false},
+																			{label: "GetLifecycleConfiguration", add: false},{label: "GetObject", add: false},
+																			{label: "GetObjectAccessControlPolicy", add: false},{label: "GetObjectAcl", add: false},
+																			{label: "GetObjectExtended", add: false},{label: "GetObjectVersion", add: false},
+																			{label: "GetObjectVersionAcl", add: false},{label: "ListAllMyBuckets", add: false},
+																			{label: "ListBucket", add: false},{label: "ListBucketMultipartUploads", add: false},
+																			{label: "ListBucketVersions", add: false},{label: "ListMultipartUploadParts", add: false},
+																			{label: "PutBucketAcl", add: false},{label: "PutBucketLogging", add: false},
+																			{label: "PutBucketNotification", add: false},{label: "PutBucketPolicy", add: false},
+																			{label: "PutBucketRequestPayment", add: false},{label: "PutBucketVersioning", add: false},
+																			{label: "PutLifecycleConfiguration", add: false},{label: "PutObject", add: false},
+																			{label: "PutObjectAcl", add: false},{label: "PutObjectInline", add: false},
+																			{label: "PutObjectVersionAcl", add: false},{label: "SetBucketAccessControlPolicy", add: false},
+																			{label: "SetObjectAccessControlPolicy", add: false}]);
+			[Bindable]
+			private var stsActionList:ArrayCollection = new ArrayCollection([{label: "GetFederationToken", add: false}]);
+			[Bindable]
+			private var sesActionList:ArrayCollection = new ArrayCollection([{label: "DeleteVerifiedEmailAddress", add: false},{label: "GetSendQuota", add: false},
+																			{label: "GetSendStatistics", add: false},{label: "ListVerifiedEmailAddresses", add: false},
+																			{label: "SendEmail", add: false},{label: "SendRawEmail", add: false},
+																			{label: "VerifyEmailAddress", add: false}]);
+			[Bindable]
+			private var sdbActionList:ArrayCollection = new ArrayCollection([{label: "BatchDeleteAttributes", add: false},{label: "BatchPutAttributes", add: false},
+																			{label: "CreateDomain", add: false},{label: "DeleteAttributes", add: false},
+																			{label: "DeleteDomain", add: false},{label: "DomainMetadata", add: false},
+																			{label: "GetAttributes", add: false},{label: "ListDomains", add: false},
+																			{label: "PutAttributes", add: false},{label: "Select", add: false}]);
+			[Bindable]
+			private var snsActionList:ArrayCollection = new ArrayCollection([{label: "AddPermission", add: false},{label: "ConfirmSubscription", add: false},
+																			{label: "CreateTopic", add: false},{label: "DeleteTopic", add: false},
+																			{label: "GetTopicAttributes", add: false},{label: "ListSubscriptions", add: false},
+																			{label: "ListSubscriptionsByTopic", add: false},{label: "ListTopics", add: false},
+																			{label: "Publish", add: false},{label: "RemovePermission", add: false},
+																			{label: "SetTopicAttributes", add: false},{label: "Subscribe", add: false},
+																			{label: "Unsubscribe", add: false}]);
+			[Bindable]
+			private var sqsActionList:ArrayCollection = new ArrayCollection([{label: "AddPermission", add: false},{label: "ChangeMessageVisibility", add: false},
+																			{label: "CreateQueue", add: false},{label: "DeleteMessage", add: false},
+																			{label: "DeleteQueue", add: false},{label: "GetQueueAttributes", add: false},
+																			{label: "ListQueues", add: false},{label: "ReceiveMessage", add: false},
+																			{label: "RemovePermission", add: false},{label: "SendMessage", add: false},
+																			{label: "SetQueueAttributes", add: false}]);
+			
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				iamService.listUsers();
+				if(!reconfigure)
+				{
+					usersTabNaviagator.selectedChild = addExistingUserContent;
+				}
+				
+				if(cloudAccount.cloud_provider != CloudAccount.AMAZON)
+				{
+					iamWizardViewStack.removeElement(policyContent);
+					iamWizardViewStack.removeElement(permissionsContent);
+
+					var knob:CookieTrailKnob;
+					for(var index:int=0; index < cookieTrail.knobGroup.numElements; index++)
+					{
+						knob = cookieTrail.knobGroup.getElementAt(index) as CookieTrailKnob;
+						if(knob.currentPage == policyContent || knob.currentPage == permissionsContent)
+						{
+							cookieTrail.knobGroup.removeElement(knob);
+							index = index - 1;
+						}
+					}
+				}
+			}
+			
+			override public function applyConfigurations():void
+			{
+				if(element.id == null)
+				{
+					return;
+				}
+				iamGroupObject = element.properties;
+				
+				var templateResources:ArrayCollection = projectVersion.elements;
+				var resource:Element;
+				var checkResource:*;
+				
+				reconfigure = true;
+				currentGroupName = element.name;
+				groupName.text = currentGroupName;
+				policyAccordion.selectedChild = policyCustom;
+
+				if(iamGroupObject.hasOwnProperty('Properties') && iamGroupObject['Properties'].hasOwnProperty('Policies'))
+				{
+					try{
+						var groupPolicy:Object = iamGroupObject['Properties']['Policies'][0];
+						policyName.text = groupPolicy['PolicyName'];
+						policyDocument.text = JSON.encode(groupPolicy['PolicyDocument'], true);
+					}catch(error:Error){
+						trace(error.message);
+					}
+				}else
+				{
+					try{
+						for each(resource in templateResources){
+							//Policy Search
+							if(resource.elementType == ResourceType.IAM_POLICY)
+							{
+								for each(checkResource in resource.properties['Properties']['Groups'])
+								{
+									if(checkResource['Ref'] == currentGroupName)
+									{
+										policyName.text = resource.properties['Properties']['PolicyName'];
+										policyDocument.text = JSON.encode(resource.properties['Properties']['PolicyDocument'], true);
+									}
+								}
+							}
+						}
+					}catch(error:Error){
+						trace(error.message);
+					}
+				}
+				
+				//Search for users included with this group
+				var newUserCount:int = 0;
+				try{							
+					for each(resource in templateResources){
+						//New User Search
+						if(resource.elementType == ResourceType.IAM_USER)
+						{
+							for each(checkResource in resource.properties['Properties']['Groups'])
+							{
+								if(checkResource['Ref'] == currentGroupName)
+								{
+									newUserCount++;
+									switch(newUserCount)
+									{
+										case 1:
+											firstNewUser.text = resource.name;
+											break;
+										case 2:
+											secondNewUser.text = resource.name;
+											break;
+										case 3:
+											thirdNewUser.text = resource.name;
+											break;
+										case 4:
+											fourthNewUser.text = resource.name;
+											break;
+										case 5:
+											fifthNewUser.text = resource.name;
+											break;
+									}
+								}
+							}
+						}else if(resource.elementType == ResourceType.IAM_USER_TO_GROUP)
+						{
+							if(resource.properties['Properties']['GroupName']['Ref'] == currentGroupName)
+							{
+								for each(checkResource in resource.properties['Properties']['Users'])
+								{
+									//Existing User
+									if(checkResource is String)
+									{
+										existingUsersFromReconfigure.addItem({name: checkResource});
+									}else if(checkResource is Object && checkResource.hasOwnProperty('Ref'))
+									{
+										//Add new user
+										newUserCount++;
+										switch(newUserCount)
+										{
+											case 1:
+												firstNewUser.text = checkResource['Ref'];
+												break;
+											case 2:
+												secondNewUser.text = checkResource['Ref'];
+												break;
+											case 3:
+												thirdNewUser.text = checkResource['Ref'];
+												break;
+											case 4:
+												fourthNewUser.text = checkResource['Ref'];
+												break;
+											case 5:
+												fifthNewUser.text = checkResource['Ref'];
+												break;
+										}
+									}
+								}
+							}
+						}
+					}
+				}catch(error:Error){
+					trace(error.message);
+				}
+				
+				if(existingUsersFromReconfigure.length > 0)
+				{
+					selectPreviousExistingUsers();
+					
+					usersTabNaviagator.selectedChild = addExistingUserContent;
+				}else
+				{
+					usersTabNaviagator.selectedChild = createNewUserContent;
+				}
+			}
+			
+			protected function selectPreviousExistingUsers():void
+			{
+				if(getIamUsersCallComplete)
+				{
+					for each(var user:* in existingUsersFromReconfigure)
+					{
+						for each(var u:* in usersList)
+						{
+							if(user.name == u.name)
+							{
+								u.add = true;
+							}
+						}
+					}
+				}
+			}
+			
+			protected function previousButton_clickHandler(event:MouseEvent):void
+			{
+				if(iamWizardViewStack.selectedIndex > 0)
+				{
+					if(iamWizardViewStack.selectedChild == usersContent && policyAccordion.selectedChild == policyNone)
+					{
+						iamWizardViewStack.selectedChild = permissionsContent;	
+					}else if(iamWizardViewStack.selectedChild == policyContent && policyAccordion.selectedChild != policyGenerator)
+					{
+						iamWizardViewStack.selectedChild = permissionsContent;
+					}else
+					{
+						iamWizardViewStack.selectedIndex--;
+					}
+				}
+			}
+			
+			protected function nextButton_clickHandler(event:MouseEvent):void
+			{
+				var alert:Boolean = false;
+				
+				if(iamWizardViewStack.selectedChild == groupNameContent)
+				{
+					if(groupName.text.replace(" ", "") != "" && groupName.text.length < 129)
+					{
+						if(Helpers.validateAlphanumeric(groupName.text))
+						{
+							if(objectManagementCreate)
+							{
+								groupNameAlert.visible = false;						
+							}else
+							{
+								if(projectVersion.validateUniqueName(groupName.text, element))
+								{
+									groupNameAlert.visible = false;
+								}else
+								{
+									groupNameAlert.text = AlertMessage.NOT_UNIQUE;
+									groupNameAlert.visible = true;
+									alert = true;
+								}
+							}
+						}else
+						{
+							groupNameAlert.text = AlertMessage.NOTALPHANUMERIC;
+							groupNameAlert.visible = true;
+							alert = true;
+						}
+					}else
+					{
+						groupNameAlert.text = AlertMessage.INVALID;
+						groupNameAlert.visible = true;
+						alert = true;
+					}
+				}else if(iamWizardViewStack.selectedChild == permissionsContent)
+				{
+					permissionsSelectionHandler();
+				}else if(iamWizardViewStack.selectedChild == policyGeneratorContent)
+				{
+					if(statementList.dataProviderLength > 0)
+					{
+						var time:Date = new Date();
+						policyName.text = "policygen-" + groupName.text + "-" + dateFormatter.format(time);
+						try
+						{
+							var policyResource:Object = new Object();
+							policyResource['Statement'] = [];
+							for each(var item:* in statementAddList)
+							{
+								var newStatement:Object = new Object();
+								newStatement['Action'] = [];
+								for each(var action:String in item.actions)
+								{
+									newStatement['Action'].push(action);
+								}
+								newStatement['Effect'] = item.effect;
+								newStatement['Resource'] = item.resource;
+								policyResource['Statement'].push(newStatement);
+							}
+							policyDocument.text = JSON.encode(policyResource, true);
+						}
+						catch(error:Error) 
+						{
+							trace(error.message);
+						}
+					}else
+					{
+						alert = true;
+						Alert.show("At least one statement must be included to proceed.");
+					}
+				}else if(iamWizardViewStack.selectedChild == policyContent)
+				{
+					if(policyName.text.replace(" ", "") != "")
+					{
+						policyNameAlert.visible = false;
+					}else
+					{
+						alert = true;
+						policyNameAlert.visible = true;
+					}
+					
+					if(policyDocument.text.replace(" ", "") != "")
+					{
+						try
+						{
+							var checkJSON:Object = JSON.decode(policyDocument.text);
+							policyDocumentAlert.visible = false;
+						} 
+						catch(error:Error) 
+						{
+							alert = true;
+							policyDocumentAlert.text = "The policy is not in valid JSON format."
+							policyDocumentAlert.visible = true;
+						}
+					}else
+					{
+						alert = true;
+						policyDocumentAlert.text = "Policy Document is required."
+						policyDocumentAlert.visible = true;
+					}
+				}else if(iamWizardViewStack.selectedChild == usersContent)
+				{
+					usersToAdd.removeAll();
+					finalUsersString = "";
+					var userNameAttempted:Boolean = false;
+					if(usersTabNaviagator.selectedChild == createNewUserContent)
+					{
+						var existingElement:Element;
+						if(Helpers.StringReplaceAll(firstNewUser.text, " ", "") != "")
+						{
+							userNameAttempted = true;
+							if(objectManagementCreate)
+							{
+								firstNewUserAlert.visible = false;
+								usersToAdd.addItem({name: firstNewUser.text});
+							}else
+							{
+								if(projectVersion.validateUniqueName(firstNewUser.text))
+								{
+									firstNewUserAlert.visible = false;
+									usersToAdd.addItem({name: firstNewUser.text});
+								}else
+								{
+									existingElement = projectVersion.getElementByName(firstNewUser.text);
+									if(existingElement.elementType == ResourceType.IAM_USER)
+									{
+										firstNewUserAlert.visible = false;
+										usersToAdd.addItem({name: firstNewUser.text});
+									}else
+									{
+										alert = true;
+										firstNewUserAlert.visible = true;
+									}
+								}
+							}
+						}else
+						{
+							firstNewUserAlert.visible = false;
+						}
+						if(Helpers.StringReplaceAll(secondNewUser.text, " ", "") != "")
+						{
+							userNameAttempted = true;
+							if(objectManagementCreate)
+							{
+								addUserUnlessDuplicate(secondNewUser.text, secondNewUserAlert);
+								if(secondNewUserAlert.visible)
+									alert = true;
+							}else
+							{
+								if(projectVersion.validateUniqueName(secondNewUser.text))
+								{
+									addUserUnlessDuplicate(secondNewUser.text, secondNewUserAlert);
+									if(secondNewUserAlert.visible)
+										alert = true;
+								}else
+								{
+									existingElement = projectVersion.getElementByName(secondNewUser.text);
+									if(existingElement.elementType == ResourceType.IAM_USER)
+									{
+										addUserUnlessDuplicate(secondNewUser.text, secondNewUserAlert);
+										if(secondNewUserAlert.visible)
+											alert = true;
+									}else
+									{
+										alert = true;
+										secondNewUserAlert.visible = true;
+									}
+								}
+							}
+						}
+						else
+						{
+							secondNewUserAlert.visible = false;
+						}
+						if(Helpers.StringReplaceAll(thirdNewUser.text, " ", "") != "")
+						{
+							userNameAttempted = true;
+							if(objectManagementCreate)
+							{
+								addUserUnlessDuplicate(thirdNewUser.text, thirdNewUserAlert);
+								if(thirdNewUserAlert.visible)
+									alert = true;
+							}else
+							{
+								if(projectVersion.validateUniqueName(thirdNewUser.text))
+								{
+									addUserUnlessDuplicate(thirdNewUser.text, thirdNewUserAlert);
+									if(thirdNewUserAlert.visible)
+										alert = true;
+								}else
+								{
+									existingElement = projectVersion.getElementByName(thirdNewUser.text);
+									if(existingElement.elementType == ResourceType.IAM_USER)
+									{
+										addUserUnlessDuplicate(thirdNewUser.text, thirdNewUserAlert);
+										if(thirdNewUserAlert.visible)
+											alert = true;
+									}else
+									{
+										alert = true;
+										thirdNewUserAlert.visible = true;
+									}
+								}
+							}
+						}
+						else
+						{
+							thirdNewUserAlert.visible = false;
+						}
+						if(Helpers.StringReplaceAll(fourthNewUser.text, " ", "") != "")
+						{
+							userNameAttempted = true;
+							if(objectManagementCreate)
+							{
+								addUserUnlessDuplicate(fourthNewUser.text, fourthNewUserAlert);
+								if(fourthNewUserAlert.visible)
+									alert = true;
+							}else
+							{
+								if(projectVersion.validateUniqueName(fourthNewUser.text))
+								{
+									addUserUnlessDuplicate(fourthNewUser.text, fourthNewUserAlert);
+									if(fourthNewUserAlert.visible)
+										alert = true;
+								}else
+								{
+									existingElement = projectVersion.getElementByName(fourthNewUser.text);
+									if(existingElement.elementType == ResourceType.IAM_USER)
+									{
+										addUserUnlessDuplicate(fourthNewUser.text, fourthNewUserAlert);
+										if(fourthNewUserAlert.visible)
+											alert = true;
+									}else
+									{
+										alert = true;
+										fourthNewUserAlert.visible = true;
+									}
+								}
+							}
+						}
+						else
+						{
+							fourthNewUserAlert.visible = false;
+						}
+						if(Helpers.StringReplaceAll(fifthNewUser.text, " ", "") != "")
+						{
+							userNameAttempted = true;
+							if(objectManagementCreate)
+							{
+								addUserUnlessDuplicate(fifthNewUser.text, fifthNewUserAlert);
+								if(fifthNewUserAlert.visible)
+									alert = true;
+							}else
+							{
+								if(projectVersion.validateUniqueName(fifthNewUser.text))
+								{
+									addUserUnlessDuplicate(fifthNewUser.text, fifthNewUserAlert);
+									if(fifthNewUserAlert.visible)
+										alert = true;
+								}else
+								{
+									existingElement = projectVersion.getElementByName(fifthNewUser.text);
+									if(existingElement.elementType == ResourceType.IAM_USER)
+									{
+										addUserUnlessDuplicate(fifthNewUser.text, fifthNewUserAlert);
+										if(fifthNewUserAlert.visible)
+											alert = true;
+									}else
+									{
+										alert = true;
+										fifthNewUserAlert.visible = true;
+									}
+								}
+							}
+						}
+						else
+						{
+							fifthNewUserAlert.visible = false;
+						}
+					}else
+					{
+						for each(var user:Object in usersList)
+						{
+							if(user.add)
+							{
+								usersToAdd.addItem(user);
+							}
+						}
+					}
+					
+					if(usersToAdd.length > 0)
+					{
+						for each(var u:Object in usersToAdd)
+						{
+							if(u.UserName != null)
+							{
+								finalUsersString = finalUsersString + u.UserName + "\n";
+							}else if(u.name != null)
+							{
+								finalUsersString = finalUsersString + u.name + "\n";
+							}else if(u.id != null)
+							{
+								finalUsersString = finalUsersString + u.id + "\n";
+							}
+						}
+						finalUsersString = StringUtil.trim(finalUsersString);
+					}else
+					{
+						if(!userNameAttempted)
+						{
+							alert = true;
+							Alert.show("You must specify at least one non-blank user name.");
+						}
+					}
+				}
+					
+				if(!alert)
+				{
+					iamWizardViewStack.selectedIndex++;
+				}
+			}
+			
+			protected function addUserUnlessDuplicate(userName:String, alert:Text):void
+			{
+				if(isDuplicateUserName(userName))
+				{
+					alert.visible = true;
+				}else
+				{
+					alert.visible = false;
+					usersToAdd.addItem({name: userName});
+				}
+			}
+			
+			protected function isDuplicateUserName(userName:String):Boolean
+			{
+				var found:Boolean = false;
+				for each(var userObject:Object in usersToAdd)
+				{
+					if(userObject.name == userName)
+					{
+						found = true;
+					}
+				}
+				if(found)
+				{
+					return true;
+				}else
+				{
+					return false;
+				}
+			}
+			
+			protected function submitButton_clickHandler(event:MouseEvent):void
+			{
+				submitButton.enabled = false;
+				submitButton.label = "Saving";
+				
+				if(objectManagementCreate)
+				{
+					var isNewUser:Boolean = false;
+					if(usersTabNaviagator.selectedChild == createNewUserContent)
+					{
+						isNewUser = true;
+					}
+					var userArray:Array = new Array();
+					for each(var user:Object in usersToAdd)
+					{
+						userArray.push(user);
+					}
+					var userArrayString:String = JSON.encode(userArray);
+					iamService.createGroup({
+						name: groupName.text,
+						policy_name: policyName.text,
+						policy_document: policyDocument.text,
+						user_type: isNewUser,
+						users: userArrayString});
+
+				}else{
+					var groupAttributes:Object = new Object();
+					groupAttributes['Type'] = ResourceType.IAM_GROUP;
+					if(policyAccordion.selectedChild != policyNone)
+					{
+						var groupProperties:Object = new Object();
+						var policyObject:Object = new Object();
+						var policyArray:Array = new Array();
+						policyObject['PolicyName'] = policyName.text;
+						policyObject['PolicyDocument'] = JSON.decode(policyDocument.text);
+						policyArray.push(policyObject);
+						groupProperties['Policies'] = policyArray;
+						groupAttributes['Properties'] = groupProperties;
+					}
+					
+					if(usersTabNaviagator.selectedChild == createNewUserContent)
+					{
+						for each(var newUser:* in usersToAdd)
+						{
+							var newUserObject:Object = new Object();
+							var newUserAttributes:Object = new Object();
+							var newUserProperties:Object = new Object();
+							
+							newUserAttributes['Type'] = ResourceType.IAM_USER;
+							newUserProperties['Groups'] = [{"Ref" : groupName.text}];
+							newUserAttributes['Properties'] = newUserProperties;
+							
+							var newUserElement:Element = new Element(null, newUser.name, ResourceType.IAM_USER, element.projectId);
+							newUserElement.properties = newUserAttributes;
+							newUserElement.save(projectVersion);
+						}
+					}else
+					{
+						var existUserObject:Object = new Object();
+						var existUserAttributes:Object = new Object();
+						var existUserProperties:Object = new Object();
+						
+						existUserAttributes['Type'] = ResourceType.IAM_USER_TO_GROUP;
+						existUserProperties['GroupName'] = {"Ref" : groupName.text};
+						
+						var existUsersArray:Array = new Array();
+						for each(var existUser:* in usersToAdd)
+						{
+							if(existUser.UserName != null)
+							{
+								existUsersArray.push(existUser.UserName);
+							}else if(existUser.name != null)
+							{
+								existUsersArray.push(existUser.name);
+							}else if(existUser.id != null)
+							{
+								existUsersArray.push(existUser.id);
+							}
+						}		
+						existUserProperties['Users'] = existUsersArray;
+						existUserAttributes['Properties'] = existUserProperties;
+						var additionsName:String = "AddUsersTo" + groupName.text;
+						var existingUser:Element = new Element(null, additionsName, ResourceType.IAM_USER_TO_GROUP, element.projectId);
+						existingUser.properties = existUserAttributes;
+						existingUser.save(projectVersion);
+					}
+					
+					saveElement(groupName.text, groupAttributes);
+					//createVariants(groupName.text, statesToApply.ignoredEnvironments);
+				}
+			}
+			
+			protected function permissionsSelectionHandler():void
+			{
+				var policyResource:Object = new Object();
+				var time:Date = new Date();
+				switch(policyAccordion.selectedChild)
+				{
+					case policyTemplate:
+						if(adminAccess.selected)
+						{	
+							policyName.text = "AdministratorAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", Action: "*", Resource: "*"}];
+						}else if(powerUserAccess.selected)
+						{
+							policyName.text = "PowerUserAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", NotAction: "iam:*", Resource: "*"}];
+						}else if(readOnlyAccess.selected)
+						{
+							policyName.text = "ReadOnlyAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", 
+															Action: ["autoscaling:Describe*",
+																	"cloudformation:DescribeStacks",
+																	"cloudformation:DescribeStackEvents",
+																	"cloudformation:DescribeStackResources",
+																	"cloudformation:GetTemplate",
+																	"cloudfront:Get*",
+																	"cloudfront:List*",
+																	"cloudwatch:Describe*",
+																	"cloudwatch:Get*",
+																	"cloudwatch:List*",
+																	"dynamodb:GetItem",
+																	"dynamodb:BatchGetItem",
+																	"dynamodb:Query",
+																	"dynamodb:Scan",
+																	"dynamodb:DescribeTable",
+																	"dynamodb:ListTables",
+																	"ec2:Describe*",
+																	"elasticache:Describe*",
+																	"elasticbeanstalk:Check*",
+																	"elasticbeanstalk:Describe*",
+																	"elasticbeanstalk:List*",
+																	"elasticbeanstalk:RequestEnvironmentInfo",
+																	"elasticbeanstalk:RetrieveEnvironmentInfo",
+																	"elasticloadbalancing:Describe*",
+																	"iam:List*",
+																	"iam:Get*",
+																	"route53:Get*",
+																	"route53:List*",
+																	"rds:Describe*",
+																	"s3:Get*",
+																	"s3:List*",
+																	"sdb:GetAttributes",
+																	"sdb:List*",
+																	"sdb:Select*",
+																	"ses:Get*",
+																	"ses:List*",
+																	"sns:Get*",
+																	"sns:List*",
+																	"sqs:GetQueueAttributes",
+																	"sqs:ListQueues",
+																	"sqs:ReceiveMessage"],
+															Resource: "*"}];
+						}else if(cfReadAccess.selected)
+						{
+							policyName.text = "CloudFormationReadOnlyAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", 
+															Action: ["cloudformation:DescribeStacks",
+																	"cloudformation:DescribeStackEvents",
+																	"cloudformation:DescribeStackResources",
+																	"cloudformation:GetTemplate"],
+															Resource: "*"}];
+						}else if(cloudFrontFullAccess.selected)
+						{
+							policyName.text = "CloudFrontFullAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", 
+															Action: ["s3:ListAllMyBuckets"],
+															Resource: "arn:aws:s3:::*"},
+														   {Effect: "Allow",
+															Action: ["cloudfront:*"],
+															Resource: "*"}];
+						}else if(cloudFrontReadAccess.selected)
+						{
+							policyName.text = "CloudFrontReadOnlyAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", 
+															Action: ["cloudfront:Get*",
+																	"cloudfront:List*",
+																	"route53:List*"],
+															Resource: "*"}];
+						}else if(cloudWatchFullAccess.selected)
+						{
+							policyName.text = "CloudWatchFullAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", 
+															Action: ["cloudwatch:*",
+																	"sns:*",
+																	"autoscaling:Describe*"],
+															Resource: "*"}];
+						}else if(cloudWatchReadAccess.selected)
+						{
+							policyName.text = "CloudWatchReadOnlyAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", 
+															Action: ["sns:Get*",
+																	"sns:List*",
+																	"autoscaling:Describe*",
+																	"cloudwatch:Describe*",
+																	"cloudwatch:List*",
+																	"cloudwatch:Get*"],
+															Resource: "*"}];
+						}else if(dynamoDBFullAccess.selected)
+						{
+							policyName.text = "DynamoDBFullAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", Action: ["dynamodb:*"], Resource: "*"}];
+						}else if(dynamoDBReadAccess.selected)
+						{
+							policyName.text = "DynamoDBReadOnlyAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", 
+															Action: ["dynamodb:GetItem",
+																	"dynamodb:BatchGetItem",
+																	"dynamodb:Query",
+																	"dynamodb:Scan",
+																	"dynamodb:DescribeTable",
+																	"dynamodb:ListTables"],
+															Resource: "*"}];
+						}else if(ec2FullAccess.selected)
+						{
+							policyName.text = "EC2FullAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", Action: "ec2:*", Resource: "*"},
+														   {Effect: "Allow", Action: "elasticloadbalancing:*", Resource: "*"},
+														   {Effect: "Allow", Action: "cloudwatch:*", Resource: "*"},
+														   {Effect: "Allow", Action: "autoscaling:*", Resource: "*"}];
+						}else if(ec2ReadAccess.selected)
+						{
+							policyName.text = "EC2ReadOnlyAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", Action: "EC2:Describe*", Resource: "*"},
+														   {Effect: "Allow", Action: "elasticloadbalancing:Describe*", Resource: "*"},
+														   {Effect: "Allow", Action: ["cloudwatch:ListMetrics",
+																					  "cloudwatch:GetMetricStatistics",
+																					  "cloudwatch:Describe*"], Resource: "*"},
+														   {Effect: "Allow", Action: "autoscaling:Describe*", Resource: "*"}];
+						}else if(beanFullAccess.selected)
+						{
+							policyName.text = "BeanstalkFullAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", 
+															Action: ["elasticbeanstalk:*",
+																	"ec2:*",
+																	"elasticloadbalancing:*",
+																	"autoscaling:*",
+																	"cloudwatch:*",
+																	"s3:*",
+																	"sns:*"],
+															Resource: "*"}];
+						}else if(beanReadAccess.selected)
+						{
+							policyName.text = "BeanstalkReadOnlyAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", 
+															Action: ["elasticbeanstalk:Check*",
+																	"elasticbeanstalk:Describe*",
+																	"elasticbeanstalk:List*",
+																	"elasticbeanstalk:RequestEnvironmentInfo",
+																	"elasticbeanstalk:RetrieveEnvironmentInfo",
+																	"ec2:Describe*",
+																	"elasticloadbalancing:Describe*",
+																	"autoscaling:Describe*",
+																	"cloudwatch:Describe*",
+																	"cloudwatch:List*",
+																	"cloudwatch:Get*",
+																	"s3:Get*",
+																	"s3:List*",
+																	"sns:Get*",
+																	"sns:List*"],
+															Resource: "*"}];
+						}else if(elcFullAccess.selected)
+						{
+							policyName.text = "ElasticacheFullAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", Action: "elasticache:*", Resource: "*"}];
+						}else if(elcReadAccess.selected)
+						{
+							policyName.text = "ElasticacheReadOnlyAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", Action: "elasticache:Describe*", Resource: "*"}];
+						}else if(mapReduceFullAccess.selected)
+						{
+							policyName.text = "MapReduceFullAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", 
+															Action: ["elasticmapreduce:*",
+																	"ec2:AuthorizeSecurityGroupIngress",
+																	"ec2:CancelSpotInstanceRequests",
+																	"ec2:CreateSecurityGroup",
+																	"ec2:CreateTags",
+																	"ec2:DescribeAvailabilityZones",
+																	"ec2:DescribeInstances",
+																	"ec2:DescribeKeyPairs",
+																	"ec2:DescribeSecurityGroups",
+																	"ec2:DescribeSpotInstanceRequests",
+																	"ec2:DescribeSubnets",
+																	"ec2:ModifyImageAttribute",
+																	"ec2:ModifyInstanceAttribute",
+																	"ec2:RequestSpotInstances",
+																	"ec2:RunInstances",
+																	"ec2:TerminateInstances",
+																	"cloudwatch:*",
+																	"s3:*",
+																	"sdb:*"],
+															Resource: "*"}];
+						}else if(mapReduceReadAccess.selected)
+						{
+							policyName.text = "MapReduceReadOnlyAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", 
+															Action: ["elasticmapreduce:DescribeJobFlows",
+																	"s3:GetObject",
+																	"s3:ListAllMyBuckets",
+																	"s3:ListBucket",
+																	"sdb:Select",
+																	"cloudwatch:GetMetricStatistics"],
+															Resource: "*"}];
+						}else if(iamFullAccess.selected)
+						{
+							policyName.text = "IAMFullAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", Action: "iam:*", Resource: "*"}];
+						}else if(iamReadAccess.selected)
+						{
+							policyName.text = "IAMReadOnlyAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", 
+															Action: ["iam:List*",
+																	"iam:Get*"],
+															Resource: "*"}];
+						}else if(rdsFullAccess.selected)
+						{
+							policyName.text = "RDSFullAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", Action: "rds:*", Resource: "*"},
+														   {Effect: "Allow", Action: "ec2:DescribeAvailabilityZones", Resource: "*"},
+														   {Effect: "Allow", Action: "cloudwatch:GetMetricStatistics", Resource: "*"}];
+						}else if(rdsReadAccess.selected)
+						{
+							policyName.text = "RDSReadOnlyAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", Action: "rds:Describe*", Resource: "*"},
+														   {Effect: "Allow", Action: "cloudwatch:GetMetricStatistics", Resource: "*"}];
+						}else if(route53FullAccess.selected)
+						{
+							policyName.text = "Route53FullAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", Action: "route53:*", Resource: "*"},
+													 	   {Effect: "Allow", Action: "elasticloadbalancing:DescribeLoadBalancers", Resource: "*"}];
+						}else if(route53ReadAccess.selected)
+						{
+							policyName.text = "Route53ReadOnlyAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", 
+															Action: ["route53:Get*",
+																	"route53:List*"],
+															Resource: "*"}];
+						}else if(s3FullAccess.selected)
+						{
+							policyName.text = "S3FullAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", Action: "s3:*", Resource: "*"}];
+						}else if(s3ReadAccess.selected)
+						{
+							policyName.text = "S3ReadOnlyAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", 
+															Action: ["s3:Get*",
+																	"s3:List*"],
+															Resource: "*"}];
+						}else if(sesFullAccess.selected)
+						{
+							policyName.text = "SESFullAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", Action: "ses:*", Resource: "*"}];
+						}else if(sesReadAccess.selected)
+						{
+							policyName.text = "SESReadOnlyAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", 
+															Action: ["ses:Get*",
+																	"ses:List*"],
+															Resource: "*"}];
+						}else if(snsFullAccess.selected)
+						{
+							policyName.text = "SNSFullAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", Action: "sns:*", Resource: "*"}];
+						}else if(snsReadAccess.selected)
+						{
+							policyName.text = "SNSReadOnlyAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", 
+															Action: ["sns:GetTopicAttributes",
+																	"sns:List*"],
+															Resource: "*"}];
+						}else if(sqsFullAccess.selected)
+						{
+							policyName.text = "SQSFullAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", Action: "sqs:*", Resource: "*"}];
+						}else if(sqsReadAccess.selected)
+						{
+							policyName.text = "SQSReadOnlyAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", 
+															Action: ["sqs:GetQueueAttributes",
+																	"sqs:ListQueues"],
+															Resource: "*"}];
+						}else if(vpcFullAccess.selected)
+						{
+							policyName.text = "VPCFullAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", 
+															Action: ["ec2:AllocateAddress",
+																	"ec2:AssociateAddress",
+																	"ec2:AssociateDhcpOptions",
+																	"ec2:AssociateRouteTable",
+																	"ec2:AttachInternetGateway",
+																	"ec2:AttachVpnGateway",
+																	"ec2:AuthorizeSecurityGroupEgress",
+																	"ec2:AuthorizeSecurityGroupIngress",
+																	"ec2:CreateCustomerGateway",
+																	"ec2:CreateDhcpOptions",
+																	"ec2:CreateInternetGateway",
+																	"ec2:CreateNetworkAcl",
+																	"ec2:CreateNetworkAclEntry",
+																	"ec2:CreateRoute",
+																	"ec2:CreateRouteTable",
+																	"ec2:CreateSecurityGroup",
+																	"ec2:CreateSubnet",
+																	"ec2:CreateVpc",
+																	"ec2:CreateVpnConnection",
+																	"ec2:CreateVpnGateway",
+																	"ec2:DeleteCustomerGateway",
+																	"ec2:DeleteDhcpOptions",
+																	"ec2:DeleteInternetGateway",
+																	"ec2:DeleteNetworkAcl",
+																	"ec2:DeleteNetworkAclEntry",
+																	"ec2:DeleteRoute",
+																	"ec2:DeleteRouteTable",
+																	"ec2:DeleteSecurityGroup",
+																	"ec2:DeleteSubnet",
+																	"ec2:DeleteVpc",
+																	"ec2:DeleteVpnConnection",
+																	"ec2:DeleteVpnGateway",
+																	"ec2:DescribeAddresses",
+																	"ec2:DescribeAvailabilityZones",
+																	"ec2:DescribeCustomerGateways",
+																	"ec2:DescribeDhcpOptions",
+																	"ec2:DescribeInstances",
+																	"ec2:DescribeInternetGateways",
+																	"ec2:DescribeKeyPairs",
+																	"ec2:DescribeNetworkAcls",
+																	"ec2:DescribeRouteTables",
+																	"ec2:DescribeSecurityGroups",
+																	"ec2:DescribeSubnets",
+																	"ec2:DescribeVpcs",
+																	"ec2:DescribeVpnConnections",
+																	"ec2:DescribeVpnGateways",
+																	"ec2:DetachInternetGateway",
+																	"ec2:DetachVpnGateway",
+																	"ec2:DisassociateAddress",
+																	"ec2:DisassociateRouteTable",
+																	"ec2:ReleaseAddress",
+																	"ec2:ReplaceNetworkAclAssociation",
+																	"ec2:ReplaceNetworkAclEntry",
+																	"ec2:ReplaceRouteTableAssociation",
+																	"ec2:RevokeSecurityGroupEgress",
+																	"ec2:RevokeSecurityGroupIngress"],
+															Resource: "*"}];
+						}else if(vpcReadAccess.selected)
+						{
+							policyName.text = "VPCReadOnlyAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", 
+															Action: ["ec2:DescribeAddresses",
+																	"ec2:DescribeCustomerGateways",
+																	"ec2:DescribeDhcpOptions",
+																	"ec2:DescribeInternetGateways",
+																	"ec2:DescribeNetworkAcls",
+																	"ec2:DescribeRouteTables",
+																	"ec2:DescribeSecurityGroups",
+																	"ec2:DescribeSubnets",
+																	"ec2:DescribeVpcs",
+																	"ec2:DescribeVpnConnections",
+																	"ec2:DescribeVpnGateways"],
+															Resource: "*"}];
+						}else if(accountActivityAccess.selected)
+						{
+							policyName.text = "AccountActivityAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", Action: "aws-portal:ViewBilling", Resource: "*"}];
+						}else if(accountUsageAccess.selected)
+						{
+							policyName.text = "AccountUsageReportAccess-" + groupName.text + "-" + dateFormatter.format(time);
+							policyResource['Statement'] = [{Effect: "Allow", Action: "aws-portal:ViewUsage", Resource: "*"}];
+						}
+						policyDocument.text = JSON.encode(policyResource, true);
+						iamWizardViewStack.selectedIndex++;
+						break;
+					case policyGenerator:
+						serviceSelection.selectedIndex = 0;
+						serviceSelection_changeHandler();
+						break;
+					case policyCustom:
+						iamWizardViewStack.selectedIndex++;
+						break;
+					case policyNone:
+						policyName.text = "";
+						policyDocument.text = "";
+						iamWizardViewStack.selectedIndex = iamWizardViewStack.selectedIndex+2;
+						break;
+				}
+			}
+			
+			protected function getIamUsersSvc_resultHandler(event:ResultEvent):void
+			{
+				usersList = event.result as ArrayCollection;
+				
+				getIamUsersCallComplete = true;
+				
+				if(reconfigure)
+				{
+					selectPreviousExistingUsers();
+				}
+			}
+			
+			protected function serviceSelection_changeHandler():void
+			{
+				actionsAddList.removeAll();
+				switch(serviceSelection.selectedItem.value)
+				{
+					case "autoscaling":
+						actionsAddList.addAll(autoscaleActionList);
+						break;
+					case "aws-portal":
+						actionsAddList.addAll(awswebActionList);
+						break;
+					case "cloudformation":
+						actionsAddList.addAll(cfnActionList);
+						break;
+					case "cloudfront":
+						actionsAddList.addAll(cftActionList);
+						break;
+					case "cloudwatch":
+						actionsAddList.addAll(acwActionList);
+						break;
+					case "dynamodb":
+						actionsAddList.addAll(ddbActionList);
+						break;
+					case "ec2":
+						actionsAddList.addAll(ec2ActionList);
+						break;
+					case "elasticache":
+						actionsAddList.addAll(elcActionList);
+						break;
+					case "elasticbeanstalk":
+						actionsAddList.addAll(beanActionList);
+						break;
+					case "elasticloadbalancing":
+						actionsAddList.addAll(elbActionList);
+						break;
+					case "elasticmapreduce":
+						actionsAddList.addAll(emrActionList);
+						break;
+					case "iam":
+						actionsAddList.addAll(iamActionList);
+						break;
+					case "rds":
+						actionsAddList.addAll(rdsActionList);
+						break;
+					case "route53":
+						actionsAddList.addAll(r53ActionList);
+						break;
+					case "s3":
+						actionsAddList.addAll(s3ActionList);
+						break;
+					case "sts":
+						actionsAddList.addAll(stsActionList);
+						break;
+					case "ses":
+						actionsAddList.addAll(sesActionList);
+						break;
+					case "sdb":
+						actionsAddList.addAll(sdbActionList);
+						break;
+					case "sns":
+						actionsAddList.addAll(snsActionList);
+						break;
+					case "sqs":
+						actionsAddList.addAll(sqsActionList);
+						break;
+				}
+			}
+			
+			protected function addStatementButton_clickHandler(event:MouseEvent):void
+			{
+				var actionArray:Array = new Array();
+				if(selectAll)
+				{
+					actionArray.push(serviceSelection.selectedItem.value + ":*");
+				}else
+				{
+					for each(var action:* in actionsAddList)
+					{
+						if(action.add)
+						{
+							actionArray.push(serviceSelection.selectedItem.value + ":" + action.label);
+						}
+					}
+				}
+				
+				statementAddList.addItem({effect: policyEffect.selection.label, actions: actionArray, resource: "*", iamWizard: this});
+				
+				statementList.validateNow();
+			}
+			
+			protected function removeStatementButton_clickHandler(event:MouseEvent):void
+			{
+				if(statementList.selectedIndex != -1)
+				{
+					statementAddList.removeItemAt(statementList.selectedIndex);
+				}	
+			}
+			
+			public function redraw_statementList():void
+			{
+				if(statementList.dataProviderLength > 0)
+				{
+					statementList.validateNow();
+					if(statementList.height != 98)
+					{
+						statementList.height = 98;
+					}
+				}
+			}
+			
+			protected function selectAllButton_clickHandler(event:MouseEvent):void
+			{
+				var item:*;
+				if(!selectAll)
+				{
+					for each(item in actionsAddList)
+					{
+						item.add = true;
+					}
+					selectAll = true;
+				}else
+				{
+					for each(item in actionsAddList)
+					{
+						item.add = false;
+					}
+					selectAll = false;
+				}
+				actionsAddList.refresh();
+			}
+			
+			protected function groupCreated_resultHandler(event:Event):void
+			{
+				Helpers.getObjectManagement(this).refreshResourceList();
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function objectManagementLaunchSvc_faultHandler(event:FaultEvent):void
+			{
+				Alert.show("Unable to save IAM group.");
+				submitButton.label = "Finish";
+				submitButton.enabled = true;
+				trace(event.fault);
+			}
+			
+			private function usersGrid_labelFunction(item:Object, column:GridColumn):String
+			{
+				if(item.UserName)
+				{
+					return item.UserName;
+				}else if(item.name)
+				{
+					return item.name;
+				}else{
+					return item.id;
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<s:DateTimeFormatter id="dateFormatter" dateTimePattern="yyyyMMddhhmm" useUTC="true"/>
+		<s:RadioButtonGroup id="policyTemplateRadioGroup"/>
+		<s:RadioButtonGroup id="policyGeneratorRadioGroup"/>
+		<s:RadioButtonGroup id="policyCustomRadioGroup"/>
+		<s:RadioButtonGroup id="policyNoneRadioGroup"/>
+		<s:RadioButtonGroup id="policyEffect"/>
+		
+		<services:IamService id="iamService"
+							 cloudAccountId="{cloudAccount.id}"
+							 listUsersResult="getIamUsersSvc_resultHandler(event)"
+							 groupCreated="groupCreated_resultHandler(event)"/>
+	</fx:Declarations>
+	
+	<s:VGroup width="100%" height="90%" gap="0">
+		<wizard:WizardWindowTitle id="iamWizardWindowTitle"
+								  wizardStack="{iamWizardViewStack}"
+								  resourceImage="{ImagePath.NEW_IAM_GROUP}"
+								  resourceLabel="{wizardDisplayName}"/>
+		<wizard:CookieTrail  id="cookieTrail" 
+							 wizardStack="{iamWizardViewStack}"
+							 gap="35"/>
+		<mx:ViewStack id="iamWizardViewStack" width="100%" height="90%" creationPolicy="all"
+					  paddingLeft="20" paddingRight="20" paddingTop="10">
+			<s:NavigatorContent id="groupNameContent" label="Group Name" width="100%" height="100%">
+				<s:Form>
+					<s:FormItem label="Group Name:">
+						<s:HGroup>
+							<s:TextInput id="groupName" width="250"/>
+							<s:Image width="16" height="16" source="{ImagePath.HELPER_ICON}" toolTip="Example: Developers&#13;Maximum 128 characters"/>
+							<mx:Text id="groupNameAlert" text="Invalid Input." color="red" visible="false"/>
+						</s:HGroup>
+					</s:FormItem>
+					<s:FormItem label="Description:">
+						<s:TextInput id="groupDescription" width="375"/>
+					</s:FormItem>
+				</s:Form>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="permissionsContent" width="100%" height="100%"
+								label="Permissions">
+				<mx:Accordion id="policyAccordion" width="100%" height="100%">
+					<s:NavigatorContent id="policyTemplate" label="Select Policy Template" width="100%" height="100%">
+						<s:BorderContainer width="100%" height="100%">
+							<s:Scroller width="100%" height="100%">
+								<s:viewport>
+									<s:VGroup width="100%" height="100%">
+										<s:RadioButton id="adminAccess" label="Administrator Access" group="{policyTemplateRadioGroup}" selected="true"/>
+										<mx:Text text="Provides full access to services and resources." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="powerUserAccess" label="Power User Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides full access to services and resources, but does not allow management of users and groups." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="readOnlyAccess" label="Read Only Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides read-only access to services and resources." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="cfReadAccess" label="CloudFormation Read Only Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides read-only access to CloudFormation." width="100%" paddingLeft="15" paddingRight="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="cloudFrontFullAccess" label="CloudFront Full Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides full access to CloudFront and S3 buckets." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="cloudFrontReadAccess" label="CloudFront Read Only Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides read-only access to CloudFront." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="cloudWatchFullAccess" label="CloudWatch Full Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides full access to CloudWatch." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="cloudWatchReadAccess" label="CloudWatch Read Only Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides read-only access to CloudWatch." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="dynamoDBFullAccess" label="DynamoDB Full Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides full access to Dynamo databases." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="dynamoDBReadAccess" label="DynamoDB Read Only Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides read-only access to Dynamo databases." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="ec2FullAccess" label="Compute Cloud Full Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides full access to the Compute Cloud." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="ec2ReadAccess" label="Compute Cloud Read Only Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides read-only access to the Compute Cloud." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="beanFullAccess" label="Elastic Beanstalk Full Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides full access to Elastic Beanstalk." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="beanReadAccess" label="Elastic Beanstalk Read Only Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides read-only access to Elastic Beanstalk." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="elcFullAccess" label="ElastiCache Full Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides full access to ElastiCache." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="elcReadAccess" label="ElastiCache Read Only Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides read-only access to ElastiCache." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="mapReduceFullAccess" label="Elastic MapReduce Full Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides full access to Elastic MapReduce, Compute Cloud, and S3." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="mapReduceReadAccess" label="Elastic MapReduce Read Only Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides read-only access to Elastic MapReduce, Compute Cloud, and S3." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="iamFullAccess" label="IAM Full Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides full access to Identity Access Management." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="iamReadAccess" label="IAM Read Only Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides read-only access to Identity Access Management." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="rdsFullAccess" label="RDS Full Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides full access to relational databases." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="rdsReadAccess" label="RDS Read Only Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides read-only access to relational databases." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="route53FullAccess" label="Route 53 Full Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides full access to Route 53." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="route53ReadAccess" label="Route 53 Read Only Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides read-only access to Route 53." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="s3FullAccess" label="S3 Full Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides full access to all buckets." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="s3ReadAccess" label="S3 Read Only Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides read-only access to all buckets." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="sesFullAccess" label="SES Full Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides full access to simple email." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="sesReadAccess" label="SES Read Only Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides read-only access to simple email." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="snsFullAccess" label="SNS Full Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides full access to simple notification." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="snsReadAccess" label="SNS Read Only Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides read-only access to simple notification." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="sqsFullAccess" label="SQS Full Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides full access to simple queue." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="sqsReadAccess" label="SQS Read Only Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides read-only access to simple queue." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="vpcFullAccess" label="VPC Full Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides full access to Virtual Private Clouds." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="vpcReadAccess" label="VPC Read Only Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides read-only access to Virtual Private Clouds." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="accountActivityAccess" label="Account Activity Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides access to Account Activity page." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+										<s:RadioButton id="accountUsageAccess" label="Account Usage Report Access" group="{policyTemplateRadioGroup}"/>
+										<mx:Text text="Provides access to Account Usage Report page." width="100%" paddingLeft="15"/>
+										<mx:HRule width="100%"/>
+									</s:VGroup>
+								</s:viewport>
+							</s:Scroller>
+						</s:BorderContainer>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="policyGenerator" label="Policy Generator" width="100%" height="100%">
+						<s:BorderContainer width="100%" height="100%">
+							<s:Scroller width="100%" height="100%">
+								<s:viewport>
+									<s:VGroup width="100%" height="100%">
+										<s:RadioButton id="policyGeneratorRB" label="Policy Generator" group="{policyGeneratorRadioGroup}" selected="true"/>
+										<mx:Text text="Use the policy generator to create your own set of permissions." width="100%" paddingLeft="15"/>
+									</s:VGroup>
+								</s:viewport>
+							</s:Scroller>
+						</s:BorderContainer>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="policyCustom" label="Custom Policy" width="100%" height="100%">
+						<s:BorderContainer width="100%" height="100%">
+							<s:Scroller width="100%" height="100%">
+								<s:viewport>
+									<s:VGroup width="100%" height="100%">
+										<s:RadioButton id="policyCustomRB" label="Custom Policy" group="{policyCustomRadioGroup}" selected="true"/>
+										<mx:Text text="Use the policy editor to customize your own set of permissions." width="100%" paddingLeft="15"/>
+									</s:VGroup>
+								</s:viewport>
+							</s:Scroller>
+						</s:BorderContainer>
+					</s:NavigatorContent>
+					<s:NavigatorContent id="policyNone" label="No Permissions" width="100%" height="100%">
+						<s:BorderContainer width="100%" height="100%">
+							<s:Scroller width="100%" height="100%">
+								<s:viewport>
+									<s:VGroup width="100%" height="100%">
+										<s:RadioButton id="policyNoneRB" label="No Permissions" group="{policyNoneRadioGroup}" selected="true"/>
+										<mx:Text text="Skip this step and do not grant any permissions." width="100%" paddingLeft="15"/>
+									</s:VGroup>
+								</s:viewport>
+							</s:Scroller>
+						</s:BorderContainer>
+					</s:NavigatorContent>
+				</mx:Accordion>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="policyGeneratorContent" width="100%" height="100%" label="Policy Generator">
+				<s:Form textAlign="right" width="100%">
+					<s:layout>
+						<s:FormLayout gap="-7"/>
+					</s:layout>
+					<s:FormItem label="Effect:">
+						<s:HGroup textAlign="left">
+							<s:RadioButton id="effectAllow" label="Allow" group="{policyEffect}" selected="true"/>
+							<s:RadioButton id="effectDeny" label="Deny" group="{policyEffect}"/>
+						</s:HGroup>
+					</s:FormItem>
+					<s:FormItem label="Service:">
+						<mx:ComboBox id="serviceSelection" dataProvider="{awsServiceList}" textAlign="left" change="serviceSelection_changeHandler()"/>
+					</s:FormItem>
+					<s:FormItem label="Actions:" width="100%">
+						<s:HGroup width="100%">
+							<s:DataGrid id="actionsList" width="420" minHeight="0" maxHeight="98" dataProvider="{actionsAddList}" textAlign="left">
+								<s:columns>
+									<s:ArrayList id="actionsGridColumns">
+										<s:GridColumn headerText="Add" dataField="add" itemRenderer="com.momentumsi.c9.itemRenderers.IamPolicyGeneratorAdd" width="40"/>
+										<s:GridColumn headerText="Action" dataField="label"/>
+									</s:ArrayList>
+								</s:columns>
+							</s:DataGrid>
+							<s:VGroup>
+								<mx:Text id="selectAllButton" text="Select/Deselect All" color="blue" click="selectAllButton_clickHandler(event)"  useHandCursor="true" buttonMode="true" mouseChildren="false"/>
+								<s:Button id="addStatementButton" label="Add Statement" click="addStatementButton_clickHandler(event)"/>
+							</s:VGroup>
+						</s:HGroup>
+					</s:FormItem>
+					<s:FormItem label="Resource:">
+						<mx:Text text="*"/>
+					</s:FormItem>
+					<s:FormItem label="Statements:" width="100%">
+						<s:HGroup width="100%">
+							<s:DataGrid id="statementList" width="465" minHeight="0" maxHeight="98" dataProvider="{statementAddList}" textAlign="left" variableRowHeight="true" selectionMode="singleRow">
+								<s:columns>
+									<s:ArrayList id="statementGridColumns">
+										<s:GridColumn headerText="Effect" dataField="effect" width="75"/>
+										<s:GridColumn headerText="Action" dataField="actions" itemRenderer="com.momentumsi.c9.itemRenderers.IamPolicyGeneratorActionArray"/>
+										<s:GridColumn headerText="Resource" dataField="resource" width="75"/>
+									</s:ArrayList>
+								</s:columns>
+							</s:DataGrid>
+							<s:Button id="removeStatementButton" label="Remove" click="removeStatementButton_clickHandler(event)"/>
+						</s:HGroup>
+					</s:FormItem>
+				</s:Form>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="policyContent" width="100%" height="100%" label="Policy">
+				<s:VGroup width="100%" height="100%">
+					<mx:Text text="You may customize permissions by editing the policy document below."/>
+					<s:HGroup>
+						<mx:Text text="Policy Name:" fontWeight="bold"/>
+						<s:TextInput id="policyName" width="400"/>
+						<mx:Text id="policyNameAlert" text="Policy Name required." color="red" visible="false"/>
+					</s:HGroup>
+					<s:HGroup>
+						<mx:Text text="Policy Document:" fontWeight="bold"/>
+						<mx:Text id="policyDocumentAlert" text="Policy Document required." color="red" visible="false"/>
+					</s:HGroup>
+					<s:TextArea id="policyDocument" width="100%" height="100%"/>
+				</s:VGroup>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="usersContent" label="Users" width="100%" height="100%">
+				<s:VGroup width="100%" height="100%">
+					<mx:TabNavigator id="usersTabNaviagator" width="100%" height="100%" creationPolicy="all">
+						<s:NavigatorContent id="createNewUserContent" label="Create New Users" width="100%" height="100%">
+							<s:VGroup width="100%" height="100%">
+								<mx:Text text="Enter User Names:" fontWeight="bold"/>
+								<s:HGroup paddingLeft="10">
+									<mx:Text text="1."/>
+									<s:TextInput id="firstNewUser" width="300"/>
+									<mx:Text id="firstNewUserAlert" text="{AlertMessage.NOT_UNIQUE}" color="red" visible="false"/>
+								</s:HGroup>
+								<s:HGroup paddingLeft="10">
+									<mx:Text text="2."/>
+									<s:TextInput id="secondNewUser" width="300"/>
+									<mx:Text id="secondNewUserAlert" text="{AlertMessage.NOT_UNIQUE}" color="red" visible="false"/>
+								</s:HGroup>
+								<s:HGroup paddingLeft="10">
+									<mx:Text text="3."/>
+									<s:TextInput id="thirdNewUser" width="300"/>
+									<mx:Text id="thirdNewUserAlert" text="{AlertMessage.NOT_UNIQUE}" color="red" visible="false"/>
+								</s:HGroup>
+								<s:HGroup paddingLeft="10">
+									<mx:Text text="4."/>
+									<s:TextInput id="fourthNewUser" width="300"/>
+									<mx:Text id="fourthNewUserAlert" text="{AlertMessage.NOT_UNIQUE}" color="red" visible="false"/>
+								</s:HGroup>
+								<s:HGroup paddingLeft="10">
+									<mx:Text text="5."/>
+									<s:TextInput id="fifthNewUser" width="300"/>
+									<mx:Text id="fifthNewUserAlert" text="{AlertMessage.NOT_UNIQUE}" color="red" visible="false"/>
+								</s:HGroup>
+							</s:VGroup>
+						</s:NavigatorContent>
+						<s:NavigatorContent id="addExistingUserContent" 
+											label="Add Existing Users"
+											height="100%">
+							<s:DataGrid id="existingUsersList" width="100%" height="100%" dataProvider="{usersList}" selectionMode="none">
+								<s:columns>
+									<s:ArrayList id="userGridColumns">
+										<s:GridColumn headerText="" dataField="add" itemRenderer="com.momentumsi.c9.itemRenderers.IAMUserAddCheckBox" width="40"/>
+										<s:GridColumn headerText="User Name" labelFunction="usersGrid_labelFunction"/>
+									</s:ArrayList>
+								</s:columns>
+							</s:DataGrid>
+						</s:NavigatorContent>
+					</mx:TabNavigator>
+				</s:VGroup>
+			</s:NavigatorContent>
+			<s:NavigatorContent id="reviewContent" label="Review" width="100%" height="100%">
+				<s:VGroup paddingLeft="20" height="100%" width="100%" paddingTop="10">
+					<mx:Text text="Please Review Your IAM Group" y="20" fontWeight="bold"/>
+					<s:Form>
+						<s:FormItem label="Group Name:">
+							<s:Label text="{groupName.text}"/>
+						</s:FormItem>
+						<s:FormItem label="Description:"
+									visible="{cloudAccount.cloud_provider != CloudAccount.AMAZON}"
+									includeInLayout="{cloudAccount.cloud_provider != CloudAccount.AMAZON}">
+							<s:Label text="{groupDescription.text}"/>
+						</s:FormItem>
+						<s:FormItem label="Permissions:"
+									visible="{cloudAccount.cloud_provider == CloudAccount.AMAZON}"
+									includeInLayout="{cloudAccount.cloud_provider == CloudAccount.AMAZON}">
+							<s:Label text="{policyName.text}"/>
+						</s:FormItem>
+						<s:FormItem label="User Names:">
+							<mx:Text text="{finalUsersString}"/>
+						</s:FormItem>
+					</s:Form>
+				</s:VGroup>
+			</s:NavigatorContent>
+		</mx:ViewStack>
+	</s:VGroup>
+	<s:Button id="previousButton" x="10" y="424" label="Previous" click="previousButton_clickHandler(event)" enabled="{iamWizardViewStack.selectedIndex != 0}"/>
+	<s:Button id="nextButton" x="92" y="424" label="Next" click="nextButton_clickHandler(event)" enabled="{iamWizardViewStack.selectedChild != reviewContent}"/>
+	<s:Button id="submitButton" x="169" y="424" label="Finish" click="submitButton_clickHandler(event)" enabled="{iamWizardViewStack.selectedChild == reviewContent}"/>
+	<s:Button id="cancelButton" x="619" y="424" label="Cancel" click="{PopUpManager.removePopUp(this)}"/>
+</wizard:WizardWindow>

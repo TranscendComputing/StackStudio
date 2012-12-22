@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   close="PopUpManager.removePopUp(this)"
+			   initialize="titlewindow1_initializeHandler(event)"
+			   creationComplete="PopUpManager.centerPopUp(this)"
+			   width="530" height="418" xmlns:components="com.momentumsi.c9.components.*">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.maccherone.json.JSON;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			[Bindable]
+			private var accountId:int;
+			
+			protected function saveButton_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				try
+				{
+					//parentWizard.configurationTemplate = JSON.decode(configurationTemplate.text);
+				}catch(e:Error)
+				{
+					Alert.show("JSON not formed correctly, please correct.");
+					return;
+				}
+				PopUpManager.removePopUp(this);				
+			}
+			
+			protected function titlewindow1_initializeHandler(event:FlexEvent):void
+			{
+				accountId = Helpers.currentAccount(this);
+				getConfigurationOptions.send();
+				var templates:Object = new Object();
+				templates["ConfigurationTemplates"] = [];
+				var template:Object = new Object();
+				template["TemplateName"] = "NewConfiguration";
+				template["Description"] = "Default Config Version 1.0";
+				template["OptionSettings"] = [];
+				var option:Object = new Object();
+				option["Namespace"] = "aws:autoscaling:launchconfiguration";
+				option["OptionName"] = "EC2KeyName";
+				option["Value"] = "c9-test";
+				template["OptionSettings"].push(option);
+				templates["ConfigurationTemplates"].push(template);
+				
+				configurationTemplate.text = JSON.encode(templates, true); 
+				
+			}
+			
+			protected function getConfigurationOptions_resultHandler(event:ResultEvent):void
+			{
+				var result:XMLList = Helpers.xmlChildrenFromEvent(event);
+				var stackOptions:XMLList = result[0].children()[0].children();
+				for each(var option:XML in stackOptions[0].children())
+				{
+					var valueOptions:ArrayCollection = new ArrayCollection();
+					for each(var value:XML in option.child('value-options').children())
+					{
+						valueOptions.addItem({value: value.toString()});
+					}
+					configurationOptions.addItem({
+						name: option.child('name').toString(),						
+						namespace: option.child('namespace').toString(),
+						regexPattern: option.child('regex').child('pattern').toString(),
+						regexLabel: option.child('regex').child('label').toString(),
+						userDefined: option.child('user-defined').toString(),
+						changeSeverity: option.child('change-severity').toString(),
+						defaultValue: option.child('default-value').toString(),
+						valueOptions: valueOptions				
+					});	
+				}
+				configurationsBox.dataProvider = configurationOptions;
+			}
+			
+			protected function getConfigurationOptions_faultHandler(event:FaultEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<s:ArrayCollection id="selectedValues"/>
+		<s:ArrayCollection id="configurationOptions"/>
+		<components:BeanstalkApplicationWizard id="parentWizard"/>
+		<s:HTTPService id="getConfigurationOptions"
+					   url="{Helpers.getHost()}/ec2_accounts/get_beanstalk_configuration_options/{accountId}.xml"
+					   resultFormat="e4x"
+					   method="GET"
+					   showBusyCursor="true"
+					   result="getConfigurationOptions_resultHandler(event)"
+					   fault="getConfigurationOptions_faultHandler(event)"/>
+		
+
+		<s:TextArea id="configurationTemplate" height="100%" width="100%"/>
+	</fx:Declarations>
+	<s:VGroup height="100%" width="100%">
+		<mx:ComboBox id="configurationsBox" labelField="name"/>
+		<s:Form height="100%" width="100%">
+			<s:FormItem label="Value:">
+				<s:HGroup>
+					<s:TextInput text="{configurationsBox.selectedItem.defaultValue}"/>
+					<mx:Text text="{configurationsBox.selectedItem.regexLabel}" visible="{configurationsBox.selectedItem.regexLabel != ''}"/>
+				</s:HGroup>
+			</s:FormItem>
+			<s:FormItem label="Allowed Values:" visible="{configurationsBox.selectedItem.valueOptions.length > 0}">
+				<s:List itemRenderer="com.momentumsi.c9.itemRenderers.ListSelectionDisabler" 
+						fontSize="11" 
+						minWidth="0" 
+						minHeight="0" 
+					    labelField="value"
+						visible="{configurationsBox.selectedItem.valueOptions.length > 0}"
+						dataProvider="{configurationsBox.selectedItem.valueOptions}"/>
+			</s:FormItem>
+		</s:Form>
+		<s:DataGrid id="valuesGrid" dataProvider="{selectedValues}" height="100%" width="100%">
+			<s:columns>
+				<s:ArrayList id="valuesGridColumns">
+					<s:GridColumn headerText="Value" dataField="value" width="175"/>
+				</s:ArrayList>
+			</s:columns>
+		</s:DataGrid>
+
+		<s:HGroup width="100%" horizontalAlign="center">
+			<s:Button label="Save" id="saveButton" click="saveButton_clickHandler(event)"/>
+			<s:Button label="Cancel" click="PopUpManager.removePopUp(this)"/>
+		</s:HGroup>
+	</s:VGroup>
+	
+</s:TitleWindow>

@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group
+	xmlns:fx="http://ns.adobe.com/mxml/2009" 
+	xmlns:s="library://ns.adobe.com/flex/spark" 
+	xmlns:mx="library://ns.adobe.com/flex/mx"
+	xmlns:c9="com.momentumsi.c9.components.*"
+    creationComplete="vbox1_creationCompleteHandler(event)"
+    width="100%"
+    height="100%" xmlns:services="com.momentumsi.c9.services.*">
+
+    <fx:Script>
+		<![CDATA[
+			import com.blitzagency.xray.logger.Log;
+			import com.maccherone.json.JSON;
+			import com.momentumsi.c9.constants.ImagePath;
+			import com.momentumsi.c9.events.AccountCreateEvent;
+			import com.momentumsi.c9.models.User;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import spark.events.TextOperationEvent;
+			[Bindable]
+			private var countriesList:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var uniqueLogin:Boolean = false;
+			[Bindable]
+			private var uniqueEmail:Boolean = false;
+			[Bindable]
+			public var newUser:User;
+			[Bindable]
+			public var countryCodeItem:Object;
+			[Bindable]
+			public var orgUser:User;
+			
+			protected function vbox1_creationCompleteHandler(event:FlexEvent):void
+			{
+				newUser = new User();
+				getCountriesList.getCountries();
+				firstNameTI.setFocus();
+			}
+
+            public function validateAccountFields():Boolean
+            {
+				if(termsAgreement.selected == false)
+				{
+					Alert.show("In order to use our services, you must agree to Transcend's Terms of Service.");
+					return false;
+				}
+				if(uniqueLogin && uniqueEmail && passwordTI.text.length > 4 && confirmPasswordTI.text.length > 4 && countryComboBox.selectedIndex != -1)
+				{
+					if(passwordTI.text != confirmPasswordTI.text)
+					{	
+						Alert.show("The password and confirm password provided do not match.");
+						return false;
+					}
+				}else{
+					Alert.show("Please provide valid input for all required fields.");
+					return false;
+				}
+				return true;
+            }
+						
+			public function createAccountSvc_resultHandler(event:ResultEvent):void
+			{
+				var result:Object = JSON.decode(String(event.result));
+				trace(result["error_message"]);
+				if(result["error_message"] != undefined) {
+					var errorMessage:String = "Error Message:" + result["error_message"] + "   Account created, but transaction failed.";  
+					Alert.show(errorMessage, "Error");
+				}
+				dispatchEvent(new AccountCreateEvent(result));
+				var ownerObj:Object = this.owner;
+				
+				if (ownerObj.loginWindow == "LoginBox"){
+					var loginBox:LoginBox = this.owner as LoginBox;
+					loginBox.usernameTI.text = this.usernameTI.text;
+					loginBox.passwordTI.text = this.passwordTI.text;
+					loginBox.login();				
+				}else{
+					var loginPopUp:LoginPopUp = this.owner as LoginPopUp;
+					loginPopUp.loginBox.usernameTI.text = this.usernameTI.text;
+					loginPopUp.loginBox.passwordTI.text = this.passwordTI.text;
+					loginPopUp.loginBox.login();
+				}
+			}
+			
+			private function createAccountSvc_faultHandler(event:FaultEvent):void
+			{
+				Alert.show('Unable to create new account at this time.  Please try again later or contact your network administrator.');
+			}
+			
+			protected function svcAccountCreate_faultHandler(event:FaultEvent):void
+			{
+				Alert.show('Unable to create new account at this time.  Please try again later or contact your network administrator.');
+			}
+			
+			protected function usernameTI_focusOutHandler(event:FocusEvent):void
+			{
+				if(usernameTI.text.replace(" ", "") != "")
+				{
+					loginUniqueCheck.getAccountDetails(usernameTI.text);
+					loginUniqueBusy.includeInLayout = true;
+					loginUniqueBusy.visible = true;
+					loginUniqueVisual.visible = false;
+					loginUniqueVisual.includeInLayout = false;
+					loginAlert.includeInLayout = false;
+					loginAlert.visible = false;
+				}else
+				{
+					uniqueLogin = false;
+					loginUniqueVisual.source = ImagePath.DISRUPTED_EVENT;
+					loginUniqueVisual.includeInLayout = true;
+					loginUniqueVisual.visible = true;
+					loginAlert.text = "Invalid";
+					loginAlert.includeInLayout = true;
+					loginAlert.visible = true;
+				}
+			}
+			
+			protected function loginUniqueCheck_resultHandler(event:ResultEvent):void
+			{
+				uniqueLogin = false;
+				loginUniqueBusy.visible = false;
+				loginUniqueBusy.includeInLayout = false;
+				loginUniqueVisual.source = ImagePath.DISRUPTED_EVENT;
+				loginUniqueVisual.includeInLayout = true;
+				loginUniqueVisual.visible = true;
+				loginAlert.text = "Not available";
+				loginAlert.includeInLayout = true;
+				loginAlert.visible = true;
+			}
+			
+			protected function loginUniqueCheck_faultHandler(event:FaultEvent):void
+			{
+				uniqueLogin = true;
+				loginUniqueBusy.visible = false;
+				loginUniqueBusy.includeInLayout = false;
+				loginUniqueVisual.source = ImagePath.HEALTHY_EVENT;
+				loginUniqueVisual.includeInLayout = true;
+				loginUniqueVisual.visible = true;
+			}
+			
+			protected function emailTI_focusOutHandler(event:FocusEvent):void
+			{
+				if(emailTI.text.replace(" ", "") != "")
+				{
+					emailUniqueCheck.getAccountDetails(emailTI.text);
+					emailUniqueBusy.includeInLayout = true;
+					emailUniqueBusy.visible = true;
+					emailUniqueVisual.visible = false;
+					emailUniqueVisual.includeInLayout = false;
+					emailAlert.includeInLayout = false;
+					emailAlert.visible = false;
+				}else
+				{
+					uniqueEmail = false;
+					emailUniqueVisual.source = ImagePath.DISRUPTED_EVENT;
+					emailUniqueVisual.includeInLayout = true;
+					emailUniqueVisual.visible = true;
+					emailAlert.text = "Invalid";
+					emailAlert.includeInLayout = true;
+					emailAlert.visible = true;
+				}
+			}
+			
+			protected function emailUniqueCheck_resultHandler(event:ResultEvent):void
+			{
+				uniqueEmail = false;
+				emailUniqueBusy.visible = false;
+				emailUniqueBusy.includeInLayout = false;
+				emailUniqueVisual.source = ImagePath.DISRUPTED_EVENT;
+				emailUniqueVisual.includeInLayout = true;
+				emailUniqueVisual.visible = true;
+				emailAlert.text = "Already used";
+				emailAlert.includeInLayout = true;
+				emailAlert.visible = true;
+			}
+			
+			protected function emailUniqueCheck_faultHandler(event:FaultEvent):void
+			{				
+				uniqueEmail = true;
+				emailUniqueBusy.visible = false;
+				emailUniqueBusy.includeInLayout = false;
+				emailUniqueVisual.source = ImagePath.HEALTHY_EVENT;
+				emailUniqueVisual.includeInLayout = true;
+				emailUniqueVisual.visible = true;
+			}
+			
+			protected function login_changeHandler(event:TextOperationEvent):void
+			{
+				usernameTI.text = firstNameTI.text + lastNameTI.text;
+			}
+			
+			protected function countryComboBox_changeHandler(event:ListEvent):void
+			{
+				newUser.country_code = countryComboBox.selectedLabel;
+			}
+			
+			private function countryComboBox_labelFunction(item:Object):String
+			{
+				return item["country"]["name"];
+			}
+			
+		]]>
+    </fx:Script>
+    <fx:Declarations>
+		<services:IdentityService id="loginUniqueCheck"
+								  result="loginUniqueCheck_resultHandler(event)"
+								  fault="loginUniqueCheck_faultHandler(event)"/>
+		
+	    <services:IdentityService id="emailUniqueCheck"
+								  result="emailUniqueCheck_resultHandler(event)"
+								  fault="emailUniqueCheck_faultHandler(event)"/>
+		
+		<services:IdentityService id="getCountriesList"/>
+		
+	</fx:Declarations>
+    <s:HGroup height="100%" width="100%" gap="-20">
+		<s:Form id="newAccountForm"
+				fontSize="13" fontWeight="bold" 
+				width="100%" height="90%">
+			<s:layout>
+				<s:FormLayout gap="-7"/>
+			</s:layout>
+			<s:FormItem label="First Name:">
+				<s:TextInput tabIndex="1" id="firstNameTI" 
+							 fontWeight="normal" width="180"
+							 text="@{newUser.firstName}"
+							 change="login_changeHandler(event)"
+							 focusOut="usernameTI_focusOutHandler(event)"/>
+			</s:FormItem>
+			<s:FormItem label="Username*:">
+				<s:HGroup>
+					<s:TextInput tabIndex="3"
+								 id="usernameTI"
+								 fontWeight="normal"
+								 text="@{newUser.login}"
+								 width="180" 
+								 focusOut="usernameTI_focusOutHandler(event)"/>
+					<s:BusyIndicator id="loginUniqueBusy" width="15" visible="false" includeInLayout="false"/>
+					<s:Image id="loginUniqueVisual" width="22" height="22" visible="false" includeInLayout="false"/>
+					<mx:Text id="loginAlert" color="red" visible="false" includeInLayout="false"/>
+				</s:HGroup>
+			</s:FormItem>
+			<s:FormItem label="Email Address*:">
+				<s:HGroup>
+					<s:TextInput tabIndex="5"
+								 text="@{newUser.email}"
+								 fontWeight="normal"
+								 id="emailTI" 
+								 width="250" 
+								 focusOut="emailTI_focusOutHandler(event)"/>
+					<s:BusyIndicator id="emailUniqueBusy" width="15" visible="false" includeInLayout="false"/>
+					<s:Image id="emailUniqueVisual" width="22" height="22" visible="false" includeInLayout="false"/>
+					<mx:Text id="emailAlert" color="red" visible="false" includeInLayout="false"/>
+				</s:HGroup>
+			</s:FormItem>
+			<s:FormItem label="Password*:">
+				<s:HGroup>
+					<s:TextInput tabIndex="7"
+								 text="@{newUser.password}"
+								 id="passwordTI" 
+								 fontWeight="normal"
+								 displayAsPassword="true"
+								 width="180"/>
+					<s:Image 
+						width="16" height="16" 
+						source="{ImagePath.HELPER_ICON}"
+						toolTip="Password must be at least 5 characters in length."/>
+				</s:HGroup>
+			</s:FormItem>
+			<s:FormItem label="Confirm Password*:">
+				<s:TextInput tabIndex="9"
+							 text="@{newUser.passwordConfirmation}"
+							 fontWeight="normal"
+							 id="confirmPasswordTI"
+							 displayAsPassword="true" 
+							 width="180"/>
+			</s:FormItem>
+			<s:HGroup id="proEditionSignupHGroup" paddingLeft="15" paddingTop="5" verticalAlign="middle" gap="-5" toolTip="Signup now, or upgrade later in subscription settings.">
+				<s:CheckBox tabIndex="10" id="proEdition" label="Signup for "/>
+				<s:HGroup paddingTop="3">
+					<mx:LinkButton id="proEditionLink" label="Pro Edition" color="blue" useHandCursor="true" click="navigateToURL(new URLRequest('http://www.transcendcomputing.com/stacks/pricing/'), '_blank')" skin="{null}"/>
+				</s:HGroup>				
+			</s:HGroup>
+			<s:HGroup paddingLeft="15" paddingTop="5" verticalAlign="middle" gap="-5">
+				<s:CheckBox tabIndex="11" id="termsAgreement" 
+							label="I agree to the Transcend" 
+							change="{newUser.termsOfService = termsAgreement.selected}"/>
+				<s:HGroup paddingTop="3">
+					<mx:LinkButton id="termsOfService" label="Terms of Service" color="blue" useHandCursor="true" click="navigateToURL(new URLRequest('http://www.transcendcomputing.com/terms-of-service'), '_blank')" skin="{null}"/>
+				</s:HGroup>				
+			</s:HGroup>
+		</s:Form>
+		<s:Form fontSize="13" fontWeight="bold" height="100%">
+			<s:layout>
+				<s:FormLayout gap="-7"/>
+			</s:layout>
+			<s:FormItem label="Last Name:">
+				<s:TextInput tabIndex="2" id="lastNameTI"
+							 fontWeight="normal"
+							 text="@{newUser.lastName}"
+							 width="180" 
+							 change="login_changeHandler(event)" 
+							 focusOut="usernameTI_focusOutHandler(event)"/>
+			</s:FormItem>
+			<s:FormItem label="Country*:">
+				<s:HGroup>
+					<mx:ComboBox tabIndex="4" 
+								 id="countryComboBox"
+								 width="180" 
+								 dataProvider="{getCountriesList.countries}"
+								 labelFunction="countryComboBox_labelFunction"
+								 prompt="Select Country"
+								 change="countryComboBox_changeHandler(event)"/>
+				</s:HGroup>
+			</s:FormItem>
+			<s:FormItem label="Company:" visible="{orgUser==null}" includeInLayout="{orgUser==null}">
+				<s:TextInput tabIndex="6" id="company"
+							 text="@{newUser.company}"
+							 fontWeight="normal" 
+							 width="180"/>
+			</s:FormItem>
+			<s:FormItem label="Admin:" visible="{orgUser!=null}" includeInLayout="{orgUser!=null}">
+				<s:CheckBox id="adminCheck"/>
+			</s:FormItem>
+
+		</s:Form>
+		<!--
+		<s:HGroup width="100%" horizontalAlign="center">
+			<s:Button id="createAccountButton" label="Create Account" click="createAccount()"/>
+			<s:Button label="Cancel" click="PopUpManager.removePopUp(this)"/>
+		</s:HGroup>
+		-->
+	</s:HGroup>
+</s:Group>

@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   title="Attach Volume"
+			   close="PopUpManager.removePopUp(this)"
+			   creationComplete="creationCompleteHandler(event)"
+			   move="Helpers.doMove(this)"
+			   width="507" height="278" xmlns:services="com.momentumsi.c9.services.*">
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.serialization.json.JSON;
+			import com.momentumsi.c9.components.MainBox;
+			import com.momentumsi.c9.constants.AlertMessage;
+			import com.momentumsi.c9.models.CloudAccount;
+			import com.momentumsi.c9.representers.BlockStorageRepresenter;
+			import com.momentumsi.c9.representers.ComputeRepresenter;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import spark.events.IndexChangeEvent;
+			
+			[Bindable]
+			public var ebsData:BlockStorageRepresenter;
+			[Bindable]
+			public var cloudAccount:CloudAccount;
+			[Bindable]
+			public var region:String;
+			[Bindable]
+			private var instanceList:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var isCloudStack:Boolean = false;
+			[Bindable]
+			private var cloudStackDevices:ArrayCollection = new ArrayCollection([{id: 1, label: "/dev/xvdb"},
+																				{id: 2, label: "/dev/xvdc"},
+																				{id: 4, label: "/dev/xvde"},
+																				{id: 5, label: "/dev/xvdf"},
+																				{id: 6, label: "/dev/xvdg"},
+																				{id: 7, label: "/dev/xvdh"},
+																				{id: 8, label: "/dev/xvdi"},
+																				{id: 9, label: "/dev/xvdj"}]);
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				PopUpManager.centerPopUp(this);
+				instances.prompt = "Loading Instances";
+				if(cloudAccount.cloud_provider == CloudAccount.CLOUDSTACK)
+				{
+					isCloudStack = true;
+					getInstancesInZoneSvc.send({availability_zone: ebsData.zoneId})
+				}else
+				{
+					isCloudStack = false;
+					getInstancesInZoneSvc.send({availability_zone: ebsData.availabilityZone});
+				}
+				
+				if(cloudAccount.cloud_provider == CloudAccount.OPENSTACK)
+				{
+					deviceExample.text = "example: /dev/vdb";
+				}
+			}
+			
+			protected function attachButton_clickHandler(event:MouseEvent):void
+			{
+				if(isCloudStack)
+				{
+					if(deviceComboBox.selectedIndex != -1)
+					{
+						submitButton.enabled = false;
+						attachVolumeSvc.send({instance_id: ComputeRepresenter(instances.selectedItem).id, volume_id: ebsData.id, device: deviceComboBox.selectedItem.id})
+					}
+				}else
+				{
+					if(device.text.replace(" ", "") != "")
+					{
+						submitButton.enabled = false;
+						attachVolumeSvc.send({instance_id: ComputeRepresenter(instances.selectedItem).id, volume_id: ebsData.id, device: device.text})
+					}
+				}
+			}
+			
+			protected function getInstancesInZoneSvc_resultHandler(event:ResultEvent):void
+			{				
+				instanceList.removeAll();
+				var resultColl:ArrayCollection = new ArrayCollection(getInstancesInZoneSvc.result as Array); 
+				for each(var item:Object in resultColl)
+				{
+					instanceList.addItem(new ComputeRepresenter(item));
+				}
+				
+				if(instanceList.length > 0)
+				{
+					instances.prompt = "Select Instance";
+				}else
+				{
+					instances.prompt = "No Instances";
+				}
+			}
+			
+			protected function getInstancesInZoneSvc_faultHandler(event:FaultEvent):void
+			{
+				instances.prompt = "No Instances";
+			}
+			
+			protected function attachVolumeSvc_resultHandler(event:ResultEvent):void
+			{
+				Helpers.getObjectManagement(this).refreshResourceList();
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function attachVolumeSvc_faultHandler(event:FaultEvent):void
+			{
+				if(event.statusCode == 400 && event.fault.content.toString() == "")
+				{
+					Alert.show(AlertMessage.INVALID_DEVICE, AlertMessage.API_ERROR);
+				}else{
+					var error:Object = JSON.decode(event.fault.content.toString());
+					Alert.show(error.errors[0][1], error.errors[0][0]);
+				}
+				submitButton.enabled = true;
+			}
+			
+			private function instanceList_labelFunction(item:ComputeRepresenter):String
+			{
+				if(item.name == null || item.name == "")
+				{
+					return "(" + item.publicIpAddress + ")";
+				}else{
+					return item.name;
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<services:CloudApiService id="getInstancesInZoneSvc"
+								  action="describe_instances_by_zone"
+								  cloudAccountId="{cloudAccount.id}"
+								  region="{region}"
+								  serviceType="EC2"
+								  result="getInstancesInZoneSvc_resultHandler(event)"
+								  fault="getInstancesInZoneSvc_faultHandler(event)"/>
+		
+		<services:CloudApiService id="attachVolumeSvc"
+								  action="attach_volume"
+								  cloudAccountId="{cloudAccount.id}"
+								  region="{region}"
+								  serviceType="EC2"
+								  result="attachVolumeSvc_resultHandler(event)"
+								  fault="attachVolumeSvc_faultHandler(event)"/>
+	</fx:Declarations>
+	<s:VGroup height="100%" width="100%">
+		<s:Form>
+			<s:FormItem label="Volume:">
+				<mx:Text text="{ebsData.id} in {ebsData.availabilityZone}" width="300"/>
+			</s:FormItem>
+			<s:FormItem label="Instance*:">
+				<s:HGroup>
+					<s:DropDownList id="instances" width="252" dataProvider="{instanceList}"
+									labelFunction="instanceList_labelFunction"/>
+				</s:HGroup>
+			</s:FormItem>
+			<s:FormItem label="Device*: ">
+				<s:HGroup visible="{!isCloudStack}" includeInLayout="{!isCloudStack}">
+					<s:TextInput id="device" width="155"/>
+					<s:Label id="deviceExample"
+							 text="example: /dev/sdh"/>
+				</s:HGroup>
+				<s:HGroup visible="{isCloudStack}" includeInLayout="{isCloudStack}">
+					<s:DropDownList id="deviceComboBox" width="155"
+									dataProvider="{cloudStackDevices}" selectedIndex="0"/>
+				</s:HGroup>
+				<mx:Text id="deviceAlert" color="red" text="Invalid Input." visible="false"/>
+			</s:FormItem>
+		</s:Form>
+		<s:HGroup width="100%"
+				  horizontalAlign="center">
+			<s:Button id="submitButton"
+					  label="Attach" 
+					  click="attachButton_clickHandler(event)"
+					  enabled="{instances.selectedIndex != -1}"/>
+			<s:Button label="Cancel" click="PopUpManager.removePopUp(this)"/>
+		</s:HGroup>
+	</s:VGroup>
+</s:TitleWindow>

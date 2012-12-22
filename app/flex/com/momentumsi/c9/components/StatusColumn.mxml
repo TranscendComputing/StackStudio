@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:GridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					xmlns:s="library://ns.adobe.com/flex/spark" 
+					xmlns:mx="library://ns.adobe.com/flex/mx">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.constants.ImagePath;			
+			
+			override public function set data(value:Object):void
+			{
+				if(value)
+				{
+					var state:String;
+					if(value.state != null)
+					{
+						state = value.state;
+					}else if(value.status != null)
+					{
+						state = value.status;
+					}else if(value.StateValue != null)
+					{
+						state = value.StateValue;
+					}
+					if(state == null)
+					{
+						return;
+					}
+					
+					state = state.toLowerCase();
+					switch (state)
+					{
+						case "running":
+						case "in-use":
+						case "ok":
+						case "enabled":
+						case "active":
+						case "ready":
+							statusImage.source = ImagePath.STATUS_RUNNING;
+							break;
+						case "terminated":
+						case "deleted":
+						case "error":
+						case "alarm":
+						case "disabled":
+						case "shutoff":
+						case "destroyed":
+						case "cancelled":
+							statusImage.source = ImagePath.STATUS_TERMINATED;
+							break;
+						case "launching":
+						case "backingup":
+						case "shutting-down":
+						case "creating":
+						case "deleting":
+						case "insufficient_data":
+						case "open":
+							statusImage.source = ImagePath.STATUS_CHANGING;
+							break;
+						case "not running":
+							statusImage.source = ImagePath.STATUS_IDLE;
+							break;
+						case "available":
+						case "allocated":
+							if(value.hasOwnProperty('engine'))
+							{
+								statusImage.source = ImagePath.STATUS_RUNNING;
+							}else
+							{
+								statusImage.source = ImagePath.STATUS_IDLE;
+							}
+							break;
+						default:
+							statusImage.source = ImagePath.STATUS_CHANGING;
+							break;
+					}
+					statusText.text = state;
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<s:HGroup width="100%" height="100%" verticalAlign="middle" paddingLeft="5">
+		<s:Image id="statusImage" width="16" height="16"/>
+		<s:Label id="statusText" paddingTop="4"/>
+	</s:HGroup>
+	
+</s:GridItemRenderer>

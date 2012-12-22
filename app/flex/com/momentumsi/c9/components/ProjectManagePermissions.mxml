@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 title="Manage Project Permissions"
+		 close="PopUpManager.removePopUp(this)"
+		 move="Helpers.doMove(this)"
+		 creationComplete="creationCompleteHandler(event)"
+		 width="800" height="500">
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.constants.PermissionType;
+			import com.momentumsi.c9.models.GroupProject;
+			import com.momentumsi.c9.models.Member;
+			import com.momentumsi.c9.models.Project;
+			import com.momentumsi.c9.models.User;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.controls.Alert;
+			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
+			[Bindable]
+			public var user:User;
+			[Bindable]
+			public var project:Project;
+			[Bindable]
+			public var projectUsersCollection:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public var projectGroupsCollection:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public var devRoleArray:Array = new Array("None","Author","Provision","Monitor","Full");
+			[Bindable]
+			public var regularRoleArray:Array = new Array("None","Provision","Monitor","Full");
+			private var envArray:Array = new Array(PermissionType.DEVELOPMENT, PermissionType.TEST, PermissionType.STAGE, PermissionType.PRODUCTION);
+			
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				PopUpManager.centerPopUp(this);
+				refreshProjectUsersCollection();
+				refreshProjectGroupsCollection();
+			}
+			
+			protected function refreshProjectUsersCollection():void
+			{
+				if(project != null && project.members!= null)
+				{
+					var currentMember:Member = project.findUserAsMember(user.id);
+					projectUsersCollection.removeAll();
+					for each(var member:Member in project.members)
+					{
+						var m:Object = new Object();
+						m.member = member;
+						m.project = project;
+						m.devCollection = devRoleArray;
+						m.testCollection = regularRoleArray;
+						m.stageCollection = regularRoleArray;
+						m.prodCollection = regularRoleArray;
+						m.projectManagePermissions = this;
+						for each(var e:String in envArray)
+						{
+							if(member != null)
+							{
+								if(member.hasPermission(PermissionType.EDIT_SOURCE, e) && member.hasPermission(PermissionType.CREATE_STACK, e))
+								{
+									setComboBoxSelection(e, "Full", m);
+								}else if(member.hasPermission(PermissionType.EDIT_SOURCE, e))
+								{
+									setComboBoxSelection(e, "Author", m);
+								}else if(member.hasPermission(PermissionType.CREATE_STACK, e))
+								{
+									setComboBoxSelection(e, "Provision", m);
+								}else if(member.hasPermission(PermissionType.MONITOR, e))
+								{
+									setComboBoxSelection(e, "Monitor", m);
+								}
+							}
+						}
+						
+						if(currentMember != null && currentMember.account.id == member.account.id)
+						{
+							m.enabled = false;
+						}else
+						{
+							m.enabled = true;
+						}
+						
+						projectUsersCollection.addItem(m);
+					}
+				}
+			}
+			
+			protected function refreshProjectGroupsCollection():void
+			{
+				if(project != null && project.group_projects!= null)
+				{
+					projectGroupsCollection.removeAll();
+					for each(var gp:GroupProject in project.group_projects)
+					{
+						var g:Object = new Object();
+						g.groupProject = gp;
+						g.project = project;
+						g.devCollection = devRoleArray;
+						g.testCollection = regularRoleArray;
+						g.stageCollection = regularRoleArray;
+						g.prodCollection = regularRoleArray;
+						g.projectManagePermissions = this;
+						for each(var e:String in envArray)
+						{
+							if(gp != null)
+							{
+								if(gp.hasPermission(PermissionType.EDIT_SOURCE, e) && gp.hasPermission(PermissionType.CREATE_STACK, e))
+								{
+									setComboBoxSelection(e, "Full", g);
+								}else if(gp.hasPermission(PermissionType.EDIT_SOURCE, e))
+								{
+									setComboBoxSelection(e, "Author", g);
+								}else if(gp.hasPermission(PermissionType.CREATE_STACK, e))
+								{
+									setComboBoxSelection(e, "Provision", g);
+								}else if(gp.hasPermission(PermissionType.MONITOR, e))
+								{
+									setComboBoxSelection(e, "Monitor", g);
+								}
+							}
+						}
+						g.enabled = true;
+						
+						projectGroupsCollection.addItem(g);
+					}
+				}
+			}
+			
+			protected function setComboBoxSelection(env:String, selection:String, item:Object):void
+			{
+				switch(env)
+				{
+					case PermissionType.DEVELOPMENT:
+						item.devSelection = selection;
+						break;
+					case PermissionType.TEST:
+						item.testSelection = selection;
+						break;
+					case PermissionType.STAGE:
+						item.stageSelection = selection;
+						break;
+					case PermissionType.PRODUCTION:
+						item.prodSelection = selection;
+						break;
+				}
+			}
+			
+			protected function manageUsers_clickHandler(event:MouseEvent):void
+			{
+				var manageUsersPopUp:ProjectManageUsers = new ProjectManageUsers();
+				manageUsersPopUp.user = user;
+				manageUsersPopUp.project = project;
+			 	manageUsersPopUp.addEventListener("usersSet", usersSet_eventHandler);
+				PopUpManager.addPopUp(manageUsersPopUp, UIComponent(parentApplication), true);
+			}
+			
+			protected function usersSet_eventHandler(event:Event=null):void
+			{
+				refreshProjectUsersCollection();
+			}
+			
+			protected function manageGroups_clickHandler(event:MouseEvent):void
+			{
+				var manageGroupsPopUp:ProjectManageGroups = new ProjectManageGroups();
+				manageGroupsPopUp.user = user;
+				manageGroupsPopUp.project = project;
+				manageGroupsPopUp.addEventListener("groupsSet", groupsSet_eventHandler);
+				PopUpManager.addPopUp(manageGroupsPopUp, UIComponent(parentApplication), true);
+			}
+			
+			protected function groupsSet_eventHandler(event:Event=null):void
+			{
+				refreshProjectGroupsCollection();
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<s:VGroup width="100%" height="90%" paddingTop="10" paddingLeft="20" paddingRight="20">
+		<s:HGroup width="100%" gap="50">
+			<s:HGroup height="100%" verticalAlign="bottom">
+				<s:Button id="manageUsers" label="Manage Users" click="manageUsers_clickHandler(event)"/>
+			</s:HGroup>
+			<s:HGroup>
+				<s:VGroup>
+					<s:HGroup>
+						<mx:Text text="Full:" fontWeight="bold"/>
+						<mx:Text text="Author, Provision, and Monitor"/>
+					</s:HGroup>
+					<s:HGroup>
+						<mx:Text text="Author:" fontWeight="bold"/>
+						<mx:Text text="Edit template only"/>
+					</s:HGroup>
+				</s:VGroup>
+				<s:VGroup>
+					<s:HGroup>
+						<mx:Text text="Provision:" fontWeight="bold"/>
+						<mx:Text text="Launch template only"/>
+					</s:HGroup>
+					<s:HGroup>
+						<mx:Text text="Monitor:" fontWeight="bold"/>
+						<mx:Text text="Monitor run time only"/>
+					</s:HGroup>
+				</s:VGroup>
+			</s:HGroup>
+		</s:HGroup>
+		<s:DataGrid id="projectUsersDataGrid" width="100%" height="40%" dataProvider="{projectUsersCollection}" resizableColumns="false">
+			<s:columns>
+				<s:ArrayCollection id="userGridColumns">
+					<s:GridColumn headerText="User" width="200" dataField="member.account.login"/>
+					<s:GridColumn headerText="Dev" width="138" itemRenderer="com.momentumsi.c9.itemRenderers.DevRoleComboBox"/>
+					<s:GridColumn headerText="Test" width="138" itemRenderer="com.momentumsi.c9.itemRenderers.TestRoleComboBox"/>
+					<s:GridColumn headerText="Stage" width="139" itemRenderer="com.momentumsi.c9.itemRenderers.StageRoleComboBox"/>
+					<s:GridColumn headerText="Prod" width="139" itemRenderer="com.momentumsi.c9.itemRenderers.ProdRoleComboBox"/>
+				</s:ArrayCollection>
+			</s:columns>
+		</s:DataGrid>
+		<s:Button id="manageGroups" label="Manage Groups" click="manageGroups_clickHandler(event)"/>
+		<s:DataGrid id="projectGroupsDataGrid" width="100%" height="40%" dataProvider="{projectGroupsCollection}" resizableColumns="false">
+			<s:columns>
+				<s:ArrayCollection id="groupGridColumns">
+					<s:GridColumn headerText="Group" width="200" dataField="groupProject.group.name"/>
+					<s:GridColumn headerText="Dev" width="138" itemRenderer="com.momentumsi.c9.itemRenderers.GroupDevRoleComboBox"/>
+					<s:GridColumn headerText="Test" width="138" itemRenderer="com.momentumsi.c9.itemRenderers.GroupTestRoleComboBox"/>
+					<s:GridColumn headerText="Stage" width="139" itemRenderer="com.momentumsi.c9.itemRenderers.GroupStageRoleComboBox"/>
+					<s:GridColumn headerText="Prod" width="139" itemRenderer="com.momentumsi.c9.itemRenderers.GroupProdRoleComboBox"/>
+				</s:ArrayCollection>
+			</s:columns>
+		</s:DataGrid>
+	</s:VGroup>
+	<s:Button id="closeButton" x="365" y="436" label="Close"
+			  click="PopUpManager.removePopUp(this)"/>
+</s:TitleWindow>

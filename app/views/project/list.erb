@@ -1,0 +1,48 @@
+<div class="project">
+	<h1>Projects</h1>
+
+	<div class="accordion">
+		<h3>My Projects</h3>
+		<div>
+			<!--% @projects.each_with_index do |project, indx| % -->
+		
+		  	<div id="project0"> <!--%=indx%-->
+		  		<a href="#" class="projlink" name="Project0">Project 0</a>
+			</div>
+		
+		  	<div id="project1"> <!--%=indx%-->
+		  		<a href="#" class="projlink" name="Project1">Project 1</a>
+			</div>
+			
+            <div id="project2"> <!--%=indx%-->
+                <a href="#" id="new_project_link" class="projlink" name="Wordpress">Wordpress</a>
+            </div>			
+			<!--% end %-->
+		</div>
+		
+		<h3>Shared Projects</h3>
+		<div>
+			<!--% @projects.each_with_index do |project, indx| % -->
+		
+		  	<div id="Projects0"> <!--%=indx%-->
+		  		<a href="#" class="projlink">Shared Project 0</a>
+			</div>
+		
+		  	<div id="Projects1"> <!--%=indx%-->
+		  		<a href="#" class="projlink">Shared Project 1</a>
+			</div>
+			<!--% end %-->
+		</div>
+		
+		<h3>New Project</h3>
+		<div>
+			<!--% @projects.each_with_index do |project, indx| % -->
+		
+		  	<div id="NewProject"> <!--%=indx%-->
+		  		<a href="#" class="newprojlink">New Project</a>
+			</div>
+			<!--% end %-->
+		</div>
+	</div>
+</div>
+

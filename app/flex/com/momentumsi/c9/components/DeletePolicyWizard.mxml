@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   close="PopUpManager.removePopUp(this)"
+			   creationComplete="creationCompleteHandler(event)"
+			   move="Helpers.doMove(this)"
+			   title="Delete Policy Wizard"
+			   width="600" height="450">
+	<fx:Metadata>
+		[Event(name="update", type="com.momentumsi.c9.events.DeletionPolicyUpdateEvent")]
+	</fx:Metadata>
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.constants.ResourceType;
+			import com.momentumsi.c9.utils.Helpers;
+			import com.momentumsi.c9.events.DeletionPolicyUpdateEvent;
+			import com.momentumsi.c9.models.Element;
+			import com.momentumsi.c9.models.ProjectVersion;
+			
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
+			[Bindable]
+			private var resourcesCollection:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var normalDeleteOptions:ArrayCollection = new ArrayCollection([{label: "Delete"},
+																			{label: "Retain"}]);
+			[Bindable]
+			private var snapshotDeleteOptions:ArrayCollection = new ArrayCollection([{label: "Delete"},
+																			{label: "Retain"},
+																			{label: "Snapshot"}]);
+			[Bindable]
+			public var projectVersion:ProjectVersion;
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				PopUpManager.centerPopUp(this);
+				var resource:Element;
+				var properties:Object;
+				var templateResources:ArrayCollection = projectVersion.elements;
+				resourcesCollection.removeAll();
+				try
+				{
+					for each(resource in templateResources)
+					{	
+						if(resource.elementGroup == Element.ELEMENT_GROUP_RESOURCE)
+						{
+							properties = resource.properties;
+							var deletionPolicyString:String = "Delete";
+							if(properties.hasOwnProperty('DeletionPolicy'))
+							{
+								deletionPolicyString = properties['DeletionPolicy'];
+							}
+							
+							if(properties['Type'] == ResourceType.DB_INSTANCE || properties['Type'] == ResourceType.EBS_VOLUME)
+							{
+								resourcesCollection.addItem({name: resource.name, type: properties['Type'], deletePolicy: deletionPolicyString, collection: snapshotDeleteOptions});
+							}else
+							{
+								resourcesCollection.addItem({name: resource.name, type: properties['Type'], deletePolicy: deletionPolicyString, collection: normalDeleteOptions});
+							}
+						}
+					}
+				}catch(error:Error)
+				{
+					trace(error.message);
+				}
+			}
+			
+			protected function submitButton_clickHandler(event:MouseEvent):void
+			{
+				submitButton.enabled = false;
+				submitButton.label = "Saving";
+				
+				var element:Element;
+				var index:int;
+				for each(var item:* in resourcesCollection)
+				{
+					element = projectVersion.getElementByName(item.name);
+					index = projectVersion.elements.getItemIndex(element);
+					if(item.deletePolicy == "Delete")
+					{
+						if(element.properties.hasOwnProperty('DeletionPolicy'))
+						{
+							delete element.properties['DeletionPolicy'];
+						}
+					}else
+					{
+						element.properties['DeletionPolicy'] = item.deletePolicy;
+					}
+					projectVersion.elements.setItemAt(element, index); 
+				}
+				dispatchEvent(new DeletionPolicyUpdateEvent(projectVersion.elements));
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function cancelButton_clickHandler(event:MouseEvent):void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<s:VGroup width="100%" height="88%" paddingTop="10" paddingLeft="20" paddingRight="20">
+		<mx:Text width="100%" text="The deletion policy will determine how to handle each resource upon the deletion of the stack. The default is delete, but you may decide to retain resources. Database and volume resources have the option to take a snapshot before their deletion."/>
+		<s:DataGrid id="resourceList" width="100%" minHeight="0" maxHeight="292" dataProvider="{resourcesCollection}">
+			<s:columns>
+				<s:ArrayList id="resourceGridColumns">
+					<s:GridColumn headerText="Deletion Policy" dataField="deletePolicy" itemRenderer="com.momentumsi.c9.itemRenderers.DeletionPolicyComboBox" width="120"/>
+					<s:GridColumn headerText="Resource Name" dataField="name"/>
+					<s:GridColumn headerText="Resource Type" dataField="type"/>
+				</s:ArrayList>
+			</s:columns>
+		</s:DataGrid>
+	</s:VGroup>
+	<s:Button id="submitButton" x="226" y="386" label="Save" click="submitButton_clickHandler(event)"/>
+	<s:Button id="cancelButton" x="303" y="386" label="Cancel" click="cancelButton_clickHandler(event)"/>
+</s:TitleWindow>

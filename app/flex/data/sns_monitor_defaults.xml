@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cloud-monitor-defaults type="array">
+  <cloud-monitor-default>
+    <monitor-description>snsDefault</monitor-description>
+    <monitor-metric-name>NumberOfMessagesPublished</monitor-metric-name>
+    <monitor-period type="integer">300</monitor-period>
+    <monitor-statistic-name>Average</monitor-statistic-name>
+    <monitor-unit>Count</monitor-unit>
+  </cloud-monitor-default>
+  <cloud-monitor-default>
+    <monitor-description>snsDefault</monitor-description>
+    <monitor-metric-name>NumberOfNotificationsDelivered</monitor-metric-name>
+    <monitor-period type="integer">300</monitor-period>
+    <monitor-statistic-name>Average</monitor-statistic-name>
+    <monitor-unit>Count</monitor-unit>
+  </cloud-monitor-default>
+  <cloud-monitor-default>
+    <monitor-description>snsDefault</monitor-description>
+    <monitor-metric-name>NumberOfNotificationsFailed</monitor-metric-name>
+    <monitor-period type="integer">300</monitor-period>
+    <monitor-statistic-name>Average</monitor-statistic-name>
+    <monitor-unit>Count</monitor-unit>
+  </cloud-monitor-default>
+  <cloud-monitor-default>
+    <monitor-description>snsDefault</monitor-description>
+    <monitor-metric-name>PublishSize</monitor-metric-name>
+    <monitor-period type="integer">300</monitor-period>
+    <monitor-statistic-name>Average</monitor-statistic-name>
+    <monitor-unit>Bytes</monitor-unit>
+  </cloud-monitor-default>
+</cloud-monitor-defaults>

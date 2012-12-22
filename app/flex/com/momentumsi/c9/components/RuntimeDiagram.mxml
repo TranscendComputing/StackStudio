@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="utf-8"?>
+<diagrammer:Diagrammer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   xmlns:diagrammer="fr.kapit.diagrammer.*" layout="balloon"
+					   initialize="runtimeDiagrammer_initializeHandler(event)"
+					   nodeRendererFunction="{customNodeRendererFunction}"
+					   nodeTooltipRendererFunction="{customNodeTooltipRendererFunction}"
+					   nodeRendererDataSource="null"
+					   nodeExpandPolicy="fixNode"
+					   groupLabelField="label"
+					   enablePan="false"
+					   enableLinkControllerCreation="false"
+					   enableZoomOnMouseWheel="false"
+					   enableAutofitOnLayout="false"
+					   creationComplete="diagrammer1_creationCompleteHandler(event)"
+					   xmlns:services="com.momentumsi.c9.services.*">
+	
+	<fx:Metadata>
+		[Event(
+		name="nodeChange",
+		type="com.momentumsi.c9.events.NodeSelectionChangeEvent")]
+	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.constants.ImagePath;
+			import com.momentumsi.c9.constants.ResourceType;
+			import com.momentumsi.c9.events.NodeSelectionChangeEvent;
+			import com.momentumsi.c9.events.cloudFromation.DescribeStackEventsResultEvent;
+			import com.momentumsi.c9.events.provisionedVersion.UpdateProvisionedInstanceResultEvent;
+			import com.momentumsi.c9.itemRenderers.CustomNodeRenderer;
+			import com.momentumsi.c9.itemRenderers.InstallsNodeRenderer;
+			import com.momentumsi.c9.itemRenderers.NodeTooltipRenderer;
+			import com.momentumsi.c9.models.DiagramNode;
+			import com.momentumsi.c9.models.ProvisionedInstance;
+			import com.momentumsi.c9.models.ProvisionedVersion;
+			import com.momentumsi.c9.representers.CloudFormationStackEventRepresenter;
+			import com.momentumsi.c9.services.CloudApiService;
+			import com.momentumsi.c9.services.CloudFormationService;
+			
+			import fr.kapit.diagrammer.base.sprite.DiagramLink;
+			import fr.kapit.diagrammer.base.uicomponent.DiagramSprite;
+			import fr.kapit.visualizer.events.VisualizerEvent;
+			import fr.kapit.visualizer.renderers.IRenderer;
+			import fr.kapit.visualizer.styles.LinkStyle;
+			
+			import mx.collections.ArrayCollection;
+			import mx.core.BitmapAsset;
+			import mx.events.FlexEvent;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			private var stackComplete:Boolean;
+			
+			public var selectedNode:ProvisionedInstance;
+			public var provisionedInstances:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public var cloudAccountId:String;
+			[Bindable]
+			public var region:String;
+			public var stackName:String;
+			public var provisionedVersion:ProvisionedVersion;
+			[Bindable]
+			public var cfnService:CloudFormationService;
+			
+			//Used for tracking nodes currently being updated
+			private var currentUpdatingNodes:ArrayCollection = new ArrayCollection();
+			
+			public function addCollectionOfResources(resources:ArrayCollection):void
+			{	
+				var nodeLinkCollection:ArrayCollection = new ArrayCollection();
+				var instance:ProvisionedInstance;
+				//var nodeElement:Element;
+				var diagramNode:DiagramSprite;
+				for each(instance in resources)
+				{
+					if(provisionedInstances.getItemIndex(instance) == -1)
+					{
+						diagramNode = addNodeElement(instance, null, null, instance.coordinates) as DiagramSprite;
+						diagramNode.isSizeFixed = true;
+						if(instance.type == ResourceType.AS_GROUP  || instance.type ==ResourceType.CACHE_CLUSTER)
+						{
+							drawLinks(diagramNode);
+						}
+					}
+				}
+				provisionedInstances = resources;
+			}
+			
+			private function drawLinks(diagramNode:DiagramSprite):void
+			{
+				var data:ProvisionedInstance = diagramNode.data as ProvisionedInstance;
+				if(data.properties == null)
+				{
+					return;
+				}
+			
+				var newNode:DiagramSprite;
+				var index:int = 0;
+				if(data.type == ResourceType.AS_GROUP)
+				{
+					if(data.properties["max_size"] == null)
+					{
+						index = data.properties["MaxSize"];
+					}else{
+						index  = data.properties["max_size"];
+					}
+					for(index; index > 0; index--)
+					{
+						newNode = addNodeElement(new ProvisionedInstance(ResourceType.EC2_INSTANCE, null, null, new Object()), null, null, new Point(diagramNode.x + 20, diagramNode.y + 20)) as DiagramSprite;
+						newNode.isSizeFixed = true;
+						addLinkElement(null, diagramNode, newNode);
+					}
+				}else if(data.type == ResourceType.CACHE_CLUSTER)
+				{
+					if(data.properties["NumCacheNodes"] == null)
+					{
+						index = data.properties["NumCacheNodes"];
+					}else{
+						index  = data.properties["NumCacheNodes"];
+					}
+					for(index; index > 0; index--)
+					{
+						newNode = addNodeElement(new ProvisionedInstance(ResourceType.CACHE_NODE, null, null, new Object()), null, null, new Point(diagramNode.x + 20, diagramNode.y + 20)) as DiagramSprite;
+						newNode.isSizeFixed = true;
+						addLinkElement(null, diagramNode, newNode);
+					}
+				}
+			}
+			
+			protected function runtimeDiagrammer_initializeHandler(event:FlexEvent):void
+			{
+				addEventListener(KeyboardEvent.KEY_DOWN, haultDeleteNode);
+				addEventListener(VisualizerEvent.ELEMENT_CLICKED, setSelectedNode);
+				addEventListener(VisualizerEvent.ELEMENTS_CREATED, linkStyle_handler);
+			}
+
+			private function linkStyle_handler(event:VisualizerEvent):void
+			{
+				if(event.items[0] is DiagramSprite)
+				{
+					return
+				}
+				var link:DiagramLink = event.items[0];
+				link.arrowTargetType = LinkStyle.LINK_ARROW_ARROW_TYPE;
+				link.arrowSourceType = LinkStyle.LINK_ARROW_ARROW_TYPE;
+				link.arrowRadius = 10;
+				link.arrowWidth = 15;
+				link.thickness = 3;
+				link.lineColor = 0x000000;
+				link.linkLine = 4;
+				link.enableControllerCreation = false;
+			}
+			
+			private function setSelectedNode(event:VisualizerEvent):void
+			{
+				if(event.items[0] is DiagramSprite)
+				{
+					selectedNode = ProvisionedInstance(DiagramSprite(event.items[0]).data);
+					dispatchEvent(new NodeSelectionChangeEvent(selectedNode));
+				}
+			}
+			
+			private function haultDeleteNode(event:KeyboardEvent):void
+			{
+				if(event.keyCode == Keyboard.DELETE || event.keyCode == Keyboard.BACKSPACE)
+				{
+					event.stopImmediatePropagation();
+				}
+			}
+			
+			public function customNodeRendererFunction(data:Object):IRenderer
+			{
+				var resource:ProvisionedInstance = ProvisionedInstance(data);
+				var renderer:CustomNodeRenderer = new CustomNodeRenderer();
+				var state:String;
+				state = resource.status;
+				var imgSrc:String;
+				
+				switch(state)
+				{
+					case ProvisionedInstance.RUNNING:
+					case ProvisionedInstance.AVAILABLE:
+						imgSrc = "Run.png";
+						renderer.loader.visible = false;
+						break;
+					case ProvisionedInstance.LAUNCHING:
+						imgSrc = "Launch.png";
+						renderer.loader.visible = true;
+						break;
+					case ProvisionedInstance.SHUTTING_DOWN:
+					case ProvisionedInstance.DELETING:
+						renderer.loader.visible = true;
+						imgSrc = "Stop.png";
+						break;
+					case ProvisionedInstance.FAILED_LAUNCH:
+						imgSrc = "LaunchFailed.png";
+						renderer.loader.visible = false;
+						break;
+					case ProvisionedInstance.TERMINATED:
+						imgSrc = "Terminate.png";
+						renderer.loader.visible = false;
+						break;
+					case ProvisionedInstance.FAILED_SHUT_DOWN:
+						imgSrc = "TerminateFailed.png";
+						renderer.loader.visible = false;
+						break;
+					default:
+						imgSrc = "Launch.png";
+						renderer.loader.visible = false;
+						break;
+				}
+				
+				switch(resource.type)
+				{
+					case ResourceType.DB_INSTANCE:
+						renderer.image.source = ImagePath.RDS + imgSrc;
+						break;
+					case ResourceType.LOAD_BALANCER:
+						renderer.image.source = ImagePath.ELB + imgSrc;
+						break;
+					case ResourceType.SQS_QUEUE:
+						renderer.image.source = ImagePath.SQS + imgSrc;
+						break;
+					case ResourceType.SNS_TOPIC:
+						if( state == ProvisionedInstance.FAILED_LAUNCH )
+						{
+							renderer.image.source = ImagePath.SNS + imgSrc;
+						}else{
+							renderer.image.source = ImagePath.SNS + ImagePath.PNG_FILE;
+						}
+						break;
+					case ResourceType.BEANSTALK_APP:
+						renderer.image.source = ImagePath.BEAN + imgSrc;
+						break;
+					case ResourceType.S3_BUCKET:
+						renderer.image.source = ImagePath.S3 + imgSrc;
+						break;
+					case ResourceType.EBS_VOLUME:
+						renderer.image.source = ImagePath.EBS + imgSrc;
+						break;
+					case ResourceType.IAM_GROUP:
+						renderer.image.source = ImagePath.IAM_GROUP + ImagePath.PNG_FILE;
+						break;
+					case ResourceType.IAM_USER:
+						renderer.image.source = ImagePath.NEW_IAM_USER;
+						break;
+					case ResourceType.EMBEDDED_STACK:
+						renderer.image.source = ImagePath.STACK + imgSrc;
+						break;
+					case ResourceType.CW_ALARM:
+						renderer.image.source = ImagePath.NEW_ALARM;
+						break;
+					case ResourceType.RECORD_SET:
+						renderer.image.source = ImagePath.NEW_DNS;
+						break;
+					case ResourceType.SIMPLE_DB_INSTANCE:
+						renderer.image.source = ImagePath.NEW_SDB;
+						break;
+					case ResourceType.CLOUD_FRONT:
+						renderer.image.source = ImagePath.NEW_CDN;
+						break;
+					 case ResourceType.AS_GROUP:
+						renderer.loader.visible = false;					
+						state = resource.status;
+						if(state == ProvisionedInstance.RUNNING)
+						{
+							if(resource.properties["max_size"] == resource.properties["min_size"])
+							{
+								if(resource.properties["min_size"] == 1){
+									renderer.image.source = ImagePath.NEW_AUTORECOVER;
+								}else{
+									renderer.image.source = ImagePath.NEW_AUTOSCALE;
+								}
+							}else{
+								renderer.image.source = ImagePath.NEW_AUTOSCALE;
+							}
+						}else{
+							renderer.image.source = ImagePath.EC2 + imgSrc;
+						}
+						break;
+					case ResourceType.EC2_INSTANCE:
+						renderer.image.source = ImagePath.EC2 + imgSrc;
+						break; 
+					/* case ResourceType.AS_GROUP:
+					case ResourceType.EC2_INSTANCE:
+					case ResourceType.CHEF_ROLE:
+					case ResourceType.PUPPET_MODULE:
+						var installRenderer:InstallsNodeRenderer = new InstallsNodeRenderer();
+						var installs:Array = resource.roles;
+						if(installs == null)
+						{
+							installs = [];
+						}
+						installRenderer.installsCollection = new ArrayCollection(installs); 
+						installRenderer.platform = resource.platform;
+						installRenderer.isFixed = false;
+						//installRenderer.data = resource;
+						installRenderer.title = resource.resourceId;
+						return installRenderer; */
+					case ResourceType.EC2_SECURITY_GROUP:
+					case ResourceType.DB_SECURITY_GROUP:
+					case ResourceType.CACHE_SECURITY_GROUP:
+						renderer.loader.visible = false;
+						renderer.image.source = ImagePath.NEW_SECURITY_GROUP;
+						break;
+					case ResourceType.CACHE_NODE:
+						renderer.image.source = ImagePath.EC2 + imgSrc;
+						break;
+					case ResourceType.CACHE_CLUSTER:
+						renderer.image.source = ImagePath.CACHE + imgSrc;
+						break;
+					case ResourceType.S3_BUCKET_POLICY:
+						renderer.loader.visible = false;
+						renderer.image.source = ImagePath.NEW_RESOURCE_POLICY;
+						break;
+				}
+				
+				renderer.data = data;
+				renderer.label.text = resource.resourceId;
+				return renderer;
+			}
+			
+			protected function customNodeTooltipRendererFunction(data:Object):DisplayObject
+			{
+				var tooltipRenderer:NodeTooltipRenderer = new NodeTooltipRenderer();
+				var cloudObjectType:String = data.type;
+				var pi:ProvisionedInstance = ProvisionedInstance(data);
+				if(pi.instanceId != null)
+				{
+					tooltipRenderer.data = pi;
+				}
+				return tooltipRenderer;
+			}
+			
+			private var lastEvent:CloudFormationStackEventRepresenter;
+			
+			private function updateNodeData(result:DescribeStackEventsResultEvent):void
+			{
+				var stackEvents:ArrayCollection = new ArrayCollection();
+				stackEvents.addAll(cfnService.events);
+				//Events come in order of newest to oldest, so reverse
+				stackEvents.source.reverse();
+				var pi:ProvisionedInstance;
+				var node:DiagramSprite;
+				for each(var event:CloudFormationStackEventRepresenter in stackEvents)
+				{
+					if(lastEvent == null || (lastEvent.timestamp < event.timestamp))
+					{
+						node = getNodeByName(event.logicalResourceId);
+						if(node != null){
+							pi = ProvisionedInstance(node.data);
+							pi.instanceId = event.physicalResourceId;
+							if(pi.currentStackState != event.resourceStatus)
+							{
+								pi.status = event.resourceStatus;
+								node.data = pi;
+								updateResources(node);
+							}
+						}
+					}
+				}
+				lastEvent = event;
+			}
+			
+			private function updateNodeData_faultHandler(event:FaultEvent):void
+			{
+				cancelAllUpdates();
+				
+				//TODO: Determine how to better handle when a stack has been deleted
+				
+				 if(event.statusCode == 400)
+				{
+					provisionedVersion.deleteVersion();
+					removeAll();
+					return;
+				} 
+				
+			}
+			
+			private function updateResources(node:DiagramSprite):void
+			{
+				currentUpdatingNodes.removeAll();
+				var diagramNode:DiagramNode;
+				/* for each(var node:DiagramSprite in nodesMap)
+				{
+					diagramNode = new DiagramNode();
+					diagramNode.cloudAccountId = cloudAccountId;
+					diagramNode.region = region;
+					diagramNode.node = node;
+					diagramNode.addEventListener(ResultEvent.RESULT, nodeUpdated_resultHandler);
+					//Add node to collection in order to track and cancel if version is changed mid update
+					currentUpdatingNodes.addItem(diagramNode);
+					diagramNode.update();
+					
+				} */
+				
+				diagramNode = new DiagramNode();
+				diagramNode.cloudAccountId = cloudAccountId;
+				diagramNode.region = region;
+				diagramNode.node = node;
+				diagramNode.addEventListener(ResultEvent.RESULT, nodeUpdated_resultHandler);
+				//Add node to collection in order to track and cancel if version is changed mid update
+				currentUpdatingNodes.addItem(diagramNode);
+				diagramNode.update();
+			}
+			
+			private function nodeUpdated_resultHandler(event:ResultEvent):void
+			{
+				
+				//Unable to determine why cancel does not remove this result handler
+				//So, check for provisioned version
+				if(provisionedVersion != null)
+				{
+					var pi:ProvisionedInstance = event.result as ProvisionedInstance;
+					provisionedVersion.updateProvisionedInstance(pi);
+					if(selectedNode != null && selectedNode.resourceId == pi.resourceId)
+					{
+						setSelectedNode(new VisualizerEvent(VisualizerEvent.ELEMENT_CLICKED, this.selection));
+					}
+						
+				}else{
+					cancelAllUpdates();
+				}
+			}
+			
+			private function getNodeByName(name:String):DiagramSprite
+			{
+				var pi:ProvisionedInstance;
+				for each(var node:DiagramSprite in nodesMap)
+				{
+					pi = ProvisionedInstance(node.data);
+					if(pi.resourceId == name)
+					{
+						return node;
+					}
+				}
+				return null;
+			}
+			
+			//Used to cancel all update service calls on nodes when changing versions
+			public function cancelAllUpdates():void
+			{
+				for each(var node:DiagramNode in currentUpdatingNodes)
+				{
+					node.cancelUpdate();
+				}
+				cfnService.cancel();
+				currentUpdatingNodes.removeAll();
+			}
+			
+			
+			protected function diagrammer1_creationCompleteHandler(event:FlexEvent):void
+			{
+				cfnService.addEventListener(DescribeStackEventsResultEvent.RESULT, updateNodeData);
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<!--<services:CloudApiService id="cfnService"
+								  cloudAccountId="{cloudAccountId}"
+								  region="{region}"
+								  action="describe_stack_resources"
+								  serviceType="{CloudApiService.CF_SERVICE}"
+								  result="updateNodeData_resultHandler(event)"
+								  fault="updateNodeData_faultHandler(event)"/>-->
+	</fx:Declarations>
+</diagrammer:Diagrammer>

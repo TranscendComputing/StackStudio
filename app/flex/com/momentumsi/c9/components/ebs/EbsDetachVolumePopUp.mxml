@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" 
+			   width="464" height="154"
+			   title="Detach Volume"
+			   move="Helpers.doMove(this)"
+			   close="PopUpManager.removePopUp(this)"
+			   creationComplete="titlewindow1_creationCompleteHandler(event)"
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.components.MainBox;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			
+			private var mainBox:MainBox;
+			
+			protected function detachButton_clickHandler(event:MouseEvent):void
+			{
+				detachVolumeSvc.send();
+				var time:Date = new Date();
+				mainBox.runningView.cloudEvents.addItem({time: time.toUTCString(),
+					type: "INFO",
+					details: "Volume '" + ebsVolume.child('ebs-id') + "' has been detached from EC2 '" + ebsVolume.child('ec2-instance-id') + ".'",
+					id: ebsVolume.child('ebs-id')});
+				mainBox.runningView.ebsBox.ebsEvents.addItem({time: time.toUTCString(),
+					type: "INFO",
+					details: "Volume '" + ebsVolume.child('ebs-id') + "' has been detached from EC2 '" + ebsVolume.child('ec2-instance-id') + ".'",
+					id: ebsVolume.child('ebs-id')});
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function detachVolumeSvc_resultHandler(event:ResultEvent):void
+			{
+				mainBox.runningView.ebsBox.updateEbsVolumeSvc.send();	
+			}
+			
+			protected function titlewindow1_creationCompleteHandler(event:FlexEvent):void
+			{
+				mainBox = Helpers.getMainBox(this);
+				PopUpManager.centerPopUp(this);
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<fx:XML id="ebsVolume"/>
+		
+		<s:HTTPService id="detachVolumeSvc"
+					   url="{Helpers.getHost()}/ebs_volumes/detach_volume/{ebsVolume.child('id')}.xml"
+					   method="GET"
+					   resultFormat="e4x"
+					   showBusyCursor="true"
+					   result="detachVolumeSvc_resultHandler(event)"/>
+		
+	</fx:Declarations>
+	<mx:Text x="10" y="10" text="Are you sure you want to detach this volume?"/>
+	<mx:Text x="27" y="36" text=" - {ebsVolume.child('ebs-id')}"/>
+	<s:Line x="6" y="-117" width="441" xFrom="5" xTo="150" yFrom="180" yTo="180">
+		<s:stroke>
+			<s:SolidColorStroke color="white"/>
+		</s:stroke>
+	</s:Line>
+	<s:HGroup x="280" y="92">
+		<s:Button label="Cancel" click="PopUpManager.removePopUp(this)"/>
+		<s:Button label="Detach" id="detachButton" click="detachButton_clickHandler(event)"/>
+	</s:HGroup>
+</s:TitleWindow>

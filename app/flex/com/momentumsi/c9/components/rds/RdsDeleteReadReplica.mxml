@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   xmlns:c9="com.momentumsi.c9.components.*"
+			   width="335" height="172"
+			   title="Delete Read Replica"
+			   move="Helpers.doMove(this)"
+			   close="PopUpManager.removePopUp(this)"
+			   creationComplete="PopUpManager.centerPopUp(this)"
+			   defaultButton="{deleteButton}"
+			   xmlns:diagrammer="fr.kapit.diagrammer.base.uicomponent.*">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.momentumsi.c9.components.MainBox;
+			import com.momentumsi.c9.utils.Helpers;
+			
+			import fr.kapit.diagrammer.Diagrammer;
+			
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			
+			protected function deleteButton_clickHandler(event:MouseEvent):void
+			{
+				if(replicaInstance != "")
+				{
+					deleteReadReplica.send();
+					var mainBox:MainBox = Helpers.getMainBox(this);
+					
+					var time:Date = new Date();
+					mainBox.runningView.cloudEvents.addItem({time: time.toUTCString(), 
+						type: "INFO",
+						details: "Read Replica '" + replicaInstance.child('rds-db-instance-identifier') + "' has been deleted.",
+						id: replicaInstance.child('rds-db-instance-identifier')});
+				}
+			}
+			
+			protected function deleteReadReplica_resultHandler(event:ResultEvent):void
+			{
+				var runningDiagram:Diagrammer = Helpers.getRunningDiagram(this);
+				runningDiagram.removeNodeElement(node.itemID);
+				var mainBox:MainBox = Helpers.getMainBox(this);
+				mainBox.runningView.runningObjectDescriptions.selectedIndex = 0;
+				PopUpManager.removePopUp(this);
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<diagrammer:DiagramSprite id="node"/>
+		<fx:XML id="replicaInstance"/>
+		
+		<s:HTTPService id="deleteReadReplica"
+					   url="{Helpers.getHost()}/rds_read_replicas/delete_rds_read_replica/{replicaInstance.child('id')}.xml"
+					   resultFormat="e4x"
+					   method="POST"
+					   showBusyCursor="true"
+					   result="deleteReadReplica_resultHandler(event)"/>
+	</fx:Declarations>
+	
+	<mx:Text paddingLeft="15" x="0" y="14" text="Are you sure you want to delete the following{'\n'} read replica?"/>
+	<mx:Text paddingLeft="15" x="10" y="50" text=" - {replicaInstance.child('rds-db-instance-identifier')}"/>
+	<s:Button x="93" y="108" id="deleteButton" label="Delete" click="deleteButton_clickHandler(event)"/>
+	<s:Button x="171" y="108" id="cancelButton" label="Cancel" click="PopUpManager.removePopUp(this)"/>
+</s:TitleWindow>
