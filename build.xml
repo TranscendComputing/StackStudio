@@ -36,18 +36,28 @@
     <property name="sstudio2.home" value="/home/sstudio/v2"/>
 	<property name="dist" value="${project.base.dir}/dist" />
 
+    <property name="dist.suffix" value=""/>
+    <property name="config" value="Config${dist.suffix}/${name}"/>
+    <property name="config.dir" value="${project.base.dir}/../${config}"/>
+
 	<target name="init">
 		<mkdir dir="${build}" />
 		<mkdir dir="${dist}" />
+        <echo>Copying config files from ${config.dir}.</echo>
+
 	</target>
 
-	<taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
+    <condition property="have.config">
+        <available file="${config.dir}" type="dir"/>
+    </condition>
 
-	<target name="configure.flex">
-		<copy todir="${config.flex}" file="${resources.flex}/config.xml" overwrite="true">
-		<filterset filtersfile="resources/${env}.properties" onmissingfiltersfile="warn" />
-		</copy>
-	</target>
+    <target name="copy.config" if="have.config">
+        <echo>Copying config files.</echo>
+        <copy todir="${project.base.dir}" overwrite="true">
+            <fileset dir="${config.dir}" >
+            </fileset>
+        </copy>
+    </target>
 
 	<target name="configure.ruby">
 		<copy todir="${config.ruby}" file="${resources}/application.rb" overwrite="true">
@@ -55,18 +65,7 @@
 		</copy>
 	</target>
 
-	<target name="compile.flex">
-		<mxmlc file="${src.flex}/C9.mxml" output="${bin.flex}/C9.swf" keep-generated-actionscript="false">
-			<load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
-			<source-path path-element="${FLEX_HOME}/frameworks"/>
-			<compiler.library-path dir="${src.flex}/.." append="true">
-				<include name="libs" />
-			</compiler.library-path>
-			<compiler.theme file="${FLEX_HOME}/frameworks/themes/Halo/halo.swc" />
-		</mxmlc>
-	</target>
-
-    <target name="bundle" depends="bundleWithDeployment,bundleWithoutDeployment">
+    <target name="bundle" depends="copy.config, bundleWithDeployment,bundleWithoutDeployment">
     </target>
 
     <target name="bundleWithoutDeployment" unless="${env.deployment}">
