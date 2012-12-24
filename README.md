@@ -15,3 +15,14 @@ Getting Started
 
 3. Go to http://localhost:8000/ and you'll see the StackStudio Dashboard
 
+Compatibility
+-------------
+
+StackStudio targets the following browser platforms:
+
+✔ IE 6+
+✔ Firefox 2+
+✔ Safari 3.2+
+✔ Chrome 3+
+✔ Opera 10+
+

@@ -1,7 +1,5 @@
-var consoleapp = consoleapp || {};
-
-$(function() {
-
-	consoleapp.commandLineView = new consoleapp.CommandLineView();
-
+require(['./common'], function (common) {
+	require([], function() {
+		// The common module builds everything, nothing needed here.
+	});
 });

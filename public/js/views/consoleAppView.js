@@ -1,13 +1,18 @@
-var consoleapp = consoleapp || {};
-
-$(function( $ ) {
+define([
+        'jquery',
+        'underscore',
+        'backbone',
+        'icanhaz',
+        'jquery.terminal',
+        'jquery.purr'
+], function( $, _, Backbone, ich ) {
 	'use strict';
 
 	// The Console Application
 	// ---------------
 
 	// Embedded model; message.
-	consoleapp.Message = Backbone.Model.extend({
+	var Message = Backbone.Model.extend({
 
 		defaults: {
 			type: 'success',
@@ -16,7 +21,7 @@ $(function( $ ) {
 	});
 
 	// Our overall **CommandLineView** is UI view for console and command line.
-	consoleapp.CommandLineView = Backbone.View.extend({
+	var CommandLineView = Backbone.View.extend({
 
 		expanded: false,
 
@@ -56,7 +61,7 @@ $(function( $ ) {
 		handleCommand: function(command, term) {
 			if (command !== '') {
 				try {
-					var result = new consoleapp.Message();
+					var result = new Message();
 					if (command.indexOf('cloud-') == 0) {
 						result.set('message', "Started 1 instance.");
 					} else if (command.indexOf('cloud-run-instances') == 0) {
@@ -150,4 +155,6 @@ $(function( $ ) {
 		}
 
 	});
+
+	return CommandLineView;
 });

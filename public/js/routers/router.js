@@ -1,6 +1,9 @@
-var instanceapp = instanceapp || {};
-
-(function() {
+define([
+        'jquery',
+        'backbone',
+        'collections/instances',
+        'common'
+], function( $, Backbone, Instances, Common ) {
 	'use strict';
 
 	// Instance Router
@@ -13,15 +16,13 @@ var instanceapp = instanceapp || {};
 
 		setFilter: function( param ) {
 			// Set the current filter to be used
-			window.instanceapp.InstanceFilter = param.trim() || '';
+			Common.InstanceFilter = param.trim() || '';
 
 			// Trigger a collection filter event, causing hiding/unhiding
 			// of Instance view items
-			window.instanceapp.Instances.trigger('filter');
+			Instances.trigger('filter');
 		}
 	});
 
-	instanceapp.InstanceRouter = new Workspace();
-	Backbone.history.start();
-
-}());
+	return Workspace;
+});

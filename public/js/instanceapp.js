@@ -1,8 +1,10 @@
-var instanceapp = instanceapp || {};
+require(['./common'], function (common) {
+	require([
+	         'views/instanceAppView'
+	        ], function( InstancesView ) {
 
-$(function() {
+		// Initialize the application view
+		new InstancesView();
 
-	// Kick things off by creating the Instances app.
-	instanceapp.instancesview = new instanceapp.InstancesView();
-
+	});
 });

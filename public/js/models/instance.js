@@ -1,16 +1,17 @@
-var instanceapp = instanceapp || {};
+define([
+        'jquery',
+        'backbone',
+], function( $, Backbone ) {
+    'use strict';
 
-(function() {
-	'use strict';
+    // Instance Model
+    // ----------
 
-	// Instance Model
-	// ----------
+    // Our basic **Instance** model has `name`, `instanceId`, and `running` attributes.
+    var Instance = Backbone.Model.extend({
 
-	// Our basic **Instance** model has `name`, `instanceId`, and `running` attributes.
-	instanceapp.Instance = Backbone.Model.extend({
-
-		// Default attributes for the instance
-		// and ensure that each instance created has `name` and `running` keys.
+    	// Default attributes for the instance
+    	// and ensure that each instance created has `name` and `running` keys.
 		defaults: {
 			name: '-',
 			description: '',
@@ -37,6 +38,7 @@ var instanceapp = instanceapp || {};
 			});
 		}
 
-	});
+    });
 
-}());
+    return Instance;
+});

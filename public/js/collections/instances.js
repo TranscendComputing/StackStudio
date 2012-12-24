@@ -1,6 +1,9 @@
-var instanceapp = instanceapp || {};
-
-(function() {
+define([
+        'jquery',
+        'backbone',
+        'models/instance',
+        'common'
+], function( $, Backbone, Instance, Common ) {
 	'use strict';
 
 	// Instance Collection
@@ -9,7 +12,7 @@ var instanceapp = instanceapp || {};
 	var InstanceList = Backbone.Collection.extend({
 
 		// Reference to this collection's model.
-		model: instanceapp.Instance,
+		model: Instance,
 
 		url: 'data.json',
 
@@ -22,6 +25,6 @@ var instanceapp = instanceapp || {};
 	});
 
 	// Create our global collection of **Instances**.
-	instanceapp.Instances = new InstanceList();
+	return new InstanceList();
 
-}());
+});

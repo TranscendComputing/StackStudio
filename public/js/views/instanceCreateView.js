@@ -1,12 +1,14 @@
-var instanceapp = instanceapp || {};
-
-$(function() {
+define([
+        'jquery',
+        'underscore',
+        'backbone'
+], function( $, _, Backbone ) {
 	'use strict';
 
 	// Instance View
 	// --------------
 
-	instanceapp.InstanceView = Backbone.View.extend({
+	var InstanceCreateView = Backbone.View.extend({
 
 		// The DOM events specific to an item.
 		events: {
@@ -93,4 +95,6 @@ $(function() {
 			this.model.destroy();
 		}
 	});
+
+	return InstanceCreateView;
 });
