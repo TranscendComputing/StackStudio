@@ -1,17 +1,31 @@
+/*!
+ * StackStudio 2.0.0-rc.1 <http://stackstudio.transcendcomputing.com>
+ * (c) 2012 Transcend Computing <http://www.transcendcomputing.com/>
+ * Available under MIT license <https://raw.github.com/TranscendComputing/StackStudio/master/LICENSE.md>
+ */
 define([
         'jquery',
         'underscore',
         'backbone',
         'icanhaz',
+        'interpreters/cloud_interpreter',
         'jquery.terminal',
         'jquery.purr'
-], function( $, _, Backbone, ich ) {
+], function( $, _, Backbone, ich, Interpreter ) {
 	'use strict';
 
 	// The Console Application
-	// ---------------
+	// -----------------------
 
-	// Embedded model; message.
+    /**
+     * Embedded model representing a result from a command.
+     *
+     * @name Message
+     * @constructor
+     * @category Console
+     * @param {Object} initialization object.
+     * @returns {Object} Returns a Message instance.
+     */
 	var Message = Backbone.Model.extend({
 
 		defaults: {
@@ -20,24 +34,38 @@ define([
 		}
 	});
 
-	// Our overall **CommandLineView** is UI view for console and command line.
+    /**
+     * CommandLineView is UI view for console and command line.
+     *
+     * @name CommandLineView
+     * @constructor
+     * @category Console
+     * @param {Object} initialization object.
+     * @returns {Object} Returns a CommandLineView instance.
+     */
 	var CommandLineView = Backbone.View.extend({
 
+		/** True if expanded to a multiline window */
 		expanded: false,
 
-		// Instead of generating a new element, bind to the existing skeleton of
-		// the App already present in the HTML.
+		/** Instead of generating a new element, bind to the existing skeleton of
+		 * the view already present in the HTML.
+		 */
 		el: '#console_area',
 
-		// Delegated events.
+		/** Delegated events */
 		events: {
 			'click #con_expand': 'toggleFullSize',
 			'click #con_options': 'popupOptions',
 			'click .export_to': 'exportTo'
 		},
 
-		// At initialization, initialize any components that still require JS.
+		/** At initialization, initialize any components that still require JS. */
 		initialize: function() {
+			this.interpreter = new Interpreter();
+			// Ensure this = this, even when called back, also bind first argument
+			this.handleCommand = _.bind(this.handleCommand, this, this.interpreter);
+			this.onCommandKey = _.bind(this.onCommandKey, this, this.interpreter);
 			$('#con_expand').button({
 	            icons: {
 	                primary: "ui-icon-arrowthick-2-n-s"
@@ -54,28 +82,19 @@ define([
 			this.toggleFullSize();
 		},
 
-		// No rendering to do, presently; the elements are already on the page.
+		/** No rendering to do, presently; the elements are already on the page. */
 		render: function() {
 		},
 
-		handleCommand: function(command, term) {
+		handleCommand: function(interpreter, command, term) {
 			if (command !== '') {
 				try {
 					var result = new Message();
-					if (command.indexOf('cloud-') == 0) {
-						result.set('message', "Started 1 instance.");
-					} else if (command.indexOf('cloud-run-instances') == 0) {
-						result.set('message', "Started 1 instance.");
-					} else if (command == 'cloud-describe-instances') {
-						result = "Displaying cloud instances.";
-					} else {
-						result.set('message', " Unsupported operation.");
-						result.set('type', "error");
-					}
+					result.set(this.interpreter.exec(command, term));
 					if (result !== undefined) {
 						if (term) {
 							if (result.get('type') == 'error') {
-								term.echo(new String('[1;31mError[0m'+result.get('message')));
+								term.error(new String(result.get('message')));
 							} else {
 								term.echo(new String(result.get('message')));
 							}
@@ -97,6 +116,10 @@ define([
 			}
 		},
 
+		onCommandKey: function(interpreter, event, term) {
+			//TODO: pop up completions on commands, arguments.
+		},
+
 		toggleFullSize: function() {
 			this.expanded = ! this.expanded;
 			if (this.expanded) {
@@ -114,7 +137,8 @@ define([
 					greetings : 'Cloud Console',
 					name : 'cloud_console',
 					height : 200,
-					prompt : '[1;32mcloud[0m> '
+					prompt : '[1;32mcloud[0m> ',
+					keypress : this.onCommandKey,
 				});
 
 			} else {
@@ -132,7 +156,9 @@ define([
 					name : 'cloud_console',
 					width : '100%',
 					prompt : '[1;32mcloud[0m> ',
-					commands : this.handleCommand
+					tabcompletion: true,
+					//commands : this.handleCommand,
+					commands : this.interpreter
 				});
 			}
 		},

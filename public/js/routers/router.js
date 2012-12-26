@@ -1,3 +1,8 @@
+/*!
+ * StackStudio 2.0.0-rc.1 <http://stackstudio.transcendcomputing.com>
+ * (c) 2012 Transcend Computing <http://www.transcendcomputing.com/>
+ * Available under MIT license <https://raw.github.com/TranscendComputing/StackStudio/master/LICENSE.md>
+ */
 define([
         'jquery',
         'backbone',
@@ -6,23 +11,26 @@ define([
 ], function( $, Backbone, Instances, Common ) {
 	'use strict';
 
-	// Instance Router
-	// ----------
-
-	var Workspace = Backbone.Router.extend({
+    /**
+     * Router the central dispatcher for matching URLs to code.
+     *
+     * @name Router
+     * @constructor
+     * @category Core
+     * @param {Object} initialization object.
+     * @returns {Object} Returns a Router instance.
+     */
+	var Router = Backbone.Router.extend({
 		routes:{
-			'*filter': 'setFilter'
+			'instance/:id': 'instanceDetail',
+			'projects/:id': 'projectDetail',
+			'*actions': 'defaultRoute'
 		},
 
-		setFilter: function( param ) {
-			// Set the current filter to be used
-			Common.InstanceFilter = param.trim() || '';
-
-			// Trigger a collection filter event, causing hiding/unhiding
-			// of Instance view items
-			Instances.trigger('filter');
+		defaultRoute: function( actions ) {
+			console.log("Running default route.  Dashboard?");
 		}
 	});
 
-	return Workspace;
+	return Router;
 });

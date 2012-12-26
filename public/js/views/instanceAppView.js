@@ -1,31 +1,40 @@
+/*!
+ * StackStudio 2.0.0-rc.1 <http://stackstudio.transcendcomputing.com>
+ * (c) 2012 Transcend Computing <http://www.transcendcomputing.com/>
+ * Available under MIT license <https://raw.github.com/TranscendComputing/StackStudio/master/LICENSE.md>
+ */
 define([
         'jquery',
         'underscore',
         'backbone',
-        'models/Instance',
+        'models/instance',
         'collections/instances',
         'views/instanceRowView',
+        'common',
         'jquery.dataTables'
-], function( $, _, Backbone, Instance, instances, InstanceView ) {
+], function( $, _, Backbone, Instance, instances, InstanceView, Common ) {
 	'use strict';
 
 	// The Instances Application View
 	// ------------------------------
 
-	// Our overall **InstancesView** is the top-level piece of UI.
+    /**
+     * InstancesView is UI view list of cloud instances.
+     *
+     * @name InstancesView
+     * @constructor
+     * @category Resources
+     * @param {Object} initialization object.
+     * @returns {Object} Returns a InstancesView instance.
+     */
 	var InstancesView = Backbone.View.extend({
+
+		/** The ID of the selected instance */
+		selectedId: undefined,
 
 		// Instead of generating a new element, bind to the existing skeleton of
 		// the App already present in the HTML.
 		el: '#instanceapp',
-
-		// Our template for the detailed view of an instance at the bottom of the app.
-		// TODO: rewrite as ICanHaz templates.
-		detailTemplate: _.template( $('#instance-detail').html() ),
-
-		// Our template for the create view of an instance at the bottom of the app.
-		// TODO: rewrite as ICanHaz templates.
-		formTemplate: _.template( $('#instance-form').html() ),
 
 		// Delegated events for creating new instances, etc.
 		events: {
@@ -37,6 +46,7 @@ define([
 		// collection, when items are added or changed. Kick things off by
 		// loading any preexisting instances.
 		initialize: function() {
+            _.bindAll(this, 'selectOne');
 			$('#new_instance').button();
 			$('#id_refresh').button();
             this.$detail = this.$('#detail');
@@ -45,11 +55,16 @@ define([
 			instances.on( 'reset', this.addAll, this );
 			instances.on( 'all', this.render, this );
 
+		    Common.router.on('route:instanceDetail', function (id) {
+		    	console.log("Got instance detail route.");
+		    	this.selectOne(event, id);
+		    }, this);
+
 			// Fetch will pull results from the server
 			instances.fetch();
 		},
 
-		// No rendering to do, presently; the elments are already on the page.
+		// No rendering to do, presently; the elements are already on the page.
 		render: function() {
 		},
 
@@ -61,7 +76,6 @@ define([
 			}
 			var view = new InstanceView({ model: instance });
 			view.render();
-		    console.log("Adding a single instance view.");
 		},
 
 		// Add all items in the **Instances** collection at once.
@@ -76,29 +90,40 @@ define([
 			$('#id_save_new').button();
 		},
 
-		selectOne : function () {
+		selectOne : function (event, id) {
 			var i, instance, selectedModel;
+			console.log("Id2:", id);
+			console.log("event:", event);
+			if (id && this.selectedId === id) {
+				return;
+			}
 			this.$table.$('tr').removeClass('row_selected');
-			$(event.target.parentNode).addClass('row_selected');
-			instance = $(event.target.parentNode).find(':nth-child(2)').html();
+			if (event.type === 'click') {
+				$(event.target.parentNode).addClass('row_selected');
+				// Find the second column of the clicked row; that's instance ID
+				instance = $(event.target.parentNode).find(':nth-child(2)').html();
+				Common.router.navigate("#/instance/"+instance, {trigger: false});
+			} else {
+				instance = id;
+				console.log("Selecting ID:", id);
+			}
 			instances.each(function(e) {
 				if (e.get('instanceId') == instance) {
 					selectedModel = e;
 				}
 			});
+			this.selectedId = instance;
 			this.$detail.html(ich.instance_detail(selectedModel.attributes));
-			//this.$detail.html(this.detailTemplate(
-			//		selectedModel.attributes
-			//	));
-			window.location = "#instance-detail";
 		}
 	});
 
-	// The following click should be redundant with the events above,
-	// but not working at the mo.  TODO: eliminate this.
-	//$('#new_instance').click(function() {
-	//	instancesview.createNew();
-	//});
+	/*
+    Common.router.on('route:instanceDetail', function (id) {
+        alert( "Get instance number " + id );
+    });
+
+	var instancesView = new InstancesView();
+	*/
 
 	return InstancesView;
 });

@@ -1,4 +1,9 @@
-// Require.js allows us to configure shortcut alias
+/*!
+ * StackStudio 2.0.0-rc.1 <http://stackstudio.transcendcomputing.com>
+ * (c) 2012 Transcend Computing <http://www.transcendcomputing.com/>
+ * Available under MIT license <https://raw.github.com/TranscendComputing/StackStudio/master/LICENSE.md>
+ */
+// Configure defaults for require.js
 requirejs.config({
     baseUrl: 'js/vendor',
 	// The shim config allows us to configure dependencies for
@@ -39,10 +44,11 @@ requirejs.config({
 		models: '../models',
 		routers: '../routers',
 		views: '../views',
+		interpreters: '../interpreters',
 		'jquery': '//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min',
 		'jquery-ui': '//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min',
-		'underscore': 'lodash-1.0.0-rc.2.min',
-		'backbone': 'backbone-0.9.9.min',
+		'underscore': 'lodash',
+		'backbone': 'backbone-0.9.9',
 		'icanhaz': 'ICanHaz',
 		'jquery.terminal': 'jquery.terminal-0.4.22',
 		'jquery.mousewheel': 'jquery.mousewheel-min'
@@ -54,21 +60,44 @@ requirejs.config({
  * pages.  It also has the side effect of loading the critical libraries
  * from local files, if the CDN has failed.
  */
-require(['jquery',
+define(
+		['jquery',
          'backbone',
          'views/consoleAppView',
          'routers/router',
          'jquery-ui',
-         ], function ($, Backbone, CommandLineView, Workspace) {
+         ], function ($, Backbone, CommandLineView, Router) {
 	// Within this scope, jquery and jquery UI have been loaded.
 
 	// Initialize routing and start Backbone.history()
-	new Workspace();
-	Backbone.history.start();
+	router = new Router();
+	$(function() {
+		console.log("Starting history.");
+		if (window.location.pathname.indexOf("/resources") == 0) {
+			console.log("# resources");
+			Backbone.history.start({root: "/resources/"});
+		} else {
+			console.log("# root");
+			Backbone.history.start({root: "/"});
+		}
+	});
+
+	//Backbone.history.start({pushState: true, root: "/resources/"});
 
 	// Initialize the command line, since that's global to all pages.
 	new CommandLineView();
 
+	// Return some "globals".
+	return {
+		// Which filter are we using?
+		InstanceFilter: '', // empty, active, completed
+
+		// What is the enter key constant?
+		ENTER_KEY: 13,
+
+		// The common router
+		router: router
+	};
 }, function (err) {
     //The errback, error callback
     //The error has a list of modules that failed
@@ -105,12 +134,3 @@ require(['jquery',
     }
 });
 
-define([], function() {
-	return {
-		// Which filter are we using?
-		InstanceFilter: '', // empty, active, completed
-
-		// What is the enter key constant?
-		ENTER_KEY: 13
-	};
-});

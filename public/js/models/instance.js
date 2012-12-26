@@ -1,3 +1,8 @@
+/*!
+ * StackStudio 2.0.0-rc.1 <http://stackstudio.transcendcomputing.com>
+ * (c) 2012 Transcend Computing <http://www.transcendcomputing.com/>
+ * Available under MIT license <https://raw.github.com/TranscendComputing/StackStudio/master/LICENSE.md>
+ */
 define([
         'jquery',
         'backbone',
@@ -7,11 +12,19 @@ define([
     // Instance Model
     // ----------
 
-    // Our basic **Instance** model has `name`, `instanceId`, and `running` attributes.
+    /**
+     * Our basic **Instance** model has `name`, `instanceId` and other
+     * attributes of a running cloud virtual machine.
+     *
+     * @name Instance
+     * @constructor
+     * @category Resources
+     * @param {Object} initialization object.
+     * @returns {Object} Returns a Instance instance.
+     */
     var Instance = Backbone.Model.extend({
 
-    	// Default attributes for the instance
-    	// and ensure that each instance created has `name` and `running` keys.
+    	/** Default attributes for the instance */
 		defaults: {
 			name: '-',
 			description: '',
@@ -26,12 +39,25 @@ define([
 			running: false
 		},
 
+	    /**
+	     * Override the base Backbone set method, for debugging.
+	     *
+	     * @memberOf Instance
+	     * @category Internal
+	     * @param {Object} hash of attribute values to set.
+	     * @param {Object} (optional) options to tweak (see Backbone docs).
+	     */
 		set: function(attributes, options) {
 		    Backbone.Model.prototype.set.apply(this, arguments);
-		    console.log("Setting attributes on model:", attributes);
+		    //console.log("Setting attributes on model:", attributes);
 		},
 
-		// Toggle the `running` state of this instance.
+	    /**
+	     *  Toggle the `running` state of this instance.
+	     *
+	     * @memberOf Instance
+	     * @category Convenience
+	     */
 		toggle: function() {
 			this.save({
 				running: !this.get('running')
