@@ -43,7 +43,7 @@ gem 'roar', '~> 0.9.1'
 
 # Install the warbler gem, in case you want to generate a war file for
 # your Rails application and deploy it to an app server, like Tomcat
-# or Glassfish 
+# or Glassfish
 gem 'warbler', :platforms=>:jruby
 gem 'jruby-openssl', :platforms=>:jruby
 
@@ -54,6 +54,7 @@ group :development, :test do
   gem 'thin', :platform => :ruby
   gem 'bson'
   gem 'bson_ext', :platform => :ruby
+  gem 'jasmine'
   if RUBY_PLATFORM=~/i386-mingw32/
     gem 'eventmachine', '1.0.0.beta.4.1', :platforms=>[:mswin, :mingw, :mingw_19, :mingw_18]
   else
@@ -67,7 +68,7 @@ gem 'rake'
 
 # Web support
 gem 'erubis', '~> 2.7.0'
-gem 'sinatra', '~> 1.3.1'
+gem 'sinatra', '~> 1.3.1', :require => "sinatra/base"
 gem 'thin', '~> 1.3.1'
 gem 'activesupport', '~> 3.2.0', :require => 'active_support'
 gem 'actionpack', '~> 3.2.0', :require => 'action_pack'
@@ -91,7 +92,7 @@ gem 'aws-ses', '~>0.4.4'
 group :development, :test do
   gem 'rspec', '~> 2.4'
   gem 'rspec-mocks'
-  gem 'heroku'
+  #gem 'heroku' # deprecated
   gem 'foreman'
   gem 'rack-test'
   gem 'awesome_print'
