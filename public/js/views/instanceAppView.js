@@ -1,8 +1,10 @@
 /*!
  * StackStudio 2.0.0-rc.1 <http://stackstudio.transcendcomputing.com>
  * (c) 2012 Transcend Computing <http://www.transcendcomputing.com/>
- * Available under MIT license <https://raw.github.com/TranscendComputing/StackStudio/master/LICENSE.md>
+ * Available under ASL2 license <http://www.apache.org/licenses/LICENSE-2.0.html>
  */
+/*jshint smarttabs:true */
+/*global define:true console:true */
 define([
         'jquery',
         'underscore',
@@ -10,9 +12,10 @@ define([
         'models/instance',
         'collections/instances',
         'views/instanceRowView',
+        'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, Instance, instances, InstanceView, Common ) {
+], function( $, _, Backbone, Instance, instances, InstanceView, ich, Common ) {
 	'use strict';
 
 	// The Instances Application View
@@ -56,8 +59,8 @@ define([
 			instances.on( 'all', this.render, this );
 
 		    Common.router.on('route:instanceDetail', function (id) {
-		    	console.log("Got instance detail route.");
-		    	this.selectOne(event, id);
+		        console.log("Got instance detail route.");
+		        this.selectOne(event, id);
 		    }, this);
 
 			// Fetch will pull results from the server
@@ -70,7 +73,7 @@ define([
 
 		// Add a single instance item to the list by creating a view for it.
 		addOne: function( instance ) {
-			if (instance.get('instanceId') == "") {
+			if (instance.get('instanceId') === "") {
 				// Refuse to add instances until they're initialized.
 				return;
 			}
@@ -108,7 +111,7 @@ define([
 				console.log("Selecting ID:", id);
 			}
 			instances.each(function(e) {
-				if (e.get('instanceId') == instance) {
+				if (e.get('instanceId') === instance) {
 					selectedModel = e;
 				}
 			});

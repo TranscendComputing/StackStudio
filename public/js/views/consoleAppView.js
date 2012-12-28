@@ -1,8 +1,10 @@
 /*!
  * StackStudio 2.0.0-rc.1 <http://stackstudio.transcendcomputing.com>
  * (c) 2012 Transcend Computing <http://www.transcendcomputing.com/>
- * Available under MIT license <https://raw.github.com/TranscendComputing/StackStudio/master/LICENSE.md>
+ * Available under ASL2 license <http://www.apache.org/licenses/LICENSE-2.0.html>
  */
+/*jshint smarttabs:true */
+/*global define:true console:true */
 define([
         'jquery',
         'underscore',
@@ -30,7 +32,7 @@ define([
 
 		defaults: {
 			type: 'success',
-			message: '',
+			message: ''
 		}
 	});
 
@@ -93,10 +95,10 @@ define([
 					result.set(this.interpreter.exec(command, term));
 					if (result !== undefined) {
 						if (term) {
-							if (result.get('type') == 'error') {
-								term.error(new String(result.get('message')));
+							if (result.get('type') === 'error') {
+								term.error(String(result.get('message')));
 							} else {
-								term.echo(new String(result.get('message')));
+								term.echo(String(result.get('message')));
 							}
 						} else {
 							$(ich.alert(result.attributes)).purr();
@@ -104,9 +106,9 @@ define([
 					}
 				} catch (e) {
 					if (term) {
-						term.error(new String(e));
+						term.error(String(e));
 					} else {
-						$(ich.alert(new String(e))).purr();
+						$(ich.alert(String(e))).purr();
 					}
 				}
 			} else {
@@ -118,6 +120,7 @@ define([
 
 		onCommandKey: function(interpreter, event, term) {
 			//TODO: pop up completions on commands, arguments.
+			//console.log("Got key.", event);
 		},
 
 		toggleFullSize: function() {
@@ -138,7 +141,7 @@ define([
 					name : 'cloud_console',
 					height : 200,
 					prompt : '[1;32mcloud[0m> ',
-					keypress : this.onCommandKey,
+					keypress : this.onCommandKey
 				});
 
 			} else {
@@ -157,8 +160,8 @@ define([
 					width : '100%',
 					prompt : '[1;32mcloud[0m> ',
 					tabcompletion: true,
-					//commands : this.handleCommand,
-					commands : this.interpreter
+					commands : this.handleCommand,
+					keypress : this.onCommandKey
 				});
 			}
 		},

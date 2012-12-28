@@ -1,11 +1,14 @@
 /*!
  * StackStudio 2.0.0-rc.1 <http://stackstudio.transcendcomputing.com>
  * (c) 2012 Transcend Computing <http://www.transcendcomputing.com/>
- * Available under MIT license <https://raw.github.com/TranscendComputing/StackStudio/master/LICENSE.md>
+ * Available under ASL2 license <http://www.apache.org/licenses/LICENSE-2.0.html>
  */
 // Configure defaults for require.js
+var URL_ARGS = URL_ARGS || '';
+
 requirejs.config({
     baseUrl: 'js/vendor',
+    urlArgs: URL_ARGS,
 	// The shim config allows us to configure dependencies for
 	// scripts that do not call define() to register a module
 	shim: {
@@ -37,6 +40,10 @@ requirejs.config({
         'jquery.purr': {
             deps: ['jquery'],
             exports: 'jQuery.fn.purr'
+        },
+        'jquery.mousewheel': {
+            deps: ['jquery'],
+            exports: 'jQuery.fn.mousewheel'
         }
 	},
 	paths: {
