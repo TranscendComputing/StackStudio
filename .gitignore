@@ -19,3 +19,4 @@ dist/
 .externalToolBuilders/*
 .externalToolBuilders
 resources/*.properties
+node_modules

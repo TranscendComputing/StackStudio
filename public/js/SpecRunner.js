@@ -7,7 +7,8 @@ BASE_URL = 'js/vendor';
 
 EXTRA_PATHS = {};
 
-//var URL_ARGS = 'cb=' + Math.random();
+// Add the following to allow tests to force a reload of JS every time.
+var URL_ARGS = 'cb=' + Math.random();
 
 require(['./common'], function (common) {
 	require({
