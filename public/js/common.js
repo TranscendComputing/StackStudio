@@ -58,9 +58,7 @@ requirejs.config({
 		'backbone': 'backbone-0.9.9',
 		'icanhaz': 'ICanHaz',
 		'jquery.terminal': 'jquery.terminal-0.4.22',
-		'jquery.mousewheel': 'jquery.mousewheel-min',
-		'less': 'less-1.3.1.min',
-		'modernizr' : 'modernizr-2.6.2.min'
+		'jquery.mousewheel': 'jquery.mousewheel-min'
 	}
 });
 
@@ -74,9 +72,7 @@ define(
          'backbone',
          'views/consoleAppView',
          'routers/router',
-         'jquery-ui',
-         'less',
-         'modernizr'
+         'jquery-ui'
          ], function ($, Backbone, CommandLineView, Router) {
 	// Within this scope, jquery and jquery UI have been loaded.
 

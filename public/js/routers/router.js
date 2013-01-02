@@ -28,6 +28,7 @@ define([
 		},
 
 		defaultRoute: function( actions ) {
+			$("#main").load('/dashboard.html')
 			console.log("Running default route.  Dashboard?");
 		}
 	});
