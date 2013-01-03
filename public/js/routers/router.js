@@ -6,9 +6,8 @@
 define([
         'jquery',
         'backbone',
-        'collections/instances',
         'common'
-], function( $, Backbone, Instances, Common ) {
+], function( $, Backbone, Common ) {
 	'use strict';
 
     /**
@@ -23,10 +22,11 @@ define([
 	var Router = Backbone.Router.extend({
 		routes:{
 			'instance/:id': 'instanceDetail',
+			'projects': 'projects',
 			'projects/:id': 'projectDetail',
 			'*actions': 'defaultRoute'
 		},
-
+        
 		defaultRoute: function( actions ) {
 			$("#main").load('/dashboard.html');
 			console.log("Running default route.  Dashboard");

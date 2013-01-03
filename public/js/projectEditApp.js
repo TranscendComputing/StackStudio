@@ -3,11 +3,13 @@
  * (c) 2012 Transcend Computing <http://www.transcendcomputing.com/>
  * Available under ASL2 license <http://www.apache.org/licenses/LICENSE-2.0.html>
  */
-var URL_ARGS = 'cb=' + Math.random();
-
 require(['./common'], function (common) {
-    require([
-             'views/projectNavigationView'
-            ], function() {
-    });	
+	require([
+	         'views/projectEditView'
+	        ], function( ProjectEditView ) {
+
+		// Initialize the application view
+		new ProjectEditView();
+
+	});
 });

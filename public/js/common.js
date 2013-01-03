@@ -58,6 +58,7 @@ requirejs.config({
 		routers: '../routers',
 		views: '../views',
 		interpreters: '../interpreters',
+		templates: '../../templates',
 		'jquery': '//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min',
 		'jquery-ui': '//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min',
 		'underscore': 'lodash',

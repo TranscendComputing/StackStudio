@@ -1,0 +1,47 @@
+<!-- Project Edit Panel-->
+<div id="projectslide2" style="height: 100%">
+  	<div style="margin-top: 20px">
+  		<button class="projback">Back</button>
+  		<button class="projedit">Edit</button>
+  		<button>Delete</button>
+	</div>
+	<div class="intro" style="font-size: 1.2em; margin-top: 20px">
+	  	<h2><span class="projectname"></span></h2>
+	  	<div id="projectdetails">
+	  		<span class="projectname"></span> details will go here...
+	  	</div>
+		<div id="tabs" style="height: 1000px">
+		    <ul>
+		        <li><a href="#tabs-design">Design</a></li>
+		        <li><a href="#tabs-runtime">Runtime</a></li>
+		    </ul>
+		    <div style="height: 4000px" id="tabs-design">
+		    	<pre id="design_editor">
+				</pre> 
+		    </div>
+		    <div style="height: 1000px"  id="tabs-runtime">
+		        <div class="project_tab" style="height:100%">
+					<ul style="list-style:none;border:solid 1px gray;float:left;width:25%;padding:10px 10px;height:500px">
+						<li id="obj1" class="resource">
+				            <img src="images/statusRunning.gif"/>
+							<img src="images/IconPNGs/NewServer.png" style="width:20px;height:auto;"/>
+							<span>MyServer</span>
+						</li>
+						<li  id="obj2" class="resource">
+							<img src="images/statusTerminated.gif"/>
+							<img src="images/IconPNGs/NewDB.png" style="width:20px;height:auto;"/>
+							<span>MyDB</span>
+						</li>
+					</ul>
+					<div style="border:solid 1px gray;float:right;width:65%;padding:10px 10px;height:500px">
+						Details
+				        <br/>
+				        <span id="name">Name: -</span><br/>
+				        <span id="id">Id: -</span><br/>
+				        <span id="resource_type">Type: -</span><br/>
+					</div>
+				</div>
+		    </div>
+		</div>	  
+	</div>
+</div>
