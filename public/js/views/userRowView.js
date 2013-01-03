@@ -1,16 +1,25 @@
-var usergroupapp = usergroupapp || {};
-
-$(function() {
+/*!
+ * StackStudio 2.0.0-rc.1 <http://stackstudio.transcendcomputing.com>
+ * (c) 2012 Transcend Computing <http://www.transcendcomputing.com/>
+ * Available under ASL2 license <http://www.apache.org/licenses/LICENSE-2.0.html>
+ */
+/*jshint smarttabs:true */
+/*global define:true console:true */
+define([
+        'jquery',
+        'underscore',
+        'backbone'
+], function( $, _, Backbone ) {
 	'use strict';
 
 	// Instance View
 	// --------------
 
-	instanceapp.InstanceView = Backbone.View.extend({
+	var InstanceView = Backbone.View.extend({
 
 		// The DOM events specific to an item.
 		events: {
-			'dblclick label':	'edit',
+			'dblclick label':	'edit'
 		},
 
 		// The InstanceView listens for changes to its model, re-rendering. Since there's
@@ -45,52 +54,11 @@ $(function() {
 			return this;
 		},
 
-		toggleVisible : function () {
-			this.$el.toggleClass( 'hidden',  this.isHidden());
-		},
-
-		isHidden : function () {
-			var isCompleted = this.model.get('completed');
-			return ( // hidden cases only
-				(!isCompleted && instanceapp.InstanceFilter === 'completed')
-				|| (isCompleted && instanceapp.InstanceFilter === 'active')
-			);
-		},
-
-		// Toggle the `"completed"` state of the model.
-		togglecompleted: function() {
-			this.model.toggle();
-		},
-
-		// Switch this view into `"editing"` mode, displaying the input field.
-		edit: function() {
-			this.$el.addClass('editing');
-			this.input.focus();
-		},
-
-		// Close the `"editing"` mode, saving changes to the instance.
-		close: function() {
-			var value = this.input.val().trim();
-
-			if ( value ) {
-				this.model.save({ title: value });
-			} else {
-				this.clear();
-			}
-
-			this.$el.removeClass('editing');
-		},
-
-		// If you hit `enter`, we're through editing the item.
-		updateOnEnter: function( e ) {
-			if ( e.which === ENTER_KEY ) {
-				this.close();
-			}
-		},
-
 		// Remove the item, destroy the model from *localStorage* and delete its view.
 		clear: function() {
 			this.model.destroy();
 		}
 	});
+
+	return InstanceView;
 });

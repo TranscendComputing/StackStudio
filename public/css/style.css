@@ -1,10 +1,10 @@
 /*
    Customized styles to be applied to the default stylesheet
 */
-html { 
-    font-size: 0.9em; 
+html {
+    font-size: 0.9em;
     background: #ffffff;
-    background-image: url(../images/BackgroundTile3.png);
+    /* missing: background-image: url(../images/BackgroundTile3.png); */
     background-repeat: repeat-x;
     background-position: 0 0;
 }
@@ -18,7 +18,7 @@ html, body, #content, header h1, header h2, header h3, #content h1, #content h2,
   text-align: center;
 }
 
-div.flash { 
+div.flash {
   margin-left: 50px;
   margin-right: 50px;
   margin-bottom: 15px;
@@ -95,7 +95,7 @@ ul.bar { list-style-type:none; margin-bottom: 0}
 ul.bar li { float: left; margin-right: 30px; width: 170px}
 
 
-/* 
+/*
    General form styles
 */
 form {}
@@ -283,12 +283,12 @@ form .field_error { color: #aa0000; }
     background: inherit;
     border: none;
 }
-.browse .stack { 
+.browse .stack {
     clear: both;
     padding-bottom: 15px;
-    margin-bottom: 20px; 
+    margin-bottom: 20px;
     background:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAABCAYAAACsXeyTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAFUlEQVQIHWNIS0sr/v//PwMMDzY+ADqMahlW4J91AAAAAElFTkSuQmCC') bottom left repeat-x;
-} 
+}
 .browse .stack h1 { font-size: 1.8em; padding: 0; margin: 0}
 
 /* Pagination */

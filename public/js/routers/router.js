@@ -1,27 +1,37 @@
-var instanceapp = instanceapp || {};
-
-(function() {
+/*!
+ * StackStudio 2.0.0-rc.1 <http://stackstudio.transcendcomputing.com>
+ * (c) 2012 Transcend Computing <http://www.transcendcomputing.com/>
+ * Available under ASL2 license <http://www.apache.org/licenses/LICENSE-2.0.html>
+ */
+define([
+        'jquery',
+        'backbone',
+        'collections/instances',
+        'common'
+], function( $, Backbone, Instances, Common ) {
 	'use strict';
 
-	// Instance Router
-	// ----------
-
-	var Workspace = Backbone.Router.extend({
+    /**
+     * Router the central dispatcher for matching URLs to code.
+     *
+     * @name Router
+     * @constructor
+     * @category Core
+     * @param {Object} initialization object.
+     * @returns {Object} Returns a Router instance.
+     */
+	var Router = Backbone.Router.extend({
 		routes:{
-			'*filter': 'setFilter'
+			'instance/:id': 'instanceDetail',
+			'projects/:id': 'projectDetail',
+			'*actions': 'defaultRoute'
 		},
 
-		setFilter: function( param ) {
-			// Set the current filter to be used
-			window.instanceapp.InstanceFilter = param.trim() || '';
-
-			// Trigger a collection filter event, causing hiding/unhiding
-			// of Instance view items
-			window.instanceapp.Instances.trigger('filter');
+		defaultRoute: function( actions ) {
+			$("#main").load('/dashboard.html');
+			console.log("Running default route.  Dashboard");
 		}
 	});
 
-	instanceapp.InstanceRouter = new Workspace();
-	Backbone.history.start();
-
-}());
+	return Router;
+});

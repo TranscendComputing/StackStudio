@@ -18,21 +18,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!-- link href="/favicon.png" rel="shortcut icon" / -->
-  <link href="<%=root%>css/screen_custom.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="<%=root%>css/style.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="<%=root%>css/browse.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="<%=root%>css/jquery-ui-1.8.17.custom.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="<%=root%>css/jquery.wijmo-open.2.3.2.css" media="screen, projection" rel="stylesheet" type="text/css">
   <!--Theme-->
-  <link href="http://cdn.wijmo.com/themes/rocket/jquery-wijmo.css" rel="stylesheet" type="text/css" title="rocket-jqueryui" />  
+  <link href="http://cdn.wijmo.com/themes/rocket/jquery-wijmo.css" rel="stylesheet" type="text/css" title="rocket-jqueryui" />
+  <!-- Pre-RequireJS -->
+  <!--  
   <script src="<%=root%>js/vendor/modernizr-2.6.2.min.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js" type="text/javascript"></script>
   <script src="<%=root%>js/vendor/template_support.js" type="text/javascript"></script>
   <script src="<%=root%>js/vendor/form_support.js" type="text/javascript"></script>
   <script src="<%=root%>js/vendor/browse_support.js" type="text/javascript"></script>
-  <script src="<%=root%>js/vendor/jquery.wijmo-open.all.2.3.2.min.js" type="text/javascript"></script>  
+  <script src="<%=root%>js/vendor/jquery.wijmo-open.all.2.3.2.min.js" type="text/javascript"></script>
+  -->  
   <!-- Codemirror editor support/-->
+  <!--
   <script src="<%=root%>js/vendor/codemirror-ui/lib/CodeMirror-2.3/lib/codemirror.js" type="text/javascript"></script>
   <script src="<%=root%>js/vendor/codemirror-ui/lib/CodeMirror-2.3/lib/util/searchcursor.js" type="text/javascript"></script>
   <link rel="stylesheet" href="<%=root%>js/vendor/codemirror-ui/lib/CodeMirror-2.3/lib/codemirror.css">
@@ -41,6 +44,8 @@
   <script src="js/vendor/codemirror-ui/js/codemirror-ui.js" type="text/javascript"></script>
   <link rel="stylesheet" href="js/vendor/codemirror-ui/css/codemirror-ui.css" type="text/css" media="screen" />
   <script src="js/vendor/ace/ace.js" type="text/javascript"></script>
+  -->
+  <script data-main="js/common" data-ace-base="js/vendor/ace" src="js/vendor/require-2.1.2.js"></script>
   
 <style>
     #project_resources
@@ -206,196 +211,197 @@
 </body>
 
 <script>
-    var editor = ace.edit("design_editor");        
-	$(function(){
-	  //Set custom 'accordion' action that allows
-	  //multiple panels to be open
-      $(".accordion").wijaccordion({
-        header: "h3",
-        requireOpenedPane: false
-      });
-	  //Set jQueryUI button style
-	  $('button').button();
-	  //Set jQueryUI tabs style
-	  $('#tabs').tabs();
-	  //Set newProject dialog box
-      $('#new_project').wijdialog({
-        autoOpen: false,
-        captionButtons: {
-            refresh: {visible: false},
-            pin: {visible: false},
-            toggle: {visible: false},
-            minimize: {visible: false},
-            maximize: {visible: false}
-        },
-        minWidth: 400,
-        modal: true
-      });
-      //Set horizontal splitter
-      $("#hsplitter").wijsplitter({
-           orientation: "horizontal",
-           resizeSettings: {ghost: false},
-           splitterDistance: 150, 
-           panel1: {
-                minSize:150, 
-                collapsed:false, 
-                scrollBars:"auto"
-           },
-           panel2: {
-                minSize:200, 
-                scrollBars:"auto"
-           }
-           
-      });  
-      
-      //New project create click handler
-      $('.hover_panel').click(function() {
-        $( "#new_project" ).wijdialog( "close" );
-        $("#project2").show();
-        $("div#my_projects").click();
-        $("a#new_project_link").click();
-        $(".projedit").click();
-        $("a#instance_link").click();
-        $("a#db_link").click();
-      });
-      
-	  //Project link click handler
-	  $('.projlink').click(function() {
-	  	$('.projectname').html($(this).attr('name'))
-	  	$('div#projectslide2').show();
-	  	$('div#projectslide1').hide();
-	  });
-	  
-      //Project link click handler
-      $('.newprojlink').click(function() {
-        $( "#new_project" ).wijdialog( "open" );
-      });	  
-	  
-	  //Resource link (add) handler
-	  $('.resource_link').click(function() {
-	    var content = editor.getValue();
-	    if(content.replace(/\s/g,"") != '')
-	    {
-	        content = jQuery.parseJSON(content);
-	    }else{
-	        content = {};
-	    }
-        if(content.Resources == null)
-        {
-            content.Resources = {};
-        }	    
-	  	if (($(this)).attr('name') == "NewComputeInstance")
-	  	{
-	  	    var newInstProps = {
-                Type:"AWS::EC2::Instance",
-                Properties:{
-                    ImageId: "DEFINE_ID",
-                    InstanceType: "m1.small",
-                    KeyName: "DEFINE_KEYNAME"
-                }
-            };
-            
-	  	    if(content.Resources.NewInstance == null)
-	  	    {
-	  	        content.Resources.NewInstance = newInstProps;
-	  	        //Pass the new item to the wijlist widget
-                resource_list.wijlist("addItem", {label: "NewInstance", value: "NewInstance"});
-	  	    }else{
-	  	        content.Resources.NewInstance2 = newInstProps;
-	  	        //Pass the new item to the wijlist widget
-                resource_list.wijlist("addItem", {label: "NewInstance2", value: "NewInstance2"});
-	  	    }
-	  	}else{
-	  	    var newDBProps = {
-                Type:"AWS::RDS::DBInstance",
-                Properties:{
-                    "AllocatedStorage": "5",
-                    "DBInstanceClass": "db.m1.small",
-                    "Engine": "MySQL",
-                    "EngineVersion": "5.5",
-                    "MasterUsername": "DB_USERNAME",
-                    "MasterUserPassword": "DB_PASSWORD"
-                }
-            };
-            
-            if(content.Resources.NewDB == null)
-            {
-                content.Resources.NewDB = newDBProps;
-                //Pass the new item to the wijlist widget
-                resource_list.wijlist("addItem", {label: "NewDB", value: "NewDB"});                
-            }else{
-                content.Resources.NewDB2 = newDBProps;
-                //Pass the new item to the wijlist widget
-                resource_list.wijlist("addItem", {label: "NewDB2", value: "NewDB2"});                
-            }
-	  	}
-	  	
-        //Render the list in the client browser
-        //resource_list.wijlist("option","autoSize",false);
-        resource_list.wijlist('renderList');
-        //Set editor value   
-        editor.setValue(JSON.stringify(content, null,'\t'));
-	  });	  
-	  
-	  //Edit project click handler
-	  $('.projedit').click(function() {
-	  	$('div#projmenu').hide('slow');
-	  	$('div#resource_menu').show('slow');
-	  	$('.projback').show();
-	  	$('.projedit').hide();
-	  	$('#tabs').show();
-	  	$('#projectdetails').hide();
-        editor.setTheme("ace/theme/twilight");
-        editor.getSession().setMode("ace/mode/json");	  	
-	  });
-	  
-	  //Back button click handler
-	  $('.projback').click(function() {
-	  	$('div#projmenu').show('slow');
-	  	$('div#resource_menu').hide('slow');
-	  	$('.projback').hide();
-	  	$('.projedit').show();
-	  	$('#tabs').hide();
-	  	$('#projectdetails').show();
-	  });
-	  
-	  /*
-	  //Setup codemirror editor in order to reference later
-	  //first set up some variables
-      var textarea = document.getElementById('design_editor');
-	  var uiOptions = { path : 'js/vendor/codemirror-ui/js/', searchMode : 'inline' }
-	  var codeMirrorOptions = { 
-	      mode: {name: "javascript", json: true},
-	      lineNumbers: true 
-	  };
-		
-	  //then create the editor
-	  editor = new CodeMirrorUI(textarea,uiOptions,codeMirrorOptions);
-	  editor.textarea.value = "";
-	  */
-	 
-	  //Setup resource list in order to reference later
-      $("#resource_list").wijlist({
-          autoSize: true
-      });	  
-      var resource_list = $("#resource_list");	  
-	<% if @set_open_project %>
-      $("#project1").show();
-      $("div#my_projects").click();
-      $("a#new_project_link").click();
-      $(".projedit").click();
-      $("a#instance_link").click();
-      $("a#instance_link").click();      
-    <% else %>
-      //Hide some components to begin with
-      $('div#projectslide2').hide();
-      $('.projback').hide();
-      $('div#resource_menu').hide();
-      $('#tabs').hide();
-      $('#project2').hide();
-      $('#project_instance').hide();
-      $('#project_database').hide();
-    <% end %> 
-	});
+    var editor = {};
+    require(['./common'], function(common) {
+       console.log("We now have 'common' functionality.");
+       require([
+           'jquery',
+           'ace',
+           'wijmo',
+           'jquery-ui'
+          ], function( $, ace ) {
+                  editor = ace.edit("design_editor");        
+                  //Set custom 'accordion' action that allows
+                  //multiple panels to be open
+                  $(".accordion").wijaccordion({
+                    header: "h3",
+                    requireOpenedPane: false
+                  });
+                  //Set jQueryUI button style
+                  $('button').button();
+                  //Set jQueryUI tabs style
+                  $('#tabs').tabs();
+                  //Set newProject dialog box
+                  $('#new_project').wijdialog({
+                    autoOpen: false,
+                    captionButtons: {
+                        refresh: {visible: false},
+                        pin: {visible: false},
+                        toggle: {visible: false},
+                        minimize: {visible: false},
+                        maximize: {visible: false}
+                    },
+                    minWidth: 400,
+                    modal: true
+                  });
+                  //Set horizontal splitter
+                  $("#hsplitter").wijsplitter({
+                       orientation: "horizontal",
+                       resizeSettings: {ghost: false},
+                       splitterDistance: 150, 
+                       panel1: {
+                            minSize:150, 
+                            collapsed:false, 
+                            scrollBars:"auto"
+                       },
+                       panel2: {
+                            minSize:200, 
+                            scrollBars:"auto"
+                       }
+                       
+                  });  
+                  
+                  //New project create click handler
+                  $('.hover_panel').click(function() {
+                    $( "#new_project" ).wijdialog( "close" );
+                    $("#project2").show();
+                    $("div#my_projects").click();
+                    $("a#new_project_link").click();
+                    $(".projedit").click();
+                    $("a#instance_link").click();
+                    $("a#db_link").click();
+                  });
+                  
+                  //Project link click handler
+                  $('.projlink').click(function() {
+                    $('.projectname').html($(this).attr('name'))
+                    $('div#projectslide2').show();
+                    $('div#projectslide1').hide();
+                  });
+                  
+                  //Project link click handler
+                  $('.newprojlink').click(function() {
+                    $( "#new_project" ).wijdialog( "open" );
+                  });     
+                  
+                  //Resource link (add) handler
+                  $('.resource_link').click(function() {
+                    var content = editor.getValue();
+                    if(content.replace(/\s/g,"") != '')
+                    {
+                        content = jQuery.parseJSON(content);
+                    }else{
+                        content = {};
+                    }
+                    if(content.Resources == null)
+                    {
+                        content.Resources = {};
+                    }       
+                    if (($(this)).attr('name') == "NewComputeInstance")
+                    {
+                        var newInstProps = {
+                            Type:"AWS::EC2::Instance",
+                            Properties:{
+                                ImageId: "DEFINE_ID",
+                                InstanceType: "m1.small",
+                                KeyName: "DEFINE_KEYNAME"
+                            }
+                        };
+                        
+                        if(content.Resources.NewInstance == null)
+                        {
+                            content.Resources.NewInstance = newInstProps;
+                            //Pass the new item to the wijlist widget
+                            resource_list.wijlist("addItem", {label: "NewInstance", value: "NewInstance"});
+                        }else{
+                            content.Resources.NewInstance2 = newInstProps;
+                            //Pass the new item to the wijlist widget
+                            resource_list.wijlist("addItem", {label: "NewInstance2", value: "NewInstance2"});
+                        }
+                    }else{
+                        var newDBProps = {
+                            Type:"AWS::RDS::DBInstance",
+                            Properties:{
+                                "AllocatedStorage": "5",
+                                "DBInstanceClass": "db.m1.small",
+                                "Engine": "MySQL",
+                                "EngineVersion": "5.5",
+                                "MasterUsername": "DB_USERNAME",
+                                "MasterUserPassword": "DB_PASSWORD"
+                            }
+                        };
+                        
+                        if(content.Resources.NewDB == null)
+                        {
+                            content.Resources.NewDB = newDBProps;
+                            //Pass the new item to the wijlist widget
+                            resource_list.wijlist("addItem", {label: "NewDB", value: "NewDB"});                
+                        }else{
+                            content.Resources.NewDB2 = newDBProps;
+                            //Pass the new item to the wijlist widget
+                            resource_list.wijlist("addItem", {label: "NewDB2", value: "NewDB2"});                
+                        }
+                    }
+                    
+                    //Render the list in the client browser
+                    //resource_list.wijlist("option","autoSize",false);
+                    resource_list.wijlist('renderList');
+                    //Set editor value   
+                    editor.setValue(JSON.stringify(content, null,'\t'));
+                  });     
+                  
+                  //Edit project click handler
+                  $('.projedit').click(function() {
+                    $('div#projmenu').hide('slow');
+                    $('div#resource_menu').show('slow');
+                    $('.projback').show();
+                    $('.projedit').hide();
+                    $('#tabs').show();
+                    $('#projectdetails').hide();
+                    editor.setTheme("ace/theme/twilight");
+                    editor.getSession().setMode("ace/mode/json");       
+                  });
+                  
+                  //Back button click handler
+                  $('.projback').click(function() {
+                    $('div#projmenu').show('slow');
+                    $('div#resource_menu').hide('slow');
+                    $('.projback').hide();
+                    $('.projedit').show();
+                    $('#tabs').hide();
+                    $('#projectdetails').show();
+                  });
+                  
+                  /*
+                  //Setup codemirror editor in order to reference later
+                  //first set up some variables
+                  var textarea = document.getElementById('design_editor');
+                  var uiOptions = { path : 'js/vendor/codemirror-ui/js/', searchMode : 'inline' }
+                  var codeMirrorOptions = { 
+                      mode: {name: "javascript", json: true},
+                      lineNumbers: true 
+                  };
+                    
+                  //then create the editor
+                  editor = new CodeMirrorUI(textarea,uiOptions,codeMirrorOptions);
+                  editor.textarea.value = "";
+                  */
+                 
+                  //Setup resource list in order to reference later
+                  $("#resource_list").wijlist({
+                      autoSize: true
+                  });     
+                  var resource_list = $("#resource_list");    
+                
+                  //Hide some components to begin with
+                  $('div#projectslide2').hide();
+                  $('.projback').hide();
+                  $('div#resource_menu').hide();
+                  $('#tabs').hide();
+                  $('#project2').hide();
+                  $('#project_instance').hide();
+                  $('#project_database').hide();               
+          }); 
+    });
 </script>
 </html>

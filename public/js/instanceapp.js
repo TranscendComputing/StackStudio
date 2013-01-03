@@ -1,8 +1,15 @@
-var instanceapp = instanceapp || {};
+/*!
+ * StackStudio 2.0.0-rc.1 <http://stackstudio.transcendcomputing.com>
+ * (c) 2012 Transcend Computing <http://www.transcendcomputing.com/>
+ * Available under ASL2 license <http://www.apache.org/licenses/LICENSE-2.0.html>
+ */
+require(['./common'], function (common) {
+	require([
+	         'views/instanceAppView'
+	        ], function( InstancesView ) {
 
-$(function() {
+		// Initialize the application view
+		new InstancesView();
 
-	// Kick things off by creating the Instances app.
-	instanceapp.instancesview = new instanceapp.InstancesView();
-
+	});
 });
