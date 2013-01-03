@@ -9,9 +9,16 @@ Getting Started
 
 1. This application requires the StackCore back end, for cloud operations (coming soon)
 
-2. To launch, change directory to <tt>StackStudio</tt> and start the web server:
-       <tt>cd StackStudio; bundle exec rackup -i . -p 8000</tt>
-       (where 8000 is the listening port)
+2. We use Node.JS and Grunt for build and release steps.  You'll need to install Node and NPM, from:
+   http://nodejs.org/#download
+
+3. Install Grunt and dependencies, cd to the <tt>StackStudio</tt> directory and run NPM:
+   <tt>cd StackStudio</tt>
+   <tt>npm install</tt>
+
+4. To launch a web server, you can run a task:
+   <tt>grunt run</tt>
+   (9000 is the default listening port)
 
 3. Go to http://localhost:8000/ and you'll see the StackStudio Dashboard
 
