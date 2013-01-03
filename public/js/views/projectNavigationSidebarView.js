@@ -9,18 +9,33 @@ define([
         'backbone',
         'text!templates/projects/projectsNavSidebarTemplate.html',
         'collections/projects',
-        'common'
+        'common',
+        'wijmo'
 ], function( $, _, Backbone, sidebarTemplate, projects, Common ) {
     
     var SidebarView = Backbone.View.extend({
         el: "#sidebar",
         
         render: function(){
-            var compiledTemplate = _.template( sidebarTemplate);
+            var compiledTemplate = _.template(sidebarTemplate);
             
-            this.el.append(compiledTemplate);
+            this.$el.html(compiledTemplate);
+            $(".accordion").wijaccordion({
+                header: "h3",
+                requireOpenedPane: false
+            });
         }
     });
+    
+    var projectSidebar;
+    
+    Common.router.on('route:projects', function (id) {
+        if (!projectSidebar) {
+            projectSidebar = new SidebarView;
+        }
+        console.log("Got project detail route.");
+        projectSidebar.render();
+    }, this);
     
     return SidebarView;
 });

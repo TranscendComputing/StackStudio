@@ -7,12 +7,13 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'text!templates/projects/projectsTemplate.html',
         'views/projectNavigationSidebarView',
         'models/project',
         'collections/projects',
         'icanhaz',
         'common'
-], function( $, _, Backbone, ProjectNavSidebarView, Project, projects, ich, Common ) {
+], function( $, _, Backbone, projectsTemplate, ProjectNavSidebarView, Project, projects, ich, Common ) {
 	'use strict';
 
 	// The Projects Navigation View
@@ -56,9 +57,8 @@ define([
 			projects.on( 'reset', this.addAll, this );
 			projects.on( 'all', this.render, this );
 			
-			// add the sidebar
-            //var projectNavSidebarView = new ProjectNavSidebarView();
-            //sidebarView.render();
+			var compiledTemplate = _.template(projectsTemplate);
+			this.$el.html(compiledTemplate);
 
 			// Fetch will pull results from the server
 			projects.fetch();
@@ -75,8 +75,9 @@ define([
 				// Refuse to add projects until they're initialized.
 				return;
 			}
-			var view = new ProjectView({ model: project });
-			view.render();
+			//TODO
+			//var view = new ProjectView({ model: project });
+			//view.render();
 		},
 
 		// Add all items in the **Projects** collection at once.
@@ -89,6 +90,10 @@ define([
 				new Project().attributes
 			));
 			$('.save_button').button();
+		},
+		
+		open : function () {
+		   //TODO  
 		},
 
 		select : function (event, id) {
@@ -124,10 +129,10 @@ define([
 	
     Common.router.on('route:projects', function (id) {
         if ( !projectsView ) {
-            new ProjectsView();
+            projectsView = new ProjectsView();
         }
         console.log("Got project detail route.");
-        this.selectOne(event, id);
+        //this.selectOne(event, id);
     }, this);
     
 	/*

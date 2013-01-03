@@ -1,0 +1,38 @@
+[
+    {
+        "id": "5032ad95d75aa23cf40000e2",
+        "status": "active",
+        "name": "SampleRailsApp",
+        "description": "New StackStudio project.",
+        "project_type": "standard",
+        "owner": {
+            "id": "5019392cd75aa23622000003",
+            "org_id": "50999f1941bed24e9100000d",
+            "login": "cstewart",
+            "first_name": "curtis",
+            "last_name": "stewart"
+        },
+        "cloud_account": {},
+        "members": [],
+        "group_projects": [],
+        "versions": [],
+        "provisioned_versions": []
+    },
+    {
+        "id": "50525bc241bed2710c0000d5",
+        "status": "active",
+        "name": "DrupalMultiAZ",
+        "description": "New StackStudio project.",
+        "project_type": "standard",
+        "owner": {
+            "id": "4fee2d3ad75aa27582000030",
+            "org_id": "50999f1a41bed24e91000011",
+            "login": "admin"
+        },
+        "cloud_account": {},
+        "members": [],
+        "group_projects": [],
+        "versions": [],
+        "provisioned_versions": []
+    }
+]
