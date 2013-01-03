@@ -74,6 +74,12 @@ module.exports = function(grunt) {
       base: 'public'
     },
     connect: {
+    	sstudio: {
+    		options: {
+    			port: 9000,
+    			base: 'public'
+    		}
+    	},
         test : {
             port : 9001
         }
@@ -152,8 +158,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-connect');
 
   // Default task.
   grunt.registerTask('default', ['jshint']);
+  grunt.registerTask('run', ['connect:sstudio', 'watch']);
 
 };

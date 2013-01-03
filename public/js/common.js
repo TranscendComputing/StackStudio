@@ -44,6 +44,12 @@ requirejs.config({
         'jquery.mousewheel': {
             deps: ['jquery'],
             exports: 'jQuery.fn.mousewheel'
+        },
+        'ace': {
+        	exports: 'ace'
+        },
+        'wijmo': {
+        	deps: ['jquery-ui']
         }
 	},
 	paths: {
@@ -58,7 +64,9 @@ requirejs.config({
 		'backbone': 'backbone-0.9.9',
 		'icanhaz': 'ICanHaz',
 		'jquery.terminal': 'jquery.terminal-0.4.22',
-		'jquery.mousewheel': 'jquery.mousewheel-min'
+		'jquery.mousewheel': 'jquery.mousewheel-min',
+		'ace': 'ace/ace',
+		'wijmo': 'jquery.wijmo-open.all.2.3.2.min'
 	}
 });
 
