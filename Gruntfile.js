@@ -12,14 +12,14 @@ module.exports = function(grunt) {
         'Transcend Computing; Licensed APL2 */'
     },
     source: {
-        files: ['public/js/interpreters/**/*.js',
-                'public/js/models/**/*.js', 'public/js/views/**/*.js', 'public/js/collections/**/*.js']
+        files: ['js/interpreters/**/*.js',
+                'js/models/**/*.js', 'js/views/**/*.js', 'js/collections/**/*.js']
     },
     lint: {
       files: ['grunt.js',
-              'public/spec/**/*.js',
-              'public/js/interpreters/**/*.js',
-              'public/js/models/**/*.js', 'public/js/views/**/*.js', 'public/js/collections/**/*.js']
+              'spec/**/*.js',
+              'js/interpreters/**/*.js',
+              'js/models/**/*.js', 'js/views/**/*.js', 'js/collections/**/*.js']
     },
     concat: {
         options: {
@@ -27,7 +27,7 @@ module.exports = function(grunt) {
             banner: '<%= meta.banner %>'
         },
         dist: {
-            src: ['public/js/main.js', 'public/js/plugins.js'],
+            src: ['js/main.js', 'js/plugins.js'],
             dest: 'dist/StackStudio.js'
         }
     },
@@ -48,9 +48,9 @@ module.exports = function(grunt) {
     },
     jshint: {
       all: ['grunt.js',
-              'public/spec/**/*.js',
-              'public/js/interpreters/**/*.js',
-              'public/js/models/**/*.js', 'public/js/views/**/*.js', 'public/js/collections/**/*.js'],
+              'spec/**/*.js',
+              'js/interpreters/**/*.js',
+              'js/models/**/*.js', 'js/views/**/*.js', 'js/collections/**/*.js'],
       options: {
         curly: true,
         eqeqeq: true,
@@ -71,7 +71,6 @@ module.exports = function(grunt) {
     uglify: {},
     server: {
       port: 9001,
-      base: 'public'
     },
     connect: {
     	sstudio: {
@@ -86,15 +85,14 @@ module.exports = function(grunt) {
     },
     jasmine: {
         requirejs: {
-            src: '<%= source.files %>',
+            src:  '<%= source.files %>',
+            junit: { output: 'junit/' },
             options: {
                 specs: 'public/spec/*.js',
-//                //helpers: 'spec/*Helper.js',
-//                host: 'http://127.0.0.1:9001/',
                 template: 'requirejs',
                 templateOptions: {
                     requireConfig: {
-                        baseUrl: 'public/js/vendor',
+                        baseUrl: 'public/js',
                         // The shim config allows us to configure dependencies for
                         // scripts that do not call define() to register a module
                         shim: {
@@ -133,18 +131,18 @@ module.exports = function(grunt) {
                             }
                         },
                         paths: {
-                            collections: '../collections',
-                            models: '../models',
-                            routers: '../routers',
-                            views: '../views',
-                            interpreters: '../interpreters',
-                            'jquery': 'jquery-1.8.3.min',
-                            'jquery-ui': 'jquery-ui-1.8.17.custom.min',
-                            'underscore': 'lodash',
-                            'backbone': 'backbone-0.9.9',
-                            'icanhaz': 'ICanHaz',
-                            'jquery.terminal': 'jquery.terminal-0.4.22',
-                            'jquery.mousewheel': 'jquery.mousewheel-min'
+                            collections: './collections',
+                            models: './models',
+                            routers: './routers',
+                            views: './views',
+                            interpreters: './interpreters',
+                            'jquery': 'vendor/jquery-1.8.3.min',
+                            'jquery-ui': 'vendor/jquery-ui-1.8.17.custom.min',
+                            'underscore': 'vendor/lodash',
+                            'backbone': 'vendor/backbone-0.9.9',
+                            'icanhaz': 'vendor/ICanHaz',
+                            'jquery.terminal': 'vendor/jquery.terminal-0.4.22',
+                            'jquery.mousewheel': 'vendor/jquery.mousewheel-min'
                         }
                     }
                 }
