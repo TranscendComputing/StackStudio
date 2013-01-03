@@ -1,3 +1,4 @@
+/*jshint smarttabs:true */
 /*global module:false*/
 module.exports = function(grunt) {
 
@@ -12,14 +13,16 @@ module.exports = function(grunt) {
         'Transcend Computing; Licensed APL2 */'
     },
     source: {
-        files: ['js/interpreters/**/*.js',
-                'js/models/**/*.js', 'js/views/**/*.js', 'js/collections/**/*.js']
+        files: ['public/js/interpreters/**/*.js',
+                'public/js/models/**/*.js', 'public/js/views/**/*.js', 'public/js/collections/**/*.js']
+    },
+    spec: {
+        files: ['public/spec/**/*.js']
     },
     lint: {
-      files: ['grunt.js',
-              'spec/**/*.js',
-              'js/interpreters/**/*.js',
-              'js/models/**/*.js', 'js/views/**/*.js', 'js/collections/**/*.js']
+      files: ['Gruntfile.js',
+              '<%= spec.files %>',
+              '<%= source.files %>']
     },
     concat: {
         options: {
@@ -27,7 +30,7 @@ module.exports = function(grunt) {
             banner: '<%= meta.banner %>'
         },
         dist: {
-            src: ['js/main.js', 'js/plugins.js'],
+            src: ['public/js/main.js', 'public/js/plugins.js'],
             dest: 'dist/StackStudio.js'
         }
     },
@@ -44,13 +47,10 @@ module.exports = function(grunt) {
     },
     watch: {
       files: '<%= lint.files %>',
-      tasks: 'lint qunit'
+      tasks: 'default'
     },
     jshint: {
-      all: ['grunt.js',
-              'spec/**/*.js',
-              'js/interpreters/**/*.js',
-              'js/models/**/*.js', 'js/views/**/*.js', 'js/collections/**/*.js'],
+      all: '<%= lint.files %>',
       options: {
         curly: true,
         eqeqeq: true,
@@ -66,33 +66,30 @@ module.exports = function(grunt) {
         globals: {
             jQuery: true
         }
-      },
+      }
     },
-    uglify: {},
     server: {
-      port: 9001,
+      port: 9001
     },
     connect: {
-    	sstudio: {
-    		options: {
-    			port: 9000,
-    			base: 'public'
-    		}
-    	},
+        sstudio: {
+            options: {
+                port: 9000,
+                base: 'public'
+            }
+        },
         test : {
             port : 9001
         }
     },
     jasmine: {
         requirejs: {
-            src:  '<%= source.files %>',
-            junit: { output: 'junit/' },
             options: {
-                specs: 'public/spec/*.js',
+                specs: '<%= spec.files %>',
                 template: 'requirejs',
                 templateOptions: {
                     requireConfig: {
-                        baseUrl: 'public/js',
+                        baseUrl: '',
                         // The shim config allows us to configure dependencies for
                         // scripts that do not call define() to register a module
                         shim: {
@@ -131,18 +128,18 @@ module.exports = function(grunt) {
                             }
                         },
                         paths: {
-                            collections: './collections',
-                            models: './models',
-                            routers: './routers',
-                            views: './views',
-                            interpreters: './interpreters',
-                            'jquery': 'vendor/jquery-1.8.3.min',
-                            'jquery-ui': 'vendor/jquery-ui-1.8.17.custom.min',
-                            'underscore': 'vendor/lodash',
-                            'backbone': 'vendor/backbone-0.9.9',
-                            'icanhaz': 'vendor/ICanHaz',
-                            'jquery.terminal': 'vendor/jquery.terminal-0.4.22',
-                            'jquery.mousewheel': 'vendor/jquery.mousewheel-min'
+                            collections: 'public/js/collections',
+                            models: 'public/js/models',
+                            routers: 'public/js/routers',
+                            views: 'public/js/views',
+                            interpreters: 'public/js/interpreters',
+                            'jquery': 'public/js/vendor/jquery-1.8.3.min',
+                            'jquery-ui': 'public/js/vendor/jquery-ui-1.8.17.custom.min',
+                            'underscore': 'public/js/vendor/lodash',
+                            'backbone': 'public/js/vendor/backbone-0.9.9',
+                            'icanhaz': 'public/js/vendor/ICanHaz',
+                            'jquery.terminal': 'public/js/vendor/jquery.terminal-0.4.22',
+                            'jquery.mousewheel': 'public/js/vendor/jquery.mousewheel-min'
                         }
                     }
                 }
@@ -159,7 +156,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-connect');
 
   // Default task.
-  grunt.registerTask('default', ['jshint']);
+  grunt.registerTask('default', ['jshint', 'jasmine']);
   grunt.registerTask('run', ['connect:sstudio', 'watch']);
+  grunt.registerTask('build', ['jasmine', 'concat', 'uglify']);
 
 };
