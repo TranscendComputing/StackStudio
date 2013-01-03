@@ -3,15 +3,15 @@
 module.exports = function(grunt) {
 
   // Project configuration.
-  grunt.initConfig({
-    meta: {
-      version: '2.0.0-rc1',
-      banner: '/*! StackStudio - v<%= meta.version %> - ' +
-        '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-        '* https://github.com/TranscendComputing/StackStudio\n' +
-        '* Copyright (c) <%= grunt.template.today("yyyy") %> ' +
-        'Transcend Computing; Licensed APL2 */'
-    },
+    grunt.initConfig({
+      pkg: grunt.file.readJSON('package.json'),
+      meta: {
+          banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
+          '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
+          '* https://github.com/TranscendComputing/StackStudio\n' +
+          '* Copyright (c) <%= grunt.template.today("yyyy") %> ' +
+          'Transcend Computing; Licensed APL2 */'
+      },
     source: {
         files: ['public/js/interpreters/**/*.js',
                 'public/js/models/**/*.js', 'public/js/views/**/*.js', 'public/js/collections/**/*.js']
@@ -31,7 +31,7 @@ module.exports = function(grunt) {
         },
         dist: {
             src: ['public/js/main.js', 'public/js/plugins.js'],
-            dest: 'dist/StackStudio.js'
+            dest: 'dist/<%= pkg.name %>.js'
         }
     },
     uglify: {
@@ -41,7 +41,7 @@ module.exports = function(grunt) {
         },
         misc: {
             files: {
-                'dist/StackStudio.min.js': ['<%= source.files %>', '<%= concat.dist.dest %>']
+                'dist/<%= pkg.name %>.min.js': ['<%= source.files %>', '<%= concat.dist.dest %>']
             }
         }
     },
