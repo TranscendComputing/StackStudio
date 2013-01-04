@@ -51,7 +51,8 @@ define([
 		// loading any preexisting instances.
 		initialize: function() {
 			var compiledTemplate = _.template(instancesTemplate);
-            this.$el.html(compiledTemplate)
+            this.$el.html(compiledTemplate);
+            ich.refresh();
             _.bindAll(this, 'selectOne');
 			$('#new_instance').button();
 			$('#id_refresh').button();
@@ -113,7 +114,7 @@ define([
 				}
 			});
 			this.selectedId = instance;
-			$('#details').html(ich.detail(selectedModel.attributes));
+			$('#details').html(ich.instance_detail(selectedModel.attributes));
 		}
 	});
 
