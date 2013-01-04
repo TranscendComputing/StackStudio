@@ -1,0 +1,38 @@
+<div>
+    <table id="instance_table" style="width:100%">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Instance</th>
+                <th>Key</th>
+                <th>Running</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    <br/>
+    <button id="id_refresh">Refresh</button>
+    <button id="new_instance">Create New Instance</button>
+    <section id="details"></section>
+</div>
+
+<script type="text/template" id="instance-detail">
+    <a name="instance-detail">Instance Detail</a>
+    <div style="border:5px solid firebrick;">
+        <div>Name: <%- name %>
+        <div>Instance ID: <%- instanceId %>
+        <div>Key Name: <%- keyName %>
+    </div>
+</script>
+<script type="text/template" id="instance-form">
+    <div>
+        <label for="id_name">Name:</label><br/>
+        <input id="id_name" name="name"><%- name %></input><br/>
+        <label for="id_description">Description:</label><br/>
+        <input id="id_description" name="description"><%- description %></input><br/>
+        <button id="id_save_new">Create New Instance</button><br/>
+    </div>
+</script>

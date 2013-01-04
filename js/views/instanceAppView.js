@@ -9,13 +9,14 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'text!templates/resources/instancesTemplate.html',
         'models/instance',
         'collections/instances',
         'views/instanceRowView',
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, Instance, instances, InstanceView, ich, Common ) {
+], function( $, _, Backbone, instancesTemplate, Instance, instances, InstanceView, ich, Common ) {
 	'use strict';
 
 	// The Instances Application View
@@ -37,31 +38,27 @@ define([
 
 		// Instead of generating a new element, bind to the existing skeleton of
 		// the App already present in the HTML.
-		el: '#instanceapp',
+		el: '#resource_app',
 
 		// Delegated events for creating new instances, etc.
 		events: {
 			'click #new_instance': 'createNew',
-			'click #instance-table tbody': 'selectOne'
+			'click #instance_table tbody': 'selectOne'
 		},
 
 		// At initialization we bind to the relevant events on the `Instances`
 		// collection, when items are added or changed. Kick things off by
 		// loading any preexisting instances.
 		initialize: function() {
+			var compiledTemplate = _.template(instancesTemplate);
+            this.$el.html(compiledTemplate)
             _.bindAll(this, 'selectOne');
 			$('#new_instance').button();
 			$('#id_refresh').button();
-            this.$detail = this.$('#detail');
-            this.$table = $('#instance-table').dataTable({"bJQueryUI": true});
+            this.$table = $('#instance_table').dataTable({"bJQueryUI": true});
 			instances.on( 'add', this.addOne, this );
 			instances.on( 'reset', this.addAll, this );
 			instances.on( 'all', this.render, this );
-
-		    Common.router.on('route:instanceDetail', function (id) {
-		        console.log("Got instance detail route.");
-		        this.selectOne(event, id);
-		    }, this);
 
 			// Fetch will pull results from the server
 			instances.fetch();
@@ -105,7 +102,7 @@ define([
 				$(event.target.parentNode).addClass('row_selected');
 				// Find the second column of the clicked row; that's instance ID
 				instance = $(event.target.parentNode).find(':nth-child(2)').html();
-				Common.router.navigate("#/instance/"+instance, {trigger: false});
+				Common.router.navigate("#resources/instances/"+instance, {trigger: false});
 			} else {
 				instance = id;
 				console.log("Selecting ID:", id);
@@ -116,17 +113,32 @@ define([
 				}
 			});
 			this.selectedId = instance;
-			this.$detail.html(ich.instance_detail(selectedModel.attributes));
+			$('#details').html(ich.detail(selectedModel.attributes));
 		}
 	});
 
-	/*
+	var instancesView;
+	
+    Common.router.on('route:resources', function () {
+        if (!instancesView) {
+        	instancesView = new InstancesView();
+        }
+        console.log("Got resource route.");
+    }, this);
+    
+    Common.router.on('route:instances', function () {
+        if (!instancesView) {
+        	instancesView = new InstancesView();
+        }
+        console.log("Got resource instance route.");
+    }, this);
+    
     Common.router.on('route:instanceDetail', function (id) {
-        alert( "Get instance number " + id );
-    });
-
-	var instancesView = new InstancesView();
-	*/
+        if (!instancesView) {
+        	instancesView = new InstancesView();
+        }
+        console.log("Got resource instance detail " + id + " route.");
+    }, this);
 
 	return InstancesView;
 });

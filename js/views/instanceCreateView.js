@@ -32,13 +32,13 @@ define([
 
 		// Populate the column values in the table with the model.
 		render: function() {
-			var selector_i = "#instance-table tr:nth-child(";
-			var selector_n = "#instance-table tr td:contains('";
+			var selector_i = "#instance_table tr:nth-child(";
+			var selector_n = "#instance_table tr td:contains('";
 			var row = $(selector_n+this.model.get("instanceId")+"')").parent();
 		    console.log("Old row:", row);
 		    // TODO: if there's an existing row, update it.
 		    // otherwise; create a new row.
-			var added = $('#instance-table').dataTable().
+			var added = $('#instance_table').dataTable().
 				fnAddData( [
 				            this.model.get("name"),
 				            this.model.get("instanceId"),
