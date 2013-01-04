@@ -3,6 +3,8 @@
  * (c) 2012 Transcend Computing <http://www.transcendcomputing.com/>
  * Available under ASL2 license <http://www.apache.org/licenses/LICENSE-2.0.html>
  */
+/*jshint smarttabs:true */
+/*global define:true console:true */
 define([
         'jquery',
         'underscore',
@@ -41,10 +43,8 @@ define([
 
 		// Delegated events for creating new instances, etc.
 		events: {
-			'dblclick .project_item' : 'open',
-			'click .project_item' : 'select',
-			'click #new_project' : 'createNew',
-			'click #edit_project' : 'open'
+		    'click .projlink': 'selectOne',
+			'click #new_project' : 'createNew'
 		},
 
 		// At initialization we bind to the relevant events on the `Instances`
@@ -62,34 +62,13 @@ define([
             //Set jQueryUI tabs style
             $('#tabs').tabs();
             this.$detail = this.$('#detail');
-			projects.on( 'add', this.addOne, this );
-			projects.on( 'reset', this.addAll, this );
-			projects.on( 'all', this.render, this );
-			
-
-			// Fetch will pull results from the server
-			projects.fetch();
+            
+            projects.fetch({update: true});
 		},
 
 		// Add project elements to the page
 		render: function() {
 
-		},
-
-		// Add a single instance item to the list by creating a view for it.
-		addOne: function( project ) {
-			if (project.get('id') === "") {
-				// Refuse to add projects until they're initialized.
-				return;
-			}
-			//TODO
-			//var view = new ProjectView({ model: project });
-			//view.render();
-		},
-
-		// Add all items in the **Projects** collection at once.
-		addAll: function() {
-			projects.each(this.addOne, this);
 		},
 
 		createNew : function () {
@@ -99,31 +78,41 @@ define([
 			$('.save_button').button();
 		},
 		
-		open : function () {
-            //TODO  
-		},
+		
+        selectOne : function (event, id) {
+            var project, selectedModel;
+            console.log("Id2:", id);
+            console.log("event:", event);
+            if (id && this.selectedId === id) {
+                return;
+            }
+            
+            projects.each(function(e) {
+                if (e.get('id') === id) {
+                    selectedModel = e;
+                }
+            });           
 
-		select : function (event, id) {
-			var p, project, selectedModel;
-			console.log("Id2:", id);
-			console.log("event:", event);
-			if (id && this.selectedId === id) {
-				return;
-			}
-
-			this.selectedId = project;
-			this.$detail.html(ich.project_detail(selectedModel.attributes));
-		}
+            this.selectedId = id;
+            $("#projdetails").html(ich.project_details(selectedModel.attributes));
+        }
 	});
 	
-	var projectsView;
+	var projView;
 	
-    Common.router.on('route:projects', function (id) {
-        if ( !projectsView ) {
-            projectsView = new ProjectsView();
+    Common.router.on('route:projects', function () {
+        if ( !projView ) {
+            projView = new ProjectsView();
+        }
+        console.log("Got project app route.");
+    }, this);
+    
+    Common.router.on('route:projectDetail', function (id) {
+        if ( !projView ) {
+            projView = new ProjectsView();
         }
         console.log("Got project detail route.");
-        //this.selectOne(event, id);
+        projView.selectOne(event, id);
     }, this);
 
 	return ProjectsView;

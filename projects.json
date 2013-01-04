@@ -3,7 +3,7 @@
         "id": "5032ad95d75aa23cf40000e2",
         "status": "active",
         "name": "SampleRailsApp",
-        "description": "New StackStudio project.",
+        "description": "Build the default sample Rails application dynamically at runtime using the Amazon Linux AMI and Cloud-init.",
         "project_type": "standard",
         "owner": {
             "id": "5019392cd75aa23622000003",
@@ -12,27 +12,47 @@
             "first_name": "curtis",
             "last_name": "stewart"
         },
-        "cloud_account": {},
-        "members": [],
+        "cloud_account": {
+            "name": "AWS Transcend Dev"
+        },
+        "members": [
+            {"name":"cstewart"},
+            {"name":"bjones"},
+            {"name":"jgardner"}
+        ],
         "group_projects": [],
-        "versions": [],
+        "versions": [
+            {"number":"1.0.0"},
+            {"number":"1.2.0"},
+            {"number":"1.2.3"}
+        ],
         "provisioned_versions": []
     },
     {
         "id": "50525bc241bed2710c0000d5",
         "status": "active",
         "name": "DrupalMultiAZ",
-        "description": "New StackStudio project.",
+        "description": "Drupal is an open source content management platform powering millions of websites and applications. ",
         "project_type": "standard",
         "owner": {
             "id": "4fee2d3ad75aa27582000030",
             "org_id": "50999f1a41bed24e91000011",
             "login": "admin"
         },
-        "cloud_account": {},
-        "members": [],
+        "cloud_account": {
+            "name": "Euca MSI2"
+        },
+        "members": [
+            {"name":"rarora"},
+            {"name":"asanz"},
+            {"name":"thite"}
+        ],
         "group_projects": [],
-        "versions": [],
+        "versions": [
+            {"number":"0.1.0"},
+            {"number":"1.3.0"},
+            {"number":"2.1.1"}
+        ],
         "provisioned_versions": []
     }
 ]

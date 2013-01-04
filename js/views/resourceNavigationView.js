@@ -3,6 +3,8 @@
  * (c) 2012 Transcend Computing <http://www.transcendcomputing.com/>
  * Available under ASL2 license <http://www.apache.org/licenses/LICENSE-2.0.html>
  */
+/*jshint smarttabs:true */
+/*global define:true console:true */
 define([
         'jquery',
         'underscore',
@@ -30,7 +32,7 @@ define([
 
 		initialize: function() {
             var compiledTemplate = _.template(resourcesTemplate);
-            this.$el.html(compiledTemplate)
+            this.$el.html(compiledTemplate);
 		}
 	});
 	
