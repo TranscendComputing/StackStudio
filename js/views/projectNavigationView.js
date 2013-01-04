@@ -12,7 +12,9 @@ define([
         'models/project',
         'collections/projects',
         'icanhaz',
-        'common'
+        'common',
+        'wijmo',
+        'jquery-ui'
 ], function( $, _, Backbone, projectsTemplate, ProjectNavSidebarView, Project, projects, ich, Common ) {
 	'use strict';
 
@@ -50,15 +52,20 @@ define([
 		// loading any preexisting instances.
 		initialize: function() {
             _.bindAll(this, 'select');
+			var compiledTemplate = _.template(projectsTemplate);
+			this.$el.html(compiledTemplate);
+			
 			$('#new_project').button();
 			$('#edit_project').button();
+            //Set jQueryUI button style
+            $('button').button();
+            //Set jQueryUI tabs style
+            $('#tabs').tabs();
             this.$detail = this.$('#detail');
 			projects.on( 'add', this.addOne, this );
 			projects.on( 'reset', this.addAll, this );
 			projects.on( 'all', this.render, this );
 			
-			var compiledTemplate = _.template(projectsTemplate);
-			this.$el.html(compiledTemplate);
 
 			// Fetch will pull results from the server
 			projects.fetch();
@@ -93,7 +100,7 @@ define([
 		},
 		
 		open : function () {
-		   //TODO  
+            //TODO  
 		},
 
 		select : function (event, id) {
@@ -103,23 +110,7 @@ define([
 			if (id && this.selectedId === id) {
 				return;
 			}
-			/*
-			this.$table.$('tr').removeClass('row_selected');
-			if (event.type === 'click') {
-				$(event.target.parentNode).addClass('row_selected');
-				// Find the second column of the clicked row; that's instance ID
-				instance = $(event.target.parentNode).find(':nth-child(2)').html();
-				Common.router.navigate("#/instance/"+instance, {trigger: false});
-			} else {
-				instance = id;
-				console.log("Selecting ID:", id);
-			}
-			instances.each(function(e) {
-				if (e.get('instanceId') === instance) {
-					selectedModel = e;
-				}
-			});
-			*/
+
 			this.selectedId = project;
 			this.$detail.html(ich.project_detail(selectedModel.attributes));
 		}
@@ -134,14 +125,6 @@ define([
         console.log("Got project detail route.");
         //this.selectOne(event, id);
     }, this);
-    
-	/*
-    Common.router.on('route:instanceDetail', function (id) {
-        alert( "Get instance number " + id );
-    });    
-
-	var instancesView = new InstancesView();
-	*/
 
 	return ProjectsView;
 });

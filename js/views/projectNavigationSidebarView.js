@@ -31,7 +31,7 @@ define([
     
     Common.router.on('route:projects', function (id) {
         if (!projectSidebar) {
-            projectSidebar = new SidebarView;
+            projectSidebar = new SidebarView();
         }
         console.log("Got project detail route.");
         projectSidebar.render();

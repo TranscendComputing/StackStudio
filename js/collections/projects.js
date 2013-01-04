@@ -21,8 +21,8 @@ define([
 		// Reference to this collection's model.
 		model: Project,
 
-		url: 'projects.json',
-
+		url: 'projects.json'
+		
         /*
 		// Filter down the list of all projects that are running.
 		running: function() {

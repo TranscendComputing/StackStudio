@@ -27,12 +27,12 @@ define([
 
         /** Default attributes for the project */
         defaults: {
-        	id: '',
-			name: '',
-			description: '',
-			owner: '',
-			account: ''
-		},
+            id: '',
+            name: '',
+            description: '',
+            owner: '',
+            account: ''
+        },
 
 	    /**
 	     * Override the base Backbone set method, for debugging.
