@@ -114,7 +114,7 @@
 		</exec>
 	</target>
 
-	<target name="deploy" depends="bundle, package">
+	<target name="deploy" depends="package">
         <echo message="Deploying StackStudio to ${deploy.ip}"/>
 		<exec command="scp ${build}/${package.file} ${deploy.ip}:/${sstudio2.home}" failonerror="true"/>
 		<exec command="ssh ${deploy.ip} sudo tar xvzf ${sstudio2.home}/${package.file} -C ${sstudio2.home}" failonerror="true"/>
@@ -122,7 +122,6 @@
 		<exec command="ssh ${deploy.ip} sudo find ${sstudio2.home}/StackStudio -type d -exec chmod 755 {} \;" failonerror="true"/>
         <exec command="ssh ${deploy.ip} sudo find ${sstudio2.home}/StackStudio -type f -exec chmod 644 {} \;" failonerror="true"/>
         <exec command="ssh ${deploy.ip} sudo chown -R sstudio:sstudio ${sstudio2.home}/StackStudio" failonerror="true"/>
-        <exec command="ssh ${deploy.ip} '. /etc/profile.d/rvm.sh; bundle install --gemfile=${sstudio2.home}/StackStudio/Gemfile --without development test --path ${sstudio2.home}/StackStudio'" failonerror="true"/>
         <exec command="ssh ${deploy.ip} sudo /etc/init.d/${sstudio.webserver} restart" failonerror="true"/>
 	</target>
 
