@@ -13,11 +13,11 @@ module.exports = function(grunt) {
           'Transcend Computing; Licensed APL2 */'
       },
     source: {
-        files: ['public/js/interpreters/**/*.js',
-                'public/js/models/**/*.js', 'public/js/views/**/*.js', 'public/js/collections/**/*.js']
+        files: ['js/interpreters/**/*.js',
+                'js/models/**/*.js', 'js/views/**/*.js', 'js/collections/**/*.js']
     },
     spec: {
-        files: ['public/spec/**/*.js']
+        files: ['spec/**/*.js']
     },
     lint: {
       files: ['Gruntfile.js',
@@ -30,7 +30,7 @@ module.exports = function(grunt) {
             banner: '<%= meta.banner %>'
         },
         dist: {
-            src: ['public/js/main.js', 'public/js/plugins.js'],
+            src: ['js/main.js', 'js/plugins.js'],
             dest: 'dist/<%= pkg.name %>.js'
         }
     },
@@ -75,7 +75,6 @@ module.exports = function(grunt) {
         sstudio: {
             options: {
                 port: 9000,
-                base: 'public'
             }
         },
         test : {
@@ -128,18 +127,18 @@ module.exports = function(grunt) {
                             }
                         },
                         paths: {
-                            collections: 'public/js/collections',
-                            models: 'public/js/models',
-                            routers: 'public/js/routers',
-                            views: 'public/js/views',
-                            interpreters: 'public/js/interpreters',
-                            'jquery': 'public/js/vendor/jquery-1.8.3.min',
-                            'jquery-ui': 'public/js/vendor/jquery-ui-1.8.17.custom.min',
-                            'underscore': 'public/js/vendor/lodash',
-                            'backbone': 'public/js/vendor/backbone-0.9.9',
-                            'icanhaz': 'public/js/vendor/ICanHaz',
-                            'jquery.terminal': 'public/js/vendor/jquery.terminal-0.4.22',
-                            'jquery.mousewheel': 'public/js/vendor/jquery.mousewheel-min'
+                            collections: 'js/collections',
+                            models: 'js/models',
+                            routers: 'js/routers',
+                            views: 'js/views',
+                            interpreters: 'js/interpreters',
+                            'jquery': 'js/vendor/jquery-1.8.3.min',
+                            'jquery-ui': 'js/vendor/jquery-ui-1.8.17.custom.min',
+                            'underscore': 'js/vendor/lodash',
+                            'backbone': 'js/vendor/backbone-0.9.9',
+                            'icanhaz': 'js/vendor/ICanHaz',
+                            'jquery.terminal': 'js/vendor/jquery.terminal-0.4.22',
+                            'jquery.mousewheel': 'js/vendor/jquery.mousewheel-min'
                         }
                     }
                 }
