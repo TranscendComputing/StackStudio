@@ -21,7 +21,9 @@ define([
      */
 	var Router = Backbone.Router.extend({
 		routes:{
-			'instance/:id': 'instanceDetail',
+			'resources': 'resources',
+			'resources/instances': 'instances',
+			'resources/instances/:id': 'instanceDetail',
 			'projects': 'projects',
 			'projects/:id': 'projectDetail',
 			'*actions': 'defaultRoute'

@@ -7,8 +7,8 @@ var URL_ARGS = 'cb=' + Math.random();
 
 require(['./common'], function (common) {
     require([
-             'views/projectNavigationView',
-             'views/projectNavigationSidebarView'
+             'views/projectNavigationSidebarView',
+             'views/resourceNavigationView'
             ], function() {
     });	
 });
