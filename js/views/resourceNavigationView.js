@@ -32,8 +32,26 @@ define([
 
 		initialize: function() {
             var compiledTemplate = _.template(resourcesTemplate);
-            this.$el.html(compiledTemplate);
+            var selection;
+            this.$el.html(compiledTemplate)
+		},
+		   	
+		events: {
+			"click .resourceLink" : "resourceSelect"
+		},
+		
+		resourceSelect: function(id) {
+			selection = id;
+			$('.resource').each(function() {
+				if(selection.target.id == $(this).find(":first").attr("id")) {
+					$(this).css("background", "#CB842E");
+				}else {
+					$(this).css("background", "#E6E9ED");
+				}
+	        });
+			console.log(selection.target.id + " selected.");
 		}
+		
 	});
 	
 	var resourcesView;
@@ -43,6 +61,7 @@ define([
             resourcesView = new ResourcesView();
         }
         console.log("Got resource route.");
+        
     }, this);
     
     Common.router.on('route:instances', function () {
