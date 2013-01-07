@@ -47,7 +47,8 @@ define([
 			'click #new_project': 'createNew',
 			'click #project_edit': 'editProject',
 			'dblclick .projlink': 'editProject',
-			'click #project_back': 'saveProject'
+			'click #project_back': 'saveProject',
+			'click .resource_link': 'addResource'
 		},
 
 		// At initialization we bind to the relevant events on the `Instances`
@@ -57,6 +58,7 @@ define([
             _.bindAll(this, 'select');
 			var compiledTemplate = _.template(projectsTemplate);
 			this.$el.html(compiledTemplate);
+            ich.refresh();
 			
 			$('#new_project').button();
 			$('#edit_project').button();
@@ -65,6 +67,7 @@ define([
             this.$detail = this.$('#detail');
             
             projects.fetch({update: true});
+            
 		},
 
 		// Add project elements to the page
@@ -106,6 +109,11 @@ define([
         saveProject: function() {
             console.log("Project saved with id: " + this.selectedId);
             Common.router.navigate('projects/' + this.selectedId, {trigger: true});
+        },
+        
+        addResource: function() {
+            console.log("adding resource from main project view...");
+            return false;
         }
 	});
 	

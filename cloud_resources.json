@@ -1,0 +1,33 @@
+[
+    {
+        "id": "aws_compute_instance",
+        "type": "Compute Instance",
+        "template": {
+            "NewInstance": {
+                "Type":"AWS::EC2::Instance",
+                "Properties": {
+                    "ImageId": "DEFINE_ID",
+                    "InstanceType": "m1.small",
+                    "KeyName": "DEFINE_KEYNAME"
+                }
+            }
+        }
+    },
+    {
+        "id": "aws_db_instance",
+        "type": "Relational Database",
+        "template": {
+            "NewDB": {
+                "Type":"AWS::RDS::DBInstance",
+                "Properties": {
+                    "AllocatedStorage": "5",
+                    "DBInstanceClass": "db.m1.small",
+                    "Engine": "MySQL",
+                    "EngineVersion": "5.5",
+                    "MasterUsername": "DB_USERNAME",
+                    "MasterUserPassword": "DB_PASSWORD"
+                }
+            }
+        }
+    }
+]

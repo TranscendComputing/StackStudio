@@ -81,32 +81,5 @@
         <p>{{ message }}</p>
         </div>
     </script>
-
-    <script type="text/html" id="project_item">
-        <div>
-           <a href="/#projects/{{ id }}" id="{{ id }}" class="projlink" name="{{ name }}">{{ name }}</a>
-        </div>
-    </script>
-     <script type="text/html" id="project_details">
-        <h3>{{ name }}</h3>
-            <ul>
-                <li>Description:</li>
-                <ul>
-                    <li>{{ description }}</li>
-                </ul>
-                <li>Members:</li>
-                <ul>
-                    {{#members}}
-                    <li>{{ name }}</li>
-                    {{/members}}
-                </ul>
-                <li>Versions:</li>
-                <ul>
-                    {{#versions}}
-                    <li>{{ number }}</li>
-                    {{/versions}}
-                </ul>
-            </ul>
-    </script>
 </body>
 </html>

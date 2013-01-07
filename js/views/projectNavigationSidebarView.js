@@ -22,8 +22,8 @@ define([
         
         initialize: function(){
             var compiledTemplate = _.template(sidebarTemplate);
-            
             this.$el.html(compiledTemplate);
+            
             this.$el.addClass("threecol");
             $(".accordion").wijaccordion({
                 header: "h3",

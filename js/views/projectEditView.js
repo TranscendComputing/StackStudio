@@ -12,11 +12,12 @@ define([
         'backbone',
         'text!templates/projects/projectEditTemplate.html',
         'models/project',
+        'collections/template_resources',
         'ace',
         'icanhaz',
         'common',
         'jquery-ui'
-], function( $, _, Backbone, projectEditTemplate, Project, ace, ich, Common ) {
+], function( $, _, Backbone, projectEditTemplate, Project, templateResources, ace, ich, Common ) {
     
     'use strict';
     
@@ -44,21 +45,18 @@ define([
         // the App already present in the HTML.
         el: '#projdetails',
 
-        // Delegated events for creating new instances, etc.
-        events: {
-            //TODO
-        },
-
         // At initialization we bind to the relevant events on the `Instances`
         // collection, when items are added or changed. Kick things off by
         // loading any preexisting instances.
         initialize: function() {
             _.bindAll(this, 'select');
+            this.bind('addResource', this.addResource);
             var compiledTemplate = _.template(projectEditTemplate);
             this.$el.html(compiledTemplate);
             
             $('#tabs').tabs();
             // Initialize editor
+            ace.EditSession.prototype.$startWorker = function(){}; //This is a workaround for a worker bug
             this.editor = ace.edit("design_editor"); 
             this.editor.setTheme("ace/theme/twilight");
             this.editor.getSession().setMode("ace/mode/json"); 
@@ -68,6 +66,24 @@ define([
         // Add project elements to the page
         render: function() {
 
+        },
+        
+        addResource: function(id, resource) {
+            console.log("Adding new resource to project...");
+            var content;
+            content = this.editor.getValue();
+            if(content.replace(/\s/g,"") !== '')
+            {
+                content = jQuery.parseJSON(content);
+            }else{
+                content = {};
+            }
+            if(content.Resources == null)
+            {
+                content.Resources = {};
+            }
+            
+            $.extend(content.Resources, resource);
         }
     });
     
@@ -81,6 +97,15 @@ define([
         console.log("Got project edit route.");
         //projectEditor.open(event, id);
     }, this);
+
+    Common.router.on('route:projectUdpate', function (id, resource) {
+        console.log("Update route");
+        if ( !projectEditor ) {
+            projectEditor = new ProjectEditView();
+        }
+        console.log("Got project udpate route.");
+        projectEditor.addResource(id, resource);
+    }, this);    
 
     return ProjectEditView;
 });

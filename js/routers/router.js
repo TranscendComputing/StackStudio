@@ -29,6 +29,7 @@ define([
 			'projects': 'projects',
 			'projects/:id': 'projectDetail',
 			'projects/:id/edit': 'projectEdit',
+			'projects/:id/update/:resource': 'projectUpdate',
 			'*actions': 'defaultRoute'
 		},
 		

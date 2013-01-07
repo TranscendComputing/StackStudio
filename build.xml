@@ -116,15 +116,7 @@
 		<sequential>
 			<tar destfile="@{destfile}" compression="gzip">
 				<tarfileset dir="${project.base.dir}" prefix="StackStudio">
-					<include name="app/**"/>
-					<include name="client/**"/>
-					<include name="config/**"/>
-					<include name="helpers/**"/>
-					<include name="lib/**"/>
-					<include name="log/"/>
-					<include name="tmp/*"/>
-					<include name="vendor/**"/>
-					<include name="*"/>
+					<include name="*/**"/>
 				    <exclude name=".git/**"/>
 				    <exclude name="resources/**"/>
 					<include-patterns/>
