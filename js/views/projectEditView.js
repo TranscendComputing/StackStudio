@@ -72,7 +72,6 @@ define([
     });
     
     var projectEditor;
-    console.log("Editor");
 
     Common.router.on('route:projectEdit', function (id) {
         console.log("Editor route");

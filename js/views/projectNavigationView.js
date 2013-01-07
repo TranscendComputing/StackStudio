@@ -46,7 +46,8 @@ define([
 		    'click .projlink': 'selectOne',
 			'click #new_project': 'createNew',
 			'click #project_edit': 'editProject',
-			'dblclick .projlink': 'editProject'
+			'dblclick .projlink': 'editProject',
+			'click #project_back': 'saveProject'
 		},
 
 		// At initialization we bind to the relevant events on the `Instances`
@@ -98,8 +99,13 @@ define([
         },
         
         editProject: function() {
-            console.log("Double-click captured");
+            console.log("Editing project");
             Common.router.navigate('projects/' + this.selectedId + '/edit', {trigger: true});
+        },
+        
+        saveProject: function() {
+            console.log("Project saved with id: " + this.selectedId);
+            Common.router.navigate('projects/' + this.selectedId, {trigger: true});
         }
 	});
 	

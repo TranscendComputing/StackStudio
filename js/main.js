@@ -10,6 +10,7 @@ var URL_ARGS = 'cb=' + Math.random();
 require(['./common'], function (common) {
     require([
              'views/projectNavigationSidebarView',
+             'views/projectResourceSidebarView',
              'views/projectNavigationView',
              'views/projectEditView',
              'views/resourceNavigationView',
