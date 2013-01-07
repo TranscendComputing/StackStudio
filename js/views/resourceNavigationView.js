@@ -54,7 +54,7 @@ define([
 					$(this).css("background", "#E6E9ED");
 				}
 	        });
-			console.log(selectionId + " selected.");
+			console.log(selectionId + " selected");
 		}
 		
 	});

@@ -43,7 +43,7 @@ define([
 		// Delegated events for creating new instances, etc.
 		events: {
 			'click #new_instance': 'createNew',
-			'click #instance_table tbody': 'selectOne'
+			'click #instance_table tbody': 'clickOne'
 		},
 
 		// At initialization we bind to the relevant events on the `Instances`
@@ -53,7 +53,6 @@ define([
 			var compiledTemplate = _.template(instancesTemplate);
             this.$el.html(compiledTemplate);
             ich.refresh();
-            _.bindAll(this, 'selectOne');
 			$('#new_instance').button();
 			$('#id_refresh').button();
             this.$table = $('#instance_table').dataTable({"bJQueryUI": true});
@@ -67,6 +66,10 @@ define([
 
 		// No rendering to do, presently; the elements are already on the page.
 		render: function() {
+			//If instance id is supplied, select it
+			if(this.selectedId) {
+				this.selectOne(this.selectedId, $("tr:contains("+this.selectedId+")"));
+			}
 		},
 
 		// Add a single instance item to the list by creating a view for it.
@@ -90,31 +93,35 @@ define([
 			));
 			$('#id_save_new').button();
 		},
-
-		selectOne : function (event, id) {
-			var i, instance, selectedModel;
-			console.log("Id2:", id);
+		
+		clickOne: function (event) {
+			var instance, parentNode;
 			console.log("event:", event);
-			if (id && this.selectedId === id) {
-				return;
-			}
+			parentNode = event.target.parentNode;
+			// Find the second column of the clicked row; that's instance ID
+			instance = $(parentNode).find(':nth-child(2)').html();
+			Common.router.navigate("#resources/instances/"+instance, {trigger: false});
+			this.selectOne(instance, parentNode);
+		},
+
+		selectOne : function (instance, parentNode) {
+			var selectedModel;
 			this.$table.$('tr').removeClass('row_selected');
-			if (event.type === 'click') {
-				$(event.target.parentNode).addClass('row_selected');
-				// Find the second column of the clicked row; that's instance ID
-				instance = $(event.target.parentNode).find(':nth-child(2)').html();
-				Common.router.navigate("#resources/instances/"+instance, {trigger: false});
-			} else {
-				instance = id;
-				console.log("Selecting ID:", id);
+			console.log("Selecting ID:", instance);
+			if(parentNode) {
+				$(parentNode).addClass('row_selected');
 			}
+			
 			instances.each(function(e) {
 				if (e.get('instanceId') === instance) {
 					selectedModel = e;
 				}
 			});
-			this.selectedId = instance;
-			$('#details').html(ich.instance_detail(selectedModel.attributes));
+			
+			if(selectedModel) {
+				this.selectedId = instance;
+				$('#details').html(ich.instance_detail(selectedModel.attributes));
+			}	
 		}
 	});
 
@@ -138,6 +145,8 @@ define([
         if (!instancesView) {
             instancesView = new InstancesView();
         }
+        instancesView.selectedId = id;
+        instancesView.render();
         console.log("instance app: instance detail route");
     }, this);
 
