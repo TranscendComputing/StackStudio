@@ -88,7 +88,7 @@ define(
          ], function ($, Backbone, CommandLineView, Router) {
 	// Within this scope, jquery and jquery UI have been loaded.
 
-	// Initialize routing and start Backbone.history()
+	// Initialize routing
 	router = new Router();
 
 	// Initialize the command line, since that's global to all pages.
