@@ -151,10 +151,10 @@ define([
 				}
 				if (this.$cmd) {
 					this.$cmd.show();
-					this.$cmd.enable();
 					return;
 				}
 				this.$cmd = $('#cloud_cmd').cmd({
+				    enabled: false,
 					greetings : 'Cloud Console',
 					name : 'cloud_console',
 					width : '100%',
