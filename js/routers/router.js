@@ -37,6 +37,6 @@ define([
 			console.log("Running default route.  Dashboard");
 		}
 	});
-    console.log("Defined routes");
+	
 	return Router;
 });

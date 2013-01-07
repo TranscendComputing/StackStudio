@@ -141,5 +141,7 @@ define([
         console.log("instance app: instance detail route");
     }, this);
 
+    console.log("instances view defined");
+    
 	return InstancesView;
 });

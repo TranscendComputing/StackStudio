@@ -85,6 +85,8 @@ define([
         resourcesView.resourceSelect("ec2");
         console.log("resources view: instance detail route");
     }, this);
+    
+    console.log("resource view defined");
 
 	return ResourcesView;
 });

@@ -90,26 +90,11 @@ define(
 
 	// Initialize routing and start Backbone.history()
 	router = new Router();
-	$(function() {
-		console.log("Starting history.");
-		if (window.location.hash.indexOf("#resources") == 0) {
-			console.log("# resources");
-			Backbone.history.start({root: "#resources"});
-		} else if (window.location.hash.indexOf("#projects") == 0) {
-		    console.log("# projects");
-		    Backbone.history.start({root: "/projects"});
-		} else {
-			console.log("# root");
-			Backbone.history.start({root: "/"});
-		}
-	});
-
-	//Backbone.history.start({pushState: true, root: "/resources/"});
 
 	// Initialize the command line, since that's global to all pages.
 	new CommandLineView();
 
-    console.log("Common defined");
+    console.log("common defined");
 	// Return some "globals".
 	return {
 		// Which filter are we using?
@@ -119,7 +104,9 @@ define(
 		ENTER_KEY: 13,
 
 		// The common router
-		router: router
+		router: router,
+		
+		backbone: Backbone
 	};
 }, function (err) {
     //The errback, error callback
