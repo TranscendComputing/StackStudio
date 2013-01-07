@@ -34,24 +34,27 @@ define([
         
 		initialize: function() {
             var compiledTemplate = _.template(resourcesTemplate);
-            
             this.$el.html(compiledTemplate);
 		},
 		
 		events: {
-			"click .resourceLink" : "resourceSelect"
+			"click .resourceLink" : "resourceClick"
 		},
 		
-		resourceSelect: function(id) {
-			this.selection = id;
+		resourceClick: function(id) {
+			var selectionId = id.target.id;
+			this.resourceSelect(selectionId);
+		},
+		
+		resourceSelect: function(selectionId) {
 			$('.resource').each(function() {
-				if(this.selection.target.id === $(this).find(":first").attr("id")) {
+				if(selectionId === $(this).find(":first").attr("id")) {
 					$(this).css("background", "#CB842E");
 				}else {
 					$(this).css("background", "#E6E9ED");
 				}
 	        });
-			console.log(this.selection.target.id + " selected.");
+			console.log(selectionId + " selected.");
 		}
 		
 	});
@@ -62,7 +65,8 @@ define([
         if (!resourcesView) {
             resourcesView = new ResourcesView();
         }
-        console.log("Got resource route.");
+        resourcesView.resourceSelect("ec2");
+        console.log("resources view: resources route");
         
     }, this);
     
@@ -70,14 +74,16 @@ define([
         if (!resourcesView) {
             resourcesView = new ResourcesView();
         }
-        console.log("Got resource instance route.");
+        resourcesView.resourceSelect("ec2");
+        console.log("resources view: instances route");
     }, this);
     
     Common.router.on('route:instanceDetail', function (id) {
         if (!resourcesView) {
             resourcesView = new ResourcesView();
         }
-        console.log("Got resource instance detail " + id + " route.");
+        resourcesView.resourceSelect("ec2");
+        console.log("resources view: instance detail route");
     }, this);
 
 	return ResourcesView;
