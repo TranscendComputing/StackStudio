@@ -26,7 +26,7 @@ define([
 			'resources/instances/:id': 'instanceDetail',
 			'projects': 'projects',
 			'projects/:id': 'projectDetail',
-			'projects/:id/open': 'projectOpen',
+			'projects/:id/edit': 'projectEdit',
 			'*actions': 'defaultRoute'
 		},
         

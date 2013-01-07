@@ -45,6 +45,10 @@ define([
 		set: function(attributes, options) {
 		    Backbone.Model.prototype.set.apply(this, arguments);
 		    //console.log("Setting attributes on model:", attributes);
+		},
+		
+		open: function() {
+		    
 		}
 
     });

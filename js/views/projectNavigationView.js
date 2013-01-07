@@ -44,7 +44,9 @@ define([
 		// Delegated events for creating new instances, etc.
 		events: {
 		    'click .projlink': 'selectOne',
-			'click #new_project' : 'createNew'
+			'click #new_project': 'createNew',
+			'click #edit_project': 'editProject',
+			'dblclick .projlink': 'editProject'
 		},
 
 		// At initialization we bind to the relevant events on the `Instances`
@@ -95,6 +97,10 @@ define([
 
             this.selectedId = id;
             $("#projdetails").html(ich.project_details(selectedModel.attributes));
+        },
+        
+        editProject: function() {
+            console.log("Double-click captured");
         }
 	});
 	

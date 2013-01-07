@@ -25,12 +25,6 @@
 	<property name="external.jars" value="${build}/external/lib" />
 	<property name="resources" value="${project.base.dir}/resources" />
 	<property name="hudson.url" value="jenkins.momentumsoftware.com:8080/" />
-	<property name="FLEX_HOME" value="/usr/local/flex_sdk" />
-	<property name="bin.flex" value="public/bin" />
-	<property name="config.flex" value="${project.base.dir}/public/bin/config" />
-	<property name="config.ruby" value="${project.base.dir}/config" />
-    <property name="Template.file" value="${project.base.dir}/html-template/C9.template.html" />
-    <property name="Output.file" value="${bin.flex}/C9.html" />
 	<property name="package.file" value="stackstudio2.tar.gz"/>
 	<property name="sstudio.home" value="/home/sstudio"/>
     <property name="sstudio2.home" value="/home/sstudio/v2"/>
@@ -59,61 +53,6 @@
         </copy>
     </target>
 
-	<target name="configure.ruby">
-		<copy todir="${config.ruby}" file="${resources}/application.rb" overwrite="true">
-		<filterset filtersfile="resources/${env}.properties" onmissingfiltersfile="warn" />
-		</copy>
-	</target>
-
-    <target name="bundle" depends="copy.config, bundleWithDeployment,bundleWithoutDeployment">
-    </target>
-
-    <target name="bundleWithoutDeployment" unless="${env.deployment}">
-		<exec executable="ruby" failonerror="true">
-			<arg value="-v" />
-		</exec>
-		<exec executable="bundle" failonerror="true">
-			<arg value="install" />
-			<arg value="--without" />
-			<arg value="development" />
-			<arg value="test" />
-		</exec>
-	</target>
-
-	<target name="bundleWithDeployment" if="${env.deployment}">
-		<exec executable="ruby" failonerror="true">
-			<arg value="-v" />
-		</exec>
-		<exec executable="bundle" failonerror="true">
-			<arg value="install" />
-			<arg value="--deployment" />
-			<arg value="--without" />
-			<arg value="development" />
-			<arg value="test" />
-		</exec>
-	</target>
-
-	<target name="seed" depends="bundle">
-		<exec executable="bundle" failonerror="true">
-			<env key="STACK_PLACE_SERVICE_ENDPOINT" value="${env.stackplace.endpoint}"/>
-			<env key="MONGO_URI" value="${env.mongouri}"/>
-			<env key="RACK_ENV" value="${env.fullname}"/>
-			<env key="RAILS_ENV" value="${env.fullname}"/>
-			<arg value="exec" />
-			<arg value="rake" />
-			<arg value="db:seed" />
-		</exec>
-	</target>
-
-	<target name="warble" depends="bundle">
-		<exec executable="jruby" failonerror="true">
-			<arg value="-S" />
-			<arg value="warble" />
-			<arg value="compiled" />
-			<arg value="war" />
-		</exec>
-	</target>
-
 	<target name="deploy" depends="package">
         <echo message="Deploying StackStudio to ${deploy.ip}"/>
 		<exec command="scp ${build}/${package.file} ${deploy.ip}:/${sstudio2.home}" failonerror="true"/>
@@ -124,12 +63,6 @@
         <exec command="ssh ${deploy.ip} sudo chown -R sstudio:sstudio ${sstudio2.home}/StackStudio" failonerror="true"/>
         <exec command="ssh ${deploy.ip} sudo /etc/init.d/${sstudio.webserver} restart" failonerror="true"/>
 	</target>
-
-    <target name="flashbuilder" depends="wrapper">
-		<exec executable="ls">
-			<arg value="${build}"/>
-		</exec>
-    </target>
 
     <available file=".git" type="dir" property="git.present"/>
 
@@ -146,50 +79,13 @@
         </condition>
         <echo message="Current git revision =====> ${repository.version}"/>
     </target>
-
-    <target name="wrapper" depends="git.revision">
-        <echo>Building Custom Wrapper...</echo>
-        <copy file="${Template.file}" tofile="${Output.file}" overwrite="true">
-            <filterchain>
-                <replacetokens>
-                    <token key='version_major' value='10'/>
-                    <token key='version_minor' value='2'/>
-                    <token key='version_revision' value='0'/>
-                    <token key='application' value='C9'/>
-                    <token key='expressInstallSwf' value='playerProductInstall.swf' />
-                    <token key='width' value='100%'/>
-                    <token key='height' value='100%'/>
-                    <token key='bgcolor' value='#FFFFFF'/>
-                    <token key='swf' value='C9'/>
-					<token key='sstudio_version' value='${sstudio.version}'/>
-					<token key='git_revision' value='${repository.version}'/>
-                </replacetokens>
-            </filterchain>
-        </copy>
-        <echo>Built Custom Wrapper</echo>
-    </target>
-
-    <target name="copydirs">
-        <echo>Copying assets and data files...</echo>
-        <copy todir="${bin.flex}" overwrite="true">
-            <fileset dir="${src.flex}" >
-                <include name="com/momentumsi/c9/assets/**"/>
-            </fileset>
-        </copy>
-        <copy todir="${bin.flex}" overwrite="true">
-            <fileset dir="${src.flex}">
-                <include name="data/**" />
-            </fileset>
-        </copy>
-        <echo>Copied assets and data files</echo>
-    </target>
-
+	
     <target name="clean">
 		<delete dir="${build}" />
 		<delete dir="${dist}"/>
 	</target>
 
-	<target name="package" depends="clean,init,configure.ruby">
+	<target name="package" depends="clean,init">
 	    <package destfile="${build}/${package.file}">
 	        <include-patterns/>
 	        <exclude-patterns/>
@@ -197,12 +93,7 @@
 	</target>
 
     <target name="dist" depends="clean,init">
-        <!-- call subant, forcing the environment to be "dist". -->
-		<!--<subant antfile="${basedir}/build.xml" target="configure.flex" failonerror="true">
-			<fileset dir="." includes="build.xml"/>
-		    <property name="env" value="dist"/>
-		</subant>-->
-		<subant antfile="${basedir}/build.xml" target="configure.ruby" failonerror="true">
+        <subant antfile="${basedir}/build.xml">
 			<fileset dir="." includes="build.xml"/>
 		    <property name="env" value="dist"/>
 		</subant>
@@ -225,17 +116,7 @@
 		<sequential>
 			<tar destfile="@{destfile}" compression="gzip">
 				<tarfileset dir="${project.base.dir}" prefix="StackStudio">
-					<include name="public/*"/>
-					<include name="public/css/*"/>
-					<include name="public/js/**"/>
-					<include name="public/images/**"/>
-					<include name="app/controllers/**"/>
-					<include name="app/libs/**"/>
-					<include name="app/models/**"/>
-					<include name="app/mailers/**"/>
-					<include name="app/views/**"/>
-					<include name="app/helpers/**"/>
-					<include name="app/*"/>
+					<include name="app/**"/>
 					<include name="client/**"/>
 					<include name="config/**"/>
 					<include name="helpers/**"/>
@@ -243,14 +124,8 @@
 					<include name="log/"/>
 					<include name="tmp/*"/>
 					<include name="vendor/**"/>
-					<include name="config.ru"/>
-					<include name="Gemfile"/>
-					<include name="Gemfile.lock"/>
-					<include name="Rakefile"/>
-					<include name="Procfile"/>
+					<include name="*"/>
 				    <exclude name=".git/**"/>
-				    <exclude name=".bundle/**"/>
-				    <exclude name="vendor"/>
 				    <exclude name="resources/**"/>
 					<include-patterns/>
 					<exclude-patterns/>

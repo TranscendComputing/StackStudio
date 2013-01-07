@@ -9,6 +9,7 @@ require(['./common'], function (common) {
     require([
              'views/projectNavigationSidebarView',
              'views/projectNavigationView',
+             'views/projectEditView',
              'views/resourceNavigationView',
              'views/instanceAppView'
             ], function() {

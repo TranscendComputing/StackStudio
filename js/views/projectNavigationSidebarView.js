@@ -28,6 +28,7 @@ define([
             var compiledTemplate = _.template(sidebarTemplate);
             
             this.$el.html(compiledTemplate);
+            this.$el.addClass("threecol");
             $(".accordion").wijaccordion({
                 header: "h3",
                 requireOpenedPane: false
@@ -65,6 +66,7 @@ define([
         
         openProject : function () {
             console.log("This will open the project for editing...");
+            Common.router.navigate()
         }
     });
     
