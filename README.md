@@ -19,7 +19,7 @@ Getting Started
     `npm install`
 
 4. To launch a web server, you can run a task:
-   
+
     `grunt run`
 
     (9000 is the default listening port)
@@ -31,9 +31,8 @@ Compatibility
 
 StackStudio targets the following browser platforms:
 
-    ✔ IE 6+
-    ✔ Firefox 2+
-    ✔ Safari 3.2+
-    ✔ Chrome 3+
-    ✔ Opera 10+
-
+✔ IE 6+
+✔ Firefox 2+
+✔ Safari 3.2+
+✔ Chrome 3+
+✔ Opera 10+
