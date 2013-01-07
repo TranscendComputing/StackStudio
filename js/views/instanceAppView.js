@@ -106,7 +106,7 @@ define([
 
 		selectOne : function (instance, parentNode) {
 			var selectedModel;
-			this.$table.$('tr').removeClass('row_selected');
+			this.clearSelection();
 			console.log("Selecting ID:", instance);
 			if(parentNode) {
 				$(parentNode).addClass('row_selected');
@@ -121,7 +121,14 @@ define([
 			if(selectedModel) {
 				this.selectedId = instance;
 				$('#details').html(ich.instance_detail(selectedModel.attributes));
-			}	
+			}else {
+				
+			}
+		},
+		
+		clearSelection: function () {
+			this.$table.$('tr').removeClass('row_selected');
+			$('#details').html("");
 		}
 	});
 
@@ -131,6 +138,7 @@ define([
         if (!instancesView) {
             instancesView = new InstancesView();
         }
+        instancesView.clearSelection();
         console.log("instance app: resources route");
     }, this);
     
@@ -138,6 +146,7 @@ define([
         if (!instancesView) {
             instancesView = new InstancesView();
         }
+        instancesView.clearSelection();
         console.log("instance app: instances route");
     }, this);
     
