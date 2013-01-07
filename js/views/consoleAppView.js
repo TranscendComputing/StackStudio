@@ -14,10 +14,10 @@ define([
         'jquery.terminal',
         'jquery.purr'
 ], function( $, _, Backbone, ich, Interpreter ) {
-	'use strict';
+    'use strict';
 
-	// The Console Application
-	// -----------------------
+    // The Console Application
+    // -----------------------
 
     /**
      * Embedded model representing a result from a command.
@@ -28,13 +28,13 @@ define([
      * @param {Object} initialization object.
      * @returns {Object} Returns a Message instance.
      */
-	var Message = Backbone.Model.extend({
+    var Message = Backbone.Model.extend({
 
-		defaults: {
-			type: 'success',
-			message: ''
-		}
-	});
+        defaults: {
+            type: 'success',
+            message: ''
+        }
+    });
 
     /**
      * CommandLineView is UI view for console and command line.
@@ -45,44 +45,48 @@ define([
      * @param {Object} initialization object.
      * @returns {Object} Returns a CommandLineView instance.
      */
-	var CommandLineView = Backbone.View.extend({
+    var CommandLineView = Backbone.View.extend({
 
-		/** True if expanded to a multiline window */
-		expanded: false,
+        /** True if expanded to a multiline window */
+        expanded: false,
 
-		/** Instead of generating a new element, bind to the existing skeleton of
-		 * the view already present in the HTML.
-		 */
-		el: '#console_area',
+        enabled: false,
 
-		/** Delegated events */
-		events: {
-			'click #con_expand': 'toggleFullSize',
-			'click #con_options': 'popupOptions',
-			'click .export_to': 'exportTo'
-		},
+        /** Instead of generating a new element, bind to the existing skeleton of
+         * the view already present in the HTML.
+         */
+        el: '#console_area',
 
-		/** At initialization, initialize any components that still require JS. */
-		initialize: function() {
-			this.interpreter = new Interpreter();
-			// Ensure this = this, even when called back, also bind first argument
-			this.handleCommand = _.bind(this.handleCommand, this, this.interpreter);
-			this.onCommandKey = _.bind(this.onCommandKey, this, this.interpreter);
-			$('#con_expand').button({
-	            icons: {
-	                primary: "ui-icon-arrowthick-2-n-s"
-	            },
-	            text: false
-			});
-			$('#con_options').button({
-	            icons: {
-	                primary: "ui-icon-gear"
-	            },
-	            text: false
-			}).next().hide().menu( {/*select: selected, */trigger: $("#con_options")} );
-			this.expanded = true; // set to expanded, then toggle, for cmd-only start.
-			this.toggleFullSize();
-		},
+        /** Delegated events */
+        events: {
+            'click #con_expand': 'toggleFullSize',
+            'click #con_options': 'popupOptions',
+            'click .export_to': 'exportTo',
+            'click .con_clear': 'clear',
+            'hover': 'toggleActive'
+        },
+
+        /** At initialization, initialize any components that still require JS. */
+        initialize: function() {
+            this.interpreter = new Interpreter();
+            // Ensure this = this, even when called back, also bind first argument
+            this.handleCommand = _.bind(this.handleCommand, this, this.interpreter);
+            this.onCommandKey = _.bind(this.onCommandKey, this, this.interpreter);
+            $('#con_expand').button({
+                icons: {
+                    primary: "ui-icon-arrowthick-2-n-s"
+                },
+                text: false
+            });
+            $('#con_options').button({
+                icons: {
+                    primary: "ui-icon-gear"
+                },
+                text: false
+            }).next().hide().menu( {trigger: $("#con_options")} );
+            this.expanded = true; // set to expanded, then toggle, for cmd-only start.
+            this.toggleFullSize();
+        },
 
 		/** No rendering to do, presently; the elements are already on the page. */
 		render: function() {
@@ -175,6 +179,32 @@ define([
             $( menu ).one( "click", function() {
                 menu.hide();
             });
+		},
+
+		toggleActive: function() {
+		    if (this.enabled) {
+		        if (this.expanded) {
+	                this.$console.disable();
+		        }
+		        else {
+                    this.$cmd.disable();
+		        }
+		        this.enabled = false;
+		    } else {
+                if (this.expanded) {
+                    this.$console.enable();
+                }
+                else {
+                    this.$cmd.enable();
+                }
+                this.enabled = true;
+		    }
+		},
+
+		clear: function() {
+		    if (this.expanded) {
+		        this.$console.clear();
+		    }
 		},
 
 		exportTo: function() {

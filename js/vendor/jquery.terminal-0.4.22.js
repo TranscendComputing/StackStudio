@@ -323,7 +323,7 @@
     // ----------------------------------------
     // START CROSS BROWSER SPLIT
     // ----------------------------------------
-
+    
     (function(undef) {
 
         // prevent double include
@@ -982,7 +982,6 @@
                     var tmp = command;
                     self.set('');
                     if (options.commands) {
-                    	console.log("Command on "+tmp);
                         options.commands(tmp);
                     }
                     if (typeof prompt === 'function') {
@@ -1192,7 +1191,6 @@
                 return command;
             },
             commands: function(commands) {
-            	console.log("Setting commands ");
                 if (commands) {
                     options.commands = commands;
                 } else {
@@ -1483,7 +1481,7 @@
                         }
                     }).join('');
                 }
-
+                
                 return str.replace(url_re, function(link) {
                         var comma = link.match(/\.$/);
                         link = link.replace(/\.$/, '');
@@ -1624,7 +1622,7 @@
             };
         })()
     };
-
+    
     // -----------------------------------------------------------------------
     // Helpers
     // -----------------------------------------------------------------------
@@ -1744,10 +1742,10 @@
         });
         /*
         self.bind('touchstart.touchScroll', function() {
-
+            
         });
         self.bind('touchmove.touchScroll', function() {
-
+            
         });
         */
         //$('<input type="text"/>').hide().focus().appendTo(self);
@@ -1893,17 +1891,14 @@
                 return self;
             },
             exec: function(command, silent) {
-            	console.log("execting command "+command);
                 if (pause) {
                     dalyed_commands.push([command, silent]);
                 } else {
-                	console.log("Invoking commands.");
                     commands(command, silent);
                 }
                 return self;
             },
             commands: function() {
-            	console.log("Commands eval.");
                 return interpreters.top().eval;
             },
             greetings: function() {
@@ -2301,7 +2296,6 @@
         // wrapper over eval it implements exit and catch all exeptions
         // from user code and display them on terminal
         function commands(command, silent) {
-        	console.log("Running commands 2.");
             try {
                 var interpreter = interpreters.top();
                 if (command === 'exit' && settings.exit) {
@@ -2457,7 +2451,7 @@
                 }
             }
         }
-
+        
         // ---------------------------------------------------------------------
         var on_scrollbar_show_resize = (function() {
             var scrollBars = haveScrollbars();
@@ -2474,7 +2468,7 @@
         // KEYDOWN EVENT HANDLER
         // ---------------------------------------------------------------------
         var tab_count = 0;
-
+        
         function key_down(e) {
             var i;
             // after text pasted into textarea in cmd plugin
@@ -2485,7 +2479,7 @@
                 return false;
             }
             if (!self.paused()) {
-
+                
                 if (e.which !== 9) { // not a TAB
                     tab_count = 0;
                 }
