@@ -5,6 +5,7 @@
  */
 /*jshint smarttabs:true */
 /*global define:true console:true */
+
 define([
         'jquery',
         'underscore',
@@ -14,8 +15,9 @@ define([
         'ace',
         'icanhaz',
         'common',
-        'wijmo'
+        'jquery-ui'
 ], function( $, _, Backbone, projectEditTemplate, Project, ace, ich, Common ) {
+    
     'use strict';
     
     // The Project Edit View
@@ -40,12 +42,11 @@ define([
 
         // Instead of generating a new element, bind to the existing skeleton of
         // the App already present in the HTML.
-        el: '#project_details',
+        el: '#projdetails',
 
         // Delegated events for creating new instances, etc.
         events: {
-            'click .projlink': 'selectOne',
-            'click #new_project' : 'createNew'
+            //TODO
         },
 
         // At initialization we bind to the relevant events on the `Instances`
@@ -56,12 +57,12 @@ define([
             var compiledTemplate = _.template(projectEditTemplate);
             this.$el.html(compiledTemplate);
             
+            $('#tabs').tabs();
             // Initialize editor
             this.editor = ace.edit("design_editor"); 
             this.editor.setTheme("ace/theme/twilight");
-            this.editor.getSession().setMode("ace/mode/json");
-            
-            Project.open();
+            this.editor.getSession().setMode("ace/mode/json"); 
+            this.editor.resize();
         },
 
         // Add project elements to the page
@@ -71,8 +72,10 @@ define([
     });
     
     var projectEditor;
-    
+    console.log("Editor");
+
     Common.router.on('route:projectEdit', function (id) {
+        console.log("Editor route");
         if ( !projectEditor ) {
             projectEditor = new ProjectEditView();
         }

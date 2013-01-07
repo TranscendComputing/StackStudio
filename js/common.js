@@ -45,13 +45,17 @@ requirejs.config({
             deps: ['jquery'],
             exports: 'jQuery.fn.mousewheel'
         },
-        'ace': {
-        	exports: 'ace'
-        },
         'wijmo': {
         	deps: ['jquery-ui']
         }
 	},
+	packages: [
+        'ace', {
+            name: 'ace',
+            main: 'ace',
+            location: 'ace'
+        }
+	],
 	paths: {
 		collections: '../collections',
 		models: '../models',
@@ -66,7 +70,6 @@ requirejs.config({
 		'icanhaz': 'ICanHaz',
 		'jquery.terminal': 'jquery.terminal-0.4.22',
 		'jquery.mousewheel': 'jquery.mousewheel-min',
-		'ace': 'ace/ace',
 		'wijmo': 'jquery.wijmo-open.all.2.3.2.min'
 	}
 });
@@ -89,9 +92,12 @@ define(
 	router = new Router();
 	$(function() {
 		console.log("Starting history.");
-		if (window.location.pathname.indexOf("/resources") == 0) {
+		if (window.location.hash.indexOf("#resources") == 0) {
 			console.log("# resources");
-			Backbone.history.start({root: "/resources/"});
+			Backbone.history.start({root: "#resources"});
+		} else if (window.location.hash.indexOf("#projects") == 0) {
+		    console.log("# projects");
+		    Backbone.history.start({root: "/projects"});
 		} else {
 			console.log("# root");
 			Backbone.history.start({root: "/"});
@@ -103,6 +109,7 @@ define(
 	// Initialize the command line, since that's global to all pages.
 	new CommandLineView();
 
+    console.log("Common defined");
 	// Return some "globals".
 	return {
 		// Which filter are we using?

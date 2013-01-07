@@ -122,21 +122,21 @@ define([
 	
     Common.router.on('route:resources', function () {
         if (!instancesView) {
-        	instancesView = new InstancesView();
+            instancesView = new InstancesView();
         }
         console.log("Got resource route.");
     }, this);
     
     Common.router.on('route:instances', function () {
         if (!instancesView) {
-        	instancesView = new InstancesView();
+            instancesView = new InstancesView();
         }
         console.log("Got resource instance route.");
     }, this);
     
     Common.router.on('route:instanceDetail', function (id) {
         if (!instancesView) {
-        	instancesView = new InstancesView();
+            instancesView = new InstancesView();
         }
         console.log("Got resource instance detail " + id + " route.");
     }, this);

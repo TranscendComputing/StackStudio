@@ -45,7 +45,7 @@ define([
 		events: {
 		    'click .projlink': 'selectOne',
 			'click #new_project': 'createNew',
-			'click #edit_project': 'editProject',
+			'click #project_edit': 'editProject',
 			'dblclick .projlink': 'editProject'
 		},
 
@@ -61,8 +61,6 @@ define([
 			$('#edit_project').button();
             //Set jQueryUI button style
             $('button').button();
-            //Set jQueryUI tabs style
-            $('#tabs').tabs();
             this.$detail = this.$('#detail');
             
             projects.fetch({update: true});
@@ -101,6 +99,7 @@ define([
         
         editProject: function() {
             console.log("Double-click captured");
+            Common.router.navigate('projects/' + this.selectedId + '/edit', {trigger: true});
         }
 	});
 	
@@ -121,5 +120,6 @@ define([
         projView.selectOne(event, id);
     }, this);
 
+	console.log("Project Nav view defined");
 	return ProjectsView;
 });

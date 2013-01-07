@@ -30,26 +30,28 @@ define([
 		// the App already present in the HTML.
 		el: '#main',
 
+        selection: undefined,
+        
 		initialize: function() {
             var compiledTemplate = _.template(resourcesTemplate);
-            var selection;
-            this.$el.html(compiledTemplate)
+            
+            this.$el.html(compiledTemplate);
 		},
-		   	
+		
 		events: {
 			"click .resourceLink" : "resourceSelect"
 		},
 		
 		resourceSelect: function(id) {
-			selection = id;
+			this.selection = id;
 			$('.resource').each(function() {
-				if(selection.target.id == $(this).find(":first").attr("id")) {
+				if(this.selection.target.id === $(this).find(":first").attr("id")) {
 					$(this).css("background", "#CB842E");
 				}else {
 					$(this).css("background", "#E6E9ED");
 				}
 	        });
-			console.log(selection.target.id + " selected.");
+			console.log(this.selection.target.id + " selected.");
 		}
 		
 	});

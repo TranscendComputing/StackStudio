@@ -19,10 +19,6 @@ define([
     var SidebarView = Backbone.View.extend({
         el: "#sidebar",
         
-        /** Delegated events */
-        events: {
-            'dblclick .projlink' : 'openProject'
-        },
         
         initialize: function(){
             var compiledTemplate = _.template(sidebarTemplate);
@@ -62,11 +58,6 @@ define([
         // Add all items in the **Projects** collection at once.
         addAll: function() {
             projects.each(this.addOne, this);
-        },
-        
-        openProject : function () {
-            console.log("This will open the project for editing...");
-            Common.router.navigate()
         }
     });
     
