@@ -12,22 +12,29 @@ define([
         'text!templates/projects/projectResourceSidebarTemplate.html',
         'collections/projects',
         'collections/template_resources',
+        'views/projectResourcesListView',
         'icanhaz',
         'common',
         'wijmo'
-], function( $, _, Backbone, sidebarTemplate, projects, resources, ich, Common ) {
+], function( $, _, Backbone, sidebarTemplate, projects, resources, ProjectResourcesListView, ich, Common ) {
     
     var SidebarView = Backbone.View.extend({
         el: "#sidebar",
 
         events: {
-            'click .resource_link': 'addResource'
+            //No events
         },
         
+        template: _.template(sidebarTemplate),
+        
         initialize: function(){
-            var compiledTemplate = _.template(sidebarTemplate);
-            
-            this.$el.html(compiledTemplate);
+            this.render();
+            //Initialize resources list
+            new ProjectResourcesListView();
+        },
+        
+        render: function() {
+            this.$el.html(this.template);
             this.$el.addClass("threecol");
             //Set horizontal splitter
             $("#hsplitter").wijsplitter({
@@ -46,39 +53,8 @@ define([
                  
             });
             
-                        
-            resources.on( 'add', this.addOne, this );
-            resources.on( 'reset', this.addAll, this );
-            resources.on( 'all', this.render, this );
-            
-
-            // Fetch will pull results from the server
-            resources.fetch();
-        },
-        
-        render: function() {
-          //Nothing to render  
-        },
-        
-        // Add a single instance item to the list by creating a view for it.
-        addOne: function( resource ) {
-            console.log("Got another resource!");
-            if (resource.get('type') === "") {
-                // Refuse to add resources until they're initialized.
-                return;
-            }
-
-            $("#aws_resources").append(ich.resource_item(resource.attributes));
-        },
-
-        // Add all items in the **TemplateResources** collection at once.
-        addAll: function() {
-            resources.each(this.addOne, this);
-        },
-        
-        addResource: function() {
-            console.log("Adding new resource");
-        }        
+            return this;
+        }      
     });
     
     var projectSidebar;

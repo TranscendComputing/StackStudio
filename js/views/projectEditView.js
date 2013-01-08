@@ -43,16 +43,21 @@ define([
 
         // Instead of generating a new element, bind to the existing skeleton of
         // the App already present in the HTML.
-        el: '#projdetails',
+        el: '#project_main',
+        
+        template: _.template(projectEditTemplate),
 
         // At initialization we bind to the relevant events on the `Instances`
         // collection, when items are added or changed. Kick things off by
         // loading any preexisting instances.
         initialize: function() {
-            _.bindAll(this, 'select');
-            this.bind('addResource', this.addResource);
-            var compiledTemplate = _.template(projectEditTemplate);
-            this.$el.html(compiledTemplate);
+            Common.vent.on('project:addResource', this.addResource, this);
+            this.render();
+        },
+
+        // Add project elements to the page
+        render: function() {
+            this.$el.html(this.template);
             
             $('#tabs').tabs();
             // Initialize editor
@@ -62,15 +67,12 @@ define([
             this.editor.getSession().setMode("ace/mode/json"); 
             this.editor.resize();
         },
-
-        // Add project elements to the page
-        render: function() {
-
-        },
         
-        addResource: function(id, resource) {
+        addResource: function(resource) {
             console.log("Adding new resource to project...");
             var content;
+            console.log(this.editor);
+            
             content = this.editor.getValue();
             if(content.replace(/\s/g,"") !== '')
             {
@@ -83,7 +85,8 @@ define([
                 content.Resources = {};
             }
             
-            $.extend(content.Resources, resource);
+            var newContent = $.extend(content.Resources, resource.get('template'));
+            this.editor.setValue(JSON.stringify(newContent, null,'\t'));
         }
     });
     
@@ -104,7 +107,6 @@ define([
             projectEditor = new ProjectEditView();
         }
         console.log("Got project udpate route.");
-        projectEditor.addResource(id, resource);
     }, this);    
 
     return ProjectEditView;

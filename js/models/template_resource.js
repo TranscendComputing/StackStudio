@@ -15,7 +15,7 @@ define([
     // ----------
 
     /**
-     * Our basic **TemplateResource** model has `type`, `template`
+     * Our basic **TemplateResource** model has `type`, `template`, `group`
      *
      * @name TemplateResource
      * @constructor
@@ -27,7 +27,9 @@ define([
 
         /** Default attributes for the project */
         defaults: {
+            id: '',
             type: '',
+            group: '',
             template: ''
         },
 

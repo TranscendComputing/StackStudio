@@ -27,11 +27,13 @@ define([
 
         /** Default attributes for the project */
         defaults: {
-            id: '',
-            name: '',
-            description: '',
+            id: '1234567890',
+            name: 'My New Project',
+            description: 'Created in StackStudio',
             owner: '',
             account: '',
+            versions: [],
+            members: [],
             resources: {},
             parameters: {},
             outputs: {},

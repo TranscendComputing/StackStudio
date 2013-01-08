@@ -2,6 +2,7 @@
     {
         "id": "aws_compute_instance",
         "type": "Compute Instance",
+        "group": "resources",
         "template": {
             "NewInstance": {
                 "Type":"AWS::EC2::Instance",
@@ -16,6 +17,7 @@
     {
         "id": "aws_db_instance",
         "type": "Relational Database",
+        "group": "resources",
         "template": {
             "NewDB": {
                 "Type":"AWS::RDS::DBInstance",

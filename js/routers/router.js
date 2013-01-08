@@ -28,6 +28,7 @@ define([
 			'resources/instances/:id': 'instanceDetail',
 			'projects': 'projects',
 			'projects/:id': 'projectDetail',
+			'project/new': 'projectCreate',
 			'projects/:id/edit': 'projectEdit',
 			'projects/:id/update/:resource': 'projectUpdate',
 			'*actions': 'defaultRoute'

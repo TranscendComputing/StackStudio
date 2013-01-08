@@ -81,15 +81,18 @@ requirejs.config({
  */
 define(
 		['jquery',
+		 'underscore',
          'backbone',
          'views/consoleAppView',
          'routers/router',
          'jquery-ui'
-         ], function ($, Backbone, CommandLineView, Router) {
+         ], function ($, _, Backbone, CommandLineView, Router) {
 	// Within this scope, jquery and jquery UI have been loaded.
 
 	// Initialize routing
 	router = new Router();
+	
+	var vent = _.extend({}, Backbone.Events);
 
 	// Initialize the command line, since that's global to all pages.
 	new CommandLineView();
@@ -105,6 +108,9 @@ define(
 
 		// The common router
 		router: router,
+		
+		// The global variable to handle custom events
+		vent: vent, 
 		
 		backbone: Backbone
 	};

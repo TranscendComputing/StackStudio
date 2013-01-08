@@ -9,9 +9,11 @@ var URL_ARGS = 'cb=' + Math.random();
 
 require(['./common'], function (common) {
     require([
-             'views/projectNavigationSidebarView',
+            'views/projectSidebarView',
+            'views/projectAppView',
+             //'views/projectNavigationSidebarView',
              'views/projectResourceSidebarView',
-             'views/projectNavigationView',
+             //'views/projectListItemView',
              'views/projectEditView',
              'views/resourceNavigationView',
              'views/instanceAppView'
