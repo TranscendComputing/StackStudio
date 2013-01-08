@@ -3,13 +3,46 @@
    ========================================================================== */
    
 table.resource_table {
+    float:right;
     border-style:solid;
     list-style-type:none;
     background:#E6E9ED;
     text-align:center;
-    width:72%;
+    width:69%;
 }
 
 table.resource_table tr td {
     border-left:solid 10px transparent;
+}
+
+#container {
+    float:left;
+    width:30%;
+    height:160px;
+}
+
+#container img, #container .item {
+    width:100%;
+    height:100%;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -o-border-radius: 10px;
+    border-radius: 10px;
+    -moz-box-shadow: 0px 5px 5px #777;
+    -webkit-box-shadow: 0px 5px 5px #777;
+    box-shadow: 0px 5px 5px #777;
+}
+.itemTitle {
+    padding-top:30px;
+}
+#container .selectedItem {
+    -moz-box-shadow: 0 4px 10px #0071BC;
+    -webkit-box-shadow: 0 4px 10px #0071BC;
+    box-shadow: 0 4px 10px #0071BC;
+    border:1px solid #0071BC;
+}
+#container .item {
+    width:160px;
+    height:160px;
+    left:0px;
 }

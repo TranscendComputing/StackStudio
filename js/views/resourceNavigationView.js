@@ -11,7 +11,8 @@ define([
         'backbone',
         'text!templates/resources/resourcesTemplate.html',
         'icanhaz',
-        'common'
+        'common',
+        'jquery.coverscroll.min'
 ], function( $, _, Backbone, resourcesTemplate, ich, Common ) {
 	// The Resources Navigation View
 	// ------------------------------
@@ -36,6 +37,8 @@ define([
 			this.$el.addClass("twelvecol");
             var compiledTemplate = _.template(resourcesTemplate);
             this.$el.html(compiledTemplate);
+
+            $('#container').coverscroll();
 		},
 		
 		events: {
