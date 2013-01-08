@@ -5,6 +5,14 @@
  * Credit left inline and big thanks to Nicolas Gallagher, Jonathan Neal,
  * Kroc Camen, and the H5BP dev community and team.
  */
+ 
+@import "notifications.less";
+
+@import "console.less";
+
+@import "resourceApp.less";
+
+@import "instanceApp.less";
 
 /* ==========================================================================
    Base styles: opinionated defaults
@@ -103,6 +111,10 @@ textarea {
             border-radius:@radius;
 }
 
+.full_width {
+    width:100%;
+}
+
 body {
     font-family: "Helvetica", "Arial", "Verdana";
     line-height: 1.5em;
@@ -118,8 +130,8 @@ nav {
     border-bottom: 1px solid #8C8C8C;
     padding-top: .35em;
     padding-bottom: .35em;
-    padding-left: 55px;
-    padding-right: 55px;
+    padding-left: 40px;
+    padding-right: 40px;
     display: block;
 }
 
@@ -140,7 +152,8 @@ nav ul.main {
     background: url('../css/../images/noise.png');
     padding-top: .35em;
     padding-bottom: .35em;
-    padding-right: 55px;
+    padding-left: 40px;
+    padding-right: 40px;
     display: block;
 }
 
@@ -151,8 +164,8 @@ nav ul.account {
     background: url('../css/../images/noise.png');
     padding-top: .35em;
     padding-bottom: .35em;
-    padding-left: 55px;
-    padding-right: 55px;
+    padding-left: 40px;
+    padding-right: 40px;
     display: block;
 }
 
@@ -226,8 +239,8 @@ footer {
 }
 
 footer p {
-    padding-left: 55px;
-    padding-right: 55px;
+    padding-left: 40px;
+    padding-right: 40px;
 }
 
 footer a:visited {
@@ -240,15 +253,13 @@ footer a:visited {
 }
 
 #main > div {
-    padding-left: 55px;
-    padding-right: 55px;
+    margin:20px 40px;
 }
 
 #entry_title {
     margin:0;
-    padding: 10px 55px;
+    padding: 10px 40px;
 }
-
 
 table.dataTable tr.row_selected td.sorting_1 {
     background: wheat;
@@ -257,7 +268,6 @@ table.dataTable tr.row_selected td.sorting_1 {
 tr.row_selected td {
     background: wheat;
 }
-
 
 /*
    Grid CSS styles
@@ -409,10 +419,6 @@ img {
 #rightnav {
     height: 100%;
 }
-
-@import "notifications.less";
-
-@import "console.less";
 
 #tabs_design {
     height: 300px;

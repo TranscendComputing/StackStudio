@@ -33,6 +33,7 @@ define([
         selection: undefined,
         
 		initialize: function() {
+			this.$el.addClass("twelvecol");
             var compiledTemplate = _.template(resourcesTemplate);
             this.$el.html(compiledTemplate);
 		},
@@ -49,7 +50,7 @@ define([
 		resourceSelect: function(selectionId) {
 			$('.resource').each(function() {
 				if(selectionId === $(this).find(":first").attr("id")) {
-					$(this).css("background", "#CB842E");
+					$(this).css("background", "wheat");
 				}else {
 					$(this).css("background", "#E6E9ED");
 				}
