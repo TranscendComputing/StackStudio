@@ -31,7 +31,11 @@ define([
             name: '',
             description: '',
             owner: '',
-            account: ''
+            account: '',
+            resources: {},
+            parameters: {},
+            outputs: {},
+            mappings: {}
         },
 
 	    /**
@@ -47,8 +51,14 @@ define([
 		    //console.log("Setting attributes on model:", attributes);
 		},
 		
-		open: function() {
-		    
+		template: function() {
+		  return {"Resources": this.get('resources')}; 
+		},
+		
+		addResource: function(resource) {
+		    if (this.get('resources') === {}) {
+		        $.extend('resources', resource);
+		    }
 		}
 
     });
