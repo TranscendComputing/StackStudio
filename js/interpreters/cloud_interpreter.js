@@ -40,7 +40,7 @@ define([
             } else if (command.indexOf('cloud-describe-instances') === 0) {
                 result.message = "Displaying cloud instances.";
             } else {
-                result.message = " Unsupported operation.";
+                result.message = "Unsupported operation.";
                 result.type = "error";
             }
             return result;
@@ -52,7 +52,7 @@ define([
             } else if (command.indexOf('cloud-describe-instances') === 0) {
                 result.message = "Displaying cloud instances.";
             } else {
-                result.message = " Unsupported operation.";
+                result.message = "Unsupported operation.";
                 result.type = "error";
             }
             return result;

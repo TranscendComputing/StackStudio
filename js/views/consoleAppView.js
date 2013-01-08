@@ -205,6 +205,7 @@ define([
 		    if (this.expanded) {
 		        this.$console.clear();
 		    }
+		    return false;
 		},
 
 		exportTo: function() {

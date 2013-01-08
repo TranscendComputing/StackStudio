@@ -7,15 +7,6 @@
     filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0.01);
     width: 2px;
 }
-.cmd .clipboard {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    opacity: 0.01;
-    filter: alpha(opacity = 0.01);
-    filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0.01);
-    width: 2px;
-}
 .cmd > .clipboard {
     position: fixed;
 }
@@ -25,21 +16,24 @@
     overflow: hidden;
 }
 .cmd {
+    padding: 0;
     margin: 0;
     height: 1.3em;
-    padding: 0px;
 }
 .terminal .terminal-output div div, .terminal .prompt {
     display: block;
     line-height: 9px;
     height: 14px;
 }
-.terminal,.cmd {
-    font-family: font-family: menlo,courier new,fixed,swiss,sans-serif;
+.terminal {
+    font-family: FreeMono, monospace;
     color: #aaa;
     background-color: #000;
-    font-size: 14px;
+    font-size: 12px;
     line-height: 14px;
+}
+.terminal-output > div {
+    padding-top: 3px;
 }
 .terminal .terminal-output div span {
     display: inline-block;
