@@ -26,14 +26,17 @@ define([
         
         render: function() {
             this.$el.wijlist({
-                autoSize: true
+                autoSize: true,
+                superPanelOptions: {
+                    autoRefresh: true
+                }
             });
             return this;
         },
         
         // Add a single instance item to the list by creating a view for it.
         addResource: function(resource) {
-            this.$el.wijlist("addItem", {label: resource.get('name'), value: resource.get('name')}); 
+            this.$el.wijlist("addItem", {label: resource.get('name'), value: resource}); 
             //Render the list in the client browser
             this.$el.wijlist('renderList');
             this.$el.wijlist('refreshSuperPanel');

@@ -1,0 +1,55 @@
+/* --- cloud console --- */
+#console_area {
+  border-top: 5px solid gray;
+  background-color: #000;
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  min-width: 100%;
+  min-height: 35px;
+  overflow: visible;
+  z-index: 100;
+}
+#command_area {
+  position: relative;
+  bottom: 0px;
+  width: 90%;
+}
+#console_controls {
+  font-size: 11px;
+  position: absolute;
+  top: 0px;
+  right: 10px;
+  display: inline;
+}
+#cloud_cmd_wrap {
+  padding: 0px;
+}
+#cloud_cmd .prompt {
+  padding: 5px 0px 5px 5px;
+}
+#cloud_cmd {
+  padding: 11px 0px 11px 5px;
+}
+#console_controls {
+  padding: 4px 0px;
+  background-color: #000;
+}
+#con_menu {
+  position: absolute;
+  width: 200px;
+  z-index: 1000;
+}
+.cmd {
+  padding: 0px;
+}
+#cloud_console .cmd {
+  font-family: FreeMono, monospace, menlo, courier new, fixed, swiss, sans-serif;
+  padding-top: 3px;
+}
+#cloud_cmd .cmd {
+  font-family: FreeMono, monospace;
+  color: #aaa;
+  background-color: #000;
+  line-height: 14px;
+}

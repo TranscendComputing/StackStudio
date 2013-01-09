@@ -22,7 +22,7 @@ define([
         id: "new_project",
                 
         events: {
-            //'click' : 'select'
+            'click .hover_panel' : 'close'
         },
 
         render: function() {
@@ -43,7 +43,14 @@ define([
           });
           
           return this;  
+        },
+        
+        close: function() {
+            this.overlay.remove();
+            this.remove();
+            return false;
         }
+        
         
     });
     
