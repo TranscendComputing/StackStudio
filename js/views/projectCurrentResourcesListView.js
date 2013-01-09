@@ -36,6 +36,10 @@ define([
             this.$el.wijlist("addItem", {label: resource.get('name'), value: resource.get('name')}); 
             //Render the list in the client browser
             this.$el.wijlist('renderList');
+            this.$el.wijlist('refreshSuperPanel');
+            $("#sidebar").height($("#ap_container").height());
+            $("#hsplitter").height($("#sidebar").height());
+            $("#hsplitter").wijsplitter("refresh");
         }
         
     });

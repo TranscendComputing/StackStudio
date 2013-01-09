@@ -35,6 +35,7 @@ define([
             
             //initialize projects list
             new ProjectsListView();
+            this.$el.height($("#ap_container").height());
         }       
     });
     
