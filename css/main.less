@@ -119,12 +119,12 @@ textarea {
 
 body {
     font-family: "Helvetica", "Arial", "Verdana";
-    line-height: 1.5em;
     color: #222;
+    font-size: .9em;
 }
 
 nav {
-    font-size: .9em;
+    font-size: 1em;
     overflow:hidden;
     background-color: #CCC;
     background: url('../css/../images/noise.png'), -webkit-linear-gradient(#E0E0E0, #CCC, #B0B0B0);
@@ -132,8 +132,8 @@ nav {
     border-bottom: 1px solid #8C8C8C;
     padding-top: .35em;
     padding-bottom: .35em;
-    padding-left: 40px;
-    padding-right: 40px;
+    padding-left: 20px;
+    padding-right: 20px;
     display: block;
 }
 
@@ -142,32 +142,20 @@ nav a {
     text-shadow: #EBEBEB 0 1px;
     float: left;
     text-decoration: none;
-    font-size: 1.1em;
-    padding: .1em 0;
-    line-height: 1.5em;
 }
 
 nav ul.main {
-    font-size: 1.1em;
     position: relative;
     background-color: #CCC;
     background: url('../css/../images/noise.png');
-    padding-top: .35em;
-    padding-bottom: .35em;
-    padding-left: 40px;
-    padding-right: 40px;
     display: block;
 }
 
-nav ul.account {
-    font-size: 1.1em;
+nav ul.account {   
     float:right;
     background-color: #CCC;
     background: url('../css/../images/noise.png');
-    padding-top: .35em;
-    padding-bottom: .35em;
-    padding-left: 40px;
-    padding-right: 40px;
+    
     display: block;
 }
 
@@ -181,14 +169,17 @@ nav ul li:last-child {
 
 nav ul {
     margin: 0;
-    padding: 0;
-    border: 0;
     overflow: hidden;
     float: left;
     display: block;
     padding-top: .15em;
     list-style-type: disc;
     list-style: none;
+    font-size: 1.1em;
+    padding-top: .35em;
+    padding-bottom: .35em;
+    padding-left: 20px;
+    padding-right: 20px;
 }
 
 nav ul li {
@@ -241,8 +232,8 @@ footer {
 }
 
 footer p {
-    padding-left: 40px;
-    padding-right: 40px;
+    padding-left: 20px;
+    padding-right: 20px;
 }
 
 footer a:visited {
@@ -255,12 +246,16 @@ footer a:visited {
 }
 
 #main > div {
-    margin:20px 40px;
+    margin:20px 20px;
 }
 
 #entry_title {
     margin:0;
-    padding: 10px 40px;
+    padding: 10px 20px;
+}
+
+div.detail_panel {
+    font-size: .9em;
 }
 
 table.dataTable tr.row_selected td.sorting_1 {
@@ -269,6 +264,10 @@ table.dataTable tr.row_selected td.sorting_1 {
 
 tr.row_selected td {
     background: wheat;
+}
+
+div.button_bar {
+    margin: 5px 0px;
 }
 
 /*
@@ -433,6 +432,10 @@ img {
 
 #tabs {
     display: inline-block;
+}
+
+#tabs ul li a {
+    color:black;
 }
 
 #design_editor {

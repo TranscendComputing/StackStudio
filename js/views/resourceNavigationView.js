@@ -38,7 +38,22 @@ define([
             var compiledTemplate = _.template(resourcesTemplate);
             this.$el.html(compiledTemplate);
 
-            $('#container').coverscroll();
+            $('#container').coverscroll({
+                'minfactor':18, // how much is the next item smaller than previous in pixels
+                'distribution':1, // how apart are the items (items become separated when this value is below 1)
+                'scalethreshold':0, // after how many items to start scaling
+                'staticbelowthreshold':false, // if true when number of items is below "scalethreshold" - don't animate 
+                'titleclass':'itemTitle', // class name of the element containing the item title
+                'selectedclass':'selectedItem', // class name of the selected item
+                'scrollactive':true, // scroll functionality switch
+                'step':{ // compressed items on the side are steps
+                	'limit':4, // how many steps should be shown on each side
+                	'width':8, // how wide is the visible section of the step in pixels
+                	'scale':true // scale down steps
+                },
+                'bendamount':2, // amount of "bending" of the CoverScroll (values 0.1 to 1 bend down, -0.1 to -1 bend up, 2 is straight (no bending), 1.5 sligtly bends down)
+              	'movecallback':function(item){} // callback function triggered after click on an item - parameter is the item's jQuery object
+              });
 		},
 		
 		events: {

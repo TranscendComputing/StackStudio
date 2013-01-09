@@ -54,7 +54,6 @@ define([
             this.$el.html(compiledTemplate);
             ich.refresh();
 			$('#new_instance').button();
-			$('#id_refresh').button();
             this.$table = $('#instance_table').dataTable({"bJQueryUI": true});
 			instances.on( 'add', this.addOne, this );
 			instances.on( 'reset', this.addAll, this );
