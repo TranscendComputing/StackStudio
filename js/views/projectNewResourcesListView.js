@@ -10,11 +10,11 @@ define([
         'underscore',
         'backbone',
         'collections/template_resources',
-        'views/projectResourceListItemView',
+        'views/projectNewResourceListItemView',
         'common'
-], function( $, _, Backbone, resources, ProjectResourceListItemView, Common ) {
+], function( $, _, Backbone, resources, ProjectNewResourceListItemView, Common ) {
        
-    var ProjectResourcesListView = Backbone.View.extend({
+    var ProjectNewResourcesListView = Backbone.View.extend({
         
         //TODO define element
         //OR use tagName, className, ...
@@ -35,8 +35,8 @@ define([
         
         // Add a single instance item to the list by creating a view for it.
         addOne: function( resource ) {
-            var projectResourceListItemView = new ProjectResourceListItemView({ model: resource });
-            this.$el.append(projectResourceListItemView.render().el);
+            var projectNewResourceListItemView = new ProjectNewResourceListItemView({ model: resource });
+            this.$el.append(projectNewResourceListItemView.render().el);
         },
 
         // Add all items in the **Projects** collection at once.
@@ -46,5 +46,5 @@ define([
         
     });
     
-    return ProjectResourcesListView;
+    return ProjectNewResourcesListView;
 });

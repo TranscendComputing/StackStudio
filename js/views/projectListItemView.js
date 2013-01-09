@@ -28,8 +28,6 @@ define([
         },
         
         select: function() {
-            console.log('project below has been clicked');
-            console.log(this.model);
             Common.vent.trigger('project:show', this.model);
         }
     });

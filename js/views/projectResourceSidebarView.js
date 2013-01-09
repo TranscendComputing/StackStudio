@@ -12,11 +12,12 @@ define([
         'text!templates/projects/projectResourceSidebarTemplate.html',
         'collections/projects',
         'collections/template_resources',
-        'views/projectResourcesListView',
+        'views/projectNewResourcesListView',
+        'views/projectCurrentResourcesListView',
         'icanhaz',
         'common',
         'wijmo'
-], function( $, _, Backbone, sidebarTemplate, projects, resources, ProjectResourcesListView, ich, Common ) {
+], function( $, _, Backbone, sidebarTemplate, projects, resources, ProjectNewResourcesListView, ProjectCurrentResourcesListView, ich, Common ) {
     
     var SidebarView = Backbone.View.extend({
         el: "#sidebar",
@@ -30,24 +31,26 @@ define([
         initialize: function(){
             this.render();
             //Initialize resources list
-            new ProjectResourcesListView();
+            new ProjectNewResourcesListView();
+            new ProjectCurrentResourcesListView();
         },
         
         render: function() {
             this.$el.html(this.template);
-            this.$el.addClass("threecol");
+            //this.$el.addClass("threecol");
             //Set horizontal splitter
             $("#hsplitter").wijsplitter({
                  orientation: "horizontal",
+                 fullSplit: true,
                  resizeSettings: {ghost: false},
                  splitterDistance: 150, 
                  panel1: {
-                      minSize:150, 
+                      minSize:400, 
                       collapsed:false, 
                       scrollBars:"auto"
                  },
                  panel2: {
-                      minSize:200, 
+                      minSize:400, 
                       scrollBars:"auto"
                  }
                  

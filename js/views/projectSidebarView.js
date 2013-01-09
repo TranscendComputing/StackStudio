@@ -49,8 +49,6 @@ define([
     Common.router.on('route:projectDetail', function (id) {
         if ( !projectSidebarView ) {
             projectSidebarView = new SidebarView();
-        } else {
-            projectSidebarView.render();
         }
     }, this);
     return SidebarView;

@@ -74,19 +74,17 @@ define([
             console.log(this.editor);
             
             content = this.editor.getValue();
-            if(content.replace(/\s/g,"") !== '')
-            {
+            if (content.replace(/\s/g,"") !== '') {
                 content = jQuery.parseJSON(content);
-            }else{
+            } else {
                 content = {};
             }
-            if(content.Resources == null)
-            {
+            if (!content.Resources) {
                 content.Resources = {};
             }
             
-            var newContent = $.extend(content.Resources, resource.get('template'));
-            this.editor.setValue(JSON.stringify(newContent, null,'\t'));
+            $.extend(content.Resources, resource.get('template'));
+            this.editor.setValue(JSON.stringify(content, null,'\t'));
         }
     });
     

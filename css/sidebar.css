@@ -1,0 +1,7 @@
+/* --- cloud console --- */
+.sidebar {
+  height: 100%;
+}
+#hsplitter {
+  height: 1000px;
+}

@@ -13,7 +13,7 @@ define([
         'common'
 ], function( $, _, Backbone, ich, Common ) {
     
-    var ProjectResourceListItemView = Backbone.View.extend({
+    var ProjectNewResourceListItemView = Backbone.View.extend({
         
         //OR use tagName, className, ...
         tagName: "a",
@@ -35,5 +35,5 @@ define([
         }
     });
     
-    return ProjectResourceListItemView;
+    return ProjectNewResourceListItemView;
 });

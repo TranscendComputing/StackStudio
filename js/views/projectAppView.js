@@ -162,8 +162,6 @@ define([
     Common.router.on('route:projectDetail', function (id) {
         if ( !projView ) {
             projView = new ProjectsView();
-        } else {
-            projView.render();
         }
         if (projView.selectedId !== id) {
             projView.updateDetails(id);
