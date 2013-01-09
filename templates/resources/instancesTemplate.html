@@ -22,11 +22,15 @@
 </div>
 
 <script type="text/html" id="instance_detail">
-    <a name="instance-detail">Instance Detail</a>
-    <div>
-        <div>Name: {{ name }} </div>
-        <div>Instance ID: {{ instanceId }} </div>
-        <div>Key Name: {{ keyName }} </div>
+    <div id="tabs">
+        <ul>
+            <li><a href="#tabs-1">Details</a></li>
+        </ul>
+        <div id="tabs-1" class="tab">
+            <div>Name: {{ name }} </div>
+            <div>Instance ID: {{ instanceId }} </div>
+            <div>Key Name: {{ keyName }} </div>
+        </div>
     </div>
 </script>
 <script type="text/html" id="instance_form">

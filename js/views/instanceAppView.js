@@ -120,7 +120,8 @@ define([
 			
 			if(selectedModel) {
 				this.selectedId = instance;
-				$('#details').html(ich.instance_detail(selectedModel.attributes));
+				$("#details").html(ich.instance_detail(selectedModel.attributes));
+				$("#tabs").tabs();
 			}else {
 				
 			}
