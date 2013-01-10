@@ -13,10 +13,11 @@ define([
         'models/instance',
         'collections/instances',
         'views/instanceRowView',
+        'views/instanceCreateView',
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, instancesTemplate, Instance, instances, InstanceView, ich, Common ) {
+], function( $, _, Backbone, instancesTemplate, Instance, instances, InstanceView, InstanceCreate, ich, Common ) {
 	'use strict';
 
 	// The Instances Application View
@@ -87,10 +88,8 @@ define([
 		},
 
 		createNew : function () {
-			this.$detail.html(ich.instance_form(
-				new Instance().attributes
-			));
-			$('#id_save_new').button();
+			var instanceCreate = new InstanceCreate();
+			instanceCreate.render();
 		},
 		
 		clickOne: function (event) {
