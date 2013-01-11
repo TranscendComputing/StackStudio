@@ -72,7 +72,7 @@ define([
             var autocomplete = {
                 bindKey: {
                     mac: "Command-Alt-Tab",
-                    win: "Ctrl-Tab"
+                    win: "Ctrl-Space"
                 },
                 name: "autocomplete",
                 exec: function(editor) {Common.vent.trigger("onAutoComplete");}
