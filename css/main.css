@@ -1800,7 +1800,7 @@ div.wijmo-wijprogressbar-north {
 }
 .ace_autocomplete {
   color: #000000;
-  background: #FFFFFF; 
+  background: #FFFFFF;
 }
 /* ==========================================================================
    Base styles: opinionated defaults
@@ -1811,10 +1811,6 @@ input,
 select,
 textarea {
   color: #222;
-}
-body {
-  font-size: 1em;
-  line-height: 1.4;
 }
 /*
  * Remove text-shadow in selection highlight: h5bp.com/i
@@ -1882,6 +1878,7 @@ body {
   font-family: "Helvetica", "Arial", "Verdana";
   color: #222;
   font-size: .9em;
+  line-height: 1.4;
 }
 nav {
   font-size: 1em;

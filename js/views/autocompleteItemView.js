@@ -26,17 +26,50 @@ define([
         },
         
         render: function() {
-          var values = ["t1.micro", "m1.small", "m1.medium", "m1.large"];
-          this.$el.autocomplete({
+          var values = [
+            { label: "t1.micro", category: "" },
+            { label: "m1.small", category: "" },
+            { label: "m1.medium", category: "" },
+            { label: "m1.large", category: "" },
+            { label: "InstanceType", category: "Parameters", value: '{"Ref": "InstanceType"}'},
+            { label: "TypeMapping", category: "Mappings", value: 'Fn::FindInMap : [ "MyMap", "MapKey", "MapValue"]'}
+          ];
+          $.widget( "custom.catcomplete", $.ui.autocomplete, {
+              _renderMenu: function( ul, items ) {
+                  var that = this,
+                  currentCategory = "";
+                  $.each( items, function( index, item ) {
+                      if ( item.category != currentCategory ) {
+                          ul.append( "<li class='ui-autocomplete-category'>" + item.category + "</li>" );
+                          currentCategory = item.category;
+                      }
+                      that._renderItemData( ul, item );
+                  });
+              }
+          })
+          
+          this.$el.catcomplete({
+              source: values,
+              autoFocus: true,
+              select: this.handleSelect,
+              delay: 0
+          });
+          
+          this.$el.focusout(this.focusOut);
+          
+          /*
+          this.$el.catcomplete({
               source: function( request, response) {
                   var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( request.term ), "i" );
                   response( $.grep( values, function( item ) {
-                      return matcher.test( item );
+                      return matcher.test( item.label );
                   }) );
               },
               autoFocus: true,
-              select: this.handleSelect
+              select: this.handleSelect,
+              delay: 0
           });
+          */
           return this;  
         },
         
@@ -47,6 +80,11 @@ define([
             var range = editor.getSelectionRange();
             var selectedValue = ui.item.value;
             editor.session.replace(range, selectedValue);
+        },
+        
+        focusOut: function() {
+            $("#autocomplete").remove();
+            $("#autocomplete_container").remove();
         }
         
     });

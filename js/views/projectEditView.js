@@ -106,13 +106,13 @@ define([
             
             // Position the list
             var coords = editor.renderer.textToScreenCoordinates(cursor.row, cursor.column);
-            element.style.top = coords.pageY + 10 + 'px';
+            element.style.top = coords.pageY + 15 + 'px';
             element.style.left = coords.pageX + -2 + 'px';
             element.style.display = 'block';
       
             var autocompleteView = new AutocompleteItemView();
             element.appendChild(autocompleteView.render().el);
-            $("input").autocomplete("enable");
+            $("input").catcomplete("enable");
             $("input").focus();
             if (editor.isFocused) {
                 console.log("editor has the focus");
