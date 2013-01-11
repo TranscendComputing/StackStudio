@@ -32,21 +32,21 @@ define([
             { label: "m1.medium", category: "" },
             { label: "m1.large", category: "" },
             { label: "InstanceType", category: "Parameters", value: '{"Ref": "InstanceType"}'},
-            { label: "TypeMapping", category: "Mappings", value: 'Fn::FindInMap : [ "MyMap", "MapKey", "MapValue"]'}
+            { label: "TypeMapping", category: "Mappings", value: '{"Fn::FindInMap" : [ "MyMap", "MapKey", "MapValue"]}'}
           ];
           $.widget( "custom.catcomplete", $.ui.autocomplete, {
               _renderMenu: function( ul, items ) {
                   var that = this,
                   currentCategory = "";
                   $.each( items, function( index, item ) {
-                      if ( item.category != currentCategory ) {
+                      if ( item.category !== currentCategory ) {
                           ul.append( "<li class='ui-autocomplete-category'>" + item.category + "</li>" );
                           currentCategory = item.category;
                       }
                       that._renderItemData( ul, item );
                   });
               }
-          })
+          });
           
           this.$el.catcomplete({
               source: values,
@@ -57,23 +57,11 @@ define([
           
           this.$el.focusout(this.focusOut);
           
-          /*
-          this.$el.catcomplete({
-              source: function( request, response) {
-                  var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( request.term ), "i" );
-                  response( $.grep( values, function( item ) {
-                      return matcher.test( item.label );
-                  }) );
-              },
-              autoFocus: true,
-              select: this.handleSelect,
-              delay: 0
-          });
-          */
           return this;  
         },
         
         handleSelect: function( event, ui ) {
+            $(".ace_autocomplete").remove();
             $("#autocomplete").remove();
             $("#autocomplete_container").remove();
             var editor = ace.edit("design_editor");
@@ -83,6 +71,7 @@ define([
         },
         
         focusOut: function() {
+            $(".ace_autocomplete").remove();
             $("#autocomplete").remove();
             $("#autocomplete_container").remove();
         }
