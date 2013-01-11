@@ -140,8 +140,7 @@ define([
         },
         
         saveProject: function() {
-            console.log("Project saved with id: " + this.selectedId);
-            Common.router.navigate('projects/' + this.selectedId, {trigger: true});
+            Common.gotoPreviousState();
         },
         
         addResource: function() {
@@ -153,7 +152,7 @@ define([
     var projView;
     
     Common.router.on('route:projects', function () {
-        if ( !projView ) {
+        if ( !projView || projView.el.innerHTML === '') {
             projView = new ProjectsView();
         }
         console.log("Got project app route.");

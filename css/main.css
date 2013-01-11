@@ -1798,6 +1798,10 @@ div.wijmo-wijprogressbar-north {
 .wijmo-wijvideo .wijmo-wijtooltip-container {
   padding: 3px;
 }
+.ace_autocomplete {
+  color: #000000;
+  background: #FFFFFF;
+}
 /* ==========================================================================
    Base styles: opinionated defaults
    ========================================================================== */

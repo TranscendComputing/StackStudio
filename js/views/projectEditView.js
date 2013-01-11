@@ -13,11 +13,12 @@ define([
         'text!templates/projects/projectEditTemplate.html',
         'models/project',
         'collections/template_resources',
+        'views/autocompleteItemView',
         'ace',
         'icanhaz',
         'common',
         'jquery-ui'
-], function( $, _, Backbone, projectEditTemplate, Project, templateResources, ace, ich, Common ) {
+], function( $, _, Backbone, projectEditTemplate, Project, templateResources, AutocompleteItemView, ace, ich, Common ) {
     
     'use strict';
     
@@ -62,10 +63,61 @@ define([
             $('#tabs').tabs();
             // Initialize editor
             ace.EditSession.prototype.$startWorker = function(){}; //This is a workaround for a worker bug
-            this.editor = ace.edit("design_editor"); 
+            this.editor = ace.edit("design_editor");
             this.editor.setTheme("ace/theme/twilight");
             this.editor.getSession().setMode("ace/mode/json"); 
+            
+            //Add custom autocomplete binding
+            var newBinding = this.editor.keyBinding;
+            var autocomplete = {
+                bindKey: {
+                    mac: "Command-Alt-Tab",
+                    win: "Ctrl-Tab"
+                },
+                name: "autocomplete",
+                exec: function(editor) {Common.vent.trigger("onAutoComplete");}
+            };
+            var cm = newBinding.$handlers[0];
+            cm.addCommand(autocomplete);
+            this.editor.keyBinding = newBinding;
+            Common.vent.on("onAutoComplete", this.handleChange);
+            
+            //this.editor.on('change', this.handleChange, this);
+            //$("#design_editor").on('keyup', this.handleChange);
             this.editor.resize();
+        },
+        
+        handleChange: function() {
+            console.log("Changing doc.....");
+            var editor = ace.edit("design_editor");
+            editor.session.setUseSoftTabs(false);
+            
+            var cursor = editor.getCursorPosition();
+            
+            // Create the suggest list
+            var element = document.createElement('div');
+            element.className = 'ace_autocomplete';
+            //element.style.display = 'none';
+            element.style.listStyleType = 'none';
+            element.style.padding = '2px';
+            element.style.position = 'fixed';
+            element.style.zIndex = '1000';
+            editor.container.appendChild(element);
+            
+            // Position the list
+            var coords = editor.renderer.textToScreenCoordinates(cursor.row, cursor.column);
+            element.style.top = coords.pageY + 10 + 'px';
+            element.style.left = coords.pageX + -2 + 'px';
+            element.style.display = 'block';
+      
+            var autocompleteView = new AutocompleteItemView();
+            element.appendChild(autocompleteView.render().el);
+            $("input").autocomplete("enable");
+            $("input").focus();
+            if (editor.isFocused) {
+                console.log("editor has the focus");
+            }
+            
         },
         
         addResource: function(resource) {

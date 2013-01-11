@@ -108,8 +108,9 @@ define(
 	// Initialize routing
 	router = new Router();
 	
-	var vent = _.extend({}, Backbone.Events);
-
+	// Initialize custom events object
+	var vent = _.extend({}, Backbone.Events);    
+    
 	// Initialize the command line, since that's global to all pages.
 	new CommandLineView();
 
@@ -128,7 +129,16 @@ define(
 		// The global variable to handle custom events
 		vent: vent, 
 		
-		backbone: Backbone
+		backbone: Backbone,
+		
+	    // Function tracks previous state
+        setPreviousState: function() {
+            this.previous_state = document.location.hash;  
+        },
+        
+        gotoPreviousState: function() {
+            document.location.hash = this.previous_state;
+        }
 	};
 }, function (err) {
     //The errback, error callback

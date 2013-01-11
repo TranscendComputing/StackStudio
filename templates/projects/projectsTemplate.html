@@ -44,6 +44,16 @@
         </ul>
 </script>
 
+<script type="text/html" id="autocomplete">
+    <div>
+       <select id="completions" multiple size="5">
+           {{#options}}
+           <option>{{value}}</option>
+           {{/options}}
+       </select> 
+    </div>
+</script>
+
 <script type="text/html" id="resource_item">
     <div>
        <a href="#" id="{{ id }}" class="resource_link">{{ type }}</a>
