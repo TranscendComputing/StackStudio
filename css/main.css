@@ -170,6 +170,9 @@ table.resource_table tr td {
    Instance App CSS
    ========================================================================== */
 /* --- cloud console --- */
+#sidebar {
+  height: 225px;
+}
 /*
 @import "jquery.wijmo.wijlist.less";
 
@@ -1802,6 +1805,12 @@ div.wijmo-wijprogressbar-north {
   color: #000000;
   background: #FFFFFF;
 }
+.ui-autocomplete-category {
+  font-weight: bold;
+  padding: .2em .4em;
+  margin: .8em 0 .2em;
+  line-height: 1.5;
+}
 /* ==========================================================================
    Base styles: opinionated defaults
    ========================================================================== */
@@ -2169,7 +2178,6 @@ img {
 .hover_panel {
   text-decoration: none;
   background-color: #E6E2DF;
-  background-image: url(http://i.imgur.com/aolSq.png);
   background-position: 292px 10px;
   background-repeat: no-repeat;
   color: #B2AAA4;

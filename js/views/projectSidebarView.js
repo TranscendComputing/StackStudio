@@ -20,6 +20,10 @@ define([
         
         template: _.template(sidebarTemplate),
         
+        events: {
+            'click #new_project': 'createNew'
+        },
+        
         initialize: function(){
             this.render(); 
         },
@@ -36,7 +40,12 @@ define([
             //initialize projects list
             new ProjectsListView();
             this.$el.height($("#ap_container").height());
-        }       
+        },
+        
+        createNew: function() {
+            Common.vent.trigger('project:createNew');
+            return false;
+        }
     });
     
     var projectSidebarView;

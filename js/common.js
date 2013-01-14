@@ -132,12 +132,13 @@ define(
 		backbone: Backbone,
 		
 	    // Function tracks previous state
-        setPreviousState: function() {
-            this.previous_state = document.location.hash;  
+        setPreviousState: function( view ) {
+            this.previousView = view
+            this.previousState = document.location.hash;  
         },
         
         gotoPreviousState: function() {
-            document.location.hash = this.previous_state;
+            router.navigate(this.previousState, {trigger: true});
         }
 	};
 }, function (err) {

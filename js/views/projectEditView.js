@@ -11,6 +11,7 @@ define([
         'underscore',
         'backbone',
         'text!templates/projects/projectEditTemplate.html',
+        'collections/projects',
         'models/project',
         'collections/template_resources',
         'views/autocompleteItemView',
@@ -18,7 +19,7 @@ define([
         'icanhaz',
         'common',
         'jquery-ui'
-], function( $, _, Backbone, projectEditTemplate, Project, templateResources, AutocompleteItemView, ace, ich, Common ) {
+], function( $, _, Backbone, projectEditTemplate, projects, Project, templateResources, AutocompleteItemView, ace, ich, Common ) {
     
     'use strict';
     
@@ -52,8 +53,7 @@ define([
         // collection, when items are added or changed. Kick things off by
         // loading any preexisting instances.
         initialize: function() {
-            Common.vent.on('project:addResource', this.addResource, this);
-            this.render();
+            Common.vent.on('project:addResource', this.addResource, this);            
         },
 
         // Add project elements to the page
@@ -71,7 +71,7 @@ define([
             var newBinding = this.editor.keyBinding;
             var autocomplete = {
                 bindKey: {
-                    mac: "Command-Alt-Tab",
+                    mac: "Ctrl-Space",
                     win: "Ctrl-Space"
                 },
                 name: "autocomplete",
@@ -85,6 +85,9 @@ define([
             //this.editor.on('change', this.handleChange, this);
             //$("#design_editor").on('keyup', this.handleChange);
             this.editor.resize();
+            
+            var p = projects.get(this.selectedId);
+            this.editor.setValue(JSON.stringify(p.template(), null,'\t'));
         },
         
         handleChange: function() {
@@ -147,6 +150,8 @@ define([
         if ( !projectEditor ) {
             projectEditor = new ProjectEditView();
         }
+        projectEditor.selectedId = id;
+        projectEditor.render();
         console.log("Got project edit route.");
         //projectEditor.open(event, id);
     }, this);

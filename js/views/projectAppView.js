@@ -47,9 +47,7 @@ define([
         
         // Delegated events for creating new instances, etc.
         events: {
-            'click #new_project': 'createNew',
             'click #project_edit': 'editProject',
-            'click .hover_panel': 'closeNew',
             'click #project_back': 'saveProject',
             'click .resource_link': 'addResource'
         },
@@ -59,6 +57,7 @@ define([
         // loading any preexisting instances.
         initialize: function() {
             Common.vent.on('project:show', this.selectOne, this);
+            Common.vent.on('project:createNew', this.createNew, this);
             this.render();
         },
 
@@ -77,35 +76,10 @@ define([
         },
 
         createNew: function () {
+            Common.setPreviousState( this );
             var newProjectWindow = new ProjectCreateView();
-            newProjectWindow.render();
-            $('#new_project').wijdialog( "open" );
-            /*
-            $('#new_project').wijdialog({
-                    autoOpen: false,
-                    captionButtons: {
-                        refresh: {visible: false},
-                        pin: {visible: false},
-                        toggle: {visible: false},
-                        minimize: {visible: false},
-                        maximize: {visible: false}
-                    },
-                    minWidth: 400,
-                    modal: true
-            });
-            
-            $( "#new_project" ).wijdialog( "open" );
-            
-            this.$detail.html(ich.new_project_dialog(
-                new Project().attributes
-            ));
-            $('.save_button').button();
-            */
-        },
-        
-        closeNew: function () {
-            console.log("closing project");
-            $('#new_project').wijdialog( "close" );
+            newProjectWindow.open();
+            return false;
         },
         
         

@@ -9,10 +9,15 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'collections/stacks',
+        'collections/projects',
+        'models/stack',
+        'models/project',
+        'views/projectNewTemplateView',
         'icanhaz',
         'common',
         'wijmo'
-], function( $, _, Backbone, ich, Common ) {
+], function( $, _, Backbone, stacks, projects, Stack, Project, ProjectNewTemplateView, ich, Common ) {
     
     var ProjectCreateView = Backbone.View.extend({
         
@@ -22,7 +27,13 @@ define([
         id: "new_project",
                 
         events: {
-            'click .hover_panel' : 'close'
+            'wijdialogclose' : 'close' 
+        },
+        
+        initialize: function() {
+           Common.vent.on('project:create', this.createProject, this);
+           stacks.on( 'addOne', this.addOne, this );
+           stacks.on( 'reset', this.addAll, this ); 
         },
 
         render: function() {
@@ -30,7 +41,7 @@ define([
           this.$el.append( ich.new_project_window() );
           $("#main").append(this.$el);
           this.$el.wijdialog({
-                autoOpen: false,
+                autoOpen: true,
                 captionButtons: {
                     refresh: {visible: false},
                     pin: {visible: false},
@@ -39,18 +50,55 @@ define([
                     maximize: {visible: false}
                 },
                 minWidth: 400,
-                modal: true
+                modal: true,
+                title: "New Project"
           });
+          
+          stacks.fetch({ success: this.handleAll, error: this.handleError, emulateJSON: true });
           
           return this;  
         },
         
         close: function() {
-            this.overlay.remove();
             this.remove();
+            Common.gotoPreviousState();
             return false;
-        }
+        },
         
+        addOne: function(stack) {
+            console.log('adding new stack');
+            var stackTemplate = new ProjectNewTemplateView({ model: stack });
+            this.$el.append(stackTemplate.render().el);
+        },
+        
+        addAll: function( stacks ) {
+            stacks.each(this.addOne, this);
+        },
+        
+        handleAll: function(e) {
+            console.log(e);
+        },
+        
+        handleError: function(collection, xhr, options) {
+            console.log(collection);
+            console.log(xhr);
+            console.log(options);
+        },
+        
+        open: function() {
+            this.render();
+            Common.router.navigate('projects/new');   
+        },
+        
+        createProject: function(stack) {
+            this.$el.wijdialog("close");
+            var newProject = new Project({
+                name: stack.get('name'),
+                template: stack.template()
+            });
+            
+            projects.add( newProject );
+        }
         
     });
     

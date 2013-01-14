@@ -15,9 +15,9 @@ define([
     // ----------
 
     /**
-     * Our basic **Project** model has `name`, `projectId`, `owner`, `account`
+     * Our basic **Stack** model has `name`, `description`, `template`
      *
-     * @name Project
+     * @name Stack
      * @constructor
      * @category Projects
      * @param {Object} initialization object.
@@ -27,13 +27,8 @@ define([
 
         /** Default attributes for the project */
         defaults: {
-            id: '1234567890',
-            name: 'My New Project',
-            description: 'Created in StackStudio',
-            owner: '',
-            account: '',
-            versions: [],
-            members: [],
+            name: '',
+            description: '',
             template: {}
         },
 
@@ -51,13 +46,7 @@ define([
 		},
 		
 		template: function() {
-		    return this.get('template');
-		},
-		
-		addResource: function(resource) {
-		    if (this.template().Resources === {}) {
-		        $.extend(this.template().Resources, resource);
-		    }
+		  return this.get('template'); 
 		}
 
     });
