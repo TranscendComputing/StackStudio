@@ -37,8 +37,9 @@ define([
         
         render: function() {
             this.$el.html(this.template);
-            //this.$el.addClass("threecol");
+            this.$el.addClass("fourcol");
             //Set horizontal splitter
+            /*
             $("#hsplitter").wijsplitter({
                  orientation: "horizontal",
                  fullSplit: true,
@@ -55,6 +56,7 @@ define([
                  }
                  
             });
+            */
             return this;
         }      
     });

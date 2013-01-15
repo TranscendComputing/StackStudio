@@ -36,13 +36,13 @@ define([
         
         // Add a single instance item to the list by creating a view for it.
         addResource: function(resource) {
-            this.$el.wijlist("addItem", {label: resource.get('name'), value: resource}); 
+            this.$el.wijlist("addItem", {label: resource.name, value: resource.template}); 
             //Render the list in the client browser
             this.$el.wijlist('renderList');
             this.$el.wijlist('refreshSuperPanel');
-            $("#sidebar").height($("#ap_container").height());
-            $("#hsplitter").height($("#sidebar").height());
-            $("#hsplitter").wijsplitter("refresh");
+            //$("#sidebar").height($("#ap_container").height());
+            //$("#hsplitter").height($("#sidebar").height());
+            //$("#hsplitter").wijsplitter("refresh");
         }
         
     });

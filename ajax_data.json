@@ -1,0 +1,34 @@
+[
+    { 
+        "data" : "EC2", 
+        "children" : [ 
+            {
+                "data": {
+                    "title": "Instance",
+                    "template": {
+                           "NewRecordSetGroup": {
+                               "Type" : "AWS::Route53::RecordSetGroup",
+                               "Properties" : {
+                                  "HostedZoneName" : "",
+                                  "RecordSets" : [],
+                                  "Comment" : ""
+                               }
+                        }
+                    },
+                    "icon": "file"
+                }
+                
+            },
+            "Volume" 
+        ], 
+        "state" : "closed" 
+    },
+    { 
+        "data" : "RDS", 
+        "children" : [ 
+            "DB Security Group",
+            "DB Instance" 
+        ], 
+        "state" : "closed" 
+    }
+]

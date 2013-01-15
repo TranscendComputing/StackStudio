@@ -2,3 +2,6 @@
 #sidebar {
   height: 225px;
 }
+.file {
+  background: url(../images/IconPNGs/16File.png);
+}

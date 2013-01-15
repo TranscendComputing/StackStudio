@@ -173,6 +173,9 @@ table.resource_table tr td {
 #sidebar {
   height: 225px;
 }
+.file {
+  background: url(../images/IconPNGs/16File.png);
+}
 /*
 @import "jquery.wijmo.wijlist.less";
 
@@ -1812,6 +1815,76 @@ div.wijmo-wijprogressbar-north {
   line-height: 1.5;
 }
 /* ==========================================================================
+   Project App CSS
+   ========================================================================== */
+#tabs {
+  height: 500px;
+  display: inline-block;
+  position: relative;
+}
+#tabs ul li a {
+  color: black;
+}
+#design_editor {
+  height: 90%;
+  width: 90%;
+}
+.dialog_panel {
+  font-family: Arial, Sans-serif, sans;
+  text-align: left;
+  background-color: #D9D3C7;
+}
+.horizlist li {
+  display: inline;
+  list-style-type: none;
+  padding-right: 20px;
+}
+.hover_panel {
+  text-decoration: none;
+  background-color: #E6E2DF;
+  background-position: 292px 10px;
+  background-repeat: no-repeat;
+  color: #B2AAA4;
+  display: block;
+  float: left;
+  height: 130px;
+  width: 262px;
+  margin: 0 10px 10px 0;
+  padding: 15px;
+  -moz-transition: all 0.2s ease;
+  /* FF3.7+ */
+
+  -o-transition: all 0.2s ease;
+  /* Opera 10.5 */
+
+  -webkit-transition: all 0.2s ease;
+  /* Saf3.2+, Chrome */
+
+  transition: all 0.2s ease;
+}
+.hover-panel h3 {
+  font-family: tandelle-1, tandelle-2, Impact, Sans-serif, sans;
+  font-size: 38px;
+  line-height: 1;
+  margin: 0 0 10px;
+  text-transform: uppercase;
+}
+.hover-panel p {
+  font-size: 12px;
+  width: 65%;
+}
+.hover_panel:hover {
+  background-color: #237ABE;
+  background-position: 180px 10px;
+}
+.hover_panel:hover h3 {
+  color: #FFF;
+  text-shadow: rgba(0, 0, 0, 0.398438) 0px 0px 4px;
+}
+.hover_panel:hover p {
+  color: #FFF;
+}
+/* ==========================================================================
    Base styles: opinionated defaults
    ========================================================================== */
 html,
@@ -2164,77 +2237,6 @@ img {
 }
 #rightnav {
   height: 100%;
-}
-.dialog_panel {
-  font-family: Arial, Sans-serif, sans;
-  text-align: left;
-  background-color: #D9D3C7;
-}
-.horizlist li {
-  display: inline;
-  list-style-type: none;
-  padding-right: 20px;
-}
-.hover_panel {
-  text-decoration: none;
-  background-color: #E6E2DF;
-  background-position: 292px 10px;
-  background-repeat: no-repeat;
-  color: #B2AAA4;
-  display: block;
-  float: left;
-  height: 130px;
-  width: 262px;
-  margin: 0 10px 10px 0;
-  padding: 15px;
-  -moz-transition: all 0.2s ease;
-  /* FF3.7+ */
-
-  -o-transition: all 0.2s ease;
-  /* Opera 10.5 */
-
-  -webkit-transition: all 0.2s ease;
-  /* Saf3.2+, Chrome */
-
-  transition: all 0.2s ease;
-}
-.hover-panel h3 {
-  font-family: tandelle-1, tandelle-2, Impact, Sans-serif, sans;
-  font-size: 38px;
-  line-height: 1;
-  margin: 0 0 10px;
-  text-transform: uppercase;
-}
-.hover-panel p {
-  font-size: 12px;
-  width: 65%;
-}
-.hover_panel:hover {
-  background-color: #237ABE;
-  background-position: 180px 10px;
-}
-.hover_panel:hover h3 {
-  color: #FFF;
-  text-shadow: rgba(0, 0, 0, 0.398438) 0px 0px 4px;
-}
-.hover_panel:hover p {
-  color: #FFF;
-}
-#tabs_design {
-  height: 300px;
-  width: 100%;
-  position: relative;
-  display: inline-block;
-}
-#tabs {
-  display: inline-block;
-}
-#tabs ul li a {
-  color: black;
-}
-#design_editor {
-  height: 100%;
-  width: 90%;
 }
 /* ==========================================================================
    Helper classes

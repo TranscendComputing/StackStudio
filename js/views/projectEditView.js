@@ -80,7 +80,7 @@ define([
             var cm = newBinding.$handlers[0];
             cm.addCommand(autocomplete);
             this.editor.keyBinding = newBinding;
-            Common.vent.on("onAutoComplete", this.handleChange);
+            Common.vent.on("onAutoComplete", this.renderAutoComplete);
             
             //this.editor.on('change', this.handleChange, this);
             //$("#design_editor").on('keyup', this.handleChange);
@@ -88,10 +88,13 @@ define([
             
             var p = projects.get(this.selectedId);
             this.editor.setValue(JSON.stringify(p.template(), null,'\t'));
+            
+            var selection = this.editor.getSelection();
+            selection.moveCursorFileStart();
+            
         },
         
-        handleChange: function() {
-            console.log("Changing doc.....");
+        renderAutoComplete: function() {
             var editor = ace.edit("design_editor");
             editor.session.setUseSoftTabs(false);
             
@@ -138,8 +141,11 @@ define([
                 content.Resources = {};
             }
             
-            $.extend(content.Resources, resource.get('template'));
+            $.extend(content.Resources, resource.template);
             this.editor.setValue(JSON.stringify(content, null,'\t'));
+            
+            var range = this.editor.find(resource.name);
+            this.editor.getSelection().setSelectionRange(range);
         }
     });
     

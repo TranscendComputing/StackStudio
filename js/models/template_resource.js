@@ -27,10 +27,10 @@ define([
 
         /** Default attributes for the project */
         defaults: {
-            id: '',
+            label: '',
             type: '',
             group: '',
-            template: ''
+            template: {}
         },
 
         /**

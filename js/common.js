@@ -45,6 +45,9 @@ requirejs.config({
             deps: ['jquery'],
             exports: 'jQuery.fn.mousewheel'
         },
+        'jquery.jstree': {
+           deps: ['jquery'] 
+        },
         'wijutil': {
             deps: ['jquery-ui', 'jquery.mousewheel']  
         },
