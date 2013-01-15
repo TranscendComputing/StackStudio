@@ -3,26 +3,26 @@
    ========================================================================== */
    
 table.resource_table {
-    margin: 10px 0px;
     float:right;
     border-style:solid;
     list-style-type:none;
     background:#E6E9ED;
     text-align:center;
-    width:69%;
+    width:74%;
 }
 
 table.resource_table tr td {
     border-left:solid 10px transparent;
 }
 
-#container {
+#cloud_coverflow {
     float:left;
-    width:30%;
-    height:100px;
+    width:25%;
+    height:90px;
+    padding-bottom:8px;
 }
 
-#container img, #container .item {
+#cloud_coverflow img, #container .item {
     width:100%;
     height:100%;
     -webkit-border-radius: 10px;
@@ -33,17 +33,23 @@ table.resource_table tr td {
     -webkit-box-shadow: 0px 5px 5px #777;
     box-shadow: 0px 5px 5px #777;
 }
-.itemTitle {
-    padding-top:30px;
-}
+
 #container .selectedItem {
     -moz-box-shadow: 0 4px 10px #0071BC;
     -webkit-box-shadow: 0 4px 10px #0071BC;
     box-shadow: 0 4px 10px #0071BC;
     border:1px solid #0071BC;
 }
-#container .item {
+#cloud_coverflow .item {
     width:160px;
     height:160px;
     left:0px;
 }
+
+#cloud_specs {
+    float:right;
+    text-align:left;
+    width:74%;
+    padding-bottom:8px;
+}
+

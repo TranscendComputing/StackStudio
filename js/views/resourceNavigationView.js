@@ -33,12 +33,17 @@ define([
 
         selection: undefined,
         
+        events: {
+			"click .resourceLink" : "resourceClick",
+			"hover #drawer": "openDrawer"
+		},
+        
 		initialize: function() {
 			this.$el.addClass("twelvecol");
             var compiledTemplate = _.template(resourcesTemplate);
             this.$el.html(compiledTemplate);
 
-            $('#container').coverscroll({
+            $('#cloud_coverflow').coverscroll({
                 'minfactor':18, // how much is the next item smaller than previous in pixels
                 'distribution':1, // how apart are the items (items become separated when this value is below 1)
                 'scalethreshold':0, // after how many items to start scaling
@@ -56,10 +61,6 @@ define([
               });
 		},
 		
-		events: {
-			"click .resourceLink" : "resourceClick"
-		},
-		
 		resourceClick: function(id) {
 			var selectionId = id.target.id;
 			this.resourceSelect(selectionId);
@@ -74,6 +75,14 @@ define([
 				}
 	        });
 			console.log(selectionId + " selected");
+		},
+		
+		openDrawer: function() {
+			$("drawer").show();
+		},
+		
+		closeDrawer: function() {
+			$("drawer").hide();
 		}
 		
 	});

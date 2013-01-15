@@ -1,32 +1,50 @@
 <div>
-    <div id="container">
-        <img src="/images/CloudLogos/openstack300.jpg"/>
-        <img src="/images/CloudLogos/eucalyptus300.jpg"/>
-        <img src="/images/CloudLogos/amazon800.jpg"/>
-        <img src="/images/CloudLogos/joyent200.jpg"/>
-        <img src="/images/CloudLogos/rackspace400.jpg"/>
+    <div id="resource_nav">
+        <div id="cloud_coverflow">
+            <img src="/images/CloudLogos/openstack300.jpg"/>
+            <img src="/images/CloudLogos/eucalyptus300.jpg"/>
+            <img src="/images/CloudLogos/amazon800.jpg"/>
+            <img src="/images/CloudLogos/joyent200.jpg"/>
+            <img src="/images/CloudLogos/rackspace400.jpg"/>
+        </div>
+        <table class="resource_table">
+            <tr>
+                <td id="alarm" class="resource"><a id="alarm" class="resourceLink">Alarm</a></td>
+                <td id="bean" class="resource"><a id="bean" class="resourceLink">Elastic Beanstalk</a></td>
+                <td id="elb" class="resource"><a id="elb" class="resourceLink">Elastic Load Balancer</a></td>
+                <td id="dns" class="resource"><a id="dns" class="resourceLink">Route 53</a></td>
+                <td id="sqs" class="resource"><a id="sqs" class="resourceLink">Simple Queue</a></td>
+            </tr>
+            <tr>
+                <td id="as" class="resource"><a id="as" class="resourceLink">Auto Scale</a></td>
+                <td id="ebs" class="resource"><a id="ebs" class="resourceLink">Elastic Block Storage</a></td>
+                <td id="iam" class="resource"><a id="iam" class="resourceLink">IAM</a></td>
+                <td id="sdb" class="resource"><a id="sdb" class="resourceLink">Simple DB</a></td>
+                <td id="s3" class="resource"><a id="s3" class="resourceLink">Simple Storage</a></td>
+            </tr>
+            <tr>
+                <td id="elc" class="resource"><a id="elc" class="resourceLink">Elasticache</a></td>
+                <td id="ec2" class="resource"><a id="ec2" class="resourceLink" href="/#resources/instances">Elastic Compute Cloud</a></td>
+                <td id="rds" class="resource"><a id="rds" class="resourceLink">Relational Database</a></td>
+                <td id="sns" class="resource"><a id="sns" class="resourceLink">Simple Notification</a></td>
+            </tr>
+        </table>
+        <div id="cloud_specs">
+            <span>Account:</span>
+            <select>
+                <option value="1">Account 1</option>
+                <option value="2">Account 2</option>
+                <option value="3">Account 3</option>
+                <option value="4">Account 4</option>
+            </select>
+            <span>Region:</span>
+            <select>
+                <option value="1">Region 1</option>
+                <option value="2">Region 2</option>
+                <option value="3">Region 3</option>
+                <option value="4">Region 4</option>
+            </select>
+        </div>
     </div>
-    <table class="resource_table">
-        <tr>
-            <td id="alarm" class="resource"><a id="alarm" class="resourceLink">Alarm</a></td>
-            <td id="bean" class="resource"><a id="bean" class="resourceLink">Elastic Beanstalk</a></td>
-            <td id="elb" class="resource"><a id="elb" class="resourceLink">Elastic Load Balancer</a></td>
-            <td id="dns" class="resource"><a id="dns" class="resourceLink">Route 53</a></td>
-            <td id="sqs" class="resource"><a id="sqs" class="resourceLink">Simple Queue</a></td>
-        </tr>
-        <tr>
-            <td id="as" class="resource"><a id="as" class="resourceLink">Auto Scale</a></td>
-            <td id="ebs" class="resource"><a id="ebs" class="resourceLink">Elastic Block Storage</a></td>
-            <td id="iam" class="resource"><a id="iam" class="resourceLink">IAM</a></td>
-            <td id="sdb" class="resource"><a id="sdb" class="resourceLink">Simple DB</a></td>
-            <td id="s3" class="resource"><a id="s3" class="resourceLink">Simple Storage</a></td>
-        </tr>
-        <tr>
-            <td id="elc" class="resource"><a id="elc" class="resourceLink">Elasticache</a></td>
-            <td id="ec2" class="resource"><a id="ec2" class="resourceLink" href="/#resources/instances">Elastic Compute Cloud</a></td>
-            <td id="rds" class="resource"><a id="rds" class="resourceLink">Relational Database</a></td>
-            <td id="sns" class="resource"><a id="sns" class="resourceLink">Simple Notification</a></td> 
-        </tr>
-    </table>
     <div id="resource_app"></div>
 </div>
