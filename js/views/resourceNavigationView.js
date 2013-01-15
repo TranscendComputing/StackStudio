@@ -12,7 +12,8 @@ define([
         'text!templates/resources/resourcesTemplate.html',
         'icanhaz',
         'common',
-        'jquery.coverscroll.min'
+        'jquery.coverscroll.min',
+        'jquery.ui.selectmenu'
 ], function( $, _, Backbone, resourcesTemplate, ich, Common ) {
 	// The Resources Navigation View
 	// ------------------------------
@@ -43,7 +44,7 @@ define([
             var compiledTemplate = _.template(resourcesTemplate);
             this.$el.html(compiledTemplate);
 
-            $('#cloud_coverflow').coverscroll({
+            $("#cloud_coverflow").coverscroll({
                 'minfactor':18, // how much is the next item smaller than previous in pixels
                 'distribution':1, // how apart are the items (items become separated when this value is below 1)
                 'scalethreshold':0, // after how many items to start scaling
@@ -59,6 +60,8 @@ define([
                 'bendamount':2, // amount of "bending" of the CoverScroll (values 0.1 to 1 bend down, -0.1 to -1 bend up, 2 is straight (no bending), 1.5 sligtly bends down)
                 'movecallback':function(item){} // callback function triggered after click on an item - parameter is the item's jQuery object
               });
+            
+            $("#cloud_specs select").selectmenu();
 		},
 		
 		resourceClick: function(id) {

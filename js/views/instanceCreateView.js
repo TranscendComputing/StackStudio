@@ -13,7 +13,10 @@ define([
         'models/instance',
         'icanhaz',
         'common',
-        'wijmo'
+        'jquery.ui.selectmenu',
+        'jquery.multiselect',
+        'jquery.multiselect.filter'
+        
 ], function( $, _, Backbone, instanceCreateTemplate, Instance, ich, Common ) {
 	
 	var imageList = [{"logo":"aws", "label":"Amazon Linux AMI 2012.09", "id":"ami-123456", "description":"EBS-backed PV-GRUB image. Includes: MySQL, PostgreSQL, Python, Ruby, and Tomcat."},
@@ -21,6 +24,12 @@ define([
 	                 {"logo":"suse", "label":"SUSE Linux Enterprise Server 11", "id":"ami-345678", "description":"EBS boot with Amazon EC2 AMI Tools preinstalled; Apache 2.2, MySQL 5.0, PHP 5.3, and Ruby "}];
 	
 	var azList = ["us-east-1a", "us-east-1b", "us-east-1d"];
+	
+	var machineSizes = ["Micro Instance", "Small Instance", "Medium Instance", "Large Instance", "Extra Large Instance"];
+	
+	var keyPairs = ["bjones", "cstewart", "jgardner"];
+	
+	var securityGroups = ["default", "dev", "elasticbeanstalk-default", "ChefServer-ChefClientSecurityGroup-N1W9603CQT1Q"];
 	
     /**
      * InstanceCreateWizardView is UI wizard to create cloud instances.
@@ -89,12 +98,44 @@ define([
             	return $("<li>").data("item.autocomplete", item).append(imageItem).appendTo(ul);
             };
             
-            var select = $("#az_list");
             $.each(azList, function (index, value) {
-            	console.log("Adding " + value + " to az_list");
-            	$("#az_list").append("<option value='" + value + "'>" + index + "</option>");
+                console.log("Adding " + value + " to az_select");
+                $('#az_select')
+	                .append($("<option></option>")
+	                .attr("value",index)
+	                .text(value)); 
             });
+            $("#az_select").selectmenu();
+           
+            $.each(machineSizes, function (index, value) {
+                console.log("Adding " + value + " to size_select");
+            	$('#size_select')
+	                .append($("<option></option>")
+	                .attr("value",index)
+	                .text(value)); 
+            });
+            $("#size_select").selectmenu();
             
+            $.each(keyPairs, function (index, value) {
+                console.log("Adding " + value + " to key_pair_select");
+            	$('#key_pair_select')
+	                .append($("<option></option>")
+	                .attr("value",index)
+	                .text(value)); 
+            });
+            $("#key_pair_select").selectmenu();
+            
+            $.each(securityGroups, function (index, value) {
+                console.log("Adding " + value + " to security_group_select");
+            	$('#security_group_select')
+	                .append($("<option></option>")
+	                .attr("value",index)
+	                .text(value)); 
+            });
+            $("#security_group_select").multiselect({
+            		selectedList: 3,
+            		noneSelectedText: "Select Security Group(s)"
+            	}).multiselectfilter();
 		},
 
 		render: function() {
@@ -109,7 +150,11 @@ define([
 		
 		close: function() {
 			console.log("close initiated");
-			$('#image_combo_box').remove();
+			$("#image_combo_box").remove();
+			$("#az_select").remove();
+			$("#size_select").remove();
+			$("#key_pair_select").remove();
+			$("#security_group_select").remove();
 			this.$el.dialog('close');
 		},
 		
