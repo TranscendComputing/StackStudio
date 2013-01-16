@@ -48,7 +48,8 @@ define([
 		// Delegated events for creating new instances, etc.
 		events: {
 			"focus #image_combo_box": "openImageList",
-			"dialogclose": "close"
+			"dialogclose": "close",
+			"change #radio": "elasticityChange"
 		},
 
 		initialize: function() {
@@ -72,6 +73,8 @@ define([
                 	}
                 }
             });
+            
+            $("#accordion").accordion();
             
             $("#image_combo_box").autocomplete({
             	source: imageList,
@@ -135,7 +138,9 @@ define([
             $("#security_group_select").multiselect({
             		selectedList: 3,
             		noneSelectedText: "Select Security Group(s)"
-            	}).multiselectfilter();
+            }).multiselectfilter();
+            
+            $("#radio").buttonset();
 		},
 
 		render: function() {
@@ -148,8 +153,43 @@ define([
         	}
 		},
 		
+		elasticityChange: function () {
+			switch($("input[name=radio]:checked").val())
+			{
+			case "none":
+				console.log("none selected");
+				$("#elasticity_image").attr("src", "/images/IconPNGs/NewServer.png");
+				noneHTML = "";
+				$("#elasticity_config").html(noneHTML);
+				break;
+			case "autoRecovery":
+				console.log("auto recover selected");
+				$("#elasticity_image").attr("src", "/images/IconPNGs/Autorestart.png");
+				autoRecoveryHTML = "";
+				$("#elasticity_config").html(autoRecoveryHTML);
+				break;
+			case "fixedArray":
+				console.log("fixed array selected");
+				$("#elasticity_image").attr("src", "/images/IconPNGs/Autoscale.png");
+				fixedArrayHTML = "<table><tr><td>Size:</td><td><input id='fixedArraySize'/></td></tr></table>";
+				$("#elasticity_config").html(fixedArrayHTML);
+				break;
+			case "autoScale":
+				console.log("auto scale selected");
+				$("#elasticity_image").attr("src", "/images/IconPNGs/Autoscale.png");
+				autoScaleHTML = "<table>" +
+						"<tr><td>Min:</td><td><input id='asMin'/></td></tr>" +
+						"<tr><td>Max:</td><td><input id='asMax'/></td></tr>" +
+						"<tr><td>Desired Capacity:</td><td><input id='asDesiredCapacity'/></td></tr>" +
+						"</table>";
+				$("#elasticity_config").html(autoScaleHTML);
+				break;
+			};
+		},
+		
 		close: function() {
 			console.log("close initiated");
+			$("#accordion").remove();
 			$("#image_combo_box").remove();
 			$("#az_select").remove();
 			$("#size_select").remove();
