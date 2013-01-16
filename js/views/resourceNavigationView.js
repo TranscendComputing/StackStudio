@@ -101,20 +101,20 @@ define([
         
     }, this);
     
-    Common.router.on('route:instances', function () {
+    Common.router.on('route:compute', function () {
         if (!resourcesView) {
             resourcesView = new ResourcesView();
         }
         resourcesView.resourceSelect("ec2");
-        console.log("resources view: instances route");
+        console.log("resources view: compute route");
     }, this);
     
-    Common.router.on('route:instanceDetail', function (id) {
+    Common.router.on('route:computeDetail', function (id) {
         if (!resourcesView) {
             resourcesView = new ResourcesView();
         }
         resourcesView.resourceSelect("ec2");
-        console.log("resources view: instance detail route");
+        console.log("resources view: compute detail route");
     }, this);
     
     console.log("resource view defined");

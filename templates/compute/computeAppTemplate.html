@@ -1,8 +1,8 @@
 <div>
     <div class="button_bar">
-        <button id="new_instance">Create New Instance</button>
+        <button id="new_compute">Create New Instance</button>
     </div>
-    <table id="instance_table" class="instance_table full_width">
+    <table id="compute_table" class="compute_table full_width">
         <thead>
             <tr>
                 <th>Name</th>
@@ -19,8 +19,8 @@
     <div id="details" class="detail_panel"></div>
 </div>
 
-<script type="text/html" id="instance_detail">
-    <div id="tabs" class="full_width">
+<script type="text/html" id="compute_detail">
+    <div id="detail_tabs" class="full_width">
         <ul>
             <li><a href="#tabs-1">Details</a></li>
         </ul>
@@ -29,14 +29,5 @@
             <div>Instance ID: {{ instanceId }} </div>
             <div>Key Name: {{ keyName }} </div>
         </div>
-    </div>
-</script>
-<script type="text/html" id="instance_form">
-    <div>
-        <label for="id_name">Name:</label><br/>
-        <input id="id_name" name="name">{{ name }}</input><br/>
-        <label for="id_description">Description:</label><br/>
-        <input id="id_description" name="description">{{ description }}</input><br/>
-        <button id="id_save_new">Create New Instance</button><br/>
     </div>
 </script>

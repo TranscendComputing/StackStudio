@@ -24,8 +24,10 @@ define([
 	var Router = Backbone.Router.extend({
 		routes:{
 			'resources': 'resourcesRoute',
-			//'resources/:type(/:id)': 'resourcesRoute',
-			'resources/instances/:id': 'instanceDetail',
+			'resources/compute': 'compute',
+			'resources/compute/:id': 'computeDetail',
+			//'resources/:type': 'resourcesRoute',
+			//'resources/:type/:id': 'resourcesRoute',
 			'projects': 'projects',
 			//'projects': 'projectsRoute',
 			//'projects/:id': 'projectsRoute',
@@ -58,22 +60,22 @@ define([
 		    $("#sidebar").empty();
 		    $("#sidebar").hide();
 		    $("#main").empty();
-		    switch (type)
-		    {
-		        case 'instances':
-	              if (!id) {
-                      this.trigger('route:instances');
-                  } else {
-                      this.trigger('route:instanceDetail', id);
-                  }
-	              break;
-		                 
-		    }
 		    
-		    if (!type) {
-		        this.trigger('route:resources');
-		    }
-		    
+		    if(type) {
+		    	switch (type)
+			    {
+			        case 'compute':
+			        	if(!id) {
+			        		this.trigger('route:compute');
+			        	}else {
+			        		this.trigger('route:computeDetail', id);
+			        	}
+			        break;
+			                 
+			    }
+		    }else {
+		    	this.trigger('route:resources');
+		    }		    
 		}
 	});
 	

@@ -16,7 +16,7 @@ require(['./common'], function (common) {
              //'views/projectListItemView',
              'views/projectEditView',
              'views/resourceNavigationView',
-             'views/instanceAppView'
+             'views/compute/computeAppView'
             ], function() {
     	console.log("starting history");
     	common.backbone.history.start();
