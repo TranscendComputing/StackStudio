@@ -45,21 +45,18 @@ define([
 
         // Instead of generating a new element, bind to the existing skeleton of
         // the App already present in the HTML.
-        el: '#project_main',
+        el: '#main',
         
         template: _.template(projectEditTemplate),
 
-        // At initialization we bind to the relevant events on the `Instances`
-        // collection, when items are added or changed. Kick things off by
-        // loading any preexisting instances.
         initialize: function() {
-            Common.vent.on('project:addResource', this.addResource, this);            
+            Common.vent.on('project:addResource', this.addResource, this); 
+            Common.vent.on('project:selectResource', this.selectResource, this);
+            this.$el.html(this.template); 
         },
 
         // Add project elements to the page
         render: function() {
-            this.$el.html(this.template);
-            
             $('#tabs').tabs();
             // Initialize editor
             ace.EditSession.prototype.$startWorker = function(){}; //This is a workaround for a worker bug
@@ -86,12 +83,27 @@ define([
             //$("#design_editor").on('keyup', this.handleChange);
             this.editor.resize();
             
-            var p = projects.get(this.selectedId);
+            var p = new Project();
             this.editor.setValue(JSON.stringify(p.template(), null,'\t'));
             
             var selection = this.editor.getSelection();
             selection.moveCursorFileStart();
             
+            var maxWidth = this.$el.width();
+            
+            $("#tabs").resizable({
+                maxHeight: 1000,
+                minHeight: 495,
+                minWidth: maxWidth,
+                maxWidth: maxWidth,
+                resize: this.refresh
+            });
+            
+        },
+        
+        refresh: function(event, ui) {
+            this.editor = ace.edit("design_editor");
+            this.editor.resize();
         },
         
         renderAutoComplete: function() {
@@ -137,26 +149,32 @@ define([
             } else {
                 content = {};
             }
-            if (!content.Resources) {
-                content.Resources = {};
+            
+            if (!content[resource.group]) {
+                content[resource.group] = {};
             }
             
-            $.extend(content.Resources, resource.template);
+            $.extend(content[resource.group], resource.template);
             this.editor.setValue(JSON.stringify(content, null,'\t'));
             
             var range = this.editor.find(resource.name);
+            this.editor.getSelection().setSelectionRange(range);
+        },
+        
+        selectResource: function(resourceName) {
+            var range = this.editor.find(resourceName);
             this.editor.getSelection().setSelectionRange(range);
         }
     });
     
     var projectEditor;
 
-    Common.router.on('route:projectEdit', function (id) {
+    Common.router.on('route:projectEdit', function () {
         console.log("Editor route");
         if ( !projectEditor ) {
             projectEditor = new ProjectEditView();
         }
-        projectEditor.selectedId = id;
+        //projectEditor.selectedId = id;
         projectEditor.render();
         console.log("Got project edit route.");
         //projectEditor.open(event, id);

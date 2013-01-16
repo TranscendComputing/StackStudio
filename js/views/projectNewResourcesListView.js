@@ -19,10 +19,18 @@ define([
         
         //TODO define element
         //OR use tagName, className, ...
-        el: "#new_resources",
+        el: "#resources_list",
+        
+        tree: undefined,
         
         events: {
-            'click .jstree-leaf': 'addResource'
+            'click .new_item_link': 'addResource',
+            'click .current_item_link': 'selectResource',
+            'dblclick .current_item_link': 'renameResource',
+            'click .jstree-open': 'cancelRequest',
+            'click .jstree-closed': 'cancelRequest',
+            'click #open_all': 'openAll',
+            'click #collapse_all': 'collapseAll'
         },
         
         initialize: function(){
@@ -32,42 +40,88 @@ define([
             this.render();
             // Fetch will pull results from the server
             // resources.fetch({update: true});
+            
+            $("#new_resources").on("rename_node.jstree", this.handleRename);
         },
         
         render: function() {
             console.log("rendering tree...");
-            this.$el.jstree({ 
+            this.tree = $("#new_resources").jstree({ 
                 // List of active plugins
                 "plugins" : [ 
-                    "themes","json_data"
+                    "json_data", "crrm", "themeroller"
                 ],
+                
+                "core": {
+                    "animation": 0,
+                    "initially_open": ["aws_resources_root"]
+                },
     
                 // I usually configure the plugin that handles the data first
                 // This example uses JSON as it is most common
                 "json_data" : { 
-                    "data": {
-                        "data": "AWS Resources",
-                        "state": "open"
+                    "data": [
+                    {
+                        "data": {
+                            "title": "New Items"
+                        },
+                        "attr": {"id": "aws_resources_root"},
+                        "state": "closed"
                     },
+                    {
+                        "data": "Current Items",
+                        "attr": {"id": "current_items_root"},
+                        "children": [
+                        {
+                            "data": {
+                                "title": "Resources",
+                                "attr": {"id": "current_resources"},
+                                "state": "closed"
+                            }   
+                        },
+                        {
+                            "data": {
+                                "title": "Parameters",
+                                "attr": {"id": "current_parameters"},
+                                "children": []
+                            } 
+                        },
+                        {
+                            "data": {
+                                "title": "Mappings",
+                                "attr": {"id": "current_mappings"},
+                                "state": "closed"
+                            }   
+                        },
+                        {
+                            "data": {
+                                "title": "Outputs",
+                                "attr": {"id": "current_outputs"},
+                                "children": []
+                            } 
+                        }]
+                    }],
                     "ajax": {
                         "url": "cloud_resources.json",
                         "success": function(data) {
-                            console.log(data);
                             var services = {};
+                            var itemId;
                             $.each(data, function(index, d) {
-                                 if (services[d.service] !== undefined) {
-                                     services[d.service].push({
-                                         data: d.label,
-                                         metadata: {template: d.template, name: d.name},
-                                         attr: {id: d.name}
-                                     });
-                                 } else {
-                                     services[d.service] = [{
-                                         data: d.label,
-                                         metadata: {template: d.template, name: d.name},
-                                         attr: {id: d.name}
-                                     }];
+                                 if (services[d.service] === undefined) {
+                                     services[d.service] = [];
                                  }
+                                 itemId = d.label.toLowerCase().replace(/\s/g, "_");
+                                 services[d.service].push({
+                                     "data": {
+                                         "title": d.label, 
+                                         "attr": {
+                                             "id": itemId, 
+                                             "class": "new_item_link"
+                                         } 
+                                     },
+                                     "attr": {"id": itemId + "_container"},
+                                     "metadata": d
+                                 });
                             });
                             
                             var treeData = [];
@@ -77,10 +131,12 @@ define([
                                     children: v
                                 });
                             });
+                            console.log(treeData);
                             return treeData;
                             //return data.label;
                         }
-                    }
+                    },
+                    "correct_state": false
                 }
             });
         },
@@ -98,11 +154,59 @@ define([
         },
         
         addResource: function(e) {
-            var selector = "#" + e.currentTarget.id;
-            var resource = $(selector).data();
+            var resource = $(e.currentTarget.parentNode).data();
+            var groupSelector = "#current_" + resource.group.toLowerCase();
+            this.tree.jstree(
+                "create", 
+                $(groupSelector), 
+                "inside", 
+                { 
+                    "data": {
+                         "title": resource.name, 
+                         "attr": {
+                             "id": resource.name, 
+                             "class": "current_item_link"
+                         } 
+                    }, 
+                    "attr": {"id": resource.name + "_container"},
+                    "template": resource.template 
+                } 
+            );
+            
             console.log(resource);
             Common.vent.trigger("project:addResource", resource);
             return false;
+        },
+        
+        selectResource: function(e) {
+            Common.vent.trigger("project:selectResource", e.currentTarget.id);
+            return false;
+        },
+        
+        renameResource: function(e) {
+            this.selectResource(e);
+            var selector = "#" + e.currentTarget.parentNode.id;
+            this.tree.jstree("rename", selector);
+            return false;
+        },
+        
+        handleRename: function(e, a, v) {
+            console.log(e);
+            console.log(a);
+            console.log(v);
+            console.log("RENAME DONE!!!!!!!!!!!!!!!!!");  
+        },
+        
+        cancelRequest: function() {
+            return false;
+        },
+        
+        openAll: function() {
+            this.tree.jstree("open_all");
+        },
+        
+        collapseAll: function() {
+            this.tree.jstree("close_all");
         }
         
     });

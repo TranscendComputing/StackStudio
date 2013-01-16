@@ -20,7 +20,7 @@ define([
         el: "#current_resource_list",
         
         initialize: function(){
-            Common.vent.on('project:addResource', this.addResource, this);
+            //Common.vent.on('project:addResource', this.addResource, this);
             this.render();
         },
         
