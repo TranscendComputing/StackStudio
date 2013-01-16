@@ -24,8 +24,8 @@ define([
 	var Router = Backbone.Router.extend({
 		routes:{
 			'resources': 'resourcesRoute',
-			'resources/compute': 'compute',
-			'resources/compute/:id': 'computeDetail',
+			'resources/:type': 'resourcesRoute',
+			'resources/:type/:id': 'resourcesRoute',
 			//'resources/:type': 'resourcesRoute',
 			//'resources/:type/:id': 'resourcesRoute',
 			'projects': 'projects',
