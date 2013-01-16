@@ -1,9 +1,0 @@
-staging:
-  aws_access_key: ACCESSKEYACCESSKEY01
-  aws_secret_access_key: SECRETKEYSECRETEKEYSECRETKEYSECRETKEY001
-  bucket_base_name: ss-staging
-
-production:
-  aws_access_key: ACCESSKEYACCESSKEY02
-  aws_secret_access_key: SECRETKEYSECRETEKEYSECRETKEYSECRETKEY002
-  bucket_base_name: ss-production

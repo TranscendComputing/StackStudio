@@ -1,0 +1,47 @@
+<!-- Project Edit Panel-->
+<div id="projectslide2">
+  	<div>
+  		<button id="project_back">Done</button>
+  		<button id="project_edit">Edit</button>
+  		<button>Delete</button>
+	</div>
+	<div class="intro">
+	  	<h2><span class="projectname"></span></h2>
+	  	<div id="projdetails">
+	  	</div>  
+	</div>
+</div>
+
+<!-- Project specific ich templates -->
+<script type="text/html" id="project_item">
+    <div>
+       <a href="/#projects/{{ id }}" id="{{ id }}" class="projlink" name="{{ name }}">{{ name }}</a>
+    </div>
+</script>
+ <script type="text/html" id="project_details">
+    <h3>{{ name }}</h3>
+        <ul>
+            <li>Description:</li>
+            <ul>
+                <li>{{ description }}</li>
+            </ul>
+            <li>Members:</li>
+            <ul>
+                {{#members}}
+                <li>{{ name }}</li>
+                {{/members}}
+            </ul>
+            <li>Versions:</li>
+            <ul>
+                {{#versions}}
+                <li>{{ number }}</li>
+                {{/versions}}
+            </ul>
+        </ul>
+</script>
+
+<script type="text/html" id="resource_item">
+    <div>
+       <a href="/#projects/{{ id }}/update/{{ template }}" id="{{ id }}" class="resource_link">{{ type }}</a>
+    </div>
+</script>
