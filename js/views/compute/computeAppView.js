@@ -18,10 +18,10 @@ define([
         'common',
         'jquery.dataTables'
 ], function( $, _, Backbone, computeAppTemplate, compute, computes, ComputeRowView, ComputeCreate, ich, Common ) {
-	'use strict';
+    'use strict';
 
-	// Compute Application View
-	// ------------------------------
+    // Compute Application View
+    // ------------------------------
 
     /**
      * ComputeAppView is UI view list of cloud instances.
@@ -32,118 +32,118 @@ define([
      * @param {Object} initialization object.
      * @returns {Object} Returns a ComputeAppView instance.
      */
-	var ComputeAppView = Backbone.View.extend({
+    var ComputeAppView = Backbone.View.extend({
 
-		/** The ID of the selected compute */
-		selectedId: undefined,
+        /** The ID of the selected compute */
+        selectedId: undefined,
 
-		el: '#resource_app',
+        el: '#resource_app',
 
-		events: {
-			'click #new_compute': 'createNew',
-			'click #compute_table tbody': 'clickOne'
-		},
+        events: {
+            'click #new_compute': 'createNew',
+            'click #compute_table tbody': 'clickOne'
+        },
 
-		initialize: function() {
-			var compiledTemplate = _.template(computeAppTemplate);
+        initialize: function() {
+            var compiledTemplate = _.template(computeAppTemplate);
             this.$el.html(compiledTemplate);
             ich.refresh();
-			$('#new_compute').button();
+            $('#new_compute').button();
             this.$table = $('#compute_table').dataTable({"bJQueryUI": true});
-			computes.on( 'add', this.addOne, this );
-			computes.on( 'reset', this.addAll, this );
-			computes.on( 'all', this.render, this );
+            computes.on( 'add', this.addOne, this );
+            computes.on( 'reset', this.addAll, this );
+            computes.on( 'all', this.render, this );
 
-			// Fetch will pull results from the server
-			computes.fetch();
-		},
+            // Fetch will pull results from the server
+            computes.fetch();
+        },
 
-		// No rendering to do, presently; the elements are already on the page.
-		render: function() {
-			//If compute id is supplied, select it
-			if(this.selectedId) {
-				this.selectOne(this.selectedId, $("tr:contains("+this.selectedId+")"));
-			}
-		},
+        // No rendering to do, presently; the elements are already on the page.
+        render: function() {
+            //If compute id is supplied, select it
+            if(this.selectedId) {
+                this.selectOne(this.selectedId, $("tr:contains("+this.selectedId+")"));
+            }
+        },
 
-		// Add a single compute item to the list by creating a view for it.
-		addOne: function( compute ) {
-			if (compute.get('computeId') === "") {
-				// Refuse to add computes until they're initialized.
-				return;
-			}
-			var view = new ComputeRowView({ model: compute });
-			view.render();
-		},
+        // Add a single compute item to the list by creating a view for it.
+        addOne: function( compute ) {
+            if (compute.get('computeId') === "") {
+                // Refuse to add computes until they're initialized.
+                return;
+            }
+            var view = new ComputeRowView({ model: compute });
+            view.render();
+        },
 
-		// Add all items in the **Instances** collection at once.
-		addAll: function() {
-			computes.each(this.addOne, this);
-		},
+        // Add all items in the **Instances** collection at once.
+        addAll: function() {
+            computes.each(this.addOne, this);
+        },
 
-		createNew : function () {
-			var computeCreate = new ComputeCreate();
-			computeCreate.render();
-		},
-		
-		clickOne: function (event) {
-			var instanceId, parentNode;
-			console.log("event:", event);
-			parentNode = event.target.parentNode;
-			// Find the second column of the clicked row; that's compute ID
-			instanceId = $(parentNode).find(':nth-child(2)').html();
-			Common.router.navigate("#resources/compute/"+instanceId, {trigger: false});
-			this.selectOne(instanceId, parentNode);
-		},
+        createNew : function () {
+            var computeCreate = new ComputeCreate();
+            computeCreate.render();
+        },
+        
+        clickOne: function (event) {
+            var instanceId, parentNode;
+            console.log("event:", event);
+            parentNode = event.target.parentNode;
+            // Find the second column of the clicked row; that's compute ID
+            instanceId = $(parentNode).find(':nth-child(2)').html();
+            Common.router.navigate("#resources/compute/"+instanceId, {trigger: false});
+            this.selectOne(instanceId, parentNode);
+        },
 
-		selectOne : function (instanceId, parentNode) {
-			var selectedModel;
-			this.clearSelection();
-			console.log("Selecting ID:", instanceId);
-			if(parentNode) {
-				$(parentNode).addClass('row_selected');
-			}
-			
-			computes.each(function(e) {
-				if (e.get('instanceId') === instanceId) {
-					selectedModel = e;
-				}
-			});
-			
-			if(selectedModel) {
-				this.selectedId = instanceId;
-				$("#details").html(ich.compute_detail(selectedModel.attributes));
-				$("#detail_tabs").tabs();
-			}else {
-				
-			}
-		},
-		
-		clearSelection: function () {
-			this.$table.$('tr').removeClass('row_selected');
-			$('#details').html("");
-		}
-	});
+        selectOne : function (instanceId, parentNode) {
+            var selectedModel;
+            this.clearSelection();
+            console.log("Selecting ID:", instanceId);
+            if(parentNode) {
+                $(parentNode).addClass('row_selected');
+            }
+            
+            computes.each(function(e) {
+                if (e.get('instanceId') === instanceId) {
+                    selectedModel = e;
+                }
+            });
+            
+            if(selectedModel) {
+                this.selectedId = instanceId;
+                $("#details").html(ich.compute_detail(selectedModel.attributes));
+                $("#detail_tabs").tabs();
+            }else {
+                
+            }
+        },
+        
+        clearSelection: function () {
+            this.$table.$('tr').removeClass('row_selected');
+            $('#details').html("");
+        }
+    });
 
-	var computeAppView;
-	
+    var computeAppView;
+    
     Common.router.on('route:resources', function () {
         if (!computeAppView) {
-        	computeAppView = new ComputeAppView();
+            computeAppView = new ComputeAppView();
         }
         console.log("compute app: resources route");
     }, this);
     
     Common.router.on('route:compute', function () {
         if (!computeAppView) {
-        	computeAppView = new ComputeAppView();
+            computeAppView = new ComputeAppView();
         }
         console.log("compute app: compute route");
     }, this);
     
     Common.router.on('route:computeDetail', function (id) {
         if (!computeAppView) {
-        	computeAppView = new ComputeAppView();
+            computeAppView = new ComputeAppView();
         }
         computeAppView.selectedId = id;
         computeAppView.render();
@@ -152,5 +152,5 @@ define([
 
     console.log("compute app view defined");
     
-	return ComputeAppView;
+    return ComputeAppView;
 });
