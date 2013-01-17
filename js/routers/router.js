@@ -36,6 +36,7 @@ define([
 			'projects/edit': 'projectEdit',
 			//'projects/:id(/:action)': 'projectsRoute',
 			'projects/:id/update/:resource': 'projectUpdate',
+			'account/login': 'accountLogin',
 			'*actions': 'defaultRoute'
 		},
 		

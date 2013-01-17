@@ -9,6 +9,7 @@ var URL_ARGS = URL_ARGS || '';
 requirejs.config({
     baseUrl: 'js/vendor',
     urlArgs: URL_ARGS,
+    nodeRequire: require,
 	// The shim config allows us to configure dependencies for
 	// scripts that do not call define() to register a module
 	shim: {
@@ -24,6 +25,17 @@ requirejs.config({
 				'jquery'
 			],
 			exports: 'Backbone'
+		},
+		'base64': {
+		    exports: 'Base64'
+		},
+		//'github': {
+		//    deps: ['base64', 'underscore'],
+		//    exports: 'Github'
+		//},
+		'gh3': {
+		    deps: ['underscore', 'jquery'],
+		    exports: 'Gh3'
 		},
         'icanhaz': {
             deps: ['jquery'],

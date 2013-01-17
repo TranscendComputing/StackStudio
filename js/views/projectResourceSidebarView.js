@@ -14,13 +14,20 @@ define([
         'collections/template_resources',
         'views/projectNewResourcesListView',
         'views/projectCurrentResourcesListView',
+        'views/templatesListView',
         'icanhaz',
         'common',
         'wijmo'
-], function( $, _, Backbone, sidebarTemplate, projects, resources, ProjectNewResourcesListView, ProjectCurrentResourcesListView, ich, Common ) {
+], function( $, _, Backbone, sidebarTemplate, projects, resources, ProjectNewResourcesListView, ProjectCurrentResourcesListView, TemplatesListView, ich, Common ) {
     
     var SidebarView = Backbone.View.extend({
         el: "#sidebar",
+        
+        newResourcesList: new ProjectNewResourcesListView(),
+        
+        currentResourcesList: new ProjectCurrentResourcesListView(),
+        
+        templatesList: new TemplatesListView(),
 
         events: {
             //No events
@@ -29,34 +36,19 @@ define([
         template: _.template(sidebarTemplate),
         
         initialize: function(){
-            this.render();
-            //Initialize resources list
-            new ProjectNewResourcesListView();
-            new ProjectCurrentResourcesListView();
+            //TODO
         },
         
         render: function() {
             this.$el.html(this.template);
             this.$el.addClass("fourcol");
             //Set horizontal splitter
-            /*
-            $("#hsplitter").wijsplitter({
-                 orientation: "horizontal",
-                 fullSplit: true,
-                 resizeSettings: {ghost: false},
-                 splitterDistance: 150, 
-                 panel1: {
-                      minSize:400, 
-                      collapsed:false, 
-                      scrollBars:"auto"
-                 },
-                 panel2: {
-                      minSize:400, 
-                      scrollBars:"auto"
-                 }
-                 
+            this.$(".accordion").accordion({
+                "heightStyle": "content"
             });
-            */
+            this.newResourcesList.render();
+            //this.currentResourcesList.render();
+            this.templatesList.render();
             return this;
         }      
     });
@@ -68,11 +60,7 @@ define([
         if ( !projectSidebar ) {
             projectSidebar = new SidebarView();
         }
-        projects.each(function(e){
-           if (e.get('id') === id) {
-               projectSidebar.selectedProject = e;
-           }
-        });
+        projectSidebar.render();
         console.log("Got project resource sidebar route.");
     }, this);
     

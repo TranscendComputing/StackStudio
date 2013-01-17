@@ -41,12 +41,12 @@ define([
             // Fetch will pull results from the server
             // resources.fetch({update: true});
             
-            $("#new_resources").on("rename_node.jstree", this.handleRename);
+            $("#template_resources    ").on("rename_node.jstree", this.handleRename);
         },
         
         render: function() {
             console.log("rendering tree...");
-            this.tree = $("#new_resources").jstree({ 
+            this.tree = $("#template_resources    ").jstree({ 
                 // List of active plugins
                 "plugins" : [ 
                     "json_data", "crrm", "themeroller"
@@ -63,42 +63,43 @@ define([
                     "data": [
                     {
                         "data": {
-                            "title": "New Items"
+                            "title": "New Items",
+                            "attr": {"class": "root_folder"}
                         },
                         "attr": {"id": "aws_resources_root"},
                         "state": "closed"
                     },
                     {
                         "data": "Current Items",
-                        "attr": {"id": "current_items_root"},
+                        "attr": {"id": "current_items_root", "class": "root_folder"},
                         "children": [
                         {
                             "data": {
-                                "title": "Resources",
-                                "attr": {"id": "current_resources"},
-                                "state": "closed"
-                            }   
+                                "title": "Resources"
+                            },
+                            "attr": {"id": "current_resources"},
+                            "state": "closed"   
                         },
                         {
                             "data": {
-                                "title": "Parameters",
-                                "attr": {"id": "current_parameters"},
-                                "children": []
-                            } 
+                                "title": "Parameters"
+                            },
+                            "attr": {"id": "current_parameters"},
+                            "state": "closed"
                         },
                         {
                             "data": {
-                                "title": "Mappings",
-                                "attr": {"id": "current_mappings"},
-                                "state": "closed"
-                            }   
+                                "title": "Mappings"
+                            },
+                            "attr": {"id": "current_mappings"},
+                            "state": "closed"
                         },
                         {
                             "data": {
-                                "title": "Outputs",
-                                "attr": {"id": "current_outputs"},
-                                "children": []
-                            } 
+                                "title": "Outputs"
+                            },
+                            "attr": {"id": "current_outputs"},
+                            "state": "closed"
                         }]
                     }],
                     "ajax": {
@@ -169,7 +170,7 @@ define([
                          } 
                     }, 
                     "attr": {"id": resource.name + "_container"},
-                    "template": resource.template 
+                    "metadata": {"name": resource.name} 
                 } 
             );
             
@@ -190,11 +191,9 @@ define([
             return false;
         },
         
-        handleRename: function(e, a, v) {
-            console.log(e);
-            console.log(a);
-            console.log(v);
-            console.log("RENAME DONE!!!!!!!!!!!!!!!!!");  
+        handleRename: function(e, object) {
+            var resourceName = object.args[1];
+            Common.vent.trigger("project:renameResource", resourceName);
         },
         
         cancelRequest: function() {

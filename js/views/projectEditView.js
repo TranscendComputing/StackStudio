@@ -52,6 +52,7 @@ define([
         initialize: function() {
             Common.vent.on('project:addResource', this.addResource, this); 
             Common.vent.on('project:selectResource', this.selectResource, this);
+            Common.vent.on('project:renameResource', this.renameResource, this);
             this.$el.html(this.template); 
         },
 
@@ -99,6 +100,51 @@ define([
                 resize: this.refresh
             });
             
+            this.editor.on("blur", this.editorFocusOut); 
+            this.editor.on("change", this.handleChange);           
+        },
+        
+        handleChange: function(e) {
+            //var editor = ace.edit("design_editor");
+            //var template = jQuery.parseJSON(editor.getValue());
+            //$("#template_resources").jstree("focused")._get_settings().json_data.data = template;
+            //$("#template_resources").jstree.focused().refresh(-1);
+        },
+        
+        reformatTemplate: function(template, newData) {
+            if (!newData) {
+                newData = [];
+            }
+            
+            $.each(template, function(property, value) {
+                if ( _.isString(value) ) {
+                    newData.push({"data": property, "children": value});
+                }
+            });
+            return newData;
+        },
+        
+        editorFocusOut: function(e) {
+            var editor = ace.edit("design_editor");
+            var treeItems = [];
+            $.merge( treeItems, $("#current_resources").find("li") );
+            $.merge( treeItems, $("#current_parameters").find("li") );
+            $.merge( treeItems, $("#current_mappings").find("li") );
+            $.merge( treeItems, $("#current_outputs").find("li") );
+            
+            var template = jQuery.parseJSON(editor.getValue());
+            var selector, name;
+            $.each(treeItems, function(index, item) {
+                selector = "#" + item.id;
+                name = $(selector).data().name;
+                
+                if ( template.Resources[name] === undefined &&
+                     template.Parameters[name] === undefined  &&
+                     template.Mappings[name] === undefined &&
+                     template.Outputs[name] === undefined  ) {
+                    $("#template_resources").jstree("remove", item);
+                }
+            });
         },
         
         refresh: function(event, ui) {
@@ -132,10 +178,6 @@ define([
             element.appendChild(autocompleteView.render().el);
             $("input").catcomplete("enable");
             $("input").focus();
-            if (editor.isFocused) {
-                console.log("editor has the focus");
-            }
-            
         },
         
         addResource: function(resource) {
@@ -164,6 +206,14 @@ define([
         selectResource: function(resourceName) {
             var range = this.editor.find(resourceName);
             this.editor.getSelection().setSelectionRange(range);
+        },
+        
+        renameResource: function(newResourceName) {
+            var currentName = this.editor.getCopyText();
+            if (currentName === newResourceName) {
+                return;
+            }
+            this.editor.replaceAll(newResourceName, {"needle": currentName});
         }
     });
     
@@ -174,10 +224,8 @@ define([
         if ( !projectEditor ) {
             projectEditor = new ProjectEditView();
         }
-        //projectEditor.selectedId = id;
         projectEditor.render();
         console.log("Got project edit route.");
-        //projectEditor.open(event, id);
     }, this);
 
     Common.router.on('route:projectUdpate', function (id, resource) {
