@@ -24,8 +24,9 @@ define([
 	var Router = Backbone.Router.extend({
 		routes:{
 			'resources': 'resourcesRoute',
-			'resources/:type': 'resourcesRoute',
-			'resources/:type/:id': 'resourcesRoute',
+			'resources/:cloud': 'resourcesRoute',
+			'resources/:cloud/:type': 'resourcesRoute',
+			'resources/:cloud/:type/:id': 'resourcesRoute',
 			//'resources/:type': 'resourcesRoute',
 			//'resources/:type/:id': 'resourcesRoute',
 			'projects': 'projects',
@@ -61,26 +62,33 @@ define([
 		    }
 		},
 		
-		resourcesRoute: function(type, id, action) {
+		resourcesRoute: function(cloud, type, id, action) {
 		    $("#sidebar").empty();
 		    $("#sidebar").hide();
 		    $("#main").empty();
 		    
-		    if(type) {
-		    	switch (type)
-			    {
-			        case 'compute':
-			        	if(!id) {
-			        		this.trigger('route:compute');
-			        	}else {
-			        		this.trigger('route:computeDetail', id);
-			        	}
-			        break;
-			                 
-			    }
+		    this.trigger("route:resources", cloud, type, id);
+		    /*
+		    if(cloud) {
+		        if(type) {
+		            switch(type)
+		            {
+		                case "compute":
+		                    if(id) {
+		                        this.trigger("route:computeDetail", cloud, type, id);
+		                    }else {
+		                        this.trigger("route:compute", cloud, type);
+		                    }
+		                    break;
+		            }
+		                
+		        }else {
+		            this.trigger("route:resources", cloud);
+		        }
 		    }else {
-		    	this.trigger('route:resources');
-		    }		    
+		        this.trigger("route:resources");
+		    }	
+		    */    
 		}
 	});
 	

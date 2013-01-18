@@ -20,11 +20,11 @@ define([
      * @constructor
      * @category Compute
      * @param {Object} initialization object.
-     * @returns {Object} Returns a Instance instance.
+     * @returns {Object} Returns a Compute instance.
      */
     var Compute = Backbone.Model.extend({
 
-        /** Default attributes for the instance */
+        /** Default attributes for compute */
         defaults: {
 			name: '-',
 			description: '',
@@ -52,9 +52,9 @@ define([
 		},
 
 	    /**
-	     *  Toggle the `running` state of this instance.
+	     *  Toggle the `running` state of this compute.
 	     *
-	     * @memberOf Instance
+	     * @memberOf Compute
 	     * @category Convenience
 	     */
 		toggle: function() {

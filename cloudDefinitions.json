@@ -1,0 +1,116 @@
+{
+    "aws": {
+        "name": "Amazon Web Services",
+        "logo": "/images/CloudLogos/amazon800.jpg",
+        "services": [
+            {
+                "name": "Alarm",
+                "type": "alarm"
+            },
+            {
+                "name": "Auto Scale",
+                "type": "autoscale"
+            },
+            {
+                "name": "Elasticache",
+                "type": "cache"
+            },
+            {
+                "name": "Elastic Beanstalk",
+                "type": "application"
+            },
+            {
+                "name": "Elastic Block Storage",
+                "type": "block-storage"
+            },
+            {
+                "name": "Elastic Compute Cloud",
+                "type": "compute"
+            },
+            {
+                "name": "Elastic Load Balancer",
+                "type": "load-balancer"
+            },
+            {
+                "name": "IAM",
+                "type": "identity"
+            },
+            {
+                "name": "Relational Database",
+                "type": "rds"
+            },
+            {
+                "name": "Route 53",
+                "type": "dns"
+            },
+            {
+                "name": "Simple DB",
+                "type": "non-rds"
+            },
+            {
+                "name": "Simple Notification",
+                "type": "notification"
+            },
+            {
+                "name": "Simple Queue",
+                "type": "queue"
+            },
+            {
+                "name": "Simple Storage",
+                "type": "object-storage"
+            }
+        ],
+        "regions": [
+            {
+                "name": "US East (Northern Virginia)",
+                "zone": "us-east-1"
+            },
+            {
+                "name": "US West (Oregon)",
+                "zone": "us-west-2"
+            },
+            {
+                "name": "US West (Northern California)",
+                "zone": "us-west-1"
+            },
+            {
+                "name": "EU (Ireland)",
+                "zone": "eu-west-1"
+            },
+            {
+                "name": "Asia Pacific (Singapore)",
+                "zone": "ap-southeast-1"
+            },
+            {
+                "name": "Asia Pacific (Sydney)",
+                "zone": "ap-southeast-2"
+            },
+            {
+                "name": "Asia Pacific (Tokyo)",
+                "zone": "ap-northeast-1"
+            },
+            {
+                "name": "South America (Sao Paulo)",
+                "zone": "sa-east-1"
+            }
+        ]
+    },
+    "openstack" : {
+        "name": "OpenStack",
+        "logo": "/images/CloudLogos/openstack300.jpg",
+        "services": [],
+        "regions": []
+    },
+    "google" : {
+        "name": "Google",
+        "logo": "/images/CloudLogos/google1920x1107.png",
+        "services": [],
+        "regions": []
+    },
+    "joyent" : {
+        "name": "Joyent",
+        "logo": "/images/CloudLogos/joyent200.jpg",
+        "services": [],
+        "regions": []
+    }
+}

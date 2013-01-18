@@ -84,6 +84,7 @@ define([
                 var imagePath;
                 switch(item.logo)
                 {
+<<<<<<< Upstream, based on origin/dev
                 case "aws":
                     imagePath = "/images/ImageLogos/amazon20.png";
                     break;
@@ -93,6 +94,17 @@ define([
                 case "suse":
                     imagePath = "/images/ImageLogos/suse20.png";
                     break;
+=======
+                    case "aws":
+                        imagePath = "/images/ImageLogos/amazon20.png";
+                        break;
+                    case "redhat":
+                        imagePath = "/images/ImageLogos/redhat20.png";
+                        break;
+                    case "suse":
+                        imagePath = "/images/ImageLogos/suse20.png";
+                        break;
+>>>>>>> 10660a1 Changed Resource Nav to be more data driven; Changed Compute app to have base class and aws will inherit;
                 }
                 var img = '<td style="width:22px;" rowspan="2"><img height="20" width="20" src="'+imagePath+'"/></td>';
                 var name = '<td>'+item.label+'</td>';
@@ -113,27 +125,45 @@ define([
             $.each(machineSizes, function (index, value) {
                 console.log("Adding " + value + " to size_select");
                 $('#size_select')
+<<<<<<< Upstream, based on origin/dev
                     .append($("<option></option>")
                     .attr("value",index)
                     .text(value)); 
+=======
+	                .append($("<option></option>")
+	                .attr("value",index)
+	                .text(value)); 
+>>>>>>> 10660a1 Changed Resource Nav to be more data driven; Changed Compute app to have base class and aws will inherit;
             });
             $("#size_select").selectmenu();
             
             $.each(keyPairs, function (index, value) {
                 console.log("Adding " + value + " to key_pair_select");
                 $('#key_pair_select')
+<<<<<<< Upstream, based on origin/dev
                     .append($("<option></option>")
                     .attr("value",index)
                     .text(value)); 
+=======
+	                .append($("<option></option>")
+	                .attr("value",index)
+	                .text(value)); 
+>>>>>>> 10660a1 Changed Resource Nav to be more data driven; Changed Compute app to have base class and aws will inherit;
             });
             $("#key_pair_select").selectmenu();
             
             $.each(securityGroups, function (index, value) {
                 console.log("Adding " + value + " to security_group_select");
                 $('#security_group_select')
+<<<<<<< Upstream, based on origin/dev
                     .append($("<option></option>")
                     .attr("value",index)
                     .text(value)); 
+=======
+	                .append($("<option></option>")
+	                .attr("value",index)
+	                .text(value)); 
+>>>>>>> 10660a1 Changed Resource Nav to be more data driven; Changed Compute app to have base class and aws will inherit;
             });
             $("#security_group_select").multiselect({
                     selectedList: 3,
@@ -143,6 +173,7 @@ define([
             $("#radio").buttonset();
         },
 
+<<<<<<< Upstream, based on origin/dev
         render: function() {
             
         },
@@ -207,6 +238,72 @@ define([
             //Validate and create
             this.$el.dialog('close');
         }
+=======
+		render: function() {
+			
+		},
+		
+		openImageList: function() {
+		    if($("ul.ui-autocomplete").is(":hidden")) {
+		        $("#image_combo_box").autocomplete("search", "");
+		    }
+		},
+		
+		elasticityChange: function () {
+			switch($("input[name=radio]:checked").val())
+			{
+			case "none":
+				console.log("none selected");
+				$("#elasticity_image").attr("src", "/images/IconPNGs/NewServer.png");
+				var noneHTML = "";
+				$("#elasticity_config").html(noneHTML);
+				break;
+			case "autoRecovery":
+				console.log("auto recover selected");
+				$("#elasticity_image").attr("src", "/images/IconPNGs/Autorestart.png");
+				var autoRecoveryHTML = "";
+				$("#elasticity_config").html(autoRecoveryHTML);
+				break;
+			case "fixedArray":
+				console.log("fixed array selected");
+				$("#elasticity_image").attr("src", "/images/IconPNGs/Autoscale.png");
+				var fixedArrayHTML = "<table><tr><td>Size:</td><td><input id='fixedArraySize'/></td></tr></table>";
+				$("#elasticity_config").html(fixedArrayHTML);
+				break;
+			case "autoScale":
+				console.log("auto scale selected");
+				$("#elasticity_image").attr("src", "/images/IconPNGs/Autoscale.png");
+				var autoScaleHTML = "<table>" +
+						"<tr><td>Min:</td><td><input id='asMin'/></td></tr>" +
+						"<tr><td>Max:</td><td><input id='asMax'/></td></tr>" +
+						"<tr><td>Desired Capacity:</td><td><input id='asDesiredCapacity'/></td></tr>" +
+						"</table>";
+				$("#elasticity_config").html(autoScaleHTML);
+				break;
+			}
+		},
+		
+		close: function() {
+			console.log("close initiated");
+			$("#accordion").remove();
+			$("#image_combo_box").remove();
+			$("#az_select").remove();
+			$("#size_select").remove();
+			$("#key_pair_select").remove();
+			$("#security_group_select").remove();
+			this.$el.dialog('close');
+		},
+		
+		cancel: function() {
+			this.$el.dialog('close');
+		},
+		
+		create: function() {
+			console.log("create_initiated");
+			//Validate and create
+			this.$el.dialog('close');
+		}
+>>>>>>> 10660a1 Changed Resource Nav to be more data driven; Changed Compute app to have base class and aws will inherit;
 
     });
 
