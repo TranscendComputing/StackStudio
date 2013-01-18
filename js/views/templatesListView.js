@@ -143,6 +143,10 @@ define([
                         }
                     },
                     "correct_state": false
+                },
+                
+                "themeroller": {
+                    "item": "jstree_custom_item"
                 }
             });
             
@@ -234,6 +238,10 @@ define([
                         }
                     },
                     "correct_state": false
+                },
+                
+                "themeroller": {
+                    "item": "jstree_custom_item"
                 }
             });
         }

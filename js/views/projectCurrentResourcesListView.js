@@ -42,7 +42,8 @@ define([
                 ],
                 
                 "core": {
-                    "animation": 0
+                    "animation": 0,
+                    "load_open": true
                 },
     
                 // I usually configure the plugin that handles the data first
@@ -78,7 +79,13 @@ define([
                             "state": "closed"
                         }
                     ],
-                    "correct_state": false
+                    "correct_state": false,
+                    "progressive_render": true,
+                    "progressive_unload": true
+                },
+                
+                "themeroller": {
+                    "item": "jstree_custom_item"
                 }
             });
         },
@@ -93,8 +100,10 @@ define([
             try{
                 template = $.parseJSON(currentTemplate);
                 var newData = this.walkTemplate(template);
+                //this.tree.jstree.save_opened();
                 this.tree.jstree("focused")._get_settings().json_data.data = newData;
                 this.tree.jstree("focused").refresh(-1);
+                //this.tree.jstree.reopen();
             } catch (e) {
                 console.log('Parsing error!!!   ', e);
                 return;
