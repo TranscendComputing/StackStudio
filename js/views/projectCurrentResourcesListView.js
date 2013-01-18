@@ -31,6 +31,7 @@ define([
         
         initialize: function(){
              $("#current_outline").on("rename_node.jstree", this.handleRename);
+             Common.vent.on("project:updateTemplate", this.updateTree, this);
         },
         
         render: function() {
@@ -80,6 +81,45 @@ define([
                     "correct_state": false
                 }
             });
+        },
+        
+        updateTree: function(currentTemplate) {
+            if ( !currentTemplate || currentTemplate === '') {
+                return;
+            }
+            
+            var template;
+            
+            try{
+                template = $.parseJSON(currentTemplate);
+                var newData = this.walkTemplate(template);
+                this.tree.jstree("focused")._get_settings().json_data.data = newData;
+                this.tree.jstree("focused").refresh(-1);
+            } catch (e) {
+                console.log('Parsing error!!!   ', e);
+                return;
+            }
+        },
+        
+        walkTemplate: function(template) {
+            var data = [];
+            for (var prop in template) {
+                var node = { "data": prop};
+                if (template.hasOwnProperty(prop)) {
+                    var val = template[prop];
+                    if (!node.children) {
+                            node.children = [];
+                    }
+                    console.log('Value = ', val, ', Prop = ', prop, ', Owner = ', template);
+                    if (typeof val === 'string') {
+                        node.children.push({ "data" : val });
+                    } else if (typeof val === 'object') {
+                        node.children.push(this.walkTemplate(val));
+                    }
+                }
+                data.push(node);
+            }
+            return data;
         },
         
         handleRename: function(e, object) {

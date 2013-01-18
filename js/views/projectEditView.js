@@ -79,10 +79,8 @@ define([
             var cm = newBinding.$handlers[0];
             cm.addCommand(autocomplete);
             this.editor.keyBinding = newBinding;
-            Common.vent.on("onAutoComplete", this.renderAutoComplete);
+            Common.vent.on("onAutoComplete", this.renderAutoComplete, this);
             
-            //this.editor.on('change', this.handleChange, this);
-            //$("#design_editor").on('keyup', this.handleChange);
             this.editor.resize();
             
             var p = new Project();
@@ -101,15 +99,13 @@ define([
                 resize: this.refresh
             });
             
-            this.editor.on("blur", this.editorFocusOut); 
             this.editor.on("change", this.handleChange);           
         },
         
         handleChange: function(e) {
-            //var editor = ace.edit("design_editor");
-            //var template = jQuery.parseJSON(editor.getValue());
-            //$("#template_resources").jstree("focused")._get_settings().json_data.data = template;
-            //$("#template_resources").jstree.focused().refresh(-1);
+            var editor = ace.edit("design_editor");
+            var content = editor.getValue();
+            Common.vent.trigger('project:updateTemplate', content);
         },
         
         reformatTemplate: function(template, newData) {
@@ -125,29 +121,6 @@ define([
             return newData;
         },
         
-        editorFocusOut: function(e) {
-            var editor = ace.edit("design_editor");
-            var treeItems = [];
-            $.merge( treeItems, $("#current_resources").find("li") );
-            $.merge( treeItems, $("#current_parameters").find("li") );
-            $.merge( treeItems, $("#current_mappings").find("li") );
-            $.merge( treeItems, $("#current_outputs").find("li") );
-            
-            var template = jQuery.parseJSON(editor.getValue());
-            var selector, name;
-            $.each(treeItems, function(index, item) {
-                selector = "#" + item.id;
-                name = $(selector).data().name;
-                
-                if ( template.Resources[name] === undefined &&
-                     template.Parameters[name] === undefined  &&
-                     template.Mappings[name] === undefined &&
-                     template.Outputs[name] === undefined  ) {
-                    $("#template_resources").jstree("remove", item);
-                }
-            });
-        },
-        
         refresh: function(event, ui) {
             this.editor = ace.edit("design_editor");
             this.editor.resize();
@@ -155,6 +128,8 @@ define([
         
         renderAutoComplete: function() {
             var editor = ace.edit("design_editor");
+            var content = editor.getValue();
+           
             editor.session.setUseSoftTabs(false);
             
             var cursor = editor.getCursorPosition();

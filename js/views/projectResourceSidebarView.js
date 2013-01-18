@@ -35,7 +35,9 @@ define([
             'click .tree_a': 'loadTemplate',
             'click .new_item_link': 'addResource',
             'click .current_item_link': 'selectResource',
-            'dblclick .current_item_link': 'renameResource'
+            'dblclick .current_item_link': 'renameResource',
+            'click button.expand_button': 'expandAll',
+            'click button.collapse_button': 'collapseAll'
         },
         
         template: _.template(sidebarTemplate),
@@ -51,6 +53,18 @@ define([
             this.$(".accordion").accordion({
                 "heightStyle": "content",
                 "collapsible": true
+            });
+            $("button.expand_button").button({
+                "icons": {
+                    "primary": "ui-icon-circle-plus"
+                },
+                "text": false
+            });
+            $("button.collapse_button").button({
+                "icons": {
+                    "primary": "ui-icon-circle-minus"
+                },
+                "text": false
             });
             this.newResourcesList.render();
             this.currentResourcesList.render();
@@ -126,7 +140,15 @@ define([
             var selector = "#" + e.currentTarget.parentNode.id;
             this.tree.jstree("rename", selector);
             return false;
-        }    
+        },
+        
+        expandAll: function(e) {
+            console.log(e);
+        },
+        
+        collapseAll: function(e) {
+            console.log('COLLAPSE');
+        } 
     });
     
     var projectSidebar;
