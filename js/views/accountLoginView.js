@@ -12,8 +12,7 @@ define([
         'models/account',
         'text!/templates/account/accountLoginTemplate.html',
         'icanhaz',
-        'common'
-        
+        'common'      
 ], function( $, _, Backbone, Account, accountLoginTemplate, ich, Common ) {
     
     /**
@@ -80,26 +79,33 @@ define([
             this.$(".accordion").accordion();
             this.username = this.$('input#username');
             this.password = this.$('input#password');
+            
+            if (this.loginMessage) {
+                $("#login_message").append(this.loginMessage);
+            }
             return this;
         },
         
         close: function() {
+            console.log(this.previous_location);
+            //document.location.hash = this.previous_location;
             console.log("close initiated");
             this.$el.dialog('close');
         },
         
         cancel: function() {
+            //document.location.hash = this.previous_location;
             this.$el.dialog('close');
         },
         
         login: function() {
             this.model.login();
+            this.close();
         }
 
     });
     
     Common.router.on("route:accountLogin", function() {
-        console.log("Loggin in...");
         var accountLoginView = new AccountLoginView({model: new Account()});
         accountLoginView.render();
         //$("#app_container").append(accountLoginView.render().el);

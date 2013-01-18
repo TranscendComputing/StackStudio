@@ -20,3 +20,4 @@ dist/
 .externalToolBuilders
 resources/*.properties
 node_modules
+/app.yaml

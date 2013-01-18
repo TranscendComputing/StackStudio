@@ -4,14 +4,15 @@
  * Available under ASL2 license <http://www.apache.org/licenses/LICENSE-2.0.html>
  */
 /*jshint smarttabs:true */
-/*global define:true console:true */
+/*global define:true console:true alert:true*/
 define([
         'jquery',
         'underscore',
         'backbone',
         'common',
+        'gh3',
         'jquery.jstree'
-], function( $, _, Backbone, Common ) {
+], function( $, _, Backbone, Common, Gh3 ) {
        
     var TemplatesListView = Backbone.View.extend({
         
@@ -26,11 +27,16 @@ define([
         },
         
         initialize: function(){
-            //TODO
+            Common.vent.on("account:login", this.reRenderTree);
+        },
+        
+        handleNodeData: function(a,b,c) {
+            console.log(a,b,c);
+            return {};  
         },
         
         render: function() {
-            console.log("rendering tree...");
+            var view = this;
             this.tree = $("#templates_list").jstree({ 
                 // List of active plugins
                 "plugins" : [ 
@@ -45,55 +51,100 @@ define([
                 // I usually configure the plugin that handles the data first
                 // This example uses JSON as it is most common
                 "json_data" : {
-                    "data": [
-                    {
-                        "data": {
-                            "title": "CloudFormation Templates",
-                            "attr": {"class": "root_folder"}
-                        },
-                        "state": "closed",
-                        "metadata": {
-                            "url": "https://api.github.com/repos/TranscendComputing/CloudFormationTemplates/contents/"
-                        }
-                    }], 
-                    "ajax": {
-                        "url": function(node) {
-                            if (node === -1) {
-                                return "";
-                            } else {
-                                return node.data( "url" );
+                    "data": function(node, dataFunction) {
+                        var data = [];
+                        if (node === -1) {
+                            var rootData = [
+                            {
+                                "data": {
+                                    "title": "CloudFormation Templates",
+                                    "attr": {"class": "root_folder"}
+                                },
+                                "attr": {"id": "templates_root"},
+                                "state": "closed"
+                            }];
+                            dataFunction(rootData);
+                        } else if ( view.templatesContent ) {
+                            console.log('templates already populated', view.templatesContent);
+                            console.log('current node....', $("#" + node[0].id).data() );
+                            var nodeData = $("#" + node[0].id).data();
+                            if (nodeData.type === "dir") {
+                                var dir = nodeData;
+                                dir.fetchContents(function(err, contents) {
+                                    dir.eachContent(function(content) {
+                                        if (content.type === "file") {
+                                            var file = dir.getFileByName(content.name);
+                                            var id = file.name.split(".")[0].toLowerCase();
+                                            var node = {
+                                                "data": {
+                                                    "title": file.name,
+                                                    "attr": {"id": id + "_link", "class": "tree_a"}
+                                                },
+                                                "metadata": file,
+                                                "attr": {"id": id + "_container", "class": "tree_li"}
+                                            };
+                                            data.push(node);
+                                        }
+                                    });
+                                    console.log("Adding data....", data);
+                                    dataFunction(data);
+                                });
                             }
-                        },
-                        "type": "get",
-                        "success": function(ops) {
-                            var data = [];
-                            console.log("OPS", ops);
-                            for(var opnum in ops){
-                                var op = ops[opnum];
-                                var id = op.name.split(".")[0].toLowerCase();
-                                var node = {
-                                    "data": {
-                                        "title": op.name,
-                                        "attr": {"id": id + "_link", "class": "tree_a"}                                    
-                                    },
-                                    "metadata": op,
-                                    "attr": {"id": id + "_container", "class": "tree_li"}
-                                    
-                                };
-                                if (op.type === "dir") {
-                                    node.state = "closed";
-                                }
-                                console.log("OP", op);
-                                if (op.name !== "README.md") {
-                                    data.push( node );
-                                }
-                            }
-                            
-                            console.log(data);
-                            return data;
-                        },
-                        "error": function(j, t, e) {
-                            console.log(j,t,e);
+                        } else {
+                               //Grab TranscendComputing org for interrogation into repo(s)
+                               var user = new Gh3.User("TranscendComputing");
+                               user.fetch(function(err, resUser){
+                                   if (err) {
+                                       console.log("Error...", err);
+                                   }
+                               });
+                               
+                               //Grab CloudFormationTemplates repo
+                               var repo = new Gh3.Repository("CloudFormationTemplates", user);
+                               repo.fetch(function(err,res) {
+                                   if (err) {console.log("Error....", err);}
+                                   
+                                   if ( repo.message && (repo.message.match("API Rate Limit Exceeded for") !== null) ) {
+                                       if (!Common.github) {
+                                           alert(repo.message + "  Please login to continue working with remote templates.");
+                                       }
+                                   }
+                                   
+                                   repo.fetchBranches(function(err,res) {
+                                       if (err) {console.log("Error fetching branches....", err);}
+                                       
+                                       //Grab master branch
+                                       var master = repo.getBranchByName("master");
+                                       master.fetchContents(function(err,res) {
+                                           if (err) {console.log("Error fetching content....", err);}
+                                           
+                                           console.log("Templates content..", view.templatesContent);
+                                           view.templatesContent = master;
+                                           
+                                           master.eachContent(function(content) {
+                                               if (content.type === "dir") {
+                                                    //Get directory
+                                                    var repoDir = master.getDirByName(content.name);
+                                                   
+                                                    var id = repoDir.name.split(".")[0].toLowerCase();
+                                                    var node = {
+                                                        "data": {
+                                                            "title": repoDir.name,
+                                                            "attr": {"id": id + "_link", "class": "tree_a"}                                    
+                                                        },
+                                                        "metadata": repoDir,
+                                                        "attr": {"id": id + "_container", "class": "tree_li"},
+                                                        "state": "closed"
+                                                        
+                                                    };
+                                                    data.push(node);
+                                               }
+                                               dataFunction(data);
+                                           });
+                                       });
+                                   });
+                               });
+                               return data;
                         }
                     },
                     "correct_state": false
@@ -101,6 +152,98 @@ define([
             });
             
             return this;
+        },
+        
+        loadTemplate: function(e) {
+            console.log("Clicked node is....", e);
+            return false;
+        },
+        
+        handleNodeClick: function() {
+            return false;
+        },
+        
+        reRenderTree: function() {
+            var view = this;
+            this.tree = $("#templates_list").jstree({ 
+                // List of active plugins
+                "plugins" : [ 
+                    "json_data", "cookies", "crrm", "themeroller"
+                ],
+                
+                "core": {
+                    "animation": 0,
+                    "load_open": true
+                },
+    
+                // I usually configure the plugin that handles the data first
+                // This example uses JSON as it is most common
+                "json_data" : {
+                    "data": function(node, dataFunction) {
+                        var data = [];
+                        if (node === -1) {
+                            var rootData = [
+                            {
+                                "data": {
+                                    "title": "CloudFormation Templates",
+                                    "attr": {"class": "root_folder"}
+                                },
+                                "attr": {"id": "templates_root"},
+                                "state": "closed"
+                            }];
+                            dataFunction(rootData);
+                        } else if (view.templatesContent){
+                            //TODO
+                        } else {
+                            var templatesRepo = Common.github.getRepo("TranscendComputing", "CloudFormationTemplates");
+                            
+                            templatesRepo.getTree('master?recursive=true', function(err, tree) {
+                                var node, currentDirectory;
+                                view.templatesContent = tree;
+                                $.each(tree, function(index, item) {
+                                    console.log(item);
+                                    if (item.type === "tree") {
+                                        node = {
+                                            "data": {
+                                                "title": item.path,
+                                                "attr": {"id": item.path.toLowerCase() + "_link", "class": "tree_a"}
+                                            },
+                                            "metadata": item,
+                                            "attr": {"id": item.path.toLowerCase() + "_container", "class": "tree_li"}
+                                        };
+                                        data.push(node);
+                                        currentDirectory = node;
+                                    }
+                                    if ( (item.type === "blob") && (item.path !== "README.md") ) {
+                                        var name = item.path.split("/").pop();
+                                        var id = name.split(".")[0];
+                                        node = {
+                                            "data": {
+                                                "title": name,
+                                                "attr": {"id": id.toLowerCase() + "_link", "class": "tree_a"}
+                                            },
+                                            "metadata": item,
+                                            "attr": {"id": id.toLowerCase() + "_container", "class": "tree_li"}
+                                        };
+                                        console.log(currentDirectory);
+                                        if (currentDirectory && (item.path.indexOf(currentDirectory.data.title) !== -1) ) {
+                                            if (!currentDirectory.children) {
+                                                currentDirectory.children = [];
+                                            }
+                                            currentDirectory.children.push( node );
+                                        } else {
+                                            data.push(node);
+                                        }
+                                    } 
+                                });
+                                dataFunction(data);
+                            });
+                               
+                        }
+                    },
+                    "correct_state": false
+                }
+            });
         }
         
     });

@@ -9,8 +9,10 @@ define([
         'jquery',
         'backbone',
         'gh3',
-        'base64'
-], function( $, Backbone, Gh3, Base64 ) {
+        'base64',
+        'github',
+        'common'
+], function( $, Backbone, Gh3, Base64, Github, Common ) {
     'use strict';
 
     // Account Model
@@ -48,43 +50,13 @@ define([
         },
         
         login: function() {
-            /*
-            var auth = this.makeBasicAuth(this.get('username'), this.get('passsword'));
-            console.log(auth);
-            var data = $.ajax({
-                url: "https://api.github.com",
-                dataType: 'json',
-                type: 'post',
-                beforeSend: function(req) {
-                    req.setRequestHeader('Authorization', auth);
-                    console.log("Request", req);
-                },
-                success: function(data) {
-                    console.log(data);
-                }
+            Common.github = new Github({
+                username: this.get('username'),
+                password: this.get('password'),
+                auth: this.get('auth')
             });
-            */
-           var user = new Gh3.User(this.get('username'));
-           console.log(user);
-           user.fetch(function(err, resUser){
-               if (err) {
-                   console.log("Error...", err);
-               }
-           });
-           
-           var repos = new Gh3.Repositories(user);
-           repos.fetch({page:1}, "next", function(err,res) {
-               if (err) {console.log("Error....", err);}
-               console.log("Repositories", repos);
-           });
-        },
-        
-        makeBasicAuth: function(username, password) {
-            var token = username + ":" + password;
-            var hash = Base64.encode(token);
-            return "Basic " + hash;
+            Common.vent.trigger("account:login");
         }
-
     });
 
     return Account;

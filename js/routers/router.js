@@ -41,10 +41,14 @@ define([
 		},
 		
 		defaultRoute: function( actions ) {
-		    $("#sidebar").empty();
-		    $("#sidebar").hide();
-			$("#main").load('/dashboard.html');
-			console.log("Running default route.  Dashboard");
+		    if (window.app === "stackplace") {
+		        this.trigger('route:projectEdit');
+		    } else {
+    		    $("#sidebar").empty();
+                $("#sidebar").hide();
+                $("#main").load('/dashboard.html');
+                console.log("Running default route.  Dashboard");    
+		    }
 		},
 		
 		projectsRoute: function(id, action) {

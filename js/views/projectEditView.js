@@ -53,6 +53,7 @@ define([
             Common.vent.on('project:addResource', this.addResource, this); 
             Common.vent.on('project:selectResource', this.selectResource, this);
             Common.vent.on('project:renameResource', this.renameResource, this);
+            Common.vent.on('project:loadTemplate', this.loadTemplate, this);
             this.$el.html(this.template); 
         },
 
@@ -214,6 +215,27 @@ define([
                 return;
             }
             this.editor.replaceAll(newResourceName, {"needle": currentName});
+        },
+        
+        loadTemplate: function(data) {
+            this.editor.setValue(data.rawTemplate);
+            this.editor.getSelection().moveCursorFileStart();
+            /*
+            var rawTemplate = data.rawTemplate,
+                name = data.name,
+                tabTemplate = "<li><a href='#{href}'>#{label}</a> <span class='ui-icon ui-icon-close'>Remove Tab</span></li>",
+                tabs = $("#tabs").tabs();
+                
+            var label = name,
+                id = "tabs-" + name.split(".")[0].toLowerCase(),
+                li = $( tabTemplate.replace( /#\{href\}/g, "#" + id ).replace( /#\{label\}/g, label ) ),
+                tabContentHtml = tabContent.val() || "Tab " + tabCounter + " content.";
+     
+            tabs.find( ".ui-tabs-nav" ).append( li );
+            tabs.append( "<div id='" + id + "'><p>" + tabContentHtml + "</p></div>" );
+            tabs.tabs( "refresh" );
+            tabCounter++;
+            */
         }
     });
     

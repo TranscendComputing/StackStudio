@@ -29,10 +29,10 @@ requirejs.config({
 		'base64': {
 		    exports: 'Base64'
 		},
-		//'github': {
-		//    deps: ['base64', 'underscore'],
-		//    exports: 'Github'
-		//},
+		'github': {
+		    deps: ['base64', 'underscore'],
+		    exports: 'Github'
+		},
 		'gh3': {
 		    deps: ['underscore', 'jquery'],
 		    exports: 'Gh3'
