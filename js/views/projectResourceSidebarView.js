@@ -49,7 +49,8 @@ define([
             this.$el.addClass("fourcol");
             //Set horizontal splitter
             this.$(".accordion").accordion({
-                "heightStyle": "content"
+                "heightStyle": "content",
+                "collapsible": true
             });
             this.newResourcesList.render();
             this.currentResourcesList.render();

@@ -31,7 +31,6 @@ define([
         },
         
         handleNodeData: function(a,b,c) {
-            console.log(a,b,c);
             return {};  
         },
         
@@ -65,8 +64,6 @@ define([
                             }];
                             dataFunction(rootData);
                         } else if ( view.templatesContent ) {
-                            console.log('templates already populated', view.templatesContent);
-                            console.log('current node....', $("#" + node[0].id).data() );
                             var nodeData = $("#" + node[0].id).data();
                             if (nodeData.type === "dir") {
                                 var dir = nodeData;
@@ -86,7 +83,6 @@ define([
                                             data.push(node);
                                         }
                                     });
-                                    console.log("Adding data....", data);
                                     dataFunction(data);
                                 });
                             }
@@ -118,7 +114,6 @@ define([
                                        master.fetchContents(function(err,res) {
                                            if (err) {console.log("Error fetching content....", err);}
                                            
-                                           console.log("Templates content..", view.templatesContent);
                                            view.templatesContent = master;
                                            
                                            master.eachContent(function(content) {
@@ -139,8 +134,8 @@ define([
                                                     };
                                                     data.push(node);
                                                }
-                                               dataFunction(data);
                                            });
+                                           dataFunction(data);
                                        });
                                    });
                                });
@@ -155,7 +150,6 @@ define([
         },
         
         loadTemplate: function(e) {
-            console.log("Clicked node is....", e);
             return false;
         },
         
@@ -201,7 +195,6 @@ define([
                                 var node, currentDirectory;
                                 view.templatesContent = tree;
                                 $.each(tree, function(index, item) {
-                                    console.log(item);
                                     if (item.type === "tree") {
                                         node = {
                                             "data": {
@@ -225,7 +218,6 @@ define([
                                             "metadata": item,
                                             "attr": {"id": id.toLowerCase() + "_container", "class": "tree_li"}
                                         };
-                                        console.log(currentDirectory);
                                         if (currentDirectory && (item.path.indexOf(currentDirectory.data.title) !== -1) ) {
                                             if (!currentDirectory.children) {
                                                 currentDirectory.children = [];
