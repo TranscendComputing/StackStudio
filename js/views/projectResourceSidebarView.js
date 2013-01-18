@@ -34,10 +34,7 @@ define([
         events: {
             'click .tree_a': 'loadTemplate',
             'click .new_item_link': 'addResource',
-            'click .current_item_link': 'selectResource',
-            'dblclick .current_item_link': 'renameResource',
-            'click button.expand_button': 'expandAll',
-            'click button.collapse_button': 'collapseAll'
+            'dblclick .current_item_link': 'renameResource'
         },
         
         template: _.template(sidebarTemplate),
@@ -66,9 +63,11 @@ define([
                 },
                 "text": false
             });
+            
             this.newResourcesList.render();
             this.currentResourcesList.render();
             this.templatesList.render();
+            
             return this;
         },
         
@@ -140,15 +139,7 @@ define([
             var selector = "#" + e.currentTarget.parentNode.id;
             this.tree.jstree("rename", selector);
             return false;
-        },
-        
-        expandAll: function(e) {
-            console.log(e);
-        },
-        
-        collapseAll: function(e) {
-            console.log('COLLAPSE');
-        } 
+        }
     });
     
     var projectSidebar;

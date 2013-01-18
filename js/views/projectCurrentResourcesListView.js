@@ -119,7 +119,6 @@ define([
                     if (!node.children) {
                             node.children = [];
                     }
-                    console.log('Value = ', val, ', Prop = ', prop, ', Owner = ', template);
                     if (typeof val === 'string') {
                         node.children.push({ "data" : val });
                     } else if (typeof val === 'object') {

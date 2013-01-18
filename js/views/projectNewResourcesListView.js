@@ -25,8 +25,6 @@ define([
         
         events: {
             'click .new_item_link': 'addResource',
-            'click .jstree-open': 'cancelRequest',
-            'click .jstree-closed': 'cancelRequest',
             'click #open_all': 'openAll',
             'click #collapse_all': 'collapseAll'
         },
@@ -99,6 +97,8 @@ define([
                     "item": "jstree_custom_item"
                 }
             });
+            
+            
         },
         
         // Add a single instance item to the list by creating a view for it.
@@ -153,10 +153,6 @@ define([
         handleRename: function(e, object) {
             var resourceName = object.args[1];
             Common.vent.trigger("project:renameResource", resourceName);
-        },
-        
-        cancelRequest: function() {
-            return false;
         },
         
         openAll: function() {
