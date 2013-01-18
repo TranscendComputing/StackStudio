@@ -9,40 +9,94 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'collections/template_resources',
         'common',
-        'wijmo'
-], function( $, _, Backbone, Common ) {
+        'jquery.jstree'
+], function( $, _, Backbone, resources, Common ) {
        
     var ProjectCurrentResourcesListView = Backbone.View.extend({
         
         //TODO define element
         //OR use tagName, className, ...
-        el: "#current_resource_list",
+        el: "#current_outline",
+        
+        tree: undefined,
+        
+        events: {
+            'click .jstree-open': 'cancelRequest',
+            'click .jstree-closed': 'cancelRequest',
+            'click #open_all': 'openAll',
+            'click #collapse_all': 'collapseAll'
+        },
         
         initialize: function(){
-            //Common.vent.on('project:addResource', this.addResource, this);
-            this.render();
+             $("#current_outline").on("rename_node.jstree", this.handleRename);
         },
         
         render: function() {
-            this.$el.wijlist({
-                autoSize: true,
-                superPanelOptions: {
-                    autoRefresh: true
+            this.tree = $("#current_outline").jstree({ 
+                // List of active plugins
+                "plugins" : [ 
+                    "json_data", "crrm", "themeroller"
+                ],
+                
+                "core": {
+                    "animation": 0
+                },
+    
+                // I usually configure the plugin that handles the data first
+                // This example uses JSON as it is most common
+                "json_data" : { 
+                    "data": [
+                        {
+                            "data": {
+                                "title": "Resources"
+                            },
+                            "attr": {"id": "current_resources"},
+                            "state": "closed"   
+                        },
+                        {
+                            "data": {
+                                "title": "Parameters"
+                            },
+                            "attr": {"id": "current_parameters"},
+                            "state": "closed"
+                        },
+                        {
+                            "data": {
+                                "title": "Mappings"
+                            },
+                            "attr": {"id": "current_mappings"},
+                            "state": "closed"
+                        },
+                        {
+                            "data": {
+                                "title": "Outputs"
+                            },
+                            "attr": {"id": "current_outputs"},
+                            "state": "closed"
+                        }
+                    ],
+                    "correct_state": false
                 }
             });
-            return this;
         },
         
-        // Add a single instance item to the list by creating a view for it.
-        addResource: function(resource) {
-            this.$el.wijlist("addItem", {label: resource.name, value: resource.template}); 
-            //Render the list in the client browser
-            this.$el.wijlist('renderList');
-            this.$el.wijlist('refreshSuperPanel');
-            //$("#sidebar").height($("#ap_container").height());
-            //$("#hsplitter").height($("#sidebar").height());
-            //$("#hsplitter").wijsplitter("refresh");
+        handleRename: function(e, object) {
+            var resourceName = object.args[1];
+            Common.vent.trigger("project:renameResource", resourceName);
+        },
+        
+        cancelRequest: function() {
+            return false;
+        },
+        
+        openAll: function() {
+            this.tree.jstree("open_all");
+        },
+        
+        collapseAll: function() {
+            this.tree.jstree("close_all");
         }
         
     });

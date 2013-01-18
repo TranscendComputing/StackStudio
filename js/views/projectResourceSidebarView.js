@@ -32,7 +32,10 @@ define([
         templatesList: new TemplatesListView(),
 
         events: {
-            'click .tree_a': 'loadTemplate'
+            'click .tree_a': 'loadTemplate',
+            'click .new_item_link': 'addResource',
+            'click .current_item_link': 'selectResource',
+            'dblclick .current_item_link': 'renameResource'
         },
         
         template: _.template(sidebarTemplate),
@@ -49,7 +52,7 @@ define([
                 "heightStyle": "content"
             });
             this.newResourcesList.render();
-            //this.currentResourcesList.render();
+            this.currentResourcesList.render();
             this.templatesList.render();
             return this;
         },
@@ -83,7 +86,46 @@ define([
             }
             
             return false;
-        }      
+        },
+        
+        addResource: function(e) {
+            var resource = $(e.currentTarget.parentNode).data();
+            var groupSelector = "#current_" + resource.group.toLowerCase();
+            this.currentResourcesList.tree.jstree(
+                "create", 
+                $(groupSelector), 
+                "inside", 
+                { 
+                    "data": {
+                         "title": resource.name, 
+                         "attr": {
+                             "id": resource.name, 
+                             "class": "current_item_link"
+                         } 
+                    }, 
+                    "attr": {"id": resource.name + "_container"},
+                    "metadata": {"name": resource.name} 
+                },
+                function(){console.log("Added ", resource.name);},
+                true 
+            );
+            
+            console.log(resource);
+            Common.vent.trigger("project:addResource", resource);
+            return false;
+        },
+        
+        selectResource: function(e) {
+            Common.vent.trigger("project:selectResource", e.currentTarget.id);
+            return false;
+        },
+        
+        renameResource: function(e) {
+            this.selectResource(e);
+            var selector = "#" + e.currentTarget.parentNode.id;
+            this.tree.jstree("rename", selector);
+            return false;
+        }    
     });
     
     var projectSidebar;

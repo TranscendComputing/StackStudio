@@ -19,14 +19,12 @@ define([
         
         //TODO define element
         //OR use tagName, className, ...
-        el: "#resources_list",
+        el: "#template_resources",
         
         tree: undefined,
         
         events: {
             'click .new_item_link': 'addResource',
-            'click .current_item_link': 'selectResource',
-            'dblclick .current_item_link': 'renameResource',
             'click .jstree-open': 'cancelRequest',
             'click .jstree-closed': 'cancelRequest',
             'click #open_all': 'openAll',
@@ -41,67 +39,24 @@ define([
             // Fetch will pull results from the server
             // resources.fetch({update: true});
             
-            $("#template_resources    ").on("rename_node.jstree", this.handleRename);
+            $("#template_resources").on("rename_node.jstree", this.handleRename);
         },
         
         render: function() {
             console.log("rendering tree...");
-            this.tree = $("#template_resources    ").jstree({ 
+            this.tree = $("#template_resources").jstree({ 
                 // List of active plugins
                 "plugins" : [ 
                     "json_data", "crrm", "themeroller"
                 ],
                 
                 "core": {
-                    "animation": 0,
-                    "initially_open": ["aws_resources_root"]
-                },
+                    "animation": 0
+                 },
     
                 // I usually configure the plugin that handles the data first
                 // This example uses JSON as it is most common
                 "json_data" : { 
-                    "data": [
-                    {
-                        "data": {
-                            "title": "New Items",
-                            "attr": {"class": "root_folder"}
-                        },
-                        "attr": {"id": "aws_resources_root"},
-                        "state": "closed"
-                    },
-                    {
-                        "data": "Current Items",
-                        "attr": {"id": "current_items_root", "class": "root_folder"},
-                        "children": [
-                        {
-                            "data": {
-                                "title": "Resources"
-                            },
-                            "attr": {"id": "current_resources"},
-                            "state": "closed"   
-                        },
-                        {
-                            "data": {
-                                "title": "Parameters"
-                            },
-                            "attr": {"id": "current_parameters"},
-                            "state": "closed"
-                        },
-                        {
-                            "data": {
-                                "title": "Mappings"
-                            },
-                            "attr": {"id": "current_mappings"},
-                            "state": "closed"
-                        },
-                        {
-                            "data": {
-                                "title": "Outputs"
-                            },
-                            "attr": {"id": "current_outputs"},
-                            "state": "closed"
-                        }]
-                    }],
                     "ajax": {
                         "url": "cloud_resources.json",
                         "success": function(data) {
