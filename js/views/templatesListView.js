@@ -30,8 +30,8 @@ define([
         initialize: function(){
             Common.vent.on("account:login", this.reRenderTree);
             
-            var userAcct = new Account({username: 'sstudiouser', password: 'transcendcomputing'});
-            userAcct.login();
+            //var userAcct = new Account({username: 'sstudiouser', password: 'transcendcomputing'});
+            //userAcct.login();
         },
         
         handleNodeData: function(a,b,c) {
@@ -72,7 +72,7 @@ define([
                             if (node === -1) {
                                 return "";
                             } else {
-                                return node.data( "url" );
+                                return "/getit?url=" + node.data( "url" );
                             }
                         },
                         "type": "get",
