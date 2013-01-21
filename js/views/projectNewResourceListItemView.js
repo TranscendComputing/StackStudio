@@ -28,8 +28,6 @@ define([
         },
         
         select: function() {
-            console.log('resource below has been added');
-            console.log(this.model);
             Common.vent.trigger('project:addResource', this.model);
             return false;
         }

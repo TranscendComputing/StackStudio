@@ -163,9 +163,7 @@ define([
         },
         
         addResource: function(resource) {
-            console.log("Adding new resource to project...");
             var content;
-            console.log(this.editor);
             
             content = this.editor.getValue();
             if (content.replace(/\s/g,"") !== '') {
@@ -223,20 +221,16 @@ define([
     var projectEditor;
 
     Common.router.on('route:projectEdit', function () {
-        console.log("Editor route");
         if ( !projectEditor ) {
             projectEditor = new ProjectEditView();
         }
         projectEditor.render();
-        console.log("Got project edit route.");
     }, this);
 
     Common.router.on('route:projectUdpate', function (id, resource) {
-        console.log("Update route");
         if ( !projectEditor ) {
             projectEditor = new ProjectEditView();
         }
-        console.log("Got project udpate route.");
     }, this);    
 
     return ProjectEditView;

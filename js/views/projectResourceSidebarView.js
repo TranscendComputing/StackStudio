@@ -73,18 +73,15 @@ define([
         loadTemplate: function(e) {
             var treeItem = $(e.currentTarget.parentNode).data();
             var name = $(e.currentTarget).contents()[1];
-            console.log("Tree item selected...", treeItem);
             if (treeItem.type === "file") {
                 var htmlUrl = treeItem.html_url;
                 var rawUrl = htmlUrl.replace("/blob", "").replace("github.com", "raw.github.com");
-                console.log("RAW URL.....", rawUrl);
                 $.ajax({
                    "url": rawUrl,
                    "type": "get",
                    "dataType": "json",
                    "success": function (data) {
                        var template = jQuery.parseJSON(data);
-                       console.log(template);
                    },
                    "error": function( err ) {
                        var accountLoginView = new AccountLoginView({model: new Account(), message: "Please login with Github credentials to view templates."});
@@ -119,11 +116,10 @@ define([
                     "attr": {"id": resource.name + "_container"},
                     "metadata": {"name": resource.name} 
                 },
-                function(){console.log("Added ", resource.name);},
+                function(){},
                 true 
             );
             
-            console.log(resource);
             Common.vent.trigger("project:addResource", resource);
             return false;
         },
@@ -144,12 +140,10 @@ define([
     var projectSidebar;
 
     Common.router.on('route:projectEdit', function (id) {
-        console.log("Editor route");
         if ( !projectSidebar ) {
             projectSidebar = new SidebarView();
         }
         projectSidebar.render();
-        console.log("Got project resource sidebar route.");
     }, this);
     
     return SidebarView;

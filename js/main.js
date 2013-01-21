@@ -7,16 +7,6 @@
 /*global define:true console:true */
 var URL_ARGS = 'cb=' + Math.random();
 
-if (!(window.console && console.log)) {
-  console = {
-    log: function(){},
-    debug: function(){},
-    info: function(){},
-    warn: function(){},
-    error: function(){}
-  };
-}
-
 require(['./common'], function (common) {
     require([
             'views/accountLoginView',
@@ -29,7 +19,6 @@ require(['./common'], function (common) {
              'views/resourceNavigationView',
              'views/compute/computeAppView'
             ], function() {
-    	console.log("starting history");
     	common.backbone.history.start();
     });
 });

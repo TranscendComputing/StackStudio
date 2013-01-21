@@ -73,7 +73,6 @@ define([
                             var templatesRepo = Common.github.getRepo("TranscendComputing", "CloudFormationTemplates");
                             
                             templatesRepo.getTree('master?recursive=true', function(err, tree) {
-                                console.log("ERROR", err);
                                 var node, currentDirectory;
                                 view.templatesContent = tree;
                                 $.each(tree, function(index, item) {

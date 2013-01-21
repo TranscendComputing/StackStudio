@@ -84,9 +84,7 @@ define([
         },
         
         close: function() {
-            console.log(this.previous_location);
             //document.location.hash = this.previous_location;
-            console.log("close initiated");
             this.$el.dialog('close');
         },
         

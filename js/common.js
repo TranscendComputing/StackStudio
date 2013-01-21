@@ -134,7 +134,6 @@ define(
 	// Initialize the command line, since that's global to all pages.
 	new CommandLineView();
 
-    console.log("common defined");
 	// Return some "globals".
 	return {
 		// Which filter are we using?

@@ -52,7 +52,6 @@ define([
             
             // Trigger event to select project if necessary
             if (selectedId && project.get('id') === selectedId) {
-                console.log(Common.vent);
                 Common.vent.trigger('project:show', project);
             }
         },

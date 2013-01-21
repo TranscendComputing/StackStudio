@@ -41,7 +41,6 @@ define([
         },
         
         render: function() {
-            console.log("rendering tree...");
             this.tree = $("#template_resources").jstree({ 
                 // List of active plugins
                 "plugins" : [ 
@@ -85,7 +84,6 @@ define([
                                     children: v
                                 });
                             });
-                            console.log(treeData);
                             return treeData;
                             //return data.label;
                         }
@@ -103,7 +101,6 @@ define([
         
         // Add a single instance item to the list by creating a view for it.
         addOne: function( resource ) {
-            console.log("adding " + resource.get('label'));
             var projectNewResourceListItemView = new ProjectNewResourceListItemView({ model: resource });
             this.$el.append(projectNewResourceListItemView.render().el);
         },
@@ -133,7 +130,6 @@ define([
                 } 
             );
             
-            console.log(resource);
             Common.vent.trigger("project:addResource", resource);
             return false;
         },
