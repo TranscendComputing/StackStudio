@@ -40,8 +40,41 @@ define([
      * interpreter.execute("cloud-run-instances param param", term);
      * // => {'message': "Created instance", 'type': "success"};
      */
-    BaseInterpreter.prototype.exec = function(command, term) {
-        return {type: 'success', message: 'Ok.'};
+    BaseInterpreter.prototype.exec = function(command_line, term) {
+        var self = this;
+        var result;
+        var command = command_line;
+        if (command.indexOf(' ') > 0) {
+            command = command.slice(0, command.indexOf(' '));
+        }
+        // hyphens are not legal in JS, but may be in command, so check both
+        [command, command.replace(/-/g, '_')].map(function(cmd) {
+            if (typeof self[cmd] === "function") {
+                result = self[cmd]();
+            }
+        });
+        if (result === undefined) {
+            result = {
+                    message: "Unsupported operation.",
+                    type: "error"
+            };
+        }
+        return result;
+        //return {type: 'success', message: 'Ok.'};
+    };
+
+    BaseInterpreter.prototype.run_instances = function() {
+        var result = {type: 'success'};
+        // TODO: call backend
+        result.message = "Started 1 instance.";
+        return result;
+    };
+
+    BaseInterpreter.prototype.describe_instances = function() {
+        var result = {type: 'success'};
+        // TODO: call backend
+        result.message = "Displaying cloud instances.";
+        return result;
     };
 
     return BaseInterpreter;

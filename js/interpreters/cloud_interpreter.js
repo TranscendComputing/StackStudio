@@ -32,30 +32,12 @@ define([
                          'cloud-create-volume'];
     };
 
-    _.extend(CloudInterpreter.prototype, BaseInterpreter, {
-        exec2: function(command, term) {
-            var result = {type: 'success'};
-            if (command.indexOf('cloud-run-instances') === 0) {
-                result.message = "Started 1 instance.";
-            } else if (command.indexOf('cloud-describe-instances') === 0) {
-                result.message = "Displaying cloud instances.";
-            } else {
-                result.message = "Unsupported operation.";
-                result.type = "error";
-            }
-            return result;
+    _.extend(CloudInterpreter.prototype, BaseInterpreter.prototype, {
+        cloud_run_instances: function() {
+            return this.run_instances();
         },
-        exec: function(command, term) {
-            var result = {type: 'success'};
-            if (command.indexOf('cloud-run-instances') === 0) {
-                result.message = "Started 1 instance.";
-            } else if (command.indexOf('cloud-describe-instances') === 0) {
-                result.message = "Displaying cloud instances.";
-            } else {
-                result.message = "Unsupported operation.";
-                result.type = "error";
-            }
-            return result;
+        cloud_describe_instances: function() {
+            return this.describe_instances();
         }
     });
 
