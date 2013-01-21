@@ -8,7 +8,8 @@
 define([
         'jquery',
         'backbone',
-        'common'
+        'common',
+        'backbone.queryparams'
 ], function( $, Backbone, Common ) {
 	'use strict';
 
@@ -21,7 +22,11 @@ define([
      * @param {Object} initialization object.
      * @returns {Object} Returns a Router instance.
      */
+    Backbone.Router.namedParameters = true;
+    
 	var Router = Backbone.Router.extend({
+	    namedParameters: true,
+	    
 		routes:{
 			'resources': 'resourcesRoute',
 			'resources/:cloud': 'resourcesRoute',
@@ -34,7 +39,8 @@ define([
 			//'projects/:id': 'projectsRoute',
 			//'projects/:id': 'projectDetail',
 			'project/new': 'projectCreate',
-			'projects/edit': 'projectEdit',
+			'projects/:url': 'projectEdit',
+			'open?:url': 'loadTemplate',
 			//'projects/:id(/:action)': 'projectsRoute',
 			'projects/:id/update/:resource': 'projectUpdate',
 			'account/login': 'accountLogin',
@@ -43,7 +49,11 @@ define([
 		
 		defaultRoute: function( actions ) {
 		    if (window.app === "stackplace") {
-		        this.trigger('route:projectEdit');
+		        if ( (typeof actions === 'object') && (actions.url !== undefined) ) {
+		            this.trigger('route:projectEdit', actions.url);
+		        } else {
+		          this.trigger('route:projectEdit');
+		        }
 		    } else {
     		    $("#sidebar").empty();
                 $("#sidebar").hide();

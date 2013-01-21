@@ -63,6 +63,8 @@ define([
                                  if (services[d.service] === undefined) {
                                      services[d.service] = [];
                                  }
+                                 //Add reference to parent tree
+                                 d.parent_tree = "#template_resources";
                                  itemId = d.label.toLowerCase().replace(/\s/g, "_");
                                  services[d.service].push({
                                      "data": {
@@ -81,7 +83,8 @@ define([
                             $.each(services, function(s, v) {
                                 treeData.push({
                                     data: s,
-                                    children: v
+                                    children: v,
+                                    "metadata": {"parent_tree": "#template_resources"} 
                                 });
                             });
                             return treeData;
@@ -126,7 +129,7 @@ define([
                          } 
                     }, 
                     "attr": {"id": resource.name + "_container"},
-                    "metadata": {"name": resource.name} 
+                    "metadata": {"name": resource.name, "parent_tree": "#template_resources"} 
                 } 
             );
             

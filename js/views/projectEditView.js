@@ -197,6 +197,7 @@ define([
         },
         
         loadTemplate: function(data) {
+            console.log("loading...");
             this.editor.setValue(data.rawTemplate);
             this.editor.getSelection().moveCursorFileStart();
             /*

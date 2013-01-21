@@ -32,12 +32,20 @@ define([
         templatesList: new TemplatesListView(),
 
         events: {
-            'click .tree_a': 'loadTemplate',
+            'click .tree_a': 'clickTemplate',
             'click .new_item_link': 'addResource',
-            'dblclick .current_item_link': 'renameResource'
+            'dblclick .current_item_link': 'renameResource',
+            'click .jstree_custom_item': 'handleClick' 
         },
         
         template: _.template(sidebarTemplate),
+        
+        handleClick: function(e) {
+            var treeNode = $(e.currentTarget.parentNode);
+            console.log(treeNode.data());
+            $(treeNode.data().parent_tree).jstree("toggle_node", treeNode);
+            return false;
+        },
         
         initialize: function(){
             //TODO
@@ -70,24 +78,30 @@ define([
             return this;
         },
         
-        loadTemplate: function(e) {
+        loadTemplate: function(url, templateData) {
+            var name;
+            if (!templateData) {
+                var rawUrl = url.replace("/blob", "").replace("github.com", "raw.github.com");
+                $.ajax({
+                    type: "GET",
+                    url: "/getit?url=" + rawUrl,
+                    success: function (txt) {
+                      templateData = txt;
+                      Common.vent.trigger("project:loadTemplate", {rawTemplate: templateData, name: name});
+                    },
+                   "error": function( err ) {
+                       console.log("ERROR", err);
+                   } 
+                });                
+            }
+        },
+        
+        clickTemplate: function(e) {
             var treeItem = $(e.currentTarget.parentNode).data();
             var name = $(e.currentTarget).contents()[1];
             if (treeItem.type === "file") {
                 var htmlUrl = treeItem.html_url;
-                var rawUrl = htmlUrl.replace("/blob", "").replace("github.com", "raw.github.com");
-                $.ajax({
-                   "url": rawUrl,
-                   "type": "get",
-                   "dataType": "json",
-                   "success": function (data) {
-                       var template = jQuery.parseJSON(data);
-                   },
-                   "error": function( err ) {
-                       var accountLoginView = new AccountLoginView({model: new Account(), message: "Please login with Github credentials to view templates."});
-                       accountLoginView.render();
-                   } 
-                });
+                this.loadTemplate(htmlUrl);
             } else if (treeItem.type === "blob") {
                 var templatesRepo = Common.github.getRepo("TranscendComputing", "CloudFormationTemplates");
                 templatesRepo.read("master", treeItem.path, function(err, data) {
@@ -139,11 +153,15 @@ define([
     
     var projectSidebar;
 
-    Common.router.on('route:projectEdit', function (id) {
+    Common.router.on('route:projectEdit', function (url) {
         if ( !projectSidebar ) {
             projectSidebar = new SidebarView();
         }
         projectSidebar.render();
+        if (url) {
+            console.log(url);
+            projectSidebar.loadTemplate(url);
+        }
     }, this);
     
     return SidebarView;

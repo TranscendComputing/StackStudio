@@ -26,6 +26,11 @@ requirejs.config({
 			],
 			exports: 'Backbone'
 		},
+		'backbone.queryparams': {
+		    deps: [
+		      'backbone'
+		    ]
+		},
 		'base64': {
 		    exports: 'Base64'
 		},

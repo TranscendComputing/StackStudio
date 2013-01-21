@@ -21,31 +21,48 @@
         return url + ((/\?/).test(url) ? "&" : "?") + (new Date()).getTime();
       }
 
-      var xhr = new XMLHttpRequest();
-      if (!raw) {xhr.dataType = "json";}
-
-      xhr.open(method, getURL());
-      xhr.onreadystatechange = function () {
-        if (this.readyState == 4) {
-          if (this.status >= 200 && this.status < 300 || this.status === 304) {
-            cb(null, raw ? this.responseText : this.responseText ? JSON.parse(this.responseText) : true);
-          } else {
-            cb({request: this, error: this.status});
-          }
-        }
-      };
-      xhr.setRequestHeader('Accept','application/vnd.github.raw');
-      xhr.setRequestHeader('Content-Type','application/json');
-      if (
-         (options.auth == 'oauth' && options.token) ||
-         (options.auth == 'basic' && options.username && options.password)
-         ) {
-           xhr.setRequestHeader('Authorization',options.auth == 'oauth'
-             ? 'token '+ options.token
-             : 'Basic ' + Base64.encode(options.username + ':' + options.password)
-           );
-         }
-      data ? xhr.send(JSON.stringify(data)) : xhr.send();
+      if ($.browser.msie && window.XDomainRequest) {
+            xdr = new XDomainRequest(); 
+            xdr.onload=function()
+            {
+                if (this.readyState == 4) {
+                  if (this.status >= 200 && this.status < 300 || this.status === 304) {
+                    cb(null, raw ? this.responseText : this.responseText ? JSON.parse(this.responseText) : true);
+                  } else {
+                    cb({request: this, error: this.status});
+                  }
+                }
+            }
+            xdr.open(method, getURL()); 
+            //pass your data here
+            data ? xdr.send([data]) : xdr.send(); 
+      } else {
+              var xhr = new XMLHttpRequest();
+              if (!raw) {xhr.dataType = "json";}
+        
+              xhr.open(method, getURL());
+              xhr.onreadystatechange = function () {
+                if (this.readyState == 4) {
+                  if (this.status >= 200 && this.status < 300 || this.status === 304) {
+                    cb(null, raw ? this.responseText : this.responseText ? JSON.parse(this.responseText) : true);
+                  } else {
+                    cb({request: this, error: this.status});
+                  }
+                }
+              };
+              xhr.setRequestHeader('Accept','application/vnd.github.raw');
+              xhr.setRequestHeader('Content-Type','application/json');
+              if (
+                 (options.auth == 'oauth' && options.token) ||
+                 (options.auth == 'basic' && options.username && options.password)
+                 ) {
+                   xhr.setRequestHeader('Authorization',options.auth == 'oauth'
+                     ? 'token '+ options.token
+                     : 'Basic ' + Base64.encode(options.username + ':' + options.password)
+                   );
+                 }
+              data ? xhr.send(JSON.stringify(data)) : xhr.send();
+      }
     }
 
     // User API

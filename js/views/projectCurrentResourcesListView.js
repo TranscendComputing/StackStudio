@@ -55,33 +55,36 @@ define([
                                 "title": "Resources"
                             },
                             "attr": {"id": "current_resources"},
-                            "state": "closed"   
+                            "state": "closed",
+                            "metadata": {"parent_tree": "#current_outline"}   
                         },
                         {
                             "data": {
                                 "title": "Parameters"
                             },
                             "attr": {"id": "current_parameters"},
-                            "state": "closed"
+                            "state": "closed",
+                            "metadata": {"parent_tree": "#current_outline"}
                         },
                         {
                             "data": {
                                 "title": "Mappings"
                             },
                             "attr": {"id": "current_mappings"},
-                            "state": "closed"
+                            "state": "closed",
+                            "metadata": {"parent_tree": "#current_outline"}
                         },
                         {
                             "data": {
                                 "title": "Outputs"
                             },
                             "attr": {"id": "current_outputs"},
-                            "state": "closed"
+                            "state": "closed",
+                            "metadata": {"parent_tree": "#current_outline"}
                         }
                     ],
                     "correct_state": false,
-                    "progressive_render": true,
-                    "progressive_unload": true
+                    "progressive_render": true
                 },
                 
                 "themeroller": {
@@ -113,14 +116,14 @@ define([
         walkTemplate: function(template) {
             var data = [];
             for (var prop in template) {
-                var node = { "data": prop};
+                var node = { "data": prop, "metadata": {"parent_tree": "#current_outline"}};
                 if (template.hasOwnProperty(prop)) {
                     var val = template[prop];
                     if (!node.children) {
                             node.children = [];
                     }
                     if (typeof val === 'string') {
-                        node.children.push({ "data" : val });
+                        node.children.push({ "data" : val, "metadata": {"parent_tree": "#current_outline"} });
                     } else if (typeof val === 'object') {
                         node.children.push(this.walkTemplate(val));
                     }
