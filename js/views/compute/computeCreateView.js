@@ -83,11 +83,7 @@ define([
             .data("autocomplete")._renderItem = function (ul, item){
                 var imagePath;
                 switch(item.logo)
-<<<<<<< Upstream, based on origin/dev
                 {
-=======
-                {
->>>>>>> 018595c corrections to refreshing once a compute resource is selected
                 case "aws":
                     imagePath = "/images/ImageLogos/amazon20.png";
                     break;
@@ -96,11 +92,7 @@ define([
                     break;
                 case "suse":
                     imagePath = "/images/ImageLogos/suse20.png";
-<<<<<<< Upstream, based on origin/dev
                     break;
-=======
-                    break;
->>>>>>> 018595c corrections to refreshing once a compute resource is selected
                 }
                 var img = '<td style="width:22px;" rowspan="2"><img height="20" width="20" src="'+imagePath+'"/></td>';
                 var name = '<td>'+item.label+'</td>';
@@ -120,49 +112,28 @@ define([
            
             $.each(machineSizes, function (index, value) {
                 console.log("Adding " + value + " to size_select");
-<<<<<<< Upstream, based on origin/dev
-                $('#size_select')
-                    .append($("<option></option>")
-                    .attr("value",index)
-                    .text(value)); 
-=======
                 $('#size_select')
 	                .append($("<option></option>")
 	                .attr("value",index)
 	                .text(value)); 
->>>>>>> 018595c corrections to refreshing once a compute resource is selected
             });
             $("#size_select").selectmenu();
             
             $.each(keyPairs, function (index, value) {
                 console.log("Adding " + value + " to key_pair_select");
-<<<<<<< Upstream, based on origin/dev
-                $('#key_pair_select')
-                    .append($("<option></option>")
-                    .attr("value",index)
-                    .text(value)); 
-=======
                 $('#key_pair_select')
 	                .append($("<option></option>")
 	                .attr("value",index)
 	                .text(value)); 
->>>>>>> 018595c corrections to refreshing once a compute resource is selected
             });
             $("#key_pair_select").selectmenu();
             
             $.each(securityGroups, function (index, value) {
                 console.log("Adding " + value + " to security_group_select");
-<<<<<<< Upstream, based on origin/dev
-                $('#security_group_select')
-                    .append($("<option></option>")
-                    .attr("value",index)
-                    .text(value)); 
-=======
                 $('#security_group_select')
 	                .append($("<option></option>")
 	                .attr("value",index)
 	                .text(value)); 
->>>>>>> 018595c corrections to refreshing once a compute resource is selected
             });
             $("#security_group_select").multiselect({
                     selectedList: 3,
@@ -171,74 +142,6 @@ define([
             
             $("#radio").buttonset();
         },
-<<<<<<< Upstream, based on origin/dev
-
-        render: function() {
-            
-        },
-        
-        openImageList: function() {
-            if($("ul.ui-autocomplete").is(":hidden")) {
-                $("#image_combo_box").autocomplete("search", "");
-            }
-        },
-        
-        elasticityChange: function () {
-            switch($("input[name=radio]:checked").val())
-            {
-            case "none":
-                console.log("none selected");
-                $("#elasticity_image").attr("src", "/images/IconPNGs/NewServer.png");
-                var noneHTML = "";
-                $("#elasticity_config").html(noneHTML);
-                break;
-            case "autoRecovery":
-                console.log("auto recover selected");
-                $("#elasticity_image").attr("src", "/images/IconPNGs/Autorestart.png");
-                var autoRecoveryHTML = "";
-                $("#elasticity_config").html(autoRecoveryHTML);
-                break;
-            case "fixedArray":
-                console.log("fixed array selected");
-                $("#elasticity_image").attr("src", "/images/IconPNGs/Autoscale.png");
-                var fixedArrayHTML = "<table><tr><td>Size:</td><td><input id='fixedArraySize'/></td></tr></table>";
-                $("#elasticity_config").html(fixedArrayHTML);
-                break;
-            case "autoScale":
-                console.log("auto scale selected");
-                $("#elasticity_image").attr("src", "/images/IconPNGs/Autoscale.png");
-                var autoScaleHTML = "<table>" +
-                        "<tr><td>Min:</td><td><input id='asMin'/></td></tr>" +
-                        "<tr><td>Max:</td><td><input id='asMax'/></td></tr>" +
-                        "<tr><td>Desired Capacity:</td><td><input id='asDesiredCapacity'/></td></tr>" +
-                        "</table>";
-                $("#elasticity_config").html(autoScaleHTML);
-                break;
-            }
-        },
-        
-        close: function() {
-            console.log("close initiated");
-            $("#accordion").remove();
-            $("#image_combo_box").remove();
-            $("#az_select").remove();
-            $("#size_select").remove();
-            $("#key_pair_select").remove();
-            $("#security_group_select").remove();
-            this.$el.dialog('close');
-        },
-        
-        cancel: function() {
-            this.$el.dialog('close');
-        },
-        
-        create: function() {
-            console.log("create_initiated");
-            //Validate and create
-            this.$el.dialog('close');
-        }
-
-=======
 
 		render: function() {
 			
@@ -304,7 +207,6 @@ define([
 			//Validate and create
 			this.$el.dialog('close');
 		}
->>>>>>> 018595c corrections to refreshing once a compute resource is selected
     });
 
     console.log("compute create view defined");
