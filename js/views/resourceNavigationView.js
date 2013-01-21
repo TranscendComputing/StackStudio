@@ -185,7 +185,7 @@ define([
                 });
                 $("#region_select").selectmenu();
 		    }
-		    
+		    console.log("CLOUDSELECT: cloudProvider: "+cloudProvider+"; type: "+typePath+"; id: "+idPath+";");
 		    this.loadResourceApp(cloudProvider, typePath, idPath);
 		},
 		
@@ -208,6 +208,7 @@ define([
 		},
 		
 		loadResourceApp: function(cloudProvider, type, id) {
+		    console.log("LOADRESOURCEAPP: cloudProvider: "+cloudProvider+"; type: "+type+"; id: "+id+";");
 		    var resourceNav = this;
             if(cloudProvider) {
                 if(!type) {

@@ -66,16 +66,6 @@ define([
 			computeCreate.render();
 		},
 		
-		clickOne: function (event) {
-			var instanceId, parentNode;
-			console.log("event:", event);
-			parentNode = event.target.parentNode;
-			// Find the second column of the clicked row; that's compute ID
-			instanceId = $(parentNode).find(':nth-child(2)').html();
-			Common.router.navigate("#resources/compute/"+instanceId, {trigger: false});
-			this.selectOne(instanceId, parentNode);
-		},
-
 		selectOne : function (instanceId, parentNode) {
             var selectedModel;
             this.clearSelection();
