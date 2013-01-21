@@ -1,0 +1,48 @@
+application: stackplace
+version: 1-2-1
+runtime: python27
+api_version: 1
+threadsafe: yes
+
+handlers:
+- url: /favicon\.ico
+  static_files: favicon.ico
+  upload: favicon\.ico
+
+- url: /js
+  static_dir: js
+  expiration: 1m
+
+- url: /css
+  static_dir: css
+  expiration: 1m
+
+- url: /images
+  static_dir: images
+  expiration: 1m
+  
+- url: /templates
+  static_dir: templates
+  expiration: 1m
+
+
+#- url: /remote_api
+#  script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
+
+#- url: /shell
+#  script: shell.py
+
+- url: /
+  static_files: stackplace.html
+  upload: stackplace\.html
+
+- url: /cloud_resources\.json
+  static_files: cloud_resources.json
+  upload: cloud_resources\.json
+
+builtins:
+- remote_api: on
+
+libraries:
+- name: webapp2
+  version: "2.5.1"
