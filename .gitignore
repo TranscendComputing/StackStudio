@@ -21,3 +21,4 @@ dist/
 resources/*.properties
 node_modules
 /app.yaml
+*.pyc

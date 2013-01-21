@@ -1,5 +1,5 @@
 application: stackplace
-version: 1-2-1
+version: 1-2-1-jgardner
 runtime: python27
 api_version: 1
 threadsafe: yes
@@ -20,11 +20,10 @@ handlers:
 - url: /images
   static_dir: images
   expiration: 1m
-  
+
 - url: /templates
   static_dir: templates
   expiration: 1m
-
 
 #- url: /remote_api
 #  script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
@@ -35,6 +34,13 @@ handlers:
 - url: /
   static_files: stackplace.html
   upload: stackplace\.html
+
+- url: /github.html
+  static_files: github.html
+  upload: github\.html
+
+- url: /getit.*
+  script: getit.app
 
 - url: /cloud_resources\.json
   static_files: cloud_resources.json
