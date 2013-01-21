@@ -18,8 +18,9 @@ define([
         'ace',
         'icanhaz',
         'common',
+        'JSV',
         'jquery-ui'
-], function( $, _, Backbone, projectEditTemplate, projects, Project, templateResources, AutocompleteItemView, ace, ich, Common ) {
+], function( $, _, Backbone, projectEditTemplate, projects, Project, templateResources, AutocompleteItemView, ace, ich, Common, JSV ) {
     
     'use strict';
     
@@ -59,6 +60,11 @@ define([
 
         // Add project elements to the page
         render: function() {
+            $('button.info').button({
+                icons: {
+                    primary: 'ui-icon-info'
+                }
+            }).tooltip();
             $('#tabs').tabs();
             // Initialize editor
             ace.EditSession.prototype.$startWorker = function(){}; //This is a workaround for a worker bug

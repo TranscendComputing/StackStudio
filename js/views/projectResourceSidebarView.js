@@ -45,7 +45,6 @@ define([
         
         render: function() {
             this.$el.html(this.template);
-            this.$el.addClass("fourcol");
             //Set horizontal splitter
             this.$(".accordion").accordion({
                 "heightStyle": "content",

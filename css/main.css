@@ -138,7 +138,7 @@ table.resource_table tr td {
   float: left;
   width: 25%;
   height: 90px;
-  padding-bottom: 8px;
+  padding-bottom: 10px;
 }
 #cloud_coverflow img,
 #container .item {
@@ -167,12 +167,32 @@ table.resource_table tr td {
   float: right;
   text-align: left;
   width: 74%;
-  padding-bottom: 8px;
+  padding-top: 4px;
+  padding-bottom: 10px;
 }
-/* ==========================================================================
-   Instance App CSS
-   ========================================================================== */
+#cloud_specs > select {
+  width: 125px;
+}
+#cloud_specs > select + span {
+  margin-right: 20px;
+}
 /* --- cloud console --- */
+.sidebar_action_button {
+  width: 16px;
+}
+.jstree_custom_item a {
+  white-space: normal !important;
+  height: auto;
+}
+.jstree_custom_item li > ins {
+  vertical-align: top;
+}
+.jstree_custom_item li > ins {
+  vertical-align: top;
+}
+div.ui-widget-content {
+  border: 0;
+}
 /*
 @import "jquery.wijmo.wijlist.less";
 
@@ -1826,6 +1846,14 @@ div.wijmo-wijprogressbar-north {
   height: 90%;
   width: 90%;
 }
+.root_folder {
+  font-weight: bold;
+  font-size: 1em;
+}
+.info {
+  height: 30px;
+  width: 30px;
+}
 .dialog_panel {
   font-family: Arial, Sans-serif, sans;
   text-align: left;
@@ -2043,8 +2071,6 @@ footer {
   background: url('../css/../images/noise.png'), -webkit-linear-gradient(#e0e0e0, #cccccc, #b0b0b0);
   border-top: 1px solid #F2F2F2;
   position: relative;
-  padding-top: 1em;
-  padding-bottom: 1em;
   margin-bottom: 3em;
   display: block;
   border-bottom-right-radius: 0.4em;

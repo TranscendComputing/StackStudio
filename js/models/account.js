@@ -4,7 +4,7 @@
  * Available under ASL2 license <http://www.apache.org/licenses/LICENSE-2.0.html>
  */
 /*jshint smarttabs:true */
-/*global define:true console:true */
+/*global define:true console:true alert:true*/
 define([
         'jquery',
         'backbone',
@@ -55,7 +55,14 @@ define([
                 password: this.get('password'),
                 auth: this.get('auth')
             });
-            Common.vent.trigger("account:login");
+            var templatesRepo = Common.github.getRepo("TranscendComputing", "CloudFormationTemplates");
+            templatesRepo.getTree('master?recursive=true', function(err, tree) {
+                    if (err === null || err === undefined) {
+                        Common.vent.trigger("account:login");
+                    } else {
+                        alert("Bad credentials, please re-enter and try again.");
+                    }
+            });
         }
     });
 

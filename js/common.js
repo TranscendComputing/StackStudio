@@ -81,6 +81,11 @@ requirejs.config({
             name: 'ace',
             main: 'ace',
             location: 'ace'
+        },
+        'JSV', {
+            name: 'JSV',
+            main: 'jsv',
+            location: 'JSV/lib'
         }
 	],
 	paths: {

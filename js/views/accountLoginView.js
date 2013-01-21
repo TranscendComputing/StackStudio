@@ -38,20 +38,17 @@ define([
         },
 
         initialize: function() {
-            //TODO
+            Common.vent.on("account:login", this.close, this);
         },
         
         usernameChanged: function(e) {
             var u = this.username;
             this.model.set({username: u.val()});
-            console.log(this.model);
-            console.log(u.val());
         },
         
         passwordChanged: function(e) {
             var p = this.password;
             this.model.set({password: p.val()});
-            console.log(this.model);
         },
 
         render: function() {
@@ -100,7 +97,6 @@ define([
         
         login: function() {
             this.model.login();
-            this.close();
         }
 
     });
