@@ -65,7 +65,7 @@ define([
 			var computeCreate = new ComputeCreate();
 			computeCreate.render();
 		},
-		
+
 		selectOne : function (instanceId, parentNode) {
             var selectedModel;
             this.clearSelection();

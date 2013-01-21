@@ -4,7 +4,7 @@
  * Available under ASL2 license <http://www.apache.org/licenses/LICENSE-2.0.html>
  */
 /*jshint smarttabs:true */
-/*global define:true console:true */
+/*global define:true console:true requirejs:true require:true*/
 define([
         'jquery',
         'underscore',
@@ -52,7 +52,7 @@ define([
                 url: "cloudDefinitions.json",
                 async: false
             }).responseText;
-            cloudDefinitions = $.parseJSON(response);
+            this.cloudDefinitions = $.parseJSON(response);
             
             cloudCredentials.on('add', this.addCloud, this );
             cloudCredentials.on('reset', this.addAllClouds, this );
@@ -68,6 +68,7 @@ define([
 		
 		addCloud: function( cloudCredential ) {
 		    var cloudProvider = cloudCredential.get("cloudProvider");
+		    var resourceNav = this;
 			if(cloudProvider) {
 			    var found = false;
 				$.each($("#cloud_coverflow").children(), function (index, coverFlowCloud) {
@@ -80,7 +81,7 @@ define([
 				        .attr({
                             "id": cloudProvider,
                             "class" : "cover_flow_cloud",
-                            "src": cloudDefinitions[cloudProvider].logo
+                            "src": resourceNav.cloudDefinitions[cloudProvider].logo
                     }));
 			    }
 			}
@@ -106,12 +107,12 @@ define([
 		
 		addAllClouds: function() {
 		    cloudCredentials.each(this.addCloud, this);
-		    if(cloudPath) {
-		        console.log("cloud path: "+cloudPath);
-		        Common.router.navigate("#resources/"+cloudPath, {trigger: false});
-		        if($("#"+cloudPath).length) {
-		            this.cloudSelection(cloudPath);
-		            Common.router.navigate("#resources/"+cloudPath, {trigger: false});
+		    if(this.cloudPath) {
+		        console.log("cloud path: "+this.cloudPath);
+		        Common.router.navigate("#resources/"+this.cloudPath, {trigger: false});
+		        if($("#"+this.cloudPath).length) {
+		            this.cloudSelection(this.cloudPath);
+		            Common.router.navigate("#resources/"+this.cloudPath, {trigger: false});
 		        }else {
 		            Common.router.navigate("#resources/"+cloudCredentials.first().attributes.cloudProvider, {trigger: false});
 		            this.cloudSelection(cloudCredentials.first().attributes.cloudProvider);
@@ -145,9 +146,10 @@ define([
 		},
 		
 		cloudSelection: function (cloudProvider) {
+		    var resourceNav = this;
 		    //Add the services of the cloud to the resource table
 		    var row = 1;
-		    $.each(cloudDefinitions[cloudProvider].services, function(index, service) {
+		    $.each(resourceNav.cloudDefinitions[cloudProvider].services, function(index, service) {
 		        $("#row"+row).append($("<td></td>").attr({
                     "id": service.type,
                     "class": "resources"
@@ -178,20 +180,20 @@ define([
 		    //Remove previous region
             $("#regions").remove();
             //Add regions if cloud has regions
-		    if(cloudDefinitions[cloudProvider].regions.length) {
+		    if(resourceNav.cloudDefinitions[cloudProvider].regions.length) {
                 $("#cloud_specs").append('<span id="regions">Region: <select id="region_select" class="cloud_spec_select"></select></span>');
-                $.each(cloudDefinitions[cloudProvider].regions, function(index, region) {
+                $.each(resourceNav.cloudDefinitions[cloudProvider].regions, function(index, region) {
                     $('#region_select').append($("<option></option>").attr("value", region.zone).text(region.name));
                 });
                 $("#region_select").selectmenu();
 		    }
-		    console.log("CLOUDSELECT: cloudProvider: "+cloudProvider+"; type: "+typePath+"; id: "+idPath+";");
-		    this.loadResourceApp(cloudProvider, typePath, idPath);
+		    
+		    this.loadResourceApp(cloudProvider, resourceNav.typePath, resourceNav.idPath);
 		},
 		
 		resourceClick: function(id) {
 			var selectionId = id.target.id;
-			typePath = selectionId;
+			this.typePath = selectionId;
 			this.resourceSelect(selectionId);
 		},
 		
@@ -208,7 +210,6 @@ define([
 		},
 		
 		loadResourceApp: function(cloudProvider, type, id) {
-		    console.log("LOADRESOURCEAPP: cloudProvider: "+cloudProvider+"; type: "+type+"; id: "+id+";");
 		    var resourceNav = this;
             if(cloudProvider) {
                 if(!type) {
@@ -219,9 +220,9 @@ define([
                         "resourceAppView": "../"+cloudProvider+"/views/"+type+"/"+cloudProvider+"ComputeAppView"
                     }
                 });
-                require(["resourceAppView"], function (appView) {
+                require(["resourceAppView"], function (AppView) {
                     console.log(cloudProvider+" "+type+" app loading...");
-                    var resourceAppView = new appView();
+                    var resourceAppView = new AppView();
                     resourceNav.resourceSelect(type);
                     if(id) {
                         Common.router.navigate("#resources/"+cloudProvider+"/"+type+"/"+id, {trigger: false});
@@ -240,9 +241,9 @@ define([
         if (!resourcesView) {
             resourcesView = new ResourcesView();
         }
-        this.cloudPath = cloud;
-        this.typePath = type;
-        this.idPath = id;
+        resourcesView.cloudPath = cloud;
+        resourcesView.typePath = type;
+        resourcesView.idPath = id;
         resourcesView.render();
         console.log("resources view: resources route");
     }, this);
