@@ -24,18 +24,11 @@ define([
         tree: undefined,
         
         events: {
-            'click .jstree_custom_item': 'handleClick' 
+            //TODO
         },
         
         initialize: function(){
             Common.vent.on("account:login", this.reRenderTree);
-            
-            //var userAcct = new Account({username: 'sstudiouser', password: 'transcendcomputing'});
-            //userAcct.login();
-        },
-        
-        handleNodeData: function(a,b,c) {
-            return {};  
         },
         
         render: function() {
@@ -120,11 +113,6 @@ define([
         },
         
         loadTemplate: function(e) {
-            return false;
-        },
-        
-        handleClick: function() {
-            console.log('clicked');
             return false;
         },
         

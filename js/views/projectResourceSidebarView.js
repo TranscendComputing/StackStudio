@@ -101,6 +101,7 @@ define([
             var name = $(e.currentTarget).contents()[1];
             if (treeItem.type === "file") {
                 var htmlUrl = treeItem.html_url;
+                Common.router.navigate('open?url=' + htmlUrl); 
                 this.loadTemplate(htmlUrl);
             } else if (treeItem.type === "blob") {
                 var templatesRepo = Common.github.getRepo("TranscendComputing", "CloudFormationTemplates");
