@@ -23,3 +23,6 @@ node_modules
 /app.yaml
 *.pyc
 css/*.css
+.gitattributes
+.settings/
+_SpecRunner.html
