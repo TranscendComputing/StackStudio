@@ -30,7 +30,7 @@ define([
             });
         }
     });
-
+    
     // Create our global collection of **Instances**.
     return new InstanceList();
 

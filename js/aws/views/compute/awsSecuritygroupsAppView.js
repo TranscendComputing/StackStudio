@@ -10,7 +10,7 @@ define([
         'underscore',
         'backbone',
         'views/resourceAppView',
-        'text!templates/aws/compute/awsInstanceAppTemplate.html',
+        'text!templates/aws/compute/awsSecurityGroupAppTemplate.html',
         '/js/aws/models/compute/awsInstance.js',
         '/js/aws/collections/compute/awsInstances.js',
         '/js/aws/views/compute/awsInstanceRowView.js',

@@ -9,15 +9,10 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'text!templates/compute/instanceAppTemplate.html',
-        'models/compute/instance',
-        'collections/compute/instances',
-        'views/compute/instanceRowView',
-        'views/compute/instanceCreateView',
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, instanceAppTemplate, instance, instances, InstanceRowView, InstanceCreate, ich, Common ) {
+], function( $, _, Backbone, ich, Common ) {
     'use strict';
 
     // Instances Application View
@@ -32,57 +27,64 @@ define([
      * @param {Object} initialization object.
      * @returns {Object} Returns a ComputeAppView instance.
      */
-    var InstancesAppView = Backbone.View.extend({
-        /** The ID of the selected compute */
+    var ResourceAppView = Backbone.View.extend({
         selectedId: undefined,
-        instance: instance,
-        instances: instances,
+        modelStringIdentifier: undefined,
+        idRowNumber: 0,
+        model: undefined,
+        collection: undefined,
+        type: undefined,
+        subtype: undefined,
+        createView: undefined,
+        rowView: undefined,
         el: '#resource_app',
 
         render: function() {
-            //If instance id is supplied, select it
             if(this.selectedId) {
                 this.selectOne(this.selectedId, $("tr:contains("+this.selectedId+")"));
             }
         },
-
-        // Add a single instance item to the list by creating a view for it.
-        addOne: function( instance ) {
-            if (instance.get('computeId') === "") {
-                // Refuse to add computes until they're initialized.
+        
+        addOne: function( model ) {
+            if (model.get(this.modelStringIdentifier) === "") {
                 return;
             }
-            var view = new InstanceRowView({ model: instance });
+            var rowView = this.rowView;
+            var view = new rowView({ model: model });
             view.render();
         },
 
-        // Add all items in the **Instances** collection at once.
         addAll: function() {
-            this.instances.each(this.addOne, this);
+            this.collection.each(this.addOne, this);
+        },
+        
+        clickOne: function (event) {
+            var id, parentNode;
+            console.log("event:", event);
+            parentNode = event.target.parentNode;
+            id = $(parentNode).find(':nth-child('+this.idRowNumber+')').html();
+            Common.router.navigate("#resources/aws/"+this.type+"/"+this.subtype+"/"+id, {trigger: false});
+            this.selectOne(id, parentNode);
         },
 
-        createNew : function () {
-            var instanceCreate = new InstanceCreate();
-            instanceCreate.render();
-        },
-
-        selectOne : function (instanceId, parentNode) {
+        selectOne : function (id, parentNode) {
             var selectedModel;
+            var modelStringIdentifier = this.modelStringIdentifier;
             this.clearSelection();
-            console.log("Selecting ID:", instanceId);
+            console.log("Selecting ID:", id);
             if(parentNode) {
                 $(parentNode).addClass('row_selected');
             }
             
-            this.instances.each(function(e) {
-                if (e.get('instanceId') === instanceId) {
+            this.collection.each(function(e) {
+                if (e.get(modelStringIdentifier) === id) {
                     selectedModel = e;
                 }
             });
             
             if(selectedModel) {
-                this.selectedId = instanceId;
-                $("#details").html(ich.instance_detail(selectedModel.attributes));
+                this.selectedId = id;
+                $("#details").html(ich.resource_detail(selectedModel.attributes));
                 $("#detail_tabs").tabs();
             }else {
                 
@@ -92,10 +94,16 @@ define([
         clearSelection: function () {
             this.$table.$('tr').removeClass('row_selected');
             $('#details').html("");
+        },
+        
+        createNew : function () {
+            var createView = this.createView;
+            var createNew = new createView();
+            createNew.render();
         }
     });
 
-    console.log("instance app view defined");
+    console.log("resource app view defined");
     
-    return InstancesAppView;
+    return ResourceAppView;
 });
