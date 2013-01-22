@@ -13,7 +13,7 @@ var URL_ARGS = 'cb=' + Math.random();
 require(['./common'], function (common) {
 	require({
 		paths: {
-			'jasmine-html': 'jasmine-1.3.1/jasmine-html',
+		    'jasmine-html': 'jasmine-1.3.1/jasmine-html',
 			'jasmine': 'jasmine-1.3.1/jasmine'
 		},
 		shim: {
@@ -42,6 +42,7 @@ require(['./common'], function (common) {
 		var specs = [];
 
 		specs.push('../../spec/console');
+		specs.push('../../spec/views/compute/ComputeCreateSpec');
 
 		$(function(){
 			require(specs, function(){
