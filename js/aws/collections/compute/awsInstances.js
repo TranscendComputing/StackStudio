@@ -8,30 +8,30 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/compute/awsCompute.js',
+        '/js/aws/models/compute/awsInstance.js',
         'common'
-], function( $, Backbone, Compute, Common ) {
+], function( $, Backbone, Instance, Common ) {
     'use strict';
 
-    // Compute Collection
+    // Instance Collection
     // ---------------
 
-    var ComputeList = Backbone.Collection.extend({
+    var InstanceList = Backbone.Collection.extend({
 
         // Reference to this collection's model.
-        model: Compute,
+        model: Instance,
 
         url: 'data2.json',
 
         // Filter down the list of all instance items that are running.
         running: function() {
-            return this.filter(function( compute ) {
-                return compute.get('running');
+            return this.filter(function( instance ) {
+                return instance.get('running');
             });
         }
     });
 
-    // Create our global collection of **Computes**.
-    return new ComputeList();
+    // Create our global collection of **Instances**.
+    return new InstanceList();
 
 });

@@ -9,15 +9,15 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'text!templates/compute/computeCreateTemplate.html',
-        'models/compute/compute',
+        'text!templates/aws/compute/awsInstanceCreateTemplate.html',
+        '/js/aws/models/compute/awsInstance.js',
         'icanhaz',
         'common',
         'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
-], function( $, _, Backbone, computeCreateTemplate, compute, ich, Common ) {
+], function( $, _, Backbone, instanceCreateTemplate, instance, ich, Common ) {
     
     var imageList = [{"logo":"aws", "label":"Amazon Linux AMI 2012.09", "id":"ami-123456", "description":"EBS-backed PV-GRUB image. Includes: MySQL, PostgreSQL, Python, Ruby, and Tomcat."},
                      {"logo":"redhat", "label":"Red Hat Enterprise Linux 6.3", "id":"ami-234567", "description":"Red Hat Enterprise Linux version 6.3, EBS-boot."},
@@ -32,16 +32,16 @@ define([
     var securityGroups = ["default", "dev", "elasticbeanstalk-default", "ChefServer-ChefClientSecurityGroup-N1W9603CQT1Q"];
     
     /**
-     * ComputeCreateView is UI form to create compute.
+     * InstanceCreateView is UI form to create compute.
      *
-     * @name ComputeCreateView
+     * @name InstanceCreateView
      * @constructor
      * @category Compute
      * @param {Object} initialization object.
      * @returns {Object} Returns a ComputeCreateView instance.
      */
     
-    var ComputeCreateView = Backbone.View.extend({
+    var InstanceCreateView = Backbone.View.extend({
         
         tagName: "div",
         
@@ -54,12 +54,12 @@ define([
 
         initialize: function() {
             var createView = this;
-            var compiledTemplate = _.template(computeCreateTemplate);
+            var compiledTemplate = _.template(instanceCreateTemplate);
             this.$el.html(compiledTemplate);
 
             this.$el.dialog({
                 autoOpen: true,
-                title: "Create Compute",
+                title: "Create Instance",
                 width:500,
                 minHeight: 150,
                 resizable: false,
@@ -113,27 +113,27 @@ define([
             $.each(machineSizes, function (index, value) {
                 console.log("Adding " + value + " to size_select");
                 $('#size_select')
-	                .append($("<option></option>")
-	                .attr("value",index)
-	                .text(value)); 
+                    .append($("<option></option>")
+                    .attr("value",index)
+                    .text(value)); 
             });
             $("#size_select").selectmenu();
             
             $.each(keyPairs, function (index, value) {
                 console.log("Adding " + value + " to key_pair_select");
                 $('#key_pair_select')
-	                .append($("<option></option>")
-	                .attr("value",index)
-	                .text(value)); 
+                    .append($("<option></option>")
+                    .attr("value",index)
+                    .text(value)); 
             });
             $("#key_pair_select").selectmenu();
             
             $.each(securityGroups, function (index, value) {
                 console.log("Adding " + value + " to security_group_select");
                 $('#security_group_select')
-	                .append($("<option></option>")
-	                .attr("value",index)
-	                .text(value)); 
+                    .append($("<option></option>")
+                    .attr("value",index)
+                    .text(value)); 
             });
             $("#security_group_select").multiselect({
                     selectedList: 3,
@@ -143,73 +143,74 @@ define([
             $("#radio").buttonset();
         },
 
-		render: function() {
-			
-		},
-		
-		openImageList: function() {
-		    if($("ul.ui-autocomplete").is(":hidden")) {
-		        $("#image_combo_box").autocomplete("search", "");
-		    }
-		},
-		
-		elasticityChange: function () {
-			switch($("input[name=radio]:checked").val())
-			{
-			case "none":
-				console.log("none selected");
-				$("#elasticity_image").attr("src", "/images/IconPNGs/NewServer.png");
-				var noneHTML = "";
-				$("#elasticity_config").html(noneHTML);
-				break;
-			case "autoRecovery":
-				console.log("auto recover selected");
-				$("#elasticity_image").attr("src", "/images/IconPNGs/Autorestart.png");
-				var autoRecoveryHTML = "";
-				$("#elasticity_config").html(autoRecoveryHTML);
-				break;
-			case "fixedArray":
-				console.log("fixed array selected");
-				$("#elasticity_image").attr("src", "/images/IconPNGs/Autoscale.png");
-				var fixedArrayHTML = "<table><tr><td>Size:</td><td><input id='fixedArraySize'/></td></tr></table>";
-				$("#elasticity_config").html(fixedArrayHTML);
-				break;
-			case "autoScale":
-				console.log("auto scale selected");
-				$("#elasticity_image").attr("src", "/images/IconPNGs/Autoscale.png");
-				var autoScaleHTML = "<table>" +
-						"<tr><td>Min:</td><td><input id='asMin'/></td></tr>" +
-						"<tr><td>Max:</td><td><input id='asMax'/></td></tr>" +
-						"<tr><td>Desired Capacity:</td><td><input id='asDesiredCapacity'/></td></tr>" +
-						"</table>";
-				$("#elasticity_config").html(autoScaleHTML);
-				break;
-			}
-		},
-		
-		close: function() {
-			console.log("close initiated");
-			$("#accordion").remove();
-			$("#image_combo_box").remove();
-			$("#az_select").remove();
-			$("#size_select").remove();
-			$("#key_pair_select").remove();
-			$("#security_group_select").remove();
-			this.$el.dialog('close');
-		},
-		
-		cancel: function() {
-			this.$el.dialog('close');
-		},
-		
-		create: function() {
-			console.log("create_initiated");
-			//Validate and create
-			this.$el.dialog('close');
-		}
+        render: function() {
+            
+        },
+        
+        openImageList: function() {
+            if($("ul.ui-autocomplete").is(":hidden")) {
+                $("#image_combo_box").autocomplete("search", "");
+            }
+        },
+        
+        elasticityChange: function () {
+            switch($("input[name=radio]:checked").val())
+            {
+            case "none":
+                console.log("none selected");
+                $("#elasticity_image").attr("src", "/images/IconPNGs/NewServer.png");
+                noneHTML = "";
+                $("#elasticity_config").html(noneHTML);
+                break;
+            case "autoRecovery":
+                console.log("auto recover selected");
+                $("#elasticity_image").attr("src", "/images/IconPNGs/Autorestart.png");
+                autoRecoveryHTML = "";
+                $("#elasticity_config").html(autoRecoveryHTML);
+                break;
+            case "fixedArray":
+                console.log("fixed array selected");
+                $("#elasticity_image").attr("src", "/images/IconPNGs/Autoscale.png");
+                fixedArrayHTML = "<table><tr><td>Size:</td><td><input id='fixedArraySize'/></td></tr></table>";
+                $("#elasticity_config").html(fixedArrayHTML);
+                break;
+            case "autoScale":
+                console.log("auto scale selected");
+                $("#elasticity_image").attr("src", "/images/IconPNGs/Autoscale.png");
+                autoScaleHTML = "<table>" +
+                        "<tr><td>Min:</td><td><input id='asMin'/></td></tr>" +
+                        "<tr><td>Max:</td><td><input id='asMax'/></td></tr>" +
+                        "<tr><td>Desired Capacity:</td><td><input id='asDesiredCapacity'/></td></tr>" +
+                        "</table>";
+                $("#elasticity_config").html(autoScaleHTML);
+                break;
+            };
+        },
+        
+        close: function() {
+            console.log("close initiated");
+            $("#accordion").remove();
+            $("#image_combo_box").remove();
+            $("#az_select").remove();
+            $("#size_select").remove();
+            $("#key_pair_select").remove();
+            $("#security_group_select").remove();
+            this.$el.dialog('close');
+        },
+        
+        cancel: function() {
+            this.$el.dialog('close');
+        },
+        
+        create: function() {
+            console.log("create_initiated");
+            //Validate and create
+            this.$el.dialog('close');
+        }
+
     });
 
-    console.log("compute create view defined");
+    console.log("aws instance create view defined");
     
-    return ComputeCreateView;
+    return InstanceCreateView;
 });

@@ -35,6 +35,7 @@ define([
 		el: '#main',
 		cloudPath: undefined,
 		typePath: undefined,
+		subtypePath:undefined,
 		idPath: undefined,
         cloudDefinitions: undefined,
         navOpen: false,
@@ -205,7 +206,7 @@ define([
 		        $("region_nav").hide();
 		    }
 		    
-		    this.loadResourceApp(cloudProvider, resourceNav.typePath, resourceNav.idPath);
+		    this.loadResourceApp(cloudProvider, resourceNav.typePath, resourceNav.subtypePath, resourceNav.idPath);
 		},
 		
 		resourceClick: function(id) {
@@ -227,15 +228,21 @@ define([
 			console.log(selectionId + " selected");
 		},
 		
-		loadResourceApp: function(cloudProvider, type, id) {
+		loadResourceApp: function(cloudProvider, type, subtype, id) {
 		    var resourceNav = this;
             if(cloudProvider) {
                 if(!type) {
                     type = "compute";
                 }
+                if(!subtype) {
+                    subtype = "instances";
+                }
+                
+                //Capitalize first letter of subtype for the file name
+                var capSubtype = subtype.charAt(0).toUpperCase() + subtype.slice(1); 
                 requirejs.config({
                     paths: {
-                        "resourceAppView": "../"+cloudProvider+"/views/"+type+"/"+cloudProvider+"ComputeAppView"
+                        "resourceAppView": "../"+cloudProvider+"/views/"+type+"/"+cloudProvider+capSubtype+"AppView"
                     }
                 });
                 require(["resourceAppView"], function (AppView) {
@@ -243,10 +250,10 @@ define([
                     var resourceAppView = new AppView();
                     resourceNav.resourceSelect(type);
                     if(id) {
-                        Common.router.navigate("#resources/"+cloudProvider+"/"+type+"/"+id, {trigger: false});
+                        Common.router.navigate("#resources/"+cloudProvider+"/"+type+"/"+subtype+"/"+id, {trigger: false});
                         resourceAppView.selectedId = id;
                     }else {
-                        Common.router.navigate("#resources/"+cloudProvider+"/"+type, {trigger: false});
+                        Common.router.navigate("#resources/"+cloudProvider+"/"+type+"/"+subtype, {trigger: false});
                     } 
                 });
             }
@@ -255,12 +262,13 @@ define([
 	
 	var resourcesView;
 	
-    Common.router.on('route:resources', function (cloud, type, id) {
+    Common.router.on('route:resources', function (cloud, type, subtype, id) {
         if (!resourcesView) {
             resourcesView = new ResourcesView();
         }
         resourcesView.cloudPath = cloud;
         resourcesView.typePath = type;
+        resourcesView.subtypePath = subtype;
         resourcesView.idPath = id;
         resourcesView.render();
         console.log("resources view: resources route");

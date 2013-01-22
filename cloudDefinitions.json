@@ -5,59 +5,74 @@
         "services": [
             {
                 "name": "Alarm",
-                "type": "alarm"
+                "type": "alarm",
+                "defaultSubtype": "alarm"
             },
             {
                 "name": "Auto Scale",
-                "type": "autoscale"
+                "type": "autoscale",
+                "defaultSubtype": "autoscalegroups"
             },
             {
                 "name": "Elasticache",
-                "type": "cache"
+                "type": "cache",
+                "defaultSubtype": "clusters"
             },
             {
                 "name": "Elastic Beanstalk",
-                "type": "application"
+                "type": "application",
+                "defaultSubtype": "applications"
             },
             {
                 "name": "Elastic Block Storage",
-                "type": "block-storage"
+                "type": "block-storage",
+                "defaultSubtype": "volumes"
             },
             {
                 "name": "Elastic Compute Cloud",
-                "type": "compute"
+                "type": "compute",
+                "defaultSubtype": "instances"
+                
             },
             {
                 "name": "Elastic Load Balancer",
-                "type": "load-balancer"
+                "type": "load-balancer",
+                "defaultSubtype": "load-balancers"
             },
             {
                 "name": "IAM",
-                "type": "identity"
+                "type": "identity",
+                "defaultSubtype": "users"
             },
             {
                 "name": "Relational Database",
-                "type": "rds"
+                "type": "rds",
+                "defaultSubtype": "databases"
             },
             {
                 "name": "Route 53",
-                "type": "dns"
+                "type": "dns",
+                "defaultSubtype": "hostedzones"
             },
             {
                 "name": "Simple DB",
-                "type": "non-rds"
+                "type": "non-rds",
+                "defaultSubtype": "databases"
             },
             {
                 "name": "Simple Notification",
-                "type": "notification"
+                "type": "notification",
+                "defaultSubtype": "notifications"
             },
             {
                 "name": "Simple Queue",
-                "type": "queue"
+                "type": "queue",
+                "defaultSubtype": "queues"
             },
             {
                 "name": "Simple Storage",
-                "type": "object-storage"
+                "type": "object-storage",
+                "defaultSubtype": "buckets"
             }
         ],
         "regions": [

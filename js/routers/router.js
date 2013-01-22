@@ -22,16 +22,17 @@ define([
      * @param {Object} initialization object.
      * @returns {Object} Returns a Router instance.
      */
-    Backbone.Router.namedParameters = true;
+    //Backbone.Router.namedParameters = true;
     
 	var Router = Backbone.Router.extend({
-	    namedParameters: true,
+	    //namedParameters: true,
 	    
 		routes:{
 			'resources': 'resourcesRoute',
 			'resources/:cloud': 'resourcesRoute',
 			'resources/:cloud/:type': 'resourcesRoute',
-			'resources/:cloud/:type/:id': 'resourcesRoute',
+			'resources/:cloud/:type/:subtype/' : 'resourcesRoute',
+			'resources/:cloud/:type/:subtype/:id': 'resourcesRoute',
 			//'resources/:type': 'resourcesRoute',
 			//'resources/:type/:id': 'resourcesRoute',
 			'projects': 'projects',
@@ -72,33 +73,12 @@ define([
 		    }
 		},
 		
-		resourcesRoute: function(cloud, type, id, action) {
+		resourcesRoute: function(cloud, type, subtype, id, action) {
 		    $("#sidebar").empty();
 		    $("#sidebar").hide();
 		    $("#main").empty();
 		    
-		    this.trigger("route:resources", cloud, type, id);
-		    /*
-		    if(cloud) {
-		        if(type) {
-		            switch(type)
-		            {
-		                case "compute":
-		                    if(id) {
-		                        this.trigger("route:computeDetail", cloud, type, id);
-		                    }else {
-		                        this.trigger("route:compute", cloud, type);
-		                    }
-		                    break;
-		            }
-		                
-		        }else {
-		            this.trigger("route:resources", cloud);
-		        }
-		    }else {
-		        this.trigger("route:resources");
-		    }	
-		    */    
+		    this.trigger("route:resources", cloud, type, subtype, id);
 		}
 	});
 	
