@@ -1,13 +1,16 @@
 application: stackplace
-version: 1-2-1-jgardner
+version: replaceme
 runtime: python27
 api_version: 1
 threadsafe: yes
 
 handlers:
 - url: /favicon\.ico
-  static_files: favicon.ico
-  upload: favicon\.ico
+  static_files: images/favicon/favicon.ico
+  upload: images/favicon/favicon\.ico
+- url: /apple-touch-(.*\.png)
+  static_files: images/favicon/apple-touch-\1
+  upload: images/favicon/(.*\.png)
 
 - url: /js
   static_dir: js
@@ -42,9 +45,9 @@ handlers:
 - url: /getit.*
   script: getit.app
 
-- url: /cloud_resources\.json
-  static_files: cloud_resources.json
-  upload: cloud_resources\.json
+- url: /samples
+  static_dir: samples
+  expiration: 1m
 
 builtins:
 - remote_api: on
