@@ -37,23 +37,22 @@ define([
 		typePath: undefined,
 		idPath: undefined,
         cloudDefinitions: undefined,
-        
+        navOpen: false,
         events: {
 			"click .resourceLink" : "resourceClick",
-			"click #cloud_coverflow img" : "cloudChange"
+			"click #cloud_coverflow img" : "cloudChange",
+			"click #resource_summary" : "toggleResourceNav"
 		},
         
 		initialize: function() {
 			this.$el.addClass("twelvecol");
             var compiledTemplate = _.template(resourcesTemplate);
             this.$el.html(compiledTemplate);
-            
             var response = $.ajax({
                 url: "cloudDefinitions.json",
                 async: false
             }).responseText;
             this.cloudDefinitions = $.parseJSON(response);
-            
             cloudCredentials.on('add', this.addCloud, this );
             cloudCredentials.on('reset', this.addAllClouds, this );
             cloudCredentials.on('all', this.render, this );
@@ -63,7 +62,17 @@ define([
 		},
 		
 		render: function () {
-		  
+		    
+		},
+		
+		toggleResourceNav: function() {
+		    if(this.navOpen) {
+                $("#resource_nav").hide();
+                this.navOpen = false;
+            }else {
+                $("#resource_nav").show();
+                this.navOpen = true;
+            }
 		},
 		
 		addCloud: function( cloudCredential ) {
@@ -122,6 +131,7 @@ define([
 		        Common.router.navigate("#resources/"+cloudCredentials.first().attributes.cloudProvider, {trigger: false});
 		        this.cloudSelection(cloudCredentials.first().attributes.cloudProvider);
 		    }
+		    $("#resource_nav").hide();
 		},
 		/*
 		setNavToCoverFlowIndex: function () {
@@ -166,6 +176,8 @@ define([
 		        }
 		    });
 		    
+		    $("#cloud_nav").html(resourceNav.cloudDefinitions[cloudProvider].name+" ->");
+		    
 		    //Refresh previous select
 		    $("#credentials").remove();
 		    $("#cloud_specs").append('<span id="credentials">Credentials: <select id="credential_select" class="cloud_spec_select"></select></span>');
@@ -176,6 +188,7 @@ define([
 		        }
 		    });
             $("#credential_select").selectmenu();
+            $("#credential_nav").html($("#credential_select option:first").text());
 		    
 		    //Remove previous region
             $("#regions").remove();
@@ -186,6 +199,10 @@ define([
                     $('#region_select').append($("<option></option>").attr("value", region.zone).text(region.name));
                 });
                 $("#region_select").selectmenu();
+                $("#region_nav").html($("#region_select option:first").text() + " ->");
+                $("#region_nav").show();
+		    }else {
+		        $("region_nav").hide();
 		    }
 		    
 		    this.loadResourceApp(cloudProvider, resourceNav.typePath, resourceNav.idPath);
@@ -202,6 +219,7 @@ define([
 			    var selection = selectionId + "Link";
 				if(selection === $(this).find(":first").attr("id")) {
 					$(this).css("background", "wheat");
+					$("#service_nav").html($(this).text() + " ->");
 				}else {
 					$(this).css("background", "#E6E9ED");
 				}
