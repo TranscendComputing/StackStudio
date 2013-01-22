@@ -31,7 +31,7 @@ define([
 			'resources': 'resourcesRoute',
 			'resources/:cloud': 'resourcesRoute',
 			'resources/:cloud/:type': 'resourcesRoute',
-			'resources/:cloud/:type/:subtype/' : 'resourcesRoute',
+			'resources/:cloud/:type/:subtype' : 'resourcesRoute',
 			'resources/:cloud/:type/:subtype/:id': 'resourcesRoute',
 			//'resources/:type': 'resourcesRoute',
 			//'resources/:type/:id': 'resourcesRoute',

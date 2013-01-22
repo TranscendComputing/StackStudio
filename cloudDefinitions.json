@@ -37,7 +37,7 @@
             {
                 "name": "Elastic Load Balancer",
                 "type": "load-balancer",
-                "defaultSubtype": "load-balancers"
+                "defaultSubtype": "loadbalancers"
             },
             {
                 "name": "IAM",
