@@ -11,6 +11,9 @@ handlers:
 - url: /apple-touch-(.*\.png)
   static_files: images/favicon/apple-touch-\1
   upload: images/favicon/(.*\.png)
+- url: /(.*\.txt)
+  static_files: meta/\1
+  upload: meta/(.*\.txt)
 
 - url: /js
   static_dir: js
