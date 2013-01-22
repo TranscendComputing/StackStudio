@@ -68,7 +68,7 @@ define([
             itemId = $(parentNode).find(':nth-child(2)').html();
             
             //Update URL
-            Common.router.navigate("#resources/aws/volume/"+ itemId, {trigger: false});
+            Common.router.navigate("#resources/aws/block_storage/volumes/"+ itemId, {trigger: false});
             
             //Select Item
             this.selectOne(itemId, parentNode);

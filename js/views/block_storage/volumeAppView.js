@@ -68,20 +68,20 @@ define([
 		selectOne : function (itemId, parentNode) {
             var selectedModel;
             this.clearSelection();
-            console.log("Selecting ID:", itemId);
+            console.log(ich);
             if(parentNode) {
                 $(parentNode).addClass('row_selected');
             }
             
             this.collection.each(function(item) {
-                if (item.get('id') === itemId) {
+                if (item.get('id').toString() === itemId) {
                     selectedModel = item;
                 }
             });
-            
+
             if(selectedModel) {
                 this.selectedId = itemId;
-                $("#details").html(ich.compute_detail(selectedModel.attributes));
+                $("#details").html(ich.resource_detail(selectedModel.attributes));
                 $("#detail_tabs").tabs();
             }else {
                 
