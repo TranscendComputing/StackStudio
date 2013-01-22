@@ -25,7 +25,7 @@
             },
             {
                 "name": "Elastic Block Storage",
-                "type": "block-storage",
+                "type": "block_storage",
                 "defaultSubtype": "volumes"
             },
             {

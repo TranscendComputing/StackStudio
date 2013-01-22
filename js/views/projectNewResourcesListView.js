@@ -55,7 +55,7 @@ define([
                 // This example uses JSON as it is most common
                 "json_data" : { 
                     "ajax": {
-                        "url": "cloud_resources.json",
+                        "url": "samples/cloud_resources.json",
                         "success": function(data) {
                             var services = {};
                             var itemId;

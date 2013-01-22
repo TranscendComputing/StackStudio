@@ -50,7 +50,7 @@ define([
             var compiledTemplate = _.template(resourcesTemplate);
             this.$el.html(compiledTemplate);
             var response = $.ajax({
-                url: "cloudDefinitions.json",
+                url: "samples/cloudDefinitions.json",
                 async: false
             }).responseText;
             this.cloudDefinitions = $.parseJSON(response);

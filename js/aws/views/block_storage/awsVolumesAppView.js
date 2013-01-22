@@ -9,15 +9,16 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'views/volume/volumeAppView',
-        'text!templates/aws/volume/awsVolumeAppTemplate.html',
-        '/js/aws/models/volume/awsVolume.js',
-        '/js/aws/views/volume/awsVolumeRowView.js',
-        '/js/aws/views/volume/awsVolumeCreateView.js',
+        'views/block_storage/volumeAppView',
+        'text!templates/aws/block_storage/awsVolumeAppTemplate.html',
+        '/js/aws/models/block_storage/awsVolume.js',
+        '/js/aws/collections/block_storage/awsVolumes.js',
+        '/js/aws/views/block_storage/awsVolumeRowView.js',
+        '/js/aws/views/block_storage/awsVolumeCreateView.js',
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, AppView, awsAppTemplate, Volume, AwsRowView, AwsCreateView, ich, Common ) {
+], function( $, _, Backbone, AppView, awsAppTemplate, Volume, volumes, AwsRowView, AwsCreateView, ich, Common ) {
 	'use strict';
 
 	// Aws Application View
@@ -40,6 +41,7 @@ define([
 		},
 
 		initialize: function() {
+		    this.collection = volumes;
 		    //Initialize the template
 			var compiledTemplate = _.template(awsAppTemplate);
             this.$el.html(compiledTemplate);

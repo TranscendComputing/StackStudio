@@ -1,0 +1,33 @@
+<div>
+    <div class="button_bar">
+        <button class="create_button">Create New Volume</button>
+    </div>
+    <table class="resource_table full_width">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Volume</th>
+                <th>Size</th>
+                <th>Available</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    <div id="details" class="detail_panel"></div>
+</div>
+
+<script type="text/html" id="resource_detail">
+    <div id="detail_tabs" class="full_width">
+        <ul>
+            <li><a href="#tabs-1">Details</a></li>
+        </ul>
+        <div id="tabs-1" class="tab">
+            <div>Name: {{ name }} </div>
+            <div>Volume ID: {{ id }} </div>
+            <div>Size: {{ size }} </div>
+        </div>
+    </div>
+</script>

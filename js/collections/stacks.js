@@ -21,7 +21,7 @@ define([
 		// Reference to this collection's model.
 		model: Stack,
 
-		url: 'sample_projects.json'
+		url: 'samples/sample_projects.json'
 		
         /*
 		// Filter down the list of all projects that are running.

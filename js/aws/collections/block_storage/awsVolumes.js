@@ -8,30 +8,30 @@
 define([
         'jquery',
         'backbone',
-        'models/compute/instance',
+        '/js/aws/models/block_storage/awsVolume.js',
         'common'
-], function( $, Backbone, Instance, Common ) {
+], function( $, Backbone, Volume, Common ) {
     'use strict';
 
     // Instance Collection
     // ---------------
 
-    var InstanceList = Backbone.Collection.extend({
+    var VolumesList = Backbone.Collection.extend({
 
         // Reference to this collection's model.
-        model: Instance,
+        model: Volume,
 
-        url: 'samples/data.json',
+        url: 'samples/volumes.json',
 
         // Filter down the list of all instance items that are running.
-        running: function() {
-            return this.filter(function( instance ) {
-                return instance.get('running');
+        available: function() {
+            return this.filter(function( item ) {
+                return item.get('state') === 'available';
             });
         }
     });
 
-    // Create our global collection of **Instances**.
-    return new InstanceList();
+    // Create our global collection of **Volumes**.
+    return new VolumesList();
 
 });

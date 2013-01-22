@@ -21,7 +21,7 @@ define([
 		// Reference to this collection's model.
 		model: TemplateResource,
 
-		url: 'cloud_resources.json'
+		url: 'samples/cloud_resources.json'
 
 	});
 

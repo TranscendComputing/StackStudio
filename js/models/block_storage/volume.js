@@ -28,7 +28,7 @@ define([
         defaults: {
 			name: '',
 			description: '',
-			id: '',
+			volumeId: '',
 			size: '',
 			snapshotId: '',
 			zone: '',
@@ -51,7 +51,6 @@ define([
 		set: function(attributes, options) {
 		    Backbone.Model.prototype.set.apply(this, arguments);
 		}
-
     });
 
     return Volume;

@@ -21,7 +21,7 @@ define([
         // Reference to this collection's model.
         model: Instance,
 
-        url: 'data2.json',
+        url: 'samples/data2.json',
 
         // Filter down the list of all instance items that are running.
         running: function() {

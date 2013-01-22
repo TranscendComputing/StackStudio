@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        'models/volume/volume',
+        'models/block_storage/volume',
         'common'
 ], function( $, Backbone, Volume, Common ) {
 	'use strict';
@@ -21,7 +21,7 @@ define([
 		// Reference to this collection's model.
 		model: Volume,
 
-		url: 'volumes.json',
+		url: 'samples/volumes.json',
 
 		// Filter down the list of all volume items that are available.
 		available: function() {

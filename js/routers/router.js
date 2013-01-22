@@ -33,16 +33,10 @@ define([
 			'resources/:cloud/:type': 'resourcesRoute',
 			'resources/:cloud/:type/:subtype' : 'resourcesRoute',
 			'resources/:cloud/:type/:subtype/:id': 'resourcesRoute',
-			//'resources/:type': 'resourcesRoute',
-			//'resources/:type/:id': 'resourcesRoute',
 			'projects': 'projects',
-			//'projects': 'projectsRoute',
-			//'projects/:id': 'projectsRoute',
-			//'projects/:id': 'projectDetail',
 			'project/new': 'projectCreate',
 			'projects/:url': 'projectEdit',
 			'open?:url': 'loadTemplate',
-			//'projects/:id(/:action)': 'projectsRoute',
 			'projects/:id/update/:resource': 'projectUpdate',
 			'account/login': 'accountLogin',
 			'*actions': 'defaultRoute'
@@ -58,18 +52,8 @@ define([
 		    } else {
     		    $("#sidebar").empty();
                 $("#sidebar").hide();
-                $("#main").load('/dashboard.html');
+                $("#main").load('/templates/dashboard.html');
                 console.log("Running default route.  Dashboard");    
-		    }
-		},
-		
-		projectsRoute: function(id, action) {
-		    $("#sidebar").show();
-		    $("#main").empty();
-		    if (!id) {
-		        this.trigger('route:projects');
-		    } else {
-    		    this.trigger('projects:' + action, id);
 		    }
 		},
 		

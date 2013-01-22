@@ -21,7 +21,7 @@ define([
 		// Reference to this collection's model.
 		model: CloudCredential,
 
-		url: 'sampleCloudData.json'
+		url: 'samples/sampleCloudData.json'
 
 	});
 
