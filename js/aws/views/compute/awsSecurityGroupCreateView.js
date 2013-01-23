@@ -43,8 +43,7 @@ define([
             this.$el.dialog({
                 autoOpen: true,
                 title: "Create Security Group",
-                width:500,
-                minHeight: 150,
+                width:350,
                 resizable: false,
                 modal: true,
                 buttons: {

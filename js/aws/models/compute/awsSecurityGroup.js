@@ -17,7 +17,7 @@ define([
      * @constructor
      * @category Compute
      * @param {Object} initialization object.
-     * @returns {Object} Returns an Instance.
+     * @returns {Object} Returns a SecurityGroup.
      */
     var SecurityGroup = Backbone.Model.extend({
 

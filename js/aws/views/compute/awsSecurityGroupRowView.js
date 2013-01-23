@@ -12,7 +12,7 @@ define([
 ], function( $, _, Backbone ) {
     'use strict';
 
-    var InstanceRowView = Backbone.View.extend({
+    var SecurityGroupRowView = Backbone.View.extend({
 
         events: {
         },
@@ -26,9 +26,6 @@ define([
         // Populate the column values in the table with the model.
         render: function() {
             var selector_i = "#resource_table tr:nth-child(";
-            //var selector_n = "#instance-table tr td:contains('";
-            //var row = $(selector_n+this.model.get("instanceId")+"')").parent();
-            //console.log("Old row:", row);
             // TODO: if there's an existing row, update it.
             // otherwise; create a new row.
             var added = $('#resource_table').dataTable().
@@ -42,5 +39,5 @@ define([
         }
     });
 
-    return InstanceRowView;
+    return SecurityGroupRowView;
 });
