@@ -1,0 +1,11 @@
+[
+    {
+        "publicIp": "23.21.132.72", 
+        "domain": "standard"
+    },
+    {
+        "publicIp": "23.21.132.73", 
+        "domain": "standard", 
+        "instanceId": "i-0000cccc"
+    }
+]
