@@ -30,15 +30,24 @@ define([
      * @returns {Object} Returns a ResourcesView project.
      */
 	var ResourcesView = Backbone.View.extend({
-		// Instead of generating a new element, bind to the existing skeleton of
-		// the App already present in the HTML.
-		el: '#main',
+		id: 'resource_navigation_view',
+		
+		className: ['twelvecol', 'last'],
+		
+		template: _.template(resourcesTemplate),
+		
 		cloudPath: undefined,
+		
 		typePath: undefined,
+		
 		subtypePath:undefined,
+		
 		idPath: undefined,
+		
         cloudDefinitions: undefined,
+        
         navOpen: false,
+        
         events: {
 			"click .resourceLink" : "resourceClick",
 			"click #cloud_coverflow img" : "cloudChange",
@@ -46,9 +55,8 @@ define([
 		},
         
 		initialize: function() {
-			this.$el.addClass("twelvecol");
-            var compiledTemplate = _.template(resourcesTemplate);
-            this.$el.html(compiledTemplate);
+		    $("#main").append(this.el);
+            this.$el.html(this.template);
             var response = $.ajax({
                 url: "samples/cloudDefinitions.json",
                 async: false
@@ -231,11 +239,15 @@ define([
 		loadResourceApp: function(cloudProvider, type, subtype, id) {
 		    var resourceNav = this;
             if(cloudProvider) {
-                if(!type) {
+                if (!type) {
                     type = "compute";
-                }
-                if(!subtype) {
                     subtype = "instances";
+                } else if (!subtype) {
+                    if (type === "compute") {
+                        subtype = "instances";
+                    } else if (type === "block_storage") {
+                        subtype = "volumes";
+                    }
                 }
                 
                 //Capitalize first letter of subtype for the file name

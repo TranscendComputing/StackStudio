@@ -34,6 +34,8 @@ define([
      * @returns {Object} Returns a AwsInstancesAppView instance.
      */
     var AwsInstancesAppView = ResourceAppView.extend({
+        template: _.template(awsInstanceAppTemplate),
+        
         modelStringIdentifier: "instanceId",
         
         idRowNumber: 2,
@@ -56,17 +58,7 @@ define([
         },
 
         initialize: function() {
-            var compiledTemplate = _.template(awsInstanceAppTemplate);
-            this.$el.html(compiledTemplate);
-            ich.refresh();
-            $('#create_button').button();
-            this.$table = $('#resource_table').dataTable({"bJQueryUI": true});
-            this.collection.on( 'add', this.addOne, this );
-            this.collection.on( 'reset', this.addAll, this );
-            this.collection.on( 'all', this.render, this );
-
-            // Fetch will pull results from the server
-            this.collection.fetch();
+            this.render();
         }
     });
     

@@ -34,6 +34,8 @@ define([
      * @returns {Object} Returns a AwsSecurityGroupsAppView instance.
      */
     var AwsSecurityGroupsAppView = ResourceAppView.extend({
+        template: _.template(awsSecurityGroupAppTemplate),
+        
         modelStringIdentifier: "name",
         
         idRowNumber: 1,
@@ -56,17 +58,7 @@ define([
         },
 
         initialize: function() {
-            var compiledTemplate = _.template(awsSecurityGroupAppTemplate);
-            this.$el.html(compiledTemplate);
-            ich.refresh();
-            $('#create_button').button();
-            this.$table = $('#resource_table').dataTable({"bJQueryUI": true});
-            this.collection.on( 'add', this.addOne, this );
-            this.collection.on( 'reset', this.addAll, this );
-            this.collection.on( 'all', this.render, this );
-
-            // Fetch will pull results from the server
-            this.collection.fetch();
+            this.render();
         }
     });
     

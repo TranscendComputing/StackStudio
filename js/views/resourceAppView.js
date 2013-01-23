@@ -34,10 +34,6 @@ define([
         
         idRowNumber: 0,
         
-        model: undefined,
-        
-        collection: undefined,
-        
         type: undefined,
         
         subtype: undefined,
@@ -49,6 +45,16 @@ define([
         el: '#resource_app',
 
         render: function() {
+            this.$el.html(this.template);
+            ich.refresh();
+            $('#create_button').button();
+            this.$table = $('#resource_table').dataTable({"bJQueryUI": true});
+            this.collection.on( 'add', this.addOne, this );
+            this.collection.on( 'reset', this.addAll, this );
+
+            // Fetch will pull results from the server
+            this.collection.fetch();
+            
             if(this.selectedId) {
                 this.selectOne(this.selectedId, $("tr:contains("+this.selectedId+")"));
             }
