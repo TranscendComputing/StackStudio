@@ -79,20 +79,22 @@ define([
         
         clickOne: function (event) {
             var id, parentNode;
-            console.log("event:", event);
-            parentNode = event.target.parentNode;
-            id = $(parentNode).find(':nth-child('+this.idRowNumber+')').html();
+            var rowData = this.$table.fnGetData(event.currentTarget);
+            console.log("ROW DATA", rowData);
+            //TODO -- make more dynamic in order to allow user to define columns
+            //Resource ID is currently second column
+            id = rowData[1];
             Common.router.navigate("#resources/aws/"+this.type+"/"+this.subtype+"/"+id, {trigger: false});
-            this.selectOne(id, parentNode);
+            this.selectOne(id, event.currentTarget);
         },
 
-        selectOne : function (id, parentNode) {
+        selectOne : function (id, rowNode) {
             var selectedModel;
             var modelStringIdentifier = this.modelStringIdentifier;
             this.clearSelection();
             console.log("Selecting ID:", id);
-            if(parentNode) {
-                $(parentNode).addClass('row_selected');
+            if(rowNode) {
+                $(rowNode).addClass('row_selected');
             }
             
             this.collection.each(function(e) {

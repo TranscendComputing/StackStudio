@@ -54,11 +54,26 @@ define([
         
         events: {
             'click #create_button': 'createNew',
-            'click #resource_table tbody': 'clickOne'
+            'click #resource_table tr': 'toggleActions'
         },
 
         initialize: function() {
             this.render();
+            $("#action_menu").on( "menuselect", this.setAction );
+        },
+        
+        setAction: function(e, ui) {
+            console.log(e, ui);
+            console.log("PERFORMING ACTION");
+            return false
+        },
+        
+        toggleActions: function(e) {
+            this.clickOne(e);
+            var rowData = this.$table.fnGetData(e.currentTarget);
+            if (rowData[3]) {
+                console.log($("#action_menu").menu("widget"));
+            }
         }
     });
     

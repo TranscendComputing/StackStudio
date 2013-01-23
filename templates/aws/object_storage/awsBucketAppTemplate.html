@@ -2,7 +2,7 @@
     <div class="button_bar">
         <ul id="action_menu">
             <li>
-                <button id="create_button">Create New Volume</button>
+                <button id="create_button">Create Bucket</button>
             </li>
             <li style="z-index: 1000">
                 <a id="actions_button" href="#">Actions</a>
@@ -21,7 +21,6 @@
         <thead>
             <tr>
                 <th>Name</th>
-                <th>Description</th>
             </tr>
         </thead>
         <tbody>
@@ -33,13 +32,12 @@
 </div>
 
 <script type="text/html" id="resource_detail">
-    <div id="detail_tabs">
+    <div id="detail_tabs" class="full_width">
         <ul>
             <li><a href="#tabs-1">Details</a></li>
         </ul>
         <div id="tabs-1" class="tab">
             <div>Name: {{ name }} </div>
-            <div>Description: {{ description }} </div>
         </div>
     </div>
 </script>

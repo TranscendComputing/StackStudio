@@ -71,7 +71,7 @@
             },
             {
                 "name": "Simple Storage",
-                "type": "object-storage",
+                "type": "object_storage",
                 "defaultSubtype": "buckets"
             }
         ],

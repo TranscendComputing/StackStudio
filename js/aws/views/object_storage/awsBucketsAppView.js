@@ -10,15 +10,15 @@ define([
         'underscore',
         'backbone',
         'views/resourceAppView',
-        'text!templates/aws/block_storage/awsVolumeAppTemplate.html',
-        '/js/aws/models/block_storage/awsVolume.js',
-        '/js/aws/collections/block_storage/awsVolumes.js',
-        '/js/aws/views/block_storage/awsVolumeRowView.js',
-        '/js/aws/views/block_storage/awsVolumeCreateView.js',
+        'text!templates/aws/object_storage/awsBucketAppTemplate.html',
+        '/js/aws/models/object_storage/awsBucket.js',
+        '/js/aws/collections/object_storage/awsBuckets.js',
+        '/js/aws/views/object_storage/awsBucketRowView.js',
+        '/js/aws/views/object_storage/awsBucketCreateView.js',
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, AppView, awsVolumeAppTemplate, Volume, volumes, AwsVolumeRowView, AwsVolumeCreateView, ich, Common ) {
+], function( $, _, Backbone, AppView, awsBucketAppTemplate, Bucket, buckets, AwsBucketRowView, AwsBucketCreateView, ich, Common ) {
 	'use strict';
 
 	// Aws Application View
@@ -33,24 +33,24 @@ define([
      * @param {Object} initialization object.
      * @returns {Object} Returns an AwsAppView instance.
      */
-	var AwsVolumesAppView = AppView.extend({
-	    template: _.template(awsVolumeAppTemplate),
+	var AwsBucketsAppView = AppView.extend({
+	    template: _.template(awsBucketAppTemplate),
 	    
-        modelStringIdentifier: "volumeId",
+        modelStringIdentifier: "name",
         
         idRowNumber: 2,
         
-        model: Volume,
+        model: Bucket,
         
-        collection: volumes,
+        collection: buckets,
         
-        type: "block_storage",
+        type: "object_storage",
         
-        subtype: "volumes",
+        subtype: "buckets",
         
-        CreateView: AwsVolumeCreateView,
+        CreateView: AwsBucketCreateView,
         
-        RowView: AwsVolumeRowView,
+        RowView: AwsBucketRowView,
         
         events: {
             'click #create_button': 'createNew',
@@ -77,5 +77,5 @@ define([
         }
 	});
     
-	return AwsVolumesAppView;
+	return AwsBucketsAppView;
 });

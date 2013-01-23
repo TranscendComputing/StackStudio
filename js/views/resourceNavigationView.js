@@ -247,6 +247,8 @@ define([
                         subtype = "instances";
                     } else if (type === "block_storage") {
                         subtype = "volumes";
+                    } else if (type === "object_storage") {
+                        subtype = "buckets";
                     }
                 }
                 
