@@ -1,18 +1,14 @@
 <div>
     <div class="button_bar">
-        <ul id="action_menu">
-            <li>
-                <button id="create_button">Create Bucket</button>
-            </li>
+        <button class="create_button">Create Bucket</button>
+        <ul class="action_menu">
             <li style="z-index: 1000">
-                <a id="actions_button" href="#">Actions</a>
+                <a class="actions_button" href="#">Actions</a>
                 <ul>
-                    <li class="ui-state-disabled"><a href="#">Delete Volume</a></li>
-                    <li class="ui-state-disabled"><a href="#">Attach Volume</a></li>
-                    <li><a href="#">Detach Volume</a></li>
-                    <li class="ui-state-disabled"><a href="#">Force Detach</a></li>
-                    <li class="ui-state-disabled"><a href="#">Create Snapshot</a></li>
-                    <li class="ui-state-disabled"><a href="#">Change Auto-Enable IO Setting</a></li>                    
+                    <li class="ui-state-disabled"><a href="#">Delete</a></li>
+                    <li class="ui-state-disabled"><a href="#">Refresh</a></li>
+                    <li class="ui-state-disabled"><a href="#">Paste Into</a></li>
+                    <li class="ui-state-disabled"><a href="#">Properties</a></li>                    
                 </ul>
             </li>
         </ul>
@@ -32,12 +28,32 @@
 </div>
 
 <script type="text/html" id="resource_detail">
+    <div class="button_bar">
+        <button class="create_button">Create Folder</button>
+        <ul class="action_menu">
+            <li style="z-index: 1000">
+                <a class="actions_button" href="#">Actions</a>
+                <ul>
+                    <li class="ui-state-disabled"><a href="#">Open</a></li>
+                    <li class="ui-state-disabled"><a href="#">Download</a></li>
+                    <li class="ui-state-disabled"><a href="#">Upload</a></li>
+                    <li class="ui-state-disabled"><a href="#">Make Public</a></li>
+                    <li class="ui-state-disabled"><a href="#">Rename</a></li>
+                    <li class="ui-state-disabled"><a href="#">Delete</a></li>                    
+                </ul>
+            </li>
+        </ul>
+    </div>
     <div id="detail_tabs">
         <ul>
-            <li><a href="#tabs-1">Details</a></li>
+            <li><a href="#properties_tab">Details</a></li>
+            <li><a href="#contents_tab">Contents</a></li>
         </ul>
-        <div id="tabs-1" class="tab">
+        <div id="properties_tab" class="tab">
             <div>Name: {{ Name }} </div>
+        </div>
+        <div id="contents_tab" class="tab">
+            <div id="bucket_contents"></div>
         </div>
     </div>
 </script>

@@ -1,11 +1,9 @@
 <div>
     <div class="button_bar">
-        <ul id="action_menu">
-            <li>
-                <button id="create_button">Create New Volume</button>
-            </li>
+        <button class="create_button">Create Volume</button>
+        <ul class="action_menu">
             <li style="z-index: 1000">
-                <a id="actions_button" href="#">Actions</a>
+                <a class="actions_button" href="#">Actions</a>
                 <ul>
                     <li class="ui-state-disabled"><a href="#">Delete Volume</a></li>
                     <li class="ui-state-disabled"><a href="#">Attach Volume</a></li>
@@ -35,9 +33,9 @@
 <script type="text/html" id="resource_detail">
     <div id="detail_tabs">
         <ul>
-            <li><a href="#tabs-1">Details</a></li>
+            <li><a href="#properties_tab">Details</a></li>
         </ul>
-        <div id="tabs-1" class="tab">
+        <div id="properties_tab" class="tab">
             <div>Name: {{ name }} </div>
             <div>Description: {{ description }} </div>
         </div>

@@ -36,8 +36,8 @@ define([
         render: function() {
             this.$el.html(this.template);
             ich.refresh();
-            $('button').button();
-            $("#action_menu").menu({
+            $('.create_button').button();
+            $(".action_menu").menu({
                 position: { my: 'left top', at: 'left bottom'}
             });
             this.$table = $('#resource_table').dataTable({"bJQueryUI": true});
@@ -110,6 +110,10 @@ define([
                 this.selectedId = id;
                 $("#details").html(ich.resource_detail(selectedModel.attributes));
                 $("#detail_tabs").tabs();
+                $('.create_button').button();
+                $(".action_menu").menu({
+                    position: { my: 'left top', at: 'left bottom'}
+                });
             }else {
                 
             }

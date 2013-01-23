@@ -17,7 +17,8 @@ define([
         '/js/aws/views/object_storage/awsBucketCreateView.js',
         'icanhaz',
         'common',
-        'jquery.dataTables'
+        'jquery.dataTables',
+        'jquery.jstree'
 ], function( $, _, Backbone, AppView, awsBucketAppTemplate, Bucket, buckets, AwsBucketRowView, AwsBucketCreateView, ich, Common ) {
 	'use strict';
 
@@ -52,6 +53,8 @@ define([
         
         RowView: AwsBucketRowView,
         
+        contents: undefined,
+        
         events: {
             'click #create_button': 'createNew',
             'click #resource_table tr': 'toggleActions'
@@ -70,10 +73,41 @@ define([
         
         toggleActions: function(e) {
             this.clickOne(e);
-            var rowData = this.$table.fnGetData(e.currentTarget);
-            if (rowData[3]) {
-                console.log($("#action_menu").menu("widget"));
-            }
+            var rowData = $(e.currentTarget).data();
+            var bucketContents = rowData.Contents;
+            var treeData = [];
+            $.each(bucketContents, function(index, item) {
+                console.log(item);
+                $.each(item, function(property, value) {
+                    console.log(property, value);
+                    if (property === "Key") {
+                        treeData.push({
+                            "data": {
+                                "title": value 
+                            }
+                        });    
+                    }
+                });
+            });
+            console.log(bucketContents);
+            $("#bucket_contents").jstree({ 
+                // List of active plugins
+                "plugins" : [ 
+                    "json_data", "crrm", "themeroller"
+                ],
+                
+                "core": {
+                    "animation": 0
+                 },
+                 
+                 "json_data": {
+                     "data": treeData
+                 },
+                
+                "themeroller": {
+                    "item": "jstree_custom_item"
+                }
+            });
         }
 	});
     
