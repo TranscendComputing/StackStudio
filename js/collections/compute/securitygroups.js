@@ -21,7 +21,7 @@ define([
         // Reference to this collection's model.
         model: SecurityGroup,
 
-        url: 'securityGroupData.json',
+        url: 'samples/securityGroupData.json'
     });
 
     // Create our global collection of **SecurityGroups**.

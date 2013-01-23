@@ -29,14 +29,23 @@ define([
      */
     var ResourceAppView = Backbone.View.extend({
         selectedId: undefined,
+        
         modelStringIdentifier: undefined,
+        
         idRowNumber: 0,
+        
         model: undefined,
+        
         collection: undefined,
+        
         type: undefined,
+        
         subtype: undefined,
-        createView: undefined,
-        rowView: undefined,
+        
+        CreateView: undefined,
+        
+        RowView: undefined,
+        
         el: '#resource_app',
 
         render: function() {
@@ -49,8 +58,8 @@ define([
             if (model.get(this.modelStringIdentifier) === "") {
                 return;
             }
-            var rowView = this.rowView;
-            var view = new rowView({ model: model });
+            var RowView = this.RowView;
+            var view = new RowView({ model: model });
             view.render();
         },
 
@@ -97,8 +106,8 @@ define([
         },
         
         createNew : function () {
-            var createView = this.createView;
-            var createNew = new createView();
+            var CreateView = this.CreateView;
+            var createNew = new CreateView();
             createNew.render();
         }
     });

@@ -18,7 +18,7 @@ define([
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, ResourceAppView, awsInstanceAppTemplate, instance, instances, AwsInstanceRowView, AwsInstanceCreate, ich, Common ) {
+], function( $, _, Backbone, ResourceAppView, awsInstanceAppTemplate, Instance, instances, AwsInstanceRowView, AwsInstanceCreate, ich, Common ) {
     'use strict';
 
     // Aws Instance Application View
@@ -35,13 +35,20 @@ define([
      */
     var AwsInstancesAppView = ResourceAppView.extend({
         modelStringIdentifier: "instanceId",
+        
         idRowNumber: 2,
-        model: instance,
+        
+        model: Instance,
+        
         collection: instances,
+        
         type: "compute",
+        
         subtype: "instances",
-        createView: AwsInstanceCreate,
-        rowView: AwsInstanceRowView,
+        
+        CreateView: AwsInstanceCreate,
+        
+        RowView: AwsInstanceRowView,
         
         events: {
             'click #create_button': 'createNew',
