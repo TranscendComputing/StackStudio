@@ -1,0 +1,33 @@
+<div>
+    <div class="button_bar">
+        <button id="create_button">Create Instance</button>
+    </div>
+    <table id="resource_table" class="full_width">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Instance</th>
+                <th>Key</th>
+                <th>Running</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    <div id="details" class="detail_panel"></div>
+</div>
+
+<script type="text/html" id="resource_detail">
+    <div id="detail_tabs" class="full_width">
+        <ul>
+            <li><a href="#tabs-1">Details</a></li>
+        </ul>
+        <div id="tabs-1" class="tab">
+            <div>Name: {{ name }} </div>
+            <div>Instance ID: {{ instanceId }} </div>
+            <div>Key Name: {{ keyName }} </div>
+        </div>
+    </div>
+</script>

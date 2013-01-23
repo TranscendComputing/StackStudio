@@ -20,3 +20,10 @@ dist/
 .externalToolBuilders
 resources/*.properties
 node_modules
+/app.yaml
+*.pyc
+css/*.css
+.gitattributes
+.settings/
+.settings/*
+_SpecRunner.html

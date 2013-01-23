@@ -1,0 +1,33 @@
+[
+    {
+        "data": "CloudFormation Templates",
+        "children": [
+            {
+                "data": "mongodb",
+                "children": [
+                    {
+                        "data": "MongoDB_SingleNode.template"
+                        "metadata": "TEMPLATE"
+                    }
+                ]
+            },
+            {
+                "data": "riak",
+                "children": [
+                    {
+                        "data": "RiakCluster.json",
+                        "metadata": "TEMPLATE"
+                    },
+                    {
+                        "data": "RiakVPCCluster.json",
+                        "metadata": "TEMPLATE"
+                    },
+                    {
+                        "data": "RiakVPCClusterWithFrontEndAppServer.json"
+                        "metadata": "TEMPLATE"
+                    }
+                ]
+            }
+        ]
+    }
+]

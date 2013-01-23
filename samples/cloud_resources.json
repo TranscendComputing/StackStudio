@@ -1,0 +1,1186 @@
+[
+    {
+        "label": "Auto Scaling Group",
+        "group": "Resources",
+        "service": "AutoScaling",
+        "name": "NewASGroup",
+        "template": {
+            "NewASGroup": {
+                   "Type" : "AWS::AutoScaling::AutoScalingGroup",
+                   "Properties" : {
+                      "AvailabilityZones" : [],
+                      "Cooldown" : "",
+                      "DesiredCapacity" : "",
+                      "HealthCheckGracePeriod" : "",
+                      "HealthCheckType" : "",
+                      "LaunchConfigurationName" : "",
+                      "LoadBalancerNames" : [],
+                      "MaxSize" : "",
+                      "MinSize" : "",
+                      "NotificationConfiguration" : {},
+                      "Tags" : [],
+                      "VPCZoneIdentifier" : []
+                   }
+            }
+        }
+    },
+    {
+        "label": "AS Launch Configuration",
+        "group": "Resources",
+        "service": "AutoScaling",
+        "name": "NewASConfig",
+        "template": {
+            "NewASConfig": {
+                   "Type" : "AWS::AutoScaling::LaunchConfiguration",
+                   "Properties" : {
+                      "BlockDeviceMappings" : [],
+                      "IamInstanceProfile" : "",
+                      "ImageId" : "",
+                      "InstanceMonitoring" : "",
+                      "InstanceType" : "",
+                      "KernelId" : "",
+                      "KeyName" : "",
+                      "RamDiskId" : "",
+                      "SecurityGroups" : [],
+                      "SpotPrice" : "",
+                      "UserData" : ""
+                   }
+            }
+        }
+    },
+    {
+        "label": "AS Scaling Policy",
+        "group": "Resources",
+        "service": "AutoScaling",
+        "name": "NewASPolicy",
+        "template": {
+            "NewASPolicy": {
+               "Type" : "AWS::AutoScaling::ScalingPolicy",
+               "Properties" : {
+                  "AdjustmentType" : "",
+                  "AutoScalingGroupName" : "",
+                  "Cooldown" : "",
+                  "ScalingAdjustment" : ""
+               }
+            }
+         } 
+    },
+    {
+        "label": "AS Trigger",
+        "group": "Resources",
+        "service": "AutoScaling",
+        "name": "NewASTrigger",
+        "template": {
+            "NewASTrigger": {
+               "Type" : "AWS::AutoScaling::Trigger",
+               "Properties" : {
+                  "AutoScalingGroupName" : "",
+                  "BreachDuration" : "",
+                  "Dimensions" : [],
+                  "LowerBreachScaleIncrement" : "",
+                  "LowerThreshold" : "",
+                  "MetricName" : "",
+                  "Namespace" : "",
+                  "Period" : "",
+                  "Statistic" : "",
+                  "Unit" : "",
+                  "UpperBreachScaleIncrement" : "",
+                  "UpperThreshold" : ""
+               }
+            } 
+         } 
+    },
+    {
+        "label": "Wait Condition",
+        "group": "Resources",
+        "service": "CloudFormation",
+        "name": "WaitCondition",
+        "template": {
+            "WaitCondition": {
+                  "Type" : "AWS::CloudFormation::WaitCondition",
+                  "DependsOn" : "",
+                  "Properties" : {
+                    "Handle" : {},
+                    "Timeout" : "600"
+                  }
+             }
+         } 
+    },
+    {
+        "label": "Wait Condition Handle",
+        "group": "Resources",
+        "service": "CloudFormation",
+        "name": "WaitHandle",
+        "template": {
+            "WaitHandle": {
+                "Type" : "AWS::CloudFormation::WaitConditionHandle"
+            }
+         } 
+    },
+    {
+        "label": "CloudFront Distribution",
+        "group": "Resources",
+        "service": "CloudFront",
+        "name": "NewCFDistribution",
+        "template": {
+            "NewCFDistribution": {
+               "Type" : "AWS::CloudFront::Distribution",
+               "Properties" : {
+                  "DistributionConfig" : {
+                       "Aliases" : [],
+                       "CacheBehaviors" : [],
+                       "Comment" : "",
+                       "DefaultCacheBehavior" : {},
+                       "DefaultRootObject" : "",
+                       "Enabled" : "",
+                       "Logging" : {},
+                       "Origins" : []
+                    }  
+               }
+            }
+         } 
+    },
+    {
+        "label": "Alarm",
+        "group": "Resources",
+        "service": "CloudWatch",
+        "name": "NewAlarm",
+        "template": {
+            "NewAlarm": {
+              "Type": "AWS::CloudWatch::Alarm",
+              "Properties": {
+                "AlarmDescription": "",
+                "Namespace": "",
+                "MetricName": "",
+                "Statistic": "",
+                "Period": "",
+                "Threshold": "",
+                "ComparisonOperator": "",
+                "EvaluationPeriods": "",
+                "AlarmActions": [],
+                "Dimensions": [{
+                    "Name": "",
+                    "Value": ""
+                }]
+              }
+            }
+         } 
+    },
+    {
+        "label": "Dynamo DB",
+        "group": "Resources",
+        "service": "DynamoDB",
+        "name": "NewDynamoDB",
+        "template": {
+            "NewDynamoDB": {
+               "Type" : "AWS::DynamoDB::Table",
+               "Properties" : {
+                  "KeySchema" : {},
+                  "ProvisionedThroughput" : {}
+               }
+            }   
+         } 
+    },
+    {
+        "label": "Customer Gateway",
+        "group": "Resources",
+        "service": "EC2",
+        "name": "NewCustomerGateway",
+        "template": {
+            "NewCustomerGateway": {
+                 "Type" : "AWS::EC2::CustomerGateway",
+                 "Properties" : {
+                    "Type" : "",
+                    "BgpAsn" : "",
+                    "IpAddress" : ""
+                 }
+            }
+         } 
+    },
+    {
+        "label": "DHCP Options",
+        "group": "Resources",
+        "service": "EC2",
+        "name": "NewDHCPOptions",
+        "template": {
+            "NewDHCPOptions": {
+               "Type" : "AWS::EC2::DHCPOptions",
+               "Properties" : {
+                  "DomainName" : "",
+                  "DomainNameServers" : [],
+                  "NetbiosNameServers" : [],
+                  "NetbiosNodeType" : "",
+                  "NtpServers" : [],
+                  "Tags" : []
+               }
+            } 
+         } 
+    },
+    {
+        "label": "Elastic IP",
+        "group": "Resources",
+        "service": "EC2",
+        "name": "NewEIP",
+        "template": {
+            "NewEIP": {
+               "Type" : "AWS::EC2::EIP",
+               "Properties" : {
+                  "InstanceId" : "",
+                  "Domain" : ""
+               }
+            }
+         } 
+    },
+    {
+        "label": "Elastic IP Association",
+        "group": "Resources",
+        "service": "EC2",
+        "name": "EIPAssoc",
+        "template": {
+            "EIPAssoc": {
+               "Type": "AWS::EC2::EIPAssociation",
+               "Properties": {
+                  "AllocationId": "",
+                  "EIP": "",
+                  "InstanceId": "",
+                  "NetworkInterfaceId": ""
+               }
+            }
+         } 
+    },
+    {
+        "label": "Instance",
+        "group": "Resources",
+        "service": "EC2",
+        "name": "NewInstance",
+        "template": {
+            "NewInstance": {
+               "Type" : "AWS::EC2::Instance",
+               "Properties" : {
+                  "AvailabilityZone" : "",
+                  "BlockDeviceMappings" : [],
+                  "DisableApiTermination" : "",
+                  "EbsOptimized" : "",
+                  "IamInstanceProfile" : "",
+                  "ImageId" : "",
+                  "InstanceType" : "",
+                  "KernelId" : "",
+                  "KeyName" : "",
+                  "Monitoring" : "",
+                  "NetworkInterfaces" : [],
+                  "PlacementGroupName" : "",
+                  "PrivateIpAddress" : "",
+                  "RamdiskId" : "",
+                  "SecurityGroupIds" : [],
+                  "SecurityGroups" : [],
+                  "SourceDestCheck" : "",
+                  "SubnetId" : "",
+                  "Tags" : [],
+                  "Tenancy" : "",
+                  "UserData" : "",
+                  "Volumes" : []
+               }
+            }
+         } 
+    },
+    {
+        "label": "Internet Gateway",
+        "group": "Resources",
+        "service": "EC2",
+        "name": "NewInternetGateway",
+        "template": {
+            "NewInternetGateway": {
+                 "Type" : "AWS::EC2::InternetGateway",
+                  "Properties" : {
+                         "Tags" : []
+                      }
+             }
+         } 
+    },
+    {
+        "label": "Network ACL",
+        "group": "Resources",
+        "service": "EC2",
+        "name": "NewNetworkAcl",
+        "template": {
+            "NewNetworkAcl": {
+                 "Type" : "AWS::EC2::NetworkAcl",
+                 "Properties" : {
+                    "VpcId" : "",
+                    "Tags" : []
+                 }
+              }
+         } 
+    },
+    {
+        "label": "Newtowrk ACL Entry",
+        "group": "Resources",
+        "service": "EC2",
+        "name": "NewNetworkAclEntry",
+        "template": {
+            "NewNetworkAclEntry": {
+                 "Type" : "AWS::EC2::NetworkAclEntry",
+                 "Properties" : {
+                    "NetworkAclId" : "",
+                    "RuleNumber" : "",
+                    "Protocol" : "",
+                    "RuleAction" : "",
+                    "Egress" : "",
+                    "CidrBlock" : "",
+                    "Icmp" : {
+                        "Code" : "",
+                        "Type" : ""
+                    },
+                    "PortRange" : { 
+                        "From" : "",
+                        "To" : ""
+                    }
+                 }
+              }
+         } 
+    },
+    {
+        "label": "Network Interface",
+        "group": "Resources",
+        "service": "EC2",
+        "name": "NewNetworkInterface",
+        "template": {
+            "NewNetworkInterface": {
+               "Type" : "AWS::EC2::NetworkInterface",
+               "Properties" : {
+                  "Description": "",
+                  "GroupSet": [],
+                  "PrivateIpAddress": "",
+                  "SourceDestCheck": "",
+                  "SubnetId": "",
+                  "Tags": []
+               }
+            }
+         } 
+    },
+    {
+        "label": "Route",
+        "group": "Resources",
+        "service": "EC2",
+        "name": "NewRoute",
+        "template": {
+            "NewRoute": {
+               "Type" : "AWS::EC2::Route",
+               "Properties" : {
+                  "DestinationCidrBlock" : "",
+                  "GatewayId" : "",
+                  "InstanceId" : "",
+                  "NetworkInterfaceId" : "",
+                  "RouteTableId" : ""
+                }  
+            }
+        } 
+    },
+    {
+        "label": "Route Table",
+        "group": "Resources",
+        "service": "EC2",
+        "name": "NewRouteTable",
+        "template": {
+            "NewRouteTable": {
+               "Type" : "AWS::EC2::RouteTable",
+               "Properties" : {
+                  "VpcId" : "",
+                  "Tags" : []
+               }
+            } 
+         } 
+    },
+    {
+        "label": "Security Group",
+        "group": "Resources",
+        "service": "EC2",
+        "name": "NewEC2SecurityGroup",
+        "template": {
+            "NewEC2SecurityGroup": {
+               "Type" : "AWS::EC2::SecurityGroup",
+               "Properties" :
+               {
+                  "GroupDescription" : "",
+                  "VpcId" : "",
+                  "SecurityGroupIngress" : [{
+                        "IpProtocol" : "",
+                        "FromPort" : "",
+                        "ToPort" : "",
+                        "CidrIp" : ""
+                     }],
+                  "SecurityGroupEgress" : [{
+                     "IpProtocol" : "",
+                     "FromPort" : "",
+                     "ToPort" : "",
+                     "CidrIp" : ""
+                  }]
+               }
+            }
+         } 
+    },
+    {
+        "label": "Security Group Ingress",
+        "group": "Resources",
+        "service": "EC2",
+        "name": "NewSGIngress",
+        "template": {
+            "NewSGIngress": {
+                "Type": "AWS::EC2::SecurityGroupIngress",
+                "Properties": {
+                    "GroupName": "",
+                    "IpProtocol": "",
+                    "FromPort": "",
+                    "ToPort": "",
+                    "SourceSecurityGroupName": ""
+                }
+            }
+         } 
+    },
+    {
+        "label": "Security Group Egress",
+        "group": "Resources",
+        "service": "EC2",
+        "name": "NewSGEgress",
+        "template": {
+            "NewSGEgress": {
+                "Type": "AWS::EC2::SecurityGroupEgress",
+                "Properties": {
+                   "GroupId" : "",
+                   "IpProtocol" : "",
+                   "CidrIp" : "",
+                   "DestinationSecurityGroupId" : "",
+                   "FromPort" : "",
+                   "ToPort" : ""
+                } 
+            }
+         } 
+    },
+    {
+        "label": "Subnet",
+        "group": "Resources",
+        "service": "EC2",
+        "name": "NewSubnet",
+        "template": {
+            "NewSubnet": {
+               "Type" : "AWS::EC2::Subnet",
+               "Properties" : {
+                  "AvailabilityZone" : "",
+                  "CidrBlock" : "",
+                  "Tags" : [],
+                  "VpcId" : ""
+               }
+            }
+         } 
+    },
+    {
+        "label": "Subnet Network ACL Association",
+        "group": "Resources",
+        "service": "EC2",
+        "name": "NewSubnetNetworkAclAssociation",
+        "template": {
+            "NewSubnetNetworkAclAssociation": {
+                 "Type" : "AWS::EC2::SubnetNetworkAclAssociation",
+                 "Properties" : {
+                    "SubnetId" : "",
+                    "NetworkAclId" : ""
+                 }
+              }
+         } 
+    },
+    {
+        "label": "Subnet Route Table Association",
+        "group": "Resources",
+        "service": "EC2",
+        "name": "NewSubnetRouteTableAssociation",
+        "template": {
+            "NewSubnetRouteTableAssociation": {
+               "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+               "Properties" : {
+                  "RouteTableId" : "",
+                  "SubnetId" : ""
+               }
+            } 
+            
+         } 
+    },
+    {
+        "label": "Volume",
+        "group": "Resources",
+        "service": "EC2",
+        "name": "NewVolume",
+        "template": {
+            "NewVolume": {
+               "Type":"AWS::EC2::Volume",
+               "Properties" : {
+                  "AvailabilityZone" : "",
+                  "Iops" : "",
+                  "Size" : "",
+                  "SnapshotId" : "",
+                  "Tags" : [],
+                  "VolumeType" : ""
+               }
+            }
+         } 
+    },
+    {
+        "label": "Volume Attacment",
+        "group": "Resources",
+        "service": "EC2",
+        "name": "NewVolumeAttachment",
+        "template": {
+            "NewVolumeAttachment": {
+               "Type":"AWS::EC2::VolumeAttachment",
+               "Properties" : {
+                  "Device" : "",
+                  "InstanceId" : "",
+                  "VolumeId" : ""
+               }
+            }
+         } 
+    },
+    {
+        "label": "VPC",
+        "group": "Resources",
+        "service": "EC2",
+        "name": "NewVPC",
+        "template": {
+            "NewVPC": {
+               "Type" : "AWS::EC2::VPC",
+               "Properties" : {
+                  "CidrBlock" : "",
+                  "InstanceTenancy" : "",
+                  "Tags" : []
+               }
+            }
+         } 
+    },
+    {
+        "label": "VPC DHCP Options Association",
+        "group": "Resources",
+        "service": "EC2",
+        "name": "NewVPCDHCPOptionsAssociation",
+        "template": {
+            "NewVPCDHCPOptionsAssociation": {
+                 "Type" : "AWS::EC2::VPCDHCPOptionsAssociation",
+                 "Properties" : {
+                     "VpcId" : "",
+                     "DhcpOptionsId" : ""
+                 }
+             }
+         } 
+    },
+    {
+        "label": "VPC Gateway Attachment",
+        "group": "Resources",
+        "service": "EC2",
+        "name": "NewVPCGatewayAttachment",
+        "template": {
+            "NewVPCGatewayAttachment": {
+               "Type" : "AWS::EC2::VPCGatewayAttachment",
+               "Properties" : {
+                  "VpcId" : "",
+                  "VpnGatewayId" : ""
+               }
+            }
+         } 
+    },
+    {
+        "label": "VPN Connection",
+        "group": "Resources",
+        "service": "EC2",
+        "name": "NewVPNConnection",
+        "template": {
+            "NewVPNConnection": {
+               "Type" : "AWS::EC2::VPNConnection",
+               "Properties" : {
+                  "Type" : "",
+                  "CustomerGatewayId" : "",
+                  "VpnGatewayId" : ""
+               }
+            } 
+         } 
+    },
+    {
+        "label": "VPN Gateway",
+        "group": "Resources",
+        "service": "EC2",
+        "name": "NewVPNGateway",
+        "template": {
+            "NewVPNGateway": {
+               "Type" : "AWS::EC2::VPNGateway",
+               "Properties" : {
+                  "Type" : "",
+                  "Tags" : []
+               }
+            }
+         } 
+    },
+    {
+        "label": "Cache Cluster",
+        "group": "Resources",
+        "service": "ElastiCache",
+        "name": "NewCacheCluster",
+        "template": {
+            "NewCacheCluster": {
+               "Type" : "AWS::ElastiCache::CacheCluster",
+               "Properties" :
+               {
+                  "AutoMinorVersionUpgrade" : "",
+                  "CacheNodeType" : "",
+                  "CacheParameterGroupName" : "",
+                  "CacheSecurityGroupNames" : [],
+                  "Engine" : "",
+                  "EngineVersion" : "",
+                  "NotificationTopicArn" : "",
+                  "NumCacheNodes" : "",
+                  "Port" : "",
+                  "PreferredAvailabilityZone" : "",
+                  "PreferredMaintenanceWindow" : ""
+               }
+            } 
+         } 
+    },
+    {
+        "label": "Parameter Group",
+        "group": "Resources",
+        "service": "ElastiCache",
+        "name": "NewCacheParameterGroup",
+        "template": {
+            "NewCacheParameterGroup": {
+                "Type": "AWS::ElastiCache::ParameterGroup",
+                "Properties": {
+                    "CacheParameterGroupFamily": "",
+                    "Description": "",
+                    "Properties": {}
+                }
+            }
+         } 
+    },
+    {
+        "label": "Security Group",
+        "group": "Resources",
+        "service": "ElastiCache",
+        "name": "NewCacheSecurityGroup",
+        "template": {
+            "NewCacheSecurityGroup": {
+                "Type": "AWS::ElastiCache::SecurityGroup",
+                "Properties": {
+                    "Description": ""
+                }
+            }
+         } 
+    },
+    {
+        "label": "Security Group Ingress",
+        "group": "Resources",
+        "service": "ElastiCache",
+        "name": "NewCacheSecurityGroupIngress",
+        "template": {
+            "NewCacheSecurityGroupIngress": {
+                "Type": "AWS::ElastiCache::SecurityGroupIngress",
+                "Properties": {
+                    "CacheSecurityGroupName": "",
+                    "EC2SecurityGroupName": ""
+                }
+            }
+         } 
+    },
+    {
+        "label": "Application",
+        "group": "Resources",
+        "service": "ElasticBeanstalk",
+        "name": "NewApplication",
+        "template": {
+            "NewApplication": {
+               "Type" : "AWS::ElasticBeanstalk::Application",
+               "Properties" : {
+                  "ApplicationVersions" : [ {
+                     "VersionLabel" : "Initial Version",
+                     "Description" : "Version 1.0",
+                     "SourceBundle" : {
+                        "S3Bucket" : "",
+                        "S3Key" : ""
+                     }
+                  } ],
+                  "ConfigurationTemplates" : [],
+                  "Description" : ""
+               }
+            }
+         } 
+    },
+    {
+        "label": "Environment",
+        "group": "Resources",
+        "service": "ElasticBeanstalk",
+        "name": "NewEnvironment",
+        "template": {
+            "NewEnviornment": {
+               "Type" : "AWS::ElasticBeanstalk::Environment",
+               "Properties" : {
+                  "ApplicationName" : "",
+                  "CNAMEPrefix" : "",
+                  "Description" :  "",
+                  "OptionSettings" : [],
+                  "OptionsToRemove" : [],
+                  "SolutionStackName" : "",
+                  "VersionLabel" : ""
+               }
+            }
+         } 
+    },
+    {
+        "label": "Load Balancer",
+        "group": "Resources",
+        "service": "ElasticLoadBalancing",
+        "name": "NewELB",
+        "template": {
+            "NewElb": {
+               "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+               "Properties": {
+                  "AppCookieStickinessPolicy" : [],
+                  "AvailabilityZones" : [],
+                  "HealthCheck" : {
+                       "HealthyThreshold" : "",
+                       "Interval" : "",
+                       "Target" : "",
+                       "Timeout" : "",
+                       "UnhealthyThreshold" : ""
+                  },
+                  "Instances" : [],
+                  "LBCookieStickinessPolicy" : [],
+                  "Listeners" : [],
+                  "Policies" : [],
+                  "Scheme" : "",
+                  "SecurityGroups" : [],
+                  "Subnets" : []
+               }
+            }
+         } 
+    },
+    {
+        "label": "Access Key",
+        "group": "Resources",
+        "service": "IAM",
+        "name": "NewAccessKey",
+        "template": {
+            "NewAccessKey": {
+               "Type": "AWS::IAM::AccessKey",
+               "Properties": {
+                  "Serial": "",
+                  "Status": "",
+                  "UserName": ""
+               }
+            }
+         } 
+    },
+    {
+        "label": "Group",
+        "group": "Resources",
+        "service": "IAM",
+        "name": "NewGroup",
+        "template": {
+            "NewGroup": {
+               "Type": "AWS::IAM::Group",
+               "Properties": {
+                  "Path": "",
+                  "Policies": []
+               }
+            }
+         } 
+    },
+    {
+        "label": "Instance Profile",
+        "group": "Resources",
+        "service": "IAM",
+        "name": "NewInstanceProfile",
+        "template": {
+            "NewInstanceProfile": {
+               "Type": "AWS::IAM::InstanceProfile",
+               "Properties": {
+                  "Path": "",
+                  "Roles": []
+               }
+            }
+         } 
+    },
+    {
+        "label": "Policy",
+        "group": "Resources",
+        "service": "IAM",
+        "name": "NewIAMPolicy",
+        "template": {
+            "NewIAMPolicy": {
+               "Type": "AWS::IAM::Policy",
+               "Properties": {
+                  "Groups" : [],
+                  "PolicyDocument" : {},
+                  "PolicyName" : "",
+                  "Roles" : [],
+                  "Users" : []
+               }
+            }
+         } 
+    },
+    {
+        "label": "Role",
+        "group": "Resources",
+        "service": "IAM",
+        "name": "NewIAMRole",
+        "template": {
+            "NewIAMRole": {
+               "Type": "AWS::IAM::Role",
+               "Properties": {
+                  "AssumeRolePolicyDocument": {},
+                  "Path": "",
+                  "Policies": []
+               }
+            }
+         } 
+    },
+    {
+        "label": "User",
+        "group": "Resources",
+        "service": "IAM",
+        "name": "NewIAMUser",
+        "template": {
+            "NewIAMUser": {
+               "Type": "AWS::IAM::User",
+               "Properties": {
+                  "Path": "",
+                  "Groups": [],
+                  "LoginProfile": { 
+                    "Password" : ""
+                  },
+                  "Policies": []
+               }
+            }
+         } 
+    },
+    {
+        "label": "User-to-Group Addition",
+        "group": "Resources",
+        "service": "IAM",
+        "name": "UserToGroupAddition",
+        "template": {
+            "UserToGroupAddition": {
+               "Type": "AWS::IAM::UserToGroupAddition",
+               "Properties": {
+                  "GroupName": "",
+                  "Users": []
+               }
+            }
+         } 
+    },
+    {
+        "label": "DB Instance",
+        "group": "Resources",
+        "service": "RDS",
+        "name": "NewDBInstance",
+        "template": {
+            "NewDBInstance": {
+               "Type" : "AWS::RDS::DBInstance",
+               "Properties" : {
+                  "AllocatedStorage" : "",
+                  "AutoMinorVersionUpgrade" : "",
+                  "AvailabilityZone" : "",
+                  "BackupRetentionPeriod" : "",
+                  "DBInstanceClass" : "",
+                  "DBName" : "",
+                  "DBParameterGroupName" : "",
+                  "DBSecurityGroups" : [],
+                  "DBSnapshotIdentifier" : "",
+                  "DBSubnetGroupName" : "",
+                  "Engine" : "",
+                  "EngineVersion" : "",
+                  "Iops" : "",
+                  "LicenseModel" : "",
+                  "MasterUsername" : "",
+                  "MasterUserPassword" : "",
+                  "MultiAZ" : "",
+                  "Port" : "",
+                  "PreferredBackupWindow" : "",
+                  "PreferredMaintenanceWindow" : ""
+               }
+            }
+         } 
+    },
+    {
+        "label": "DB Parameter Group",
+        "group": "Resources",
+        "service": "RDS",
+        "name": "NewDBParameterGroup",
+        "template": {
+            "NewDBParameterGroup": {
+               "Type": "AWS::RDS::DBParameterGroup",
+               "Properties" : {
+                  "Description" : "",
+                  "Family" : "",
+                  "Parameters" : {}
+               }
+            }
+         } 
+    },
+    {
+        "label": "DB Subnet Group",
+        "group": "Resources",
+        "service": "RDS",
+        "name": "NewDBSubnetGroup",
+        "template": {
+            "NewDBSubnetGroup": {
+                 "Type" : "AWS::RDS::DBSubnetGroup",
+                  "Properties" : {
+                      "DBSubnetGroupDescription" : "",
+                      "SubnetIds" :[]
+                  }
+            }
+         } 
+    },
+    {
+        "label": "DB Security Group",
+        "group": "Resources",
+        "service": "RDS",
+        "name": "NewDBSecurityGroup",
+        "template": {
+            "NewDBSecurityGroup": {
+               "Type" : "AWS::RDS::DBSecurityGroup",
+               "Properties" : {
+                  "EC2VpcId" : "",
+                  "DBSecurityGroupIngress" : [],
+                  "GroupDescription" : ""
+               }
+            } 
+         } 
+    },
+    {
+        "label": "DB Security Group Ingress",
+        "group": "Resources",
+        "service": "RDS",
+        "name": "NewDBSecurityGroupIngress",
+        "template": {
+            "NewDBSecurityGroupIngress": {
+                "Type": "AWS::RDS::DBSecurityGroupIngress",
+                "Properties": {
+                   "CIDRIP": "",
+                   "DBSecurityGroupName": "",
+                   "EC2SecurityGroupId": "",
+                   "EC2SecurityGroupName": ""
+                } 
+            }
+         } 
+    },
+    {
+        "label": "Record Set",
+        "group": "Resources",
+        "service": "Route53",
+        "name": "NewRecordSet",
+        "template": {
+            "NewRecordSet": {
+               "Type" : "AWS::Route53::RecordSet",
+               "Properties" : {
+                  "Comment" : "",
+                  "HostedZoneName" : "",
+                  "Name" : "",
+                  "Region" : "",
+                  "ResourceRecords" : [],
+                  "SetIdentifier" : "",
+                  "TTL" : "",
+                  "Type" : "",
+                  "Weight" : ""
+               }
+            }
+         } 
+    },
+    {
+        "label": "Record Set Group",
+        "group": "Resources",
+        "service": "Route53",
+        "name": "NewRecordSetGroup",
+        "template": {
+            "NewRecordSetGroup": {
+               "Type" : "AWS::Route53::RecordSetGroup",
+               "Properties" : {
+                  "HostedZoneName" : "",
+                  "RecordSets" : [],
+                  "Comment" : ""
+               }
+            }
+         } 
+    },
+    {
+        "label": "Bucket",
+        "group": "Resources",
+        "service": "S3",
+        "name": "NewBucket",
+        "template": {
+            "NewBucket": {
+                 "Type" : "AWS::S3::Bucket",
+                 "Properties" : {
+                     "AccessControl" : "",
+                     "WebsiteConfiguration" : {
+                         "IndexDocument" : "",
+                         "ErrorDocument" : ""
+                     }
+                 }
+              }
+         } 
+    },
+    {
+        "label": "Bucket Policy",
+        "group": "Resources",
+        "service": "S3",
+        "name": "NewBucketPolicy",
+        "template": {
+            "NewBucketPolicy": {
+                "Type": "AWS::S3::BucketPolicy",
+                "Properties": {
+                    "PolicyDocument": {},
+                    "Bucket": ""
+                }
+            }
+         } 
+    },
+    {
+        "label": "Simple DB Domain",
+        "group": "Resources",
+        "service": "SDB",
+        "name": "NewSDBDomiain",
+        "template": {
+            "NewSDBDomain": {
+                "Type": "AWS::SDB::Domain"
+            }    
+         } 
+    },
+    {
+        "label": "Topic Policy",
+        "group": "Resources",
+        "service": "SNS",
+        "name": "NewTopicPolicy",
+        "template": {
+            "NewTopicPolicy": {
+                "Type": "AWS::SNS::TopicPolicy",
+                "Properties": {
+                    "PolicyDocument": {},
+                    "Topics": []
+                }
+            }
+         } 
+    },
+    {
+        "label": "Topic",
+        "group": "Resources",
+        "service": "SNS",
+        "name": "NewTopic",
+        "template": {
+            "NewTopic": {
+                "Type": "AWS::SNS::Topic",
+                "Properties": {
+                   "DisplayName" : "",
+                   "Subscription" : [
+                        { "Endpoint": "", "Protocol": "" }
+                   ]
+                }     
+            }
+         } 
+    },
+    {
+        "label": "Queue",
+        "group": "Resources",
+        "service": "SQS",
+        "name": "NewQueue",
+        "template": {
+            "NewQueue": {
+               "Type": "AWS::SQS::Queue",
+               "Properties": {
+                  "VisibilityTimeout": ""
+               }
+            }
+         } 
+    },
+    {
+        "label": "Queue Policy",
+        "group": "Resources",
+        "service": "SQS",
+        "name": "NewQueuePolicy",
+        "template": {
+            "NewQueuePolicy": {
+                "Type": "AWS::SQS:QueuePolicy",
+                "Properties": {
+                    "PolicyDocument": {},
+                    "Queues": []
+                }
+            }
+         } 
+    },
+    {
+        "label": "Number",
+        "group": "Parameters",
+        "service": "Parameters",
+        "name": "NewNumberParameter",
+        "template": {
+            "NewNumberParameter": {
+              "Default": "",
+              "Description" : "",
+              "Type": "Number",
+              "MinValue": "",
+              "MaxValue": ""
+            }
+         } 
+    },
+    {
+        "label": "String",
+        "group": "Parameters",
+        "service": "Parameters",
+        "name": "NewStringParameter",
+        "template": {
+            "NewStringParameter": {
+              "NoEcho": "true",
+              "Description" : "",
+              "Type": "String",
+              "MinLength": "1",
+              "MaxLength": "15",
+              "AllowedPattern" : "[a-zA-Z0-9]*"
+            }
+         } 
+    },
+    {
+        "label": "List",
+        "group": "Parameters",
+        "service": "Parameters",
+        "name": "NewListParameter",
+        "template": {
+            "NewListParameter": {
+              "Type" : "CommaDelimitedList",
+              "Default" : "item1,item2",
+              "NoEcho" : "true"
+            }
+         } 
+    },
+    {
+        "label": "RegionMap",
+        "group": "Mappings",
+        "service": "Mappings",
+        "name": "RegionMap",
+        "template": {
+            "DefaultRegionMap": {
+                  "us-east-1" : { "32" : "ami-6411e20d", "64" : "ami-7a11e213" },
+                  "us-west-1" : { "32" : "ami-c9c7978c", "64" : "ami-cfc7978a" },
+                  "eu-west-1" : { "32" : "ami-37c2f643", "64" : "ami-31c2f645" },
+                  "ap-southeast-1" : { "32" : "ami-66f28c34", "64" : "ami-60f28c32" },
+                  "ap-northeast-1" : { "32" : "ami-9c03a89d", "64" : "ami-a003a8a1" }
+            }
+         } 
+    },
+    {
+        "label": "Basic Output",
+        "group": "Outputs",
+        "service": "Outputs",
+        "name": "NewOutput",
+        "template": {
+            "NewOutput" : {
+              "Description" : "Output of join",
+              "Value" : { "Fn::Join" : [ "", [ "http://", "www.", "mynewwebsite", ".com"]]}
+            }
+         } 
+    }
+]

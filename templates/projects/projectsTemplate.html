@@ -1,0 +1,76 @@
+<div>
+  	<div id="project_button_bar">
+  		<button id="project_back">Done</button>
+  		<button id="project_edit">Edit</button>
+  		<button id="project_delete">Delete</button>
+	</div>
+	<div class="intro">
+	  	<div id="project_main">
+	  	</div>  
+	</div>
+</div>
+
+<!-- Project specific ich templates -->
+<script type="text/html" id="project_item">
+    <div>
+       <a href="/#projects/{{ id }}" id="{{ id }}" class="projlink" name="{{ name }}">{{ name }}</a>
+    </div>
+</script>
+<script type="text/html" id="project_details">
+    <h3>{{ name }}</h3>
+        <ul>
+            <li>
+                <strong>Description:</strong>
+            </li>
+            <ul>
+                <li>{{ description }}</li>
+            </ul>
+            <li>
+                <strong>Members:</strong>
+            </li>
+            <ul>
+                {{#members}}
+                <li>{{ name }}</li>
+                {{/members}}
+            </ul>
+            <li>
+                <strong>Versions:</strong>
+            </li>
+            <ul>
+                {{#versions}}
+                <li>{{ number }}</li>
+                {{/versions}}
+            </ul>
+        </ul>
+</script>
+
+<script type="text/html" id="autocomplete">
+    <div>
+       <select id="completions" multiple size="5">
+           {{#options}}
+           <option>{{value}}</option>
+           {{/options}}
+       </select> 
+    </div>
+</script>
+
+<script type="text/html" id="resource_item">
+    <div>
+       <a href="#" id="{{ name }}" class="resource_link">{{ label }}</a>
+    </div>
+</script>
+
+<script type="text/html" id="new_project_window">
+        <div class="dialog_panel">
+            <ul class="horizlist">
+            </ul>
+        </div>
+</script>
+
+<script type="text/html" id="sample_project">
+        <a href="#" class="hover_panel" style="background-image: url({{icon}})">
+            <h3>{{name}}</h3>
+
+            <p>{{description}}</p>
+        </a>   
+</script>
