@@ -25,4 +25,5 @@ node_modules
 css/*.css
 .gitattributes
 .settings/
+.settings/*
 _SpecRunner.html
