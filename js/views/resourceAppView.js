@@ -14,19 +14,7 @@ define([
         'jquery.dataTables'
 ], function( $, _, Backbone, ich, Common ) {
     'use strict';
-
-    // Instances Application View
-    // ------------------------------
-
-    /**
-     * InstancesAppView is UI view list of cloud instances.
-     *
-     * @name InstancesAppView
-     * @constructor
-     * @category Resources
-     * @param {Object} initialization object.
-     * @returns {Object} Returns a ComputeAppView instance.
-     */
+    
     var ResourceAppView = Backbone.View.extend({
         selectedId: undefined,
         
