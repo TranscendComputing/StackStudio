@@ -1,0 +1,50 @@
+<div>
+   <div class="button_bar">
+        <ul id="action_menu">
+            <li>
+                <button id="create_button">Create New Volume</button>
+            </li>
+            <li style="z-index: 1000">
+                <a id="actions_button" href="#">Actions</a>
+                <ul>
+                    <li class="ui-state-disabled"><a href="#">Cancel</a></li>
+                    <li class="ui-state-disabled"><a href="#">Price History</a></li>                  
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <table id="resource_table" class="full_width">
+        <thead>
+            <tr>
+                <th>Request ID</th>
+                <th>Max Price</th>
+                <th>Image ID</th>
+                <th>Instance ID</th>
+                <th>Type</th>
+                <th>State</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    <div id="details" class="detail_panel"></div>
+</div>
+
+<script type="text/html" id="resource_detail">
+    <div id="detail_tabs">
+        <ul>
+            <li><a href="#tabs-1">Details</a></li>
+        </ul>
+        <div id="tabs-1" class="tab">
+            <div>Request ID: {{ spotInstanceRequestId }} </div>
+            <div>Instance ID: {{ launchSpecification.imageId }} </div>
+            <div>Monitoring Enabled: {{ launchSpecification.monitoring }} </div>
+            <div>Maximum Price: {{ spotPrice }} </div>
+            <div>Security Group(s): {{ groupSet }} </div>
+            <div>Availability Zone: {{ launchedAvailabilityZone }} </div>
+            <div>Request Persistence: {{ type }} </div>  
+        </div>
+    </div>
+</script>

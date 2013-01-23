@@ -1,0 +1,39 @@
+[
+    {
+        "launchSpecification": {
+            "blockDeviceMapping": [],
+            "groupSet": ["sg-72f99c1a"],
+            "imageId": "ami-e565ba8c",
+            "instanceType": "t1.micro", 
+            "monitoring": false
+        },
+        "spotInstanceRequestId": "sir-66d75811", 
+        "spotPrice": 0.001, 
+        "type": "one-time", 
+        "state": "open", 
+        "createTime": "2012-11-21 04:22:46 UTC", 
+        "productDescription": "Linux/UNIX"
+    },
+    {
+        "launchSpecification": {
+            "blockDeviceMapping": [
+                {
+                    "deviceName": "/dev/sda1",
+                    "deleteOnTermination": true
+                }
+            ],
+            "groupSet": ["sg-c4f89dac"],
+            "imageId": "ami-1624987f", 
+            "instanceType": "t1.micro", 
+            "monitoring": false
+        }, 
+        "spotInstanceRequestId": "sir-1d14a811", 
+        "spotPrice": 0.003, 
+        "type": "one-time", 
+        "state": "active", 
+        "instanceId": "i-c69870b6", 
+        "createTime": "2013-01-23 22:16:43 UTC", 
+        "productDescription": "Linux/UNIX", 
+        "launchedAvailabilityZone": "us-east-1b"
+    }
+ ]
