@@ -1,8 +1,23 @@
 <div>
     <div class="button_bar">
-        <button class="create_button">Create New Volume</button>
+        <ul id="action_menu">
+            <li>
+                <button id="create_button">Create New Volume</button>
+            </li>
+            <li style="z-index: 1000">
+                <a id="actions_button" href="#">Actions</a>
+                <ul>
+                    <li class="ui-state-disabled"><a href="#">Delete Volume</a></li>
+                    <li class="ui-state-disabled"><a href="#">Attach Volume</a></li>
+                    <li><a href="#">Detach Volume</a></li>
+                    <li class="ui-state-disabled"><a href="#">Force Detach</a></li>
+                    <li class="ui-state-disabled"><a href="#">Create Snapshot</a></li>
+                    <li class="ui-state-disabled"><a href="#">Change Auto-Enable IO Setting</a></li>                    
+                </ul>
+            </li>
+        </ul>
     </div>
-    <table class="resource_table full_width">
+    <table id="resource_table" class="full_width">
         <thead>
             <tr>
                 <th>Name</th>

@@ -11,7 +11,8 @@ define([
         'backbone',
         'icanhaz',
         'common',
-        'jquery.dataTables'
+        'jquery.dataTables',
+        'wijmo'
 ], function( $, _, Backbone, ich, Common ) {
     'use strict';
     
@@ -31,17 +32,22 @@ define([
         RowView: undefined,
         
         el: '#resource_app',
-
+        
         render: function() {
             this.$el.html(this.template);
             ich.refresh();
-            $('#create_button').button();
+            $('button').button();
+            $("#action_menu").menu({
+                position: { my: 'left top', at: 'left bottom'}
+            });
             this.$table = $('#resource_table').dataTable({"bJQueryUI": true});
             this.collection.on( 'add', this.addOne, this );
             this.collection.on( 'reset', this.addAll, this );
 
             // Fetch will pull results from the server
             this.collection.fetch();
+            
+            return this;
         },
         
         addOne: function( model ) {
@@ -59,6 +65,16 @@ define([
             if(this.selectedId) {
                 this.selectOne(this.selectedId, $("tr:contains("+this.selectedId+")"));
             }
+            /* //Add data and define columns
+            $(".resource_table").dataTable({
+                "aaData": this.collection.toJSON(),
+                "aoColumns": [
+                    { "mDataProp": "volumeId" },
+                    { "mDataProp": "name" },
+                    { "mDataProp": "size" }
+                ]
+            });
+             */
         },
         
         clickOne: function (event) {

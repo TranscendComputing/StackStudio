@@ -59,6 +59,13 @@ define([
 
         initialize: function() {
             this.render();
+            $("#action_menu").on( "menuselect", this.setAction );
+        },
+        
+        setAction: function(e, ui) {
+            console.log(e, ui);
+            console.log("PERFORMING ACTION");
+            return false
         }
 	});
     
