@@ -36,7 +36,7 @@ define([
 	var AwsBucketsAppView = AppView.extend({
 	    template: _.template(awsBucketAppTemplate),
 	    
-        modelStringIdentifier: "name",
+        modelStringIdentifier: "Name",
         
         idRowNumber: 2,
         

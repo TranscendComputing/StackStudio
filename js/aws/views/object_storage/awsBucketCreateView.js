@@ -9,7 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'text!templates/aws/object_storgae/awsBucketCreateTemplate.html',
+        'text!templates/aws/object_storage/awsBucketCreateTemplate.html',
         '/js/aws/models/object_storage/awsBucket.js',
         'icanhaz',
         'common',

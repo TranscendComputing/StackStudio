@@ -80,10 +80,13 @@ define([
         clickOne: function (event) {
             var id, parentNode;
             var rowData = this.$table.fnGetData(event.currentTarget);
-            console.log("ROW DATA", rowData);
             //TODO -- make more dynamic in order to allow user to define columns
             //Resource ID is currently second column
-            id = rowData[1];
+            if (rowData.length > 1) {
+                id = rowData[1];
+            } else {
+                id = rowData[0];
+            }
             Common.router.navigate("#resources/aws/"+this.type+"/"+this.subtype+"/"+id, {trigger: false});
             this.selectOne(id, event.currentTarget);
         },

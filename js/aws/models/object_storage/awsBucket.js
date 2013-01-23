@@ -26,11 +26,11 @@ define([
 
         /** Default attributes for compute */
         defaults: {
-			name: '',
-			prefix: '',
-			maxKeys: '',
-			isTruncated: '',
-			contents: []
+			Name: '',
+			Prefix: '',
+			MaxKeys: '',
+			IsTruncated: '',
+			Contents: []
 		},
 
 	    /**

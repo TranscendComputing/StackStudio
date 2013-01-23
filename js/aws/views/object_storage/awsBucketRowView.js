@@ -33,7 +33,7 @@ define([
 		    // otherwise; create a new row.
 			var added = $('#resource_table').dataTable().
 				fnAddData( [
-				            this.model.get("name")
+				            this.model.get("Name")
 				            ]
 			);
 			this.setElement( $(selector_i+(added[0]+1)+')') );
