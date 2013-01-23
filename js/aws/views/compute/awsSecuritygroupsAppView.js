@@ -11,37 +11,37 @@ define([
         'backbone',
         'views/resourceAppView',
         'text!templates/aws/compute/awsSecurityGroupAppTemplate.html',
-        '/js/aws/models/compute/awsInstance.js',
-        '/js/aws/collections/compute/awsInstances.js',
-        '/js/aws/views/compute/awsInstanceRowView.js',
-        '/js/aws/views/compute/awsInstanceCreateView.js',
+        '/js/aws/models/compute/awsSecurityGroup.js',
+        '/js/aws/collections/compute/awsSecurityGroups.js',
+        '/js/aws/views/compute/awsSecurityGroupRowView.js',
+        '/js/aws/views/compute/awsSecurityGroupCreateView.js',
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, ResourceAppView, awsInstanceAppTemplate, instance, instances, AwsInstanceRowView, AwsInstanceCreate, ich, Common ) {
+], function( $, _, Backbone, ResourceAppView, awsSecurityGroupAppTemplate, securitygroup, securitygroups, AwsSecurityGroupRowView, AwsSecurityGroupCreate, ich, Common ) {
     'use strict';
 
-    // Aws Instance Application View
+    // Aws Security Group Application View
     // ------------------------------
 
     /**
-     * AwsInstancesAppView is UI view list of cloud instances.
+     * AwsSecurityGroupsAppView is UI view list of aws security groups.
      *
-     * @name InstanceAppView
+     * @name AwsSecurityGroupsAppView
      * @constructor
      * @category Resources
      * @param {Object} initialization object.
-     * @returns {Object} Returns a AwsInstancesAppView instance.
+     * @returns {Object} Returns a AwsSecurityGroupsAppView instance.
      */
-    var AwsInstancesAppView = ResourceAppView.extend({
-        modelStringIdentifier: "instanceId",
-        idRowNumber: 2,
-        model: instance,
-        collection: instances,
+    var AwsSecurityGroupsAppView = ResourceAppView.extend({
+        modelStringIdentifier: "name",
+        idRowNumber: 1,
+        model: securitygroup,
+        collection: securitygroups,
         type: "compute",
-        subtype: "instances",
-        createView: AwsInstanceCreate,
-        rowView: AwsInstanceRowView,
+        subtype: "securitygroups",
+        createView: AwsSecurityGroupCreate,
+        rowView: AwsSecurityGroupRowView,
         
         events: {
             'click #create_button': 'createNew',
@@ -49,7 +49,7 @@ define([
         },
 
         initialize: function() {
-            var compiledTemplate = _.template(awsInstanceAppTemplate);
+            var compiledTemplate = _.template(awsSecurityGroupAppTemplate);
             this.$el.html(compiledTemplate);
             ich.refresh();
             $('#create_button').button();
@@ -63,5 +63,5 @@ define([
         }
     });
     
-    return AwsInstancesAppView;
+    return AwsSecurityGroupsAppView;
 });
