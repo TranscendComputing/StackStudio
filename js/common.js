@@ -65,6 +65,9 @@ requirejs.config({
         'jquery.jstree': {
            deps: ['jquery'] 
         },
+        'spinner': {
+            exports: 'Spinner'
+        },
         'wijutil': {
             deps: ['jquery-ui', 'jquery.mousewheel']  
         },
@@ -107,6 +110,7 @@ requirejs.config({
 		'icanhaz': 'ICanHaz',
 		'jquery.terminal': 'jquery.terminal-0.4.22',
 		'jquery.mousewheel': 'jquery.mousewheel-min',
+		'spinner': 'spin.min',
 		'wijlist': 'jquery.wijmo.wijlist',
 		'wijutil': 'jquery.wijmo.wijutil',
 		'wijsuperpanel': 'jquery.wijmo.wijsuperpanel',
