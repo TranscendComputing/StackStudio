@@ -42,7 +42,6 @@ require(['./common'], function (common) {
 		var specs = [];
 
 		specs.push('../../spec/console');
-		specs.push('../../spec/views/ResourceNavigationSpec');
 
 		$(function(){
 			require(specs, function(){
