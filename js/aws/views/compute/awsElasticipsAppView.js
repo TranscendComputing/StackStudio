@@ -38,7 +38,7 @@ define([
         
         modelStringIdentifier: "publicIp",
         
-        idRowNumber: 1,
+        idColumnNumber: 0,
         
         model: Elasticip,
         

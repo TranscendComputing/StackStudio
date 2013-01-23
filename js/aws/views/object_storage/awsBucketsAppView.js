@@ -39,7 +39,7 @@ define([
 	    
         modelStringIdentifier: "Name",
         
-        idRowNumber: 2,
+        idColumnNumber: 1,
         
         model: Bucket,
         

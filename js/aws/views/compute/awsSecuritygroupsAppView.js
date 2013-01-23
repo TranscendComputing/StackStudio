@@ -38,7 +38,7 @@ define([
         
         modelStringIdentifier: "name",
         
-        idRowNumber: 1,
+        idColumnNumber: 0,
         
         model: Securitygroup,
         

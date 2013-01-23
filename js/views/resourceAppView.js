@@ -21,7 +21,7 @@ define([
         
         modelStringIdentifier: undefined,
         
-        idRowNumber: 0,
+        idColumnNumber: 0,
         
         type: undefined,
         
@@ -82,11 +82,7 @@ define([
             var rowData = this.$table.fnGetData(event.currentTarget);
             //TODO -- make more dynamic in order to allow user to define columns
             //Resource ID is currently second column
-            if (rowData.length > 1) {
-                id = rowData[1];
-            } else {
-                id = rowData[0];
-            }
+            id = rowData[this.idColumnNumber];
             Common.router.navigate("#resources/aws/"+this.type+"/"+this.subtype+"/"+id, {trigger: false});
             this.selectOne(id, event.currentTarget);
         },

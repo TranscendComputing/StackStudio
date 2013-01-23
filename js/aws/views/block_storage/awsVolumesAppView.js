@@ -38,7 +38,7 @@ define([
 	    
         modelStringIdentifier: "volumeId",
         
-        idRowNumber: 2,
+        idColumnNumber: 1,
         
         model: Volume,
         

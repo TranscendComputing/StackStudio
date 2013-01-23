@@ -38,7 +38,7 @@ define([
         
         modelStringIdentifier: "instanceId",
         
-        idRowNumber: 2,
+        idColumnNumber: 1,
         
         model: Instance,
         
