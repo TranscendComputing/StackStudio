@@ -54,10 +54,6 @@ define([
 
             // Fetch will pull results from the server
             this.collection.fetch();
-            
-            if(this.selectedId) {
-                this.selectOne(this.selectedId, $("tr:contains("+this.selectedId+")"));
-            }
         },
         
         addOne: function( model ) {
@@ -71,6 +67,10 @@ define([
 
         addAll: function() {
             this.collection.each(this.addOne, this);
+            
+            if(this.selectedId) {
+                this.selectOne(this.selectedId, $("tr:contains("+this.selectedId+")"));
+            }
         },
         
         clickOne: function (event) {
