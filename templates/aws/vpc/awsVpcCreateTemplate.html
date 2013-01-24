@@ -1,0 +1,23 @@
+<div id="vpc_create">
+    <div>
+        <p>
+            A VPC is an isolated portion of the AWS cloud populated by AWS objects, such as Amazon EC2 instances.
+            Please use the Classless Inter-Domain Routing (CIDR) block format to specify your VPC's contiguous 
+            IP address range, for example, 10.0.0.0/16.  Please note that you can create a VPC no larger the /16.            
+        </p>
+        <table>
+            <tr>
+                <td>CIDR Block:</td>
+                <td>
+                    <input id="cidr_block_input" type="text" style="width:200px;"/>
+                </td>
+            </tr>
+            <tr>
+                <td>Tenancy:</td>
+                <td>
+                    <select id="tenancy_select" style="width:150px"></select>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

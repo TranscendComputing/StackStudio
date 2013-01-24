@@ -55,13 +55,13 @@ define([
         contents: undefined,
         
         events: {
-            'click #create_button': 'createNew',
+            'click .create_button': 'createNew',
             'click #resource_table tr': 'toggleActions'
         },
 
         initialize: function() {
             this.render();
-            $("#action_menu").on( "menuselect", this.setAction );
+            $(".action_menu").on( "menuselect", this.setAction );
         },
         
         setAction: function(e, ui) {
@@ -76,9 +76,7 @@ define([
             var bucketContents = rowData.Contents;
             var treeData = [];
             $.each(bucketContents, function(index, item) {
-                console.log(item);
                 $.each(item, function(property, value) {
-                    console.log(property, value);
                     if (property === "Key") {
                         treeData.push({
                             "data": {
@@ -88,7 +86,6 @@ define([
                     }
                 });
             });
-            console.log(bucketContents);
             $("#bucket_contents").jstree({ 
                 // List of active plugins
                 "plugins" : [ 

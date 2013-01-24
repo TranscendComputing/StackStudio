@@ -1,0 +1,30 @@
+<div id="subnet_create">
+    <div>
+        <p>
+            Please use the CIDR format to specify your subnet's IP address block (e.g.,
+            10.0.0.0/24).  Please note that block sizes must be between a /16 netmask and 
+            /28 netmask. You can create no more than 20 subnets per VPC. Also, please 
+            note that a subnet can be the same size as your VPC.         
+        </p>
+        <table>
+            <tr>
+                <td>VPC:</td>
+                <td>
+                    <select id="vpc_select" style="width:150px"></select>
+                </td>
+            </tr>
+            <tr>
+                <td>Availability Zone:</td>
+                <td>
+                    <select id="zone_select" style="width:150px"></select>
+                </td>
+            </tr>
+            <tr>
+                <td>CIDR Block:</td>
+                <td>
+                    <input id="cidr_block_input" type="text" style="width:200px;"/>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

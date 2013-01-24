@@ -243,13 +243,11 @@ define([
                     type = "compute";
                     subtype = "instances";
                 } else if (!subtype) {
-                    if (type === "compute") {
-                        subtype = "instances";
-                    } else if (type === "block_storage") {
-                        subtype = "volumes";
-                    } else if (type === "object_storage") {
-                        subtype = "buckets";
-                    }
+                    $.each(this.cloudDefinitions[cloudProvider].services, function(index, service) {
+                        if (service.type === type) {
+                            subtype = service.defaultSubtype;
+                        }
+                    });
                 }
                 
                 //Capitalize first letter of subtype for the file name

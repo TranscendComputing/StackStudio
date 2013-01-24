@@ -94,14 +94,23 @@ define([
             
             if(selectedModel) {
                 this.selectedId = id;
-                $("#details").html(ich.resource_detail(selectedModel.attributes));
-                $("#detail_tabs").tabs();
+                
+                if (ich.templates.resource_detail) {
+                    $("#details").html(ich.resource_detail(selectedModel.attributes));
+                    $("#detail_tabs").tabs();
+                    $('.create_button').button();
+                    $(".action_menu").menu({
+                        position: { my: 'left top', at: 'left bottom'}
+                    });
+                }
+            }else {
+                
             }
         },
         
         clearSelection: function () {
             this.$table.$('tr').removeClass('row_selected');
-            $('#details').html("");
+            $('#details').empty();
         },
         
         createNew : function () {

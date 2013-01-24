@@ -1,0 +1,100 @@
+<div>
+    <div class="button_bar">
+        <table>
+            <tr>
+                <td>
+                    <button class="create_button">Create Subnet</button>
+                </td>
+                <td>                    
+                    <ul class="action_menu">
+                        <li style="z-index: 1000">
+                            <a class="actions_button" href="#">Actions</a>
+                            <ul>
+                                <li><a href="#">Delete</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table id="resource_table" class="full_width">
+        <thead>
+            <tr>
+                <th>Subnet ID</th>
+                <th>State</th>
+                <th>VPC ID</th>
+                <th>CIDR</th>
+                <th>Available IPs</th>
+                <th>Availability Zone</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    <div id="details" class="detail_panel"></div>
+</div>
+
+<script type="text/html" id="resource_detail">
+    <div id="detail_tabs">
+        <ul>
+            <li><a href="#properties_tab">Details</a></li>
+            <li><a href="#route_table_tab">Route Table</a></li>
+            <li><a href="#network_acl_tab">Network ACL</a></li>
+        </ul>
+        <div id="properties_tab" class="tab">
+            <div>CIDR: {{ cidrBlock }}</div>
+            <div>VPC: {{ vpcId }}</div>
+            <div>Availability Zone: {{ availabilityZone }}</div>         
+        </div>
+        <div id="route_table_tab">
+            <h3>Route Table: {{ routeTable }}</h3>
+            <table class="display_table">
+                <thead>
+                    <tr>
+                        <th>Destination</th>
+                        <th>Target</th>
+                    </tr>
+                </thead>            
+                <tbody></tbody>
+                <tfoot></tfoot>
+            </table>
+        </div>
+        <div id="network_acl_tab">
+            <h3>Inbound:</h3>
+            <tr>
+                <table class="display_table">
+                    <thead>
+                        <tr>
+                            <th>Rule #</th>
+                            <th>Port (Service)</th>
+                            <th>Protocol</th>
+                            <th>Source</th>
+                            <th>Allow/Deny</th>
+                        </tr>
+                    </thead>            
+                    <tbody></tbody>
+                    <tfoot></tfoot>
+                </table>                
+            </tr>
+            <h3>Outbound:</h3>
+            <tr>
+                <table class="display_table">
+                    <thead>
+                        <tr>
+                            <th>Rule #</th>
+                            <th>Port (Service)</th>
+                            <th>Protocol</th>
+                            <th>Source</th>
+                            <th>Allow/Deny</th>
+                        </tr>
+                    </thead>            
+                    <tbody></tbody>
+                    <tfoot></tfoot>
+                </table>
+            </tr>            
+        </div>
+    </div>
+</script>
