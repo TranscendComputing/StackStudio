@@ -1,0 +1,13 @@
+[
+    {
+        "reservedInstancesId": "4b2293b4-5813-4cc8-9ce3-1957fc1dcfc8",
+        "instanceType": "m1.xlarge",
+        "availabilityZone": "us-east-1a",
+        "duration": "31536000",
+        "fixedPrice": "1820.0",
+        "usagePrice": "0.24",
+        "instanceCount": "3",
+        "productDescription": "Linux/UNIX",
+        "state": "active"
+    }
+]
