@@ -29,7 +29,14 @@ define([
             // otherwise; create a new row.
             var rowData = [];
             $.each(this.columns, function (index, value) {
-                rowData.push(model.get(value));
+                //split in case value is embedded in an object
+                var splitArray = value.split(".");
+                if(splitArray.length === 1) {
+                    rowData.push(model.get(value));
+                }else if(splitArray.length === 2){
+                    var valObject = model.get(splitArray[0]);
+                    rowData.push(valObject[splitArray[1]]);
+                }
             });
             var added = $('#resource_table').dataTable().fnAddData(rowData);
             this.setElement( $(selector_i+(added[0]+1)+')') );
