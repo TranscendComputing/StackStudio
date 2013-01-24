@@ -30,12 +30,12 @@ define([
             var rowData = [];
             $.each(this.columns, function (index, value) {
                 //split in case value is embedded in an object
-                var splitArray = value.split(".");
-                if(splitArray.length === 1) {
+                var valuePathArray = value.split(".");
+                if(valuePathArray.length === 1) {
                     rowData.push(model.get(value));
-                }else if(splitArray.length === 2){
-                    var valObject = model.get(splitArray[0]);
-                    rowData.push(valObject[splitArray[1]]);
+                }else if(valuePathArray.length === 2){
+                    var valObject = model.get(valuePathArray[0]);
+                    rowData.push(valObject[valuePathArray[1]]);
                 }
             });
             var added = $('#resource_table').dataTable().fnAddData(rowData);
