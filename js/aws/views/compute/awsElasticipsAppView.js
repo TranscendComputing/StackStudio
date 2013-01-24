@@ -53,7 +53,7 @@ define([
         RowView: AwsElasticIPsRowView,
         
         events: {
-            'click #create_button': 'createNew',
+            'click .create_button': 'createNew',
             'click #resource_table tbody': 'clickOne'
         },
 

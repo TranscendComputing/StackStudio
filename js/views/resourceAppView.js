@@ -36,7 +36,7 @@ define([
         render: function() {
             this.$el.html(this.template);
             ich.refresh();
-            $('.create_button').button();
+            $('button').button();
             $(".action_menu").menu({
                 position: { my: 'left top', at: 'left bottom'}
             });

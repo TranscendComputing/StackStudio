@@ -53,7 +53,7 @@ define([
         RowView: AwsInstanceRowView,
         
         events: {
-            'click #create_button': 'createNew',
+            'click .create_button': 'createNew',
             'click #resource_table tr': 'toggleActions'
         },
 
