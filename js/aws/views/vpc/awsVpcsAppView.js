@@ -13,12 +13,11 @@ define([
         'text!templates/aws/vpc/awsVpcAppTemplate.html',
         '/js/aws/models/vpc/awsVpc.js',
         '/js/aws/collections/vpc/awsVpcs.js',
-        '/js/aws/views/vpc/awsVpcRowView.js',
         '/js/aws/views/vpc/awsVpcCreateView.js',
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, AppView, awsVpcAppTemplate, Vpc, vpcs, AwsVpcRowView, AwsVpcCreateView, ich, Common ) {
+], function( $, _, Backbone, AppView, awsVpcAppTemplate, Vpc, vpcs, AwsVpcCreateView, ich, Common ) {
 	'use strict';
 
 	// Aws Application View
@@ -42,15 +41,15 @@ define([
         
         idRowNumber: 0,
         
+        columns:["vpcId","state","cidrBlock","dhcpOptionsId"],
+        
         collection: vpcs,
         
         type: "vpc",
         
         subtype: "vpcs",
         
-        CreateView: AwsVpcCreateView,
-        
-        RowView: AwsVpcRowView,
+        CreateView: AwsVpcCreateView,        
                 
         events: {
             'click .create_button': 'createNew',

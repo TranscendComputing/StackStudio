@@ -10,47 +10,47 @@ define([
         'underscore',
         'backbone',
         'views/resourceAppView',
-        'text!templates/aws/vpc/awsSubnetAppTemplate.html',
-        '/js/aws/models/vpc/awsSubnet.js',
-        '/js/aws/collections/vpc/awsSubnets.js',
-        '/js/aws/views/vpc/awsSubnetCreateView.js',
+        'text!templates/aws/vpc/awsRouteTableAppTemplate.html',
+        '/js/aws/models/vpc/awsRouteTable.js',
+        '/js/aws/collections/vpc/awsRouteTables.js',
+        '/js/aws/views/vpc/awsRouteTableCreateView.js',
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, AppView, awsSubnetAppTemplate, Subnet, subnets, AwsSubnetCreateView, ich, Common ) {
-	'use strict';
+], function( $, _, Backbone, ResourceAppView, awsRouteTableAppTemplate, RouteTable, routeTables, AwsRouteTableCreate, ich, Common ) {
+    'use strict';
 
-	// Aws Application View
-	// ------------------------------
+    // Aws RouteTable Application View
+    // ------------------------------
 
     /**
-     * Aws AppView is UI view list of cloud items.
+     * AwsRouteTablesAppView is UI view list of cloud routeTables.
      *
-     * @name AppView
+     * @name RouteTableAppView
      * @constructor
      * @category Resources
      * @param {Object} initialization object.
-     * @returns {Object} Returns an AwsAppView instance.
+     * @returns {Object} Returns a AwsRouteTablesAppView instance.
      */
-	var AwsSubnetsAppView = AppView.extend({
-	    template: _.template(awsSubnetAppTemplate),
-	    
-        modelStringIdentifier: "subnetId",
-                
-        model: Subnet,
+    var AwsRouteTablesAppView = ResourceAppView.extend({
+        template: _.template(awsRouteTableAppTemplate),
         
-        idRowNumber: 1,
+        modelStringIdentifier: "routeTableId",
         
-        columns: ["state","subnetId","vpcId","cidrBlock","availabiltyZone","availableIpAddressCount"],
+        columns: ["vpcId", "routeTableId"],
         
-        collection: subnets,
+        idColumnNumber: 1,
+        
+        model: RouteTable,
+        
+        collection: routeTables,
         
         type: "vpc",
         
-        subtype: "subnets",
+        subtype: "routeTables",
         
-        CreateView: AwsSubnetCreateView,
-                
+        CreateView: AwsRouteTableCreate,
+        
         events: {
             'click .create_button': 'createNew',
             'click #resource_table tr': 'toggleActions'
@@ -69,7 +69,6 @@ define([
         
         toggleActions: function(e) {
             this.clickOne(e);
-            
             $(".display_table").dataTable({
                "bPaginate": false,
                "bSortable": false,
@@ -78,12 +77,8 @@ define([
                "bLengthChange": false,
                "bJQueryUI": true
             });
-            
-            //console.log($(e.currentTarget).data());
-            //var rowData = $(e.currentTarget).data();
-            
         }
-	});
+    });
     
-	return AwsSubnetsAppView;
+    return AwsRouteTablesAppView;
 });

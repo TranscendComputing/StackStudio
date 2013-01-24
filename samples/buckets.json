@@ -1,6 +1,5 @@
 [
 {
-    "id": 1,
     "Name" : "bucket1",
     "Delimeter": "",
     "IsTruncated": false,
@@ -23,7 +22,6 @@
     ]
 },
 {
-    "id": 2,
     "Name" : "testbucket",
     "Delimeter": "",
     "IsTruncated": false,

@@ -40,7 +40,7 @@ define([
         
         columns: ["Name"],
         
-        idColumnNumber: 1,
+        idColumnNumber: 0,
         
         model: Bucket,
         
@@ -72,6 +72,7 @@ define([
         
         toggleActions: function(e) {
             this.clickOne(e);
+            console.log($(e.currentTarget).data());
             var rowData = $(e.currentTarget).data();
             var bucketContents = rowData.Contents;
             var treeData = [];

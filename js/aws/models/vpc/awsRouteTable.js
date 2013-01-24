@@ -11,44 +11,53 @@ define([
 ], function( $, Backbone ) {
     'use strict';
 
-    // Base Subnet Model
+    // Base RouteTable Model
     // ----------
 
     /**
      *
-     * @name Subnet
+     * @name RouteTable
      * @constructor
      * @category ObjectStorage
      * @param {Object} initialization object.
-     * @returns {Object} Returns a Subnet instance.
+     * @returns {Object} Returns a RouteTable instance.
      */
-    var Subnet = Backbone.Model.extend({
+    var RouteTable = Backbone.Model.extend({
 
-        idAttribute: "subnetId",
+        idAttribute: "routeTableId",
         
         /** Default attributes for compute */
         defaults: {
-            subnetId: '',
+            routeTableId: '',
             vpcId: '',
-            state: '',
-            cidrBlock: '10.0.0.0/16',
-            availableIpAddressCount: '',
-            tagSet: [],
-            availabilityZone: ''
+            routeSet: [],
+            associationSet: [],
+            propagatingVgwSet: [],
+            tagSet: []
 		},
 
 	    /**
 	     * Override the base Backbone set method, for debugging.
 	     *
-	     * @memberOf Subnet
+	     * @memberOf RouteTable
 	     * @category Internal
 	     * @param {Object} hash of attribute values to set.
 	     * @param {Object} (optional) options to tweak (see Backbone docs).
 	     */
 		set: function(attributes, options) {
 		    Backbone.Model.prototype.set.apply(this, arguments);
+		},
+		
+		/*
+		get: function(attr) {
+		    if (typeof this[attr] == 'function') {
+		        return this[attr]();
+		    }
+		    
+		    return Backbone.Model.prototype.get.call(this, attr);
 		}
+		*/
     });
 
-    return Subnet;
+    return RouteTable;
 });

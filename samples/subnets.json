@@ -9,7 +9,7 @@
     },
     {
         "subnetId" : "subnet-1234asdf",
-        "vpcId" : "vpc-1a2b3c4d",
+        "vpcId" : "vpc-2a2b3c4d",
         "state": "available",
         "cidrBlock" : "10.0.2.0/24",
         "availableIpAddressCount": 125,
@@ -25,7 +25,7 @@
     },
     {
         "subnetId" : "subnet-qwer1235",
-        "vpcId" : "vpc-xcv12sd2",
+        "vpcId" : "vpc-xdv12sd2",
         "state": "available",
         "cidrBlock" : "10.0.1.0/24",
         "availableIpAddressCount": 250,
@@ -33,7 +33,7 @@
     },
     {
         "subnetId" : "subnet-asdfer34",
-        "vpcId" : "vpc-1a2b3c4d",
+        "vpcId" : "vpc-3a2b3c4d",
         "state": "available",
         "cidrBlock" : "10.0.1.0/24",
         "availableIpAddressCount": 250,

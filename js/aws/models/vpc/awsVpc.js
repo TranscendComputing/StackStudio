@@ -24,6 +24,8 @@ define([
      */
     var Vpc = Backbone.Model.extend({
 
+        idAttribute: "vpcId",
+        
         /** Default attributes for compute */
         defaults: {
             vpcId: '',

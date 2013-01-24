@@ -24,6 +24,8 @@ define([
      */
     var Bucket = Backbone.Model.extend({
 
+        idAttribute: "Name",
+        
         /** Default attributes for compute */
         defaults: {
 			Name: '',
