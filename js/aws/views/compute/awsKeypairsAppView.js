@@ -13,12 +13,11 @@ define([
         'text!templates/aws/compute/awsKeyPairAppTemplate.html',
         '/js/aws/models/compute/awsKeyPair.js',
         '/js/aws/collections/compute/awsKeyPairs.js',
-        '/js/aws/views/compute/awsKeyPairRowView.js',
         '/js/aws/views/compute/awsKeyPairCreateView.js',
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, ResourceAppView, awsKeyPairAppTemplate, Keypair, keypairs, AwsKeyPairRowView, AwsKeyPairCreate, ich, Common ) {
+], function( $, _, Backbone, ResourceAppView, awsKeyPairAppTemplate, Keypair, keypairs, AwsKeyPairCreate, ich, Common ) {
     'use strict';
 
     // Aws Security Group Application View
@@ -38,6 +37,8 @@ define([
         
         modelStringIdentifier: "name",
         
+        columns: ["name", "fingerprint"],
+        
         idColumnNumber: 0,
         
         model: Keypair,
@@ -49,8 +50,6 @@ define([
         subtype: "keypairs",
         
         CreateView: AwsKeyPairCreate,
-        
-        RowView: AwsKeyPairRowView,
         
         events: {
             'click .create_button': 'createNew',

@@ -13,13 +13,12 @@ define([
         'text!templates/aws/object_storage/awsBucketAppTemplate.html',
         '/js/aws/models/object_storage/awsBucket.js',
         '/js/aws/collections/object_storage/awsBuckets.js',
-        '/js/aws/views/object_storage/awsBucketRowView.js',
         '/js/aws/views/object_storage/awsBucketCreateView.js',
         'icanhaz',
         'common',
         'jquery.dataTables',
         'jquery.jstree'
-], function( $, _, Backbone, AppView, awsBucketAppTemplate, Bucket, buckets, AwsBucketRowView, AwsBucketCreateView, ich, Common ) {
+], function( $, _, Backbone, AppView, awsBucketAppTemplate, Bucket, buckets, AwsBucketCreateView, ich, Common ) {
 	'use strict';
 
 	// Aws Application View
@@ -39,6 +38,8 @@ define([
 	    
         modelStringIdentifier: "Name",
         
+        columns: ["Name"],
+        
         idColumnNumber: 1,
         
         model: Bucket,
@@ -50,8 +51,6 @@ define([
         subtype: "buckets",
         
         CreateView: AwsBucketCreateView,
-        
-        RowView: AwsBucketRowView,
         
         contents: undefined,
         

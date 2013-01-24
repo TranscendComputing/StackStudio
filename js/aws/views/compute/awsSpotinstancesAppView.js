@@ -13,12 +13,11 @@ define([
         'text!templates/aws/compute/awsSpotInstanceAppTemplate.html',
         '/js/aws/models/compute/awsSpotInstanceRequest.js',
         '/js/aws/collections/compute/awsSpotInstanceRequests.js',
-        '/js/aws/views/compute/awsSpotInstanceRowView.js',
         '/js/aws/views/compute/awsSpotInstanceCreateView.js',
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, ResourceAppView, awsSpotInstanceAppTemplate, Spotinstance, spotinstances, AwsSpotInstanceRowView, AwsSpotInstanceCreate, ich, Common ) {
+], function( $, _, Backbone, ResourceAppView, awsSpotInstanceAppTemplate, Spotinstance, spotinstances, AwsSpotInstanceCreate, ich, Common ) {
     'use strict';
 
     // Aws Spot Instance Application View
@@ -38,6 +37,8 @@ define([
         
         modelStringIdentifier: "spotInstanceRequestId",
         
+        columns: ["spotInstanceRequestId", "spotPrice", "launchSpecification.imageId", "instanceId", "launchSpecification.instanceType", "state"],
+        
         idColumnNumber: 0,
         
         model: Spotinstance,
@@ -49,8 +50,6 @@ define([
         subtype: "spotinstance",
         
         CreateView: AwsSpotInstanceCreate,
-        
-        RowView: AwsSpotInstanceRowView,
         
         events: {
             'click .create_button': 'createNew',

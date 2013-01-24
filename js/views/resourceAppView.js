@@ -11,15 +11,18 @@ define([
         'backbone',
         'icanhaz',
         'common',
+        'views/resourceRowView',
         'jquery.dataTables',
         'wijmo'
-], function( $, _, Backbone, ich, Common ) {
+], function( $, _, Backbone, ich, Common , ResourceRowView ) {
     'use strict';
     
     var ResourceAppView = Backbone.View.extend({
         selectedId: undefined,
         
         modelStringIdentifier: undefined,
+        
+        columns: [],
         
         idColumnNumber: 0,
         
@@ -28,8 +31,6 @@ define([
         subtype: undefined,
         
         CreateView: undefined,
-        
-        RowView: undefined,
         
         el: '#resource_app',
         
@@ -54,8 +55,8 @@ define([
             if (model.get(this.modelStringIdentifier) === "") {
                 return;
             }
-            var RowView = this.RowView;
-            var view = new RowView({ model: model });
+            var view = new ResourceRowView({ model: model });
+            view.columns = this.columns;
             view.render();
         },
 
@@ -65,23 +66,12 @@ define([
             if(this.selectedId) {
                 this.selectOne(this.selectedId, $("tr:contains("+this.selectedId+")"));
             }
-            /* //Add data and define columns
-            $(".resource_table").dataTable({
-                "aaData": this.collection.toJSON(),
-                "aoColumns": [
-                    { "mDataProp": "volumeId" },
-                    { "mDataProp": "name" },
-                    { "mDataProp": "size" }
-                ]
-            });
-             */
         },
         
         clickOne: function (event) {
             var id, parentNode;
             var rowData = this.$table.fnGetData(event.currentTarget);
             //TODO -- make more dynamic in order to allow user to define columns
-            //Resource ID is currently second column
             id = rowData[this.idColumnNumber];
             Common.router.navigate("#resources/aws/"+this.type+"/"+this.subtype+"/"+id, {trigger: false});
             this.selectOne(id, event.currentTarget);

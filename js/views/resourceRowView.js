@@ -12,7 +12,9 @@ define([
 ], function( $, _, Backbone ) {
     'use strict';
 
-    var ElasticIPRowView = Backbone.View.extend({
+    var ResourceRowView = Backbone.View.extend({
+        columns: [],
+
         initialize: function() {
             this.model.on( 'change', this.render, this );
             this.model.on( 'destroy', this.remove, this );
@@ -21,20 +23,20 @@ define([
 
         // Populate the column values in the table with the model.
         render: function() {
+            var model = this.model;
             var selector_i = "#resource_table tr:nth-child(";
             // TODO: if there's an existing row, update it.
             // otherwise; create a new row.
-            var added = $('#resource_table').dataTable().
-                fnAddData( [
-                            this.model.get("publicIp"),
-                            this.model.get("instanceId"),
-                            this.model.get("domain")
-                ]
-            );
+            var rowData = [];
+            $.each(this.columns, function (index, value) {
+                rowData.push(model.get(value));
+            });
+            var added = $('#resource_table').dataTable().fnAddData(rowData);
             this.setElement( $(selector_i+(added[0]+1)+')') );
+            this.$el.data(model.attributes);
             return this;
         }
     });
 
-    return ElasticIPRowView;
+    return ResourceRowView;
 });

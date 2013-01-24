@@ -13,12 +13,11 @@ define([
         'text!templates/aws/block_storage/awsVolumeAppTemplate.html',
         '/js/aws/models/block_storage/awsVolume.js',
         '/js/aws/collections/block_storage/awsVolumes.js',
-        '/js/aws/views/block_storage/awsVolumeRowView.js',
         '/js/aws/views/block_storage/awsVolumeCreateView.js',
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, AppView, awsVolumeAppTemplate, Volume, volumes, AwsVolumeRowView, AwsVolumeCreateView, ich, Common ) {
+], function( $, _, Backbone, AppView, awsVolumeAppTemplate, Volume, volumes, AwsVolumeCreateView, ich, Common ) {
 	'use strict';
 
 	// Aws Application View
@@ -38,6 +37,8 @@ define([
 	    
         modelStringIdentifier: "volumeId",
         
+        columns: ["name", "volumeId", "size", "available"],
+        
         idColumnNumber: 1,
         
         model: Volume,
@@ -49,8 +50,6 @@ define([
         subtype: "volumes",
         
         CreateView: AwsVolumeCreateView,
-        
-        RowView: AwsVolumeRowView,
         
         events: {
             'click #create_button': 'createNew',

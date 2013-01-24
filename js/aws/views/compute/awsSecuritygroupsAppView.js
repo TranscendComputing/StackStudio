@@ -13,12 +13,11 @@ define([
         'text!templates/aws/compute/awsSecurityGroupAppTemplate.html',
         '/js/aws/models/compute/awsSecurityGroup.js',
         '/js/aws/collections/compute/awsSecurityGroups.js',
-        '/js/aws/views/compute/awsSecurityGroupRowView.js',
         '/js/aws/views/compute/awsSecurityGroupCreateView.js',
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, ResourceAppView, awsSecurityGroupAppTemplate, Securitygroup, securitygroups, AwsSecurityGroupRowView, AwsSecurityGroupCreate, ich, Common ) {
+], function( $, _, Backbone, ResourceAppView, awsSecurityGroupAppTemplate, Securitygroup, securitygroups, AwsSecurityGroupCreate, ich, Common ) {
     'use strict';
 
     // Aws Security Group Application View
@@ -38,6 +37,8 @@ define([
         
         modelStringIdentifier: "name",
         
+        columns: ["name", "description"],
+        
         idColumnNumber: 0,
         
         model: Securitygroup,
@@ -49,8 +50,6 @@ define([
         subtype: "securitygroups",
         
         CreateView: AwsSecurityGroupCreate,
-        
-        RowView: AwsSecurityGroupRowView,
         
         events: {
             'click .create_button': 'createNew',

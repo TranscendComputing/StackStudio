@@ -13,12 +13,11 @@ define([
         'text!templates/aws/compute/awsElasticIPAppTemplate.html',
         '/js/aws/models/compute/awsElasticIP.js',
         '/js/aws/collections/compute/awsElasticIPs.js',
-        '/js/aws/views/compute/awsElasticIPsRowView.js',
         '/js/aws/views/compute/awsElasticIPsCreateView.js',
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, ResourceAppView, awsElasticIPAppTemplate, Elasticip, elasticips, AwsElasticIPsRowView, AwsElasticIPsCreate, ich, Common ) {
+], function( $, _, Backbone, ResourceAppView, awsElasticIPAppTemplate, Elasticip, elasticips, AwsElasticIPsCreate, ich, Common ) {
     'use strict';
 
     // Aws Security Group Application View
@@ -38,6 +37,8 @@ define([
         
         modelStringIdentifier: "publicIp",
         
+        columns: ["publicIp", "instanceId", "domain"],
+        
         idColumnNumber: 0,
         
         model: Elasticip,
@@ -50,11 +51,9 @@ define([
         
         CreateView: AwsElasticIPsCreate,
         
-        RowView: AwsElasticIPsRowView,
-        
         events: {
             'click .create_button': 'createNew',
-            'click #resource_table tbody': 'clickOne'
+            'click #resource_table tr': 'clickOne'
         },
 
         initialize: function() {

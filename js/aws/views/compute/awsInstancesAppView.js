@@ -13,12 +13,11 @@ define([
         'text!templates/aws/compute/awsInstanceAppTemplate.html',
         '/js/aws/models/compute/awsInstance.js',
         '/js/aws/collections/compute/awsInstances.js',
-        '/js/aws/views/compute/awsInstanceRowView.js',
         '/js/aws/views/compute/awsInstanceCreateView.js',
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, ResourceAppView, awsInstanceAppTemplate, Instance, instances, AwsInstanceRowView, AwsInstanceCreate, ich, Common ) {
+], function( $, _, Backbone, ResourceAppView, awsInstanceAppTemplate, Instance, instances, AwsInstanceCreate, ich, Common ) {
     'use strict';
 
     // Aws Instance Application View
@@ -38,6 +37,8 @@ define([
         
         modelStringIdentifier: "instanceId",
         
+        columns: ["name", "instanceId", "keyName", "running"],
+        
         idColumnNumber: 1,
         
         model: Instance,
@@ -49,8 +50,6 @@ define([
         subtype: "instances",
         
         CreateView: AwsInstanceCreate,
-        
-        RowView: AwsInstanceRowView,
         
         events: {
             'click .create_button': 'createNew',

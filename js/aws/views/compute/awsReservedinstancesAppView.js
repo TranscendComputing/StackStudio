@@ -13,12 +13,11 @@ define([
         'text!templates/aws/compute/awsReservedInstanceAppTemplate.html',
         '/js/aws/models/compute/awsReservedInstance.js',
         '/js/aws/collections/compute/awsReservedInstances.js',
-        '/js/aws/views/compute/awsReservedInstanceRowView.js',
         '/js/aws/views/compute/awsReservedInstanceCreateView.js',
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, ResourceAppView, awsReservedInstanceAppTemplate, Reservedinstance, reservedinstances, AwsReservedInstanceRowView, AwsReservedInstanceCreate, ich, Common ) {
+], function( $, _, Backbone, ResourceAppView, awsReservedInstanceAppTemplate, Reservedinstance, reservedinstances, AwsReservedInstanceCreate, ich, Common ) {
     'use strict';
 
     // Aws Reserved Instance Application View
@@ -38,6 +37,8 @@ define([
         
         modelStringIdentifier: "reservedInstancesId",
         
+        columns: ["reservedInstancesId", "instanceType", "state"],
+        
         idColumnNumber: 0,
         
         model: Reservedinstance,
@@ -49,8 +50,6 @@ define([
         subtype: "reservedinstances",
         
         CreateView: AwsReservedInstanceCreate,
-        
-        RowView: AwsReservedInstanceRowView,
         
         events: {
             'click .create_button': 'createNew',
