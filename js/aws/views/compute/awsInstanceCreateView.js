@@ -60,7 +60,7 @@ define([
             this.$el.dialog({
                 autoOpen: true,
                 title: "Create Instance",
-                width:500,
+                width:575,
                 minHeight: 150,
                 resizable: false,
                 modal: true,
@@ -106,7 +106,7 @@ define([
                 $('#az_select')
                     .append($("<option></option>")
                     .attr("value",index)
-                    .text(value)); 
+                    .text(value));
             });
             $("#az_select").selectmenu();
            
