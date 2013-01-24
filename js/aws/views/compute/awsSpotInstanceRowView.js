@@ -39,6 +39,7 @@ define([
                 ]
             );
             this.setElement( $(selector_i+(added[0]+1)+')') );
+            this.$el.data(this.model.toJSON());
             return this;
         }
     });
