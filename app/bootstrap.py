@@ -17,8 +17,6 @@
 import webapp2
 import logging
 import os
-from datetime import datetime
-from google.appengine.ext.webapp import template
 
 _DEBUG = True
 

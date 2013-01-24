@@ -18,7 +18,6 @@ import webapp2
 import logging
 import os
 from datetime import datetime
-from google.appengine.ext.webapp import template
 
 import urllib2
 from urllib2 import HTTPError
