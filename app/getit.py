@@ -19,9 +19,9 @@ import logging
 import os
 from datetime import datetime
 from google.appengine.ext.webapp import template
-from google.appengine.ext import db
 
 import urllib2
+from urllib2 import HTTPError
 
 _DEBUG = True
 
@@ -47,7 +47,11 @@ class ProxyHandler(webapp2.RequestHandler):
     """
 
     def get(self):
-        target_url = self.request.GET['url']
+        try:
+            target_url = self.request.GET['url']
+        except:
+            self.response.set_status(404)
+            return
         logging.info("Fetching %s" % target_url)
         headers = {}
         req = urllib2.Request(target_url, headers=headers)
@@ -57,6 +61,12 @@ class ProxyHandler(webapp2.RequestHandler):
             proxied_response = opener.open(req)
         except StopIteration, e:
             self.redirect(e.message, permanent=False)
+            return
+        except ValueError, e:
+            self.response.set_status(400)
+            return
+        except urllib2.HTTPError, http_error:
+            self.response.set_status(http_error.code)
             return
         chunk = True
         while chunk:
@@ -82,4 +92,4 @@ class ProxyHandler(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([
     ('/getit', ProxyHandler),
-], debug=True)
+], debug=_DEBUG)

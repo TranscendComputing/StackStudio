@@ -5,6 +5,9 @@ api_version: 1
 threadsafe: yes
 
 handlers:
+
+# Static files
+
 - url: /favicon\.ico
   static_files: images/favicon/favicon.ico
   upload: images/favicon/favicon\.ico
@@ -31,11 +34,12 @@ handlers:
   static_dir: templates
   expiration: 1m
 
-#- url: /remote_api
-#  script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
+# GAE internal handlers
 
-#- url: /shell
-#  script: shell.py
+- url: /_ah/warmup
+  script: app.bootstrap.app
+
+# Application handlers
 
 - url: /
   static_files: stackplace.html
@@ -46,14 +50,23 @@ handlers:
   upload: github\.html
 
 - url: /getit.*
-  script: getit.app
+  script: app.getit.app
 
 - url: /samples
   static_dir: samples
   expiration: 1m
 
+error_handlers:
+  - file: 500.html
+
+  - error_code: over_quota
+    file: 500.html
+
 builtins:
 - remote_api: on
+
+inbound_services:
+- warmup
 
 libraries:
 - name: webapp2
