@@ -107,7 +107,7 @@ requirejs.config({
         'jquery-ui': '//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min',
         'underscore': '//cdnjs.cloudflare.com/ajax/libs/lodash.js/1.0.0-rc.3/lodash.min',
         'backbone': '//cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.10/backbone-min',
-        'icanhaz': 'iCanHaz',
+        'icanhaz': 'ICanHaz',
         'jquery.terminal': 'jquery.terminal-0.4.22',
         'jquery.mousewheel': 'jquery.mousewheel-min',
         'spinner': 'spin.min',
