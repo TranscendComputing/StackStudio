@@ -253,12 +253,9 @@ define([
                 
                 //Capitalize first letter of subtype for the file name
                 var capSubtype = subtype.charAt(0).toUpperCase() + subtype.slice(1); 
-                requirejs.config({
-                    paths: {
-                        "resourceAppView": "../"+cloudProvider+"/views/"+type+"/"+cloudProvider+capSubtype+"AppView"
-                    }
-                });
-                require(["resourceAppView"], function (AppView) {
+                var appPath = "../"+cloudProvider+"/views/"+type+"/"+cloudProvider+capSubtype+"AppView";
+
+                require([appPath], function (AppView) {
                     console.log(cloudProvider+" "+type+" app loading...");
                     if (this.selectedService === type) {
                         return;
@@ -277,6 +274,7 @@ define([
                         Common.router.navigate("#resources/"+cloudProvider+"/"+type+"/"+subtype, {trigger: true});
                     } 
                 });
+                
             }
         }
 	});

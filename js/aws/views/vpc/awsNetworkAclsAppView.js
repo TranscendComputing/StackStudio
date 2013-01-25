@@ -10,14 +10,14 @@ define([
         'underscore',
         'backbone',
         'views/resourceAppView',
-        'text!templates/aws/vpc/awsSubnetAppTemplate.html',
-        '/js/aws/models/vpc/awsSubnet.js',
-        '/js/aws/collections/vpc/awsSubnets.js',
-        '/js/aws/views/vpc/awsSubnetCreateView.js',
+        'text!templates/aws/vpc/awsNetworkAclAppTemplate.html',
+        '/js/aws/models/vpc/awsNetworkAcl.js',
+        '/js/aws/collections/vpc/awsNetworkAcls.js',
+        '/js/aws/views/vpc/awsNetworkAclCreateView.js',
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, AppView, awsSubnetAppTemplate, Subnet, subnets, AwsSubnetCreateView, ich, Common ) {
+], function( $, _, Backbone, AppView, awsNetworkAclAppTemplate, NetworkAcl, networkAcls, AwsNetworkAclCreateView, ich, Common ) {
 	'use strict';
 
 	// Aws Application View
@@ -32,24 +32,24 @@ define([
      * @param {Object} initialization object.
      * @returns {Object} Returns an AwsAppView instance.
      */
-	var AwsSubnetsAppView = AppView.extend({
-	    template: _.template(awsSubnetAppTemplate),
+	var AwsNetworkAclsAppView = AppView.extend({
+	    template: _.template(awsNetworkAclAppTemplate),
 	    
-        modelStringIdentifier: "subnetId",
+        modelStringIdentifier: "networkAclId",
                 
-        model: Subnet,
+        model: NetworkAcl,
         
-        idColumnNumber: 1,
+        idColumnNumber: 0,
         
-        columns: ["state","subnetId","vpcId","cidrBlock","availabiltyZone","availableIpAddressCount"],
+        columns: ["networkAclId","vpcId", "default"],
         
-        collection: subnets,
+        collection: networkAcls,
         
         type: "vpc",
         
-        subtype: "subnets",
+        subtype: "networkAcls",
         
-        CreateView: AwsSubnetCreateView,
+        CreateView: AwsNetworkAclCreateView,
                 
         events: {
             'click .create_button': 'createNew',
@@ -79,11 +79,20 @@ define([
                "bJQueryUI": true
             });
             
-            //console.log($(e.currentTarget).data());
-            //var rowData = $(e.currentTarget).data();
-            
+            var rowData = $(e.currentTarget).data();
+            $.each(rowData.entrySet, function(index, entry) {
+                var selector = (entry.egress === "true") ? "#outbound_table" : "#inbound_table";
+                var portRange = entry.portRange ? (entry.portRange.from + "-" + entry.portRange.to) : "ALL";                 
+                $(selector).dataTable().fnAddData([
+                    entry.ruleNumber,
+                    portRange,
+                    entry.protocol,
+                    entry.cidrBlock,
+                    entry.ruleAction.toUpperCase()
+                ]);
+            });
         }
 	});
     
-	return AwsSubnetsAppView;
+	return AwsNetworkAclsAppView;
 });

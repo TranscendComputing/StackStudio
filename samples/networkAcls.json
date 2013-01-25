@@ -1,0 +1,69 @@
+[
+    {
+         "networkAclId": "acl-5d659634",
+         "vpcId": "vpc-5266953b",
+         "default": "false",
+         "entrySet":[
+            {
+                 "ruleNumber": "110",
+                 "protocol": "6",
+                 "ruleAction": "allow",
+                 "egress": "true",
+                 "cidrBlock": "0.0.0.0/0",
+                 "portRange": {
+                   "from": "49152",
+                   "to": "65535"
+                 }
+             },
+             {
+                 "ruleNumber": "32767",
+                 "protocol": "all",
+                 "ruleAction": "deny",
+                 "egress": "true",
+                 "cidrBlock": "0.0.0.0/0"
+             },
+             {
+                 "ruleNumber": "110",
+                 "protocol": "6",
+                 "ruleAction": "allow",
+                 "egress": "false",
+                 "cidrBlock": "0.0.0.0/0",
+                 "portRange": {
+                   "from": "80",
+                   "to": "80"
+                 }
+             },
+             {
+                 "ruleNumber": "120",
+                 "protocol": "6",
+                 "ruleAction": "allow",
+                 "egress": "false",
+                 "cidrBlock": "0.0.0.0/0",
+                 "portRange": {
+                   "from": "443",
+                   "to": "443"
+                 }
+              },
+              {
+                 "ruleNumber": "32767",
+                 "protocol": "all",
+                 "ruleAction": "deny",
+                 "egress": "false",
+                 "cidrBlock": "0.0.0.0/0"
+              }
+         ],
+         "associationSet": [
+           {
+             "networkAclAssociationId": "aclassoc-5c659635",
+             "networkAclId": "acl-5d659634",
+             "subnetId": "subnet-ff669596"
+           },
+           {
+             "networkAclAssociationId": "aclassoc-c26596ab",
+             "networkAclId": "acl-5d659634",
+             "subnetId": "subnet-f0669599"
+           }
+         ],
+         "tagSet": []
+    }
+]

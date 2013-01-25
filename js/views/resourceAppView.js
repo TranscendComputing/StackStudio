@@ -72,7 +72,7 @@ define([
             console.log($(event.currentTarget).data());
             var id, parentNode;
             var rowData = this.$table.fnGetData(event.currentTarget);
-            console.log("ROW DATA", rowData);
+            console.log("ROW DATA", rowData, "COLUMN NUMBER", this.idColumnNumber);
             //TODO -- make more dynamic in order to allow user to define columns
             id = rowData[this.idColumnNumber];
             Common.router.navigate("#resources/aws/"+this.type+"/"+this.subtype+"/"+id, {trigger: false});

@@ -1,0 +1,101 @@
+<div>
+    <div class="button_bar">
+        <table>
+            <tr>
+                <td>
+                    <button class="create_button">Create Network ACL</button>
+                </td>
+                <td>                    
+                    <ul class="action_menu">
+                        <li style="z-index: 1000">
+                            <a class="actions_button" href="#">Actions</a>
+                            <ul>
+                                <li><a href="#">Delete</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table id="resource_table" class="full_width">
+        <thead>
+            <tr>
+                <th>Network ACL ID</th>
+                <th>VPC</th>
+                <th>Default</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    <div id="details" class="detail_panel"></div>
+</div>
+
+<script type="text/html" id="resource_detail">
+    <div id="detail_tabs">
+        <ul>
+            <li><a href="#inbound_tab">Inbound</a></li>
+            <li><a href="#outbound_tab">Outbound</a></li>
+            <li><a href="#associations_tab">Associations</a></li>
+        </ul>
+        <div id="inbound_tab" class="tab">
+            <form>
+                Create a new rule: <select></select>
+                Rule #: <input />
+                Port range: <input />
+                Source: <input />
+                Allow/Deny: <select></select>
+            </form>
+            <table id="inbound_table" class="display_table">
+                <thead>
+                    <tr>
+                        <th>Rule #</th>
+                        <th>Port (Service)</th>
+                        <th>Protocol</th>
+                        <th>Source</th>
+                        <th>Allow/Deny</th>
+                    </tr>
+                </thead>            
+                <tbody></tbody>
+                <tfoot></tfoot>
+            </table>         
+        </div>
+        <div id="outbound_tab">
+            <form>
+                Create a new rule: <select></select>
+                Rule #: <input />
+                Port range: <input />
+                Destination: <input />
+                Allow/Deny: <select></select>
+            </form>            
+            <table id="outbound_table" class="display_table">
+                <thead>
+                    <tr>
+                        <th>Rule #</th>
+                        <th>Port (Service)</th>
+                        <th>Protocol</th>
+                        <th>Destination</th>
+                        <th>Allow/Deny</th>
+                    </tr>
+                </thead>            
+                <tbody></tbody>
+                <tfoot></tfoot>
+            </table>
+        </div>
+        <div id="associations_tab">
+            <table class="display_table">
+                <thead>
+                    <tr>
+                        <th>Subnet</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>            
+                <tbody></tbody>
+                <tfoot></tfoot>
+            </table>         
+        </div>
+    </div>
+</script>

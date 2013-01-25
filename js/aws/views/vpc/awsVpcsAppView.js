@@ -39,7 +39,7 @@ define([
                 
         model: Vpc,
         
-        idRowNumber: 0,
+        idColumnNumber: 0,
         
         columns:["vpcId","state","cidrBlock","dhcpOptionsId"],
         
