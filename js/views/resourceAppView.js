@@ -41,11 +41,12 @@ define([
             $(".action_menu").menu({
                 position: { my: 'left top', at: 'left bottom'}
             });
+            
             this.$table = $('#resource_table').dataTable({"bJQueryUI": true});
+            
             this.collection.on( 'add', this.addOne, this );
             this.collection.on( 'reset', this.addAll, this );
 
-            // Fetch will pull results from the server
             this.collection.fetch();
             
             return this;
@@ -112,13 +113,13 @@ define([
         
         clearSelection: function () {
             this.$table.$('tr').removeClass('row_selected');
-            $('#details').empty();
+            //$('#details').empty();
         },
         
         createNew : function () {
             var CreateView = this.CreateView;
-            var createNew = new CreateView();
-            createNew.render();
+            this.newResourceDialog = new CreateView();
+            this.newResourceDialog.render();
         }
     });
 

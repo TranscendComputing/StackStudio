@@ -256,15 +256,10 @@ define([
                 var appPath = "../"+cloudProvider+"/views/"+type+"/"+cloudProvider+capSubtype+"AppView";
 
                 require([appPath], function (AppView) {
-                    console.log(cloudProvider+" "+type+" app loading...");
-                    if (this.selectedService === type) {
+                    if (this.resourceApp instanceof AppView) {
                         return;
-                        
-                    } else if (this.resourceApp) {
-                        this.resourceApp.$el.empty();
                     }
                     var resourceAppView = new AppView();
-                    this.selectedService = type;
                     this.resourceApp = resourceAppView;
                     resourceNav.resourceSelect(type);
                     if(id) {

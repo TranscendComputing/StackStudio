@@ -9,32 +9,32 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'text!templates/aws/vpc/awsSubnetCreateTemplate.html',
-        '/js/aws/models/vpc/awsSubnet.js',
+        'text!templates/aws/vpc/awsInternetGatewayCreateTemplate.html',
+        '/js/aws/models/vpc/awsInternetGateway.js',
         'icanhaz',
         'common',
         'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
-], function( $, _, Backbone, subnetCreateTemplate, Subnet, ich, Common ) {
+], function( $, _, Backbone, internetGatewayCreateTemplate, InternetGateway, ich, Common ) {
 			
     /**
-     * SubnetCreateView is UI form to create compute.
+     * InternetGatewayCreateView is UI form to create compute.
      *
-     * @name SubnetCreateView
+     * @name InternetGatewayCreateView
      * @constructor
-     * @category Subnet
+     * @category InternetGateway
      * @param {Object} initialization object.
-     * @returns {Object} Returns a SubnetCreateView instance.
+     * @returns {Object} Returns a InternetGatewayCreateView instance.
      */
 	
-	var SubnetCreateView = Backbone.View.extend({
+	var InternetGatewayCreateView = Backbone.View.extend({
 	    
 		
 		tagName: "div",
 		
-		template: _.template(subnetCreateTemplate),
+		template: _.template(internetGatewayCreateTemplate),
 		// Delegated events for creating new instances, etc.
 		events: {
 			"dialogclose": "close"
@@ -50,7 +50,7 @@ define([
 
             this.$el.dialog({
                 autoOpen: true,
-                title: "Create Subnet",
+                title: "Create Internet Gateway",
                 width:500,
                 minHeight: 150,
                 resizable: false,
@@ -64,30 +64,25 @@ define([
                     }
                 }
             });
-            
-            $("#zone_select").selectmenu();
-           
+                       
             return this;
 		},
 		
 		close: function() {
 			//$("#region_select").remove();
 			this.$el.dialog('close');
-			this.$el.remove();
 		},
 		
 		cancel: function() {
 			this.$el.dialog('close');
-			this.$el.remove();
 		},
 		
 		create: function() {
 			//Validate and create
 			this.$el.dialog('close');
-			this.$el.remove();
 		}
 
 	});
     
-	return SubnetCreateView;
+	return InternetGatewayCreateView;
 });
