@@ -65,6 +65,10 @@ requirejs.config({
         'jquery.jstree': {
            deps: ['jquery']
         },
+        'morris': {
+            deps: ['jquery', 'raphael'],
+            exports: 'Morris'
+        },
         'spinner': {
             exports: 'Spinner'
         },
@@ -110,6 +114,7 @@ requirejs.config({
         'icanhaz': 'ICanHaz',
         'jquery.terminal': 'jquery.terminal-0.4.22',
         'jquery.mousewheel': 'jquery.mousewheel-min',
+        'raphael': '//raw.github.com/DmitryBaranovskiy/raphael/300aa589f5a0ba7fce667cd62c7cdda0bd5ad904/raphael-min',
         'spinner': 'spin.min',
         'wijlist': 'jquery.wijmo.wijlist',
         'wijutil': 'jquery.wijmo.wijutil',
