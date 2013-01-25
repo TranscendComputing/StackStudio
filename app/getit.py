@@ -18,6 +18,7 @@ import webapp2
 import logging
 import os
 from datetime import datetime
+from google.appengine.api import memcache
 
 import urllib2
 from urllib2 import HTTPError
@@ -25,6 +26,9 @@ from urllib2 import HTTPError
 _DEBUG = True
 
 MAX_USERWAITING_REQUEST_TIMEOUT = 30
+
+SHORT_CACHE_TIME = 300
+LONG_CACHE_TIME = 3600
 
 class NonRedirectHTTPRedirectHandler(urllib2.HTTPRedirectHandler):
     """
@@ -52,10 +56,15 @@ class ProxyHandler(webapp2.RequestHandler):
             self.response.set_status(404)
             return
         logging.info("Fetching %s" % target_url)
+        content = self.cache_get(target_url, 1)
+        if content:
+            logging.info("Satisfied %s from L1 cache." % target_url)
+            self.response.out.write(content)
+            return
         headers = {}
         req = urllib2.Request(target_url, headers=headers)
         opener = urllib2.build_opener(NonRedirectHTTPRedirectHandler)
-
+        content = ""
         try:
             proxied_response = opener.open(req)
         except StopIteration, e:
@@ -65,12 +74,28 @@ class ProxyHandler(webapp2.RequestHandler):
             self.response.set_status(400)
             return
         except urllib2.HTTPError, http_error:
+            if http_error.code == 403 or http_error.code == 500:
+                content = self.cache_get(target_url, 2)
+                if content:
+                    logging.info("Satisfied %s from L2 cache." % target_url)
+                    self.response.out.write(content)
+                    return
             self.response.set_status(http_error.code)
             return
         chunk = True
         while chunk:
             chunk = proxied_response.read(1024)
+            try:
+                if chunk and content is not None and len(content) < 1024*1000:
+                    content += chunk
+            except e:
+                logging.info("Failed to add %s (%d bytes) to content: e" %
+                             (target_url, len(chunk), e))
+                content = None
             self.response.out.write(chunk)
+        if content:
+            logging.info("Saved %s (%d bytes) to cache." % (target_url, len(content)))
+            self.cache_put(target_url, content)
 
     def post(self):
         target_url = self.request.POST['url']
@@ -88,6 +113,13 @@ class ProxyHandler(webapp2.RequestHandler):
         while chunk:
             chunk = proxied_response.read(1024)
             self.response.out.write(chunk)
+
+    def cache_get(self, target_url, level=1):
+        return memcache.get(key="%d:%s" % (level, target_url))
+
+    def cache_put(self, target_url, val):
+        done = memcache.add(key="1:%s" % target_url, value=val, time=SHORT_CACHE_TIME)
+        memcache.add(key="2:%s" % target_url, value=val, time=LONG_CACHE_TIME)
 
 app = webapp2.WSGIApplication([
     ('/getit', ProxyHandler),
