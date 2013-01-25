@@ -64,14 +64,14 @@ define([
             this.cloudDefinitions = $.parseJSON(response);
             cloudCredentials.on('add', this.addCloud, this );
             cloudCredentials.on('reset', this.addAllClouds, this );
-            cloudCredentials.on('all', this.render, this );
             
             //load user's cloud selections
             cloudCredentials.fetch();
 		},
 		
 		render: function () {
-		    
+		    this.loadResourceApp(this.selectedCloud, this.typePath, this.subtypePath, this.idPath);
+		    return this;
 		},
 		
 		toggleResourceNav: function() {
@@ -165,6 +165,7 @@ define([
 		},
 		
 		cloudSelection: function (cloudProvider) {
+            this.selectedCloud = cloudProvider;
 		    var resourceNav = this;
 		    //Add the services of the cloud to the resource table
 		    var row = 1;
@@ -259,13 +260,21 @@ define([
                 });
                 require(["resourceAppView"], function (AppView) {
                     console.log(cloudProvider+" "+type+" app loading...");
+                    if (this.selectedService === type) {
+                        return;
+                        
+                    } else if (this.resourceApp) {
+                        this.resourceApp.$el.empty();
+                    }
                     var resourceAppView = new AppView();
+                    this.selectedService = type;
+                    this.resourceApp = resourceAppView;
                     resourceNav.resourceSelect(type);
                     if(id) {
-                        Common.router.navigate("#resources/"+cloudProvider+"/"+type+"/"+subtype+"/"+id, {trigger: false});
+                        Common.router.navigate("#resources/"+cloudProvider+"/"+type+"/"+subtype+"/"+id, {trigger: true});
                         resourceAppView.selectedId = id;
                     }else {
-                        Common.router.navigate("#resources/"+cloudProvider+"/"+type+"/"+subtype, {trigger: false});
+                        Common.router.navigate("#resources/"+cloudProvider+"/"+type+"/"+subtype, {trigger: true});
                     } 
                 });
             }

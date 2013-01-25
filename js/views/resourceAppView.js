@@ -58,7 +58,6 @@ define([
             var view = new ResourceRowView({ model: model });
             view.columns = this.columns;
             view.render();
-            console.log("VIEW DATA", $(view.el).data());
         },
 
         addAll: function() {

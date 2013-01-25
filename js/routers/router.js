@@ -59,9 +59,7 @@ define([
 		
 		resourcesRoute: function(cloud, type, subtype, id, action) {
 		    $("#sidebar").empty();
-		    $("#sidebar").hide();
-		    $("#main").empty();
-		    
+		    $("#sidebar").hide();		    
 		    this.trigger("route:resources", cloud, type, subtype, id);
 		}
 	});
