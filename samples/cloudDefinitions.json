@@ -4,24 +4,9 @@
         "logo": "/images/CloudLogos/amazon800.jpg",
         "services": [
             {
-                "name": "Alarm",
-                "type": "alarm",
-                "defaultSubtype": "alarm"
-            },
-            {
-                "name": "Auto Scale",
-                "type": "autoscale",
-                "defaultSubtype": "autoscalegroups"
-            },
-            {
-                "name": "Elasticache",
-                "type": "cache",
-                "defaultSubtype": "clusters"
-            },
-            {
-                "name": "Elastic Beanstalk",
-                "type": "application",
-                "defaultSubtype": "applications"
+                "name": "CloudWatch",
+                "type": "cloud_watch",
+                "defaultSubtype": "alarms"
             },
             {
                 "name": "Elastic Block Storage",
@@ -33,41 +18,6 @@
                 "type": "compute",
                 "defaultSubtype": "instances"
                 
-            },
-            {
-                "name": "Elastic Load Balancer",
-                "type": "load-balancer",
-                "defaultSubtype": "loadbalancers"
-            },
-            {
-                "name": "IAM",
-                "type": "identity",
-                "defaultSubtype": "users"
-            },
-            {
-                "name": "Relational Database",
-                "type": "rds",
-                "defaultSubtype": "databases"
-            },
-            {
-                "name": "Route 53",
-                "type": "dns",
-                "defaultSubtype": "hostedzones"
-            },
-            {
-                "name": "Simple DB",
-                "type": "non-rds",
-                "defaultSubtype": "databases"
-            },
-            {
-                "name": "Simple Notification",
-                "type": "notification",
-                "defaultSubtype": "notifications"
-            },
-            {
-                "name": "Simple Queue",
-                "type": "queue",
-                "defaultSubtype": "queues"
             },
             {
                 "name": "Simple Storage",
