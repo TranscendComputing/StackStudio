@@ -44,6 +44,36 @@ define([
             Statistic: '',
             Threshold: 0.0,
             Unit: ''
+        },
+        
+        get: function(attr) {
+            if(typeof this[attr] == 'function') {
+                var test = this[attr]();
+                return test;
+            }
+            
+            return Backbone.Model.prototype.get.call(this, attr);
+        },
+        
+        Threshold: function() {
+            var comparisonSign = "";
+            switch(this.attributes.ComparisonOperator)
+            {
+                    case "GreaterThanOrEqualToThreshold":
+                            comparisonSign = ">="
+                            break;
+                    case "LessThanOrEqualToThreshold":
+                            comparisonSign = "<="
+                            break;
+                    case "GreaterThanThreshold":
+                            comparisonSign = ">"
+                            break;
+                    case "LessThanThreshold":
+                            comparisonSign = "<"
+                            break;
+            }
+            var timeLength = (this.attributes.Period * this.attributes.EvaluationPeriods/60).toString();
+            return this.attributes.MetricName + " " + comparisonSign + " " + this.attributes.Threshold.toString() + " " + this.attributes.Unit + " for " + timeLength + " minutes.";;
         }
     });
 
