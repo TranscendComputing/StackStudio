@@ -12,7 +12,8 @@ define([
         'text!templates/aws/cloud_watch/awsAlarmCreateTemplate.html',
         '/js/aws/models/cloud_watch/awsAlarm.js',
         'icanhaz',
-        'common'
+        'common',
+        'jquery.ui.selectmenu'
         
 ], function( $, _, Backbone, alarmCreateTemplate, Alarm, ich, Common ) {
     
@@ -43,7 +44,7 @@ define([
             this.$el.dialog({
                 autoOpen: true,
                 title: "Create Alarm",
-                width:350,
+                width:500,
                 resizable: false,
                 modal: true,
                 buttons: {
@@ -55,6 +56,17 @@ define([
                     }
                 }
             });
+            
+            $("#accordion").accordion();
+            $("select").selectmenu();
+            $("button").button();
+            $('#actions_table').dataTable({
+                "bJQueryUI": true,
+                bLengthChange: false,
+                bFilter: false,
+                bInfo: false,
+                bPaginate : false
+            });
         },
 
         render: function() {
@@ -63,6 +75,7 @@ define([
         
         close: function() {
             console.log("close initiated");
+            $("#accordion").remove();
             this.$el.dialog('close');
         },
         

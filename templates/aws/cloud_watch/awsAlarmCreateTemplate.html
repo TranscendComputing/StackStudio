@@ -1,10 +1,135 @@
-<div id="security_group_create">
-    <table>
-        <tr>
-            <td>Name:</td>
-            <td>
-                <input id="sg_name" type="text" style="width:200px;"/>
-            </td>
-        </tr>
-    </table>
+<div id="alarm_create">
+    <div id="accordion">
+        <h3>Alarm Configuration</h3>
+        <div>
+            <table>
+                <tr>
+                    <td>Name*:</td>
+                    <td>
+                        <input id="alarm_name" type="text" style="width:200px;"/>
+                    </td>
+                </tr>
+                <tr>  
+                    <td>Description:</td>
+                    <td>
+                        <input id="alarm_description" type="text" style="width:325px;"/>
+                    </td>
+                </tr>
+                <tr>  
+                    <td>Resource Type*:</td>
+                    <td>
+                        <select id="resource_type" style="width:200px;">
+                            <option value="autoscale">Auto Scale</option>
+                            <option value="ebs">Elastic Block Storage</option>
+                            <option value="ec2">Elastic Compute Cloud</option>
+                            <option value="elb">Elastic Load Balancer</option>
+                            <option value="rds">Relational Database</option>
+                            <option value="sns">Simple Notification</option>
+                            <option value="sqs">Simple Queue</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>  
+                    <td>Resource:</td>
+                    <td>
+                        <select id="resource" style="width:200px;"></select>
+                    </td>
+                </tr>
+            </table>
+            <hr />
+            <table>
+                <tr>
+                    <td>Metric*:</td>
+                    <td><select id="metric_select" style="width:200px;"></select></td>
+                </tr>
+                <tr>
+                    <td>Comparison*:</td>
+                    <td>
+                        <select id="comparison_select">
+                            <option value="GreaterThanOrEqualToThreshold">&gt;=</option>
+                            <option value="LessThanOrEqualToThreshold">&lt;=</option>
+                            <option value="GreaterThanThreshold">&gt;</option>
+                            <option value="LessThanThreshold">&lt;</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Threshold*:</td>
+                    <td><input id="threshold_input" type="text" /></td>
+                </tr>
+                <tr>
+                    <td>Statistic*:</td>
+                    <td>
+                        <select id="statistic_select" style="width:200px;">
+                            <option value="Average">Average</option>
+                            <option value="Minimum">Minimum</option>
+                            <option value="Maximum">Maximum</option>
+                            <option value="SampleCount">Sample Count</option>
+                            <option value="Sum">Sum</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Period*:</td>
+                    <td>
+                        <select id="period_select" style="width:200px;">
+                            <option value="60">1 minute</option>
+                            <option value="300" selected="true">5 minutes</option>
+                            <option value="600">10 minutes</option>
+                            <option value="900">15 minutes</option>
+                            <option value="1200">20 minutes</option>
+                            <option value="1800">30 minutes</option>
+                            <option value="3600">1 hour</option>
+                            <option value="10800">3 hours</option>
+                            <option value="21600">6 hours</option>
+                            <option value="43200">12 hours</option>
+                            <option value="86400">24 hours</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <h3>Configure Actions</h3>
+        <div>
+            <table>
+                <tr>
+                    <td>Alarm State:</td>
+                    <td>
+                        <select id="alarm_state" style="width:200px;">
+                            <option value="ALARM">ALARM</option>
+                            <option value="OK">OK</option>
+                            <option value="INSUFFICIENT_DATA">INSUFFICIENT_DATA</option>
+                        </select>
+                   </td>
+                </tr>
+                <tr>
+                    <td>Action:</td>
+                    <td>Send Notification</td>
+                </tr>
+                <tr>
+                    <td>SNS Topic:</td>
+                    <td><select id="sns_topic" style="width:200px;"></select></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><button id="add_action">Add Action</button></td>
+                </tr>
+            </table>
+            <hr />
+            <table id="actions_table" class="full_width">
+                <thead>
+                    <tr>
+                        <th>State</th>
+                        <th>Action</th>
+                        <th>Topic</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+                <tfoot>
+                </tfoot>
+            </table>
+            <button id="remove_action">Remove Action</button>
+        </div>
+    </div>    
 </div>
