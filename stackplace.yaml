@@ -1,5 +1,5 @@
 application: stackplace
-version: replaceme
+version: 1-git-revision
 runtime: python27
 api_version: 1
 threadsafe: yes
@@ -41,13 +41,17 @@ handlers:
 
 # Application handlers
 
+# {%DEV
 - url: /
   static_files: stackplace.html
   upload: stackplace\.html
+# %}
 
-- url: /github.html
-  static_files: github.html
-  upload: github\.html
+# {%PROD
+#- url: /
+#  static_files: stackplace-prod.html
+#  upload: stackplace-prod\.html
+# %}
 
 - url: /getit.*
   script: app.getit.app
@@ -85,6 +89,6 @@ skip_files:
 - ^(.*/)?node_modules
 - ^(.*/)?Gruntfile\.js
 - ^(.*/)?r\.js
+- ^(.*/)?.*\.jar
 - ^(.*/)?build\.xml
-- ^(.*/)?LICENSE\.md
-- ^(.*/)?README\.md
+- ^(.*/)?.*\.md
