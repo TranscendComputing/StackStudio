@@ -61,7 +61,8 @@ requirejs.config({
             exports: 'jQuery.fn.mousewheel'
         },
         'jquery.jstree': {
-           deps: ['jquery']
+            deps: ['jquery', 'jquery.cookie'],
+            exports: 'jQuery.fn.jstree'
         },
         'morris': {
             deps: ['jquery', 'raphael'],
@@ -112,6 +113,7 @@ requirejs.config({
         'icanhaz': 'ICanHaz',
         'jquery.terminal': 'jquery.terminal-0.4.22',
         'jquery.mousewheel': 'jquery.mousewheel-min',
+        //'jquery.jstree': '//cachedcommons.org/cache/jquery-jstree/1.0.0/javascripts/jquery-jstree-min',
         'raphael': '//raw.github.com/DmitryBaranovskiy/raphael/300aa589f5a0ba7fce667cd62c7cdda0bd5ad904/raphael-min',
         'spinner': 'spin.min',
         'wijlist': 'jquery.wijmo.wijlist',
