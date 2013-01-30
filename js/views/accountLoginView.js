@@ -10,11 +10,12 @@ define([
         'underscore',
         'backbone',
         'models/account',
-        'text!templates/account/accountLoginTemplate.html',
+        'text!/templates/account/stackplaceLoginTemplate.html',
+        'text!/templates/account/stackstudioLoginTemplate.html',
         'icanhaz',
-        'common'
-], function( $, _, Backbone, Account, accountLoginTemplate, ich, Common ) {
-
+        'common'      
+], function( $, _, Backbone, Account, stackplaceLoginTemplate, stackstudioLoginTemplate, ich, Common ) {
+    
     /**
      * AccountLoginView is UI wizard to create cloud instances.
      *
@@ -24,86 +25,105 @@ define([
      * @param {Object} initialization object.
      * @returns {Object} Returns a InstanceCreateWizardView instance.
      */
-
+    
     var AccountLoginView = Backbone.View.extend({
-
+        
         tagName: "div",
-
-        template: _.template(accountLoginTemplate),
-
+        
         // Delegated events for creating new instances, etc.
         events: {
-            "change input#username": "usernameChanged",
-            "change input#password": "passwordChanged"
+            // TODO
         },
 
         initialize: function() {
             Common.vent.on("account:login", this.close, this);
         },
 
-        usernameChanged: function(e) {
-            var u = this.username;
-            this.model.set({username: u.val()});
-        },
-
-        passwordChanged: function(e) {
-            var p = this.password;
-            this.model.set({password: p.val()});
-        },
-
         render: function() {
-            var accountLoginView = this;
-
-            this.$el.html(this.template);
+            var accountLoginView = this,
+                title, template;
+            
+            if (window.app === "stackplace") {
+                title = "GitHub Login";
+                template = _.template( stackplaceLoginTemplate );
+            } else {
+                title = "Login";
+                template = _.template( stackstudioLoginTemplate );
+            }
+            
+            this.$el.html( template );
 
             this.$el.dialog({
+                title: title,
                 autoOpen: true,
-                title: "GitHub Login",
                 width:500,
                 minHeight: 150,
                 resizable: false,
                 modal: true,
-                buttons: {
-                    "Login": function () {
-                        accountLoginView.login();
+                buttons: [
+                    {
+                        text: "Login",
+                        click: function() {
+                            accountLoginView.login();
+                        }
                     },
-                    "Cancel": function() {
-                        accountLoginView.cancel();
+                    {
+                        text: "Cancel",
+                        click: function() {
+                            accountLoginView.login();
+                        }
                     }
-                }
+                ]
             });
-
+            
             this.$(".accordion").accordion();
-            this.username = this.$('input#username');
-            this.password = this.$('input#password');
+            this.$el.dialog('open');
 
-            if (this.loginMessage) {
-                $("#login_message").append(this.loginMessage);
-            }
             return this;
         },
-
+        
         close: function() {
             //document.location.hash = this.previous_location;
             this.$el.dialog('close');
         },
-
+        
         cancel: function() {
             //document.location.hash = this.previous_location;
             this.$el.dialog('close');
         },
-
+        
         login: function() {
-            this.model.login();
+            var username = $('input#username').val(),
+                password = $('input#password').val();
+            if (window.app === "stackplace") {
+                this.model.githubLogin(username, password);
+            } else {
+                var url = Common.apiUrl + "/identity/v1/accounts";
+                var formValues = {
+                    login: username,
+                    password: password
+                };
+                
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    contentType: 'application/x-www-form-urlencoded',
+                    dataType: 'json',
+                    success: function(data) {
+                        console.log(["Login request details: ", data]);
+                    }
+                });
+            }
         }
 
     });
-
+    
     Common.router.on("route:accountLogin", function() {
         var accountLoginView = new AccountLoginView({model: new Account()});
+        console.log(accountLoginView.model);
         accountLoginView.render();
         //$("#app_container").append(accountLoginView.render().el);
     }, this);
-
+    
     return AccountLoginView;
 });

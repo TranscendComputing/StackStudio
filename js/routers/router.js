@@ -22,10 +22,10 @@ define([
      * @param {Object} initialization object.
      * @returns {Object} Returns a Router instance.
      */
-    //Backbone.Router.namedParameters = true;
+    Backbone.Router.namedParameters = true;
     
 	var Router = Backbone.Router.extend({
-	    //namedParameters: true,
+	    namedParameters: true,
 	    
 		routes:{
 			'resources': 'resourcesRoute',

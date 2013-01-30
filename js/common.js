@@ -223,6 +223,9 @@ define(
     // Initialize routing
     router = new Router();
 
+    //Base url for API calls
+    var apiUrl = "http://localhost:9292";
+    
     // Initialize custom events object
     var vent = _.extend({}, Backbone.Events);
 
@@ -240,6 +243,9 @@ define(
         // The common router
         router: router,
 
+        // The base API url
+        apiUrl: apiUrl,
+        
         // The global variable to handle custom events
         vent: vent,
 

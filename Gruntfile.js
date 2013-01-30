@@ -70,16 +70,16 @@ module.exports = function(grunt) {
       }
     },
     server: {
-      port: 9001
+      port: 9002
     },
     connect: {
         sstudio: {
             options: {
-                port: 9000
+                port: 9001
             }
         },
         test : {
-            port : 9001
+            port : 9002
         }
     },
     jasmine: {
