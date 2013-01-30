@@ -10,11 +10,11 @@ define([
         'underscore',
         'backbone',
         'models/account',
-        'text!/templates/account/accountLoginTemplate.html',
+        'text!templates/account/accountLoginTemplate.html',
         'icanhaz',
-        'common'      
+        'common'
 ], function( $, _, Backbone, Account, accountLoginTemplate, ich, Common ) {
-    
+
     /**
      * AccountLoginView is UI wizard to create cloud instances.
      *
@@ -24,13 +24,13 @@ define([
      * @param {Object} initialization object.
      * @returns {Object} Returns a InstanceCreateWizardView instance.
      */
-    
+
     var AccountLoginView = Backbone.View.extend({
-        
+
         tagName: "div",
-        
+
         template: _.template(accountLoginTemplate),
-        
+
         // Delegated events for creating new instances, etc.
         events: {
             "change input#username": "usernameChanged",
@@ -40,12 +40,12 @@ define([
         initialize: function() {
             Common.vent.on("account:login", this.close, this);
         },
-        
+
         usernameChanged: function(e) {
             var u = this.username;
             this.model.set({username: u.val()});
         },
-        
+
         passwordChanged: function(e) {
             var p = this.password;
             this.model.set({password: p.val()});
@@ -53,7 +53,7 @@ define([
 
         render: function() {
             var accountLoginView = this;
-            
+
             this.$el.html(this.template);
 
             this.$el.dialog({
@@ -72,38 +72,38 @@ define([
                     }
                 }
             });
-            
+
             this.$(".accordion").accordion();
             this.username = this.$('input#username');
             this.password = this.$('input#password');
-            
+
             if (this.loginMessage) {
                 $("#login_message").append(this.loginMessage);
             }
             return this;
         },
-        
+
         close: function() {
             //document.location.hash = this.previous_location;
             this.$el.dialog('close');
         },
-        
+
         cancel: function() {
             //document.location.hash = this.previous_location;
             this.$el.dialog('close');
         },
-        
+
         login: function() {
             this.model.login();
         }
 
     });
-    
+
     Common.router.on("route:accountLogin", function() {
         var accountLoginView = new AccountLoginView({model: new Account()});
         accountLoginView.render();
         //$("#app_container").append(accountLoginView.render().el);
     }, this);
-    
+
     return AccountLoginView;
 });

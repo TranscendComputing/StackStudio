@@ -36,7 +36,7 @@ define([
             members: [],
             template: {
                 "AWSTemplateFormatVersion" : "2010-09-09",
-                "Description" : "New template creted in StackStudio.",
+                "Description" : "New template created in StackStudio.",
                 "Parameters" : {},
                 "Mappings": {},
                 "Resources": {},
