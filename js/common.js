@@ -4,11 +4,9 @@
  * Available under ASL2 license <http://www.apache.org/licenses/LICENSE-2.0.html>
  */
 // Configure defaults for require.js
-var URL_ARGS = URL_ARGS || '';
 
 requirejs.config({
     baseUrl: 'js/vendor',
-    urlArgs: URL_ARGS,
     nodeRequire: require,
     // The shim config allows us to configure dependencies for
     // scripts that do not call define() to register a module
@@ -122,6 +120,12 @@ requirejs.config({
         'wijsplitter': 'jquery.wijmo.wijsplitter',
         'wijmo': 'jquery.wijmo-open.all.2.3.2.min'
     }
+});
+
+var URL_ARGS = URL_ARGS || '';
+
+requirejs.config({
+    urlArgs: URL_ARGS,
 });
 
 /**

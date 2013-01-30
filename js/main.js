@@ -5,19 +5,23 @@
  */
 /*jshint smarttabs:true */
 /*global define:true console:true */
-var URL_ARGS = 'cb=' + Math.random();
+var URL_ARGS, DEBUG;
+
+if (DEBUG) {
+    URL_ARGS = 'cb=' + Math.random();
+}
 
 require(['./common'], function (common) {
     require([
             'views/accountLoginView',
             'views/projectSidebarView',
             'views/projectAppView',
-             //'views/projectNavigationSidebarView',
+             // 'views/projectNavigationSidebarView',
              'views/projectResourceSidebarView',
-             //'views/projectListItemView',
+             // 'views/projectListItemView',
              'views/projectEditView',
              'views/resourceNavigationView'
             ], function() {
-    	common.backbone.history.start();
+        common.backbone.history.start();
     });
 });

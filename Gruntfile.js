@@ -21,6 +21,7 @@ module.exports = function(grunt) {
     },
     lint: {
       files: ['Gruntfile.js',
+              'js/stackplace.build.js',
               '<%= spec.files %>',
               '<%= source.files %>']
     },

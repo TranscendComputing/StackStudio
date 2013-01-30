@@ -66,6 +66,10 @@ define([
             'hover': 'toggleActive'
         },
 
+        chooseInterpreter: function(newInterpreter) {
+            //TODO: dynamically load different interpreters
+        },
+
         /** At initialization, initialize any components that still require JS. */
         initialize: function() {
             this.interpreter = new Interpreter();
@@ -128,6 +132,9 @@ define([
 		},
 
 		toggleFullSize: function() {
+		    if ($('#cloud_cmd')['cmd'] === undefined) {
+		        return;
+		    }
 			this.expanded = ! this.expanded;
 			if (this.expanded) {
 				if (this.$cmd) {
