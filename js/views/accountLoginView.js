@@ -10,8 +10,8 @@ define([
         'underscore',
         'backbone',
         'models/account',
-        'text!/templates/account/stackplaceLoginTemplate.html',
-        'text!/templates/account/stackstudioLoginTemplate.html',
+        'text!templates/account/stackplaceLoginTemplate.html',
+        'text!templates/account/stackstudioLoginTemplate.html',
         'icanhaz',
         'common'      
 ], function( $, _, Backbone, Account, stackplaceLoginTemplate, stackstudioLoginTemplate, ich, Common ) {
