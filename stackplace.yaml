@@ -53,6 +53,10 @@ handlers:
 #  upload: stackplace-prod\.html
 # %}
 
+- url: /dev
+  static_files: stackplace.html
+  upload: stackplace\.html
+
 - url: /getit.*
   script: app.getit.app
 

@@ -4,7 +4,7 @@
     baseUrl: "vendor",
     //dir is incompatible with "out"
     //dir: "../../StackStudio-build",
-    out: "stackplace-all.min.js",
+    out: "stackplace-all-1.min.js",
     name: "../main",
     include: [
               'jquery',
