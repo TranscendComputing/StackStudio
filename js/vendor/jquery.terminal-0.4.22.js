@@ -1,3 +1,5 @@
+define(['jquery'], function( jQuery ) {
+    // begin wrap
 /**@license
  *|       __ _____                     ________                              __
  *|      / // _  /__ __ _____ ___ __ _/__  ___/__ ___ ______ __ __  __ ___  / /
@@ -47,8 +49,6 @@
           disable
 
 */
-
-
 
 (function($, undefined) {
     "use strict";
@@ -323,7 +323,7 @@
     // ----------------------------------------
     // START CROSS BROWSER SPLIT
     // ----------------------------------------
-    
+
     (function(undef) {
 
         // prevent double include
@@ -1481,7 +1481,7 @@
                         }
                     }).join('');
                 }
-                
+
                 return str.replace(url_re, function(link) {
                         var comma = link.match(/\.$/);
                         link = link.replace(/\.$/, '');
@@ -1622,7 +1622,7 @@
             };
         })()
     };
-    
+
     // -----------------------------------------------------------------------
     // Helpers
     // -----------------------------------------------------------------------
@@ -1742,10 +1742,10 @@
         });
         /*
         self.bind('touchstart.touchScroll', function() {
-            
+
         });
         self.bind('touchmove.touchScroll', function() {
-            
+
         });
         */
         //$('<input type="text"/>').hide().focus().appendTo(self);
@@ -2451,7 +2451,7 @@
                 }
             }
         }
-        
+
         // ---------------------------------------------------------------------
         var on_scrollbar_show_resize = (function() {
             var scrollBars = haveScrollbars();
@@ -2468,7 +2468,7 @@
         // KEYDOWN EVENT HANDLER
         // ---------------------------------------------------------------------
         var tab_count = 0;
-        
+
         function key_down(e) {
             var i;
             // after text pasted into textarea in cmd plugin
@@ -2479,7 +2479,7 @@
                 return false;
             }
             if (!self.paused()) {
-                
+
                 if (e.which !== 9) { // not a TAB
                     tab_count = 0;
                 }
@@ -2710,3 +2710,6 @@
 
     }; //terminal plugin
 })(jQuery);
+// end wrap
+return jQuery;
+});

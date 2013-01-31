@@ -64,9 +64,17 @@ requirejs.config({
             deps: ['jquery', 'jquery.cookie'],
             exports: 'jQuery.fn.jstree'
         },
+        'jquery-ui.selectmenu': {
+            deps: ['jquery', 'jquery-ui'],
+            exports: 'jQuery.fn.selectmenu'
+        },
         'morris': {
             deps: ['jquery', 'raphael'],
             exports: 'Morris'
+        },
+        'raphael': {
+            deps: ['jquery'],
+            exports: 'Raphael'
         },
         'spinner': {
             exports: 'Spinner'
@@ -106,21 +114,24 @@ requirejs.config({
         views: '../views',
         interpreters: '../interpreters',
         templates: '../../templates',
+        wrappers: '../../wrappers',
         'jquery': '//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min',
         'jquery-ui': '//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min',
         'underscore': '//cdnjs.cloudflare.com/ajax/libs/lodash.js/1.0.0-rc.3/lodash.min',
         'backbone': '//cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.10/backbone-min',
+        //'backbone': 'backbone-0.9.9',
         'icanhaz': 'ICanHaz',
         'jquery.terminal': 'jquery.terminal-0.4.22',
         'jquery.mousewheel': 'jquery.mousewheel-min',
         //'jquery.jstree': '//cachedcommons.org/cache/jquery-jstree/1.0.0/javascripts/jquery-jstree-min',
-        'raphael': '//raw.github.com/DmitryBaranovskiy/raphael/300aa589f5a0ba7fce667cd62c7cdda0bd5ad904/raphael-min',
+        'raphael': '//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min',
         'spinner': 'spin.min',
         'wijlist': 'jquery.wijmo.wijlist',
         'wijutil': 'jquery.wijmo.wijutil',
         'wijsuperpanel': 'jquery.wijmo.wijsuperpanel',
         'wijsplitter': 'jquery.wijmo.wijsplitter',
-        'wijmo': 'jquery.wijmo-open.all.2.3.2.min'
+        'wijmo': 'wijmo-require',
+        'wijmo-actual': 'jquery.wijmo-open.all.2.3.2.min'
     }
 });
 
@@ -216,7 +227,8 @@ define(
          'backbone',
          'views/consoleAppView',
          'routers/router',
-         'jquery-ui'
+         'jquery-ui',
+         'jquery-ui-plugins'
          ], function ($, _, Backbone, CommandLineView, Router) {
     // Within this scope, jquery and jquery UI have been loaded.
 
@@ -225,7 +237,7 @@ define(
 
     //Base url for API calls
     var apiUrl = "http://localhost:9292";
-    
+
     // Initialize custom events object
     var vent = _.extend({}, Backbone.Events);
 
@@ -245,7 +257,7 @@ define(
 
         // The base API url
         apiUrl: apiUrl,
-        
+
         // The global variable to handle custom events
         vent: vent,
 

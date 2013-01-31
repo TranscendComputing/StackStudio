@@ -4,15 +4,10 @@
     baseUrl: "vendor",
     //dir is incompatible with "out"
     //dir: "../../StackStudio-build",
-    out: "stackplace-all-1.min.js",
+    out: "stackplace-all.min.js",
     name: "../main",
     include: [
-              'jquery',
-              'underscore',
-              'backbone',
-              'views/consoleAppView',
-              'routers/router',
-              'jquery-ui',
+              './common',
               // Copied from main.js innards; nested requires aren't loaded.
               'views/accountLoginView',
               'views/projectSidebarView',
@@ -24,6 +19,9 @@
     excludeShallow: ['jquery.jstree'], // doesn't play well minified.
     mainConfigFile: 'common.js',
 
+    optimize: "uglify2",
+    generateSourceMaps: true,
+    preserveLicenseComments: false, // required for source maps
     //logLevel: 0,
 
     paths: {

@@ -14,8 +14,8 @@ define([
         'text!templates/resources/resourcesTemplate.html',
         'models/cloudCredential',
         'collections/cloudCredentials',
-        'jquery.coverscroll.min',
-        'jquery.ui.selectmenu'
+        'jquery-plugins',
+        'jquery-ui-plugins'
 ], function( $, _, Backbone, ich, Common, resourcesTemplate, cloudCredential, cloudCredentials ) {
 	// The Resources Navigation View
 	// ------------------------------
@@ -31,29 +31,29 @@ define([
      */
 	var ResourcesView = Backbone.View.extend({
 		id: 'resource_navigation_view',
-		
+
 		className: ['twelvecol', 'last'],
-		
+
 		template: _.template(resourcesTemplate),
-		
+
 		cloudPath: undefined,
-		
+
 		typePath: undefined,
-		
+
 		subtypePath:undefined,
-		
+
 		idPath: undefined,
-		
+
         cloudDefinitions: undefined,
-        
+
         navOpen: false,
-        
+
         events: {
 			"click .resourceLink" : "resourceClick",
 			"click #cloud_coverflow img" : "cloudChange",
 			"click #resource_summary" : "toggleResourceNav"
 		},
-        
+
 		initialize: function() {
 		    $("#main").append(this.el);
             this.$el.html(this.template);
@@ -64,16 +64,16 @@ define([
             this.cloudDefinitions = $.parseJSON(response);
             cloudCredentials.on('add', this.addCloud, this );
             cloudCredentials.on('reset', this.addAllClouds, this );
-            
+
             //load user's cloud selections
             cloudCredentials.fetch();
 		},
-		
+
 		render: function () {
 		    this.loadResourceApp(this.selectedCloud, this.typePath, this.subtypePath, this.idPath);
 		    return this;
 		},
-		
+
 		toggleResourceNav: function() {
 		    if(this.navOpen) {
                 $("#resource_nav").hide();
@@ -83,7 +83,7 @@ define([
                 this.navOpen = true;
             }
 		},
-		
+
 		addCloud: function( cloudCredential ) {
 		    var cloudProvider = cloudCredential.get("cloudProvider");
 		    var resourceNav = this;
@@ -103,13 +103,13 @@ define([
                     }));
 			    }
 			}
-			
+
 			//Setup coverflow after logos have been added
 			$("#cloud_coverflow").coverscroll({
                 'minfactor':18, // how much is the next item smaller than previous in pixels
                 'distribution':1, // how apart are the items (items become separated when this value is below 1)
                 'scalethreshold':0, // after how many items to start scaling
-                'staticbelowthreshold':false, // if true when number of items is below "scalethreshold" - don't animate 
+                'staticbelowthreshold':false, // if true when number of items is below "scalethreshold" - don't animate
                 'titleclass':'itemTitle', // class name of the element containing the item title
                 'selectedclass':'selectedItem', // class name of the selected item
                 'scrollactive':true, // scroll functionality switch
@@ -122,7 +122,7 @@ define([
                 'movecallback':function(item){} // callback function triggered after click on an item - parameter is the item's jQuery object
             });
 		},
-		
+
 		addAllClouds: function() {
 		    cloudCredentials.each(this.addCloud, this);
 		    if(this.cloudPath) {
@@ -152,18 +152,18 @@ define([
 		    }else {
 		        coverFlowIndex = Math.floor(cloudCount/2);
 		    }
-		    
+
 		    var coverFlowSelectedCloud = $("#cloud_coverflow").children()[coverFlowIndex].id;
 		    Common.router.navigate("#resources/"+coverFlowSelectedCloud, {trigger: false});
-		    
+
 		},
         */
-		cloudChange: function(event) {		
+		cloudChange: function(event) {
 			$(".resources").remove();
 			Common.router.navigate("#resources/"+event.target.id, {trigger: false});
 			this.cloudSelection(event.target.id);
 		},
-		
+
 		cloudSelection: function (cloudProvider) {
             this.selectedCloud = cloudProvider;
 		    var resourceNav = this;
@@ -180,26 +180,26 @@ define([
                     "href": "/#resources/"+cloudProvider+"/"+service.type
                 }).text(service.name));
                 row++;
-                //reset row if greater than 3 
+                //reset row if greater than 3
 		        if(row > 3) {
 		            row = 1;
 		        }
 		    });
-		    
+
 		    $("#cloud_nav").html(resourceNav.cloudDefinitions[cloudProvider].name+" ->");
-		    
+
 		    //Refresh previous select
 		    $("#credentials").remove();
 		    $("#cloud_specs").append('<span id="credentials">Credentials: <select id="credential_select" class="cloud_spec_select"></select></span>');
 		    //Add credentials for this cloud
 		    cloudCredentials.each(function (credential) {
 		        if(credential.get("cloudProvider") === cloudProvider) {
-		            $('#credential_select').append($("<option></option>").text(credential.get("name"))); 
+		            $('#credential_select').append($("<option></option>").text(credential.get("name")));
 		        }
 		    });
             $("#credential_select").selectmenu();
             $("#credential_nav").html($("#credential_select option:first").text());
-		    
+
 		    //Remove previous region
             $("#regions").remove();
             //Add regions if cloud has regions
@@ -214,16 +214,16 @@ define([
 		    }else {
 		        $("region_nav").hide();
 		    }
-		    
+
 		    this.loadResourceApp(cloudProvider, resourceNav.typePath, resourceNav.subtypePath, resourceNav.idPath);
 		},
-		
+
 		resourceClick: function(id) {
 			var selectionId = id.target.id;
 			this.typePath = selectionId;
 			this.resourceSelect(selectionId);
 		},
-		
+
 		resourceSelect: function(selectionId) {
 			$('.resources').each(function() {
 			    var selection = selectionId + "Link";
@@ -236,7 +236,7 @@ define([
 	        });
 			console.log(selectionId + " selected");
 		},
-		
+
 		loadResourceApp: function(cloudProvider, type, subtype, id) {
 		    var resourceNav = this;
             if(cloudProvider) {
@@ -250,9 +250,9 @@ define([
                         }
                     });
                 }
-                
+
                 //Capitalize first letter of subtype for the file name
-                var capSubtype = subtype.charAt(0).toUpperCase() + subtype.slice(1); 
+                var capSubtype = subtype.charAt(0).toUpperCase() + subtype.slice(1);
                 var appPath = "../"+cloudProvider+"/views/"+type+"/"+cloudProvider+capSubtype+"AppView";
 
                 require([appPath], function (AppView) {
@@ -267,15 +267,15 @@ define([
                         resourceAppView.selectedId = id;
                     }else {
                         Common.router.navigate("#resources/"+cloudProvider+"/"+type+"/"+subtype, {trigger: true});
-                    } 
+                    }
                 });
-                
+
             }
         }
 	});
-	
+
 	var resourcesView;
-	
+
     Common.router.on('route:resources', function (cloud, type, subtype, id) {
         if (!resourcesView) {
             resourcesView = new ResourcesView();

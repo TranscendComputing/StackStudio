@@ -12,7 +12,7 @@ define([
         'icanhaz',
         'interpreters/cloud_interpreter',
         'jquery.terminal',
-        'jquery.purr'
+        'jquery-plugins' // for jquery.purr
 ], function( $, _, Backbone, ich, Interpreter ) {
     'use strict';
 

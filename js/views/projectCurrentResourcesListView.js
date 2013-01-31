@@ -13,42 +13,42 @@ define([
         'common',
         'jquery.jstree'
 ], function( $, _, Backbone, resources, Common ) {
-       
+
     var ProjectCurrentResourcesListView = Backbone.View.extend({
-        
+
         //TODO define element
         //OR use tagName, className, ...
         el: "#current_outline",
-        
+
         tree: undefined,
-        
+
         events: {
             'click .jstree-open': 'cancelRequest',
             'click .jstree-closed': 'cancelRequest',
             'click #open_all': 'openAll',
             'click #collapse_all': 'collapseAll'
         },
-        
+
         initialize: function(){
              $("#current_outline").on("rename_node.jstree", this.handleRename);
              Common.vent.on("project:updateTemplate", this.updateTree, this);
         },
-        
+
         render: function() {
-            this.tree = $("#current_outline").jstree({ 
+            this.tree = $("#current_outline").jstree({
                 // List of active plugins
-                "plugins" : [ 
+                "plugins" : [
                     "json_data", "crrm", "themeroller"
                 ],
-                
+
                 "core": {
                     "animation": 0,
                     "load_open": true
                 },
-    
+
                 // I usually configure the plugin that handles the data first
                 // This example uses JSON as it is most common
-                "json_data" : { 
+                "json_data" : {
                     "data": [
                         {
                             "data": {
@@ -56,7 +56,7 @@ define([
                             },
                             "attr": {"id": "current_resources"},
                             "state": "closed",
-                            "metadata": {"parent_tree": "#current_outline"}   
+                            "metadata": {"parent_tree": "#current_outline"}
                         },
                         {
                             "data": {
@@ -86,20 +86,20 @@ define([
                     "correct_state": false,
                     "progressive_render": true
                 },
-                
+
                 "themeroller": {
                     "item": "jstree_custom_item"
                 }
             });
         },
-        
+
         updateTree: function(currentTemplate) {
             if ( !currentTemplate || currentTemplate === '') {
                 return;
             }
-            
+
             var template;
-            
+
             try{
                 template = $.parseJSON(currentTemplate);
                 var newData = this.walkTemplate(template);
@@ -108,11 +108,11 @@ define([
                 this.tree.jstree("focused").refresh(-1);
                 //this.tree.jstree.reopen();
             } catch (e) {
-                console.log('Parsing error!!!   ', e);
+                console.log('Parsing error!!!   ', currentTemplate, e);
                 return;
             }
         },
-        
+
         walkTemplate: function(template) {
             var data = [];
             for (var prop in template) {
@@ -132,25 +132,25 @@ define([
             }
             return data;
         },
-        
+
         handleRename: function(e, object) {
             var resourceName = object.args[1];
             Common.vent.trigger("project:renameResource", resourceName);
         },
-        
+
         cancelRequest: function() {
             return false;
         },
-        
+
         openAll: function() {
             this.tree.jstree("open_all");
         },
-        
+
         collapseAll: function() {
             this.tree.jstree("close_all");
         }
-        
+
     });
-    
+
     return ProjectCurrentResourcesListView;
 });
