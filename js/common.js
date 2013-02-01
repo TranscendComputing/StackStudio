@@ -236,7 +236,12 @@ define(
     router = new Router();
 
     //Base url for API calls
-    var apiUrl = "http://localhost:9292";
+    var apiUrl;
+    if(location.hostname === "localhost") {
+        apiUrl = "http://localhost:9292";
+    }else if(location.hostname === "stackstudio-local") {
+        apiUrl = "http://stackstudio-api:9292";
+    }
 
     // Initialize custom events object
     var vent = _.extend({}, Backbone.Events);
