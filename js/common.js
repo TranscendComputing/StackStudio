@@ -124,7 +124,7 @@ requirejs.config({
         'jquery.terminal': 'jquery.terminal-0.4.22',
         'jquery.mousewheel': 'jquery.mousewheel-min',
         //'jquery.jstree': '//cachedcommons.org/cache/jquery-jstree/1.0.0/javascripts/jquery-jstree-min',
-        'raphael': '//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min',
+        'raphael': 'raphael-min',
         'spinner': 'spin.min',
         'wijlist': 'jquery.wijmo.wijlist',
         'wijutil': 'jquery.wijmo.wijutil',
