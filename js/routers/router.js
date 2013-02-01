@@ -22,10 +22,14 @@ define([
      * @param {Object} initialization object.
      * @returns {Object} Returns a Router instance.
      */
-    Backbone.Router.namedParameters = true;
-    
+	
+	if(window.app === "stackplace") {
+	    Backbone.Router.namedParameters = true;
+	}else {
+	    Backbone.Router.namedParameters = false;
+	}
+	
 	var Router = Backbone.Router.extend({
-	    namedParameters: true,
 	    
 		routes:{
 			'resources': 'resourcesRoute',
@@ -42,7 +46,7 @@ define([
 			'*actions': 'defaultRoute'
 		},
 		
-		defaultRoute: function( actions ) {
+		defaultRoute: function( actions ) {   
 		    if (window.app === "stackplace") {
 		        if ( (typeof actions === 'object') && (actions.url !== undefined) ) {
 		            this.trigger('route:projectEdit', actions.url);

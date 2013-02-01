@@ -63,9 +63,10 @@
     <br/>
 </body>
     <script>
+        console.log("window.app set.");
+        window.app = "stackplace";
         require(['./common'], function(common) {
                console.log("We now have 'common' functionality.");
-               window.app = "stackplace";
                require([
                    'jquery',
                    'spinner'
