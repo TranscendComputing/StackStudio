@@ -29,13 +29,21 @@ define([
             // otherwise; create a new row.
             var rowData = [];
             $.each(this.columns, function (index, value) {
+                var dataValue;
                 //split in case value is embedded in an object
                 var valuePathArray = value.split(".");
                 if(valuePathArray.length === 1) {
-                    rowData.push(model.get(value));
+                    dataValue = model.get(value); 
                 }else if(valuePathArray.length === 2){
                     var valObject = model.get(valuePathArray[0]);
-                    rowData.push(valObject[valuePathArray[1]]);
+                    dataValue = valObject[valuePathArray[1]];
+                }
+                
+                // if value is undefined send as empty string
+                if(dataValue) {
+                    rowData.push(dataValue);
+                } else {
+                    rowData.push("");
                 }
             });
             var added = $('#resource_table').dataTable().fnAddData(rowData);
