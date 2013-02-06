@@ -70,7 +70,7 @@ define([
                     {
                         text: "Cancel",
                         click: function() {
-                            accountLoginView.login();
+                            accountLoginView.cancel();
                         }
                     }
                 ]
@@ -84,46 +84,64 @@ define([
         
         close: function() {
             //document.location.hash = this.previous_location;
-            this.$el.dialog('close');
+            this.$(".accordion").remove();
         },
         
         cancel: function() {
-            //document.location.hash = this.previous_location;
             this.$el.dialog('close');
         },
         
         login: function() {
+            var accountLoginView = this;
             var username = $('input#username').val(),
                 password = $('input#password').val();
             if (window.app === "stackplace") {
                 this.model.githubLogin(username, password);
             } else {
-                var url = Common.apiUrl + "/identity/v1/accounts";
-                var formValues = {
-                    login: username,
-                    password: password
-                };
+                var url = Common.apiUrl + "/identity/v1/accounts/auth";
                 
                 $.ajax({
                     url: url,
                     type: 'POST',
                     contentType: 'application/x-www-form-urlencoded',
                     dataType: 'json',
+                    data: {
+                        'login' : username,
+                        'password' : password
+                    },
                     success: function(data) {
-                        console.log(["Login request details: ", data]);
+                        accountLoginView.successfulLogin(data);
+                    },
+                    error: function(jqXHR) {
+                        var messageObject = JSON.parse(jqXHR.responseText);
+                        alert(messageObject["error"]["message"]);
                     }
                 });
             }
+        },
+        
+        successfulLogin: function(data) {
+            if(typeof(Storage) !== "undefined") {
+                sessionStorage.account_id = data.account.id;
+                sessionStorage.login = data.account.login;
+                sessionStorage.first_name = data.account.first_name;
+                sessionStorage.last_name = data.account.last_name;
+                sessionStorage.company = data.account.company;
+                sessionStorage.email = data.account.email;
+                sessionStorage.org_id = data.account.org_id;
+                sessionStorage.cloud_accounts = JSON.stringify(data.account.cloud_accounts);
+                sessionStorage.permissions = JSON.stringify(data.account.permissions);
+                sessionStorage.project_memeberships = JSON.stringify(data.account.project_memberships);
+                
+                console.log("session login:" + sessionStorage.login);
+                Common.vent.trigger("loginSuccess");
+            }else {
+                alert("Sorry, your browser does not support web storage...");
+            }
+            this.$el.dialog('close');
         }
 
     });
-    
-    Common.router.on("route:accountLogin", function() {
-        var accountLoginView = new AccountLoginView({model: new Account()});
-        console.log(accountLoginView.model);
-        accountLoginView.render();
-        //$("#app_container").append(accountLoginView.render().el);
-    }, this);
     
     return AccountLoginView;
 });
