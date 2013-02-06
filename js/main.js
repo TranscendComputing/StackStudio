@@ -13,15 +13,19 @@ if (DEBUG) {
 
 require(['./common'], function (common) {
     require([
-            'views/accountLoginView',
+            'views/navLogin',
             'views/projectSidebarView',
             'views/projectAppView',
              // 'views/projectNavigationSidebarView',
              'views/projectResourceSidebarView',
              // 'views/projectListItemView',
              'views/projectEditView',
-             'views/resourceNavigationView'
-            ], function() {
+             'views/resourceNavigationView',
+             'views/cloudCredentialView'
+            ], function(NavLogin) {
+        
+        var navLogin = new NavLogin();
+        navLogin.render();
         common.backbone.history.start();
     });
 });
