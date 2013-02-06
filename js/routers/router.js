@@ -32,6 +32,9 @@ define([
 	var Router = Backbone.Router.extend({
 	    
 		routes:{
+		    'account/login': 'accountLogin',
+            'account/logout': 'accountLogout',
+            'account/cloudcredentials': 'cloudCredentials',
 			'resources': 'resourcesRoute',
 			'resources/:cloud': 'resourcesRoute',
 			'resources/:cloud/:type': 'resourcesRoute',
@@ -42,7 +45,6 @@ define([
 			'projects/:url': 'projectEdit',
 			'open?:url': 'loadTemplate',
 			'projects/:id/update/:resource': 'projectUpdate',
-			'account/login': 'accountLogin',
 			'*actions': 'defaultRoute'
 		},
 		
