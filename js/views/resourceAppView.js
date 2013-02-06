@@ -47,7 +47,12 @@ define([
             this.collection.on( 'add', this.addOne, this );
             this.collection.on( 'reset', this.addAll, this );
 
-            this.collection.fetch();
+            if(this.credentialId) {
+                var credId = this.credentialId;
+                this.collection.fetch({ data: $.param({ cred_id: credId}) });
+            } else {
+                this.collection.fetch();
+            }
             
             return this;
         },

@@ -55,7 +55,7 @@ define([
 		},
 
 		initialize: function() {
-		    $("#main").append(this.el);
+		    $("#main").html(this.el);
             this.$el.html(this.template);
             var response = $.ajax({
                 url: "samples/cloudDefinitions.json",
@@ -64,7 +64,7 @@ define([
             this.cloudDefinitions = $.parseJSON(response);
             cloudCredentials.on('add', this.addCloud, this );
             cloudCredentials.on('reset', this.addAllClouds, this );
-
+            
             //load user's cloud selections
             cloudCredentials.fetch();
 		},
@@ -85,16 +85,17 @@ define([
 		},
 
 		addCloud: function( cloudCredential ) {
-		    var cloudProvider = cloudCredential.get("cloudProvider");
+		    var cloudProvider = cloudCredential.get("cloud_provider");
 		    var resourceNav = this;
 			if(cloudProvider) {
+			    cloudProvider = cloudProvider.toLowerCase();
 			    var found = false;
 				$.each($("#cloud_coverflow").children(), function (index, coverFlowCloud) {
 				    if(coverFlowCloud.id === cloudProvider) {
 				        found = true;
 				    }
 				});
-				if(!found) {
+				if(!found && cloudProvider==="aws") {
 				    $('#cloud_coverflow').append($("<img></img>")
 				        .attr({
                             "id": cloudProvider,
@@ -125,6 +126,8 @@ define([
 
 		addAllClouds: function() {
 		    cloudCredentials.each(this.addCloud, this);
+		    firstCloudProvider = cloudCredentials.first().attributes.cloud_provider;
+		    firstCloudProvider = firstCloudProvider.toLowerCase();
 		    if(this.cloudPath) {
 		        console.log("cloud path: "+this.cloudPath);
 		        Common.router.navigate("#resources/"+this.cloudPath, {trigger: false});
@@ -132,13 +135,13 @@ define([
 		            this.cloudSelection(this.cloudPath);
 		            Common.router.navigate("#resources/"+this.cloudPath, {trigger: false});
 		        }else {
-		            Common.router.navigate("#resources/"+cloudCredentials.first().attributes.cloudProvider, {trigger: false});
-		            this.cloudSelection(cloudCredentials.first().attributes.cloudProvider);
+		            Common.router.navigate("#resources/"+firstCloudProvider, {trigger: false});
+		            this.cloudSelection(firstCloudProvider);
 		        }
 		    }else {
 		        console.log("cloud path undefined");
-		        Common.router.navigate("#resources/"+cloudCredentials.first().attributes.cloudProvider, {trigger: false});
-		        this.cloudSelection(cloudCredentials.first().attributes.cloudProvider);
+		        Common.router.navigate("#resources/"+firstCloudProvider, {trigger: false});
+		        this.cloudSelection(firstCloudProvider);
 		    }
 		    $("#resource_nav").hide();
 		},
@@ -193,13 +196,13 @@ define([
 		    $("#cloud_specs").append('<span id="credentials">Credentials: <select id="credential_select" class="cloud_spec_select"></select></span>');
 		    //Add credentials for this cloud
 		    cloudCredentials.each(function (credential) {
-		        if(credential.get("cloudProvider") === cloudProvider) {
-		            $('#credential_select').append($("<option></option>").text(credential.get("name")));
+		        if(credential.get("cloud_provider").toLowerCase() === cloudProvider) {
+		            $('#credential_select').append($("<option value='" + credential.get("id") + "'></option>").text(credential.get("name")));
 		        }
 		    });
             $("#credential_select").selectmenu();
             $("#credential_nav").html($("#credential_select option:first").text());
-
+            
 		    //Remove previous region
             $("#regions").remove();
             //Add regions if cloud has regions
@@ -215,7 +218,7 @@ define([
 		        $("region_nav").hide();
 		    }
 
-		    this.loadResourceApp(cloudProvider, resourceNav.typePath, resourceNav.subtypePath, resourceNav.idPath);
+		    this.loadResourceApp(cloudProvider, resourceNav.typePath, resourceNav.subtypePath, resourceNav.idPath, $("#credential_select option:first").val());
 		},
 
 		resourceClick: function(id) {
@@ -237,7 +240,7 @@ define([
 			console.log(selectionId + " selected");
 		},
 
-		loadResourceApp: function(cloudProvider, type, subtype, id) {
+		loadResourceApp: function(cloudProvider, type, subtype, id, credId) {
 		    var resourceNav = this;
             if(cloudProvider) {
                 if (!type) {
@@ -259,7 +262,7 @@ define([
                     if (this.resourceApp instanceof AppView) {
                         return;
                     }
-                    var resourceAppView = new AppView();
+                    var resourceAppView = new AppView({cred_id: credId});
                     this.resourceApp = resourceAppView;
                     resourceNav.resourceSelect(type);
                     if(id) {
