@@ -195,7 +195,6 @@ define([
             $("#size_select").remove();
             $("#key_pair_select").remove();
             $("#security_group_select").remove();
-            this.$el.dialog('close');
         },
         
         cancel: function() {

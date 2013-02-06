@@ -26,41 +26,35 @@ define([
 
         /** Default attributes for instance */
         defaults: {
-            name: '-',
-            description: '',
-            instanceId: '',
-            imageId: '',
-            imageName: '-',
-            zone: '',
+            id: '',
+            image_id: '',
+            flavor_id: '',
+            block_device_mapping: {},
+            network_interfaces: [],
+            iam_instance_profile: {},
             state: '',
-            keypairName: '-',
-            publicIp: '0.0.0.0',
-            privateIp: '0.0.0.0',
-            running: false
-        },
-
-        /**
-         * Override the base Backbone set method, for debugging.
-         *
-         * @memberOf Compute
-         * @category Internal
-         * @param {Object} hash of attribute values to set.
-         * @param {Object} (optional) options to tweak (see Backbone docs).
-         */
-        set: function(attributes, options) {
-            Backbone.Model.prototype.set.apply(this, arguments);
-        },
-
-        /**
-         *  Toggle the `running` state of this instance.
-         *
-         * @memberOf Compute
-         * @category Convenience
-         */
-        toggle: function() {
-            this.save({
-                running: !this.get('running')
-            });
+            monitoring: false,
+            availability_zone: '',
+            placement_group: {},
+            tenancy: '',
+            product_codes: [],
+            state_reason: {},
+            tags: {},
+            ownerId: '',
+            private_dns_name: '',
+            dns_name: '',
+            reason: {},
+            key_name: '',
+            ami_launch_index: 0,
+            created_at: '',
+            kernel_id: '',
+            private_ip_address: '',
+            public_ip_address: '',
+            root_device_type: '',
+            client_token: '',
+            ebs_optimized: false,
+            groups: [],
+            security_group_ids: []
         }
 
     });

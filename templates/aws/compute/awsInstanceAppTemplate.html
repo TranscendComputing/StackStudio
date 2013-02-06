@@ -10,15 +10,12 @@
                         <li style="z-index: 1000">
                             <a class="actions_button" href="#">Actions</a>
                             <ul>
-                                <li class="ui-state-disabled"><a href="#">Console</a></li>
                                 <li class="ui-state-disabled"><a href="#">Start</a></li>
                                 <li class="ui-state-disabled"><a href="#">Stop</a></li>
                                 <li class="ui-state-disabled"><a href="#">Reboot</a></li>
                                 <li class="ui-state-disabled"><a href="#">Terminate</a></li>
                                 <li class="ui-state-disabled"><a href="#">Associate Address</a></li>
-                                <li class="ui-state-disabled"><a href="#">Disassociate Address</a></li>
-                                <li class="ui-state-disabled"><a href="#">Launch More Like This</a></li>
-                                <li class="ui-state-disabled"><a href="#">View System Log</a></li>                    
+                                <li class="ui-state-disabled"><a href="#">Disassociate Address</a></li>                
                             </ul>
                         </li>
                     </ul>
@@ -30,9 +27,12 @@
         <thead>
             <tr>
                 <th>Name</th>
-                <th>Instance</th>
-                <th>Key</th>
-                <th>Running</th>
+                <th>Instance ID</th>
+                <th>Image ID</th>
+                <th>Root Device</th>
+                <th>Type</th>
+                <th>Key Pair</th>
+                <th>State</th>
             </tr>
         </thead>
         <tbody>
@@ -50,9 +50,21 @@
             <li><a id="monitoring" href="#tabs-2">Monitoring</a></li>
         </ul>
         <div id="tabs-1" class="tab">
-            <div>Name: {{ name }} </div>
-            <div>Instance ID: {{ instanceId }} </div>
-            <div>Key Name: {{ keyName }} </div>
+            <table>
+                <tbody>
+                    <tr><td><b>Name:</b></td>                  <td>{{ tags.Name }}</td>                <td><b>Public DNS:</b></td>    <td>{{ dns_name }}</td></tr>
+                    <tr><td><b>Instance ID:</b></td>           <td>{{ id }}</td>                       <td><b>Public IP:</b></td>     <td>{{ public_ip_address }}</td></tr>
+                    <tr><td><b>Image ID:</b></td>              <td>{{ image_id }}</td>                 <td><b>Private IP:</b></td>    <td>{{ private_ip_address }}</td></tr>
+                    <tr><td><b>Root Device:</b></td>           <td>{{ root_device_type }}</td>         <td><b>Tenancy:</b></td>       <td>{{ tenancy }}</td></tr>
+                    <tr><td><b>Type:</b></td>                  <td>{{ flavor_id }}</td></tr>
+                    <tr><td><b>Key Name:</b></td>              <td>{{ key_name }}</td></tr>
+                    <tr><td><b>Availability Zone:</b></td>     <td>{{ availability_zone }}</td></tr>
+                    <tr><td><b>Detailed Monitoring:</b></td>   <td>{{ monitoring }}</td></tr>
+                    <tr><td><b>EBS Optimized:</b></td>         <td>{{ ebs_optimized }}</td></tr>
+                    <tr><td><b>State:</b></td>                 <td>{{ state }}</td></tr>
+                    <tr><td><b>Launch Time:</b></td>           <td>{{ created_at }}</td></tr>
+                </tbody>
+            </table>
         </div>
         <div id="tabs-2" class="tab">
             <div id="cpuGraph"></div>

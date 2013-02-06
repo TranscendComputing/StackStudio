@@ -37,11 +37,14 @@ define([
      * @returns {Object} Returns a AwsInstancesAppView instance.
      */
     var AwsInstancesAppView = ResourceAppView.extend({
+        
+        credentialId: undefined,
+        
         template: _.template(awsInstanceAppTemplate),
         
-        modelStringIdentifier: "instanceId",
+        modelStringIdentifier: "id",
         
-        columns: ["name", "instanceId", "keyName", "running"],
+        columns: ["tags.Name", "id", "image_id", "root_device_type", "flavor_id", "key_name", "state"],
         
         idColumnNumber: 1,
         
@@ -66,7 +69,10 @@ define([
             'click #monitoring': 'loadMonitors'
         },
 
-        initialize: function() {
+        initialize: function(options) {
+            if(options.cred_id) {
+                this.credentialId = options.cred_id;
+            }
             this.render();
             $("#action_menu").on( "menuselect", this.setAction );
         },
