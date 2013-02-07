@@ -12,9 +12,10 @@ define([
         'models/account',
         'text!templates/account/stackplaceLoginTemplate.html',
         'text!templates/account/stackstudioLoginTemplate.html',
+        'views/newLoginView',
         'icanhaz',
         'common'      
-], function( $, _, Backbone, Account, stackplaceLoginTemplate, stackstudioLoginTemplate, ich, Common ) {
+], function( $, _, Backbone, Account, stackplaceLoginTemplate, stackstudioLoginTemplate, NewLoginView, ich, Common ) {
     
     /**
      * AccountLoginView is UI wizard to create cloud instances.
@@ -65,6 +66,12 @@ define([
                         text: "Login",
                         click: function() {
                             accountLoginView.login();
+                        }
+                    },
+                    {
+                        text: "Register",
+                        click: function() {
+                            accountLoginView.createNew();
                         }
                     },
                     {
@@ -139,6 +146,10 @@ define([
                 alert("Sorry, your browser does not support web storage...");
             }
             this.$el.dialog('close');
+        },
+        
+        createNew: function() {
+            new NewLoginView();
         }
 
     });
