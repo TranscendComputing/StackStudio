@@ -50,7 +50,11 @@ define([
         },
         
         addOne: function( model ) {
-            $("#credential_list").append("<li>" + model.get("name") + "</li>");
+            var logo = "";
+            if(model.get("cloud_provider") === "AWS") {
+                logo = "<img src='images/CloudLogos/amazon.png' />"
+            }
+            $("#credential_list").append("<li>" + logo + model.get("name") + "</li>");
         },
         
         addAll: function() {
