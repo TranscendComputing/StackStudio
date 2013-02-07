@@ -29,14 +29,15 @@ define([
             id: "",
             name: "New Account",
             description: "",
-            cloudId: "",
-            cloudName: "",
-            cloudProvider: "",
-            accessKey: "",
-            secretKey: "",
-            cloudAttributes: {},
-            auditLogs: [],
-            topstackEnabled: false
+            cloud_id: "",
+            cloud_name: "",
+            cloud_provider: "",
+            access_key: "",
+            secret_key: "",
+            cloud_attributes: {},
+            audit_logs: [],
+            topstack_enabled: false,
+            topstack_configured: false
 		}
 
     });
