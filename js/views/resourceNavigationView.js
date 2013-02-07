@@ -16,7 +16,7 @@ define([
         'collections/cloudCredentials',
         'jquery-plugins',
         'jquery-ui-plugins'
-], function( $, _, Backbone, ich, Common, resourcesTemplate, cloudCredential, cloudCredentials ) {
+], function( $, _, Backbone, ich, Common, resourcesTemplate, cloudCredential, CloudCredentials ) {
 	// The Resources Navigation View
 	// ------------------------------
 
@@ -45,6 +45,8 @@ define([
 		idPath: undefined,
 
         cloudDefinitions: undefined,
+        
+        cloudCredentials: undefined,
 
         navOpen: false,
 
@@ -62,11 +64,12 @@ define([
                 async: false
             }).responseText;
             this.cloudDefinitions = $.parseJSON(response);
-            cloudCredentials.on('add', this.addCloud, this );
-            cloudCredentials.on('reset', this.addAllClouds, this );
+            this.cloudCredentials = new CloudCredentials();
+            this.cloudCredentials.on('add', this.addCloud, this );
+            this.cloudCredentials.on('reset', this.addAllClouds, this );
             
             //load user's cloud selections
-            cloudCredentials.fetch();
+            this.cloudCredentials.fetch();
 		},
 
 		render: function () {
@@ -125,8 +128,8 @@ define([
 		},
 
 		addAllClouds: function() {
-		    cloudCredentials.each(this.addCloud, this);
-		    firstCloudProvider = cloudCredentials.first().attributes.cloud_provider;
+		    this.cloudCredentials.each(this.addCloud, this);
+		    firstCloudProvider = this.cloudCredentials.first().attributes.cloud_provider;
 		    firstCloudProvider = firstCloudProvider.toLowerCase();
 		    if(this.cloudPath) {
 		        console.log("cloud path: "+this.cloudPath);
@@ -195,7 +198,7 @@ define([
 		    $("#credentials").remove();
 		    $("#cloud_specs").append('<span id="credentials">Credentials: <select id="credential_select" class="cloud_spec_select"></select></span>');
 		    //Add credentials for this cloud
-		    cloudCredentials.each(function (credential) {
+		    this.cloudCredentials.each(function (credential) {
 		        if(credential.get("cloud_provider").toLowerCase() === cloudProvider) {
 		            $('#credential_select').append($("<option value='" + credential.get("id") + "'></option>").text(credential.get("name")));
 		        }

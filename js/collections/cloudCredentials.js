@@ -95,6 +95,6 @@ define([
 	
 	});
 
-	return CloudCredentialList();
+	return CloudCredentialList;
 
 });

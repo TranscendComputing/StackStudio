@@ -16,14 +16,18 @@ define([
         'views/cloudCredentialCreateView',
         'jquery-plugins',
         'jquery-ui-plugins'
-], function( $, _, Backbone, Common, cloudCredentialTemplate, cloudCredential, cloudCredentials, CloudCredentialCreateView ) {
+], function( $, _, Backbone, Common, cloudCredentialTemplate, cloudCredential, CloudCredentials, CloudCredentialCreateView ) {
 
     var CloudCredentialView = Backbone.View.extend({
         el: "#main",
         
+        template: _.template(cloudCredentialTemplate),
+        
+        selectedCredential: undefined,
+        
         formView: undefined,
         
-        template: _.template(cloudCredentialTemplate),
+        cloudCredentials: undefined,
         
         events: {
             "click #credential_list li": "selectCredential",
@@ -33,14 +37,17 @@ define([
         },
 
         initialize: function() {
-            this.$el.html(this.template);
-            $("button").button();
-            cloudCredentials.on( 'add', this.addOne, this );
-            cloudCredentials.on( 'reset', this.addAll, this );
+            
         },
 
-        render: function () {            
-            cloudCredentials.fetch();
+        render: function () {
+            this.$el.html(this.template);
+            this.cloudCredentials = new CloudCredentials();
+            $("button").button();
+            this.cloudCredentials.on( 'add', this.addOne, this );
+            this.cloudCredentials.on( 'reset', this.addAll, this );
+            this.clearForm();
+            this.cloudCredentials.fetch();
         },
         
         addOne: function( model ) {
@@ -49,20 +56,22 @@ define([
         
         addAll: function() {
             $("#credential_list").empty();
-            cloudCredentials.each(this.addOne, this);
+            this.cloudCredentials.each(this.addOne, this);
         },
         
         selectCredential: function( click ) {
+            var credentialView = this;
             this.clearSelection();
             $(click.target).addClass("selected_li");
             
-            cloudCredentials.each(function(cloudCred) {
+            this.cloudCredentials.each(function(cloudCred) {
                 if($(click.target).text() === cloudCred.attributes.name) {
+                    credentialView.selectedCredential = cloudCred;
                     var cloudProvider = cloudCred.attributes.cloud_provider.toLowerCase();
-                    var formViewPath = "../"+cloudProvider+"/account/"+cloudProvider+"CredentialFormView";
+                    var formViewPath = "../"+cloudProvider+"/views/account/"+cloudProvider+"CredentialFormView";
                     require([formViewPath], function (FormView) {
                         var formView = new FormView({el: "#credential_form", credential: cloudCred});
-                        this.formView = formView;
+                        credentialView.formView = formView;
                     });
                 }
             });
@@ -74,16 +83,24 @@ define([
             });
         },
         
+        clearForm: function() {
+            $("#credential_form").html("");
+        },
+        
         newCredential: function() {
             new CloudCredentialCreateView();
         },
         
         saveCredential: function() {
-            
+            if(this.selectedCredential) {
+                this.formView.update(this.selectedCredential);
+            }
         },
         
         deleteCredential: function() {
-            
+            if(this.selectedCredential) {
+                this.cloudCredentials.delete(this.selectedCredential.attributes.id); 
+            }  
         }
     });
 
@@ -93,10 +110,26 @@ define([
         if (!cloudCredentialView) {
             cloudCredentialView = new CloudCredentialView();
         }
+        console.log("cloud credentials view: cloudCredentials route");
+        Common.router.navigate("#account/cloudcredentials", {trigger: true});
         cloudCredentialView.render();
     }, this);
     
     Common.vent.on("cloudCredentialCreated", function () {
+        if (!cloudCredentialView) {
+            cloudCredentialView = new CloudCredentialView();
+        }
+        cloudCredentialView.render();
+    }, this);
+    
+    Common.vent.on("cloudCredentialUpdated", function () {
+        if (!cloudCredentialView) {
+            cloudCredentialView = new CloudCredentialView();
+        }
+        cloudCredentialView.render();
+    }, this);
+    
+    Common.vent.on("cloudCredentialDeleted", function () {
         if (!cloudCredentialView) {
             cloudCredentialView = new CloudCredentialView();
         }
