@@ -44,7 +44,6 @@ define([
             this.$el.html(this.template);
             this.cloudCredentials = new CloudCredentials();
             $("button").button();
-            this.cloudCredentials.on( 'add', this.addOne, this );
             this.cloudCredentials.on( 'reset', this.addAll, this );
             this.clearForm();
             this.cloudCredentials.fetch();
