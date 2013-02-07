@@ -62,6 +62,7 @@ define([
             navLogin = new NavLogin();
         }
         sessionStorage.clear();
+        Common.router.navigate("/", {trigger: true});
         navLogin.render();
     }, this);
     
