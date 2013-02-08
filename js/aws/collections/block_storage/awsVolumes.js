@@ -21,7 +21,7 @@ define([
         // Reference to this collection's model.
         model: Volume,
 
-        url: 'samples/volumes.json',
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/block_storage/volumes/describe',
 
         // Filter down the list of all instance items that are running.
         available: function() {

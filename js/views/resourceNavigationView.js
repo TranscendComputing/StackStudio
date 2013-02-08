@@ -47,6 +47,8 @@ define([
         cloudDefinitions: undefined,
         
         cloudCredentials: undefined,
+        
+        selectedCredential: undefined,
 
         navOpen: false,
 
@@ -73,7 +75,7 @@ define([
 		},
 
 		render: function () {
-		    this.loadResourceApp(this.selectedCloud, this.typePath, this.subtypePath, this.idPath);
+		    this.loadResourceApp(this.selectedCloud, this.typePath, this.subtypePath, this.idPath, this.selectedCredential);
 		    return this;
 		},
 
@@ -205,6 +207,7 @@ define([
 		    });
             $("#credential_select").selectmenu();
             $("#credential_nav").html($("#credential_select option:first").text());
+            this.selectedCredential = $("#credential_select option:first").val();
             
 		    //Remove previous region
             $("#regions").remove();
@@ -221,7 +224,7 @@ define([
 		        $("region_nav").hide();
 		    }
 
-		    this.loadResourceApp(cloudProvider, resourceNav.typePath, resourceNav.subtypePath, resourceNav.idPath, $("#credential_select option:first").val());
+		    this.loadResourceApp(cloudProvider, resourceNav.typePath, resourceNav.subtypePath, resourceNav.idPath, this.selectedCredential);
 		},
 
 		resourceClick: function(id) {
@@ -291,7 +294,6 @@ define([
         resourcesView.subtypePath = subtype;
         resourcesView.idPath = id;
         resourcesView.render();
-        console.log("resources view: resources route");
     }, this);
 
     console.log("resource view defined");

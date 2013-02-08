@@ -24,33 +24,22 @@ define([
      */
     var Volume = Backbone.Model.extend({
 
-        /** Default attributes for compute */
         defaults: {
-			name: '',
-			description: '',
-			volumeId: '',
-			size: '',
-			snapshotId: '',
-			zone: '',
+            id: '',
+			attached_at: '',
+			availability_zone: '',
+			created_at: '',
+			delete_on_termination: '',
+			device: '',
+			iops: '-',
+			server_id: '',
+			size: 0,
+			snapshot_id: '',
 			state: '',
-			createTime: '-',
-			attachmentSet: '',
-			tagSet: '',
-			volumeType: '',
-			iops: ''
-		},
-
-	    /**
-	     * Override the base Backbone set method, for debugging.
-	     *
-	     * @memberOf BloackStorage
-	     * @category Internal
-	     * @param {Object} hash of attribute values to set.
-	     * @param {Object} (optional) options to tweak (see Backbone docs).
-	     */
-		set: function(attributes, options) {
-		    Backbone.Model.prototype.set.apply(this, arguments);
+			tags: {},
+			type: ''
 		}
+    
     });
 
     return Volume;

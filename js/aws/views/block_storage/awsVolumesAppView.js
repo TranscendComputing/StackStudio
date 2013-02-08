@@ -35,9 +35,9 @@ define([
 	var AwsVolumesAppView = AppView.extend({
 	    template: _.template(awsVolumeAppTemplate),
 	    
-        modelStringIdentifier: "volumeId",
+        modelStringIdentifier: "id",
         
-        columns: ["name", "volumeId", "size", "available"],
+        columns: ["tags.Name", "id", "size", "state"],
         
         idColumnNumber: 1,
         
@@ -56,7 +56,10 @@ define([
             'click #resource_table tr': 'toggleActions'
         },
 
-        initialize: function() {
+        initialize: function(options) {
+            if(options.cred_id) {
+                this.credentialId = options.cred_id;
+            }
             this.render();
             $("#action_menu").on( "menuselect", this.setAction );
         },
