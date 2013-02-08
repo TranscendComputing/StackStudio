@@ -37,12 +37,22 @@
 <script type="text/html" id="resource_detail">
     <div id="detail_tabs">
         <ul>
-            <li><a href="#properties_tab">Details</a></li>
+            <li><a href="#tabs-1">Details</a></li>
+            <li><a id="monitoring" href="#tabs-2">Monitoring</a></li>
         </ul>
-        <div id="properties_tab" class="tab">
-            <div>Name: {{ AlarmName }} </div>
-            <div>Threshold: {{ Threshold }} </div>
-            <div>State: {{ StateValue }} </div>
+        <div id="tabs-1" class="tab">
+            <table>
+                <tbody>
+                    <tr><td><b>Name:</b></td>                   <td>{{ id }}</td>                   <td><b>Comparison Operator:</b></td>    <td>{{ comparison_operator }}</td></tr>
+                    <tr><td><b>Description:</b></td>            <td>{{ alarm_description }}</td>    <td><b>Dimensions:</b></td>             <td>{{ dimensions }}</td></tr>
+                    <tr><td><b>Resource Name:</b></td>          <td>{{ arn }}</td>                  <td><b>Namespace:</b></td>              <td>{{ namespace }}</td></tr>
+                    <tr><td><b>Actions Enabled:</b></td>        <td>{{ actions_enabled }}</td>      <td><b>Period:</b></td>                 <td>{{ period }}</td></tr>
+                    <tr><td><b>Metric Name:</b></td>            <td>{{ metric_name }}</td>          <td><b>Statistic:</b></td>              <td>{{ statistic }}</td></tr>
+                    <tr><td><b>Threshold:</b></td>              <td>{{ threshold }}</td>            <td><b>Unit:</b></td>                   <td>{{ unit }}</td></tr>
+                    <tr><td><b>State Reason:</b></td>           <td>{{ state_reason }}</td></tr>
+                    <tr><td><b>State Value:</b></td>            <td>{{ state_value }}</td></tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </script>
