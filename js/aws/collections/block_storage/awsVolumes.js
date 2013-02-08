@@ -32,6 +32,6 @@ define([
     });
 
     // Create our global collection of **Volumes**.
-    return new VolumesList();
+    return VolumesList;
 
 });

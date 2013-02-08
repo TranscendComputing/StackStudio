@@ -17,7 +17,7 @@ define([
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, AppView, awsVolumeAppTemplate, Volume, volumes, AwsVolumeCreateView, ich, Common ) {
+], function( $, _, Backbone, AppView, awsVolumeAppTemplate, Volume, Volumes, AwsVolumeCreateView, ich, Common ) {
 	'use strict';
 
 	// Aws Application View
@@ -43,7 +43,7 @@ define([
         
         model: Volume,
         
-        collection: volumes,
+        collectionType: Volumes,
         
         type: "block_storage",
         

@@ -22,6 +22,8 @@ define([
         
         modelStringIdentifier: undefined,
         
+        collection: undefined,
+        
         columns: [],
         
         idColumnNumber: 0,
@@ -43,7 +45,8 @@ define([
             });
             
             this.$table = $('#resource_table').dataTable({"bJQueryUI": true});
-            
+            var CollectionType = this.collectionType;
+            this.collection = new CollectionType(); 
             this.collection.on( 'add', this.addOne, this );
             this.collection.on( 'reset', this.addAll, this );
 

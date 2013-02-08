@@ -21,7 +21,7 @@ define([
         'morris',
         'spinner',
         'jquery.dataTables'
-], function( $, _, Backbone, ResourceAppView, awsInstanceAppTemplate, Instance, instances, AwsInstanceCreate, DataPoint, DataPoints, ich, Common, Morris, Spinner ) {
+], function( $, _, Backbone, ResourceAppView, awsInstanceAppTemplate, Instance, Instances, AwsInstanceCreate, DataPoint, DataPoints, ich, Common, Morris, Spinner ) {
     'use strict';
 
     // Aws Instance Application View
@@ -50,7 +50,7 @@ define([
         
         model: Instance,
         
-        collection: instances,
+        collectionType: Instances,
         
         type: "compute",
         
