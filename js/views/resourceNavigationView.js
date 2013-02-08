@@ -49,6 +49,8 @@ define([
         cloudCredentials: undefined,
         
         selectedCredential: undefined,
+        
+        resourceApp: undefined,
 
         navOpen: false,
 
@@ -61,12 +63,14 @@ define([
 		initialize: function() {
 		    $("#main").html(this.el);
             this.$el.html(this.template);
-            var response = $.ajax({
+            
+		    var response = $.ajax({
                 url: "samples/cloudDefinitions.json",
                 async: false
             }).responseText;
-            this.cloudDefinitions = $.parseJSON(response);
-            this.cloudCredentials = new CloudCredentials();
+		    this.cloudDefinitions = $.parseJSON(response);
+		    
+		    this.cloudCredentials = new CloudCredentials();
             this.cloudCredentials.on('add', this.addCloud, this );
             this.cloudCredentials.on('reset', this.addAllClouds, this );
             
@@ -75,6 +79,28 @@ define([
 		},
 
 		render: function () {
+            if(this.resourceApp) {
+                this.resourceApp.remove();
+            } else {
+                var firstCloudProvider = this.cloudCredentials.first().attributes.cloud_provider;
+                firstCloudProvider = firstCloudProvider.toLowerCase();
+                if(this.cloudPath) {
+                    console.log("cloud path: "+this.cloudPath);
+                    Common.router.navigate("#resources/"+this.cloudPath, {trigger: false});
+                    if($("#"+this.cloudPath).length) {
+                        this.cloudSelection(this.cloudPath);
+                        Common.router.navigate("#resources/"+this.cloudPath, {trigger: false});
+                    }else {
+                        Common.router.navigate("#resources/"+firstCloudProvider, {trigger: false});
+                        this.cloudSelection(firstCloudProvider);
+                    }
+                }else {
+                    console.log("cloud path undefined");
+                    Common.router.navigate("#resources/"+firstCloudProvider, {trigger: false});
+                    this.cloudSelection(firstCloudProvider);
+                }
+            }    
+
 		    this.loadResourceApp(this.selectedCloud, this.typePath, this.subtypePath, this.idPath, this.selectedCredential);
 		    return this;
 		},
@@ -130,42 +156,10 @@ define([
 		},
 
 		addAllClouds: function() {
-		    this.cloudCredentials.each(this.addCloud, this);
-		    var firstCloudProvider = this.cloudCredentials.first().attributes.cloud_provider;
-		    firstCloudProvider = firstCloudProvider.toLowerCase();
-		    if(this.cloudPath) {
-		        console.log("cloud path: "+this.cloudPath);
-		        Common.router.navigate("#resources/"+this.cloudPath, {trigger: false});
-		        if($("#"+this.cloudPath).length) {
-		            this.cloudSelection(this.cloudPath);
-		            Common.router.navigate("#resources/"+this.cloudPath, {trigger: false});
-		        }else {
-		            Common.router.navigate("#resources/"+firstCloudProvider, {trigger: false});
-		            this.cloudSelection(firstCloudProvider);
-		        }
-		    }else {
-		        console.log("cloud path undefined");
-		        Common.router.navigate("#resources/"+firstCloudProvider, {trigger: false});
-		        this.cloudSelection(firstCloudProvider);
-		    }
+		    this.cloudCredentials.each(this.addCloud, this); 
 		    $("#resource_nav").hide();
 		},
-		/*
-		setNavToCoverFlowIndex: function () {
-		    //Move coverflow to first to parse for correct cloud
-		    var cloudCount = $("#cloud_coverflow").children().length;
-		    var coverFlowIndex = 0;
-		    if(cloudCount/2 % 2 === 0) {
-		        coverFlowIndex = cloudCount/2 - 1;
-		    }else {
-		        coverFlowIndex = Math.floor(cloudCount/2);
-		    }
 
-		    var coverFlowSelectedCloud = $("#cloud_coverflow").children()[coverFlowIndex].id;
-		    Common.router.navigate("#resources/"+coverFlowSelectedCloud, {trigger: false});
-
-		},
-        */
 		cloudChange: function(event) {
 			$(".resources").remove();
 			Common.router.navigate("#resources/"+event.target.id, {trigger: false});
@@ -177,6 +171,7 @@ define([
 		    var resourceNav = this;
 		    //Add the services of the cloud to the resource table
 		    var row = 1;
+		    $("#resource_table").empty();
 		    $.each(resourceNav.cloudDefinitions[cloudProvider].services, function(index, service) {
 		        $("#row"+row).append($("<td></td>").attr({
                     "id": service.type,
@@ -223,8 +218,6 @@ define([
 		    }else {
 		        $("region_nav").hide();
 		    }
-
-		    this.loadResourceApp(cloudProvider, resourceNav.typePath, resourceNav.subtypePath, resourceNav.idPath, this.selectedCredential);
 		},
 
 		resourceClick: function(id) {
@@ -243,7 +236,6 @@ define([
 					$(this).css("background", "#E6E9ED");
 				}
 	        });
-			console.log(selectionId + " selected");
 		},
 
 		loadResourceApp: function(cloudProvider, type, subtype, id, credId) {
@@ -269,16 +261,15 @@ define([
                         return;
                     }
                     var resourceAppView = new AppView({cred_id: credId});
-                    this.resourceApp = resourceAppView;
+                    resourceNav.resourceApp = resourceAppView;
                     resourceNav.resourceSelect(type);
                     if(id) {
-                        Common.router.navigate("#resources/"+cloudProvider+"/"+type+"/"+subtype+"/"+id, {trigger: true});
+                        Common.router.navigate("#resources/"+cloudProvider+"/"+type+"/"+subtype+"/"+id, {trigger: false});
                         resourceAppView.selectedId = id;
                     }else {
-                        Common.router.navigate("#resources/"+cloudProvider+"/"+type+"/"+subtype, {trigger: true});
+                        Common.router.navigate("#resources/"+cloudProvider+"/"+type+"/"+subtype, {trigger: false});
                     }
                 });
-
             }
         }
 	});

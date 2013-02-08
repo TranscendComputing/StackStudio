@@ -34,10 +34,11 @@ define([
         
         CreateView: undefined,
         
-        el: '#resource_app',
+        tagName: 'div',
         
         render: function() {
             this.$el.html(this.template);
+            $("#resource_app").html(this.$el);
             ich.refresh();
             $('button').button();
             $(".action_menu").menu({
@@ -56,8 +57,6 @@ define([
             } else {
                 this.collection.fetch();
             }
-            
-            return this;
         },
         
         addOne: function( model ) {
@@ -70,6 +69,7 @@ define([
         },
 
         addAll: function() {
+            this.$table.fnClearTable();
             this.collection.each(this.addOne, this);
             
             if(this.selectedId) {
