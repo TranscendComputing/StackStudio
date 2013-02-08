@@ -12,7 +12,7 @@
                             <ul>
                                 <li class="ui-state-disabled"><a href="#">Delete Volume</a></li>
                                 <li class="ui-state-disabled"><a href="#">Attach Volume</a></li>
-                                <li><a href="#">Detach Volume</a></li>
+                                <li class="ui-state-disabled"><a href="#">Detach Volume</a></li>
                                 <li class="ui-state-disabled"><a href="#">Force Detach</a></li>
                                 <li class="ui-state-disabled"><a href="#">Create Snapshot</a></li>
                                 <li class="ui-state-disabled"><a href="#">Change Auto-Enable IO Setting</a></li>                   
@@ -41,14 +41,27 @@
 </div>
 
 <script type="text/html" id="resource_detail">
-    <div id="detail_tabs" class="full_width">
+    <div id="detail_tabs">
         <ul>
-            <li><a href="#properties_tab">Details</a></li>
+            <li><a href="#tabs-1">Details</a></li>
         </ul>
-        <div id="properties_tab" class="tab">
-            <div>Name: {{ name }} </div>
-            <div>Volume ID: {{ id }} </div>
-            <div>Size: {{ size }} </div>
+        <div id="tabs-1" class="tab">
+            <table>
+                <tbody>
+                    <tr><td><b>Name:</b></td>                   <td>{{ tags.Name }}</td>
+                    <tr><td><b>Volume ID:</b></td>              <td>{{ id }}</td>
+                    <tr><td><b>Size:</b></td>                   <td>{{ size }}</td>
+                    <tr><td><b>Availability Zone:</b></td>      <td>{{ availability_zone }}</td>
+                    <tr><td><b>Type:</b></td>                   <td>{{ type }}</td>
+                    <tr><td><b>Server ID:</b></td>              <td>{{ server_id }}</td></tr>
+                    <tr><td><b>Device:</b></td>                 <td>{{ device }}</td></tr>
+                    <tr><td><b>Attached At:</b></td>            <td>{{ attached_at }}</td></tr>
+                    <tr><td><b>Snapshot ID:</b></td>            <td>{{ snapshot_id }}</td></tr>
+                    <tr><td><b>Delete on Termination:</b></td>  <td>{{ delete_on_termination }}</td></tr>
+                    <tr><td><b>State:</b></td>                  <td>{{ state }}</td></tr>
+                    <tr><td><b>Created At:</b></td>             <td>{{ created_at }}</td></tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </script>
