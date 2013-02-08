@@ -4,7 +4,7 @@
  * Available under ASL2 license <http://www.apache.org/licenses/LICENSE-2.0.html>
  */
 /*jshint smarttabs:true */
-/*global define:true console:true */
+/*global define:true console:true alert:true*/
 define([
         'jquery',
         'underscore',
@@ -106,7 +106,7 @@ define([
                             "password_confirmation": $("#confirm_password").val(),
                             "country_code": $("#country_select").val()
                         }
-                }
+                };
                 $.ajax({
                     url: Common.apiUrl + "/identity/v1/accounts",
                     type: 'POST',
@@ -130,7 +130,7 @@ define([
         
         cancel: function() {
             this.$el.dialog('close');
-        },
+        }
 
     });
     

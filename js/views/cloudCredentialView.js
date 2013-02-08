@@ -52,7 +52,7 @@ define([
         addOne: function( model ) {
             var logo = "";
             if(model.get("cloud_provider") === "AWS") {
-                logo = "<img src='images/CloudLogos/amazon.png' />"
+                logo = "<img src='images/CloudLogos/amazon.png' />";
             }
             $("#credential_list").append("<li>" + logo + model.get("name") + "</li>");
         },
@@ -82,7 +82,7 @@ define([
         
         clearSelection: function() {
             $("#credential_list li").each(function() {
-               $(this).removeClass("selected_li") 
+               $(this).removeClass("selected_li");
             });
         },
         
@@ -102,7 +102,7 @@ define([
         
         deleteCredential: function() {
             if(this.selectedCredential) {
-                this.cloudCredentials.delete(this.selectedCredential.attributes.id); 
+                this.cloudCredentials.deleteCredential(this.selectedCredential.attributes.id); 
             }  
         }
     });

@@ -55,8 +55,8 @@ define([
             });
             
             $("select").selectmenu();
-            var credForm = this.credentialForm;
-            this.credentialForm = new credForm({el: "#credential_create_form"});
+            var CredForm = this.credentialForm;
+            this.credentialForm = new CredForm({el: "#credential_create_form"});
             
             clouds.on( 'reset', this.setCloud, this );
             clouds.fetch();

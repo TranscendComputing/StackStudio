@@ -129,7 +129,7 @@ define([
 
 		addAllClouds: function() {
 		    this.cloudCredentials.each(this.addCloud, this);
-		    firstCloudProvider = this.cloudCredentials.first().attributes.cloud_provider;
+		    var firstCloudProvider = this.cloudCredentials.first().attributes.cloud_provider;
 		    firstCloudProvider = firstCloudProvider.toLowerCase();
 		    if(this.cloudPath) {
 		        console.log("cloud path: "+this.cloudPath);
