@@ -23,27 +23,27 @@ define([
 
         /** Default attributes for alarm */
         defaults: {
-            AlarmName: '',
-            ActionsEnabled: '',
-            AlarmActions: [],
-            AlarmArn: '',
-            AlarmConfigurationUpdatedTimestamp: '',
-            AlarmDescription: '',
-            ComparisonOperator: '',
-            Dimensions: [],
-            EvaluationPeriods: 0,
-            InsufficientDataActions: [],
-            MetricName: '',
-            Namespace: '',
-            OKActions: [],
-            Period: 0,
-            StateReason: '',
-            StateReasonData: '',
-            StateUpdateTimestamp: '',
-            StateValue: '',
-            Statistic: '',
-            Threshold: 0.0,
-            Unit: ''
+            id: '',
+            actions_enabled: '',
+            alarm_actions: [],
+            arn: '',
+            alarm_configuration_updated_timestamp: '',
+            alarm_description: '',
+            comparison_operator: '',
+            dimensions: [],
+            evaluation_periods: 0,
+            insufficient_data_actions: [],
+            metric_name: '',
+            namespace: '',
+            ok_actions: [],
+            period: 0,
+            state_reason: '',
+            state_reason_data: '',
+            state_updated_timestamp: '',
+            state_value: '',
+            statistic: '',
+            threshold: 0.0,
+            unit: ''
         },
         
         get: function(attr) {
@@ -55,9 +55,9 @@ define([
             return Backbone.Model.prototype.get.call(this, attr);
         },
         
-        Threshold: function() {
+        threshold: function() {
             var comparisonSign = "";
-            switch(this.attributes.ComparisonOperator)
+            switch(this.attributes.comparison_operator)
             {
                     case "GreaterThanOrEqualToThreshold":
                             comparisonSign = ">="
@@ -72,8 +72,8 @@ define([
                             comparisonSign = "<"
                             break;
             }
-            var timeLength = (this.attributes.Period * this.attributes.EvaluationPeriods/60).toString();
-            return this.attributes.MetricName + " " + comparisonSign + " " + this.attributes.Threshold.toString() + " " + this.attributes.Unit + " for " + timeLength + " minutes.";;
+            var timeLength = (this.attributes.period * this.attributes.evaluation_periods/60).toString();
+            return this.attributes.metric_name + " " + comparisonSign + " " + this.attributes.threshold.toString() + " " + this.attributes.unit + " for " + timeLength + " minutes.";;
         }
     });
 

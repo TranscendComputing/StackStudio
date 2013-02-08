@@ -17,7 +17,7 @@ define([
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, ResourceAppView, awsAlarmAppTemplate, Alarm, alarms, AwsAlarmCreate, ich, Common ) {
+], function( $, _, Backbone, ResourceAppView, awsAlarmAppTemplate, Alarm, Alarms, AwsAlarmCreate, ich, Common ) {
     'use strict';
 
     // Aws Reserved Instance Application View
@@ -35,15 +35,15 @@ define([
     var AwsAlarmAppView = ResourceAppView.extend({
         template: _.template(awsAlarmAppTemplate),
         
-        modelStringIdentifier: "AlarmName",
+        modelStringIdentifier: "id",
         
-        columns: ["AlarmName", "Threshold", "StateValue"],
+        columns: ["id", "threshold", "state_value"],
         
         idColumnNumber: 0,
         
         model: Alarm,
         
-        collection: alarms,
+        collectionType: Alarms,
         
         type: "cloud_watch",
         
@@ -56,7 +56,10 @@ define([
             'click #resource_table tr': 'toggleActions'
         },
 
-        initialize: function() {
+        initialize: function(options) {
+            if(options.cred_id) {
+                this.credentialId = options.cred_id;
+            }
             this.render();
             $("#action_menu").on( "menuselect", this.setAction );
         },

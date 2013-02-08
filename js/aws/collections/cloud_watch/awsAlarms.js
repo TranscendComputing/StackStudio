@@ -21,10 +21,10 @@ define([
         // Reference to this collection's model.
         model: Alarm,
 
-        url: 'samples/alarms.json'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/monitor/alarms/describe'
     });
     
     // Create our global collection of **Alarms**.
-    return new AlarmList();
+    return AlarmList;
 
 });
