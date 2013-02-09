@@ -1,0 +1,98 @@
+application: stackstudio2
+version: 1
+runtime: python27
+api_version: 1
+threadsafe: yes
+
+handlers:
+
+# Static files
+
+- url: /favicon\.ico
+  static_files: images/favicon/favicon.ico
+  upload: images/favicon/favicon\.ico
+- url: /apple-touch-(.*\.png)
+  static_files: images/favicon/apple-touch-\1
+  upload: images/favicon/(.*\.png)
+- url: /(.*\.txt)
+  static_files: meta/\1
+  upload: meta/(.*\.txt)
+
+- url: /js
+  static_dir: js
+  expiration: 1m
+
+- url: /css
+  static_dir: css
+  expiration: 1m
+
+- url: /images
+  static_dir: images
+  expiration: 1m
+
+- url: /templates
+  static_dir: templates
+  expiration: 1m
+
+# GAE internal handlers
+
+- url: /_ah/warmup
+  script: app.bootstrap.app
+
+# Application handlers
+
+# {%DEV
+#- url: /
+#  static_files: stackplace.html
+#  upload: stackplace\.html
+# %}
+
+# {%PROD
+- url: /
+  static_files: index.html
+  upload: index\.html
+# %}
+
+- url: /dev
+  static_files: index.html
+  upload: index\.html
+
+- url: /getit.*
+  script: app.getit.app
+
+- url: /samples
+  static_dir: samples
+  expiration: 1m
+
+error_handlers:
+  - file: 500.html
+
+  - error_code: over_quota
+    file: 500.html
+
+builtins:
+- remote_api: on
+
+inbound_services:
+- warmup
+
+libraries:
+- name: webapp2
+  version: "2.5.1"
+
+skip_files:
+- ^(.*/)?app\.yaml
+- ^(.*/)?app\.yml
+- ^(.*/)?index\.yaml
+- ^(.*/)?index\.yml
+- ^(.*/)?#.*#
+- ^(.*/)?.*~
+- ^(.*/)?.*\.py[co]
+- ^(.*/)?.*/RCS/.*
+- ^(.*/)?\..*
+- ^(.*/)?node_modules
+- ^(.*/)?Gruntfile\.js
+- ^(.*/)?r\.js
+- ^(.*/)?.*\.jar
+- ^(.*/)?build\.xml
+- ^(.*/)?.*\.md
