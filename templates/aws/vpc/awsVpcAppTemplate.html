@@ -35,3 +35,22 @@
     </table>
     <div id="details" class="detail_panel"></div>
 </div>
+
+<script type="text/html" id="resource_detail">
+    <div id="detail_tabs">
+        <ul>
+            <li><a href="#properties_tab">Details</a></li>
+        </ul>
+        <div id="properties_tab" class="tab">
+            <table>
+                <tbody>
+                    <tr><td><b>ID:</b></td>                 <td>{{ id }}</td></tr>
+                    <tr><td><b>State:</b></td>              <td>{{ state }}</td></tr>
+                    <tr><td><b>CIDR Block:</b></td>         <td>{{ cidr_block }}</td></tr>
+                    <tr><td><b>DHCP Options ID:</b></td>    <td>{{ dhcp_options_id }}</td></tr>
+                    <tr><td><b>Tenancy:</b></td>            <td>{{ tenancy }}</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</script>

@@ -24,28 +24,15 @@ define([
      */
     var Vpc = Backbone.Model.extend({
 
-        idAttribute: "vpcId",
-        
-        /** Default attributes for compute */
-        defaults: {
-            vpcId: '',
-            state: '',
-            cidrBlock: '10.0.0.0/16',
-            dhcpOptionsId: '',
-            tagSet: [],
-            instanceTenancy: 'default'
-		},
+        idAttribute: "id",
 
-	    /**
-	     * Override the base Backbone set method, for debugging.
-	     *
-	     * @memberOf Vpc
-	     * @category Internal
-	     * @param {Object} hash of attribute values to set.
-	     * @param {Object} (optional) options to tweak (see Backbone docs).
-	     */
-		set: function(attributes, options) {
-		    Backbone.Model.prototype.set.apply(this, arguments);
+        defaults: {
+            id: '',
+            state: '',
+            cidr_block: '10.0.0.0/16',
+            dhcp_options_id: '',
+            tags: {},
+            tenancy: 'default'
 		}
     });
 

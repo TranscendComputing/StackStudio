@@ -17,7 +17,7 @@ define([
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, AppView, awsVpcAppTemplate, Vpc, vpcs, AwsVpcCreateView, ich, Common ) {
+], function( $, _, Backbone, AppView, awsVpcAppTemplate, Vpc, Vpcs, AwsVpcCreateView, ich, Common ) {
 	'use strict';
 
 	// Aws Application View
@@ -35,15 +35,15 @@ define([
 	var AwsVpcsAppView = AppView.extend({
 	    template: _.template(awsVpcAppTemplate),
 	    
-        modelStringIdentifier: "vpcId",
+        modelStringIdentifier: "id",
                 
         model: Vpc,
         
         idColumnNumber: 0,
         
-        columns:["vpcId","state","cidrBlock","dhcpOptionsId"],
+        columns:["id","state","cidr_block","dhcp_options_id"],
         
-        collection: vpcs,
+        collectionType: Vpcs,
         
         type: "vpc",
         
@@ -56,7 +56,10 @@ define([
             'click #resource_table tr': 'toggleActions'
         },
 
-        initialize: function() {
+        initialize: function(options) {
+            if(options.cred_id) {
+                this.credentialId = options.cred_id;
+            }
             this.render();
             $(".action_menu").on( "menuselect", this.setAction );
         },

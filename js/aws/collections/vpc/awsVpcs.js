@@ -21,11 +21,11 @@ define([
         // Reference to this collection's model.
         model: Vpc,
 
-        url: 'samples/vpcs.json'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/vpcs/describe'
         
     });
 
     // Create our global collection of **Vpcs**.
-    return new VpcsList();
+    return VpcsList;
 
 });
