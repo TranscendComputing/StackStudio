@@ -21,10 +21,10 @@ define([
         // Reference to this collection's model.
         model: Bucket,
 
-        url: 'samples/buckets.json'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/object_storage/directories/describe'
     });
 
     // Create our global collection of **Buckets**.
-    return new BucketsList();
+    return BucketsList;
 
 });

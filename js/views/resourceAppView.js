@@ -20,6 +20,8 @@ define([
     var ResourceAppView = Backbone.View.extend({
         selectedId: undefined,
         
+        credentialId: undefined,
+        
         modelStringIdentifier: undefined,
         
         collection: undefined,

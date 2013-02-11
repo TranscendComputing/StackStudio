@@ -18,7 +18,7 @@ define([
         'common',
         'jquery.dataTables',
         'jquery.jstree'
-], function( $, _, Backbone, AppView, awsBucketAppTemplate, Bucket, buckets, AwsBucketCreateView, ich, Common ) {
+], function( $, _, Backbone, AppView, awsBucketAppTemplate, Bucket, Buckets, AwsBucketCreateView, ich, Common ) {
 	'use strict';
 
 	// Aws Application View
@@ -36,15 +36,15 @@ define([
 	var AwsBucketsAppView = AppView.extend({
 	    template: _.template(awsBucketAppTemplate),
 	    
-        modelStringIdentifier: "Name",
+        modelStringIdentifier: "key",
         
-        columns: ["Name"],
+        columns: ["key"],
         
         idColumnNumber: 0,
         
         model: Bucket,
         
-        collection: buckets,
+        collectionType: Buckets,
         
         type: "object_storage",
         
@@ -59,7 +59,10 @@ define([
             'click #resource_table tr': 'toggleActions'
         },
 
-        initialize: function() {
+        initialize: function(options) {
+            if(options.cred_id) {
+                this.credentialId = options.cred_id;
+            }
             this.render();
             $(".action_menu").on( "menuselect", this.setAction );
         },

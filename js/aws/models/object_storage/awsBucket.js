@@ -24,27 +24,11 @@ define([
      */
     var Bucket = Backbone.Model.extend({
 
-        idAttribute: "Name",
+        idAttribute: "key",
         
-        /** Default attributes for compute */
         defaults: {
-			Name: '',
-			Prefix: '',
-			MaxKeys: '',
-			IsTruncated: '',
-			Contents: []
-		},
-
-	    /**
-	     * Override the base Backbone set method, for debugging.
-	     *
-	     * @memberOf ObjectStorage
-	     * @category Internal
-	     * @param {Object} hash of attribute values to set.
-	     * @param {Object} (optional) options to tweak (see Backbone docs).
-	     */
-		set: function(attributes, options) {
-		    Backbone.Model.prototype.set.apply(this, arguments);
+			key: '',
+			creation_date: ''
 		}
     });
 

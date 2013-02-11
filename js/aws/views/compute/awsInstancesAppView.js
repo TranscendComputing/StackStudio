@@ -38,8 +38,6 @@ define([
      */
     var AwsInstancesAppView = ResourceAppView.extend({
         
-        credentialId: undefined,
-        
         template: _.template(awsInstanceAppTemplate),
         
         modelStringIdentifier: "id",

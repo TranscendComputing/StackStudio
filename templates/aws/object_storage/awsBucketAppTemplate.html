@@ -36,6 +36,7 @@
 </div>
 
 <script type="text/html" id="resource_detail">
+    <!--
     <div class="button_bar">
         <button class="create_button">Create Folder</button>
         <ul class="action_menu">
@@ -52,16 +53,18 @@
             </li>
         </ul>
     </div>
+    -->
     <div id="detail_tabs">
         <ul>
             <li><a href="#properties_tab">Details</a></li>
-            <li><a href="#contents_tab">Contents</a></li>
         </ul>
         <div id="properties_tab" class="tab">
-            <div>Name: {{ Name }} </div>
-        </div>
-        <div id="contents_tab" class="tab">
-            <div id="bucket_contents"></div>
+            <table>
+                <tbody>
+                    <tr><td><b>Name:</b></td>                   <td>{{ key }}</td></tr>
+                    <tr><td><b>Creation Date:</b></td>          <td>{{ creation_date }}</td></tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </script>
