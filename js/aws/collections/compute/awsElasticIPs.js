@@ -21,9 +21,9 @@ define([
         // Reference to this collection's model.
         model: ElasticIP,
 
-        url: 'samples/elasticIPSample.json'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/addresses/describe'
     });
     
-    return new ElasticIPList();
+    return ElasticIPList;
 
 });

@@ -23,9 +23,11 @@ define([
 
         /** Default attributes for key pair */
         defaults: {
-            publicIp: '',
-            domain: '',
-            instanceId: ''
+            public_ip: '',
+            allocation_id: '',
+            server_id: '',
+            network_interface_id: '',
+            domain: ''
         }
     });
 

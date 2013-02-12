@@ -42,9 +42,13 @@
             <li><a href="#tabs-1">Details</a></li>
         </ul>
         <div id="tabs-1" class="tab">
-            <div>Address: {{ publicIp }} </div>
-            <div>Instance ID: {{ instanceId }} </div>
-            <div>Scope: {{ domain }} </div>
+            <table>
+                <tbody>
+                    <tr><td><b>Public IP:</b></td>      <td>{{ public_ip }}</td></tr>
+                    <tr><td><b>Instance ID:</b></td>    <td>{{ server_id }}</td></tr>
+                    <tr><td><b>Scope:</b></td>          <td>{{ domain }}</td></tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </script>

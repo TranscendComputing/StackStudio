@@ -17,7 +17,7 @@ define([
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, ResourceAppView, awsElasticIPAppTemplate, Elasticip, elasticips, AwsElasticIPsCreate, ich, Common ) {
+], function( $, _, Backbone, ResourceAppView, awsElasticIPAppTemplate, Elasticip, Elasticips, AwsElasticIPsCreate, ich, Common ) {
     'use strict';
 
     // Aws Security Group Application View
@@ -35,15 +35,15 @@ define([
     var AwsElasticIPsAppView = ResourceAppView.extend({
         template: _.template(awsElasticIPAppTemplate),
         
-        modelStringIdentifier: "publicIp",
+        modelStringIdentifier: "public_ip",
         
-        columns: ["publicIp", "instanceId", "domain"],
+        columns: ["public_ip", "server_id", "domain"],
         
         idColumnNumber: 0,
         
         model: Elasticip,
         
-        collection: elasticips,
+        collectionType: Elasticips,
         
         type: "compute",
         
@@ -56,7 +56,10 @@ define([
             'click #resource_table tr': 'clickOne'
         },
 
-        initialize: function() {
+        initialize: function(options) {
+            if(options.cred_id) {
+                this.credentialId = options.cred_id;
+            }
             this.render();
         }
     });
