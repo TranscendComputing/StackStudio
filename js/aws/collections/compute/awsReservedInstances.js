@@ -21,9 +21,9 @@ define([
         // Reference to this collection's model.
         model: ReservedInstance,
 
-        url: 'samples/reservedInstanceSample.json'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/reserved_instances/describe'
     });
     
-    return new ReservedInstanceList();
+    return ReservedInstanceList;
 
 });

@@ -31,6 +31,7 @@ define([
             usagePrice: '',
             instanceCount: '',
             productDescription: '',
+            start: '',
             state: ''
         }
     });

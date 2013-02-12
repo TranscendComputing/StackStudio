@@ -41,9 +41,20 @@
             <li><a href="#tabs-1">Details</a></li>
         </ul>
         <div id="tabs-1" class="tab">
-            <div>Reserved ID: {{ reservedInstancesId }} </div>
-            <div>Type: {{ instanceType }} </div>
-            <div>State: {{ state }} </div>
+            <table>
+                <tbody>
+                    <tr><td><b>Reserved ID:</b></td>            <td>{{ reservedInstancesId }}</td></tr>
+                    <tr><td><b>Instance Type:</b></td>          <td>{{ instanceType }}</td></tr>
+                    <tr><td><b>Fixed Price:</b></td>            <td>{{ fixedPrice }}</td></tr>
+                    <tr><td><b>Usage Price:</b></td>            <td>{{ usagePrice }}</td></tr>
+                    <tr><td><b>Availability Zone:</b></td>      <td>{{ availabilityZone }}</td></tr>
+                    <tr><td><b>Duration:</b></td>               <td>{{ duration }}</td></tr>
+                    <tr><td><b>Instance Count:</b></td>         <td>{{ instanceCount }}</td></tr>
+                    <tr><td><b>Product Description:</b></td>    <td>{{ productDescription }}</td></tr>
+                    <tr><td><b>Start Time:</b></td>             <td>{{ start }}</td></tr>
+                    <tr><td><b>State:</b></td>                  <td>{{ state }}</td></tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </script>
