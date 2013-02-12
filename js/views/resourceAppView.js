@@ -59,6 +59,7 @@ define([
             } else {
                 this.collection.fetch();
             }
+            this.setResourceAppHeightify();
         },
         
         addOne: function( model ) {
@@ -116,9 +117,8 @@ define([
                         position: { my: 'left top', at: 'left bottom'}
                     });
                 }
-            }else {
-                
             }
+            this.setResourceAppHeightify();
         },
         
         clearSelection: function () {
@@ -130,6 +130,11 @@ define([
             var CreateView = this.CreateView;
             this.newResourceDialog = new CreateView();
             this.newResourceDialog.render();
+        },
+        
+        setResourceAppHeightify: function() {
+            //set resource_app_heightify for other elements to reference
+            $(".resource_app_heightify").height($("#resource_app").height());
         }
     });
 

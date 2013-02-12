@@ -14,9 +14,10 @@ define([
         'text!templates/resources/resourcesTemplate.html',
         'models/cloudCredential',
         'collections/cloudCredentials',
+        'views/subServiceMenuView',
         'jquery-plugins',
         'jquery-ui-plugins'
-], function( $, _, Backbone, ich, Common, resourcesTemplate, cloudCredential, CloudCredentials ) {
+], function( $, _, Backbone, ich, Common, resourcesTemplate, cloudCredential, CloudCredentials, SubServiceMenuView ) {
 	// The Resources Navigation View
 	// ------------------------------
 
@@ -50,6 +51,8 @@ define([
         
         selectedCredential: undefined,
         
+        subServiceMenu: undefined,
+        
         resourceApp: undefined,
 
         navOpen: false,
@@ -68,6 +71,9 @@ define([
                 url: "samples/cloudDefinitions.json",
                 async: false
             }).responseText;
+		    
+		    this.subServiceMenu = new SubServiceMenuView();
+		    
 		    this.cloudDefinitions = $.parseJSON(response);
 		    
 		    this.cloudCredentials = new CloudCredentials();
@@ -240,16 +246,29 @@ define([
 
 		loadResourceApp: function(cloudProvider, type, subtype, id, credId) {
 		    var resourceNav = this;
+		    var serviceObject;
             if(cloudProvider) {
                 if (!type) {
                     type = "compute";
                     subtype = "instances";
-                } else if (!subtype) {
-                    $.each(this.cloudDefinitions[cloudProvider].services, function(index, service) {
-                        if (service.type === type) {
+                }
+                
+                $.each(this.cloudDefinitions[cloudProvider].services, function(index, service) {
+                    if (service.type === type) {
+                        if(!subtype) {
                             subtype = service.defaultSubtype;
                         }
-                    });
+                        serviceObject = service;
+                    }
+                });
+                
+                //Load SubServiceMenu if applies
+                if(serviceObject.hasOwnProperty("subServices") && serviceObject.subServices.length > 0) {
+                    this.subServiceMenu.render({service: serviceObject, cloudProvider: cloudProvider, selectedSubtype: subtype});
+                    $("#service_menu").show();
+                }else {
+                    $("#service_menu").hide();
+                    $("#resource_app").width("1100px");
                 }
 
                 //Capitalize first letter of subtype for the file name

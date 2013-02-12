@@ -16,7 +16,33 @@
             {
                 "name": "Elastic Compute Cloud",
                 "type": "compute",
-                "defaultSubtype": "instances"
+                "defaultSubtype": "instances",
+                "subServices" : [
+                    {
+                        "name": "Instances",
+                        "type": "instances"
+                    },
+                    {
+                        "name": "Spot Requests",
+                        "type": "spotinstances"
+                    },
+                    {
+                        "name": "Reserved Instances",
+                        "type": "reservedinstances"
+                    },
+                    {
+                        "name": "Security Groups",
+                        "type": "securitygroups"
+                    },
+                    {
+                        "name": "Key Pairs",
+                        "type": "keypairs"
+                    },
+                    {
+                        "name": "Elastic IPs",
+                        "type": "elasticips"
+                    }
+                ]
                 
             },
             {
