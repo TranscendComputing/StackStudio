@@ -17,7 +17,7 @@ define([
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, ResourceAppView, awsSpotInstanceAppTemplate, Spotinstance, spotinstances, AwsSpotInstanceCreate, ich, Common ) {
+], function( $, _, Backbone, ResourceAppView, awsSpotInstanceAppTemplate, Spotinstance, Spotinstances, AwsSpotInstanceCreate, ich, Common ) {
     'use strict';
 
     // Aws Spot Instance Application View
@@ -35,19 +35,19 @@ define([
     var AwsSpotInstanceAppView = ResourceAppView.extend({
         template: _.template(awsSpotInstanceAppTemplate),
         
-        modelStringIdentifier: "spotInstanceRequestId",
+        modelStringIdentifier: "id",
         
-        columns: ["spotInstanceRequestId", "spotPrice", "launchSpecification.imageId", "instanceId", "launchSpecification.instanceType", "state"],
+        columns: ["id", "price", "image_id", "instance_id", "flavor_id", "state"],
         
         idColumnNumber: 0,
         
         model: Spotinstance,
         
-        collection: spotinstances,
+        collectionType: Spotinstances,
         
         type: "compute",
         
-        subtype: "spotinstance",
+        subtype: "spotinstances",
         
         CreateView: AwsSpotInstanceCreate,
         
@@ -56,7 +56,10 @@ define([
             'click #resource_table tr': 'toggleActions'
         },
 
-        initialize: function() {
+        initialize: function(options) {
+            if(options.cred_id) {
+                this.credentialId = options.cred_id;
+            }
             this.render();
             $("#action_menu").on( "menuselect", this.setAction );
         },

@@ -23,15 +23,29 @@ define([
 
         /** Default attributes for spot instance */
         defaults: {
-            launchSpecification: {},
-            spotInstanceRequestId: '',
-            spotPrice: 0,
-            type: '',
+            id: '',
+            price: 0.0,
+            request_type: '',
+            created_at: '',
+            instance_count: 0,
+            instance_id: '',
             state: '',
-            instanceId: '',
-            createTime: '',
-            productDescription: '',
-            launchedAvailabilityZone: ''
+            valid_from: '',
+            valid_until: '',
+            launch_group: '',
+            availability_zone_group: '',
+            product_description: '',
+            groups: [],
+            key_name: '',
+            availability_zone: '',
+            flavor_id: '',
+            image_id: '',
+            monitoring: false,
+            block_device_mapping: [],
+            subnet_id: '',
+            tags: {},
+            fault: '',
+            user_data: ''
         }
     });
 

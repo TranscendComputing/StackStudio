@@ -21,9 +21,9 @@ define([
         // Reference to this collection's model.
         model: SpotInstance,
 
-        url: 'samples/spotInstanceSample.json'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/spot_requests/describe'
     });
     
-    return new SpotInstanceList();
+    return SpotInstanceList;
 
 });

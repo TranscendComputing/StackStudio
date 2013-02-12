@@ -44,13 +44,20 @@
             <li><a href="#tabs-1">Details</a></li>
         </ul>
         <div id="tabs-1" class="tab">
-            <div>Request ID: {{ spotInstanceRequestId }} </div>
-            <div>Instance ID: {{ launchSpecification.imageId }} </div>
-            <div>Monitoring Enabled: {{ launchSpecification.monitoring }} </div>
-            <div>Maximum Price: {{ spotPrice }} </div>
-            <div>Security Group(s): {{ groupSet }} </div>
-            <div>Availability Zone: {{ launchedAvailabilityZone }} </div>
-            <div>Request Persistence: {{ type }} </div>  
+            <table>
+                <tbody>
+                    <tr><td><b>Request ID:</b></td>         <td>{{ id }}</td>                   <td><b>Image ID:</b></td>       <td>{{ image_id }}</td></tr>
+                    <tr><td><b>Price:</b></td>              <td>{{ price }}</td>                <td><b>Machine Type:</b></td>   <td>{{ flavor_id }}</td></tr>
+                    <tr><td><b>Request Type:</b></td>       <td>{{ request_type }}</td>         <td><b>Key Name:</b></td>       <td>{{ key_name }}</td></tr>
+                    <tr><td><b>Created At:</b></td>         <td>{{ created_at }}</td>           <td><b>Monitoring:</b></td>     <td>{{ monitoring }}</td></tr>
+                    <tr><td><b>State:</b></td>              <td>{{ state }}</td>                <td><b>Subnet ID:</b></td>      <td>{{ subnet_id }}</td></tr>
+                    <tr><td><b>Valid From:</b></td>         <td>{{ valid_from }}</td></tr>
+                    <tr><td><b>Valid Until:</b></td>        <td>{{ valid_until }}</td></tr>
+                    <tr><td><b>Instance Id:</b></td>        <td>{{ instance_id }}</td></tr>
+                    <tr><td><b>Availability Zone:</b></td>  <td>{{ availability_zone }}</td></tr>
+                    <tr></tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </script>
