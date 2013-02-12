@@ -39,8 +39,12 @@
             <li><a href="#tabs-1">Details</a></li>
         </ul>
         <div id="tabs-1" class="tab">
-            <div>Name: {{ name }} </div>
-            <div>Fingerprint: {{ fingerprint }} </div>
+            <table>
+                <tbody>
+                    <tr><td><b>Name:</b></td>           <td>{{ name }}</tr>
+                    <tr><td><b>Fingerprint:</b></td>    <td>{{ fingerprint }}</td></tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </script>

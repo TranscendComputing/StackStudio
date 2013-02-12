@@ -17,7 +17,7 @@ define([
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, ResourceAppView, awsKeyPairAppTemplate, Keypair, keypairs, AwsKeyPairCreate, ich, Common ) {
+], function( $, _, Backbone, ResourceAppView, awsKeyPairAppTemplate, Keypair, Keypairs, AwsKeyPairCreate, ich, Common ) {
     'use strict';
 
     // Aws Security Group Application View
@@ -43,7 +43,7 @@ define([
         
         model: Keypair,
         
-        collection: keypairs,
+        collectionType: Keypairs,
         
         type: "compute",
         
@@ -56,7 +56,10 @@ define([
             'click #resource_table tr': 'toggleActions'
         },
 
-        initialize: function() {
+        initialize: function(options) {
+            if(options.cred_id) {
+                this.credentialId = options.cred_id;
+            }
             this.render();
             $("#action_menu").on( "menuselect", this.setAction );
         },

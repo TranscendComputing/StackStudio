@@ -21,9 +21,9 @@ define([
         // Reference to this collection's model.
         model: KeyPair,
 
-        url: 'samples/keyPairSample.json'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/key_pairs/describe'
     });
     
-    return new KeyPairList();
+    return KeyPairList;
 
 });

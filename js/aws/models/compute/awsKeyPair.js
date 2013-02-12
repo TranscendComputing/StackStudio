@@ -23,7 +23,7 @@ define([
 
         /** Default attributes for key pair */
         defaults: {
-            name: '-',
+            name: '',
             fingerprint: ''
         }
     });
