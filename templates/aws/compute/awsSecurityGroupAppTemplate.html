@@ -39,8 +39,15 @@
             <li><a href="#properties_tab">Details</a></li>
         </ul>
         <div id="properties_tab" class="tab">
-            <div>Name: {{ name }} </div>
-            <div>Description: {{ description }} </div>
+            <table>
+                <tbody>
+                    <tr><td><b>Name:</b></td>           <td>{{ name }}</td></tr>
+                    <tr><td><b>Description:</b></td>    <td>{{ description }}</td></tr>
+                    <tr><td><b>Group ID:</b></td>       <td>{{ group_id }}</td></tr>
+                    <tr><td><b>Owner ID:</b></td>       <td>{{ owner_id }}</td></tr>
+                    <tr><td><b>VPC ID:</b></td>         <td>{{ vpc_id }}</td></tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </script>

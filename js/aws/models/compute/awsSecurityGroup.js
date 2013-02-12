@@ -23,8 +23,13 @@ define([
 
         /** Default attributes for security group */
         defaults: {
-            name: '-',
-            description: ''
+            name: '',
+            description: '',
+            group_id: '',
+            ip_permissions: [],
+            ip_permissions_egress: [],
+            owner_id: '',
+            vpc_id: ''
         }
     });
 

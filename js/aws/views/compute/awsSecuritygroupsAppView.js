@@ -17,7 +17,7 @@ define([
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, ResourceAppView, awsSecurityGroupAppTemplate, Securitygroup, securitygroups, AwsSecurityGroupCreate, ich, Common ) {
+], function( $, _, Backbone, ResourceAppView, awsSecurityGroupAppTemplate, Securitygroup, Securitygroups, AwsSecurityGroupCreate, ich, Common ) {
     'use strict';
 
     // Aws Security Group Application View
@@ -43,7 +43,7 @@ define([
         
         model: Securitygroup,
         
-        collection: securitygroups,
+        collectionType: Securitygroups,
         
         type: "compute",
         
@@ -56,7 +56,10 @@ define([
             'click #resource_table tr': 'toggleActions'
         },
 
-        initialize: function() {
+        initialize: function(options) {
+            if(options.cred_id) {
+                this.credentialId = options.cred_id;
+            }
             this.render();
             $("#action_menu").on( "menuselect", this.setAction );
         },
