@@ -31,6 +31,7 @@ define([
      * @returns {Object} Returns a ResourcesView project.
      */
 	var ResourcesView = Backbone.View.extend({
+	    
 		id: 'resource_navigation_view',
 
 		className: ['twelvecol', 'last'],
@@ -296,14 +297,19 @@ define([
 	var resourcesView;
 
     Common.router.on('route:resources', function (cloud, type, subtype, id) {
-        if (!resourcesView) {
-            resourcesView = new ResourcesView();
+        if(sessionStorage.account_id) {
+            if (!resourcesView) {
+                resourcesView = new ResourcesView();
+            }
+            resourcesView.cloudPath = cloud;
+            resourcesView.typePath = type;
+            resourcesView.subtypePath = subtype;
+            resourcesView.idPath = id;
+            resourcesView.render();
+        }else {
+            Common.router.navigate("", {trigger: true});
+            alert("Must be logged in.");
         }
-        resourcesView.cloudPath = cloud;
-        resourcesView.typePath = type;
-        resourcesView.subtypePath = subtype;
-        resourcesView.idPath = id;
-        resourcesView.render();
     }, this);
 
     console.log("resource view defined");
