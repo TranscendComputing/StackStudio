@@ -39,7 +39,7 @@ define([
         render: function(options) {
             $("#subservice_menu_list").empty();
             if(options) {
-                this.service = options.service
+                this.service = options.service;
                 this.cloudProvider = options.cloudProvider;
                 $("#subservice_menu_title").html(this.service.name);
                 // Build Menu
