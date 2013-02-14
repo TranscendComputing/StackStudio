@@ -243,6 +243,8 @@ define(
         apiUrl = "http://localhost:9292";
     }else if(location.hostname === "stackstudio-local") {
         apiUrl = "http://stackstudio-api:9292";
+    }else if(location.hostname === "devessex.essex.momentumsoftware.com") {
+        apiUrl = "http://devessex.essex.momentumsoftware.com:8000";
     }
 
     // Initialize custom events object
