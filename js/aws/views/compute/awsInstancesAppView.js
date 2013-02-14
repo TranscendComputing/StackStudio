@@ -73,6 +73,11 @@ define([
             }
             this.render();
             $("#action_menu").on( "menuselect", this.setAction );
+            
+            var instanceApp = this;
+            Common.vent.on("instanceCreated", function() {
+                instanceApp.render(); 
+            });
         },
         
         setAction: function(e, ui) {
@@ -144,6 +149,6 @@ define([
             });
         }
     });
-    
+
     return AwsInstancesAppView;
 });

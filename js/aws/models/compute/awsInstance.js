@@ -7,8 +7,9 @@
 /*global define:true console:true */
 define([
         'jquery',
-        'backbone'
-], function( $, Backbone ) {
+        'backbone',
+        'common'
+], function( $, Backbone, Common ) {
     'use strict';
 
     // Aws Instance Model
@@ -55,6 +56,45 @@ define([
             ebs_optimized: false,
             groups: [],
             security_group_ids: []
+        },
+        
+        create: function(options, credentialId) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/instances/create?_method=PUT&cred_id=" + credentialId;
+            var instance = {"instance": options};
+            $.ajax({
+                url: url,
+                type: 'POST',
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: JSON.stringify(instance),
+                success: function(data) {
+                    Common.vent.trigger("instanceCreated");
+                },
+                error: function(jqXHR) {
+                    var messageObject = JSON.parse(jqXHR.responseText);
+                    alert(messageObject["error"]["message"]);
+                }
+            });
+        },
+        
+        start: function() {
+            alert("Start Instance!");
+        },
+        
+        stop: function() {
+            alert("Stop Instance!");
+        },
+        
+        reboot: function() {
+            alert("Reboot Instance!");
+        },
+        
+        terminate: function() {
+            alert("Terminate Instance!");
+        },
+        
+        disassociateAddress: function() {
+            alert("Disassociate Address!");
         }
 
     });

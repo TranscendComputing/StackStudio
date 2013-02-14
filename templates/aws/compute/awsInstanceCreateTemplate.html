@@ -6,31 +6,31 @@
                 <tr>
                     <td>Name:</td>
                     <td>
-                        <input id="image_name" type="text" style="width:200px;"/>
+                        <input id="instance_name" type="text" style="width:200px;"/>
                     </td>
                 </tr>
                 <tr>
                     <td>Image:</td>
                     <td>
-                        <input id="image_combo_box" style="width:200px;"/>
+                        <input id="image_select" style="width:250px;"/>
                     </td>
                 </tr>
                 <tr>
                     <td>Machine Size:</td>
                     <td>
-                        <select id="size_select" style="width:150px"></select>
+                        <select id="flavor_select" style="width:250px"></select>
                     </td>
                 </tr>
                 <tr>
                     <td>Availability Zone:</td>
                     <td>
-                        <select id="az_select" style="width:150px;"></select>
+                        <select id="az_select" style="width:200px;"></select>
                     </td>
                 </tr>
                 <tr>
                     <td>Key Pair:</td>
                     <td>
-                        <select id="key_pair_select" style="width:150px;"></select>
+                        <select id="key_pair_select" style="width:200px;"></select>
                     </td>
                 </tr>
                 <tr>
@@ -41,6 +41,7 @@
                 </tr>
             </table>
         </div>
+        <!--
         <h3>Elasticity</h3>
         <div>
             <div id="radio" style="float:left;">
@@ -53,27 +54,34 @@
             <div id="elasticity_config">
             </div>
         </div>
+         -->
         <h3>Additional Configuration</h3>
         <div>
             <table>
                 <tr>
                     <td>Detailed Monitoring:</td>
                     <td>
-                        <input id="monitoring" type="checkbox" />
+                        <input id="detailed_monitoring" type="checkbox" />
                     </td>
                 </tr>
+                <!--
                 <tr>
                     <td>Termination Protection:</td>
                     <td>
                         <input id="term_protection" type="checkbox" />
                     </td>
                 </tr>
+                 -->
                 <tr>
                     <td>Shutdown Behavior:</td>
                     <td>
-                        <input id="shutdown_behavior" type="checkbox" />
+                        <select id="shutdown_behavior_select" style="width:150px;">
+                            <option>Stop</option>
+                            <option>Terminate</option>
+                        </select>
                     </td>
                 </tr>
+               
             </table>
         </div>
     </div>

@@ -128,7 +128,7 @@ define([
         
         createNew : function () {
             var CreateView = this.CreateView;
-            this.newResourceDialog = new CreateView();
+            this.newResourceDialog = new CreateView({cred_id: this.credentialId});
             this.newResourceDialog.render();
         },
         
