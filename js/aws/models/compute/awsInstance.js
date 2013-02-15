@@ -60,6 +60,49 @@ define([
         
         create: function(options, credentialId) {
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/instances/create?_method=PUT&cred_id=" + credentialId;
+            this.sendPostAction(url, options);
+        },
+        
+        start: function(credentialId) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/instances/start?cred_id=" + credentialId;
+            this.sendPostAction(url, this.attributes);
+        },
+        
+        stop: function(credentialId) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/instances/stop?cred_id=" + credentialId;
+            this.sendPostAction(url, this.attributes);
+        },
+        
+        reboot: function(credentialId) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/instances/reboot?cred_id=" + credentialId;
+            this.sendPostAction(url, this.attributes);
+        },
+        
+        terminate: function(credentialId) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/instances/terminate?_method=DELETE&cred_id=" + credentialId;
+            this.sendPostAction(url, this.attributes);
+        },
+        
+        disassociateAddress: function(credentialId) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/addresses/disassociate?cred_id=" + credentialId;
+            var address = {"address": {"public_ip": this.attributes.public_ip_address}};
+            $.ajax({
+                url: url,
+                type: 'POST',
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: JSON.stringify(address),
+                success: function(data) {
+                    Common.vent.trigger("instanceAppRefresh");
+                },
+                error: function(jqXHR) {
+                    var messageObject = JSON.parse(jqXHR.responseText);
+                    alert(messageObject["error"]["message"]);
+                }
+            }); 
+        },
+        
+        sendPostAction: function(url, options) {
             var instance = {"instance": options};
             $.ajax({
                 url: url,
@@ -68,33 +111,13 @@ define([
                 dataType: 'json',
                 data: JSON.stringify(instance),
                 success: function(data) {
-                    Common.vent.trigger("instanceCreated");
+                    Common.vent.trigger("instanceAppRefresh");
                 },
                 error: function(jqXHR) {
                     var messageObject = JSON.parse(jqXHR.responseText);
                     alert(messageObject["error"]["message"]);
                 }
-            });
-        },
-        
-        start: function() {
-            alert("Start Instance!");
-        },
-        
-        stop: function() {
-            alert("Stop Instance!");
-        },
-        
-        reboot: function() {
-            alert("Reboot Instance!");
-        },
-        
-        terminate: function() {
-            alert("Terminate Instance!");
-        },
-        
-        disassociateAddress: function() {
-            alert("Disassociate Address!");
+            }); 
         }
 
     });

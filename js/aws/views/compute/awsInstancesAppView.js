@@ -63,7 +63,8 @@ define([
         
         events: {
             'click .create_button': 'createNew',
-            'click #resource_table tr': 'toggleActions',
+            'click #action_menu ul li': 'performAction',
+            'click #resource_table tr': "toggleActions",
             'click #monitoring': 'loadMonitors',
             'click #instance_details': 'unloadMonitors'
         },
@@ -76,22 +77,36 @@ define([
             $("#action_menu").on( "menuselect", this.setAction );
             
             var instanceApp = this;
-            Common.vent.on("instanceCreated", function() {
-                instanceApp.render(); 
+            Common.vent.on("instanceAppRefresh", function() {
+                instanceApp.render();
             });
-        },
-        
-        setAction: function(e, ui) {
-            console.log(e, ui);
-            console.log("PERFORMING ACTION");
-            return false
         },
         
         toggleActions: function(e) {
             this.clickOne(e);
-            var rowData = this.$table.fnGetData(e.currentTarget);
-            if (rowData[this.idColumnNumber]) {
-                //console.log($("#action_menu").menu("widget"));
+            //Disable any needed actions
+        },
+        
+        performAction: function(event) {
+            var instance = this.collection.get(this.selectedId);
+            
+            switch(event.target.text)
+            {
+            case "Start":
+                instance.start(this.credentialId);
+                break;
+            case "Stop":
+                instance.stop(this.credentialId);
+                break;
+            case "Reboot":
+                instance.reboot(this.credentialId);
+                break;
+            case "Terminate":
+                instance.terminate(this.credentialId);
+                break;
+            case "Disassociate Address":
+                instance.disassociateAddress(this.credentialId);
+                break;
             }
         },
         

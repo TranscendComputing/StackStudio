@@ -41,18 +41,17 @@ define([
         render: function() {
             this.$el.html(this.template);
             $("#resource_app").html(this.$el);
+            this.delegateEvents(this.events);
             ich.refresh();
             $('button').button();
-            $(".action_menu").menu({
-                position: { my: 'left top', at: 'left bottom'}
-            });
+            $("#action_menu").menu();
             
             this.$table = $('#resource_table').dataTable({"bJQueryUI": true});
             var CollectionType = this.collectionType;
             this.collection = new CollectionType(); 
             this.collection.on( 'add', this.addOne, this );
             this.collection.on( 'reset', this.addAll, this );
-
+            $("#action_menu li").addClass("ui-state-disabled");
             if(this.credentialId) {
                 var credId = this.credentialId;
                 this.collection.fetch({ data: $.param({ cred_id: credId}) });
@@ -108,14 +107,11 @@ define([
             
             if(selectedModel) {
                 this.selectedId = id;
-                
+                $("#action_menu li").removeClass("ui-state-disabled");
                 if (ich.templates.resource_detail) {
                     $("#details").html(ich.resource_detail(selectedModel.attributes));
                     $("#detail_tabs").tabs();
                     $('.create_button').button();
-                    $(".action_menu").menu({
-                        position: { my: 'left top', at: 'left bottom'}
-                    });
                 }
             }
             this.setResourceAppHeightify();
