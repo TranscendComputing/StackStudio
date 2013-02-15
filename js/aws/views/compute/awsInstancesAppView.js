@@ -64,7 +64,8 @@ define([
         events: {
             'click .create_button': 'createNew',
             'click #resource_table tr': 'toggleActions',
-            'click #monitoring': 'loadMonitors'
+            'click #monitoring': 'loadMonitors',
+            'click #instance_details': 'unloadMonitors'
         },
 
         initialize: function(options) {
@@ -89,8 +90,8 @@ define([
         toggleActions: function(e) {
             this.clickOne(e);
             var rowData = this.$table.fnGetData(e.currentTarget);
-            if (rowData[3]) {
-                console.log($("#action_menu").menu("widget"));
+            if (rowData[this.idColumnNumber]) {
+                //console.log($("#action_menu").menu("widget"));
             }
         },
         
@@ -125,6 +126,21 @@ define([
             this.diskReadDataPoints.on( 'reset', this.diskReadDataPointsFunc, this );
             this.diskReadDataPoints.fetch();
             
+            this.diskReadOps = new DataPoints();
+            this.diskReadOps.url = "samples/diskReadOpsDataPoints.json";
+            this.diskReadOps.on( 'reset', this.diskReadOpsFunc, this );
+            this.diskReadOps.fetch();
+            
+        },
+        
+        unloadMonitors: function() {
+            $("#cpuGraph").empty();
+            $("#diskReadGraph").empty();
+            $("#diskReadOpsGraph").empty();
+            $("#diskWriteGraph").empty();
+            $("#diskWriteOpsGraph").empty();
+            $("#networkInGraph").empty();
+            $("#networkOutGraph").empty();
         },
         
         cpuDataPointsFunc: function() {
@@ -146,6 +162,17 @@ define([
                 ykeys: ['Average'],
                 labels: ['Disk Reads'],
                 lineColors: ["#FF8000"]
+            });
+        },
+        
+        diskReadOpsFunc: function() {
+            Morris.Line({
+                element: 'diskReadOpsGraph',
+                data: this.diskReadOps.toJSON(),
+                xkey: 'Timestamp',
+                ykeys: ['Average'],
+                labels: ['Disk Reads Ops'],
+                lineColors: ["#800080"]
             });
         }
     });

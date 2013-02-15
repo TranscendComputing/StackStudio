@@ -8,14 +8,14 @@
                 <td>
                     <ul class="action_menu">
                         <li style="z-index: 1000">
-                            <a class="actions_button" href="#">Actions</a>
+                            <a class="actions_button">Actions</a>
                             <ul>
-                                <li class="ui-state-disabled"><a href="#">Start</a></li>
-                                <li class="ui-state-disabled"><a href="#">Stop</a></li>
-                                <li class="ui-state-disabled"><a href="#">Reboot</a></li>
-                                <li class="ui-state-disabled"><a href="#">Terminate</a></li>
-                                <li class="ui-state-disabled"><a href="#">Associate Address</a></li>
-                                <li class="ui-state-disabled"><a href="#">Disassociate Address</a></li>                
+                                <li class="ui-state-disabled"><a>Start</a></li>
+                                <li class="ui-state-disabled"><a>Stop</a></li>
+                                <li class="ui-state-disabled"><a>Reboot</a></li>
+                                <li class="ui-state-disabled"><a>Terminate</a></li>
+                                <li class="ui-state-disabled"><a>Associate Address</a></li>
+                                <li class="ui-state-disabled"><a>Disassociate Address</a></li>                
                             </ul>
                         </li>
                     </ul>
@@ -46,7 +46,7 @@
 <script type="text/html" id="resource_detail">
     <div id="detail_tabs">
         <ul>
-            <li><a href="#tabs-1">Details</a></li>
+            <li><a id="instance_details" href="#tabs-1">Details</a></li>
             <li><a id="monitoring" href="#tabs-2">Monitoring</a></li>
         </ul>
         <div id="tabs-1" class="tab">
@@ -67,13 +67,13 @@
             </table>
         </div>
         <div id="tabs-2" class="tab">
-            <div id="cpuGraph"></div>
-            <div id="diskReadGraph"></div>
-            <div id="diskReadOpsGraph"></div>
-            <div id="diskWriteGraph"></div>
-            <div id="diskWriteOpsGraph"></div>
-            <div id="networkInGraph"></div>
-            <div id="networkOutGraph"></div>
+            <div id="cpuGraph" class="monitor_graph"></div>
+            <div id="diskReadGraph" class="monitor_graph"></div>
+            <div id="diskReadOpsGraph" class="monitor_graph"></div>
+            <div id="diskWriteGraph" class="monitor_graph"></div>
+            <div id="diskWriteOpsGraph" class="monitor_graph"></div>
+            <div id="networkInGraph" class="monitor_graph"></div>
+            <div id="networkOutGraph" class="monitor_graph"></div>
         </div>
     </div>
     
