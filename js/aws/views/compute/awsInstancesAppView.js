@@ -74,7 +74,6 @@ define([
                 this.credentialId = options.cred_id;
             }
             this.render();
-            $("#action_menu").on( "menuselect", this.setAction );
             
             var instanceApp = this;
             Common.vent.on("instanceAppRefresh", function() {
