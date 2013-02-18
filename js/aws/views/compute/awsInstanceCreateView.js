@@ -245,7 +245,7 @@ define([
             }
             //Hack alert, region is currently hardcoded to us-east-1
             var region = "us-east-1";
-            $.each(this.images, function(index, image) {
+            $.each(this.images.toJSON(), function(index, image) {
                 if(image.label === $("#image_select").val()) {
                     options.image_id = image.region[region];
                 }
