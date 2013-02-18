@@ -116,7 +116,7 @@ define([
             var createView = this;
             $("#image_select").autocomplete({
                 source: createView.images.toJSON(),
-                minLength: 0,
+                minLength: 0
             })
             .data("autocomplete")._renderItem = function (ul, item){
                 var imagePath;
