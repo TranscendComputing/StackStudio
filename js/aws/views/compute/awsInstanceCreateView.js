@@ -11,6 +11,7 @@ define([
         'backbone',
         'text!templates/aws/compute/awsInstanceCreateTemplate.html',
         '/js/aws/models/compute/awsInstance.js',
+        '/js/aws/collections/compute/awsImages.js',
         '/js/aws/collections/compute/awsAvailabilityZones.js',
         '/js/aws/collections/compute/awsFlavors.js',
         '/js/aws/collections/compute/awsKeyPairs.js',
@@ -21,7 +22,7 @@ define([
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
-], function( $, _, Backbone, instanceCreateTemplate, Instance, AvailabilityZones, Flavors, KeyPairs, SecurityGroups, ich, Common ) {
+], function( $, _, Backbone, instanceCreateTemplate, Instance, Images, AvailabilityZones, Flavors, KeyPairs, SecurityGroups, ich, Common ) {
     
     /**
      * InstanceCreateView is UI form to create compute.
@@ -39,97 +40,7 @@ define([
         
         credentialId: undefined,
         
-        images: [   {
-                        label: "Amazon Linux AMI 64-bit",
-                        description: "EBS-backed. It includes Linux 3.2, AWS tools, and repository access to multiple versions of MySQL, PostgreSQL, Python, Ruby, and Tomcat.",
-                        logo: "aws",
-                        region: {
-                            "us-east-1": "ami-1624987f",
-                            "us-west-1": "ami-1bf9de5e",
-                            "us-west-2": "ami-2a31bf1a",
-                            "eu-west-1": "ami-c37474b7",
-                            "ap-southeast-1": "ami-a6a7e7f4",
-                            "ap-southeast-2": "ami-bd990e87",
-                            "ap-northeast-1": "ami-4e6cd34f",
-                            "sa-east-1": "ami-1e08d103"
-                    }
-                    },
-                    {
-                        label: "Amazon Linux AMI 32-bit",
-                        description: "EBS-backed. It includes Linux 3.2, AWS tools, and repository access to multiple versions of MySQL, PostgreSQL, Python, Ruby, and Tomcat.",
-                        logo: "aws",
-                        region: {
-                            "us-east-1": "ami-1a249873",
-                            "us-west-1": "ami-19f9de5c",
-                            "us-west-2": "ami-2231bf12",
-                            "eu-west-1": "ami-937474e7",
-                            "ap-southeast-1": "ami-a2a7e7f0",
-                            "ap-southeast-2": "ami-b3990e89",
-                            "ap-northeast-1": "ami-486cd349",
-                            "sa-east-1": "ami-e209d0ff"
-                        }
-                    },
-                    {
-                        label: "Red Hat Enterprise Linux 6.3 64-bit",
-                        description: "Red Hat Enterprise Linux version 6.3, EBS-boot.",
-                        logo: "redhat",
-                        region: {
-                            "us-east-1": "ami-cc5af9a5",
-                            "us-west-1": "ami-51f4ae14",
-                            "us-west-2": "ami-8a25a9ba",
-                            "eu-west-1": "ami-8bf2f7ff",
-                            "ap-southeast-1": "ami-24e5a376",
-                            "ap-southeast-2": "ami-8d8413b7",
-                            "ap-northeast-1": "ami-5453e055",
-                            "sa-east-1": "ami-4807d955"
-                        }
-                    },
-                    {
-                        label: "Red Hat Enterprise Linux 6.3 32-bit",
-                        description: "Red Hat Enterprise Linux version 6.3, EBS-boot.",
-                        logo: "redhat",
-                        region: {
-                            "us-east-1": "ami-d258fbbb",
-                            "us-west-1": "ami-53f4ae16",
-                            "us-west-2": "ami-8625a9b6",
-                            "eu-west-1": "ami-8ff2f7fb",
-                            "ap-southeast-1": "ami-a0e4a2f2",
-                            "ap-southeast-2": "ami-71891e4b",
-                            "ap-northeast-1": "ami-4e53e04f",
-                            "sa-east-1": "AMI ID ami-4e07d953"
-                        }
-                    },
-                    {
-                        label: "Ubuntu Server 12.04.1 LTS 64-bit",
-                        description: "Ubuntu Server 12.04.1 LTS with support available from Canonical.",
-                        logo: "ubuntu",
-                        region: {
-                            "us-east-1": "ami-3fec7956",
-                            "us-west-1": "ami-883714cd",
-                            "us-west-2": "ami-2a31bf1a",
-                            "eu-west-1": "ami-f2191786",
-                            "ap-southeast-1": "ami-56e6a404",
-                            "ap-southeast-2": "ami-e2ba2cd8",
-                            "ap-northeast-1": "ami-9763e696",
-                            "sa-east-1": "ami-d56ab2c8"
-                        }
-                    },
-                    {
-                        label: "Ubuntu Server 12.04.1 LTS 32-bit",
-                        description: "Ubuntu Server 12.04.1 LTS with support available from Canonical.",
-                        logo: "ubuntu",
-                        region: {
-                            "us-east-1": "ami-3bec7952",
-                            "us-west-1": "ami-8e3714cb",
-                            "us-west-2": "ami-48c94378",
-                            "eu-west-1": "ami-f0191784",
-                            "ap-southeast-1": "ami-50e6a402",
-                            "ap-southeast-2": "ami-ecba2cd6",
-                            "ap-northeast-1": "ami-9563e694",
-                            "sa-east-1": "ami-db6ab2c6"
-                        }
-                    },
-                ],
+        images: new Images(),
         
         availabilityZones: new AvailabilityZones(),
 
@@ -171,10 +82,40 @@ define([
                 }
             });
             $("#accordion").accordion();
-            $("#radio").buttonset();
+            $("#radio").buttonset();  
+            $("#az_select").selectmenu();
+            $("#flavor_select").selectmenu();
+            $("#key_pair_select").selectmenu();
+            $("#shutdown_behavior_select").selectmenu();
+            $("#security_group_select").multiselect({
+                selectedList: 3,
+                noneSelectedText: "Select Security Group(s)"
+            }).multiselectfilter();
             
+            this.images.on( 'reset', this.addAllImages, this );
+            this.images.fetch();
+            
+            this.flavors.on( 'reset', this.addAllFlavors, this );
+            this.flavors.fetch({ data: $.param({ cred_id: this.credentialId}) });
+            
+            this.availabilityZones.on( 'reset', this.addAllAvailabilityZones, this );
+            this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId}) });
+            
+            this.keyPairs.on( 'reset', this.addAllKeyPairs, this );
+            this.keyPairs.fetch({ data: $.param({ cred_id: this.credentialId}) });
+            
+            this.securityGroups.on( 'reset', this.addAllSecurityGroups, this );
+            this.securityGroups.fetch({ data: $.param({ cred_id: this.credentialId}) });
+        },
+
+        render: function() {
+            
+        },
+        
+        addAllImages: function() {
+            var createView = this;
             $("#image_select").autocomplete({
-                source: createView.images,
+                source: createView.images.toJSON(),
                 minLength: 0,
             })
             .data("autocomplete")._renderItem = function (ul, item){
@@ -203,30 +144,6 @@ define([
                 var imageItem = '<a><table stlye="min-width:150px;"><tr>'+ img + name + '</tr><tr>' + description + '</tr></table></a>';
                 return $("<li>").data("item.autocomplete", item).append(imageItem).appendTo(ul);
             };
-            $("#az_select").selectmenu();
-            $("#flavor_select").selectmenu();
-            $("#key_pair_select").selectmenu();
-            $("#shutdown_behavior_select").selectmenu();
-            $("#security_group_select").multiselect({
-                selectedList: 3,
-                noneSelectedText: "Select Security Group(s)"
-            }).multiselectfilter();
-            
-            this.flavors.on( 'reset', this.addAllFlavors, this );
-            this.flavors.fetch({ data: $.param({ cred_id: this.credentialId}) });
-            
-            this.availabilityZones.on( 'reset', this.addAllAvailabilityZones, this );
-            this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId}) });
-            
-            this.keyPairs.on( 'reset', this.addAllKeyPairs, this );
-            this.keyPairs.fetch({ data: $.param({ cred_id: this.credentialId}) });
-            
-            this.securityGroups.on( 'reset', this.addAllSecurityGroups, this );
-            this.securityGroups.fetch({ data: $.param({ cred_id: this.credentialId}) });
-        },
-
-        render: function() {
-            
         },
         
         addAllAvailabilityZones: function() {
