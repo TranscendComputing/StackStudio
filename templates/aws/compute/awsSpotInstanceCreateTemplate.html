@@ -4,37 +4,31 @@
         <div>
             <table>
                 <tr>
-                    <td>Name:</td>
+                    <td>Image*:</td>
                     <td>
-                        <input id="image_name" type="text" style="width:200px;"/>
+                        <input id="image_select" style="width:200px;"/>
                     </td>
                 </tr>
                 <tr>
-                    <td>Image:</td>
+                    <td>Machine Size*:</td>
                     <td>
-                        <input id="image_combo_box" style="width:200px;"/>
+                        <select id="flavor_select" style="width:150px"></select>
                     </td>
                 </tr>
                 <tr>
-                    <td>Machine Size:</td>
-                    <td>
-                        <select id="size_select" style="width:150px"></select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Availability Zone:</td>
+                    <td>Availability Zone*:</td>
                     <td>
                         <select id="az_select" style="width:150px;"></select>
                     </td>
                 </tr>
                 <tr>
-                    <td>Key Pair:</td>
+                    <td>Key Pair*:</td>
                     <td>
                         <select id="key_pair_select" style="width:150px;"></select>
                     </td>
                 </tr>
                 <tr>
-                    <td>Security Group(s):</td>
+                    <td>Security Group(s)*:</td>
                     <td>
                         <select id="security_group_select" multiple="multiple" style="width:360px;"></select>
                     </td>
@@ -44,10 +38,10 @@
             <table>
                 <tr>
                     <td>Current Price:</td>
-                    <td id="current_price">$0.003</td>
+                    <td id="current_price">$ 0.00</td>
                 </tr>
                 <tr>
-                    <td>Max Price:</td>
+                    <td>Max Price*:</td>
                     <td><input id="max_price" type="text" style="width:100px;"/></td>
                 </tr>
                 <tr>
@@ -56,25 +50,37 @@
                 </tr>
                 <tr>
                     <td>Request Valid From:</td>
-                    <td><input id="valid_from_year" type="text" style="width:40px">
-                    -
-                    <input id="valid_from_month" type="text" style="width:20px">
-                    -
-                    <input id="valid_from_day" type="text" style="width:20px">
-                    <input id="valid_from_hour" type="text" style="margin-left:10px;width:20px">
-                    :
-                    <input id="valid_from_minute" type="text" style="width:20px"></td>
+                    <td>
+                        <input id="valid_from_anytime" type="radio" name="valid_from_group" checked>Any time
+                        <input type="radio" name="valid_from_group">Date:
+                        <span id="valid_from_date">
+                            <input id="valid_from_year" type="text" style="width:40px">
+                            -
+                            <input id="valid_from_month" type="text" style="width:20px">
+                            -
+                            <input id="valid_from_day" type="text" style="width:20px">
+                            <input id="valid_from_hour" type="text" style="margin-left:10px;width:20px">
+                            :
+                            <input id="valid_from_minute" type="text" style="width:20px">
+                        </span>
+                    </td>
                 </tr>
                 <tr>
                     <td>Request Valid Until:</td>
-                    <td><input id="valid_until_year" type="text" style="width:40px">
-                    -
-                    <input id="valid_until_month" type="text" style="width:20px">
-                    -
-                    <input id="valid_until_day" type="text" style="width:20px">
-                    <input id="valid_until_hour" type="text" style="margin-left:10px;width:20px">
-                    :
-                    <input id="valid_until_minute" type="text" style="width:20px"></td>
+                    <td>
+                        <input id="valid_until_anytime" type="radio" name="valid_until_group" checked>Any time
+                        <input type="radio" name="valid_until_group">Date:
+                        <span id="valid_until_date">
+                            <input id="valid_until_year" type="text" style="width:40px">
+                            -
+                            <input id="valid_until_month" type="text" style="width:20px">
+                            -
+                            <input id="valid_until_day" type="text" style="width:20px">
+                            <input id="valid_until_hour" type="text" style="margin-left:10px;width:20px">
+                            :
+                            <input id="valid_until_minute" type="text" style="width:20px">
+                        </span>
+                    </td>
                 </tr>
                 <tr>
                     <td>Persistent Request:</td>
@@ -88,19 +94,7 @@
                 <tr>
                     <td>Detailed Monitoring:</td>
                     <td>
-                        <input id="monitoring" type="checkbox" />
-                    </td>
-                </tr>
-                <tr>
-                    <td>Termination Protection:</td>
-                    <td>
-                        <input id="term_protection" type="checkbox" />
-                    </td>
-                </tr>
-                <tr>
-                    <td>Shutdown Behavior:</td>
-                    <td>
-                        <input id="shutdown_behavior" type="checkbox" />
+                        <input id="detailed_monitoring" type="checkbox" />
                     </td>
                 </tr>
             </table>

@@ -7,8 +7,9 @@
 /*global define:true console:true */
 define([
         'jquery',
-        'backbone'
-], function( $, Backbone ) {
+        'backbone',
+        'common'
+], function( $, Backbone, Common ) {
     'use strict';
 
     /**
@@ -46,8 +47,37 @@ define([
             tags: {},
             fault: '',
             user_data: ''
+        },
+        
+        create: function(options, credentialId) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/spot_requests/create?_method=PUT&cred_id=" + credentialId;
+            this.sendPostAction(url, options);
+        },
+        
+        cancel: function(credentialId) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/spot_requests/delete?_method=DELETE&cred_id=" + credentialId;
+            this.sendPostAction(url, this.attributes);
+        },
+        
+        sendPostAction: function(url, options) {
+            var spotRequest = {"spot_request": options};
+            $.ajax({
+                url: url,
+                type: 'POST',
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: JSON.stringify(spotRequest),
+                success: function(data) {
+                    Common.vent.trigger("spotInstanceAppRefresh");
+                },
+                error: function(jqXHR) {
+                    var messageObject = JSON.parse(jqXHR.responseText);
+                    alert(messageObject["error"]["message"]);
+                }
+            }); 
         }
     });
-
+    
+    
     return SpotInstance;
 });

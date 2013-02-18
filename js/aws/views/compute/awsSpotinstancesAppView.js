@@ -50,9 +50,11 @@ define([
         subtype: "spotinstances",
         
         CreateView: AwsSpotInstanceCreate,
-        
+
         events: {
             'click .create_button': 'createNew',
+            'click #action_menu ul li': 'performAction',
+            'click #price_history_button': 'priceHistory',
             'click #resource_table tr': 'toggleActions'
         },
 
@@ -61,14 +63,31 @@ define([
                 this.credentialId = options.cred_id;
             }
             this.render();
+            
+            var spotInstanceApp = this;
+            Common.vent.on("spotInstanceAppRefresh", function() {
+                spotInstanceApp.render();
+            });
         },
 
         toggleActions: function(e) {
             this.clickOne(e);
-            var rowData = this.$table.fnGetData(e.currentTarget);
-            if (rowData[3]) {
-                console.log($("#action_menu").menu("widget"));
+            //Disable any needed actions
+        },
+        
+        performAction: function(event) {
+            var spotInstance = this.collection.get(this.selectedId);
+            
+            switch(event.target.text)
+            {
+            case "Cancel":
+                spotInstance.cancel(this.credentialId);
+                break;
             }
+        },
+        
+        priceHistory: function() {
+            //add price history pop up
         }
     });
     
