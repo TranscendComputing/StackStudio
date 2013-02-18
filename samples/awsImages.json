@@ -3,6 +3,7 @@
         "label": "Amazon Linux AMI 64-bit",
         "description": "EBS-backed. It includes Linux 3.2, AWS tools, and repository access to multiple versions of MySQL, PostgreSQL, Python, Ruby, and Tomcat.",
         "logo": "aws",
+        "product": "Linux/UNIX",
         "region": {
             "us-east-1": "ami-1624987f",
             "us-west-1": "ami-1bf9de5e",
@@ -18,6 +19,7 @@
         "label": "Amazon Linux AMI 32-bit",
         "description": "EBS-backed. It includes Linux 3.2, AWS tools, and repository access to multiple versions of MySQL, PostgreSQL, Python, Ruby, and Tomcat.",
         "logo": "aws",
+        "product": "Linux/UNIX",
         "region": {
             "us-east-1": "ami-1a249873",
             "us-west-1": "ami-19f9de5c",
@@ -33,6 +35,7 @@
         "label": "Red Hat Enterprise Linux 6.3 64-bit",
         "description": "Red Hat Enterprise Linux version 6.3, EBS-boot.",
         "logo": "redhat",
+        "product": "Linux/UNIX",
         "region": {
             "us-east-1": "ami-cc5af9a5",
             "us-west-1": "ami-51f4ae14",
@@ -48,6 +51,7 @@
         "label": "Red Hat Enterprise Linux 6.3 32-bit",
         "description": "Red Hat Enterprise Linux version 6.3, EBS-boot.",
         "logo": "redhat",
+        "product": "Linux/UNIX",
         "region": {
             "us-east-1": "ami-d258fbbb",
             "us-west-1": "ami-53f4ae16",
@@ -63,6 +67,7 @@
         "label": "Ubuntu Server 12.04.1 LTS 64-bit",
         "description": "Ubuntu Server 12.04.1 LTS with support available from Canonical.",
         "logo": "ubuntu",
+        "product": "Linux/UNIX",
         "region": {
             "us-east-1": "ami-3fec7956",
             "us-west-1": "ami-883714cd",
@@ -78,6 +83,7 @@
         "label": "Ubuntu Server 12.04.1 LTS 32-bit",
         "description": "Ubuntu Server 12.04.1 LTS with support available from Canonical.",
         "logo": "ubuntu",
+        "product": "Linux/UNIX",
         "region": {
             "us-east-1": "ami-3bec7952",
             "us-west-1": "ami-8e3714cb",

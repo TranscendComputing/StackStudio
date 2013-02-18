@@ -22,6 +22,7 @@ define([
             label: '',
             description: '',
             logo: '',
+            product: '',
             region: {}
         }
 
