@@ -14,10 +14,11 @@ define([
         '/js/aws/models/compute/awsSpotInstanceRequest.js',
         '/js/aws/collections/compute/awsSpotInstanceRequests.js',
         '/js/aws/views/compute/awsSpotInstanceCreateView.js',
+        '/js/aws/views/compute/awsSpotPriceHistoryView.js',
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, ResourceAppView, awsSpotInstanceAppTemplate, Spotinstance, Spotinstances, AwsSpotInstanceCreate, ich, Common ) {
+], function( $, _, Backbone, ResourceAppView, awsSpotInstanceAppTemplate, Spotinstance, Spotinstances, AwsSpotInstanceCreate, SpotHistoryView, ich, Common ) {
     'use strict';
 
     // Aws Spot Instance Application View
@@ -87,7 +88,7 @@ define([
         },
         
         priceHistory: function() {
-            //add price history pop up
+            new SpotHistoryView({cred_id: this.credentialId});
         }
     });
     
