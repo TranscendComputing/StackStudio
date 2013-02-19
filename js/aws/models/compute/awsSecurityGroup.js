@@ -7,8 +7,9 @@
 /*global define:true console:true */
 define([
         'jquery',
-        'backbone'
-], function( $, Backbone ) {
+        'backbone',
+        'common'
+], function( $, Backbone, Common ) {
     'use strict';
 
     /**
@@ -20,7 +21,8 @@ define([
      * @returns {Object} Returns a SecurityGroup.
      */
     var SecurityGroup = Backbone.Model.extend({
-
+        idAttribute: "group_id",
+        
         /** Default attributes for security group */
         defaults: {
             name: '',
@@ -30,6 +32,34 @@ define([
             ip_permissions_egress: [],
             owner_id: '',
             vpc_id: ''
+        },
+        
+        create: function(options, credentialId) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/security_groups/create?_method=PUT&cred_id=" + credentialId;
+            this.sendPostAction(url, options);
+        },
+        
+        destroy: function(credentialId) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/security_groups/delete?_method=DELETE&cred_id=" + credentialId;
+            this.sendPostAction(url, this.attributes);
+        },
+        
+        sendPostAction: function(url, options) {
+            var securityGroup = {"security_group": options};
+            $.ajax({
+                url: url,
+                type: 'POST',
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: JSON.stringify(securityGroup),
+                success: function(data) {
+                    Common.vent.trigger("securityGroupAppRefresh");
+                },
+                error: function(jqXHR) {
+                    var messageObject = JSON.parse(jqXHR.responseText);
+                    alert(messageObject["error"]["message"]);
+                }
+            }); 
         }
     });
 

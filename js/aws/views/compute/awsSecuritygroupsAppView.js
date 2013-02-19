@@ -35,9 +35,9 @@ define([
     var AwsSecurityGroupsAppView = ResourceAppView.extend({
         template: _.template(awsSecurityGroupAppTemplate),
         
-        modelStringIdentifier: "name",
+        modelStringIdentifier: "group_id",
         
-        columns: ["name", "description"],
+        columns: ["group_id", "name", "description"],
         
         idColumnNumber: 0,
         
@@ -53,7 +53,8 @@ define([
         
         events: {
             'click .create_button': 'createNew',
-            'click #resource_table tr': 'toggleActions'
+            'click #action_menu ul li': 'performAction',
+            'click #resource_table tr': "toggleActions"
         },
 
         initialize: function(options) {
@@ -61,13 +62,26 @@ define([
                 this.credentialId = options.cred_id;
             }
             this.render();
+            
+            var securityGroupApp = this;
+            Common.vent.on("securityGroupAppRefresh", function() {
+                securityGroupApp.render();
+            });
         },
         
         toggleActions: function(e) {
             this.clickOne(e);
-            var rowData = this.$table.fnGetData(e.currentTarget);
-            if (rowData[3]) {
-                console.log($("#action_menu").menu("widget"));
+            //Disable any needed actions
+        },
+        
+        performAction: function(event) {
+            var securityGroup = this.collection.get(this.selectedId);
+
+            switch(event.target.text)
+            {
+            case "Delete Security Group":
+                securityGroup.destroy(this.credentialId);
+                break;
             }
         }
     });
