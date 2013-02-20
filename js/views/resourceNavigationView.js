@@ -237,10 +237,10 @@ define([
 			$('.resources').each(function() {
 			    var selection = selectionId + "Link";
 				if(selection === $(this).find(":first").attr("id")) {
-					$(this).css("background", "wheat");
+					$(this).addClass("selected_item");
 					$("#service_nav").html($(this).text() + " ->");
 				}else {
-					$(this).css("background", "#E6E9ED");
+					$(this).removeClass("selected_item");
 				}
 	        });
 		},

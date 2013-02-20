@@ -65,7 +65,7 @@ define([
         selectCredential: function( click ) {
             var credentialView = this;
             this.clearSelection();
-            $(click.target).addClass("selected_li");
+            $(click.target).addClass("selected_item");
             
             this.cloudCredentials.each(function(cloudCred) {
                 if($(click.target).text() === cloudCred.attributes.name) {
@@ -82,7 +82,7 @@ define([
         
         clearSelection: function() {
             $("#credential_list li").each(function() {
-               $(this).removeClass("selected_li");
+               $(this).removeClass("selected_item");
             });
         },
         

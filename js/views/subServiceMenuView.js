@@ -45,7 +45,7 @@ define([
                 // Build Menu
                 $.each(options.service.subServices, function(index, subService) {
                     if(subService.type === options.selectedSubtype) {
-                        $("#subservice_menu_list").append("<li class='subservice selected_li' id='"+subService.type+"'>"+subService.name+"</li>");
+                        $("#subservice_menu_list").append("<li class='subservice selected_item' id='"+subService.type+"'>"+subService.name+"</li>");
                     }else {
                         $("#subservice_menu_list").append("<li class='subservice' id='"+subService.type+"'>"+subService.name+"</li>");
                     }
@@ -57,14 +57,14 @@ define([
         
         selectSubService: function( click ) {
             this.clearSelection();
-            $(click.target).addClass("selected_li");
+            $(click.target).addClass("selected_item");
             
             Common.router.navigate("#resources/"+this.cloudProvider+"/"+this.service.type+"/"+click.target.id, {trigger: true});
         },
         
         clearSelection: function() {
             $("#subservice_menu_list li").each(function() {
-               $(this).removeClass("selected_li");
+               $(this).removeClass("selected_item");
             });
         },
         
