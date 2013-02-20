@@ -53,7 +53,8 @@ define([
         
         events: {
             'click .create_button': 'createNew',
-            'click #resource_table tr': 'toggleActions'
+            'click #action_menu ul li': 'performAction',
+            'click #resource_table tr': "toggleActions"
         },
 
         initialize: function(options) {
@@ -61,13 +62,31 @@ define([
                 this.credentialId = options.cred_id;
             }
             this.render();
+            
+            var keyPairApp = this;
+            Common.vent.on("keyPairAppRefresh", function() {
+                keyPairApp.render();
+            });
+            Common.vent.on("keyPairAppDelayRefresh", function() {
+                setTimeout(function() {
+                    keyPairApp.render();
+                }, 2000);
+            });
         },
         
         toggleActions: function(e) {
             this.clickOne(e);
-            var rowData = this.$table.fnGetData(e.currentTarget);
-            if (rowData[3]) {
-                console.log($("#action_menu").menu("widget"));
+            //Disable any needed actions
+        },
+        
+        performAction: function(event) {
+            var keyPair = this.collection.get(this.selectedId);
+            
+            switch(event.target.text)
+            {
+            case "Delete Key Pair":
+                keyPair.destroy(this.credentialId);
+                break;
             }
         }
     });

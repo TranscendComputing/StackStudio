@@ -4,7 +4,7 @@
  * Available under ASL2 license <http://www.apache.org/licenses/LICENSE-2.0.html>
  */
 /*jshint smarttabs:true */
-/*global define:true console:true */
+/*global define:true console:true alert:true*/
 define([
         'jquery',
         'underscore',
@@ -14,17 +14,22 @@ define([
         'icanhaz',
         'common'
         
-], function( $, _, Backbone, keyPairCreateTemplate, Keypair, ich, Common ) {
+], function( $, _, Backbone, keyPairCreateTemplate, KeyPair, ich, Common ) {
     
     var AwsKeyPairCreateView = Backbone.View.extend({
         
         tagName: "div",
         
+        credentialId: undefined,
+        
+        keyPair: new KeyPair(),
+        
         events: {
             "dialogclose": "close"
         },
 
-        initialize: function() {
+        initialize: function(options) {
+            this.credentialId = options.cred_id;
             var createView = this;
             var compiledTemplate = _.template(keyPairCreateTemplate);
             this.$el.html(compiledTemplate);
@@ -51,8 +56,7 @@ define([
         },
         
         close: function() {
-            console.log("close initiated");
-            this.$el.dialog('close');
+            this.$el.remove();
         },
         
         cancel: function() {
@@ -60,9 +64,25 @@ define([
         },
         
         create: function() {
-            console.log("create_initiated");
-            //Validate and create
-            this.$el.dialog('close');
+            var newKeyPair = this.keyPair;
+            var options = {};
+            var alert = false;
+            
+            if($("#keypair_name").val() !== "") {
+                options.name = $("#keypair_name").val();
+            }else {
+                alert = true;
+            }
+            
+            if(!alert) {
+                $("#keypair_form").attr("action", Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/key_pairs/create");
+                $("#credential_id").attr("value", this.credentialId);
+                $("#keypair_form").submit();
+                Common.vent.trigger("keyPairAppDelayRefresh");
+                this.$el.dialog('close');
+            }else {
+                alert("Please supply the required fields.");
+            } 
         }
 
     });
