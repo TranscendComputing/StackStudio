@@ -8,23 +8,23 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/block_storage/awsVolume.js',
+        '/js/aws/models/block_storage/awsSnapshot.js',
         'common'
-], function( $, Backbone, Volume, Common ) {
+], function( $, Backbone, Snapshot, Common ) {
     'use strict';
 
-    // Volume Collection
+    // Snapshot Collection
     // ---------------
 
-    var VolumesList = Backbone.Collection.extend({
+    var SnapshotList = Backbone.Collection.extend({
 
         // Reference to this collection's model.
-        model: Volume,
+        model: Snapshot,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/block_storage/volumes/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/block_storage/snapshots/describe'
     });
 
     // Create our global collection of **Volumes**.
-    return VolumesList;
+    return SnapshotList;
 
 });

@@ -11,19 +11,15 @@ define([
         'backbone',
         'text!templates/aws/block_storage/awsVolumeCreateTemplate.html',
         '/js/aws/models/block_storage/awsVolume.js',
+        '/js/aws/collections/compute/awsAvailabilityZones.js',
+        '/js/aws/collections/block_storage/awsSnapshots.js',
         'icanhaz',
         'common',
         'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
-], function( $, _, Backbone, volumeCreateTemplate, Volume, ich, Common ) {
-	
-	var azList = ["us-east-1a", "us-east-1b", "us-east-1d"];
-	
-	var volumeTypes = ["Standard", "Provisioned IOPS (io1)"];
-	
-	var snapshots = ["--- No Snapshot ---", "snap-d010f6b9 -- Windows 2003 R2 Installation", "snap-0bdf3f62 -- 2003-2006 Economic Data (Linux)"];
+], function( $, _, Backbone, volumeCreateTemplate, Volume, AvailabilityZones, Snapshots, ich, Common ) {
 	
     /**
      * VolumeCreateView is UI form to create compute.
@@ -39,24 +35,31 @@ define([
 		
 		tagName: "div",
 		
+		credentialId: undefined,
+		
+		availabilityZones: new AvailabilityZones(),
+		
+		ownedSnapshots: new Snapshots(),
+		
+		publicSnapshots: new Snapshots(),
+		
 		template: _.template(volumeCreateTemplate),
-		// Delegated events for creating new instances, etc.
+		
+		volume: new Volume(),
+
 		events: {
 			"dialogclose": "close"
 		},
 
-		initialize: function() {
-			//TODO
-		},
-
-		render: function() {
-			var createView = this;
+		initialize: function(options) {
+		    this.credentialId = options.cred_id;
+		    var createView = this;
             this.$el.html(this.template);
 
             this.$el.dialog({
                 autoOpen: true,
                 title: "Create Volume",
-                width:500,
+                width:550,
                 minHeight: 150,
                 resizable: false,
                 modal: true,
@@ -69,39 +72,69 @@ define([
                     }
                 }
             });
-            
-            $.each(azList, function (index, value) {
-                $('#az_select')
-                    .append($("<option></option>")
-                    .attr("value",index)
-                    .text(value)); 
+            $("#volume_type_select").selectmenu({
+                change: function() {
+                    createView.volumeTypeChange();
+                }
             });
+            this.volumeTypeChange();
             $("#az_select").selectmenu();
-           
-            $.each(volumeTypes, function (index, value) {
-                $('#volume_type_select')
-                    .append($("<option></option>")
-                    .attr("value",index)
-                    .text(value)); 
-            });
-            $("#volume_type_select").selectmenu();
-            
-            $.each(snapshots, function (index, value) {
-                $('#snapshot_select')
-                    .append($("<option></option>")
-                    .attr("value",index)
-                    .text(value)); 
-            });
             $("#snapshot_select").selectmenu();
             
-            return this;
+            this.availabilityZones.on( 'reset', this.addAllAvailabilityZones, this );
+            this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId}) });
+            
+            this.ownedSnapshots.on( 'reset', this.addAllOwnedSnapshots, this );
+            this.ownedSnapshots.fetch({ data: $.param({ cred_id: this.credentialId}) });
+            
+            this.publicSnapshots.on( 'reset', this.addAllPublicSnapshots, this );
+            this.publicSnapshots.fetch({ data: $.param({ cred_id: this.credentialId, filters: {"RestorableBy":"all"}}) });
+		},
+		
+		render: function() {
+            
+        },
+		
+		addAllAvailabilityZones: function() {
+            $("#az_select").empty();
+            this.availabilityZones.each(function(az) {
+                $("#az_select").append($("<option></option>").text(az.attributes.zoneName));
+            });
+            $("#az_select").selectmenu();
+        },
+        
+        addAllOwnedSnapshots: function() {
+            this.ownedSnapshots.each(function(ownedSnapshot) {
+                var snapshotText = ownedSnapshot.attributes.id;
+                if(ownedSnapshot.attributes.description) {
+                    snapshotText = snapshotText + " -- " + ownedSnapshot.attributes.description;
+                }
+                $("#snapshot_select").append($("<option value="+ ownedSnapshot.attributes.id +">"+ snapshotText +"</option>"));
+            });
+            $("#snapshot_select").selectmenu();
+        },
+        
+        addAllPublicSnapshots: function() {
+            this.publicSnapshots.each(function(publicSnapshot) {
+                var snapshotText = publicSnapshot.attributes.id;
+                if(publicSnapshot.attributes.description) {
+                    snapshotText = snapshotText + " -- " + publicSnapshot.attributes.description;
+                }
+                $("#snapshot_select").append($("<option value="+ publicSnapshot.attributes.id +">"+ snapshotText +"</option>"));
+            });
+            $("#snapshot_select").selectmenu();
+        },
+
+		volumeTypeChange: function() {
+		    if($("#volume_type_select").val() === "standard") {
+		        $("#volume_iops").addClass("ui-state-disabled");
+		    }else {
+		        $("#volume_iops").removeClass();
+		    }
 		},
 		
 		close: function() {
-			$("#az_select").remove();
-			$("#volume_type_select").remove();
-			$("#snapshots_select").remove();
-			this.$el.dialog('close');
+		    this.$el.remove();
 		},
 		
 		cancel: function() {
@@ -109,8 +142,50 @@ define([
 		},
 		
 		create: function() {
-			//Validate and create
-			this.$el.dialog('close');
+		    var newVolume = this.volume;
+            var options = {};
+            var alert = false;
+            //Validate before create
+            if($("#volume_name_input").val() !== "") {
+                options.tags = {"Name": $("#volume_name_input").val()};
+            }
+            
+            if($("#volume_size_input").val() !== "") {
+                var sizeInt = parseInt($("#volume_size_input").val());
+                if(sizeInt > 0 && sizeInt < 1001) {
+                    options.size = sizeInt;
+                }else {
+                    alert = true;
+                }
+            }else {
+                alert = true;
+            }
+            
+            if($("#volume_type_select").val() === "io1") {
+                if($("#volume_iops_input").val() !== "") {
+                    var iopsInt = parseInt($("#volume_iops_input").val());
+                    if(iopsInt > 99 && iopsInt < 2001) {
+                        options.type = $("#volume_type_select").val();
+                        options.iops = iopsInt;
+                    }else {
+                        alert = true;
+                    }
+                }else {
+                    alert = true;
+                }
+            }
+            
+            options.availability_zone = $("#az_select").val();
+            if($("#snapshot_select").val() !== "none") {
+                options.snapshot_id = $("#snapshot_select").val();
+            }
+            
+            if(!alert) {
+                newVolume.create(options, this.credentialId);
+                this.$el.dialog('close'); 
+            }else {
+                alert("Invalid request, please supply all required fields.");
+            }
 		}
 
 	});

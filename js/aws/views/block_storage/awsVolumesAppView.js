@@ -14,10 +14,12 @@ define([
         '/js/aws/models/block_storage/awsVolume.js',
         '/js/aws/collections/block_storage/awsVolumes.js',
         '/js/aws/views/block_storage/awsVolumeCreateView.js',
+        '/js/aws/views/block_storage/awsVolumeAttachView.js',
+        '/js/aws/views/block_storage/awsSnapshotCreateView.js',
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, AppView, awsVolumeAppTemplate, Volume, Volumes, AwsVolumeCreateView, ich, Common ) {
+], function( $, _, Backbone, AppView, awsVolumeAppTemplate, Volume, Volumes, AwsVolumeCreateView, AwsVolumeAttachView, AwsSnapshotCreateView, ich, Common ) {
 	'use strict';
 
 	// Aws Application View
@@ -52,8 +54,9 @@ define([
         CreateView: AwsVolumeCreateView,
         
         events: {
-            'click #create_button': 'createNew',
-            'click #resource_table tr': 'toggleActions'
+            'click .create_button': 'createNew',
+            'click #action_menu ul li': 'performAction',
+            'click #resource_table tr': "toggleActions"
         },
 
         initialize: function(options) {
@@ -61,13 +64,38 @@ define([
                 this.credentialId = options.cred_id;
             }
             this.render();
+            
+            var volumeApp = this;
+            Common.vent.on("volumeAppRefresh", function() {
+                volumeApp.render();
+            });
         },
         
         toggleActions: function(e) {
             this.clickOne(e);
-            var rowData = this.$table.fnGetData(e.currentTarget);
-            if (rowData[3]) {
-                console.log($("#action_menu").menu("widget"));
+            //Disable any needed actions
+        },
+        
+        performAction: function(event) {
+            var volume = this.collection.get(this.selectedId);
+            
+            switch(event.target.text)
+            {
+            case "Delete Volume":
+                volume.destroy(this.credentialId);
+                break;
+            case "Attach Volume":
+                new AwsVolumeAttachView({cred_id: this.credentialId, volume: volume});
+                break;
+            case "Detach Volume":
+                volume.detach(this.credentialId);
+                break;
+            case "Force Detach":
+                volume.forceDetach(this.credentialId);
+                break;
+            case "Create Snapshot":
+                new AwsSnapshotCreateView({cred_id: this.credentialId, volume: volume});
+                break;
             }
         }
 	});
