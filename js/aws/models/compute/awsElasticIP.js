@@ -7,8 +7,9 @@
 /*global define:true console:true */
 define([
         'jquery',
-        'backbone'
-], function( $, Backbone ) {
+        'backbone',
+        'common'
+], function( $, Backbone, Common ) {
     'use strict';
 
     /**
@@ -20,6 +21,7 @@ define([
      * @returns {Object} Returns a ElasticIP.
      */
     var ElasticIP = Backbone.Model.extend({
+        idAttribute: "public_ip",
 
         /** Default attributes for key pair */
         defaults: {
@@ -28,6 +30,44 @@ define([
             server_id: '',
             network_interface_id: '',
             domain: ''
+        },
+        
+        create: function(options, credentialId) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/addresses/create?_method=PUT&cred_id=" + credentialId;
+            this.sendPostAction(url, options);
+        },
+        
+        destroy: function(credentialId) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/addresses/delete?_method=DELETE&cred_id=" + credentialId;
+            this.sendPostAction(url, this.attributes);
+        },
+        
+        associateAddress: function(credentialId) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/addresses/associate?cred_id=" + credentialId;
+            this.sendPostAction(url, this.attributes);
+        },
+        
+        disassociateAddress: function(credentialId) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/addresses/disassociate?cred_id=" + credentialId;
+            this.sendPostAction(url, this.attributes);
+        },
+        
+        sendPostAction: function(url, options) {
+            var address = {"address": options};
+            $.ajax({
+                url: url,
+                type: 'POST',
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: JSON.stringify(address),
+                success: function(data) {
+                    Common.vent.trigger("elasticIPAppRefresh");
+                },
+                error: function(jqXHR) {
+                    var messageObject = JSON.parse(jqXHR.responseText);
+                    alert(messageObject["error"]["message"]);
+                }
+            }); 
         }
     });
 

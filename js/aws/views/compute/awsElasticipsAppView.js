@@ -14,10 +14,11 @@ define([
         '/js/aws/models/compute/awsElasticIP.js',
         '/js/aws/collections/compute/awsElasticIPs.js',
         '/js/aws/views/compute/awsElasticIPsCreateView.js',
+        '/js/aws/views/compute/awsElasticIPAssociateView.js',
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, ResourceAppView, awsElasticIPAppTemplate, Elasticip, Elasticips, AwsElasticIPsCreate, ich, Common ) {
+], function( $, _, Backbone, ResourceAppView, awsElasticIPAppTemplate, Elasticip, Elasticips, AwsElasticIPsCreate, AwsElasticIpAssociate, ich, Common ) {
     'use strict';
 
     // Aws Security Group Application View
@@ -53,7 +54,8 @@ define([
         
         events: {
             'click .create_button': 'createNew',
-            'click #resource_table tr': 'clickOne'
+            'click #action_menu ul li': 'performAction',
+            'click #resource_table tr': "toggleActions"
         },
 
         initialize: function(options) {
@@ -61,6 +63,33 @@ define([
                 this.credentialId = options.cred_id;
             }
             this.render();
+            
+            var elasticIpApp = this;
+            Common.vent.on("elasticIPAppRefresh", function() {
+                elasticIpApp.render();
+            });
+        },
+        
+        toggleActions: function(e) {
+            this.clickOne(e);
+            //Disable any needed actions
+        },
+        
+        performAction: function(event) {
+            var elasticIp = this.collection.get(this.selectedId);
+            
+            switch(event.target.text)
+            {
+            case "Release Address":
+                elasticIp.destroy(this.credentialId);
+                break;
+            case "Associate Address":
+                new AwsElasticIpAssociate({cred_id: this.credentialId, elastic_ip: elasticIp});
+                break;
+            case "Disassociate Address":
+                elasticIp.disassociateAddress(this.credentialId);
+                break;
+            }
         }
     });
     

@@ -20,18 +20,23 @@ define([
         
         tagName: "div",
         
+        credentialId: undefined,
+        
+        elasticIp: new ElasticIP(),
+        
         events: {
             "dialogclose": "close"
         },
 
-        initialize: function() {
+        initialize: function(options) {
+            this.credentialId = options.cred_id;
             var createView = this;
             var compiledTemplate = _.template(elasticIPCreateTemplate);
             this.$el.html(compiledTemplate);
 
             this.$el.dialog({
                 autoOpen: true,
-                title: "Associate New Address",
+                title: "Allocate New Address",
                 width:350,
                 resizable: false,
                 modal: true,
@@ -44,7 +49,6 @@ define([
                     }
                 }
             });
-            
             $("#eip_type_select").selectmenu();
         },
 
@@ -53,9 +57,7 @@ define([
         },
         
         close: function() {
-            console.log("close initiated");
-            $("#eip_type_select").remove();
-            this.$el.dialog('close');
+            this.$el.remove();
         },
         
         cancel: function() {
@@ -63,8 +65,13 @@ define([
         },
         
         create: function() {
-            console.log("create_initiated");
+            var newElasticIp = this.elasticIp;
+            var options = {};
             //Validate and create
+            if($("#eip_type_select").val() === "vpc") {
+                options.domain = "vpc";
+            }
+            newElasticIp.create(options, this.credentialId);
             this.$el.dialog('close');
         }
 
