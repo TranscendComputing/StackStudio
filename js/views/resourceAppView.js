@@ -65,7 +65,7 @@ define([
             if (model.get(this.modelStringIdentifier) === "") {
                 return;
             }
-            var view = new ResourceRowView({ model: model });
+            var view = new ResourceRowView({ tableId: "#resource_table", model: model });
             view.columns = this.columns;
             view.render();
         },
