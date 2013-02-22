@@ -7,8 +7,9 @@
 /*global define:true console:true */
 define([
         'jquery',
-        'backbone'
-], function( $, Backbone ) {
+        'backbone',
+        'common'
+], function( $, Backbone, Common ) {
     'use strict';
 
     // Base Bucket Model
@@ -29,7 +30,35 @@ define([
         defaults: {
 			key: '',
 			creation_date: ''
-		}
+		},
+		
+        create: function(options, credentialId) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/object_storage/directories/create?_method=PUT&cred_id=" + credentialId;
+            this.sendPostAction(url, options);
+        },
+        
+        destroy: function(credentialId) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/object_storage/directories/delete?_method=DELETE&cred_id=" + credentialId;
+            this.sendPostAction(url, this.attributes);
+        },
+        
+        sendPostAction: function(url, options) {
+            var directory = {"directory": options};
+            $.ajax({
+                url: url,
+                type: 'POST',
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: JSON.stringify(directory),
+                success: function(data) {
+                    Common.vent.trigger("objectStorageAppRefresh");
+                },
+                error: function(jqXHR) {
+                    var messageObject = JSON.parse(jqXHR.responseText);
+                    alert(messageObject["error"]["message"]);
+                }
+            }); 
+        }
     });
 
     return Bucket;
