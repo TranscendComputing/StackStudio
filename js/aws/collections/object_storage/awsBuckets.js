@@ -13,7 +13,7 @@ define([
 ], function( $, Backbone, Bucket, Common ) {
     'use strict';
 
-    // Instance Collection
+    // Bucket Collection
     // ---------------
 
     var BucketsList = Backbone.Collection.extend({
