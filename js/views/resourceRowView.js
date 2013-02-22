@@ -14,8 +14,11 @@ define([
 
     var ResourceRowView = Backbone.View.extend({
         columns: [],
+        
+        tableId: undefined,
 
-        initialize: function() {
+        initialize: function(options) {
+            this.tableId = options.tableId;
             this.model.on( 'change', this.render, this );
             this.model.on( 'destroy', this.remove, this );
             this.model.on( 'visible', this.toggleVisible, this );
@@ -46,7 +49,7 @@ define([
                     rowData.push("");
                 }
             });
-            var added = $('#resource_table').dataTable().fnAddData(rowData);
+            var added = $(this.tableId).dataTable().fnAddData(rowData);
             this.setElement( $(selector_i+(added[0]+1)+')') );
             this.$el.data( model.toJSON() );
             this.$el.addClass("selectable_item");
