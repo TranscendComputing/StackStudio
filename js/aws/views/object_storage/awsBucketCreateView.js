@@ -11,16 +11,8 @@ define([
         'backbone',
         'text!templates/aws/object_storage/awsBucketCreateTemplate.html',
         '/js/aws/models/object_storage/awsBucket.js',
-        'icanhaz',
-        'common',
-        'jquery.ui.selectmenu',
-        'jquery.multiselect',
-        'jquery.multiselect.filter'
-        
-], function( $, _, Backbone, bucketCreateTemplate, Bucket, ich, Common ) {
-	
-	var regions = ["US Standard", "Oregon", "Northern California", "Ireland", "Singapore", "Tokyo", "Sydney", "Sao Paulo"];
-	
+        'common'
+], function( $, _, Backbone, bucketCreateTemplate, Bucket, Common ) {	
 	
     /**
      * BucketCreateView is UI form to create compute.
@@ -36,24 +28,27 @@ define([
 		
 		tagName: "div",
 		
+		credentialId: undefined,
+		
 		template: _.template(bucketCreateTemplate),
-		// Delegated events for creating new instances, etc.
+		
+		cloudDefinitions: undefined,
+		
+		bucket: new Bucket(),
+
 		events: {
 			"dialogclose": "close"
 		},
 
-		initialize: function() {
-			//TODO
-		},
-
-		render: function() {
-			var createView = this;
+		initialize: function(options) {
+		    this.credentialId = options.cred_id;
+		    var createView = this;
             this.$el.html(this.template);
 
             this.$el.dialog({
                 autoOpen: true,
                 title: "Create Bucket",
-                width:500,
+                width:400,
                 minHeight: 150,
                 resizable: false,
                 modal: true,
@@ -67,23 +62,24 @@ define([
                 }
             });
             
-            $("#accordion").accordion();
-
-
-            $.each(regions, function (index, value) {
-                $('#region_select')
-                    .append($("<option></option>")
-                    .attr("value",index)
-                    .text(value)); 
-            });
-            $("#region_select").selectmenu();
+            var response = $.ajax({
+                url: "samples/cloudDefinitions.json",
+                async: false
+            }).responseText;
+            this.cloudDefinitions = $.parseJSON(response);
             
-            return this;
+            $.each(this.cloudDefinitions["aws"].regions, function (index, value) {
+                $('#bucket_region_select').append($("<option value="+ value.zone +">"+ value.name +"</option>"));
+            });
+            $("#bucket_region_select").selectmenu();
+		},
+
+		render: function() {
+
 		},
 		
 		close: function() {
-			$("#region_select").remove();
-			this.$el.dialog('close');
+			this.$el.remove();
 		},
 		
 		cancel: function() {
@@ -92,7 +88,22 @@ define([
 		
 		create: function() {
 			//Validate and create
-			this.$el.dialog('close');
+		    newBucket = this.bucket;
+		    options = {};
+		    alert = false;
+		    
+		    if($("#bucket_name_input").val() !== "") {
+		        options.key = $("#bucket_name_input").val();
+		    }else {
+		        alert = true;
+		    }
+		    
+		    if(!alert) {
+		        newBucket.create(options, this.credentialId);
+		        this.$el.dialog('close');
+		    }else {
+		        alert("Please provide a name for the bucket.");
+		    }
 		}
 
 	});
