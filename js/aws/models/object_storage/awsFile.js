@@ -35,6 +35,23 @@ define([
             storage_class: '',
             encryption: '',
             version: ''
+        },
+        
+        destroy: function(directoryName, credentialId) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/object_storage/directory/file/delete?_method=DELETE&directory=" + directoryName + "&file=" + this.attributes.key + "&cred_id=" + credentialId;
+            $.ajax({
+                url: url,
+                type: 'POST',
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                success: function(data) {
+                    Common.vent.trigger("objectStorageObjectRefresh");
+                },
+                error: function(jqXHR) {
+                    var messageObject = JSON.parse(jqXHR.responseText);
+                    alert(messageObject["error"]["message"]);
+                }
+            }); 
         }
     });
 

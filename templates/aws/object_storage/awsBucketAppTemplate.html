@@ -10,10 +10,7 @@
                         <li style="z-index: 1000">
                             <a id="action_button">Actions</a>
                             <ul>
-                                <li><a>Delete</a></li>
-                                <li><a>Refresh</a></li>
-                                <li><a>Paste Into</a></li>
-                                <li><a>Properties</a></li>                    
+                                <li><a>Delete</a></li>                
                             </ul>
                         </li>
                     </ul>
@@ -27,36 +24,16 @@
                 <th>Name</th>
             </tr>
         </thead>
-        <tbody>
-        </tbody>
-        <tfoot>
-        </tfoot>
+        <tbody></tbody>
     </table>
     <div id="details" class="detail_panel"></div>
 </div>
 
 <script type="text/html" id="resource_detail">
-    <!--
-    <div class="button_bar">
-        <button class="create_button">Create Folder</button>
-        <ul class="action_menu">
-            <li style="z-index: 1000">
-                <a class="actions_button" href="#">Actions</a>
-                <ul>
-                    <li class="ui-state-disabled"><a href="#">Open</a></li>
-                    <li class="ui-state-disabled"><a href="#">Download</a></li>
-                    <li class="ui-state-disabled"><a href="#">Upload</a></li>
-                    <li class="ui-state-disabled"><a href="#">Make Public</a></li>
-                    <li class="ui-state-disabled"><a href="#">Rename</a></li>
-                    <li class="ui-state-disabled"><a href="#">Delete</a></li>                    
-                </ul>
-            </li>
-        </ul>
-    </div>
-    -->
     <div id="detail_tabs">
         <ul>
-            <li><a href="#properties_tab">Details</a></li>
+            <li id="properties"><a href="#properties_tab">Details</a></li>
+            <li id="objects"><a href="#object_tab">Objects</a></li>
         </ul>
         <div id="properties_tab" class="tab">
             <table>
@@ -66,5 +43,6 @@
                 </tbody>
             </table>
         </div>
+        <div id="object_tab" class="tab"></div>
     </div>
 </script>
