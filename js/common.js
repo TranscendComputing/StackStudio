@@ -44,6 +44,9 @@ requirejs.config({
             deps: ['jquery'],
             exports: 'ich'
         },
+        'jquery.form': {
+            deps: ['jquery']
+        },
         'jquery.terminal': {
             deps: ['jquery', 'jquery.mousewheel'],
             exports: 'jQuery.fn.terminal'
@@ -121,6 +124,7 @@ requirejs.config({
         'backbone': '//cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.10/backbone-min',
         //'backbone': 'backbone-0.9.9',
         'icanhaz': 'ICanHaz',
+        'jquery.form': 'jquery.form',
         'jquery.terminal': 'jquery.terminal-0.4.22',
         'jquery.mousewheel': 'jquery.mousewheel-min',
         //'jquery.jstree': '//cachedcommons.org/cache/jquery-jstree/1.0.0/javascripts/jquery-jstree-min',
