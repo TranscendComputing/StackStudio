@@ -53,7 +53,8 @@ define([
         
         events: {
             'click .create_button': 'createNew',
-            'click #resource_table tr': 'toggleActions'
+            'click #action_menu ul li': 'performAction',
+            'click #resource_table tr': "toggleActions",
         },
 
         initialize: function(options) {
@@ -61,11 +62,27 @@ define([
                 this.credentialId = options.cred_id;
             }
             this.render();
+            
+            var alarmApp = this;
+            Common.vent.on("alarmAppRefresh", function() {
+                alarmApp.render();
+            });
         },
         
         toggleActions: function(e) {
             this.clickOne(e);
-            var rowData = this.$table.fnGetData(e.currentTarget);
+            //Disable any needed actions
+        },
+        
+        performAction: function(event) {
+            var alarm = this.collection.get(this.selectedId);
+            
+            switch(event.target.text)
+            {
+            case "Delete Alarm":
+                alarm.destroy(this.credentialId);
+                break;
+            }
         }
     });
     

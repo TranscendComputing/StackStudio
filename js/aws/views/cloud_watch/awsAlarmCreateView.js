@@ -4,18 +4,19 @@
  * Available under ASL2 license <http://www.apache.org/licenses/LICENSE-2.0.html>
  */
 /*jshint smarttabs:true */
-/*global define:true console:true */
+/*global define:true console:true alert:true*/
 define([
         'jquery',
         'underscore',
         'backbone',
         'text!templates/aws/cloud_watch/awsAlarmCreateTemplate.html',
         '/js/aws/models/cloud_watch/awsAlarm.js',
-        'icanhaz',
+        '/js/aws/collections/cloud_watch/awsMetrics.js',
+        '/js/aws/collections/notification/awsTopics.js',
         'common',
         'jquery.ui.selectmenu'
         
-], function( $, _, Backbone, alarmCreateTemplate, Alarm, ich, Common ) {
+], function( $, _, Backbone, alarmCreateTemplate, Alarm, Metrics, Topics, Common ) {
     
     /**
      * awsAlarmCreateView is UI form to create compute.
@@ -31,12 +32,26 @@ define([
         
         tagName: "div",
         
+        credentialId: undefined,
+        
+        metrics: new Metrics(),
+        
+        topics: new Topics(),
+        
+        alarm: new Alarm(),
+        
+        selectedAction: undefined,
+        
         // Delegated events for creating new alarms, etc.
         events: {
-            "dialogclose": "close"
+            "dialogclose": "close",
+            "click #actions_table tr": 'selectAction',
+            "click #add_action_button": "addAction",
+            "click #remove_action_button": "removeAction",
         },
 
-        initialize: function() {
+        initialize: function(options) {
+            this.credentialId = options.cred_id;
             var createView = this;
             var compiledTemplate = _.template(alarmCreateTemplate);
             this.$el.html(compiledTemplate);
@@ -44,7 +59,7 @@ define([
             this.$el.dialog({
                 autoOpen: true,
                 title: "Create Alarm",
-                width:500,
+                width:600,
                 resizable: false,
                 modal: true,
                 buttons: {
@@ -56,9 +71,6 @@ define([
                     }
                 }
             });
-            
-            $("#accordion").accordion();
-            $("select").selectmenu();
             $("button").button();
             $('#actions_table').dataTable({
                 "bJQueryUI": true,
@@ -66,17 +78,92 @@ define([
                 bFilter: false,
                 bInfo: false,
                 bPaginate : false
+            }); 
+            $("#accordion").accordion();
+            $("select").selectmenu();
+            $("#namespace_select").selectmenu({
+                change: function() {
+                    createView.namespaceChange();
+                }
             });
+            this.metrics.on( 'reset', this.addAllMetrics, this );
+            this.namespaceChange();
+            this.topics.on( 'reset', this.addAllTopics, this );
+            this.topics.fetch({ data: $.param({ cred_id: this.credentialId })});
         },
 
         render: function() {
             
         },
         
+        namespaceChange: function() {
+            $("#metric_select").empty();
+            $("#metric_select").append("<option value='none'>No Metrics Available</option>");
+            $("#metric_select").selectmenu();
+            switch($("#namespace_select").val()) 
+            {
+            case "AWS/EBS":
+                this.metrics.fetch({ data: $.param({ cred_id: this.credentialId, filters: {"Namespace": "AWS/EBS", "Dimensions":"VolumeId"}}) });
+                break;
+            case "AWS/EC2":
+                this.metrics.fetch({ data: $.param({ cred_id: this.credentialId, filters: {"Namespace": "AWS/EC2", "Dimensions":"InstanceId"}}) });
+                break;
+            case "AWS/ELB":
+                this.metrics.fetch({ data: $.param({ cred_id: this.credentialId, filters: {"Namespace": "AWS/ELB", "Dimensions":"LoadBalancerName"}}) });
+                break;
+            case "AWS/RDS":
+                this.metrics.fetch({ data: $.param({ cred_id: this.credentialId, filters: {"Namespace": "AWS/RDS", "Dimensions":"DBInstanceIdentifier"}}) });
+                break;
+            case "AWS/SNS":
+                this.metrics.fetch({ data: $.param({ cred_id: this.credentialId, filters: {"Namespace": "AWS/SNS", "Dimensions":"TopicName"}}) });
+                break;
+            case "AWS/SQS":
+                this.metrics.fetch({ data: $.param({ cred_id: this.credentialId, filters: {"Namespace": "AWS/SQS", "Dimensions":"QueueName"}}) });
+                break;
+            }
+        },
+        
+        addAllMetrics: function() {
+            $("#metric_select").empty();
+            $("#metric_select").selectmenu();
+            this.metrics.each(function (metric) {
+                if(metric.attributes.dimensions.length > 0) {
+                    $("#metric_select").append("<option value='" + JSON.stringify(metric.attributes) + "'>" + metric.attributes.dimensions[0].Value + " - " + metric.attributes.name + "</option>"); 
+                }
+            });
+            $("#metric_select").selectmenu();
+        },
+        
+        addAllTopics: function() {
+            $("#sns_topic_select").empty();
+            this.topics.each(function(topic) {
+                $("#sns_topic_select").append("<option>" + topic.attributes.id + "</option>");
+            });
+            $("#sns_topic_select").selectmenu();
+        },
+        
+        selectAction: function(event) {
+            $("#actions_table tr").removeClass("row_selected");
+            this.selectedAction = $("#actions_table").dataTable().fnGetData(event.currentTarget);
+            $(event.currentTarget).addClass("row_selected");
+        },
+        
+        addAction: function() {
+            if($("#alarm_state_select").val() !== null) {
+                var rowData = [$("#alarm_state_select").val(), "Send Notification", $("#sns_topic_select").val()];
+                $("#actions_table").dataTable().fnAddData(rowData);
+            }
+        },
+        
+        removeAction: function() {
+            if(this.selectedAction) {
+                $("#actions_table").dataTable().fnDeleteRow($("#actions_table .row_selected")[0]);
+                this.selectedAction = undefined;
+            }
+        },
+        
         close: function() {
-            console.log("close initiated");
-            $("#accordion").remove();
-            this.$el.dialog('close');
+            this.$el.remove();
         },
         
         cancel: function() {
@@ -84,9 +171,65 @@ define([
         },
         
         create: function() {
-            console.log("create_initiated");
-            //Validate and create
-            this.$el.dialog('close');
+            var newAlarm = this.alarm;
+            var options = {};
+            var alert = false;
+
+            if($("#alarm_name").val() !== "") {
+                options.id = $("#alarm_name").val();
+            }else {
+                alert = true;
+            }
+            
+            if($("#alarm_description").val() !== "") {
+                options.alarm_description = $("alarm_description").val();
+            }
+            
+            if($("#metric_select").val() !== "none") {
+                var metric = JSON.parse($("#metric_select").val());
+                options.dimensions = metric.dimensions;
+                options.metric_name = metric.name;
+            }
+            
+            if($("#threshold_input").val() !== "") {
+                var thresholdInt = parseInt($("#threshold_input").val());
+                if(isNaN(thresholdInt)) {
+                    alert = true;
+                }else {
+                    options.threshold = thresholdInt;
+                }
+            }
+            options.namespace = $("#namespace_select").val();
+            options.comparison_operator = $("#comparison_select").val();
+            options.statistic = $("#statistic_select").val();
+            var period = JSON.parse($("#period_select").val());
+            options.period = period.period;
+            options.evaluation_periods = period.evaluation;
+            options.alarm_actions = [];
+            options.ok_actions = [];
+            options.insufficient_data_actions = [];
+            var actionsArray = $("#actions_table").dataTable().fnGetData();
+            $.each(actionsArray, function(index, rowData) {
+                switch(rowData[0])
+                {
+                case "ALARM":
+                    options.alarm_actions.push(rowData[2]);
+                    break;
+                case "OK":
+                    options.ok_actions.push(rowData[2]);
+                    break;
+                case "INSUFFICIENT_DATA":
+                    options.insufficient_data_actions.push(rowData[2]);
+                    break;
+                }
+            });
+            
+            if(!alert) {
+                newAlarm.create(options, this.credentialId);
+                this.$el.dialog('close');
+            }else {
+                alert("Invalid request, please supply all required fields.");
+            }
         }
 
     });
