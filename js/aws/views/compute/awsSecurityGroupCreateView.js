@@ -91,20 +91,20 @@ define([
         create: function() {
             var newSecurityGroup = this.securityGroup;
             var options = {};
-            var alert = false;
+            var issue = false;
             
             if($("#sg_name").val() !== "" && $("#sg_desc").val() !== "" ) {
                 options.name = $("#sg_name").val();
                 options.description = $("#sg_desc").val();
             }else {
-                alert = true;
+                issue = true;
             }
             
             if($("#vpc_select").val() !== "No VPC") {
                 options.vpc_id = $("#vpc_select").val();
             }
             
-            if(!alert) {
+            if(!issue) {
                 newSecurityGroup.create(options, this.credentialId);
                 this.$el.dialog('close');
             } else {

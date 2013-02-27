@@ -90,15 +90,15 @@ define([
 			//Validate and create
 		    newBucket = this.bucket;
 		    options = {};
-		    alert = false;
+		    issue = false;
 		    
 		    if($("#bucket_name_input").val() !== "") {
 		        options.key = $("#bucket_name_input").val();
 		    }else {
-		        alert = true;
+		        issue = true;
 		    }
 		    
-		    if(!alert) {
+		    if(!issue) {
 		        newBucket.create(options, this.credentialId);
 		        this.$el.dialog('close');
 		    }else {

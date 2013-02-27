@@ -66,15 +66,15 @@ define([
         create: function() {
             var newKeyPair = this.keyPair;
             var options = {};
-            var alert = false;
+            var issue = false;
             
             if($("#keypair_name").val() !== "") {
                 options.name = $("#keypair_name").val();
             }else {
-                alert = true;
+                issue = true;
             }
             
-            if(!alert) {
+            if(!issue) {
                 $("#keypair_form").attr("action", Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/key_pairs/create");
                 $("#credential_id").attr("value", this.credentialId);
                 $("#keypair_form").submit();

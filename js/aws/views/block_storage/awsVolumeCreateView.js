@@ -144,7 +144,7 @@ define([
 		create: function() {
 		    var newVolume = this.volume;
             var options = {};
-            var alert = false;
+            var issue = false;
             //Validate before create
             if($("#volume_name_input").val() !== "") {
                 options.tags = {"Name": $("#volume_name_input").val()};
@@ -155,10 +155,10 @@ define([
                 if(sizeInt > 0 && sizeInt < 1001) {
                     options.size = sizeInt;
                 }else {
-                    alert = true;
+                    issue = true;
                 }
             }else {
-                alert = true;
+                issue = true;
             }
             
             if($("#volume_type_select").val() === "io1") {
@@ -168,10 +168,10 @@ define([
                         options.type = $("#volume_type_select").val();
                         options.iops = iopsInt;
                     }else {
-                        alert = true;
+                        issue = true;
                     }
                 }else {
-                    alert = true;
+                    issue = true;
                 }
             }
             
@@ -180,7 +180,7 @@ define([
                 options.snapshot_id = $("#snapshot_select").val();
             }
             
-            if(!alert) {
+            if(!issue) {
                 newVolume.create(options, this.credentialId);
                 this.$el.dialog('close'); 
             }else {

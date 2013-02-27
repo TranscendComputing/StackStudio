@@ -60,6 +60,7 @@ define([
                 autoOpen: true,
                 title: "Create Alarm",
                 width:600,
+                minHeight:500,
                 resizable: false,
                 modal: true,
                 buttons: {
@@ -71,6 +72,7 @@ define([
                     }
                 }
             });
+            $("#accordion").accordion();
             $("button").button();
             $('#actions_table').dataTable({
                 "bJQueryUI": true,
@@ -79,7 +81,6 @@ define([
                 bInfo: false,
                 bPaginate : false
             }); 
-            $("#accordion").accordion();
             $("select").selectmenu();
             $("#namespace_select").selectmenu({
                 change: function() {
@@ -173,12 +174,12 @@ define([
         create: function() {
             var newAlarm = this.alarm;
             var options = {};
-            var alert = false;
+            var issue = false;
 
             if($("#alarm_name").val() !== "") {
                 options.id = $("#alarm_name").val();
             }else {
-                alert = true;
+                issue = true;
             }
             
             if($("#alarm_description").val() !== "") {
@@ -194,7 +195,7 @@ define([
             if($("#threshold_input").val() !== "") {
                 var thresholdInt = parseInt($("#threshold_input").val());
                 if(isNaN(thresholdInt)) {
-                    alert = true;
+                    issue = true;
                 }else {
                     options.threshold = thresholdInt;
                 }
@@ -224,7 +225,7 @@ define([
                 }
             });
             
-            if(!alert) {
+            if(!issue) {
                 newAlarm.create(options, this.credentialId);
                 this.$el.dialog('close');
             }else {
