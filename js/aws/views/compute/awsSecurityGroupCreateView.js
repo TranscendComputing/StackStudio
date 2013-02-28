@@ -97,7 +97,7 @@ define([
                 options.name = $("#sg_name").val();
                 options.description = $("#sg_desc").val();
             }else {
-                //issue = true;
+                issue = true;
             }
             
             if($("#vpc_select").val() !== "No VPC") {
