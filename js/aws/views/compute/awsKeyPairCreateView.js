@@ -81,7 +81,7 @@ define([
                 Common.vent.trigger("keyPairAppDelayRefresh");
                 this.$el.dialog('close');
             }else {
-                alert("Please supply the required fields.");
+                Common.errorDialog("Invalid Request", "Please supply all required fields.");
             } 
         }
 

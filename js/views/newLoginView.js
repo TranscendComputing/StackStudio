@@ -114,13 +114,12 @@ define([
                     dataType: 'json',
                     data: JSON.stringify(newLogin),
                     error: function(jqXHR) {
-                        var messageObject = JSON.parse(jqXHR.responseText);
-                        alert(messageObject["error"]["message"]);
+                        Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
                     }
                 });
                 this.$el.dialog('close');
             }else {
-                alert("Your registration request is not valid.");
+                Common.errorDialog("Invalid Request", "Please supply all required fields.");
             }
         },
         

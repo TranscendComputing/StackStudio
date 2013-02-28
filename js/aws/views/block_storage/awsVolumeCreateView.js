@@ -184,7 +184,7 @@ define([
                 newVolume.create(options, this.credentialId);
                 this.$el.dialog('close'); 
             }else {
-                alert("Invalid request, please supply all required fields.");
+                Common.errorDialog("Invalid Request", "Please supply all required fields.");
             }
 		}
 

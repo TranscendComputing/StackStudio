@@ -102,7 +102,7 @@ define([
 		        newBucket.create(options, this.credentialId);
 		        this.$el.dialog('close');
 		    }else {
-		        alert("Please provide a name for the bucket.");
+		        Common.errorDialog("Invalid Request", "Please supply all required fields.");
 		    }
 		}
 

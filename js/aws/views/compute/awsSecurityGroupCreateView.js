@@ -97,7 +97,7 @@ define([
                 options.name = $("#sg_name").val();
                 options.description = $("#sg_desc").val();
             }else {
-                issue = true;
+                //issue = true;
             }
             
             if($("#vpc_select").val() !== "No VPC") {
@@ -108,7 +108,7 @@ define([
                 newSecurityGroup.create(options, this.credentialId);
                 this.$el.dialog('close');
             } else {
-                alert("Please supply the required fields.");
+                Common.errorDialog("Invalid Request", "Please supply all required fields.");
             }
         }
 

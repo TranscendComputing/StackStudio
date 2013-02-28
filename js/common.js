@@ -231,9 +231,10 @@ define(
          'backbone',
          'views/consoleAppView',
          'routers/router',
+         'views/errorDialog',
          'jquery-ui',
          'jquery-ui-plugins'
-         ], function ($, _, Backbone, CommandLineView, Router) {
+         ], function ($, _, Backbone, CommandLineView, Router, ErrorDialog) {
     // Within this scope, jquery and jquery UI have been loaded.
 
     // Initialize routing
@@ -275,6 +276,10 @@ define(
         vent: vent,
 
         backbone: Backbone,
+        
+        errorDialog: function(title, message) {
+            new ErrorDialog({title: title, message: message});
+        },
 
         // Function tracks previous state
         setPreviousState: function( view ) {

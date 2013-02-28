@@ -48,8 +48,7 @@ define([
                     Common.vent.trigger("cloudCredentialCreated");
                 },
                 error: function(jqXHR) {
-                    var messageObject = JSON.parse(jqXHR.responseText);
-                    alert(messageObject["error"]["message"]);
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
                 }
             });
 		},
@@ -68,8 +67,7 @@ define([
                     Common.vent.trigger("cloudCredentialUpdated");
                 },
                 error: function(jqXHR) {
-                    var messageObject = JSON.parse(jqXHR.responseText);
-                    alert(messageObject["error"]["message"]);
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
                 }
             });
 		},
@@ -86,8 +84,7 @@ define([
                     Common.vent.trigger("cloudCredentialDeleted");
                 },
                 error: function(jqXHR) {
-                    var messageObject = JSON.parse(jqXHR.responseText);
-                    alert(messageObject["error"]["message"]);
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
                 }
             });
 		}

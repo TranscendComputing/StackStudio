@@ -308,7 +308,7 @@ define([
             resourcesView.render();
         }else {
             Common.router.navigate("", {trigger: true});
-            alert("Must be logged in.");
+            Common.errorDialog("Login Error", "You must login.");
         }
     }, this);
 

@@ -78,8 +78,7 @@ define([
                     Common.vent.trigger("volumeAppRefresh");
                 },
                 error: function(jqXHR) {
-                    var messageObject = JSON.parse(jqXHR.responseText);
-                    alert(messageObject["error"]["message"]);
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
                 }
             }); 
         }

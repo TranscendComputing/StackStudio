@@ -120,8 +120,7 @@ define([
                         accountLoginView.successfulLogin(data);
                     },
                     error: function(jqXHR) {
-                        var messageObject = JSON.parse(jqXHR.responseText);
-                        alert(messageObject["error"]["message"]);
+                        Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
                     }
                 });
             }
@@ -143,7 +142,7 @@ define([
                 console.log("session login:" + sessionStorage.login);
                 Common.vent.trigger("loginSuccess");
             }else {
-                alert("Sorry, your browser does not support web storage...");
+                Common.errorDialog("Browser Issue", "Your browser does not support web storage.");
             }
             this.$el.dialog('close');
         },

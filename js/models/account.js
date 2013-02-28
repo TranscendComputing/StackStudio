@@ -63,7 +63,7 @@ define([
                     if (err === null || err === undefined) {
                         Common.vent.trigger("account:login");
                     } else {
-                        alert("Bad credentials, please re-enter and try again.");
+                        Common.errorDialog("Bad Credentials", "Please re-enter and try again.");
                     }
             });
         },
