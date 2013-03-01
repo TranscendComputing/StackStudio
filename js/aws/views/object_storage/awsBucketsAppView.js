@@ -110,7 +110,7 @@ define([
                 //Add button bar
                 $("#object_tab").append("<table>" +
                 		                    "<tr>" +
-                		                        "<td><button id='object_refresh_button'>Refresh object</button></td>" +
+                		                        "<td><button id='object_refresh_button'>Refresh Object</button></td>" +
                 		                        "<td><button id='object_upload_button'>Upload Object</button></td>" +
                 		                        "<td>" +
                 		                            "<ul id='object_action_menu'>" +
