@@ -82,7 +82,11 @@ define([
                     }
                 ]
             });
-            
+            this.$el.keypress(function(e) {
+                if(e.keyCode == $.ui.keyCode.ENTER) {
+                    accountLoginView.login();
+                }
+            });
             this.$(".accordion").accordion();
             this.$el.dialog('open');
 
