@@ -134,11 +134,7 @@ define([
                                     		"<tbody></tbody>" +
                                 		"</table>");
                 //Add hidden form for file upload
-                $("#object_tab").append("<form id='upload_file_form' style='visibility:hidden' method='post' action='" + Common.apiUrl + "/stackstudio/v1/cloud_management/aws/object_storage/directory/file/upload'>" +
-            		                        "<input id='file_dialog' name='file_upload' type='file'>" +
-                				            "<input name='directory' value='" + this.selectedId + "'>" +
-                				            "<input name='cred_id' value='" + this.credentialId + "'>" +
-                				        "</form>");
+                this.refreshFileInputForm();
                 //Add hidden form for file download
                 $("#object_tab").append("<form id='download_file_form' style='visibility:hidden' method='post' action='" + Common.apiUrl + "/stackstudio/v1/cloud_management/aws/object_storage/directory/file/download'>" +
                         "<input id='download_file_name' name='file' value=''/>" +
@@ -210,7 +206,17 @@ define([
                     }
                 });
                 $('#upload_file_form').submit();
+                appView.refreshFileInputForm();
             });
+        },
+
+        refreshFileInputForm: function() {
+            $("#upload_file_form").remove();
+            $("#object_tab").append("<form id='upload_file_form' style='visibility:hidden' method='post' action='" + Common.apiUrl + "/stackstudio/v1/cloud_management/aws/object_storage/directory/file/upload'>" +
+                                            "<input id='file_dialog' name='file_upload' type='file'>" +
+                                            "<input name='directory' value='" + this.selectedId + "'>" +
+                                            "<input name='cred_id' value='" + this.credentialId + "'>" +
+                                        "</form>");
         },
         
         fileUploadComplete: function() {
