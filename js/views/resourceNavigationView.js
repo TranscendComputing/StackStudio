@@ -116,9 +116,13 @@ define([
 		    if(this.navOpen) {
                 $("#resource_nav").hide();
                 this.navOpen = false;
+                $("#resource_summary_icon").removeClass("ui-icon-triangle-1-n");
+                $("#resource_summary_icon").addClass("ui-icon-triangle-1-s");
             }else {
                 $("#resource_nav").show();
                 this.navOpen = true;
+                $("#resource_summary_icon").removeClass("ui-icon-triangle-1-s");
+                $("#resource_summary_icon").addClass("ui-icon-triangle-1-n");
             }
 		},
 
