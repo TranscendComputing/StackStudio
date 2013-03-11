@@ -4,7 +4,7 @@
  * Available under ASL2 license <http://www.apache.org/licenses/LICENSE-2.0.html>
  */
 /*jshint smarttabs:true */
-/*global define:true console:true requirejs:true require:true debugger:true*/
+/*global define:true console:true requirejs:true require:true */
 define([
         'jquery',
         'underscore',
