@@ -9,13 +9,14 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'views/dialogView',
         'text!templates/aws/compute/awsReservedInstanceCreateTemplate.html',
         '/js/aws/models/compute/awsReservedInstance.js',
         'icanhaz',
         'common',
         'jquery.ui.selectmenu'
         
-], function( $, _, Backbone, reservedInstanceCreateTemplate, ReservedInstance, ich, Common ) {
+], function( $, _, Backbone, DialogView, reservedInstanceCreateTemplate, ReservedInstance, ich, Common ) {
     
     var platformList = [
                         "Linux/UNIX",
@@ -68,10 +69,8 @@ define([
                          "Heavy Utilization"
                         ];
 
-    var ReservedInstanceCreateView = Backbone.View.extend({
-        
-        tagName: "div",
-        
+    var ReservedInstanceCreateView = DialogView.extend({
+
         // Delegated events for creating new instances, etc.
         events: {
             "dialogclose": "close"
@@ -139,20 +138,6 @@ define([
 
         render: function() {
             
-        },
-        
-        close: function() {
-            console.log("close initiated");
-            $('#platform_select').remove();
-            $('#instance_type_select').remove();
-            $('#az_select').remove();
-            $('#term_select').remove();
-            $('#offering_type_select').remove();
-            this.$el.dialog('close');
-        },
-        
-        cancel: function() {
-            this.$el.dialog('close');
         },
         
         create: function() {

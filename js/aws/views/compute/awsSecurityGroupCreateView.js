@@ -9,13 +9,14 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'views/dialogView',
         'text!templates/aws/compute/awsSecurityGroupCreateTemplate.html',
         '/js/aws/models/compute/awsSecurityGroup.js',
         '/js/aws/collections/vpc/awsVpcs.js',
         'icanhaz',
         'common'
         
-], function( $, _, Backbone, securityGroupCreateTemplate, SecurityGroup, VPCs, ich, Common ) {
+], function( $, _, Backbone, DialogView, securityGroupCreateTemplate, SecurityGroup, VPCs, ich, Common ) {
     
     /**
      * awsSecurityGroupCreateView is UI form to create compute.
@@ -27,10 +28,8 @@ define([
      * @returns {Object} Returns a awsSecurityGroupCreateView instance.
      */
     
-    var AwsSecurityGroupCreateView = Backbone.View.extend({
-        
-        tagName: "div",
-        
+    var AwsSecurityGroupCreateView = DialogView.extend({
+
         credentialId: undefined,
         
         securityGroup: new SecurityGroup(),
@@ -79,15 +78,7 @@ define([
             });
             $("#vpc_select").selectmenu();
         },
-        
-        close: function() {
-            this.$el.remove();
-        },
-        
-        cancel: function() {
-            this.$el.dialog('close');
-        },
-        
+
         create: function() {
             var newSecurityGroup = this.securityGroup;
             var options = {};

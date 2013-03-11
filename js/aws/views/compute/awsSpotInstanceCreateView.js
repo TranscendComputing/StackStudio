@@ -9,6 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'views/dialogView',
         'text!templates/aws/compute/awsSpotInstanceCreateTemplate.html',
         '/js/aws/models/compute/awsSpotInstanceRequest.js',
         '/js/aws/models/compute/awsSpotPrice.js',
@@ -23,7 +24,7 @@ define([
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
-], function( $, _, Backbone, spotInstanceCreateTemplate, Spotinstance, SpotPrice, Images, AvailabilityZones, Flavors, KeyPairs, SecurityGroups, ich, Common ) {
+], function( $, _, Backbone, DialogView, spotInstanceCreateTemplate, Spotinstance, SpotPrice, Images, AvailabilityZones, Flavors, KeyPairs, SecurityGroups, ich, Common ) {
 
     /**
      * SpotInstanceCreateView is UI form to create compute.
@@ -35,9 +36,7 @@ define([
      * @returns {Object} Returns a SpotInstanceCreateView instance.
      */
     
-    var SpotInstanceCreateView = Backbone.View.extend({
-        
-        tagName: "div",
+    var SpotInstanceCreateView = DialogView.extend({
         
         credentialId: undefined,
         

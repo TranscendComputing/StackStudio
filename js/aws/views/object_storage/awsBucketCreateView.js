@@ -9,10 +9,11 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'views/dialogView',
         'text!templates/aws/object_storage/awsBucketCreateTemplate.html',
         '/js/aws/models/object_storage/awsBucket.js',
         'common'
-], function( $, _, Backbone, bucketCreateTemplate, Bucket, Common ) {	
+], function( $, _, Backbone, DialogView, bucketCreateTemplate, Bucket, Common ) {	
 	
     /**
      * BucketCreateView is UI form to create compute.
@@ -24,10 +25,8 @@ define([
      * @returns {Object} Returns a BucketCreateView instance.
      */
 	
-	var BucketCreateView = Backbone.View.extend({
-		
-		tagName: "div",
-		
+	var BucketCreateView = DialogView.extend({
+
 		credentialId: undefined,
 		
 		template: _.template(bucketCreateTemplate),
@@ -76,14 +75,6 @@ define([
 
 		render: function() {
 
-		},
-		
-		close: function() {
-			this.$el.remove();
-		},
-		
-		cancel: function() {
-			this.$el.dialog('close');
 		},
 		
 		create: function() {

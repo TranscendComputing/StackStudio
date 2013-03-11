@@ -9,6 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'views/dialogView',
         'common',
         'text!templates/account/cloudCredentialCreateTemplate.html',
         'models/cloudCredential',
@@ -17,11 +18,10 @@ define([
         'collections/clouds',
         '/js/aws/views/account/awsCredentialFormView.js',
         'jquery.ui.selectmenu'
-], function( $, _, Backbone, Common, cloudCredentialCreateTemplate, cloudCredential, cloudCredentials, cloud, clouds, AwsCredentialFormView ) {
+], function( $, _, Backbone, DialogView, Common, cloudCredentialCreateTemplate, cloudCredential, cloudCredentials, cloud, clouds, AwsCredentialFormView ) {
 
-    var CloudCredentialCreateView = Backbone.View.extend({
-        tagName: "div",
-        
+    var CloudCredentialCreateView = DialogView.extend({
+
         template: _.template(cloudCredentialCreateTemplate),
         
         credentialForm: AwsCredentialFormView,
@@ -77,14 +77,6 @@ define([
         
         changeFormView: function() {
             
-        },
-        
-        cancel: function() {
-            this.$el.dialog('close');
-        },
-        
-        close: function() {
-            $("#credential_create_form").remove();
         }
     });
 

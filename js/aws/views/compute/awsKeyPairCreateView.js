@@ -9,16 +9,15 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'views/dialogView',
         'text!templates/aws/compute/awsKeyPairCreateTemplate.html',
         '/js/aws/models/compute/awsKeyPair.js',
         'icanhaz',
         'common'
         
-], function( $, _, Backbone, keyPairCreateTemplate, KeyPair, ich, Common ) {
+], function( $, _, Backbone, DialogView, keyPairCreateTemplate, KeyPair, ich, Common ) {
     
-    var AwsKeyPairCreateView = Backbone.View.extend({
-        
-        tagName: "div",
+    var AwsKeyPairCreateView = DialogView.extend({
         
         credentialId: undefined,
         
@@ -53,14 +52,6 @@ define([
 
         render: function() {
             
-        },
-        
-        close: function() {
-            this.$el.remove();
-        },
-        
-        cancel: function() {
-            this.$el.dialog('close');
         },
         
         create: function() {

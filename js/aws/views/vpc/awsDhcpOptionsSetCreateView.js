@@ -9,6 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'views/dialogView',
         'text!templates/aws/vpc/awsDhcpOptionsSetCreateTemplate.html',
         '/js/aws/models/vpc/awsDhcpOptionsSet.js',
         'icanhaz',
@@ -17,7 +18,7 @@ define([
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
-], function( $, _, Backbone, dhcpOptionSetCreateTemplate, DhcpOptionsSet, ich, Common ) {
+], function( $, _, Backbone, DialogView, dhcpOptionSetCreateTemplate, DhcpOptionsSet, ich, Common ) {
             
     /**
      * DhcpOptionsSetCreateView is UI form to create compute.
@@ -29,10 +30,7 @@ define([
      * @returns {Object} Returns a DhcpOptionsSetCreateView instance.
      */
     
-    var DhcpOptionsSetCreateView = Backbone.View.extend({
-        
-        
-        tagName: "div",
+    var DhcpOptionsSetCreateView = DialogView.extend({
         
         template: _.template(dhcpOptionSetCreateTemplate),
         // Delegated events for creating new instances, etc.
@@ -66,15 +64,6 @@ define([
             });
                        
             return this;
-        },
-        
-        close: function() {
-            //$("#region_select").remove();
-            this.$el.dialog('close');
-        },
-        
-        cancel: function() {
-            this.$el.dialog('close');
         },
         
         create: function() {

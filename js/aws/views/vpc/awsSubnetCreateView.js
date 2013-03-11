@@ -9,6 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'views/dialogView',
         'text!templates/aws/vpc/awsSubnetCreateTemplate.html',
         '/js/aws/models/vpc/awsSubnet.js',
         'icanhaz',
@@ -17,7 +18,7 @@ define([
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
-], function( $, _, Backbone, subnetCreateTemplate, Subnet, ich, Common ) {
+], function( $, _, Backbone, DialogView, subnetCreateTemplate, Subnet, ich, Common ) {
 			
     /**
      * SubnetCreateView is UI form to create compute.
@@ -29,11 +30,8 @@ define([
      * @returns {Object} Returns a SubnetCreateView instance.
      */
 	
-	var SubnetCreateView = Backbone.View.extend({
-	    
-		
-		tagName: "div",
-		
+	var SubnetCreateView = DialogView.extend({
+
 		template: _.template(subnetCreateTemplate),
 		// Delegated events for creating new instances, etc.
 		events: {
@@ -70,21 +68,9 @@ define([
             return this;
 		},
 		
-		close: function() {
-			//$("#region_select").remove();
-			this.$el.dialog('close');
-			this.$el.remove();
-		},
-		
-		cancel: function() {
-			this.$el.dialog('close');
-			this.$el.remove();
-		},
-		
 		create: function() {
 			//Validate and create
 			this.$el.dialog('close');
-			this.$el.remove();
 		}
 
 	});

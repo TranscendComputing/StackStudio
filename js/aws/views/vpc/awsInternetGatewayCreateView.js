@@ -9,6 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'views/dialogView',
         'text!templates/aws/vpc/awsInternetGatewayCreateTemplate.html',
         '/js/aws/models/vpc/awsInternetGateway.js',
         'icanhaz',
@@ -17,7 +18,7 @@ define([
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
-], function( $, _, Backbone, internetGatewayCreateTemplate, InternetGateway, ich, Common ) {
+], function( $, _, Backbone, DialogView, internetGatewayCreateTemplate, InternetGateway, ich, Common ) {
 			
     /**
      * InternetGatewayCreateView is UI form to create compute.
@@ -29,11 +30,8 @@ define([
      * @returns {Object} Returns a InternetGatewayCreateView instance.
      */
 	
-	var InternetGatewayCreateView = Backbone.View.extend({
-	    
-		
-		tagName: "div",
-		
+	var InternetGatewayCreateView = DialogView.extend({
+
 		template: _.template(internetGatewayCreateTemplate),
 		// Delegated events for creating new instances, etc.
 		events: {
@@ -66,15 +64,6 @@ define([
             });
                        
             return this;
-		},
-		
-		close: function() {
-			//$("#region_select").remove();
-			this.$el.dialog('close');
-		},
-		
-		cancel: function() {
-			this.$el.dialog('close');
 		},
 		
 		create: function() {

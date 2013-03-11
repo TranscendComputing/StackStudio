@@ -9,6 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'views/dialogView',
         'collections/stacks',
         'collections/projects',
         'models/stack',
@@ -17,13 +18,10 @@ define([
         'icanhaz',
         'common',
         'wijmo'
-], function( $, _, Backbone, stacks, projects, Stack, Project, ProjectNewTemplateView, ich, Common ) {
+], function( $, _, Backbone, DialogView, stacks, projects, Stack, Project, ProjectNewTemplateView, ich, Common ) {
     
-    var ProjectCreateView = Backbone.View.extend({
-        
-        //OR use tagName, className, ...
-        tagName: "div",
-        
+    var ProjectCreateView = DialogView.extend({
+
         id: "new_project",
                 
         events: {

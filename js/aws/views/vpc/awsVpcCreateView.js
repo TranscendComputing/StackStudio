@@ -9,6 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'views/dialogView',
         'text!templates/aws/vpc/awsVpcCreateTemplate.html',
         '/js/aws/models/vpc/awsVpc.js',
         'icanhaz',
@@ -17,7 +18,7 @@ define([
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
-], function( $, _, Backbone, vpcCreateTemplate, Vpc, ich, Common ) {
+], function( $, _, Backbone, DialogView, vpcCreateTemplate, Vpc, ich, Common ) {
 	
 	var tenancies = ["Default", "Dedicated"];
 		
@@ -31,10 +32,7 @@ define([
      * @returns {Object} Returns a VpcCreateView instance.
      */
 	
-	var VpcCreateView = Backbone.View.extend({
-	    
-		
-		tagName: "div",
+	var VpcCreateView = DialogView.extend({
 		
 		template: _.template(vpcCreateTemplate),
 		// Delegated events for creating new instances, etc.
@@ -76,15 +74,6 @@ define([
             $("#tenancy_select").selectmenu();
            
             return this;
-		},
-		
-		close: function() {
-			//$("#region_select").remove();
-			this.$el.dialog('close');
-		},
-		
-		cancel: function() {
-			this.$el.dialog('close');
 		},
 		
 		create: function() {
