@@ -49,8 +49,8 @@ define([
         
         get: function(attr) {
             if(typeof this[attr] == 'function') {
-                var test = this[attr]();
-                return test;
+                var attribute = this[attr]();
+                return attribute;
             }
             
             return Backbone.Model.prototype.get.call(this, attr);
