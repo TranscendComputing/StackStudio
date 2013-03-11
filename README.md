@@ -36,3 +36,5 @@ StackStudio targets the following browser platforms:
 ✔ Safari 3.2+
 ✔ Chrome 3+
 ✔ Opera 10+
+
+
