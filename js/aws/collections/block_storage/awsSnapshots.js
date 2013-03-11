@@ -21,6 +21,7 @@ define([
         // Reference to this collection's model.
         model: Snapshot,
 
+        // CloudMux url for AWS EBS snapshots
         url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/block_storage/snapshots/describe'
     });
 
