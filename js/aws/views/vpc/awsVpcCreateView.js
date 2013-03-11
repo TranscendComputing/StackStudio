@@ -20,32 +20,21 @@ define([
         
 ], function( $, _, Backbone, DialogView, vpcCreateTemplate, Vpc, ich, Common ) {
 	
-	var tenancies = ["Default", "Dedicated"];
-		
-    /**
-     * VpcCreateView is UI form to create compute.
-     *
-     * @name VpcCreateView
-     * @constructor
-     * @category Vpc
-     * @param {Object} initialization object.
-     * @returns {Object} Returns a VpcCreateView instance.
-     */
-	
 	var VpcCreateView = DialogView.extend({
 		
+        credentialId: undefined,
+
 		template: _.template(vpcCreateTemplate),
-		// Delegated events for creating new instances, etc.
+		
+        vpc: new Vpc(),
+
 		events: {
 			"dialogclose": "close"
 		},
 
-		initialize: function() {
-			//TODO
-		},
-
-		render: function() {
-			var createView = this;
+		initialize: function(options) {
+			this.credentialId = options.cred_id;
+            var createView = this;
             this.$el.html(this.template);
 
             this.$el.dialog({
@@ -64,21 +53,32 @@ define([
                     }
                 }
             });
-            
-            $.each(tenancies, function (index, value) {
-                $('#tenancy_select')
-                    .append($("<option></option>")
-                    .attr("value",index)
-                    .text(value)); 
-            });
             $("#tenancy_select").selectmenu();
-           
-            return this;
+		},
+
+		render: function() {
+			
 		},
 		
 		create: function() {
+            var newVpc = this.vpc;
+            var options = {};
+            var issue = false;
 			//Validate and create
-			this.$el.dialog('close');
+
+            if($("#cidr_block_input").val() != "") {
+                options.CidrBlock = $("#cidr_block_input").val();
+                options.InstanceTenancy = $("#tenancy_select").val();
+            }else {
+                issue = true;
+            }
+
+            if(!issue) {
+                newVpc.create(options, this.credentialId)
+                this.$el.dialog('close');
+            }else {
+                Common.errorDialog("Invalid Request", "Please supply all required fields.");
+            } 
 		}
 
 	});
