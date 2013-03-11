@@ -25,34 +25,19 @@ define([
         /** Default attributes for instance */
         defaults: {
             id: '',
-            image_id: '',
-            flavor_id: '',
-            block_device_mapping: {},
-            network_interfaces: [],
-            iam_instance_profile: {},
+            image: {},
+            flavor: {},
+            instance_name: '',
+            addresses: {},
+            name: '',
             state: '',
-            monitoring: false,
-            availability_zone: '',
-            placement_group: {},
-            tenancy: '',
-            product_codes: [],
-            state_reason: {},
-            tags: {},
-            ownerId: '',
-            private_dns_name: '',
-            dns_name: '',
-            reason: {},
+            created: '',
+            udpated: '',
+            tenant_id: '',
+            user_id: '',
             key_name: '',
-            ami_launch_index: 0,
-            created_at: '',
-            kernel_id: '',
-            private_ip_address: '',
-            public_ip_address: '',
-            root_device_type: '',
-            client_token: '',
-            ebs_optimized: false,
-            groups: [],
-            security_group_ids: []
+            host: '',
+            instance_id: ''
         },
         /**
          * [create description]
@@ -101,8 +86,8 @@ define([
          * @param  {String} credentialId
          * @return {nil}
          */
-        delete: function(credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/compute/instances/delete?_method=DELETE&cred_id=" + credentialId;
+        terminate: function(credentialId) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/compute/instances/terminate?_method=DELETE&cred_id=" + credentialId;
             this.sendPostAction(url, this.attributes);
         },
         /**

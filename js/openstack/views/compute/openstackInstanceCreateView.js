@@ -33,7 +33,7 @@ define([
      * @returns {Object} Returns a ComputeCreateView instance.
      */
     
-    var InstanceCreateView = Backbone.View.extend({
+    var InstanceCreateView = DialogView.extend({
         
         tagName: "div",
         
@@ -54,8 +54,7 @@ define([
         /** @type {Hash} Event listeners for new Openstack instance dialog */
         events: {
             "focus #image_select": "openImageList",
-            "dialogclose": "close",
-            "change #radio": "elasticityChange"
+            "dialogclose": "close"
         },
 
         /**
@@ -87,11 +86,9 @@ define([
                 }
             });
             $("#accordion").accordion();
-            $("#radio").buttonset();  
             $("#az_select").selectmenu();
             $("#flavor_select").selectmenu();
             $("#key_pair_select").selectmenu();
-            $("#shutdown_behavior_select").selectmenu();
             $("#security_group_select").multiselect({
                 selectedList: 3,
                 noneSelectedText: "Select Security Group(s)"
@@ -214,19 +211,6 @@ define([
             if($("ul.ui-autocomplete").is(":hidden")) {
                 $("#image_select").autocomplete("search", "");
             }
-        },
-        
-        /**
-         * [close description]
-         * Removes necessary DOM elements to close create instance dialog
-         * @return {nil}
-         */
-        close: function() {
-            console.log("close initiated");
-        },
-        
-        cancel: function() {
-            this.$el.dialog('close');
         },
         
         /**

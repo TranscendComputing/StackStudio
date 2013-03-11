@@ -8,22 +8,22 @@
 define([
         'jquery',
         'backbone',
-        '/js/openstack/models/compute/openstackInstance.js',
+        '/js/openstack/models/compute/openstackKeyPair.js',
         'common'
-], function( $, Backbone, Instance, Common ) {
+], function( $, Backbone, KeyPair, Common ) {
     'use strict';
 
-    // Instance Collection
+    // KeyPair Collection
     // ---------------
-    
-    var InstanceList = Backbone.Collection.extend({
+
+    var KeyPairList = Backbone.Collection.extend({
 
         // Reference to this collection's model.
-        model: Instance,
+        model: KeyPair,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/compute/instances/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/compute/key_pairs/describe'
     });
-    // Create our global collection of **Instances**.
-    return InstanceList;
+    
+    return KeyPairList;
 
 });

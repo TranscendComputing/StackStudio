@@ -81,7 +81,7 @@ define([
                 ]
             });
             this.$el.keypress(function(e) {
-                if(e.keyCode == $.ui.keyCode.ENTER) {
+                if(e.keyCode === $.ui.keyCode.ENTER) {
                     accountLoginView.login();
                 }
             });

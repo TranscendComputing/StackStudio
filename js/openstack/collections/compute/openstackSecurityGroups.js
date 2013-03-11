@@ -8,22 +8,23 @@
 define([
         'jquery',
         'backbone',
-        '/js/openstack/models/compute/openstackInstance.js',
+        '/js/openstack/models/compute/openstackSecurityGroup.js',
         'common'
-], function( $, Backbone, Instance, Common ) {
+], function( $, Backbone, SecurityGroup, Common ) {
     'use strict';
 
-    // Instance Collection
+    // SecurityGroup Collection
     // ---------------
-    
-    var InstanceList = Backbone.Collection.extend({
+
+    var SecurityGroupList = Backbone.Collection.extend({
 
         // Reference to this collection's model.
-        model: Instance,
+        model: SecurityGroup,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/compute/instances/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/compute/security_groups/describe'
     });
-    // Create our global collection of **Instances**.
-    return InstanceList;
+    
+    // Create our global collection of **Security Groups**.
+    return SecurityGroupList;
 
 });

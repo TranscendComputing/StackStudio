@@ -8,22 +8,22 @@
 define([
         'jquery',
         'backbone',
-        '/js/openstack/models/compute/openstackInstance.js',
+        '/js/openstack/models/compute/openstackFlavor.js',
         'common'
-], function( $, Backbone, Instance, Common ) {
+], function( $, Backbone, Flavor, Common ) {
     'use strict';
 
-    // Instance Collection
+    // Flavor Collection
     // ---------------
-    
-    var InstanceList = Backbone.Collection.extend({
+
+    var FlavorList = Backbone.Collection.extend({
 
         // Reference to this collection's model.
-        model: Instance,
+        model: Flavor,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/compute/instances/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/compute/flavors/describe'
     });
-    // Create our global collection of **Instances**.
-    return InstanceList;
+    
+    return FlavorList;
 
 });

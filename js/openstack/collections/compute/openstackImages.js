@@ -8,22 +8,22 @@
 define([
         'jquery',
         'backbone',
-        '/js/openstack/models/compute/openstackInstance.js',
+        '/js/openstack/models/compute/openstackImage.js',
         'common'
-], function( $, Backbone, Instance, Common ) {
+], function( $, Backbone, Image, Common ) {
     'use strict';
 
-    // Instance Collection
+    // Image Collection
     // ---------------
-    
-    var InstanceList = Backbone.Collection.extend({
+
+    var ImageList = Backbone.Collection.extend({
 
         // Reference to this collection's model.
-        model: Instance,
+        model: Image,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/compute/instances/describe'
+        url: 'samples/openstackImages.json'
     });
-    // Create our global collection of **Instances**.
-    return InstanceList;
+    
+    return ImageList;
 
 });

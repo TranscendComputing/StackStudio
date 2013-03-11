@@ -8,22 +8,22 @@
 define([
         'jquery',
         'backbone',
-        '/js/openstack/models/compute/openstackInstance.js',
+        '/js/openstack/models/compute/openstackAvailabilityZone.js',
         'common'
-], function( $, Backbone, Instance, Common ) {
+], function( $, Backbone, AvailabilityZone, Common ) {
     'use strict';
 
-    // Instance Collection
+    // AvailabilityZone Collection
     // ---------------
-    
-    var InstanceList = Backbone.Collection.extend({
+
+    var AvailabilityZoneList = Backbone.Collection.extend({
 
         // Reference to this collection's model.
-        model: Instance,
+        model: AvailabilityZone,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/compute/instances/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/compute/availability_zones/describe'
     });
-    // Create our global collection of **Instances**.
-    return InstanceList;
+    
+    return AvailabilityZoneList;
 
 });

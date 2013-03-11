@@ -4,7 +4,7 @@
  * Available under ASL2 license <http://www.apache.org/licenses/LICENSE-2.0.html>
  */
 /*jshint smarttabs:true */
-/*global define:true console:true requirejs:true require:true*/
+/*global define:true console:true requirejs:true require:true debugger:true*/
 define([
         'jquery',
         'underscore',
@@ -17,8 +17,9 @@ define([
         'models/cloud',
         'collections/clouds',
         '/js/aws/views/account/awsCredentialFormView.js',
+        '/js/openstack/views/account/openstackCredentialFormView.js',
         'jquery.ui.selectmenu'
-], function( $, _, Backbone, DialogView, Common, cloudCredentialCreateTemplate, cloudCredential, cloudCredentials, cloud, clouds, AwsCredentialFormView ) {
+], function( $, _, Backbone, DialogView, Common, cloudCredentialCreateTemplate, cloudCredential, cloudCredentials, cloud, clouds, AwsCredentialFormView, OpenstackCredentialFormView ) {
 
     var CloudCredentialCreateView = DialogView.extend({
 
@@ -54,29 +55,47 @@ define([
                 }
             });
             
-            $("select").selectmenu();
-            var CredForm = this.credentialForm;
-            this.credentialForm = new CredForm({el: "#credential_create_form"});
-            
+            $("select#provider_select").selectmenu({
+                change: function(e, object){
+                    credCreateView.setCloud(object.value);
+                }
+            });
+            $("select#provider_select").selectmenu("index", 0);
+            this.render();
             clouds.on( 'reset', this.setCloud, this );
             clouds.fetch();
         },
 
         render: function () {
-        
+            var CredForm = this.credentialForm;
+            this.credentialForm = new CredForm({el: "#credential_create_form"});
         },
         
-        setCloud: function() {
+        /**
+         * [setCloud description]
+         * Applies the correct credentials form based on the selected cloud
+         * @param {String} provider
+         */
+        setCloud: function(provider) {
             var credCreateView = this;
             clouds.each(function(cloud) {
-               if(cloud.attributes.cloud_provider.toLowerCase() === "aws") {
+               if(cloud.attributes.cloud_provider.toLowerCase() === provider) {
                    credCreateView.cloud = cloud;
+                   switch(provider)
+                   {
+                    case "aws":
+                        credCreateView.credentialForm = AwsCredentialFormView;
+                        break;
+                    case "openstack":
+                        credCreateView.credentialForm = OpenstackCredentialFormView;
+                        break;
+                    default:
+                        credCreateView.credentialForm = AwsCredentialFormView;
+                        break;
+                   }
+                    credCreateView.render();
                }
             });
-        },
-        
-        changeFormView: function() {
-            
         }
     });
 

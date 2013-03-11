@@ -8,22 +8,22 @@
 define([
         'jquery',
         'backbone',
-        '/js/openstack/models/compute/openstackInstance.js',
+        '/js/openstack/models/compute/openstackElasticIP.js',
         'common'
-], function( $, Backbone, Instance, Common ) {
+], function( $, Backbone, ElasticIP, Common ) {
     'use strict';
 
-    // Instance Collection
+    // ElasticIP Collection
     // ---------------
-    
-    var InstanceList = Backbone.Collection.extend({
+
+    var ElasticIPList = Backbone.Collection.extend({
 
         // Reference to this collection's model.
-        model: Instance,
+        model: ElasticIP,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/compute/instances/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/compute/addresses/describe'
     });
-    // Create our global collection of **Instances**.
-    return InstanceList;
+    
+    return ElasticIPList;
 
 });
