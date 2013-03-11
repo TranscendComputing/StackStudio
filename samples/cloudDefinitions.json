@@ -53,7 +53,29 @@
             {
                 "name": "VPC",
                 "type": "vpc",
-                "defaultSubtype": "vpcs"
+                "defaultSubtype": "vpcs",
+                "subServices" : [
+                    {
+                        "name": "VPCs",
+                        "type": "vpcs"
+                    },
+                    {
+                        "name": "Subnets",
+                        "type": "subnets"
+                    },
+                    {
+                        "name": "Route Tables",
+                        "type": "routetables"
+                    },
+                    {
+                        "name": "Internet Gateways",
+                        "type": "internetgateways"
+                    },
+                    {
+                        "name": "DHCP Options Sets",
+                        "type": "dhcpoptionssets"
+                    }
+                ]
             }
         ],
         "regions": [
