@@ -17,7 +17,7 @@ define([
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, ResourceAppView, awsRouteTableAppTemplate, RouteTable, routeTables, AwsRouteTableCreate, ich, Common ) {
+], function( $, _, Backbone, ResourceAppView, awsRouteTableAppTemplate, RouteTable, RouteTables, AwsRouteTableCreate, ich, Common ) {
     'use strict';
 
     // Aws RouteTable Application View
@@ -35,19 +35,19 @@ define([
     var AwsRouteTablesAppView = ResourceAppView.extend({
         template: _.template(awsRouteTableAppTemplate),
         
-        modelStringIdentifier: "routeTableId",
+        modelStringIdentifier: "route_table_id",
         
-        columns: ["vpcId", "routeTableId"],
+        columns: ["vpc_id", "route_table_id"],
         
         idColumnNumber: 1,
         
         model: RouteTable,
         
-        collection: routeTables,
+        collectionType: RouteTables,
         
         type: "vpc",
         
-        subtype: "routeTables",
+        subtype: "routetables",
         
         CreateView: AwsRouteTableCreate,
         
@@ -58,6 +58,7 @@ define([
 
         initialize: function() {
             this.render();
+            this.$el.html("<div><center><h3>Coming Soon!</h3></center></div>");
         },
         
         toggleActions: function(e) {

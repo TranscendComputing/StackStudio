@@ -25,6 +25,6 @@ define([
     });
 
     // Create our global collection of **RouteTables**.
-    return new RouteTablesList();
+    return RouteTablesList;
 
 });
