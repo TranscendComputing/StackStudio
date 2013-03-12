@@ -9,6 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'views/dialogView',
         'text!templates/aws/compute/awsSpotPriceHistoryTemplate.html',
         '/js/aws/collections/compute/awsSpotPrices.js',
         '/js/aws/collections/compute/awsFlavors.js',
@@ -19,11 +20,9 @@ define([
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
-], function( $, _, Backbone, spotPriceHistoryTemplate, SpotPrices, Flavors, AvailabilityZones, Morris, Common ) {
+], function( $, _, Backbone, DialogView, spotPriceHistoryTemplate, SpotPrices, Flavors, AvailabilityZones, Morris, Common ) {
     
-    var SpotPriceHistoryView = Backbone.View.extend({
-        
-        tagName: "div",
+    var SpotPriceHistoryView = DialogView.extend({
         
         credentialId: undefined,
 
@@ -145,11 +144,6 @@ define([
                 ykeys: ['spotPrice'],
                 labels: ['Price']
             });
-        },
-
-        close: function() {
-            this.$el.dialog('close');
-            this.$el.remove();
         },
 
     });

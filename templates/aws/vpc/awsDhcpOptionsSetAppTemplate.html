@@ -21,7 +21,8 @@
     <table id="resource_table" class="full_width">
         <thead>
             <tr>
-                <th>DHCP Options Set ID</th>
+                <th style="width:200px;">DHCP Options Set ID</th>
+                <th>Options</th>
             </tr>
         </thead>
         <tbody>
@@ -31,3 +32,19 @@
     </table>
     <div id="details" class="detail_panel"></div>
 </div>
+
+<script type="text/html" id="resource_detail">
+    <div id="detail_tabs">
+        <ul>
+            <li><a href="#tabs-1">Details</a></li>
+        </ul>
+        <div id="tabs-1" class="tab">
+            <table>
+                <tbody>
+                    <tr><td><b>ID:</b></td>         <td>{{ id }}</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+</script>

@@ -9,6 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'views/dialogView',
         'text!templates/aws/compute/awsInstanceCreateTemplate.html',
         '/js/aws/models/compute/awsInstance.js',
         '/js/aws/collections/compute/awsImages.js',
@@ -22,7 +23,7 @@ define([
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
-], function( $, _, Backbone, instanceCreateTemplate, Instance, Images, AvailabilityZones, Flavors, KeyPairs, SecurityGroups, ich, Common ) {
+], function( $, _, Backbone, DialogView, instanceCreateTemplate, Instance, Images, AvailabilityZones, Flavors, KeyPairs, SecurityGroups, ich, Common ) {
     
     /**
      * InstanceCreateView is UI form to create compute.
@@ -34,10 +35,8 @@ define([
      * @returns {Object} Returns a ComputeCreateView instance.
      */
     
-    var InstanceCreateView = Backbone.View.extend({
-        
-        tagName: "div",
-        
+    var InstanceCreateView = DialogView.extend({
+
         credentialId: undefined,
         
         images: new Images(),
@@ -61,6 +60,9 @@ define([
 
         initialize: function(options) {
             this.credentialId = options.cred_id;
+        },
+
+        render: function() {
             var createView = this;
             var compiledTemplate = _.template(instanceCreateTemplate);
             this.$el.html(compiledTemplate);
@@ -106,10 +108,6 @@ define([
             
             this.securityGroups.on( 'reset', this.addAllSecurityGroups, this );
             this.securityGroups.fetch({ data: $.param({ cred_id: this.credentialId}) });
-        },
-
-        render: function() {
-            
         },
         
         addAllImages: function() {
@@ -218,21 +216,6 @@ define([
                 $("#elasticity_config").html(autoScaleHTML);
                 break;
             };
-        },
-        
-        close: function() {
-            console.log("close initiated");
-            $("#accordion").remove();
-            $("#image_select").remove();
-            $("#az_select").remove();
-            $("#flavor_select").remove();
-            $("#key_pair_select").remove();
-            $("#security_group_select").remove();
-            $("#shutdown_behavior_select").remove();
-        },
-        
-        cancel: function() {
-            this.$el.dialog('close');
         },
         
         create: function() {

@@ -9,6 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'views/dialogView'
         'text!templates/aws/cloud_watch/awsAlarmCreateTemplate.html',
         '/js/aws/models/cloud_watch/awsAlarm.js',
         '/js/aws/collections/cloud_watch/awsMetrics.js',
@@ -16,7 +17,7 @@ define([
         'common',
         'jquery.ui.selectmenu'
         
-], function( $, _, Backbone, alarmCreateTemplate, Alarm, Metrics, Topics, Common ) {
+], function( $, _, Backbone, DialogView, alarmCreateTemplate, Alarm, Metrics, Topics, Common ) {
     
     /**
      * awsAlarmCreateView is UI form to create compute.
@@ -28,9 +29,7 @@ define([
      * @returns {Object} Returns a awsAlarmCreateView instance.
      */
     
-    var AwsAlarmCreateView = Backbone.View.extend({
-        
-        tagName: "div",
+    var AwsAlarmCreateView = DialogView.extend({
         
         credentialId: undefined,
         
@@ -161,14 +160,6 @@ define([
                 $("#actions_table").dataTable().fnDeleteRow($("#actions_table .row_selected")[0]);
                 this.selectedAction = undefined;
             }
-        },
-        
-        close: function() {
-            this.$el.remove();
-        },
-        
-        cancel: function() {
-            this.$el.dialog('close');
         },
         
         create: function() {

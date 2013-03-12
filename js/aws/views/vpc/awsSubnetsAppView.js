@@ -17,7 +17,7 @@ define([
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, AppView, awsSubnetAppTemplate, Subnet, subnets, AwsSubnetCreateView, ich, Common ) {
+], function( $, _, Backbone, AppView, awsSubnetAppTemplate, Subnet, Subnets, AwsSubnetCreateView, ich, Common ) {
 	'use strict';
 
 	// Aws Application View
@@ -35,15 +35,15 @@ define([
 	var AwsSubnetsAppView = AppView.extend({
 	    template: _.template(awsSubnetAppTemplate),
 	    
-        modelStringIdentifier: "subnetId",
+        modelStringIdentifier: "subnet_id",
                 
         model: Subnet,
         
-        idColumnNumber: 1,
+        idColumnNumber: 0,
         
-        columns: ["state","subnetId","vpcId","cidrBlock","availabiltyZone","availableIpAddressCount"],
+        columns: ["subnet_id", "state", "vpc_id","cidr_block","available_ip_address_count","availability_zone"],
         
-        collection: subnets,
+        collectionType: Subnets,
         
         type: "vpc",
         
@@ -53,28 +53,36 @@ define([
                 
         events: {
             'click .create_button': 'createNew',
-            'click #resource_table tr': 'toggleActions'
+            'click #action_menu ul li': 'performAction',
+            'click #resource_table tr': "toggleActions"
         },
 
-        initialize: function() {
+        initialize: function(options) {
+            if(options.cred_id) {
+                this.credentialId = options.cred_id;
+            }
             this.render();
+            
+            var subnetApp = this;
+            Common.vent.on("subnetAppRefresh", function() {
+                subnetApp.render();
+            });
         },
         
         toggleActions: function(e) {
             this.clickOne(e);
+            //Disable any needed actions
+        },
+        
+        performAction: function(event) {
+            var subnet = this.collection.get(this.selectedId);
             
-            $(".display_table").dataTable({
-               "bPaginate": false,
-               "bSortable": false,
-               "bFilter": false,
-               "bInfo": false,
-               "bLengthChange": false,
-               "bJQueryUI": true
-            });
-            
-            //console.log($(e.currentTarget).data());
-            //var rowData = $(e.currentTarget).data();
-            
+            switch(event.target.text)
+            {
+            case "Delete":
+                subnet.destroy(this.credentialId);
+                break;
+            }
         }
 	});
     

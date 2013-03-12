@@ -9,40 +9,35 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'views/dialogView',
         'text!templates/aws/vpc/awsSubnetCreateTemplate.html',
         '/js/aws/models/vpc/awsSubnet.js',
-        'icanhaz',
+        '/js/aws/collections/vpc/awsVpcs.js',
+        '/js/aws/collections/compute/awsAvailabilityZones.js',
         'common',
-        'jquery.ui.selectmenu',
-        'jquery.multiselect',
-        'jquery.multiselect.filter'
+        'jquery.ui.selectmenu'
         
-], function( $, _, Backbone, subnetCreateTemplate, Subnet, ich, Common ) {
-			
-    /**
-     * SubnetCreateView is UI form to create compute.
-     *
-     * @name SubnetCreateView
-     * @constructor
-     * @category Subnet
-     * @param {Object} initialization object.
-     * @returns {Object} Returns a SubnetCreateView instance.
-     */
+], function( $, _, Backbone, DialogView, subnetCreateTemplate, Subnet, Vpcs, AvailabilityZones, Common ) {
 	
-	var SubnetCreateView = Backbone.View.extend({
-	    
-		
-		tagName: "div",
-		
+	var SubnetCreateView = DialogView.extend({
+
+        credentialId: undefined,
+
 		template: _.template(subnetCreateTemplate),
-		// Delegated events for creating new instances, etc.
+
+        vpcs: new Vpcs(),
+
+        availabilityZones: new AvailabilityZones(),
+
+        subnet: new Subnet(),
+
 		events: {
 			"dialogclose": "close"
 		},
 
-		initialize: function() {
-			//TODO
-		},
+		initialize: function(options) {
+            this.credentialId = options.cred_id;
+        },
 
 		render: function() {
 			var createView = this;
@@ -64,27 +59,60 @@ define([
                     }
                 }
             });
-            
+            $("#vpc_select").selectmenu();
             $("#zone_select").selectmenu();
-           
-            return this;
+
+            this.vpcs.on( 'reset', this.addAllVpcs, this );
+            this.vpcs.fetch({ data: $.param({ cred_id: this.credentialId}) });
+
+            this.availabilityZones.on( 'reset', this.addAllAvailabilityZones, this );
+            this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId}) });
 		},
-		
-		close: function() {
-			//$("#region_select").remove();
-			this.$el.dialog('close');
-			this.$el.remove();
-		},
-		
-		cancel: function() {
-			this.$el.dialog('close');
-			this.$el.remove();
-		},
+
+        addAllVpcs: function() {
+            $("#vpc_select").empty();
+            this.vpcs.each(function(vpc) {
+                $("#vpc_select").append($("<option value=" + vpc.attributes.id + ">" + vpc.attributes.id + "</option>"));
+            });
+            $("#vpc_select").selectmenu();
+        },
+
+        addAllAvailabilityZones: function() {
+            $("#zone_select").empty();
+            this.availabilityZones.each(function(az) {
+                $("#zone_select").append($("<option value=" + az.attributes.zoneName + ">" + az.attributes.zoneName + "</option>"));
+            });
+            $("#zone_select").selectmenu();
+        },
 		
 		create: function() {
+            var subnet = this.subnet;
+            var options = {};
+            var issue = false;
+
 			//Validate and create
-			this.$el.dialog('close');
-			this.$el.remove();
+            if($("#vpc_select").val != null && $("#vpc_select").val() != "") {
+                options.vpc_id = $("#vpc_select").val();
+            }else {
+                issue = true;
+            }
+
+            if($("#zone_select").val() != null && $("#zone_select").val() != "") {
+                options.availability_zone = $("#zone_select").val();
+            }
+
+            if($("#cidr_block_input").val() != "") {
+                options.cidr_block = $("#cidr_block_input").val();
+            }else {
+                issue = true;
+            }
+
+            if(!issue) {
+                subnet.create(options, this.credentialId);
+                this.$el.dialog('close');
+            }else {
+                Common.errorDialog("Invalid Request", "Please supply all required fields.");
+            }
 		}
 
 	});

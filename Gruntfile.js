@@ -83,10 +83,10 @@ module.exports = function(grunt) {
         }
     },
     jasmine: {
-        requirejs: {
+        test: {
             options: {
                 specs: '<%= spec.files %>',
-                template: 'requirejs',
+                template: require('grunt-template-jasmine-requirejs'),
                 templateOptions: {
                     requireConfig: {
                         baseUrl: '',

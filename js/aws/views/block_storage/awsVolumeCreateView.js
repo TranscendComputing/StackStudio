@@ -9,6 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'views/dialogView',
         'text!templates/aws/block_storage/awsVolumeCreateTemplate.html',
         '/js/aws/models/block_storage/awsVolume.js',
         '/js/aws/collections/compute/awsAvailabilityZones.js',
@@ -19,7 +20,7 @@ define([
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
-], function( $, _, Backbone, volumeCreateTemplate, Volume, AvailabilityZones, Snapshots, ich, Common ) {
+], function( $, _, Backbone, DialogView, volumeCreateTemplate, Volume, AvailabilityZones, Snapshots, ich, Common ) {
 	
     /**
      * VolumeCreateView is UI form to create compute.
@@ -31,9 +32,7 @@ define([
      * @returns {Object} Returns a VolumeCreateView instance.
      */
 	
-	var VolumeCreateView = Backbone.View.extend({
-		
-		tagName: "div",
+	var VolumeCreateView = DialogView.extend({
 		
 		credentialId: undefined,
 		
@@ -131,14 +130,6 @@ define([
 		    }else {
 		        $("#volume_iops").removeClass();
 		    }
-		},
-		
-		close: function() {
-		    this.$el.remove();
-		},
-		
-		cancel: function() {
-			this.$el.dialog('close');
 		},
 		
 		create: function() {

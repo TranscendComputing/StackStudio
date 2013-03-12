@@ -9,16 +9,15 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'views/dialogView',
         'text!templates/account/newLoginTemplate.html',
         'collections/countries',
         'icanhaz',
         'common'      
-], function( $, _, Backbone, newLoginTemplate, Countries, ich, Common ) {
+], function( $, _, Backbone, DialogView, newLoginTemplate, Countries, ich, Common ) {
     
-    var NewLoginView = Backbone.View.extend({
-        
-        tagName: "div",
-        
+    var NewLoginView = DialogView.extend({
+
         template: _.template(newLoginTemplate),
         
         countries: undefined,
@@ -121,16 +120,7 @@ define([
             }else {
                 Common.errorDialog("Invalid Request", "Please supply all required fields.");
             }
-        },
-        
-        close: function() {
-            $("#country_select").remove();
-        },
-        
-        cancel: function() {
-            this.$el.dialog('close');
         }
-
     });
     
     return NewLoginView;

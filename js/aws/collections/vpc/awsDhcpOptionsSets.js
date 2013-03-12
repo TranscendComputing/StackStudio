@@ -21,11 +21,11 @@ define([
         // Reference to this collection's model.
         model: DhcpOptionsSet,
 
-        url: 'samples/dhcpOptionsSets.json'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/dhcp_options/describe'
         
     });
 
     // Create our global collection of **DhcpOptionsSets**.
-    return new DhcpOptionsSetsList();
+    return DhcpOptionsSetsList;
 
 });

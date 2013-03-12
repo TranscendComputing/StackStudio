@@ -9,16 +9,15 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'views/dialogView',
         'text!templates/aws/compute/awsElasticIPAssociateTemplate.html',
         '/js/aws/collections/compute/awsInstances.js',
         'icanhaz',
         'common'
         
-], function( $, _, Backbone, elasticIPAssociateTemplate, Instances, ich, Common ) {
+], function( $, _, Backbone, DialogView, elasticIPAssociateTemplate, Instances, ich, Common ) {
     
-    var AwsElasticIPCreateView = Backbone.View.extend({
-        
-        tagName: "div",
+    var AwsElasticIPCreateView = DialogView.extend({
         
         credentialId: undefined,
         
@@ -67,14 +66,6 @@ define([
                 $("#instance_select").append($("<option></option>").text(instance.attributes.id));
             });
             $("#instance_select").selectmenu();
-        },
-        
-        close: function() {
-            this.$el.remove();
-        },
-        
-        cancel: function() {
-            this.$el.dialog('close');
         },
         
         associate: function() {

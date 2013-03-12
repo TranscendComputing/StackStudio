@@ -9,6 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'views/dialogView',
         'text!templates/aws/vpc/awsRouteTableCreateTemplate.html',
         '/js/aws/models/vpc/awsRouteTable.js',
         'icanhaz',
@@ -17,7 +18,7 @@ define([
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
-], function( $, _, Backbone, routeTableCreateTemplate, RouteTable, ich, Common ) {
+], function( $, _, Backbone, DialogView, routeTableCreateTemplate, RouteTable, ich, Common ) {
 			
     /**
      * RouteTableCreateView is UI form to create compute.
@@ -29,11 +30,8 @@ define([
      * @returns {Object} Returns a RouteTableCreateView instance.
      */
 	
-	var RouteTableCreateView = Backbone.View.extend({
-	    
-		
-		tagName: "div",
-		
+	var RouteTableCreateView = DialogView.extend({
+
 		template: _.template(routeTableCreateTemplate),
 		// Delegated events for creating new instances, etc.
 		events: {
@@ -68,15 +66,6 @@ define([
             $("#zone_select").selectmenu();
            
             return this;
-		},
-		
-		close: function() {
-			//$("#region_select").remove();
-			this.$el.dialog('close');
-		},
-		
-		cancel: function() {
-			this.$el.dialog('close');
 		},
 		
 		create: function() {

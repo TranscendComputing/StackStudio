@@ -9,6 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'views/dialogView',
         'text!templates/aws/vpc/awsNetworkAclCreateTemplate.html',
         '/js/aws/models/vpc/awsNetworkAcl.js',
         'icanhaz',
@@ -17,7 +18,7 @@ define([
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
-], function( $, _, Backbone, networkAclCreateTemplate, NetworkAcl, ich, Common ) {
+], function( $, _, Backbone, DialogView, networkAclCreateTemplate, NetworkAcl, ich, Common ) {
 			
     /**
      * NetworkAclCreateView is UI form to create compute.
@@ -29,10 +30,7 @@ define([
      * @returns {Object} Returns a NetworkAclCreateView instance.
      */
 	
-	var NetworkAclCreateView = Backbone.View.extend({
-	    
-		
-		tagName: "div",
+	var NetworkAclCreateView = DialogView.extend({
 		
 		template: _.template(networkAclCreateTemplate),
 		// Delegated events for creating new instances, etc.
@@ -68,15 +66,6 @@ define([
             $("#vpc_select").selectmenu();
            
             return this;
-		},
-		
-		close: function() {
-			//$("#region_select").remove();
-			this.$el.dialog('close');
-		},
-		
-		cancel: function() {
-			this.$el.dialog('close');
 		},
 		
 		create: function() {

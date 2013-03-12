@@ -9,11 +9,12 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'views/dialogView',
         'text!templates/aws/block_storage/awsVolumeAttachTemplate.html',
         '/js/aws/collections/compute/awsInstances.js',
         'common',
         'jquery.ui.selectmenu' 
-], function( $, _, Backbone, volumeAttachTemplate, Instances, Common ) {
+], function( $, _, Backbone, DialogView, volumeAttachTemplate, Instances, Common ) {
     
     /**
      * InstanceCreateView is UI form to create compute.
@@ -25,9 +26,7 @@ define([
      * @returns {Object} Returns a ComputeCreateView instance.
      */
     
-    var InstanceCreateView = Backbone.View.extend({
-        
-        tagName: "div",
+    var VolumeAttachView = DialogView.extend({
         
         credentialId: undefined,
         
@@ -97,14 +96,6 @@ define([
             $("#instance_select").selectmenu();
         },
         
-        close: function() {
-            this.$el.remove();
-        },
-        
-        cancel: function() {
-            this.$el.dialog('close');
-        },
-        
         attach: function() {
             var alert = false;
             
@@ -128,5 +119,5 @@ define([
 
     });
     
-    return InstanceCreateView;
+    return VolumeAttachView;
 });

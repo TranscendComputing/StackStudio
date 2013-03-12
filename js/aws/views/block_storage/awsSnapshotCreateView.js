@@ -9,14 +9,13 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'views/dialogView',
         'text!templates/aws/block_storage/awsSnapshotCreateTemplate.html',
         '/js/aws/models/block_storage/awsSnapshot.js',
         'common'  
-], function( $, _, Backbone, snapshotCreateTemplate, Snapshot, Common ) {
+], function( $, _, Backbone, DialogView, snapshotCreateTemplate, Snapshot, Common ) {
 
-    var VolumeCreateView = Backbone.View.extend({
-        
-        tagName: "div",
+    var VolumeCreateView = DialogView.extend({
         
         credentialId: undefined,       
         
@@ -61,14 +60,6 @@ define([
         
         render: function() {
             
-        },
-        
-        close: function() {
-            this.$el.remove();
-        },
-        
-        cancel: function() {
-            this.$el.dialog('close');
         },
         
         create: function() {

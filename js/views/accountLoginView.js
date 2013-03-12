@@ -9,13 +9,14 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'views/dialogView',
         'models/account',
         'text!templates/account/stackplaceLoginTemplate.html',
         'text!templates/account/stackstudioLoginTemplate.html',
         'views/newLoginView',
         'icanhaz',
         'common'      
-], function( $, _, Backbone, Account, stackplaceLoginTemplate, stackstudioLoginTemplate, NewLoginView, ich, Common ) {
+], function( $, _, Backbone, DialogView, Account, stackplaceLoginTemplate, stackstudioLoginTemplate, NewLoginView, ich, Common ) {
     
     /**
      * AccountLoginView is UI wizard to create cloud instances.
@@ -27,11 +28,8 @@ define([
      * @returns {Object} Returns a InstanceCreateWizardView instance.
      */
     
-    var AccountLoginView = Backbone.View.extend({
-        
-        tagName: "div",
-        
-        // Delegated events for creating new instances, etc.
+    var AccountLoginView = DialogView.extend({
+
         events: {
             // TODO
         },
@@ -83,7 +81,7 @@ define([
                 ]
             });
             this.$el.keypress(function(e) {
-                if(e.keyCode == $.ui.keyCode.ENTER) {
+                if(e.keyCode === $.ui.keyCode.ENTER) {
                     accountLoginView.login();
                 }
             });
@@ -91,15 +89,6 @@ define([
             this.$el.dialog('open');
 
             return this;
-        },
-        
-        close: function() {
-            //document.location.hash = this.previous_location;
-            this.$(".accordion").remove();
-        },
-        
-        cancel: function() {
-            this.$el.dialog('close');
         },
         
         login: function() {

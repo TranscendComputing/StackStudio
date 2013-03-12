@@ -14,10 +14,11 @@ define([
         '/js/aws/models/vpc/awsVpc.js',
         '/js/aws/collections/vpc/awsVpcs.js',
         '/js/aws/views/vpc/awsVpcCreateView.js',
+        '/js/aws/views/vpc/awsAssociateDhcpOptionsView.js',
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, AppView, awsVpcAppTemplate, Vpc, Vpcs, AwsVpcCreateView, ich, Common ) {
+], function( $, _, Backbone, AppView, awsVpcAppTemplate, Vpc, Vpcs, AwsVpcCreateView, AssociateDhcpView, ich, Common ) {
 	'use strict';
 
 	// Aws Application View
@@ -53,7 +54,8 @@ define([
                 
         events: {
             'click .create_button': 'createNew',
-            'click #resource_table tr': 'toggleActions'
+            'click #action_menu ul li': 'performAction',
+            'click #resource_table tr': "toggleActions"
         },
 
         initialize: function(options) {
@@ -61,14 +63,31 @@ define([
                 this.credentialId = options.cred_id;
             }
             this.render();
+
+            var vpcApp = this;
+            Common.vent.on("vpcAppRefresh", function() {
+                vpcApp.render();
+            });
         },
         
         toggleActions: function(e) {
             this.clickOne(e);
-            //console.log($(e.currentTarget).data());
-            //var rowData = $(e.currentTarget).data();
+            //Disable any needed actions
+        },
+
+        performAction: function(event) {
+            var vpc = this.collection.get(this.selectedId);
             
-        }
+            switch(event.target.text)
+            {
+            case "Delete":
+                vpc.destroy(this.credentialId);
+                break;
+            case "Change DHCP Options Set":
+                new AssociateDhcpView({vpc: vpc, cred_id: this.credentialId});
+                break;
+            }
+        },
 	});
     
 	return AwsVpcsAppView;

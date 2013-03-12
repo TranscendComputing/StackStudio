@@ -17,7 +17,7 @@ define([
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, AppView, awsDhcpOptionsSetAppTemplate, DhcpOptionsSet, dhcpOptionsSets, AwsDhcpOptionsSetCreateView, ich, Common ) {
+], function( $, _, Backbone, AppView, awsDhcpOptionsSetAppTemplate, DhcpOptionsSet, DhcpOptionsSets, AwsDhcpOptionsSetCreateView, ich, Common ) {
 	'use strict';
 
 	// Aws Application View
@@ -35,15 +35,15 @@ define([
 	var AwsDhcpOptionsSetsAppView = AppView.extend({
 	    template: _.template(awsDhcpOptionsSetAppTemplate),
 	    
-        modelStringIdentifier: "dhcpOptionsId",
+        modelStringIdentifier: "id",
                 
         model: DhcpOptionsSet,
         
         idColumnNumber: 0,
         
-        columns: ["dhcpOptionsId"],
+        columns: ["id", "dhcp_configuration_set"],
         
-        collection: dhcpOptionsSets,
+        collectionType: DhcpOptionsSets,
         
         type: "vpc",
         
@@ -53,16 +53,37 @@ define([
                 
         events: {
             'click .create_button': 'createNew',
-            'click #resource_table tr': 'toggleActions'
+            'click #action_menu ul li': 'performAction',
+            'click #resource_table tr': "toggleActions"
         },
 
-        initialize: function() {
+        initialize: function(options) {
+            if(options.cred_id) {
+                this.credentialId = options.cred_id;
+            }
             this.render();
+            
+            var dhcpOptionsApp = this;
+            Common.vent.on("dhcpOptionAppRefresh", function() {
+                dhcpOptionsApp.render();
+            });
         },
         
         toggleActions: function(e) {
-            this.clickOne(e);           
-        }
+            this.clickOne(e);
+            //Disable any needed actions
+        },
+        
+        performAction: function(event) {
+            var dhcpOption = this.collection.get(this.selectedId);
+            
+            switch(event.target.text)
+            {
+            case "Delete":
+                dhcpOption.destroy(this.credentialId);
+                break;
+            }
+        },
 	});
     
 	return AwsDhcpOptionsSetsAppView;

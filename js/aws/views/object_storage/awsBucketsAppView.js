@@ -213,10 +213,10 @@ define([
         refreshFileInputForm: function() {
             $("#upload_file_form").remove();
             $("#object_tab").append("<form id='upload_file_form' style='visibility:hidden' method='post' action='" + Common.apiUrl + "/stackstudio/v1/cloud_management/aws/object_storage/directory/file/upload'>" +
-                                            "<input id='file_dialog' name='file_upload' type='file'>" +
-                                            "<input name='directory' value='" + this.selectedId + "'>" +
-                                            "<input name='cred_id' value='" + this.credentialId + "'>" +
-                                        "</form>");
+                                        "<input id='file_dialog' name='file_upload' type='file'>" +
+                                        "<input name='directory' value='" + this.selectedId + "'>" +
+                                        "<input name='cred_id' value='" + this.credentialId + "'>" +
+                                    "</form>");
         },
         
         fileUploadComplete: function() {

@@ -9,17 +9,16 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'views/dialogView',
         'text!templates/aws/compute/awsElasticIPCreateTemplate.html',
         '/js/aws/models/compute/awsElasticIP.js',
         'icanhaz',
         'common'
         
-], function( $, _, Backbone, elasticIPCreateTemplate, ElasticIP, ich, Common ) {
+], function( $, _, Backbone, DialogView, elasticIPCreateTemplate, ElasticIP, ich, Common ) {
     
-    var AwsElasticIPCreateView = Backbone.View.extend({
-        
-        tagName: "div",
-        
+    var AwsElasticIPCreateView = DialogView.extend({
+
         credentialId: undefined,
         
         elasticIp: new ElasticIP(),
@@ -54,14 +53,6 @@ define([
 
         render: function() {
             
-        },
-        
-        close: function() {
-            this.$el.remove();
-        },
-        
-        cancel: function() {
-            this.$el.dialog('close');
         },
         
         create: function() {
