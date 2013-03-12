@@ -60,7 +60,6 @@ define([
 
         initialize: function(options) {
             this.credentialId = options.cred_id;
-            
         },
 
         render: function() {

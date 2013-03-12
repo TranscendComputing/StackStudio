@@ -19,27 +19,21 @@ define([
         'jquery.multiselect.filter'
         
 ], function( $, _, Backbone, DialogView, dhcpOptionSetCreateTemplate, DhcpOptionsSet, ich, Common ) {
-            
-    /**
-     * DhcpOptionsSetCreateView is UI form to create compute.
-     *
-     * @name DhcpOptionsSetCreateView
-     * @constructor
-     * @category DhcpOptionsSet
-     * @param {Object} initialization object.
-     * @returns {Object} Returns a DhcpOptionsSetCreateView instance.
-     */
     
     var DhcpOptionsSetCreateView = DialogView.extend({
+
+        credentialId: undefined,
         
         template: _.template(dhcpOptionSetCreateTemplate),
-        // Delegated events for creating new instances, etc.
+
+        dhcpOption: new DhcpOptionsSet(),
+
         events: {
             "dialogclose": "close"
         },
 
-        initialize: function() {
-            //TODO
+        initialize: function(options) {
+            this.credentialId = options.cred_id;
         },
 
         render: function() {
@@ -49,7 +43,7 @@ define([
             this.$el.dialog({
                 autoOpen: true,
                 title: "Create DHCP Options Set",
-                width:500,
+                width:700,
                 minHeight: 150,
                 resizable: false,
                 modal: true,
@@ -62,12 +56,29 @@ define([
                     }
                 }
             });
-                       
-            return this;
         },
         
         create: function() {
-            //Validate and create
+            var dhcpOption = this.dhcpOption;
+            var options = {};
+            options.dhcp_configuration_set = {};
+            if($("#domain_name_input").val() != "") {
+                options.dhcp_configuration_set["domain-name"] = $("#domain_name_input").val();
+            }
+            if($("#domain_name_servers_input").val() != "") {
+                options.dhcp_configuration_set["domain-name-servers"] = $("#domain_name_servers_input").val();
+            }
+            if($("#ntp_servers_input").val() != "") {
+                options.dhcp_configuration_set["ntp-servers"] = $("#ntp_servers_input").val();
+            }
+            if($("#netbios_name_servers_input").val() != "") {
+                options.dhcp_configuration_set["netbios-name-servers"] = $("#netbios_name_servers_input").val();
+            }
+            if($("#netbios_node_type_input").val() != "") {
+                options.dhcp_configuration_set["netbios-node-type"] = $("#netbios_node_type_input").val();
+            }
+
+            dhcpOption.create(options, this.credentialId);
             this.$el.dialog('close');
         }
 

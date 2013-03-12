@@ -7,8 +7,9 @@
 /*global define:true console:true */
 define([
         'jquery',
-        'backbone'
-], function( $, Backbone ) {
+        'backbone',
+        'common'
+], function( $, Backbone, Common ) {
     'use strict';
 
     // Base DhcpOptionsSet Model
@@ -23,27 +24,56 @@ define([
      * @returns {Object} Returns a DhcpOptionsSet instance.
      */
     var DhcpOptionsSet = Backbone.Model.extend({
-
-        idAttribute: "dhcpOptionsId",
         
-        /** Default attributes for compute */
         defaults: {
-            "dhcpOptionsId": '',
-            "dhcpConfigurationSet": [],
-            "tagSet": []
+            "id": '',
+            "dhcp_configuration_set": {},
+            "tag_set": {}
 		},
 
-	    /**
-	     * Override the base Backbone set method, for debugging.
-	     *
-	     * @memberOf DhcpOptionsSet
-	     * @category Internal
-	     * @param {Object} hash of attribute values to set.
-	     * @param {Object} (optional) options to tweak (see Backbone docs).
-	     */
-		set: function(attributes, options) {
-		    Backbone.Model.prototype.set.apply(this, arguments);
-		}
+        get: function(attr) {
+            if(typeof this[attr] == 'function') {
+                var attribute = this[attr]();
+                return attribute;
+            }
+            
+            return Backbone.Model.prototype.get.call(this, attr);
+        },
+        
+        dhcp_configuration_set: function() {
+            var configurationSet = "";
+            $.each(this.attributes.dhcp_configuration_set, function(k, v) {
+                configurationSet = configurationSet + k + " = " + v + "; ";
+            });
+            return configurationSet;
+        },
+
+        create: function(options, credentialId) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/dhcp_options/create?_method=PUT&cred_id=" + credentialId;
+            this.sendPostAction(url, options);
+        },
+
+        destroy: function(credentialId) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/dhcp_options/delete?_method=DELETE&cred_id=" + credentialId;
+            this.sendPostAction(url, this.attributes);
+        },
+
+        sendPostAction: function(url, options) {
+            var dhcpOption = {"dhcp_option": options};
+            $.ajax({
+                url: url,
+                type: 'POST',
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: JSON.stringify(dhcpOption),
+                success: function(data) {
+                    Common.vent.trigger("dhcpOptionAppRefresh");
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            }); 
+        }
     });
 
     return DhcpOptionsSet;
