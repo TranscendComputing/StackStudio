@@ -26,6 +26,6 @@ define([
     });
 
     // Create our global collection of **NetworkAcls**.
-    return new NetworkAclsList();
+    return NetworkAclsList;
 
 });

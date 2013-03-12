@@ -17,7 +17,7 @@ define([
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, AppView, awsNetworkAclAppTemplate, NetworkAcl, networkAcls, AwsNetworkAclCreateView, ich, Common ) {
+], function( $, _, Backbone, AppView, awsNetworkAclAppTemplate, NetworkAcl, NetworkAcls, AwsNetworkAclCreateView, ich, Common ) {
 	'use strict';
 
 	// Aws Application View
@@ -35,15 +35,15 @@ define([
 	var AwsNetworkAclsAppView = AppView.extend({
 	    template: _.template(awsNetworkAclAppTemplate),
 	    
-        modelStringIdentifier: "networkAclId",
+        modelStringIdentifier: "network_acl_id",
                 
         model: NetworkAcl,
         
         idColumnNumber: 0,
         
-        columns: ["networkAclId","vpcId", "default"],
+        columns: ["network_acl_id","vpc_id", "default"],
         
-        collection: networkAcls,
+        collectionType: NetworkAcls,
         
         type: "vpc",
         
@@ -58,6 +58,7 @@ define([
 
         initialize: function() {
             this.render();
+            this.$el.html("<div><center><h3>Coming Soon!</h3></center></div>");
         },
 
         toggleActions: function(e) {
