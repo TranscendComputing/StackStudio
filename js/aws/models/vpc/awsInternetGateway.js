@@ -7,43 +7,72 @@
 /*global define:true console:true */
 define([
         'jquery',
-        'backbone'
-], function( $, Backbone ) {
+        'backbone',
+        'common'
+], function( $, Backbone, Common ) {
     'use strict';
 
-    // Base InternetGateway Model
-    // ----------
-
-    /**
-     *
-     * @name InternetGateway
-     * @constructor
-     * @category ObjectStorage
-     * @param {Object} initialization object.
-     * @returns {Object} Returns a InternetGateway instance.
-     */
     var InternetGateway = Backbone.Model.extend({
-
-        idAttribute: "internetGatewayId",
         
-        /** Default attributes for compute */
         defaults: {
-            "internetGatewayId": '',
-            "attachmentSet": [],
-            "tagSet": []
+            "id": '',
+            "attachment_set": {},
+            "tag_set": {}
 		},
 
-	    /**
-	     * Override the base Backbone set method, for debugging.
-	     *
-	     * @memberOf InternetGateway
-	     * @category Internal
-	     * @param {Object} hash of attribute values to set.
-	     * @param {Object} (optional) options to tweak (see Backbone docs).
-	     */
-		set: function(attributes, options) {
-		    Backbone.Model.prototype.set.apply(this, arguments);
-		}
+        create: function(credentialId) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/internet_gateways/create?_method=PUT&cred_id=" + credentialId;
+            this.sendPostAction(url);
+        },
+
+        attach: function(options, credentialId) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/internet_gateways/attach?cred_id=" + credentialId;
+            options.id = this.attributes.id;
+            this.sendPostAction(url, options);
+        },
+
+        detach: function(credentialId) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/internet_gateways/detach?cred_id=" + credentialId;
+            var options = {id: this.attributes.id, vpc_id: this.attributes.attachment_set.vpcId};
+            this.sendPostAction(url, options);
+        },
+
+        destroy: function(credentialId) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/internet_gateways/delete?_method=DELETE&cred_id=" + credentialId;
+            this.sendPostAction(url, this.attributes);
+        },
+
+        sendPostAction: function(url, options) {
+            if(options) {
+                var internetGateway = {"internet_gateway": options};
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    contentType: 'application/x-www-form-urlencoded',
+                    dataType: 'json',
+                    data: JSON.stringify(internetGateway),
+                    success: function(data) {
+                        Common.vent.trigger("internetGatewayAppRefresh");
+                    },
+                    error: function(jqXHR) {
+                        Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                    }
+                }); 
+            }else {
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    contentType: 'application/x-www-form-urlencoded',
+                    success: function(data) {
+                        Common.vent.trigger("internetGatewayAppRefresh");
+                    },
+                    error: function(jqXHR) {
+                        Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                    }
+                });
+            }
+            
+        }
     });
 
     return InternetGateway;

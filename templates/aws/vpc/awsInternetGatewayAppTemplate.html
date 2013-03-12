@@ -11,8 +11,8 @@
                             <a id="action_button">Actions</a>
                             <ul>
                                 <li><a>Delete</a></li>
-                                <li><a>Attach to VPC</a></li>
-                                <li><a>Detach from VPC</a></li>
+                                <li id="attach_vpc"><a>Attach to VPC</a></li>
+                                <li id="detach_vpc"><a>Detach from VPC</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -23,7 +23,9 @@
     <table id="resource_table" class="full_width">
         <thead>
             <tr>
-                <th>Internet Gateway ID</th>
+                <th>ID</th>
+                <th>State</th>
+                <th>VPC</th>
             </tr>
         </thead>
         <tbody>
@@ -37,18 +39,14 @@
 <script type="text/html" id="resource_detail">
     <div id="detail_tabs">
         <ul>
-            <li><a href="#attachments_tab">Attachments</a></li>
+            <li><a href="#tabs-1">Details</a></li>
         </ul>
-        <div id="attachments_tab" class="tab">
-            <table id="attachments_table" class="display_table">
-                <thead>
-                    <tr>
-                        <th>VPC ID</th>
-                        <th>State</th>
-                </thead>            
-                <tbody></tbody>
-                <tfoot></tfoot>
-            </table>         
+        <div id="tabs-1" class="tab">
+            <table>
+                <tbody>
+                    <tr><td><b>ID:</b></td> <td>{{ id }}</tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </script>

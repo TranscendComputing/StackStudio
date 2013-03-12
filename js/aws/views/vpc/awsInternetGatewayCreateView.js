@@ -12,35 +12,25 @@ define([
         'views/dialogView',
         'text!templates/aws/vpc/awsInternetGatewayCreateTemplate.html',
         '/js/aws/models/vpc/awsInternetGateway.js',
-        'icanhaz',
         'common',
-        'jquery.ui.selectmenu',
-        'jquery.multiselect',
-        'jquery.multiselect.filter'
         
-], function( $, _, Backbone, DialogView, internetGatewayCreateTemplate, InternetGateway, ich, Common ) {
-			
-    /**
-     * InternetGatewayCreateView is UI form to create compute.
-     *
-     * @name InternetGatewayCreateView
-     * @constructor
-     * @category InternetGateway
-     * @param {Object} initialization object.
-     * @returns {Object} Returns a InternetGatewayCreateView instance.
-     */
+], function( $, _, Backbone, DialogView, internetGatewayCreateTemplate, InternetGateway, Common ) {
 	
 	var InternetGatewayCreateView = DialogView.extend({
 
+        credentialId: undefined,
+
 		template: _.template(internetGatewayCreateTemplate),
-		// Delegated events for creating new instances, etc.
+
+        internetGateway: new InternetGateway(),
+
 		events: {
 			"dialogclose": "close"
 		},
 
-		initialize: function() {
-			//TODO
-		},
+		initialize: function(options) {
+            this.credentialId = options.cred_id;
+        },
 
 		render: function() {
 			var createView = this;
@@ -49,7 +39,7 @@ define([
             this.$el.dialog({
                 autoOpen: true,
                 title: "Create Internet Gateway",
-                width:500,
+                width:400,
                 minHeight: 150,
                 resizable: false,
                 modal: true,
@@ -62,12 +52,11 @@ define([
                     }
                 }
             });
-                       
-            return this;
 		},
 		
 		create: function() {
-			//Validate and create
+			var internetGateway = this.internetGateway;
+            internetGateway.create(this.credentialId);
 			this.$el.dialog('close');
 		}
 

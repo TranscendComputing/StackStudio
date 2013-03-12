@@ -14,10 +14,12 @@ define([
         '/js/aws/models/vpc/awsInternetGateway.js',
         '/js/aws/collections/vpc/awsInternetGateways.js',
         '/js/aws/views/vpc/awsInternetGatewayCreateView.js',
+        '/js/aws/views/vpc/awsInternetGatewayAttachView.js',
+        '/js/aws/views/vpc/awsInternetGatewayDetachView.js',
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, AppView, awsInternetGatewayAppTemplate, InternetGateway, internetGateways, AwsInternetGatewayCreateView, ich, Common ) {
+], function( $, _, Backbone, AppView, awsInternetGatewayAppTemplate, InternetGateway, InternetGateways, AwsInternetGatewayCreateView, InternetGatewayAttachView, InternetGatewayDetachView, ich, Common ) {
 	'use strict';
 
 	// Aws Application View
@@ -35,50 +37,69 @@ define([
 	var AwsInternetGatewaysAppView = AppView.extend({
 	    template: _.template(awsInternetGatewayAppTemplate),
 	    
-        modelStringIdentifier: "internetGatewayId",
+        modelStringIdentifier: "id",
                 
         model: InternetGateway,
         
         idColumnNumber: 0,
         
-        columns: ["internetGatewayId"],
+        columns: ["id", "attachment_set.state", "attachment_set.vpcId"],
         
-        collection: internetGateways,
+        collectionType: InternetGateways,
         
         type: "vpc",
         
-        subtype: "internetGateways",
+        subtype: "internetgateways",
         
         CreateView: AwsInternetGatewayCreateView,
                 
         events: {
             'click .create_button': 'createNew',
-            'click #resource_table tr': 'toggleActions'
+            'click #action_menu ul li': 'performAction',
+            'click #resource_table tr': "clickOne",
         },
 
-        initialize: function() {
+        initialize: function(options) {
+            if(options.cred_id) {
+                this.credentialId = options.cred_id;
+            }
             this.render();
+
+            var internetGatewayApp = this;
+            Common.vent.on("internetGatewayAppRefresh", function() {
+                setTimeout(function() {
+                    internetGatewayApp.render();
+                }, 1000);
+            });
         },
         
         toggleActions: function(e) {
-            this.clickOne(e);
+            //Disable any needed actions
+            var internetGateway = this.collection.get(this.selectedId);
+            if(internetGateway.attributes.attachment_set.hasOwnProperty("vpcId")) {
+                $("#detach_vpc").removeClass("ui-state-disabled");
+            }else {
+                $("#detach_vpc").addClass("ui-state-disabled");
+            }
+        },
+        
+        performAction: function(event) {
+            var internetGateway = this.collection.get(this.selectedId);
             
-            $(".display_table").dataTable({
-               "bPaginate": false,
-               "bSortable": false,
-               "bFilter": false,
-               "bInfo": false,
-               "bLengthChange": false,
-               "bJQueryUI": true
-            });
-            
-            var rowData = $(e.currentTarget).data();
-            $.each(rowData.attachmentSet, function(index, attachment) {
-                $("#attachments_table").dataTable().fnAddData([
-                    attachment.vpcId,
-                    attachment.state
-                ]);
-            });            
+            switch(event.target.text)
+            {
+            case "Delete":
+                internetGateway.destroy(this.credentialId);
+                break;
+            case "Attach to VPC":
+                var attachView = new InternetGatewayAttachView({cred_id: this.credentialId, internet_gateway: internetGateway});
+                attachView.render();
+                break;
+            case "Detach from VPC":
+                var detachView = new InternetGatewayDetachView({cred_id: this.credentialId, internet_gateway: internetGateway});
+                detachView.render();
+                break;
+            }
         }
 	});
     

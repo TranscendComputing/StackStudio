@@ -13,19 +13,14 @@ define([
 ], function( $, Backbone, InternetGateway, Common ) {
     'use strict';
 
-    // InternetGateway Collection
-    // ---------------
-
     var InternetGatewaysList = Backbone.Collection.extend({
 
-        // Reference to this collection's model.
         model: InternetGateway,
 
-        url: 'samples/internetGateways.json'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/internet_gateways/describe'
         
     });
 
-    // Create our global collection of **InternetGateways**.
-    return new InternetGatewaysList();
+    return InternetGatewaysList;
 
 });
