@@ -8,24 +8,22 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/block_storage/awsSnapshot.js',
+        '/js/openstack/models/compute/openstackElasticIP.js',
         'common'
-], function( $, Backbone, Snapshot, Common ) {
+], function( $, Backbone, ElasticIP, Common ) {
     'use strict';
 
-    // Snapshot Collection
+    // ElasticIP Collection
     // ---------------
 
-    var SnapshotList = Backbone.Collection.extend({
+    var ElasticIPList = Backbone.Collection.extend({
 
         // Reference to this collection's model.
-        model: Snapshot,
+        model: ElasticIP,
 
-        // CloudMux url for AWS EBS snapshots
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/block_storage/snapshots/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/compute/addresses/describe'
     });
-
-    // Create our global collection of **Volumes**.
-    return SnapshotList;
+    
+    return ElasticIPList;
 
 });

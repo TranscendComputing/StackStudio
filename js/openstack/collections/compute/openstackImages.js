@@ -8,24 +8,22 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/block_storage/awsSnapshot.js',
+        '/js/openstack/models/compute/openstackImage.js',
         'common'
-], function( $, Backbone, Snapshot, Common ) {
+], function( $, Backbone, Image, Common ) {
     'use strict';
 
-    // Snapshot Collection
+    // Image Collection
     // ---------------
 
-    var SnapshotList = Backbone.Collection.extend({
+    var ImageList = Backbone.Collection.extend({
 
         // Reference to this collection's model.
-        model: Snapshot,
+        model: Image,
 
-        // CloudMux url for AWS EBS snapshots
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/block_storage/snapshots/describe'
+        url: 'samples/openstackImages.json'
     });
-
-    // Create our global collection of **Volumes**.
-    return SnapshotList;
+    
+    return ImageList;
 
 });
