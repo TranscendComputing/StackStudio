@@ -1,0 +1,741 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://devessex.essex.momentumsoftware.com:9000/" />
+<title>Login Test Case</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">Login Test Case</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//html/body/div[7]/div[2]/div/p/span[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='message']</td>
+	<td>You must login.</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//html/body/div[7]/div[3]/div/button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[2]/li/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//html/body/div[1]/div/nav/ul[2]/li/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//html/body/div[7]/div[2]/div/div/div/div/table/tbody/tr[1]/td[2]/input</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//html/body/div[7]/div[2]/div/div/div/div/table/tbody/tr[1]/td[2]/input</td>
+	<td>ehan</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//html/body/div[7]/div[2]/div/div/div/div/table/tbody/tr[2]/td[2]/input</td>
+	<td>tester</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//html/body/div[7]/div[3]/div/button[1]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//html/body/div[9]/div[2]/div/p/span[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[2]/li[1]/a</td>
+	<td>ehansen</td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[9]/div[2]/div/p/span[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeElementPresent</td>
+	<td>//html/body/div[9]/div[2]/div/p/span[2]</td>
+	<td>notLoggedIn</td>
+</tr>
+<tr>
+	<td>echo</td>
+	<td>${notLoggedIn}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeTextPresent</td>
+	<td>ehansen</td>
+	<td>loggedIn</td>
+</tr>
+<tr>
+	<td>echo</td>
+	<td>${loggedIn}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>while</td>
+	<td>${loggedIn}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//html/body/div[9]/div[3]/div/button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//html/body/div[9]/div[3]/div/button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPageToLoad</td>
+	<td></td>
+	<td>5000</td>
+</tr>
+<tr>
+	<td>store</td>
+	<td>!${loggedIn}</td>
+	<td>loggedIn</td>
+</tr>
+<tr>
+	<td>echo</td>
+	<td>${loggedIn}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>endWhile</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>while</td>
+	<td>${notLoggedIn}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//html/body/div[9]/div[3]/div/button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//html/body/div[9]/div[3]/div/button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//html/body/div[7]/div[3]/div/button[3]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPageToLoad</td>
+	<td></td>
+	<td>5000</td>
+</tr>
+<tr>
+	<td>store</td>
+	<td>!${notLoggedIn}</td>
+	<td>notLoggedIn</td>
+</tr>
+<tr>
+	<td>echo</td>
+	<td>${notLoggedIn}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>endWhile</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[2]/li/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//html/body/div[1]/div/nav/ul[2]/li/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//html/body/div[7]/div[2]/div/div/div/div/table/tbody/tr[1]/td[2]/input</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//html/body/div[7]/div[2]/div/div/div/div/table/tbody/tr[1]/td[2]/input</td>
+	<td>ehansen</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//html/body/div[7]/div[2]/div/div/div/div/table/tbody/tr[2]/td[2]/input</td>
+	<td>test</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//html/body/div[7]/div[3]/div/button[1]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//html/body/div[9]/div[2]/div/p/span[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[2]/li[1]/a</td>
+	<td>ehansen</td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[9]/div[2]/div/p/span[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeElementPresent</td>
+	<td>//html/body/div[9]/div[2]/div/p/span[2]</td>
+	<td>notLoggedIn</td>
+</tr>
+<tr>
+	<td>echo</td>
+	<td>${notLoggedIn}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeTextPresent</td>
+	<td>ehansen</td>
+	<td>loggedIn</td>
+</tr>
+<tr>
+	<td>echo</td>
+	<td>${loggedIn}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>while</td>
+	<td>${loggedIn}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//html/body/div[9]/div[3]/div/button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//html/body/div[9]/div[3]/div/button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPageToLoad</td>
+	<td></td>
+	<td>5000</td>
+</tr>
+<tr>
+	<td>store</td>
+	<td>!${loggedIn}</td>
+	<td>loggedIn</td>
+</tr>
+<tr>
+	<td>echo</td>
+	<td>${loggedIn}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>endWhile</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>while</td>
+	<td>${notLoggedIn}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//html/body/div[9]/div[3]/div/button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//html/body/div[9]/div[3]/div/button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//html/body/div[7]/div[3]/div/button[3]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPageToLoad</td>
+	<td></td>
+	<td>5000</td>
+</tr>
+<tr>
+	<td>store</td>
+	<td>!${notLoggedIn}</td>
+	<td>notLoggedIn</td>
+</tr>
+<tr>
+	<td>echo</td>
+	<td>${notLoggedIn}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>endWhile</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='navLogin']/li/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='navLogin']/li/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='username']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//*[@id='username']</td>
+	<td>ehansen</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//*[@id='password']</td>
+	<td>tester</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//html/body/div[7]/div[3]/div/button[1]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='navAccount']/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//*[@id='navAccount']/a</td>
+	<td>ehansen</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='navLogin']/li[2]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='navLogin']/li/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='navLogin']/li/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='navLogin']/li/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//html/body/div[7]/div[2]/div/div/div/div/table/tbody/tr[1]/td[2]/input</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//html/body/div[7]/div[2]/div/div/div/div/table/tbody/tr[1]/td[2]/input</td>
+	<td>ehan</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//html/body/div[7]/div[2]/div/div/div/div/table/tbody/tr[2]/td[2]/input</td>
+	<td>tester</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//html/body/div[7]/div[3]/div/button[1]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//html/body/div[9]/div[2]/div/p/span[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>ehansen</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[9]/div[2]/div/p/span[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeElementPresent</td>
+	<td>//html/body/div[9]/div[2]/div/p/span[2]</td>
+	<td>notLoggedIn</td>
+</tr>
+<tr>
+	<td>echo</td>
+	<td>${notLoggedIn}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeTextPresent</td>
+	<td>ehansen</td>
+	<td></td>
+</tr>
+<tr>
+	<td>echo</td>
+	<td>${loggedIn}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>while</td>
+	<td>${loggedIn}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[2]/li[2]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//html/body/div[1]/div/nav/ul[2]/li[2]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPageToLoad</td>
+	<td></td>
+	<td>5000</td>
+</tr>
+<tr>
+	<td>store</td>
+	<td>!${loggedIn}</td>
+	<td>loggedIn</td>
+</tr>
+<tr>
+	<td>echo</td>
+	<td>${loggedIn}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>endWhile</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>while</td>
+	<td>${notLoggedIn}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//html/body/div[9]/div[3]/div/button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//html/body/div[9]/div[3]/div/button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPageToLoad</td>
+	<td></td>
+	<td>5000</td>
+</tr>
+<tr>
+	<td>store</td>
+	<td>!${notLoggedIn}</td>
+	<td>notLoggedIn</td>
+</tr>
+<tr>
+	<td>echo</td>
+	<td>${notLoggedIn}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>endWhile</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[2]/li/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//html/body/div[1]/div/nav/ul[2]/li/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//html/body/div[7]/div[2]/div/div/div/div/table/tbody/tr[1]/td[2]/input</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//html/body/div[7]/div[2]/div/div/div/div/table/tbody/tr[1]/td[2]/input</td>
+	<td>ehansen</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//html/body/div[7]/div[2]/div/div/div/div/table/tbody/tr[2]/td[2]/input</td>
+	<td>test</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//html/body/div[7]/div[3]/div/button[1]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//html/body/div[9]/div[3]/div/button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>ehansen</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[9]/div[2]/div/p/span[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeElementPresent</td>
+	<td>//html/body/div[9]/div[2]/div/p/span[2]</td>
+	<td>notLoggedIn</td>
+</tr>
+<tr>
+	<td>echo</td>
+	<td>${notLoggedIn}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeTextPresent</td>
+	<td>ehansen</td>
+	<td>loggedIn</td>
+</tr>
+<tr>
+	<td>echo</td>
+	<td>${loggedIn}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>while</td>
+	<td>${loggedIn}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[2]/li[2]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//html/body/div[1]/div/nav/ul[2]/li[2]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPageToLoad</td>
+	<td></td>
+	<td>5000</td>
+</tr>
+<tr>
+	<td>store</td>
+	<td>!${loggedIn}</td>
+	<td>loggedIn</td>
+</tr>
+<tr>
+	<td>echo</td>
+	<td>${loggedIn}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>endWhile</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>while</td>
+	<td>${notLoggedIn}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//html/body/div[9]/div[3]/div/button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//html/body/div[9]/div[3]/div/button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPageToLoad</td>
+	<td></td>
+	<td>5000</td>
+</tr>
+<tr>
+	<td>store</td>
+	<td>!${notLoggedIn}</td>
+	<td>notLoggedIn</td>
+</tr>
+<tr>
+	<td>echo</td>
+	<td>${notLoggedIn}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>endWhile</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>link=Login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//html/body/div[7]/div[1]/a/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[7]/div[1]/a/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//html/body/div[7]/div[1]/a/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>//html/body/div[7]/div[1]/a/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>link=Login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//html/body/div[7]/div[3]/div/button[3]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[7]/div[3]/div/button[3]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//html/body/div[7]/div[3]/div/button[3]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>//html/body/div[7]/div[3]/div/button[3]</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>
