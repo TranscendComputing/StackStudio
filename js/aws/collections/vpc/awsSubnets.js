@@ -21,11 +21,11 @@ define([
         // Reference to this collection's model.
         model: Subnet,
 
-        url: 'samples/subnets.json'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/subnets/describe'
         
     });
 
     // Create our global collection of **Subnets**.
-    return new SubnetsList();
+    return SubnetsList;
 
 });

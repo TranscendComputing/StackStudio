@@ -7,8 +7,9 @@
 /*global define:true console:true */
 define([
         'jquery',
-        'backbone'
-], function( $, Backbone ) {
+        'backbone',
+        'common'
+], function( $, Backbone, Common ) {
     'use strict';
 
     // Base Subnet Model
@@ -24,30 +25,45 @@ define([
      */
     var Subnet = Backbone.Model.extend({
 
-        idAttribute: "subnetId",
+        idAttribute: "subnet_id",
         
         /** Default attributes for compute */
         defaults: {
-            subnetId: '',
-            vpcId: '',
+            subnet_id: '',
+            vpc_id: '',
             state: '',
-            cidrBlock: '10.0.0.0/16',
-            availableIpAddressCount: '',
-            tagSet: [],
-            availabilityZone: ''
+            cidr_block: '10.0.0.0/16',
+            available_ip_address_count: '',
+            tag_set: {},
+            availability_zone: ''
 		},
 
-	    /**
-	     * Override the base Backbone set method, for debugging.
-	     *
-	     * @memberOf Subnet
-	     * @category Internal
-	     * @param {Object} hash of attribute values to set.
-	     * @param {Object} (optional) options to tweak (see Backbone docs).
-	     */
-		set: function(attributes, options) {
-		    Backbone.Model.prototype.set.apply(this, arguments);
-		}
+        create: function(options, credentialId) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/subnets/create?_method=PUT&cred_id=" + credentialId;
+            this.sendPostAction(url, options);
+        },
+
+        destroy: function(credentialId) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/subnets/delete?_method=DELETE&cred_id=" + credentialId;
+            this.sendPostAction(url, this.attributes);
+        },
+
+        sendPostAction: function(url, options) {
+            var subnet = {"subnet": options};
+            $.ajax({
+                url: url,
+                type: 'POST',
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: JSON.stringify(subnet),
+                success: function(data) {
+                    Common.vent.trigger("subnetAppRefresh");
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            }); 
+        }
     });
 
     return Subnet;
