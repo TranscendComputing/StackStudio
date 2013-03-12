@@ -53,7 +53,7 @@ define([
         
         events: {
             'click .create_button': 'createNew',
-            'click #resource_table tr': 'toggleActions'
+            'click #resource_table tr': 'clickOne'
         },
 
         initialize: function() {
@@ -62,15 +62,7 @@ define([
         },
         
         toggleActions: function(e) {
-            this.clickOne(e);
-            $(".display_table").dataTable({
-               "bPaginate": false,
-               "bSortable": false,
-               "bFilter": false,
-               "bInfo": false,
-               "bLengthChange": false,
-               "bJQueryUI": true
-            });
+            //Disable any needed actions
         }
     });
     

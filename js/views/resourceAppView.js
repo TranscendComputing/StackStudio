@@ -54,7 +54,7 @@ define([
             $("#action_menu li").addClass("ui-state-disabled");
             if(this.credentialId) {
                 var credId = this.credentialId;
-                this.collection.fetch({ data: $.param({ cred_id: credId}) });
+                this.collection.fetch({ data: $.param({ cred_id: credId }) });
             } else {
                 this.collection.fetch();
             }
@@ -108,6 +108,7 @@ define([
             if(selectedModel) {
                 this.selectedId = id;
                 $("#action_menu li").removeClass("ui-state-disabled");
+                this.toggleActions();
                 if (ich.templates.resource_detail) {
                     $("#details").html(ich.resource_detail(selectedModel.attributes));
                     $("#detail_tabs").tabs();

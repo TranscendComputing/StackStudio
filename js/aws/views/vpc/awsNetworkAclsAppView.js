@@ -53,7 +53,7 @@ define([
                 
         events: {
             'click .create_button': 'createNew',
-            'click #resource_table tr': 'toggleActions'
+            'click #resource_table tr': 'clickOne'
         },
 
         initialize: function() {
@@ -62,29 +62,7 @@ define([
         },
 
         toggleActions: function(e) {
-            this.clickOne(e);
-            
-            $(".display_table").dataTable({
-               "bPaginate": false,
-               "bSortable": false,
-               "bFilter": false,
-               "bInfo": false,
-               "bLengthChange": false,
-               "bJQueryUI": true
-            });
-            
-            var rowData = $(e.currentTarget).data();
-            $.each(rowData.entrySet, function(index, entry) {
-                var selector = (entry.egress === "true") ? "#outbound_table" : "#inbound_table";
-                var portRange = entry.portRange ? (entry.portRange.from + "-" + entry.portRange.to) : "ALL";                 
-                $(selector).dataTable().fnAddData([
-                    entry.ruleNumber,
-                    portRange,
-                    entry.protocol,
-                    entry.cidrBlock,
-                    entry.ruleAction.toUpperCase()
-                ]);
-            });
+            //Disable any needed actions
         }
 	});
     

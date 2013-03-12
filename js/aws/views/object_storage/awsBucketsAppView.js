@@ -64,7 +64,7 @@ define([
         events: {
             'click .create_button': 'createNew',
             'click #action_menu ul li': 'performAction',
-            'click #resource_table tr': 'toggleActions',
+            'click #resource_table tr': 'clickOne',
             'click #objects': 'loadObjectTab',
             'click #object_refresh_button': 'refreshObject',
             'click #object_upload_button': 'openFileDialog',
@@ -89,7 +89,6 @@ define([
         },
         
         toggleActions: function(e) {
-            this.clickOne(e);
             this.unloadObjectTab();
             //Disable any needed actions
         },

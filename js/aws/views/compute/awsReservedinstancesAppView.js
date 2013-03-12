@@ -53,7 +53,7 @@ define([
         
         events: {
             'click .create_button': 'createNew',
-            'click #resource_table tr': 'toggleActions'
+            'click #resource_table tr': 'clickOne'
         },
 
         initialize: function(options) {
@@ -64,8 +64,7 @@ define([
         },
         
         toggleActions: function(e) {
-            this.clickOne(e);
-            var rowData = this.$table.fnGetData(e.currentTarget);
+            //Disable any needed actions
         }
     });
     

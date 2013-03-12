@@ -54,7 +54,7 @@ define([
         events: {
             'click .create_button': 'createNew',
             'click #action_menu ul li': 'performAction',
-            'click #resource_table tr': "toggleActions",
+            'click #resource_table tr': "clickOne",
         },
 
         initialize: function(options) {
@@ -70,7 +70,6 @@ define([
         },
         
         toggleActions: function(e) {
-            this.clickOne(e);
             //Disable any needed actions
         },
         
