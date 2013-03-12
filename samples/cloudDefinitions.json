@@ -74,6 +74,10 @@
                     {
                         "name": "DHCP Options Sets",
                         "type": "dhcpoptionssets"
+                    },
+                    {
+                        "name": "Network ACLs",
+                        "type": "networkacls"
                     }
                 ]
             }
