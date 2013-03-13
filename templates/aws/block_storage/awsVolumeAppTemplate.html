@@ -43,6 +43,7 @@
     <div id="detail_tabs">
         <ul>
             <li><a href="#tabs-1">Details</a></li>
+            <li><a id="monitoring" href="#tabs-2">Monitoring</a></li>
         </ul>
         <div id="tabs-1" class="tab">
             <table>
@@ -61,6 +62,61 @@
                     <tr><td><b>Created At:</b></td>             <td>{{ created_at }}</td></tr>
                 </tbody>
             </table>
+        </div>
+        <div id="tabs-2" class="tab" style="overflow:hidden;">
+            <div class="monitor_options">
+                <table>
+                    <tr>
+                        <td>Time Range:</td>
+                        <td>
+                            <select id="monitor_time_range">
+                                <option value='{"time_range":3600, "period":300}' selected>Last Hour</option>
+                                <option value='{"time_range":10800, "period":600}'>Last 3 Hours</option>
+                                <option value='{"time_range":21600, "period":900}'>Last 6 Hours</option>
+                                <option value='{"time_range":43200, "period":1800}'>Last 12 Hours</option>
+                                <option value='{"time_range":86400, "period":3600}'>Last 24 Hours</option>
+                                <option value='{"time_range":604800, "period":21600}'>Last Week</option>
+                                <option value='{"time_range":1209600, "period":21600}'>Last 2 Weeks</option>
+                            </select>
+                        </td>
+                        <td>
+                            <button id="refresh_monitors_button">Refresh</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Volume Idle Time</div>
+                <div id="volume_idle_time" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Volume Queue Length</div>
+                <div id="volume_queue_length" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Volume Read Bytes</div>
+                <div id="volume_read_bytes" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Volume Read Ops</div>
+                <div id="volume_read_ops" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Volume Total Read Time</div>
+                <div id="volume_total_read_time" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Volume Total Write Time</div>
+                <div id="volume_total_write_time" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Volume Write Bytes</div>
+                <div id="volume_write_bytes" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Volume Write Ops</div>
+                <div id="volume_write_ops" class="monitor_graph"></div>
+            </div>
         </div>
     </div>
 </script>

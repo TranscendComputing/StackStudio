@@ -66,13 +66,55 @@
             </table>
         </div>
         <div id="tabs-2" class="tab" style="overflow:hidden;">
-            <div id="cpu_utilization" class="monitor_graph"></div>
-            <div id="disk_read_bytes" class="monitor_graph"></div>
-            <div id="disk_read_ops" class="monitor_graph"></div>
-            <div id="disk_write_bytes" class="monitor_graph"></div>
-            <div id="disk_write_ops" class="monitor_graph"></div>
-            <div id="network_in" class="monitor_graph"></div>
-            <div id="network_out" class="monitor_graph"></div>
+            <div class="monitor_options">
+                <table>
+                    <tr>
+                        <td>Time Range:</td>
+                        <td>
+                            <select id="monitor_time_range">
+                                <option value='{"time_range":3600, "period":300}' selected>Last Hour</option>
+                                <option value='{"time_range":10800, "period":600}'>Last 3 Hours</option>
+                                <option value='{"time_range":21600, "period":900}'>Last 6 Hours</option>
+                                <option value='{"time_range":43200, "period":1800}'>Last 12 Hours</option>
+                                <option value='{"time_range":86400, "period":3600}'>Last 24 Hours</option>
+                                <option value='{"time_range":604800, "period":21600}'>Last Week</option>
+                                <option value='{"time_range":1209600, "period":21600}'>Last 2 Weeks</option>
+                            </select>
+                        </td>
+                        <td>
+                            <button id="refresh_monitors_button">Refresh</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">CPU Utilization</div>
+                <div id="cpu_utilization" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Disk Read Bytes</div>
+                <div id="disk_read_bytes" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Disk Read Ops</div>
+                <div id="disk_read_ops" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Disk Write Bytes</div>
+                <div id="disk_write_bytes" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Disk Write Ops</div>
+                <div id="disk_write_ops" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Network In</div>
+                <div id="network_in" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Network Out</div>
+                <div id="network_out" class="monitor_graph"></div>
+            </div>
         </div>
     </div>
     
