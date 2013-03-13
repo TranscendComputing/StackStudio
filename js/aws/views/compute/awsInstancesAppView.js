@@ -127,13 +127,13 @@ define([
         
         unloadMonitors: function() {
             if(this.initialMonitorLoad) {
-                $("#cpuGraph").empty();
-                $("#diskReadBytesGraph").empty();
-                $("#diskReadOpsGraph").empty();
-                $("#diskWriteBytesGraph").empty();
-                $("#diskWriteOpsGraph").empty();
-                $("#networkInGraph").empty();
-                $("#networkOutGraph").empty();
+                $("#cpu_utilization").empty();
+                $("#disk_read_bytes").empty();
+                $("#disk_read_ops").empty();
+                $("#disk_write_bytes").empty();
+                $("#disk_write_ops").empty();
+                $("#network_in").empty();
+                $("#network_out").empty();
                 this.initialMonitorLoad = false;
             }
         },
@@ -193,7 +193,7 @@ define([
         
         addCPUData: function() {
             Morris.Line({
-                element: 'cpuGraph',
+                element: 'cpu_utilization',
                 data: this.cpuData.toJSON(),
                 xkey: 'Timestamp',
                 ykeys: ['Average'],
@@ -205,7 +205,7 @@ define([
         
         addDiskReadBytesData: function() {
             Morris.Line({
-                element: 'diskReadBytesGraph',
+                element: 'disk_read_bytes',
                 data: this.diskReadBytesData.toJSON(),
                 xkey: 'Timestamp',
                 ykeys: ['Average'],
@@ -216,7 +216,7 @@ define([
         
         addDiskReadOpsData: function() {
             Morris.Line({
-                element: 'diskReadOpsGraph',
+                element: 'disk_read_ops',
                 data: this.diskReadOpsData.toJSON(),
                 xkey: 'Timestamp',
                 ykeys: ['Average'],
@@ -227,7 +227,7 @@ define([
         
         addDiskWriteBytesData: function() {
             Morris.Line({
-                element: 'diskWriteBytesGraph',
+                element: 'disk_write_bytes',
                 data: this.diskWriteBytesData.toJSON(),
                 xkey: 'Timestamp',
                 ykeys: ['Average'],
@@ -238,7 +238,7 @@ define([
         
         addDiskWriteOpsData: function() {
             Morris.Line({
-                element: 'diskWriteOpsGraph',
+                element: 'disk_write_ops',
                 data: this.diskWriteOpsData.toJSON(),
                 xkey: 'Timestamp',
                 ykeys: ['Average'],
@@ -249,7 +249,7 @@ define([
         
         addNetworkInData: function() {
             Morris.Line({
-                element: 'networkInGraph',
+                element: 'network_in',
                 data: this.networkInData.toJSON(),
                 xkey: 'Timestamp',
                 ykeys: ['Average'],
@@ -260,7 +260,7 @@ define([
         
         addNetworkOutData: function() {
             Morris.Line({
-                element: 'networkOutGraph',
+                element: 'network_out',
                 data: this.networkOutData.toJSON(),
                 xkey: 'Timestamp',
                 ykeys: ['Average'],
