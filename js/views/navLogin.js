@@ -21,51 +21,36 @@ define([
         accountMenuVisible: false,
         
         events: {
+            'click #account_login': 'accountLogin',
+            'click #account_logout': 'accountLogout'
         },
 
         initialize: function() {
-            this.render();
+            var navLogin = this;
+            Common.vent.on("loginSuccess", function() {
+                navLogin.render();
+            });
         },
 
         render: function() {
             if(sessionStorage.login) {
-                this.$el.html("<li id='navAccount'><a href='/#account/cloudcredentials'>"+sessionStorage.login+"</a></li><li><a href='/#account/logout'>Logout</a></li>");
+                this.$el.html("<li id='navAccount'><a href='/#account/cloudcredentials'>"+sessionStorage.login+"</a></li><li><a id='account_logout'>Logout</a></li>");
             } else {
-                this.$el.html("<li><a href='/#account/login'>Login</a></li>");
+                this.$el.html("<li><a id='account_login'>Login</a></li>");
             }
         },
         
         accountLogin: function() {
             var accountLoginView = new AccountLoginView();
             accountLoginView.render();
+        },
+
+        accountLogout: function() {
+            sessionStorage.clear();
+            Common.router.navigate("/", {trigger: true});
+            this.render();
         }
     });
-    
-    var navLogin;
-    
-    Common.router.on("route:accountLogin", function() {
-        if (!navLogin) {
-            navLogin = new NavLogin();
-        }
-        navLogin.accountLogin();
-    }, this);
-    
-    Common.vent.on("loginSuccess", function() {
-        if (!navLogin) {
-            navLogin = new NavLogin();
-        }
-        navLogin.render();
-    }, this);
-    
-    Common.router.on('route:accountLogout', function () {
-        if (!navLogin) {
-            navLogin = new NavLogin();
-        }
-        sessionStorage.clear();
-        Common.router.navigate("/", {trigger: true});
-        navLogin.render();
-    }, this);
-    
-    console.log("nav login defined");
+
     return NavLogin;
 });

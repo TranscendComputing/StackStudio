@@ -32,8 +32,6 @@ define([
 	var Router = Backbone.Router.extend({
 	    
 		routes:{
-		    'account/login': 'accountLogin',
-            'account/logout': 'accountLogout',
             'account/cloudcredentials': 'cloudCredentials',
 			'resources': 'resourcesRoute',
 			'resources/:cloud': 'resourcesRoute',

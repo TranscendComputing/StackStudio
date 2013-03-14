@@ -14,28 +14,17 @@ define([
         'text!templates/account/stackplaceLoginTemplate.html',
         'text!templates/account/stackstudioLoginTemplate.html',
         'views/newLoginView',
-        'icanhaz',
         'common'      
-], function( $, _, Backbone, DialogView, Account, stackplaceLoginTemplate, stackstudioLoginTemplate, NewLoginView, ich, Common ) {
-    
-    /**
-     * AccountLoginView is UI wizard to create cloud instances.
-     *
-     * @name AccountLoginView
-     * @constructor
-     * @category Instance
-     * @param {Object} initialization object.
-     * @returns {Object} Returns a InstanceCreateWizardView instance.
-     */
+], function( $, _, Backbone, DialogView, Account, stackplaceLoginTemplate, stackstudioLoginTemplate, NewLoginView, Common ) {
     
     var AccountLoginView = DialogView.extend({
 
         events: {
-            // TODO
+            "dialogclose": "close"
         },
 
         initialize: function() {
-            Common.vent.on("account:login", this.close, this);
+            
         },
 
         render: function() {
@@ -87,8 +76,6 @@ define([
             });
             this.$(".accordion").accordion();
             this.$el.dialog('open');
-
-            return this;
         },
         
         login: function() {
