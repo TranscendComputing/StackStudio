@@ -1,5 +1,5 @@
 /*jshint smarttabs:true */
-/*global module:false*/
+/*global module:false require:true*/
 module.exports = function(grunt) {
 
   // Project configuration.
