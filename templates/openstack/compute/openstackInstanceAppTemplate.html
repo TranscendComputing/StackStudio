@@ -27,9 +27,7 @@
             <tr>
                 <th>Name</th>
                 <th>Instance ID</th>
-                <th>Image ID</th>
-                <th>Root Device</th>
-                <th>Type</th>
+                <th>ID</th>
                 <th>Key Pair</th>
                 <th>State</th>
             </tr>
@@ -48,20 +46,25 @@
             <li><a id="instance_details" href="#tabs-1">Details</a></li>
             <li><a id="monitoring" href="#tabs-2">Monitoring</a></li>
         </ul>
-        <div id="tabs-1" class="tab">
-            <table>
+        <div id="tabs-1" class="tab row">
+            <table class="sixcol">
                 <tbody>
-                    <tr><td><b>Name:</b></td>                  <td>{{ tags.Name }}</td>                <td><b>Public DNS:</b></td>    <td>{{ dns_name }}</td></tr>
-                    <tr><td><b>Instance ID:</b></td>           <td>{{ id }}</td>                       <td><b>Public IP:</b></td>     <td>{{ public_ip_address }}</td></tr>
-                    <tr><td><b>Image ID:</b></td>              <td>{{ image_id }}</td>                 <td><b>Private IP:</b></td>    <td>{{ private_ip_address }}</td></tr>
-                    <tr><td><b>Root Device:</b></td>           <td>{{ root_device_type }}</td>         <td><b>Tenancy:</b></td>       <td>{{ tenancy }}</td></tr>
-                    <tr><td><b>Type:</b></td>                  <td>{{ flavor_id }}</td></tr>
+                    <tr><td><b>Name:</b></td>                  <td>{{ name }}</td>                     
+                    <tr><td><b>ID:</b></td>                    <td>{{ id }}</td>                       
+                    <tr><td><b>Image ID:</b></td>              <td>{{ image.id }}</td>                 
+                    <tr><td><b>Instance ID:</b></td>           <td>{{ os_ext_srv_attr_instance_name }}</td></tr>        
+                    <tr><td><b>Type:</b></td>                  <td>{{ flavor.id }}</td></tr>
                     <tr><td><b>Key Name:</b></td>              <td>{{ key_name }}</td></tr>
-                    <tr><td><b>Availability Zone:</b></td>     <td>{{ availability_zone }}</td></tr>
-                    <tr><td><b>Detailed Monitoring:</b></td>   <td>{{ monitoring }}</td></tr>
-                    <tr><td><b>EBS Optimized:</b></td>         <td>{{ ebs_optimized }}</td></tr>
+                </tbody>
+            </table>
+            <table class="fivecol">
+                <tbody>
+                    <tr><td><b>Host:</b></td>                  <td>{{ os_ext_srv_attr_host }}</td></tr>
                     <tr><td><b>State:</b></td>                 <td>{{ state }}</td></tr>
-                    <tr><td><b>Launch Time:</b></td>           <td>{{ created_at }}</td></tr>
+                    <tr><td><b>Launch Time:</b></td>           <td>{{ created }}</td></tr>
+                    {{#addresses.private}}
+                    <tr><td><b>Private Address:</b></td>           <td>{{ addr }}</td></tr>
+                    {{/addresses.private}}
                 </tbody>
             </table>
         </div>

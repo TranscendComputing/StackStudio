@@ -1,0 +1,65 @@
+[   
+    {
+        "label": "New devint base",
+        "description": "Base image created from snapshot of configured devint instance",
+        "logo": "ubuntu",
+        "product": "Linux/UNIX",
+        "region": {
+            "us-east-1": "431784c3-064e-4bd6-bb31-065c5fd0ab54"
+        }
+    },
+    {
+        "label": "Transcend Client 2013-02-07",
+        "description": "Base image used for Transcend clients.",
+        "logo": "ubuntu",
+        "product": "Linux/UNIX",
+        "region": {
+            "us-east-1": "0df07248-3dc4-4304-b3cd-bc9660cb0f63"
+        }
+    },
+    {
+        "label": "Transcend Client 2013-02-06",
+        "description": "Base image used for Transcend clients.",
+        "logo": "ubuntu",
+        "product": "Linux/UNIX",
+        "region": {
+            "us-east-1": "92340204-df94-49d1-8e66-6a96b6e4c540"
+        }
+    },
+    {
+        "label": "ready-for-chef",
+        "description": "Base image for chef workstation.",
+        "logo": "ubuntu",
+        "product": "Linux/UNIX",
+        "region": {
+            "us-east-1": "b932627c-df2f-4a8e-a243-2ae75967c3a1"
+        }
+    },
+    {
+        "label": "Simple Web Server",
+        "description": "Pre-installed apache.",
+        "logo": "ubuntu",
+        "product": "Linux/UNIX",
+        "region": {
+            "us-east-1": "71eef7b3-afc9-4d72-9c1a-f9f26fe742aa"
+        }
+    },
+    {
+        "label": "StackStudioBase",
+        "description": "Pre-installed StackStudio v1.0",
+        "logo": "ubuntu",
+        "product": "Linux/UNIX",
+        "region": {
+            "us-east-1": "4825efee-41e7-4d28-b2bf-3d443365a3ed"
+        }
+    },
+    {
+        "label": "Ubuntu 12.04-64bit Chef-Client-20121003-B",
+        "description": "Ubuntu Chef-client Pre-installed",
+        "logo": "ubuntu",
+        "product": "Linux/UNIX",
+        "region": {
+            "us-east-1": "af8bb13c-a593-4d02-9aec-1f29b569537a"
+        }
+    }
+]

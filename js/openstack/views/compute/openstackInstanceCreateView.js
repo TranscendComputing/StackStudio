@@ -9,6 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'views/dialogView',
         'text!templates/openstack/compute/openstackInstanceCreateTemplate.html',
         '/js/openstack/models/compute/openstackInstance.js',
         '/js/openstack/collections/compute/openstackImages.js',
@@ -21,7 +22,7 @@ define([
         'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter'
-], function( $, _, Backbone, instanceCreateTemplate, Instance, Images, AvailabilityZones, Flavors, KeyPairs, SecurityGroups, ich, Common ) {
+], function( $, _, Backbone, DialogView, instanceCreateTemplate, Instance, Images, AvailabilityZones, Flavors, KeyPairs, SecurityGroups, ich, Common ) {
     
     /**
      * InstanceCreateView is UI form to create compute.

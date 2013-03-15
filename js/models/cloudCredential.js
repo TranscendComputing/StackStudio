@@ -27,7 +27,7 @@ define([
         /** Default attributes for cloud credential */
         defaults: {
             id: "",
-            name: "New Account",
+            name: "MyCredentials",
             description: "",
             cloud_id: "",
             cloud_name: "",

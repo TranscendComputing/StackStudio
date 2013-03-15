@@ -120,7 +120,42 @@
     "openstack" : {
         "name": "OpenStack",
         "logo": "/images/CloudLogos/openstack300.jpg",
-        "services": [],
+        "services": [
+            {
+                "name": "Elastic Block Storage",
+                "type": "block_storage",
+                "defaultSubtype": "volumes"
+            },
+            {
+                "name": "Elastic Compute Cloud",
+                "type": "compute",
+                "defaultSubtype": "instances",
+                "subServices" : [
+                    {
+                        "name": "Instances",
+                        "type": "instances"
+                    },
+                    {
+                        "name": "Security Groups",
+                        "type": "securitygroups"
+                    },
+                    {
+                        "name": "Key Pairs",
+                        "type": "keypairs"
+                    },
+                    {
+                        "name": "Elastic IPs",
+                        "type": "elasticips"
+                    }
+                ]
+                
+            },
+            {
+                "name": "Simple Storage",
+                "type": "object_storage",
+                "defaultSubtype": "buckets"
+            }     
+        ],
         "regions": []
     },
     "google" : {

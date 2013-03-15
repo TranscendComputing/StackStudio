@@ -41,9 +41,9 @@ define([
         
         modelStringIdentifier: "id",
         
-        columns: ["tags.Name", "id", "image_id", "root_device_type", "flavor_id", "key_name", "state"],
+        columns: ["name", "os_ext_srv_attr_instance_name", "id", "key_name", "state"],
         
-        idColumnNumber: 1,
+        idColumnNumber: 2,
         
         model: Instance,
         

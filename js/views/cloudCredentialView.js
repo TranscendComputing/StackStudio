@@ -118,6 +118,7 @@ define([
         cloudCredentialView.render();
     }, this);
     
+    /**
     Common.vent.on("cloudCredentialCreated", function () {
         if (!cloudCredentialView) {
             cloudCredentialView = new CloudCredentialView();
@@ -138,6 +139,7 @@ define([
         }
         cloudCredentialView.render();
     }, this);
+    **/
 
     return CloudCredentialView;
 });

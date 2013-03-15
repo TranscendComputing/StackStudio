@@ -70,7 +70,7 @@ define([
             
             //Top-level app templates have app specific templates,
             // so refresh ich in order to use new templates
-            ich.refresh();
+            ich.grabTemplates();
             
             return this;
         },
