@@ -82,6 +82,9 @@ requirejs.config({
         'spinner': {
             exports: 'Spinner'
         },
+        'URIjs': {
+
+        },
         'wijutil': {
             deps: ['jquery-ui', 'jquery.mousewheel']
         },
@@ -130,6 +133,7 @@ requirejs.config({
         //'jquery.jstree': '//cachedcommons.org/cache/jquery-jstree/1.0.0/javascripts/jquery-jstree-min',
         'raphael': 'raphael-min',
         'spinner': 'spin.min',
+         URIjs: 'uri/src',
         'wijlist': 'jquery.wijmo.wijlist',
         'wijutil': 'jquery.wijmo.wijutil',
         'wijsuperpanel': 'jquery.wijmo.wijsuperpanel',
@@ -142,7 +146,7 @@ requirejs.config({
 var URL_ARGS = URL_ARGS || '';
 
 requirejs.config({
-    urlArgs: URL_ARGS,
+    urlArgs: URL_ARGS
 });
 
 /**

@@ -15,6 +15,7 @@ require(['./common'], function (common) {
     require([
             'views/navLogin',
             'views/projectSidebarView',
+            'views/accountManagementView',
             'views/projectAppView',
              // 'views/projectNavigationSidebarView',
              'views/projectResourceSidebarView',

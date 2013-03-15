@@ -29,7 +29,7 @@ define([
 
         render: function() {
             if(sessionStorage.login) {
-                this.$el.html("<li id='navAccount'><a href='/#account/cloudcredentials'>"+sessionStorage.login+"</a></li><li><a href='/#account/logout'>Logout</a></li>");
+                this.$el.html("<li id='navAccount'><a href='/#account/management'>"+sessionStorage.login+"</a></li><li><a href='/#account/logout'>Logout</a></li>");
             } else {
                 this.$el.html("<li><a href='/#account/login'>Login</a></li>");
             }

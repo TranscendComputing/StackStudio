@@ -35,6 +35,7 @@ define([
 		    'account/login': 'accountLogin',
             'account/logout': 'accountLogout',
             'account/cloudcredentials': 'cloudCredentials',
+            'account/management(/:action)': 'accountManagement',
 			'resources': 'resourcesRoute',
 			'resources/:cloud': 'resourcesRoute',
 			'resources/:cloud/:type': 'resourcesRoute',
@@ -56,7 +57,7 @@ define([
 		          this.trigger('route:projectEdit');
 		        }
 		    } else {
-    		    $("#sidebar").empty();
+                $("#sidebar").empty();
                 $("#sidebar").hide();
                 $("#main").load('/templates/dashboard.html');
                 console.log("Running default route.  Dashboard");    

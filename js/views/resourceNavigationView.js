@@ -137,7 +137,7 @@ define([
 				        found = true;
 				    }
 				});
-				if(!found && cloudProvider==="aws") {
+				if(!found) {
 				    $('#cloud_coverflow').append($("<img></img>")
 				        .attr({
                             "id": cloudProvider,
@@ -285,6 +285,7 @@ define([
                         return;
                     }
                     var resourceAppView = new AppView({cred_id: credId});
+                    resourceAppView.cloudProvider = cloudProvider;
                     resourceNav.resourceApp = resourceAppView;
                     resourceNav.resourceSelect(type);
                     if(id) {

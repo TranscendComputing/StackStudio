@@ -42,7 +42,7 @@ define([
             this.$el.html(this.template);
             $("#resource_app").html(this.$el);
             this.delegateEvents(this.events);
-            ich.refresh();
+            ich.grabTemplates();
             $('button').button();
             $("#action_menu").menu();
             
@@ -62,6 +62,7 @@ define([
         },
         
         addOne: function( model ) {
+            console.log(model);
             if (model.get(this.modelStringIdentifier) === "") {
                 return;
             }
@@ -86,7 +87,7 @@ define([
             console.log("ROW DATA", rowData, "COLUMN NUMBER", this.idColumnNumber);
             //TODO -- make more dynamic in order to allow user to define columns
             id = rowData[this.idColumnNumber];
-            Common.router.navigate("#resources/aws/"+this.type+"/"+this.subtype+"/"+id, {trigger: false});
+            Common.router.navigate("#resources/" + this.cloudProvider + "/"+this.type+"/"+this.subtype+"/"+id, {trigger: false});
             this.selectOne(id, event.currentTarget);
         },
 

@@ -128,7 +128,7 @@ define([
                 sessionStorage.company = data.account.company;
                 sessionStorage.email = data.account.email;
                 sessionStorage.org_id = data.account.org_id;
-                sessionStorage.cloud_accounts = JSON.stringify(data.account.cloud_accounts);
+                sessionStorage.cloud_credentials = JSON.stringify(data.account.cloud_credentials);
                 sessionStorage.permissions = JSON.stringify(data.account.permissions);
                 sessionStorage.project_memeberships = JSON.stringify(data.account.project_memberships);
                 
