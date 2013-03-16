@@ -46,6 +46,11 @@
                 
             },
             {
+                "name": "Route 53",
+                "type": "dns",
+                "defaultSubtype": "hostedzones"
+            },
+            {
                 "name": "Simple Storage",
                 "type": "object_storage",
                 "defaultSubtype": "buckets"
