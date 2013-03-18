@@ -101,8 +101,8 @@ define([
             this.flavors.on( 'reset', this.addAllFlavors, this );
             this.flavors.fetch({ data: $.param({ cred_id: this.credentialId}) });
             
-            this.availabilityZones.on( 'reset', this.addAllAvailabilityZones, this );
-            this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId}) });
+            //this.availabilityZones.on( 'reset', this.addAllAvailabilityZones, this );
+            //this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId}) });
             
             this.keyPairs.on( 'reset', this.addAllKeyPairs, this );
             this.keyPairs.fetch({ data: $.param({ cred_id: this.credentialId}) });
@@ -225,23 +225,23 @@ define([
             console.log("create_initiated");
             //#TODO: Validate before create
             if($("#instance_name").val() !== "") {
-                options.tags = {"Name": $("#instance_name").val()};
+                options.name = $("#instance_name").val();
             }
             //Hack alert, region is currently hardcoded to us-east-1
             var region = "us-east-1";
             $.each(this.images.toJSON(), function(index, image) {
                 if(image.label === $("#image_select").val()) {
-                    options.image_id = image.region[region];
+                    options.image_ref = image.region[region];
                 }
             });
             
             this.flavors.each(function(flavor) {
                 if(flavor.attributes.name === $("#flavor_select").val()) {
-                    options.flavor_id = flavor.attributes.id;
+                    options.flavor_ref = flavor.attributes.id;
                 } 
              });
             
-            options.availability_zone = $("#az_select").val();
+            //options.availability_zone = $("#az_select").val();
             options.key_name = $("#key_pair_select").val();
             options.groups = $("#security_group_select").val();
             newInstance.create(options, this.credentialId);

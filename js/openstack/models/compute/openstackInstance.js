@@ -48,6 +48,7 @@ define([
          */
         create: function(options, credentialId) {
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/compute/instances/create?_method=PUT&cred_id=" + credentialId;
+            console.log(options);
             this.sendPostAction(url, options);
         },
         /**
