@@ -35,7 +35,7 @@ define([
              * Then removes those elements from the dom (this is the method that runs 
              * on document ready when ich first inits).
              */
-            this.cloudProvider = this.model.attributes.cloud_provider;
+            this.cloudProvider = this.model.attributes.cloud_provider.toLocaleLowerCase();
             ich.grabTemplates();
             var template = this.cloudProvider + "_credential_form";
             var attributes = (this.model === undefined) ? {} : this.model.attributes;
