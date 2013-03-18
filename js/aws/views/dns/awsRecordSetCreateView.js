@@ -60,18 +60,10 @@ define([
                 }
                 var previousRecordName;
                 try {
-                    previousRecordName = this.previousRecordSet.attributes.name.split(this.hostedZone.attributes.domain)[0];
+                    previousRecordName = this.previousRecordSet.attributes.Name.split(this.hostedZone.attributes.domain)[0];
                 }catch(error) {
                     previousRecordName = "";
                 }
-                $("#record_name_input").val() = previousRecordName;
-                $("#record_type_select option[value=" + this.previousRecordSet.attributes.Type + "]").attr('selected', 'selected');
-                $("#record_ttl_input").val() = this.previousRecordSet.attributes.TTL;
-                var previousRecordValues = "";
-                $.each(this.previousRecordSet.attributes.ResourceRecords, function(index, value) {
-                    previousRecordValues = previousRecordValues + value + "\n";
-                })
-                $("#record_value_input").val() = previousRecordValues.trim();
             }else {
                 dialogOptions.title = "Create Record Set";
                 dialogOptions.buttons = {
@@ -91,6 +83,18 @@ define([
                 }
             });
             $("#hosted_zone_domain").html(this.hostedZone.attributes.domain);
+
+            if(this.previousRecordSet) {
+                //Set the values of the record set to edit
+                $("#record_name_input").val(previousRecordName);
+                $("#record_type_select option[value=" + this.previousRecordSet.attributes.Type + "]").attr('selected', 'selected');
+                $("#record_ttl_input").val(this.previousRecordSet.attributes.TTL);
+                var previousRecordValues = "";
+                $.each(this.previousRecordSet.attributes.ResourceRecords, function(index, value) {
+                    previousRecordValues = previousRecordValues + value + "\n";
+                })
+                $("#record_value_input").val(previousRecordValues.trim());
+            }
         },
 
         render: function() {
