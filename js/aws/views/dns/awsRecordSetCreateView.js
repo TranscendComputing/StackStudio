@@ -35,21 +35,46 @@ define([
             this.credentialId = options.cred_id;
             this.hostedZone = options.hosted_zone;
             this.previousRecordSet = options.record_set;
-            var dialogTitle = "Create Record Set";
-            if(this.previousRecordSet) {
-                dialogTitle = "Edit Record Set";
-            }
+
             var createView = this;
             var compiledTemplate = _.template(recordSetCreateTemplate);
             this.$el.html(compiledTemplate);
 
-            this.$el.dialog({
-                autoOpen: true,
-                title: dialogTitle,
-                resizable: false,
-                width: 550,
-                modal: true,
-                buttons: {
+            var dialogOptions = {
+                    autoOpen: true,
+                    title: "Edit Record Set",
+                    resizable: false,
+                    width: 550,
+                    modal: true
+            };
+
+            if(this.previousRecordSet) {
+                dialogOptions.title = "Edit Record Set";
+                dialogOptions.buttons = {
+                    Save: function () {
+                        createView.edit();
+                    },
+                    Cancel: function() {
+                        createView.cancel();
+                    }
+                }
+                var previousRecordName;
+                try {
+                    previousRecordName = this.previousRecordSet.attributes.name.split(this.hostedZone.attributes.domain)[0];
+                }catch(error) {
+                    previousRecordName = "";
+                }
+                $("#record_name_input").val() = previousRecordName;
+                $("#record_type_select option[value=" + this.previousRecordSet.attributes.Type + "]").attr('selected', 'selected');
+                $("#record_ttl_input").val() = this.previousRecordSet.attributes.TTL;
+                var previousRecordValues = "";
+                $.each(this.previousRecordSet.attributes.ResourceRecords, function(index, value) {
+                    previousRecordValues = previousRecordValues + value + "\n";
+                })
+                $("#record_value_input").val() = previousRecordValues.trim();
+            }else {
+                dialogOptions.title = "Create Record Set";
+                dialogOptions.buttons = {
                     Create: function () {
                         createView.create();
                     },
@@ -57,7 +82,9 @@ define([
                         createView.cancel();
                     }
                 }
-            });
+            }
+            this.$el.dialog(dialogOptions);
+
             $("#record_type_select").selectmenu({
                 change: function() {
                     createView.updateExample();
@@ -133,13 +160,16 @@ define([
             }
         },
 
-        create: function() {
+        create: function(editOptions) {
             var newRecordSet = this.recordSet;
             var options = {};
+            if(editOptions) {
+                options = editOptions;
+            }else {
+                options.change_batch = [];
+            }
             var issue = false;
-
             options.hosted_zone_id = this.hostedZone.attributes.id;
-            options.change_batch = [];
             var change = {};
             change["action"] = 'CREATE';
             if($("#record_name_input").val() != "") {
@@ -175,6 +205,20 @@ define([
             } else {
                 Common.errorDialog("Invalid Request", "Please supply all required fields.");
             }
+        },
+
+        edit: function() {
+            var options = {};
+            options.change_batch = [];
+            var previousChange = {
+                "action": 'DELETE',
+                "name": this.previousRecordSet.attributes.Name,
+                "type": this.previousRecordSet.attributes.Type,
+                "ttl": this.previousRecordSet.attributes.TTL,
+                "resource_records": this.previousRecordSet.attributes.ResourceRecords
+            };
+            options.change_batch.push(previousChange);
+            this.create(options);
         }
 
     });
