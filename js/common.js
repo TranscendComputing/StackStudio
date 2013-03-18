@@ -238,7 +238,7 @@ define(
          'views/errorDialog',
          'jquery-ui',
          'jquery-ui-plugins'
-         ], function ($, _, Backbone, CommandLineView, Router, ErrorDialog) {
+         ], function ($, _, Backbone, CommandLineView, Router, ErrorDialog) {            
     // Within this scope, jquery and jquery UI have been loaded.
 
     // Initialize routing
@@ -280,6 +280,8 @@ define(
         vent: vent,
 
         backbone: Backbone,
+
+        previousView: {},
         
         errorDialog: function(title, message) {
             new ErrorDialog({title: title, message: message});
@@ -287,6 +289,10 @@ define(
 
         // Function tracks previous state
         setPreviousState: function( view ) {
+            if(!$.isEmptyObject(this.previousView))
+            {
+                this.previousView.close();
+            }
             this.previousView = view
             this.previousState = document.location.hash;
         },

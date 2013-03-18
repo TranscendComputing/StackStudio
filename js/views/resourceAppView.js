@@ -42,7 +42,7 @@ define([
             this.$el.html(this.template);
             $("#resource_app").html(this.$el);
             this.delegateEvents(this.events);
-            ich.grabTemplates();
+            ich.refresh();
             $('button').button();
             $("#action_menu").menu();
             
@@ -110,6 +110,7 @@ define([
                 this.selectedId = id;
                 $("#action_menu li").removeClass("ui-state-disabled");
                 this.toggleActions();
+                var template = this.cloudProvider + "_resource_detail";
                 if (ich.templates.resource_detail) {
                     $("#details").html(ich.resource_detail(selectedModel.attributes));
                     $("#detail_tabs").tabs();

@@ -65,27 +65,29 @@ define([
 		},
 
 		initialize: function() {
-		    $("#main").html(this.el);
+            this.subViews = [];
+		},
+
+		render: function () {
+            $("#main").html(this.el);
             this.$el.html(this.template);
             
-		    var response = $.ajax({
+            var response = $.ajax({
                 url: "samples/cloudDefinitions.json",
                 async: false
             }).responseText;
-		    
-		    this.subServiceMenu = new SubServiceMenuView();
-		    
-		    this.cloudDefinitions = $.parseJSON(response);
-		    
-		    this.cloudCredentials = new CloudCredentials();
+            
+            this.subServiceMenu = new SubServiceMenuView();
+            
+            this.cloudDefinitions = $.parseJSON(response);
+            
+            this.cloudCredentials = new CloudCredentials();
             this.cloudCredentials.on('add', this.addCloud, this );
             this.cloudCredentials.on('reset', this.addAllClouds, this );
             
             //load user's cloud selections
             this.cloudCredentials.fetch();
-		},
 
-		render: function () {
             if(this.resourceApp) {
                 this.resourceApp.remove();
             } else {
@@ -214,7 +216,6 @@ define([
             $("#credential_select").selectmenu();
             $("#credential_nav").html($("#credential_select option:first").text());
             this.selectedCredential = $("#credential_select option:first").val();
-            
 		    //Remove previous region
             $("#regions").remove();
             //Add regions if cloud has regions
@@ -296,6 +297,18 @@ define([
                     }
                 });
             }
+        },
+        close: function(){
+            this.$el.empty();
+            this.undelegateEvents();
+            this.stopListening();
+            this.unbind();
+            // handle other unbinding needs, here
+            _.each(this.subViews, function(childView){
+              if (childView.close){
+                childView.close();
+              }
+            });
         }
 	});
 
@@ -303,8 +316,12 @@ define([
 
     Common.router.on('route:resources', function (cloud, type, subtype, id) {
         if(sessionStorage.account_id) {
-            if (!resourcesView) {
-                resourcesView = new ResourcesView();
+            if (this.previousView !== resourcesView) {
+                if(!resourcesView)
+                {
+                    resourcesView = new ResourcesView();
+                }
+                this.setPreviousState(resourcesView);
             }
             resourcesView.cloudPath = cloud;
             resourcesView.typePath = type;
@@ -315,7 +332,7 @@ define([
             Common.router.navigate("", {trigger: true});
             Common.errorDialog("Login Error", "You must login.");
         }
-    }, this);
+    }, Common);
 
     console.log("resource view defined");
 

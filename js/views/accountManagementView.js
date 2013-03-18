@@ -38,6 +38,18 @@ define([
             //Render my template
             this.$el.html(this.template);
             $("ul#account_management_menu").menu({role: "listbox"});
+        },
+        close: function(){
+            this.$el.empty();
+            this.undelegateEvents();
+            this.stopListening();
+            this.unbind();
+            // handle other unbinding needs, here
+            _.each(this.subViews, function(childView){
+              if (childView.close){
+                childView.close();
+              }
+            });
         }
     });
 
@@ -45,8 +57,14 @@ define([
     var accountManagementView;
 
     Common.router.on("route:accountManagement", function (action) {
-        if (!accountManagementView) {
-            accountManagementView = new AccountManagementView();
+        if (this.previousView !== accountManagementView) {
+            if(!accountManagementView)
+            {
+                accountManagementView = new AccountManagementView();
+            }else{
+                accountManagementView.render();
+            }
+            this.setPreviousState(accountManagementView);
         }
         switch(action)
         {
@@ -73,7 +91,7 @@ define([
                 }
                 break;
         }
-    }, this);
+    }, Common);
 
     return AccountManagementView;
 });

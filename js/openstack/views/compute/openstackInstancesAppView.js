@@ -75,7 +75,7 @@ define([
         events: {
             'click .create_button': 'createNew',
             'click #action_menu ul li': 'performAction',
-            'click #resource_table tr': "toggleActions",
+            'click #resource_table tr': "clickOne",
             'click #monitoring': 'refreshMonitors'
         },
         /**
@@ -109,7 +109,6 @@ define([
          * @return {nil}
          */
         toggleActions: function(e) {
-            this.clickOne(e);
             this.unloadMonitors();
             //Disable any needed actions
         },
