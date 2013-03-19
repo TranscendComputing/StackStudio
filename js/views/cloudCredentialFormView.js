@@ -20,7 +20,8 @@ define([
         el: "#form_area",
         /** @type {Object} Object of events for view to listen on */
         events: {
-            "change input": "contentChanged"
+            "change input": "contentChanged",
+            "change textarea": "contentChanged"
         },
         /** Constructor method for current view */
         initialize: function() {
@@ -41,7 +42,7 @@ define([
             var attributes = (this.model === undefined) ? {} : this.model.attributes;
             var form =  ich[template](attributes);
             //Render my template
-            this.$el.html(form);
+            this.$el.append(form);
         },        
 
         contentChanged: function(event) {
@@ -55,6 +56,14 @@ define([
                     view.model.attributes[this.id] = this.value;
                 }
             }, view);
+            $.each(view.$("textarea"), function() {
+                if(view.model.attributes[this.id] === undefined)
+                {
+                    view.model.attributes.cloud_attributes[view.cloudProvider + "_" + this.id] = this.value;
+                }else{
+                    view.model.attributes[this.id] = this.value;
+                }
+            }, view);            
             if(this.formIsComplete(form))
             {
                 Common.vent.trigger("form:completed");
@@ -64,7 +73,7 @@ define([
         formIsComplete: function(form) {
             var complete = true;
             $.each(form, function(index, value){
-                if(value.tagName === "INPUT")
+                if(value.tagName === "INPUT" || value.tagName === "TEXTAREA")
                 {
                     if(value.value === "")
                     {
@@ -75,8 +84,10 @@ define([
             });
             return complete;
         },
-        close: function() {
-            this.remove();
+        close: function(){
+            this.$el.empty();
+            this.undelegateEvents();
+            this.stopListening();
             this.unbind();
         }
     });
