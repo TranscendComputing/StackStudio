@@ -29,7 +29,8 @@ define([
         /** @type {Object} Object of events for view to listen on */
         events: {
             "click .list_item": "selectCloudAccount",
-            "click button#save_button": "saveServices"
+            "click button#save_button": "saveServices",
+            "click button#new_cloud_account": "newCloudAccount"
         },
         /** Constructor method for current view */
         initialize: function() {
@@ -123,6 +124,10 @@ define([
                 }
             }, view);
             return false;
+        },
+
+        newCloudAccount: function(){
+            
         },
 
         close: function(){

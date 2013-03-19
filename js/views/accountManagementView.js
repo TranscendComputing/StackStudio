@@ -58,12 +58,8 @@ define([
 
     Common.router.on("route:accountManagement", function (action) {
         if (this.previousView !== accountManagementView) {
-            if(!accountManagementView)
-            {
-                accountManagementView = new AccountManagementView();
-            }else{
-                accountManagementView.render();
-            }
+            this.unloadPreviousState();
+            accountManagementView = new AccountManagementView();
             this.setPreviousState(accountManagementView);
         }
         switch(action)

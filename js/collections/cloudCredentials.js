@@ -46,6 +46,7 @@ define([
          * @return {nil}
          */
 		create: function(model, options) {
+            var coll = this;
 		    var url = Common.apiUrl + "/identity/v1/accounts/" + sessionStorage.account_id + "/" + options.cloud_account_id + "/cloud_credentials";
 		    var cloudCredential = {"cloud_credential": model.attributes};
 		    $.ajax({
@@ -55,13 +56,20 @@ define([
                 dataType: 'json',
                 data: JSON.stringify(cloudCredential),
                 success: function(data) {
+                    var cloudCreds = [];
                     sessionStorage.cloud_credentials = JSON.stringify(data.account.cloud_credentials);
-                    Common.vent.trigger("cloudCredentialCreated");
+                    var cloudCredentials = JSON.parse(sessionStorage.cloud_credentials);
+                    $.each(cloudCredentials, function(index, value) {
+                        var cloudCred = new CloudCredential(value.cloud_credential);
+                        cloudCreds.push(cloudCred);
+                    });
+                    coll.reset(cloudCreds);
+                    Common.vent.trigger("cloudCredentialSaved");
                 },
                 error: function(jqXHR) {
                     Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
                 }
-            });
+            }, coll);
 		},
 		/**
          * Updates a users cloud credential
@@ -80,7 +88,7 @@ define([
                 data: JSON.stringify(cloudCredential),
                 success: function(data) {
                     sessionStorage.cloud_credentials = JSON.stringify(data.account.cloud_credentials);
-                    Common.vent.trigger("cloudCredentialUpdated");
+                    Common.vent.trigger("cloudCredentialSaved");
                 },
                 error: function(jqXHR) {
                     Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
@@ -103,6 +111,7 @@ define([
                 success: function(data) {
                     sessionStorage.cloud_credentials = JSON.stringify(data.account.cloud_credentials);
                     coll.remove(cloudCredential);
+                    Common.vent.trigger("cloudCredentialDeleted");
                 },
                 error: function(jqXHR) {
                     Common.errorDialog(jqXHR.statusText, jqXHR.responseText);

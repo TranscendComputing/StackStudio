@@ -16,9 +16,10 @@ define([
         'collections/cloudAccounts',
         'collections/cloudCredentials',        
         'views/cloudCredentialFormView',
+        'views/notificationDialogView',
         'jquery-plugins',
         'jquery-ui-plugins'
-], function( $, _, Backbone, Common, ich, managementCloudCredentialTemplate, CloudCredential, CloudAccounts, CloudCredentials, CloudCredentialFormView ) {
+], function( $, _, Backbone, Common, ich, managementCloudCredentialTemplate, CloudCredential, CloudAccounts, CloudCredentials, CloudCredentialFormView, NotificationDialogView ) {
 
     var CloudCredentialManagementView = Backbone.View.extend({
         /** @type {String} DOM element to attach view to */
@@ -42,6 +43,8 @@ define([
             this.render();
             //Add listener for form completion to enable buttons
             Common.vent.on("form:completed", this.registerNewCredential, this);
+            Common.vent.on("cloudCredentialSaved", this.notifyCreated, this);
+            Common.vent.on("cloudCredentialDeleted", this.notifyDeleted, this);
             //Add listeners and fetch db for credentials collection
             this.cloudCredentials.on( 'add', this.addOne, this );
             this.cloudCredentials.on( 'reset', this.addAll, this );
@@ -58,7 +61,7 @@ define([
         /** Add all of my own html elements */
         render: function () {
             //Render my template
-            this.$el.append(this.template);
+            this.$el.html(this.template);
             $("div#detail_tabs").tabs();
             $("button").button({
                 disabled: true
@@ -67,6 +70,10 @@ define([
         },
 
         renderCredentialForm: function() {
+            if(this.subViews.length !== 0)
+            {
+                this.subViews[0].close();
+            }
             this.credentialForm = new CloudCredentialFormView({model: this.selectedCloudCredential});
             $('button').button();
             $("button#save_credential").show();
@@ -110,6 +117,7 @@ define([
                 this.filterCredentialsOnAccount(this.selectedCloudAccount);
             }else{
                 this.addAll();
+                $("button#new_credential").button("option", "disabled", true);
             }
         },
 
@@ -139,6 +147,7 @@ define([
         saveCredential: function() {
             if(this.selectedCloudCredential.id === "")
             {
+                $("button.save_credential").button("option", "disabled", true);
                 this.cloudCredentials.create(this.selectedCloudCredential, {cloud_account_id: this.selectedCloudAccount.id});
             }else{
                 this.cloudCredentials.update(this.selectedCloudCredential);
@@ -150,13 +159,28 @@ define([
                 this.cloudCredentials.deleteCredential(this.selectedCloudCredential); 
             } 
         },
+
+        notifyCreated: function() {
+            var message = "Your new cloud credentials have been successfully saved.";
+            var title = "Credential Saved";
+            var notifDialog = new NotificationDialogView({dialog_title: title, message: message});
+        },
+
+        notifyDeleted: function() {
+            var message = "Your cloud credentials have been deleted.";
+            var title = "Credential Deleted";
+            var notifDialog = new NotificationDialogView({dialog_title: title, message: message});
+            this.subViews[0].close();
+            $("button#save_credential").hide();
+        },
+
         close: function(){
             this.$el.empty();
             this.undelegateEvents();
             this.stopListening();
             this.unbind();
             // handle other unbinding needs, here
-            _.each(this.childViews, function(childView){
+            _.each(this.subViews, function(childView){
               if (childView.close){
                 childView.close();
               }
