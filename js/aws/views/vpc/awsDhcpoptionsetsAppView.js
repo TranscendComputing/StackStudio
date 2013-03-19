@@ -47,7 +47,7 @@ define([
         
         type: "vpc",
         
-        subtype: "dhcpoptionsoets",
+        subtype: "dhcpoptionsets",
         
         CreateView: AwsDhcpOptionsSetCreateView,
                 
