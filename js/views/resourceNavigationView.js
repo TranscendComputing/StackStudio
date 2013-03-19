@@ -66,9 +66,6 @@ define([
 
 		initialize: function() {
             this.subViews = [];
-		},
-
-		render: function () {
             $("#main").html(this.el);
             this.$el.html(this.template);
             
@@ -87,6 +84,9 @@ define([
             
             //load user's cloud selections
             this.cloudCredentials.fetch();
+        },
+
+        render: function () {
 
             if(this.resourceApp) {
                 this.resourceApp.remove();
