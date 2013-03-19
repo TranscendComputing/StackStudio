@@ -9,7 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'views/dialogView'
+        'views/dialogView',
         'text!templates/aws/cloud_watch/awsAlarmCreateTemplate.html',
         '/js/aws/models/cloud_watch/awsAlarm.js',
         '/js/aws/collections/cloud_watch/awsMetrics.js',
