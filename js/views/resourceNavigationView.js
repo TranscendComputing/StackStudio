@@ -38,13 +38,13 @@ define([
 
 		template: _.template(resourcesTemplate),
 
-		cloudPath: undefined,
+        cloudProvider: undefined,
 
-		typePath: undefined,
+		type: undefined,
 
-		subtypePath:undefined,
+		subtype:undefined,
 
-		idPath: undefined,
+		resourceId: undefined,
 
         cloudDefinitions: undefined,
         
@@ -79,7 +79,6 @@ define([
             this.cloudDefinitions = $.parseJSON(response);
             
             this.cloudCredentials = new CloudCredentials();
-            this.cloudCredentials.on('add', this.addCloud, this );
             this.cloudCredentials.on('reset', this.addAllClouds, this );
             
             //load user's cloud selections
@@ -87,18 +86,17 @@ define([
         },
 
         render: function () {
-
             if(this.resourceApp) {
                 this.resourceApp.remove();
             } else {
                 var firstCloudProvider = this.cloudCredentials.first().attributes.cloud_provider;
                 firstCloudProvider = firstCloudProvider.toLowerCase();
-                if(this.cloudPath) {
-                    console.log("cloud path: "+this.cloudPath);
-                    Common.router.navigate("#resources/"+this.cloudPath, {trigger: false});
-                    if($("#"+this.cloudPath).length) {
-                        this.cloudSelection(this.cloudPath);
-                        Common.router.navigate("#resources/"+this.cloudPath, {trigger: false});
+                if(this.cloudProvider) {
+                    console.log("cloud path: "+this.cloudProvider);
+                    Common.router.navigate("#resources/"+this.cloudProvider, {trigger: false});
+                    if($("#"+this.cloudProvider).length) {
+                        this.cloudSelection(this.cloudProvider);
+                        Common.router.navigate("#resources/"+this.cloudProvider, {trigger: false});
                     }else {
                         Common.router.navigate("#resources/"+firstCloudProvider, {trigger: false});
                         this.cloudSelection(firstCloudProvider);
@@ -110,8 +108,7 @@ define([
                 }
             }    
 
-		    this.loadResourceApp(this.selectedCloud, this.typePath, this.subtypePath, this.idPath, this.selectedCredential);
-		    return this;
+		    this.loadResourceApp();
 		},
 
 		toggleResourceNav: function() {
@@ -180,12 +177,12 @@ define([
 		},
 
 		cloudSelection: function (cloudProvider) {
-            this.selectedCloud = cloudProvider;
+            this.cloudProvider = cloudProvider;
 		    var resourceNav = this;
 		    //Add the services of the cloud to the resource table
 		    var row = 1;
 		    $("#resource_table").empty();
-		    $.each(resourceNav.cloudDefinitions[cloudProvider].services, function(index, service) {
+		    $.each(resourceNav.cloudDefinitions[this.cloudProvider].services, function(index, service) {
 		        $("#row"+row).append($("<td></td>").attr({
                     "id": service.type,
                     "class": "resources"
@@ -193,7 +190,7 @@ define([
                 $("#"+service.type).append($("<a></a>").attr({
                     "id": service.type+"Link",
                     "class": "resourceLink",
-                    "href": "/#resources/"+cloudProvider+"/"+service.type
+                    "href": "/#resources/"+resourceNav.cloudProvider+"/"+service.type
                 }).text(service.name));
                 row++;
                 //reset row if greater than 3
@@ -202,39 +199,70 @@ define([
 		        }
 		    });
 
-		    $("#cloud_nav").html(resourceNav.cloudDefinitions[cloudProvider].name+" ->");
+		    $("#cloud_nav").html(this.cloudDefinitions[this.cloudProvider].name+" ->");
 
-		    //Refresh previous select
-		    $("#credentials").remove();
-		    $("#cloud_specs").append('<span id="credentials">Credentials: <select id="credential_select" class="cloud_spec_select"></select></span>');
-		    //Add credentials for this cloud
-		    this.cloudCredentials.each(function (credential) {
-		        if(credential.get("cloud_provider").toLowerCase() === cloudProvider) {
-		            $('#credential_select').append($("<option value='" + credential.get("id") + "'></option>").text(credential.get("name")));
-		        }
-		    });
-            $("#credential_select").selectmenu();
-            $("#credential_nav").html($("#credential_select option:first").text());
-            this.selectedCredential = $("#credential_select option:first").val();
-		    //Remove previous region
+            this.refreshCloudSpecs();       
+		},
+
+        refreshCloudSpecs: function() {
+            this.refreshCredentials();
+            this.refreshRegions();
+        },
+
+        refreshCredentials: function() {
+            var resourceNav = this;
+            var credentialFound = false;
+            //Remove previous credentials
+            $("#credentials").remove();
+            $("#cloud_specs").append('<span id="credentials">Credentials: <select id="credential_select" class="cloud_spec_select"></select></span>');
+            //Add credentials for this cloud
+            this.cloudCredentials.each(function (credential) {
+                if(credential.get("cloud_provider").toLowerCase() === resourceNav.cloudProvider) {
+                    if(resourceNav.selectedCredential === credential.get("id")) {
+                        $('#credential_select').append($("<option value='" + credential.get("id") + "' selected></option>").text(credential.get("name")));
+                        $("#credential_nav").html(credential.get("name"));
+                        credentialFound = true;
+                    }else {
+                        $('#credential_select').append($("<option value='" + credential.get("id") + "'></option>").text(credential.get("name")));
+                    }
+                    
+                }
+            });
+            $("#credential_select").selectmenu({
+                change: function() {
+                    resourceNav.selectedCredential = $("#credential_select").val();
+                    resourceNav.refreshCloudSpecs();
+                    resourceNav.render();
+                }
+            });
+
+            if(!credentialFound) {
+                $("#credential_nav").html($("#credential_select option:first").text());
+                this.selectedCredential = $("#credential_select option:first").val();
+            }
+        },
+
+        refreshRegions: function() {
+            var resourceNav = this;
+            //Remove previous region
             $("#regions").remove();
             //Add regions if cloud has regions
-		    if(resourceNav.cloudDefinitions[cloudProvider].regions.length) {
+            if(resourceNav.cloudDefinitions[this.cloudProvider].regions.length) {
                 $("#cloud_specs").append('<span id="regions">Region: <select id="region_select" class="cloud_spec_select"></select></span>');
-                $.each(resourceNav.cloudDefinitions[cloudProvider].regions, function(index, region) {
+                $.each(resourceNav.cloudDefinitions[this.cloudProvider].regions, function(index, region) {
                     $('#region_select').append($("<option></option>").attr("value", region.zone).text(region.name));
                 });
                 $("#region_select").selectmenu();
                 $("#region_nav").html($("#region_select option:first").text() + " ->");
                 $("#region_nav").show();
-		    }else {
-		        $("region_nav").hide();
-		    }
-		},
+            }else {
+                $("region_nav").hide();
+            }
+        },
 
 		resourceClick: function(id) {
 			var selectionId = id.target.id;
-			this.typePath = selectionId;
+			this.type = selectionId;
 			this.resourceSelect(selectionId);
 		},
 
@@ -250,19 +278,18 @@ define([
 	        });
 		},
 
-		loadResourceApp: function(cloudProvider, type, subtype, id, credId) {
+		loadResourceApp: function() {
 		    var resourceNav = this;
 		    var serviceObject;
-            if(cloudProvider) {
-                if (!type) {
-                    type = "compute";
-                    subtype = "instances";
+            if(this.cloudProvider) {
+                if (!this.type) {
+                    this.type = "compute";
+                    this.subtype = "instances";
                 }
-                
-                $.each(this.cloudDefinitions[cloudProvider].services, function(index, service) {
-                    if (service.type === type) {
-                        if(!subtype) {
-                            subtype = service.defaultSubtype;
+                $.each(this.cloudDefinitions[this.cloudProvider].services, function(index, service) {
+                    if (service.type === resourceNav.type) {
+                        if(!resourceNav.subtype) {
+                            resourceNav.subtype = service.defaultSubtype;
                         }
                         serviceObject = service;
                     }
@@ -270,7 +297,7 @@ define([
                 
                 //Load SubServiceMenu if applies
                 if(serviceObject.hasOwnProperty("subServices") && serviceObject.subServices.length > 0) {
-                    this.subServiceMenu.render({service: serviceObject, cloudProvider: cloudProvider, selectedSubtype: subtype});
+                    this.subServiceMenu.render({service: serviceObject, cloudProvider: this.cloudProvider, selectedSubtype: this.subtype});
                     $("#service_menu").show();
                 }else {
                     $("#service_menu").hide();
@@ -278,26 +305,24 @@ define([
                 }
 
                 //Capitalize first letter of subtype for the file name
-                var capSubtype = subtype.charAt(0).toUpperCase() + subtype.slice(1);
-                var appPath = "../"+cloudProvider+"/views/"+type+"/"+cloudProvider+capSubtype+"AppView";
+                var capSubtype = this.subtype.charAt(0).toUpperCase() + this.subtype.slice(1);
+                var appPath = "../"+this.cloudProvider+"/views/"+this.type+"/"+this.cloudProvider+capSubtype+"AppView";
 
                 require([appPath], function (AppView) {
-                    if (this.resourceApp instanceof AppView) {
-                        return;
-                    }
-                    var resourceAppView = new AppView({cred_id: credId});
-                    resourceAppView.cloudProvider = cloudProvider;
+                    var resourceAppView = new AppView({cred_id: resourceNav.selectedCredential});
+                    resourceAppView.cloudProvider = resourceNav.cloudProvider;
                     resourceNav.resourceApp = resourceAppView;
-                    resourceNav.resourceSelect(type);
-                    if(id) {
-                        Common.router.navigate("#resources/"+cloudProvider+"/"+type+"/"+subtype+"/"+id, {trigger: false});
-                        resourceAppView.selectedId = id;
+                    resourceNav.resourceSelect(resourceNav.type);
+                    if(resourceNav.resourceId) {
+                        Common.router.navigate("#resources/"+resourceNav.cloudProvider+"/"+resourceNav.type+"/"+resourceNav.subtype+"/"+resourceNav.resourceId, {trigger: false});
+                        resourceAppView.selectedId = resourceNav.resourceId;
                     }else {
-                        Common.router.navigate("#resources/"+cloudProvider+"/"+type+"/"+subtype, {trigger: false});
+                        Common.router.navigate("#resources/"+resourceNav.cloudProvider+"/"+resourceNav.type+"/"+resourceNav.subtype, {trigger: false});
                     }
                 });
             }
         },
+
         close: function(){
             this.$el.empty();
             this.undelegateEvents();
@@ -323,10 +348,10 @@ define([
                 }
                 this.setPreviousState(resourcesView);
             }
-            resourcesView.cloudPath = cloud;
-            resourcesView.typePath = type;
-            resourcesView.subtypePath = subtype;
-            resourcesView.idPath = id;
+            resourcesView.cloudProvider = cloud;
+            resourcesView.type = type;
+            resourcesView.subtype = subtype;
+            resourcesView.resourceId = id;
             resourcesView.render();
         }else {
             Common.router.navigate("", {trigger: true});
