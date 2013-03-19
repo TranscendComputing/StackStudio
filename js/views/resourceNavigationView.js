@@ -107,7 +107,6 @@ define([
                     this.cloudSelection(firstCloudProvider);
                 }
             }    
-
 		    this.loadResourceApp();
 		},
 
@@ -309,6 +308,12 @@ define([
                 var appPath = "../"+this.cloudProvider+"/views/"+this.type+"/"+this.cloudProvider+capSubtype+"AppView";
 
                 require([appPath], function (AppView) {
+                    if (resourceNav.resourceApp instanceof AppView) {
+                        resourceNav.resourceApp.credentialId = resourceNav.selectedCredential;
+                        resourceNav.resourceApp.render();
+                        return;
+                    }
+                    
                     var resourceAppView = new AppView({cred_id: resourceNav.selectedCredential});
                     resourceAppView.cloudProvider = resourceNav.cloudProvider;
                     resourceNav.resourceApp = resourceAppView;
