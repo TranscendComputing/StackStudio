@@ -9,8 +9,9 @@ define([
         'jquery',
         'backbone',
         'models/cloudCredential',
-        'common'
-], function( $, Backbone, CloudCredential, Common ) {
+        'common',
+        'messenger'
+], function( $, Backbone, CloudCredential, Common, Messenger ) {
 	'use strict';
 
 	// Cloud Credential Collection
@@ -46,10 +47,20 @@ define([
          * @return {nil}
          */
 		create: function(model, options) {
+            Messenger.options = {
+                extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-right',
+                theme: 'future'
+            };
             var coll = this;
 		    var url = Common.apiUrl + "/identity/v1/accounts/" + sessionStorage.account_id + "/" + options.cloud_account_id + "/cloud_credentials";
 		    var cloudCredential = {"cloud_credential": model.attributes};
-		    $.ajax({
+            Messenger().run({
+                errorMessage: "Unable to save credentials.",
+                successMessage: "Credentials saved.",
+                showCloseButton: true,
+                hideAfter: 2,
+                hideOnNavigate: true
+            },{
                 url: url,
                 type: 'POST',
                 contentType: 'application/x-www-form-urlencoded',
@@ -64,10 +75,6 @@ define([
                         cloudCreds.push(cloudCred);
                     });
                     coll.reset(cloudCreds);
-                    Common.vent.trigger("cloudCredentialSaved");
-                },
-                error: function(jqXHR) {
-                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
                 }
             }, coll);
 		},
@@ -80,7 +87,13 @@ define([
 		update: function(model, options) {
 		    var url = Common.apiUrl + "/identity/v1/accounts/" + sessionStorage.account_id + "/cloud_credentials/" + model.attributes.id + "?_method=PUT";
 		    var cloudCredential = {"cloud_credential": model.attributes};
-		    $.ajax({
+            Messenger().run({
+                errorMessage: "Unable to save credentials.",
+                successMessage: "Credentials saved.",
+                showCloseButton: true,
+                hideAfter: 2,
+                hideOnNavigate: true
+            },{
                 url: url,
                 type: 'POST',
                 contentType: 'application/x-www-form-urlencoded',
@@ -88,10 +101,6 @@ define([
                 data: JSON.stringify(cloudCredential),
                 success: function(data) {
                     sessionStorage.cloud_credentials = JSON.stringify(data.account.cloud_credentials);
-                    Common.vent.trigger("cloudCredentialSaved");
-                },
-                error: function(jqXHR) {
-                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
                 }
             });
 		},
@@ -103,7 +112,13 @@ define([
 		deleteCredential: function(cloudCredential) {
             var coll = this;
 		    var url = Common.apiUrl + "/identity/v1/accounts/" + sessionStorage.account_id + "/cloud_credentials/" + cloudCredential.id + "?_method=DELETE";
-		    $.ajax({
+            Messenger().run({
+                errorMessage: "Unable to delete credentials.",
+                successMessage: "Credentials deleted.",
+                showCloseButton: true,
+                hideAfter: 2,
+                hideOnNavigate: true
+            },{
                 url: url,
                 type: 'POST',
                 dataType: 'json',
@@ -112,11 +127,8 @@ define([
                     sessionStorage.cloud_credentials = JSON.stringify(data.account.cloud_credentials);
                     coll.remove(cloudCredential);
                     Common.vent.trigger("cloudCredentialDeleted");
-                },
-                error: function(jqXHR) {
-                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
                 }
-            }, coll);
+            });
 		}
 	
 	

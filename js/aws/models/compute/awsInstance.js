@@ -103,7 +103,16 @@ define([
         
         sendPostAction: function(url, options) {
             var instance = {"instance": options};
-            $.ajax({
+            Messenger.options = {
+                extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-right',
+                theme: 'future'
+            };
+            Messenger().run({
+                successMessage: "New instance launched.",
+                showCloseButton: true,
+                hideAfter: 4,
+                hideOnNavigate: true
+            },{
                 url: url,
                 type: 'POST',
                 contentType: 'application/x-www-form-urlencoded',

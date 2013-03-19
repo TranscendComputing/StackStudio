@@ -57,8 +57,7 @@ define([
 		    } else {
                 $("#sidebar").empty();
                 $("#sidebar").hide();
-                $("#main").load('/templates/dashboard.html');
-                console.log("Running default route.  Dashboard");    
+                this.trigger("route:dashboard");    
 		    }
 		},
 		

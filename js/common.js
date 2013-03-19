@@ -32,6 +32,9 @@ requirejs.config({
         'base64': {
             exports: 'Base64'
         },
+        'FeedEk': {
+            deps: ['jquery']
+        },
         'github': {
             deps: ['base64', 'underscore'],
             exports: 'Github'
@@ -74,6 +77,9 @@ requirejs.config({
         'morris': {
             deps: ['jquery', 'raphael'],
             exports: 'Morris'
+        },
+        'messenger': {
+            exports: 'Messenger'
         },
         'raphael': {
             deps: ['jquery'],
@@ -130,6 +136,7 @@ requirejs.config({
         'jquery.form': 'jquery.form',
         'jquery.terminal': 'jquery.terminal-0.4.22',
         'jquery.mousewheel': 'jquery.mousewheel-min',
+        'messenger': 'messenger.min',
         //'jquery.jstree': '//cachedcommons.org/cache/jquery-jstree/1.0.0/javascripts/jquery-jstree-min',
         'raphael': 'raphael-min',
         'spinner': 'spin.min',

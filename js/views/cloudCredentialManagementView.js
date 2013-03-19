@@ -43,7 +43,6 @@ define([
             this.render();
             //Add listener for form completion to enable buttons
             Common.vent.on("form:completed", this.registerNewCredential, this);
-            Common.vent.on("cloudCredentialSaved", this.notifyCreated, this);
             Common.vent.on("cloudCredentialDeleted", this.notifyDeleted, this);
             //Add listeners and fetch db for credentials collection
             this.cloudCredentials.on( 'add', this.addOne, this );
@@ -160,16 +159,7 @@ define([
             } 
         },
 
-        notifyCreated: function() {
-            var message = "Your new cloud credentials have been successfully saved.";
-            var title = "Credential Saved";
-            var notifDialog = new NotificationDialogView({dialog_title: title, message: message});
-        },
-
         notifyDeleted: function() {
-            var message = "Your cloud credentials have been deleted.";
-            var title = "Credential Deleted";
-            var notifDialog = new NotificationDialogView({dialog_title: title, message: message});
             this.subViews[0].close();
             $("button#save_credential").hide();
         },

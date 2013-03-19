@@ -22,7 +22,8 @@ require(['./common'], function (common) {
              // 'views/projectListItemView',
              'views/projectEditView',
              'views/resourceNavigationView',
-             'views/cloudCredentialView'
+             'views/cloudCredentialView',
+             'views/dashboardView'
             ], function(NavLogin) {
         
         var navLogin = new NavLogin();
