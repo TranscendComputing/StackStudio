@@ -62,7 +62,6 @@ define([
         },
         
         addOne: function( model ) {
-            console.log(model);
             if (model.get(this.modelStringIdentifier) === "") {
                 return;
             }
