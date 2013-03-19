@@ -289,12 +289,15 @@ define(
 
         // Function tracks previous state
         setPreviousState: function( view ) {
+            this.previousView = view;
+            this.previousState = document.location.hash;
+        },
+
+        unloadPreviousState: function() {
             if(!$.isEmptyObject(this.previousView))
             {
                 this.previousView.close();
             }
-            this.previousView = view
-            this.previousState = document.location.hash;
         },
 
         gotoPreviousState: function() {

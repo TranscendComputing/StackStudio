@@ -117,6 +117,7 @@ define([
                 this.filterCredentialsOnAccount(this.selectedCloudAccount);
             }else{
                 this.addAll();
+                $("button#new_credential").button("option", "disabled", true);
             }
         },
 

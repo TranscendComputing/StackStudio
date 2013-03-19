@@ -347,10 +347,8 @@ define([
     Common.router.on('route:resources', function (cloud, type, subtype, id) {
         if(sessionStorage.account_id) {
             if (this.previousView !== resourcesView) {
-                if(!resourcesView)
-                {
-                    resourcesView = new ResourcesView();
-                }
+                this.unloadPreviousState();
+                resourcesView = new ResourcesView();
                 this.setPreviousState(resourcesView);
             }
             resourcesView.cloudProvider = cloud;
