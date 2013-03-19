@@ -62,6 +62,9 @@ define([
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
             }
+            if(options.region) {
+                this.region = options.region;
+            }
             this.render();
             
             var elasticIpApp = this;
@@ -80,13 +83,13 @@ define([
             switch(event.target.text)
             {
             case "Release Address":
-                elasticIp.destroy(this.credentialId);
+                elasticIp.destroy(this.credentialId, this.region);
                 break;
             case "Associate Address":
-                new AwsElasticIpAssociate({cred_id: this.credentialId, elastic_ip: elasticIp});
+                new AwsElasticIpAssociate({cred_id: this.credentialId, region: this.region, elastic_ip: elasticIp});
                 break;
             case "Disassociate Address":
-                elasticIp.disassociateAddress(this.credentialId);
+                elasticIp.disassociateAddress(this.credentialId, this.region);
                 break;
             }
         }

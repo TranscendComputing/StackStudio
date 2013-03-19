@@ -43,8 +43,8 @@ define([
             return resourceRecords;
         },
 
-        change: function(options, credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/dns/record_sets/change?_method=PUT&cred_id=" + credentialId;
+        change: function(options, credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/dns/record_sets/change?_method=PUT&cred_id=" + credentialId + "&region=" + region;
             this.sendPostAction(url, options);
         },
 

@@ -24,6 +24,8 @@ define([
 		
         credentialId: undefined,
 
+        region: undefined,
+
 		template: _.template(vpcCreateTemplate),
 		
         vpc: new Vpc(),
@@ -34,6 +36,7 @@ define([
 
 		initialize: function(options) {
 			this.credentialId = options.cred_id;
+            this.region = options.region;
             var createView = this;
             this.$el.html(this.template);
 
@@ -74,7 +77,7 @@ define([
             }
 
             if(!issue) {
-                newVpc.create(options, this.credentialId)
+                newVpc.create(options, this.credentialId, this.region);
                 this.$el.dialog('close');
             }else {
                 Common.errorDialog("Invalid Request", "Please supply all required fields.");

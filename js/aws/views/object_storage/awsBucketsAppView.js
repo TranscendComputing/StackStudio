@@ -76,6 +76,9 @@ define([
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
             }
+            if(options.region) {
+                this.region = options.region;
+            }
             this.render();
             
             var objectStorageApp = this;
@@ -99,7 +102,7 @@ define([
             switch(event.target.text)
             {
             case "Delete":
-                directory.destroy(this.credentialId);
+                directory.destroy(this.credentialId, this.region);
                 break;
             }
         },
@@ -139,6 +142,7 @@ define([
                         "<input id='download_file_name' name='file' value=''/>" +
                         "<input name='directory' value='" + this.selectedId + "'/>" +
                         "<input name='cred_id' value='" + this.credentialId + "'/>" +
+                        "<input name='region' value='" + this.region + "'/>" +
                     "</form>");
                 $("#object_refresh_button").button();
                 $("#object_upload_button").button();
@@ -174,7 +178,7 @@ define([
             $("#object_action_menu li").addClass("ui-state-disabled");
             this.files = new Files();
             this.files.on( 'reset', this.addAllFiles, this );
-            this.files.fetch({ data: $.param({ cred_id: this.credentialId, directory: this.selectedId}) });
+            this.files.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region, directory: this.selectedId}) });
         },
         
         openFileDialog: function() {
@@ -215,6 +219,7 @@ define([
                                         "<input id='file_dialog' name='file_upload' type='file'>" +
                                         "<input name='directory' value='" + this.selectedId + "'>" +
                                         "<input name='cred_id' value='" + this.credentialId + "'>" +
+                                        "<input name='region' value='" + this.region + "'>" +
                                     "</form>");
         },
         
@@ -242,7 +247,7 @@ define([
                 switch(event.target.text)
                 {
                 case "Delete":
-                    this.selectedFile.destroy(this.selectedId, this.credentialId);
+                    this.selectedFile.destroy(this.selectedId, this.credentialId, this.region);
                     break;
                 case "Download":
                     $("#download_file_name").attr("value", this.selectedFile.attributes.key);

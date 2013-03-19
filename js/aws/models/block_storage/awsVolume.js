@@ -41,28 +41,28 @@ define([
 			type: ''
 		},
 		
-		create: function(options, credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/block_storage/volumes/create?_method=PUT&cred_id=" + credentialId;
+		create: function(options, credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/block_storage/volumes/create?_method=PUT&cred_id=" + credentialId + "&region=" + region;
             this.sendPostAction(url, options);
         },
         
-        attach: function(credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/block_storage/volumes/attach?cred_id=" + credentialId;
+        attach: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/block_storage/volumes/attach?cred_id=" + credentialId + "&region=" + region;
             this.sendPostAction(url, this.attributes);
         },
         
-        detach: function(credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/block_storage/volumes/detach?cred_id=" + credentialId;
+        detach: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/block_storage/volumes/detach?cred_id=" + credentialId + "&region=" + region;
             this.sendPostAction(url, this.attributes);
         },
         
-        forceDetach: function(credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/block_storage/volumes/force_detach?cred_id=" + credentialId;
+        forceDetach: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/block_storage/volumes/force_detach?cred_id=" + credentialId + "&region=" + region;
             this.sendPostAction(url, this.attributes);
         },
         
-        destroy: function(credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/block_storage/volumes/delete?_method=DELETE&cred_id=" + credentialId;
+        destroy: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/block_storage/volumes/delete?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
             this.sendPostAction(url, this.attributes);
         },
 		

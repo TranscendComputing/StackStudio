@@ -28,6 +28,8 @@ define([
 	var BucketCreateView = DialogView.extend({
 
 		credentialId: undefined,
+
+        region: undefined,
 		
 		template: _.template(bucketCreateTemplate),
 		
@@ -41,6 +43,7 @@ define([
 
 		initialize: function(options) {
 		    this.credentialId = options.cred_id;
+            this.region = options.region;
 		    var createView = this;
             this.$el.html(this.template);
 
@@ -90,7 +93,7 @@ define([
 		    }
 		    
 		    if(!issue) {
-		        newBucket.create(options, this.credentialId);
+		        newBucket.create(options, this.credentialId, this.region);
 		        this.$el.dialog('close');
 		    }else {
 		        Common.errorDialog("Invalid Request", "Please supply all required fields.");

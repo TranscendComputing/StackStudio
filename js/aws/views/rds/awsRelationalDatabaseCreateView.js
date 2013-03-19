@@ -23,6 +23,8 @@ define([
 
         credentialId: undefined,
 
+        region: undefined,
+
         currentViewIndex: undefined,
  
         events: {
@@ -31,6 +33,7 @@ define([
 
         initialize: function(options) {
             this.credentialId = options.cred_id;
+            this.region = options.region;
         },
 
         render: function() {

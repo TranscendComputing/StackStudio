@@ -61,6 +61,9 @@ define([
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
             }
+            if(options.region) {
+                this.region = options.region;
+            }
             this.render();
             
             var keyPairApp = this;
@@ -84,7 +87,7 @@ define([
             switch(event.target.text)
             {
             case "Delete Key Pair":
-                keyPair.destroy(this.credentialId);
+                keyPair.destroy(this.credentialId, this.region);
                 break;
             }
         }

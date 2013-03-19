@@ -52,6 +52,9 @@ define([
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
             }
+            if(options.region) {
+                this.region = options.region;
+            }
             this.render();
             
             var rdsApp = this;
@@ -70,7 +73,7 @@ define([
             switch(event.target.text)
             {
             case "Delete":
-                rds.destroy(this.credentialId);
+                rds.destroy(this.credentialId, this.region);
                 break;
             }
         }

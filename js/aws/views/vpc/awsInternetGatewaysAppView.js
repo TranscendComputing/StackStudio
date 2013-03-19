@@ -63,6 +63,9 @@ define([
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
             }
+            if(options.region) {
+                this.region = options.region;
+            }
             this.render();
 
             var internetGatewayApp = this;
@@ -89,14 +92,14 @@ define([
             switch(event.target.text)
             {
             case "Delete":
-                internetGateway.destroy(this.credentialId);
+                internetGateway.destroy(this.credentialId, this.region);
                 break;
             case "Attach to VPC":
-                var attachView = new InternetGatewayAttachView({cred_id: this.credentialId, internet_gateway: internetGateway});
+                var attachView = new InternetGatewayAttachView({cred_id: this.credentialId, region: this.region, internet_gateway: internetGateway});
                 attachView.render();
                 break;
             case "Detach from VPC":
-                var detachView = new InternetGatewayDetachView({cred_id: this.credentialId, internet_gateway: internetGateway});
+                var detachView = new InternetGatewayDetachView({cred_id: this.credentialId, region: this.region, internet_gateway: internetGateway});
                 detachView.render();
                 break;
             }

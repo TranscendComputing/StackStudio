@@ -29,6 +29,8 @@ define([
     var VolumeAttachView = DialogView.extend({
         
         credentialId: undefined,
+
+        region: undefined,
         
         volume: undefined,
         
@@ -40,6 +42,7 @@ define([
 
         initialize: function(options) {
             this.credentialId = options.cred_id;
+            this.region = options.region;
             this.volume = options.volume;
             var attachView = this;
             var compiledTemplate = _.template(volumeAttachTemplate);
@@ -69,7 +72,7 @@ define([
             $("#instance_zone_message").text("in " + this.volume.attributes.availability_zone);
             $("#instance_select").selectmenu();
             this.instances.on( 'reset', this.addAllInstances, this );
-            this.instances.fetch({ data: $.param({ cred_id: this.credentialId, filters: {"availability-zone": this.volume.attributes.availability_zone}}) });
+            this.instances.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region, filters: {"availability-zone": this.volume.attributes.availability_zone}}) });
         },
 
         render: function() {
@@ -112,7 +115,7 @@ define([
             }
             
             if(!alert) {
-                this.volume.attach(this.credentialId);
+                this.volume.attach(this.credentialId, this.region);
                 this.$el.dialog('close'); 
             } 
         }

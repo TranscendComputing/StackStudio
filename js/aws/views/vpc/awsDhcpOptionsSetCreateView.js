@@ -23,6 +23,8 @@ define([
     var DhcpOptionsSetCreateView = DialogView.extend({
 
         credentialId: undefined,
+
+        region: undefined,
         
         template: _.template(dhcpOptionSetCreateTemplate),
 
@@ -34,6 +36,7 @@ define([
 
         initialize: function(options) {
             this.credentialId = options.cred_id;
+            this.region = options.region;
         },
 
         render: function() {
@@ -78,7 +81,7 @@ define([
                 options.dhcp_configuration_set["netbios-node-type"] = $("#netbios_node_type_input").val();
             }
 
-            dhcpOption.create(options, this.credentialId);
+            dhcpOption.create(options, this.credentialId, this.region);
             this.$el.dialog('close');
         }
 

@@ -20,6 +20,8 @@ define([
     var AwsElasticIPCreateView = DialogView.extend({
         
         credentialId: undefined,
+
+        region: undefined,
         
         instances: new Instances(),
         
@@ -29,6 +31,7 @@ define([
 
         initialize: function(options) {
             this.credentialId = options.cred_id;
+            this.region = options.region;
             this.elasticIp = options.elastic_ip;
             var associateView = this;
             var compiledTemplate = _.template(elasticIPAssociateTemplate);
@@ -53,7 +56,7 @@ define([
             $("#instance_select").selectmenu();
             
             this.instances.on( 'reset', this.addAllInstances, this );
-            this.instances.fetch({ data: $.param({ cred_id: this.credentialId}) });
+            this.instances.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }) });
         },
 
         render: function() {
@@ -79,7 +82,7 @@ define([
             }
 
             if(!alert) {
-                elasticIp.associateAddress(this.credentialId);
+                elasticIp.associateAddress(this.credentialId, this.region);
                 this.$el.dialog('close');
             }
         }

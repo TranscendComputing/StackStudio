@@ -37,8 +37,8 @@ define([
             version: ''
         },
         
-        destroy: function(directoryName, credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/object_storage/directory/file/delete?_method=DELETE&directory=" + directoryName + "&file=" + this.attributes.key + "&cred_id=" + credentialId;
+        destroy: function(directoryName, credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/object_storage/directory/file/delete?_method=DELETE&directory=" + directoryName + "&file=" + this.attributes.key + "&cred_id=" + credentialId + "&region=" + region;
             $.ajax({
                 url: url,
                 type: 'POST',

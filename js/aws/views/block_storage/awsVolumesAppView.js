@@ -83,6 +83,9 @@ define([
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
             }
+            if(options.region) {
+                this.region = options.region;
+            }
             this.render();
             
             var volumeApp = this;
@@ -109,19 +112,19 @@ define([
             switch(event.target.text)
             {
             case "Delete Volume":
-                volume.destroy(this.credentialId);
+                volume.destroy(this.credentialId, this.region);
                 break;
             case "Attach Volume":
-                new AwsVolumeAttachView({cred_id: this.credentialId, volume: volume});
+                new AwsVolumeAttachView({cred_id: this.credentialId, region: this.region, volume: volume});
                 break;
             case "Detach Volume":
-                volume.detach(this.credentialId);
+                volume.detach(this.credentialId, this.region);
                 break;
             case "Force Detach":
-                volume.forceDetach(this.credentialId);
+                volume.forceDetach(this.credentialId, this.region);
                 break;
             case "Create Snapshot":
-                new AwsSnapshotCreateView({cred_id: this.credentialId, volume: volume});
+                new AwsSnapshotCreateView({cred_id: this.credentialId, region: this.region, volume: volume});
                 break;
             }
         },
@@ -167,7 +170,8 @@ define([
             var monitorTime = JSON.parse(monitorTimeValue);
 
             var metricStatisticOptions = {
-                cred_id: this.credentialId, 
+                cred_id: this.credentialId,
+                region: this.region,
                 time_range: monitorTime.time_range, 
                 namespace: "AWS/EBS",
                 period: monitorTime.period,

@@ -41,13 +41,13 @@ define([
             db_subnet_group_name: ''
         },
         
-        create: function(options, credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/rds/databases/create?_method=PUT&cred_id=" + credentialId;
+        create: function(options, credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/rds/databases/create?_method=PUT&cred_id=" + credentialId + "&region=" + region;
             this.sendPostAction(url, options);
         },
         
-        destroy: function(credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/rds/databases/delete?_method=DELETE&cred_id=" + credentialId;
+        destroy: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/rds/databases/delete?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
             this.sendPostAction(url, this.attributes);
         },
         

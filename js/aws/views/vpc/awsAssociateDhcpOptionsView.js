@@ -22,6 +22,8 @@ define([
         
         credentialId: undefined,
 
+        region: undefined,
+
         template: _.template(associateDhcpOptionTemplate),
 
         vpc: undefined,
@@ -34,6 +36,7 @@ define([
 
         initialize: function(options) {
             this.credentialId = options.cred_id;
+            this.region = options.region;
             this.vpc = options.vpc;
             var associateView = this;
             this.$el.html(this.template);
@@ -58,7 +61,7 @@ define([
             $("#dhcp_options_select").selectmenu();
 
             this.dhcps.on( 'reset', this.addAllDhcpOptions, this );
-            this.dhcps.fetch({ data: $.param({ cred_id: this.credentialId}) });
+            this.dhcps.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }) });
         },
 
         render: function() {
@@ -88,7 +91,7 @@ define([
             }
 
             if(!issue) {
-                associateVpc.associateDhcpOptions(options, this.credentialId);
+                associateVpc.associateDhcpOptions(options, this.credentialId, this.region);
                 this.$el.dialog('close');
             }else {
                 Common.errorDialog("Invalid Request", "Please supply all required fields.");

@@ -20,6 +20,8 @@ define([
     var InternetGatewayAttachView = DialogView.extend({
 
         credentialId: undefined,
+
+        region: undefined,
         
         template: _.template(internetGatewayAttachTemplate),
 
@@ -33,6 +35,7 @@ define([
 
         initialize: function(options) {
             this.credentialId = options.cred_id;
+            this.region = options.region;
             this.internetGateway = options.internet_gateway;
         },
 
@@ -58,7 +61,7 @@ define([
             });
             $("#vpc_select").selectmenu();
             this.vpcs.on('reset', this.addAllVpcs, this);
-            this.vpcs.fetch({ data: $.param({ cred_id: this.credentialId}) });
+            this.vpcs.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }) });
         },
 
         addAllVpcs: function() {
@@ -79,7 +82,7 @@ define([
             }
 
             if(!issue) {
-                internetGateway.attach(options, this.credentialId);
+                internetGateway.attach(options, this.credentialId, this.region);
                 this.$el.dialog('close');
             }else {
                 Common.errorDialog("Invalid Request", "Please supply all required fields.");

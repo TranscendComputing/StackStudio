@@ -81,6 +81,9 @@ define([
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
             }
+            if(options.region) {
+                this.region = options.region;
+            }
             this.render();
             
             var instanceApp = this;
@@ -106,19 +109,19 @@ define([
             switch(event.target.text)
             {
             case "Start":
-                instance.start(this.credentialId);
+                instance.start(this.credentialId, this.region);
                 break;
             case "Stop":
-                instance.stop(this.credentialId);
+                instance.stop(this.credentialId, this.region);
                 break;
             case "Reboot":
-                instance.reboot(this.credentialId);
+                instance.reboot(this.credentialId, this.region);
                 break;
             case "Terminate":
-                instance.terminate(this.credentialId);
+                instance.terminate(this.credentialId, this.region);
                 break;
             case "Disassociate Address":
-                instance.disassociateAddress(this.credentialId);
+                instance.disassociateAddress(this.credentialId, this.region);
                 break;
             }
         },
@@ -164,6 +167,7 @@ define([
 
             var metricStatisticOptions = {
                 cred_id: this.credentialId, 
+                region: this.region,
                 time_range: monitorTime.time_range, 
                 namespace: "AWS/EC2",
                 period: monitorTime.period,

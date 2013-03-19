@@ -17,7 +17,9 @@ define([
 
     var VolumeCreateView = DialogView.extend({
         
-        credentialId: undefined,       
+        credentialId: undefined,
+
+        region: undefined,
         
         template: _.template(snapshotCreateTemplate),
         
@@ -31,6 +33,7 @@ define([
 
         initialize: function(options) {
             this.credentialId = options.cred_id;
+            this.region = options.region;
             this.volume = options.volume;
             var createView = this;
             this.$el.html(this.template);
@@ -75,7 +78,7 @@ define([
                 options.description = $("#snapshot_description").val();
             }
 
-            newSnapshot.create(options, this.credentialId);
+            newSnapshot.create(options, this.credentialId, this.region);
             this.$el.dialog('close'); 
         }
 

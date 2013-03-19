@@ -23,6 +23,8 @@ define([
 
         credentialId: undefined,
 
+        region: undefined,
+
 		template: _.template(subnetCreateTemplate),
 
         vpcs: new Vpcs(),
@@ -37,6 +39,7 @@ define([
 
 		initialize: function(options) {
             this.credentialId = options.cred_id;
+            this.region = options.region;
         },
 
 		render: function() {
@@ -63,10 +66,10 @@ define([
             $("#zone_select").selectmenu();
 
             this.vpcs.on( 'reset', this.addAllVpcs, this );
-            this.vpcs.fetch({ data: $.param({ cred_id: this.credentialId}) });
+            this.vpcs.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }) });
 
             this.availabilityZones.on( 'reset', this.addAllAvailabilityZones, this );
-            this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId}) });
+            this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }) });
 		},
 
         addAllVpcs: function() {
@@ -108,7 +111,7 @@ define([
             }
 
             if(!issue) {
-                subnet.create(options, this.credentialId);
+                subnet.create(options, this.credentialId, this.region);
                 this.$el.dialog('close');
             }else {
                 Common.errorDialog("Invalid Request", "Please supply all required fields.");

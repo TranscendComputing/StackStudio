@@ -49,13 +49,13 @@ define([
             user_data: ''
         },
         
-        create: function(options, credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/spot_requests/create?_method=PUT&cred_id=" + credentialId;
+        create: function(options, credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/spot_requests/create?_method=PUT&cred_id=" + credentialId + "&region=" + region;
             this.sendPostAction(url, options);
         },
         
-        cancel: function(credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/spot_requests/delete?_method=DELETE&cred_id=" + credentialId;
+        cancel: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/spot_requests/delete?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
             this.sendPostAction(url, this.attributes);
         },
         

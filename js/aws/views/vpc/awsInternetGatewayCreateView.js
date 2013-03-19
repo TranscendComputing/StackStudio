@@ -20,6 +20,8 @@ define([
 
         credentialId: undefined,
 
+        region: undefined,
+
 		template: _.template(internetGatewayCreateTemplate),
 
         internetGateway: new InternetGateway(),
@@ -30,6 +32,7 @@ define([
 
 		initialize: function(options) {
             this.credentialId = options.cred_id;
+            this.region = options.region;
         },
 
 		render: function() {
@@ -56,7 +59,7 @@ define([
 		
 		create: function() {
 			var internetGateway = this.internetGateway;
-            internetGateway.create(this.credentialId);
+            internetGateway.create(this.credentialId, this.region);
 			this.$el.dialog('close');
 		}
 

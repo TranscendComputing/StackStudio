@@ -61,6 +61,9 @@ define([
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
             }
+            if(options.region) {
+                this.region = options.region;
+            }
             this.render();
             
             var alarmApp = this;
@@ -79,7 +82,7 @@ define([
             switch(event.target.text)
             {
             case "Delete Alarm":
-                alarm.destroy(this.credentialId);
+                alarm.destroy(this.credentialId, this.region);
                 break;
             }
         }

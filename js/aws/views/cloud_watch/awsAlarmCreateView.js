@@ -32,6 +32,8 @@ define([
     var AwsAlarmCreateView = DialogView.extend({
         
         credentialId: undefined,
+
+        region: undefined,
         
         metrics: new Metrics(),
         
@@ -51,6 +53,7 @@ define([
 
         initialize: function(options) {
             this.credentialId = options.cred_id;
+            this.region = options.region;
             var createView = this;
             var compiledTemplate = _.template(alarmCreateTemplate);
             this.$el.html(compiledTemplate);
@@ -89,7 +92,7 @@ define([
             this.metrics.on( 'reset', this.addAllMetrics, this );
             this.namespaceChange();
             this.topics.on( 'reset', this.addAllTopics, this );
-            this.topics.fetch({ data: $.param({ cred_id: this.credentialId })});
+            this.topics.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region })});
         },
 
         render: function() {
@@ -103,22 +106,22 @@ define([
             switch($("#namespace_select").val()) 
             {
             case "AWS/EBS":
-                this.metrics.fetch({ data: $.param({ cred_id: this.credentialId, filters: {"Namespace": "AWS/EBS", "Dimensions":"VolumeId"}}) });
+                this.metrics.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region, filters: {"Namespace": "AWS/EBS", "Dimensions":"VolumeId"}}) });
                 break;
             case "AWS/EC2":
-                this.metrics.fetch({ data: $.param({ cred_id: this.credentialId, filters: {"Namespace": "AWS/EC2", "Dimensions":"InstanceId"}}) });
+                this.metrics.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region, filters: {"Namespace": "AWS/EC2", "Dimensions":"InstanceId"}}) });
                 break;
             case "AWS/ELB":
-                this.metrics.fetch({ data: $.param({ cred_id: this.credentialId, filters: {"Namespace": "AWS/ELB", "Dimensions":"LoadBalancerName"}}) });
+                this.metrics.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region, filters: {"Namespace": "AWS/ELB", "Dimensions":"LoadBalancerName"}}) });
                 break;
             case "AWS/RDS":
-                this.metrics.fetch({ data: $.param({ cred_id: this.credentialId, filters: {"Namespace": "AWS/RDS", "Dimensions":"DBInstanceIdentifier"}}) });
+                this.metrics.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region, filters: {"Namespace": "AWS/RDS", "Dimensions":"DBInstanceIdentifier"}}) });
                 break;
             case "AWS/SNS":
-                this.metrics.fetch({ data: $.param({ cred_id: this.credentialId, filters: {"Namespace": "AWS/SNS", "Dimensions":"TopicName"}}) });
+                this.metrics.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region, filters: {"Namespace": "AWS/SNS", "Dimensions":"TopicName"}}) });
                 break;
             case "AWS/SQS":
-                this.metrics.fetch({ data: $.param({ cred_id: this.credentialId, filters: {"Namespace": "AWS/SQS", "Dimensions":"QueueName"}}) });
+                this.metrics.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region, filters: {"Namespace": "AWS/SQS", "Dimensions":"QueueName"}}) });
                 break;
             }
         },
@@ -126,11 +129,15 @@ define([
         addAllMetrics: function() {
             $("#metric_select").empty();
             $("#metric_select").selectmenu();
-            this.metrics.each(function (metric) {
-                if(metric.attributes.dimensions.length > 0) {
-                    $("#metric_select").append("<option value='" + JSON.stringify(metric.attributes) + "'>" + metric.attributes.dimensions[0].Value + " - " + metric.attributes.name + "</option>"); 
-                }
-            });
+            if(this.metrics.length > 0) {
+                this.metrics.each(function (metric) {
+                    if(metric.attributes.dimensions.length > 0) {
+                        $("#metric_select").append("<option value='" + JSON.stringify(metric.attributes) + "'>" + metric.attributes.dimensions[0].Value + " - " + metric.attributes.name + "</option>"); 
+                    }
+                });
+            }else {
+               $("#metric_select").append("<option value='none'>No Metrics Available</option>"); 
+            }
             $("#metric_select").selectmenu();
         },
         
@@ -177,7 +184,7 @@ define([
                 options.alarm_description = $("alarm_description").val();
             }
             
-            if($("#metric_select").val() !== "none") {
+            if($("#metric_select").val() !== "none" && $("#metric_select").val !== null) {
                 var metric = JSON.parse($("#metric_select").val());
                 options.dimensions = metric.dimensions;
                 options.metric_name = metric.name;
@@ -217,7 +224,7 @@ define([
             });
             
             if(!issue) {
-                newAlarm.create(options, this.credentialId);
+                newAlarm.create(options, this.credentialId, this.region);
                 this.$el.dialog('close');
             }else {
                 Common.errorDialog("Invalid Request", "Please supply all required fields.");

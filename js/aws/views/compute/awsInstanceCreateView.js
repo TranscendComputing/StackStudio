@@ -38,6 +38,8 @@ define([
     var InstanceCreateView = DialogView.extend({
 
         credentialId: undefined,
+
+        region: undefined,
         
         images: new Images(),
         
@@ -60,6 +62,7 @@ define([
 
         initialize: function(options) {
             this.credentialId = options.cred_id;
+            this.region = options.region;
         },
 
         render: function() {
@@ -98,16 +101,16 @@ define([
             this.images.fetch();
             
             this.flavors.on( 'reset', this.addAllFlavors, this );
-            this.flavors.fetch({ data: $.param({ cred_id: this.credentialId}) });
+            this.flavors.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }) });
             
             this.availabilityZones.on( 'reset', this.addAllAvailabilityZones, this );
-            this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId}) });
+            this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }) });
             
             this.keyPairs.on( 'reset', this.addAllKeyPairs, this );
-            this.keyPairs.fetch({ data: $.param({ cred_id: this.credentialId}) });
+            this.keyPairs.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }) });
             
             this.securityGroups.on( 'reset', this.addAllSecurityGroups, this );
-            this.securityGroups.fetch({ data: $.param({ cred_id: this.credentialId}) });
+            this.securityGroups.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }) });
         },
         
         addAllImages: function() {
@@ -219,6 +222,7 @@ define([
         },
         
         create: function() {
+            var createView = this;
             var newInstance = this.instance;
             var options = {};
             console.log("create_initiated");
@@ -226,11 +230,10 @@ define([
             if($("#instance_name").val() !== "") {
                 options.tags = {"Name": $("#instance_name").val()};
             }
-            //Hack alert, region is currently hardcoded to us-east-1
-            var region = "us-east-1";
+ 
             $.each(this.images.toJSON(), function(index, image) {
                 if(image.label === $("#image_select").val()) {
-                    options.image_id = image.region[region];
+                    options.image_id = image.region[createView.region];
                 }
             });
             
@@ -245,14 +248,11 @@ define([
             options.groups = $("#security_group_select").val();
             options.monitoring = $("#detailed_monitoring").is(":checked");
             options.instance_initiated_shutdown_behavior = $("#shutdown_behavior_select").val().toLowerCase();
-            newInstance.create(options, this.credentialId);
-            
+            newInstance.create(options, this.credentialId, this.region);
             this.$el.dialog('close');
         }
 
     });
-
-    console.log("aws instance create view defined");
     
     return InstanceCreateView;
 });

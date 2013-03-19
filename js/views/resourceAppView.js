@@ -21,6 +21,8 @@ define([
         selectedId: undefined,
         
         credentialId: undefined,
+
+        region: undefined,
         
         modelStringIdentifier: undefined,
         
@@ -52,10 +54,11 @@ define([
             this.collection.on( 'add', this.addOne, this );
             this.collection.on( 'reset', this.addAll, this );
             $("#action_menu li").addClass("ui-state-disabled");
-            if(this.credentialId) {
-                var credId = this.credentialId;
-                this.collection.fetch({ data: $.param({ cred_id: credId }) });
-            } else {
+            if(this.credentialId && this.region) {
+                this.collection.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }) });
+            }else if(this.credentialId) {
+                this.collection.fetch({ data: $.param({ cred_id: this.credentialId }) });
+            }else {
                 this.collection.fetch();
             }
             this.setResourceAppHeightify();
@@ -126,7 +129,11 @@ define([
         
         createNew : function () {
             var CreateView = this.CreateView;
-            this.newResourceDialog = new CreateView({cred_id: this.credentialId});
+            if(this.region) {
+                this.newResourceDialog = new CreateView({cred_id: this.credentialId, region: this.region});
+            }else {
+                this.newResourceDialog = new CreateView({cred_id: this.credentialId});
+            }
             this.newResourceDialog.render();
         },
         

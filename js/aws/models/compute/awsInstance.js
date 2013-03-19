@@ -58,33 +58,33 @@ define([
             security_group_ids: []
         },
         
-        create: function(options, credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/instances/create?_method=PUT&cred_id=" + credentialId;
+        create: function(options, credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/instances/create?_method=PUT&cred_id=" + credentialId + "&region=" + region;
             this.sendPostAction(url, options);
         },
         
-        start: function(credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/instances/start?cred_id=" + credentialId;
+        start: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/instances/start?cred_id=" + credentialId + "&region=" + region;
             this.sendPostAction(url, this.attributes);
         },
         
-        stop: function(credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/instances/stop?cred_id=" + credentialId;
+        stop: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/instances/stop?cred_id=" + credentialId + "&region=" + region;
             this.sendPostAction(url, this.attributes);
         },
         
-        reboot: function(credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/instances/reboot?cred_id=" + credentialId;
+        reboot: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/instances/reboot?cred_id=" + credentialId + "&region=" + region;
             this.sendPostAction(url, this.attributes);
         },
         
-        terminate: function(credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/instances/terminate?_method=DELETE&cred_id=" + credentialId;
+        terminate: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/instances/terminate?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
             this.sendPostAction(url, this.attributes);
         },
         
-        disassociateAddress: function(credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/addresses/disassociate?cred_id=" + credentialId;
+        disassociateAddress: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/addresses/disassociate?cred_id=" + credentialId + "&region=" + region;
             var address = {"address": {"public_ip": this.attributes.public_ip_address}};
             $.ajax({
                 url: url,

@@ -39,6 +39,8 @@ define([
     var SpotInstanceCreateView = DialogView.extend({
         
         credentialId: undefined,
+
+        region: undefined,
         
         images: new Images(),
         
@@ -62,6 +64,7 @@ define([
 
         initialize: function(options) {
             this.credentialId = options.cred_id;
+            this.region = options.region;
             var createView = this;
             var compiledTemplate = _.template(spotInstanceCreateTemplate);
             this.$el.html(compiledTemplate);
@@ -115,16 +118,16 @@ define([
             this.images.fetch();
             
             this.flavors.on( 'reset', this.addAllFlavors, this );
-            this.flavors.fetch({ data: $.param({ cred_id: this.credentialId}) });
+            this.flavors.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }) });
             
             this.availabilityZones.on( 'reset', this.addAllAvailabilityZones, this );
-            this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId}) });
+            this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }) });
             
             this.keyPairs.on( 'reset', this.addAllKeyPairs, this );
-            this.keyPairs.fetch({ data: $.param({ cred_id: this.credentialId}) });
+            this.keyPairs.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }) });
             
             this.securityGroups.on( 'reset', this.addAllSecurityGroups, this );
-            this.securityGroups.fetch({ data: $.param({ cred_id: this.credentialId}) });
+            this.securityGroups.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }) });
         },
 
         render: function() {
@@ -240,7 +243,7 @@ define([
                 });
 
                 if(flavorId && productType) {
-                    this.currentPrice.currentPrice({"availability-zone": $("#az_select").val(), "instance-type": flavorId, "product-description": productType}, this.credentialId);
+                    this.currentPrice.currentPrice({"availability-zone": $("#az_select").val(), "instance-type": flavorId, "product-description": productType}, this.credentialId, this.region);
                 }
             }
         },
@@ -336,7 +339,7 @@ define([
             if($("#persistent_request").is(":checked")) {
                 options.request_type = "persistent";
             }
-            newSpotInstance.create(options, this.credentialId);
+            newSpotInstance.create(options, this.credentialId, this.region);
             
             this.$el.dialog('close');
         }

@@ -62,6 +62,9 @@ define([
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
             }
+            if(options.region) {
+                this.region = options.region;
+            }
             this.render();
 
             var vpcApp = this;
@@ -80,10 +83,10 @@ define([
             switch(event.target.text)
             {
             case "Delete":
-                vpc.destroy(this.credentialId);
+                vpc.destroy(this.credentialId, this.region);
                 break;
             case "Change DHCP Options Set":
-                new AssociateDhcpView({vpc: vpc, cred_id: this.credentialId});
+                new AssociateDhcpView({vpc: vpc, cred_id: this.credentialId, region: this.region});
                 break;
             }
         },

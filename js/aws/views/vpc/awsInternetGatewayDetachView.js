@@ -19,6 +19,8 @@ define([
     var InternetGatewayAttachView = DialogView.extend({
 
         credentialId: undefined,
+
+        region: undefined,
         
         template: _.template(internetGatewayDetachTemplate),
 
@@ -30,6 +32,7 @@ define([
 
         initialize: function(options) {
             this.credentialId = options.cred_id;
+            this.region = options.region;
             this.internetGateway = options.internet_gateway;
         },
 
@@ -59,7 +62,7 @@ define([
         
         detach: function() {
             var internetGateway = this.internetGateway;
-            internetGateway.detach(this.credentialId);
+            internetGateway.detach(this.credentialId, this.region);
             this.$el.dialog('close');
         }
     });

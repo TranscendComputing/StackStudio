@@ -31,6 +31,8 @@ define([
     var AwsSecurityGroupCreateView = DialogView.extend({
 
         credentialId: undefined,
+
+        region: undefined,
         
         securityGroup: new SecurityGroup(),
         
@@ -43,6 +45,7 @@ define([
 
         initialize: function(options) {
             this.credentialId = options.cred_id;
+            this.region = options.region;
             var createView = this;
             var compiledTemplate = _.template(securityGroupCreateTemplate);
             this.$el.html(compiledTemplate);
@@ -65,7 +68,7 @@ define([
             $("#vpc_select").selectmenu();
             
             this.vpcs.on( 'reset', this.addAllVPCs, this );
-            this.vpcs.fetch({ data: $.param({ cred_id: this.credentialId}) });
+            this.vpcs.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }) });
         },
 
         render: function() {
@@ -96,16 +99,13 @@ define([
             }
             
             if(!issue) {
-                newSecurityGroup.create(options, this.credentialId);
+                newSecurityGroup.create(options, this.credentialId, this.region);
                 this.$el.dialog('close');
             } else {
                 Common.errorDialog("Invalid Request", "Please supply all required fields.");
             }
         }
-
     });
-
-    console.log("aws security group create view defined");
     
     return AwsSecurityGroupCreateView;
 });

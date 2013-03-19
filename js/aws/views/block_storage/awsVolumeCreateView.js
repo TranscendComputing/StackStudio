@@ -35,6 +35,10 @@ define([
 	var VolumeCreateView = DialogView.extend({
 		
 		credentialId: undefined,
+
+        region: undefined,
+
+        region: undefined,
 		
 		availabilityZones: new AvailabilityZones(),
 		
@@ -52,6 +56,7 @@ define([
 
 		initialize: function(options) {
 		    this.credentialId = options.cred_id;
+            this.region = options.region;
 		    var createView = this;
             this.$el.html(this.template);
 
@@ -81,13 +86,13 @@ define([
             $("#snapshot_select").selectmenu();
             
             this.availabilityZones.on( 'reset', this.addAllAvailabilityZones, this );
-            this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId}) });
+            this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region}) });
             
             this.ownedSnapshots.on( 'reset', this.addAllOwnedSnapshots, this );
-            this.ownedSnapshots.fetch({ data: $.param({ cred_id: this.credentialId}) });
+            this.ownedSnapshots.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region}) });
             
             this.publicSnapshots.on( 'reset', this.addAllPublicSnapshots, this );
-            this.publicSnapshots.fetch({ data: $.param({ cred_id: this.credentialId, filters: {"RestorableBy":"all"}}) });
+            this.publicSnapshots.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region, filters: {"RestorableBy":"all"}}) });
 		},
 		
 		render: function() {
@@ -172,7 +177,7 @@ define([
             }
             
             if(!issue) {
-                newVolume.create(options, this.credentialId);
+                newVolume.create(options, this.credentialId, this.region);
                 this.$el.dialog('close'); 
             }else {
                 Common.errorDialog("Invalid Request", "Please supply all required fields.");

@@ -63,6 +63,9 @@ define([
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
             }
+            if(options.region) {
+                this.region = options.region;
+            }
             this.render();
             
             var spotInstanceApp = this;
@@ -81,13 +84,13 @@ define([
             switch(event.target.text)
             {
             case "Cancel":
-                spotInstance.cancel(this.credentialId);
+                spotInstance.cancel(this.credentialId, this.region);
                 break;
             }
         },
         
         priceHistory: function() {
-            new SpotHistoryView({cred_id: this.credentialId});
+            new SpotHistoryView({cred_id: this.credentialId, region: this.region});
         }
     });
     

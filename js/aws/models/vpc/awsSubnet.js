@@ -38,13 +38,13 @@ define([
             availability_zone: ''
 		},
 
-        create: function(options, credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/subnets/create?_method=PUT&cred_id=" + credentialId;
+        create: function(options, credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/subnets/create?_method=PUT&cred_id=" + credentialId + "&region=" + region;
             this.sendPostAction(url, options);
         },
 
-        destroy: function(credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/subnets/delete?_method=DELETE&cred_id=" + credentialId;
+        destroy: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/subnets/delete?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
             this.sendPostAction(url, this.attributes);
         },
 

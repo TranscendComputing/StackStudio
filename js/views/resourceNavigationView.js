@@ -51,6 +51,8 @@ define([
         cloudCredentials: undefined,
         
         selectedCredential: undefined,
+
+        selectedRegion: undefined,
         
         subServiceMenu: undefined,
         
@@ -243,18 +245,36 @@ define([
 
         refreshRegions: function() {
             var resourceNav = this;
+            var regionFound = false;
             //Remove previous region
             $("#regions").remove();
             //Add regions if cloud has regions
             if(resourceNav.cloudDefinitions[this.cloudProvider].regions.length) {
                 $("#cloud_specs").append('<span id="regions">Region: <select id="region_select" class="cloud_spec_select"></select></span>');
                 $.each(resourceNav.cloudDefinitions[this.cloudProvider].regions, function(index, region) {
-                    $('#region_select').append($("<option></option>").attr("value", region.zone).text(region.name));
+                    if(resourceNav.selectedRegion === region.zone) {
+                        $('#region_select').append($("<option value='" + region.zone + "' selected></option>").text(region.name));
+                        $("#region_nav").html(region.name + " ->");
+                        regionFound = true;
+                    }else {
+                        $('#region_select').append($("<option value='" + region.zone + "'></option>").text(region.name));
+                    }
                 });
-                $("#region_select").selectmenu();
-                $("#region_nav").html($("#region_select option:first").text() + " ->");
+                $("#region_select").selectmenu({
+                    change: function() {
+                        resourceNav.selectedRegion = $("#region_select").val();
+                        resourceNav.refreshCloudSpecs();
+                        resourceNav.render();
+                    }
+                });
+
+                if(!regionFound) {
+                    $("#region_nav").html($("#region_select option:first").text() + " ->");
+                    this.selectedRegion = $("#region_select option:first").val();
+                }
                 $("#region_nav").show();
             }else {
+                this.selectedRegion = undefined;
                 $("region_nav").hide();
             }
         },
@@ -310,11 +330,16 @@ define([
                 require([appPath], function (AppView) {
                     if (resourceNav.resourceApp instanceof AppView) {
                         resourceNav.resourceApp.credentialId = resourceNav.selectedCredential;
+                        if(resourceNav.selectedRegion) {
+                            resourceNav.resourceApp.region = resourceNav.selectedRegion;
+                        }else {
+                            resourceNav.resourceApp.region = undefined;
+                        }
                         resourceNav.resourceApp.render();
                         return;
                     }
                     
-                    var resourceAppView = new AppView({cred_id: resourceNav.selectedCredential});
+                    var resourceAppView = new AppView({cred_id: resourceNav.selectedCredential, region: resourceNav.selectedRegion});
                     resourceAppView.cloudProvider = resourceNav.cloudProvider;
                     resourceNav.resourceApp = resourceAppView;
                     resourceNav.resourceSelect(resourceNav.type);
@@ -347,8 +372,7 @@ define([
     Common.router.on('route:resources', function (cloud, type, subtype, id) {
         if(sessionStorage.account_id) {
             if (this.previousView !== resourcesView) {
-                if(!resourcesView)
-                {
+                if(!resourcesView) {
                     resourcesView = new ResourcesView();
                 }
                 this.setPreviousState(resourcesView);

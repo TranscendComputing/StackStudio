@@ -26,9 +26,9 @@ define([
             availabilityZone: ''
         },
         
-        currentPrice: function(options, credentialId) {
+        currentPrice: function(options, credentialId, region) {
             var spotPrice = this;
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/spot_prices/current?cred_id=" + credentialId;
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/spot_prices/current?cred_id=" + credentialId + "&region=" + region;
             var filters = {"filters": options};
             $.ajax({
                 url: url,

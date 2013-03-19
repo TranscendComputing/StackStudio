@@ -20,25 +20,25 @@ define([
             "tag_set": {}
 		},
 
-        create: function(credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/internet_gateways/create?_method=PUT&cred_id=" + credentialId;
+        create: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/internet_gateways/create?_method=PUT&cred_id=" + credentialId + "&region=" + region;
             this.sendPostAction(url);
         },
 
-        attach: function(options, credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/internet_gateways/attach?cred_id=" + credentialId;
+        attach: function(options, credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/internet_gateways/attach?cred_id=" + credentialId + "&region=" + region;
             options.id = this.attributes.id;
             this.sendPostAction(url, options);
         },
 
-        detach: function(credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/internet_gateways/detach?cred_id=" + credentialId;
+        detach: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/internet_gateways/detach?cred_id=" + credentialId + "&region=" + region;
             var options = {id: this.attributes.id, vpc_id: this.attributes.attachment_set.vpcId};
             this.sendPostAction(url, options);
         },
 
-        destroy: function(credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/internet_gateways/delete?_method=DELETE&cred_id=" + credentialId;
+        destroy: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/internet_gateways/delete?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
             this.sendPostAction(url, this.attributes);
         },
 

@@ -20,6 +20,8 @@ define([
     var AwsKeyPairCreateView = DialogView.extend({
         
         credentialId: undefined,
+
+        region: undefined,
         
         keyPair: new KeyPair(),
         
@@ -29,6 +31,7 @@ define([
 
         initialize: function(options) {
             this.credentialId = options.cred_id;
+            this.region = options.region;
             var createView = this;
             var compiledTemplate = _.template(keyPairCreateTemplate);
             this.$el.html(compiledTemplate);
@@ -68,6 +71,7 @@ define([
             if(!issue) {
                 $("#keypair_form").attr("action", Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/key_pairs/create");
                 $("#credential_id").attr("value", this.credentialId);
+                $("#region_id").attr("value", this.region);
                 $("#keypair_form").submit();
                 Common.vent.trigger("keyPairAppDelayRefresh");
                 this.$el.dialog('close');
@@ -77,8 +81,6 @@ define([
         }
 
     });
-
-    console.log("aws key pair create view defined");
     
     return AwsKeyPairCreateView;
 });

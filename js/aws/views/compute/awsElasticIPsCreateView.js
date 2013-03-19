@@ -20,6 +20,8 @@ define([
     var AwsElasticIPCreateView = DialogView.extend({
 
         credentialId: undefined,
+
+        region: undefined,
         
         elasticIp: new ElasticIP(),
         
@@ -29,6 +31,7 @@ define([
 
         initialize: function(options) {
             this.credentialId = options.cred_id;
+            this.region = options.region;
             var createView = this;
             var compiledTemplate = _.template(elasticIPCreateTemplate);
             this.$el.html(compiledTemplate);
@@ -62,7 +65,7 @@ define([
             if($("#eip_type_select").val() === "vpc") {
                 options.domain = "vpc";
             }
-            newElasticIp.create(options, this.credentialId);
+            newElasticIp.create(options, this.credentialId, this.region);
             this.$el.dialog('close');
         }
 
