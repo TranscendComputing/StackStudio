@@ -15,12 +15,13 @@ define([
         '/js/aws/collections/compute/awsInstances.js',
         '/js/aws/views/compute/awsInstanceCreateView.js',
         '/js/aws/collections/cloud_watch/awsMetricStatistics.js',
+        'text!templates/emptyGraphTemplate.html',
         'icanhaz',
         'common',
         'morris',
         'spinner',
         'jquery.dataTables'
-], function( $, _, Backbone, ResourceAppView, awsInstanceAppTemplate, Instance, Instances, AwsInstanceCreate, MetricStatistics, ich, Common, Morris, Spinner ) {
+], function( $, _, Backbone, ResourceAppView, awsInstanceAppTemplate, Instance, Instances, AwsInstanceCreate, MetricStatistics, emptyGraph, ich, Common, Morris, Spinner ) {
     'use strict';
 
     // Aws Instance Application View
@@ -38,6 +39,8 @@ define([
     var AwsInstancesAppView = ResourceAppView.extend({
         
         template: _.template(awsInstanceAppTemplate),
+
+        emptyGraphTemplate: _.template(emptyGraph),
         
         modelStringIdentifier: "id",
         
@@ -90,13 +93,14 @@ define([
             Common.vent.on("instanceAppRefresh", function() {
                 instanceApp.render();
             });
+            //CPU has its own graph function because ymax is used
             this.cpuData.on( 'reset', this.addCPUData, this );
-            this.diskReadBytesData.on( 'reset', this.addDiskReadBytesData, this );
-            this.diskReadOpsData.on( 'reset', this.addDiskReadOpsData, this );
-            this.diskWriteBytesData.on( 'reset', this.addDiskWriteBytesData, this );
-            this.diskWriteOpsData.on( 'reset', this.addDiskWriteOpsData, this );
-            this.networkInData.on( 'reset', this.addNetworkInData, this );
-            this.networkOutData.on( 'reset', this.addNetworkOutData, this );
+            this.diskReadBytesData.on( 'reset', function() {this.addMonitorGraph("#disk_read_bytes", this.diskReadBytesData, ["Average"], ["Disk Read Bytes"], ["#FF8000"])}, this );
+            this.diskReadOpsData.on( 'reset', function() {this.addMonitorGraph("#disk_read_ops", this.diskReadOpsData, ["Average"], ["Disk Read Ops"], ["#00CC00"])}, this );
+            this.diskWriteBytesData.on( 'reset', function() {this.addMonitorGraph("#disk_write_bytes", this.diskWriteBytesData, ["Average"], ["Disk Write Bytes"], ["#660066"])}, this );
+            this.diskWriteOpsData.on( 'reset', function() {this.addMonitorGraph("#disk_write_ops", this.diskWriteOpsData, ["Average"], ["Disk Write Ops"], ["#FF0000"])}, this );
+            this.networkInData.on( 'reset', function() {this.addMonitorGraph("#network_in", this.networkInData, ["Average"], ["Network In Bytes"], ["#3399FF"])}, this );
+            this.networkOutData.on( 'reset', function() {this.addMonitorGraph("#network_out", this.networkOutData, ["Average"], ["Network Out Bytes"], ["#996633"])}, this );
         },
         
         toggleActions: function(e) {
@@ -191,6 +195,23 @@ define([
             metricStatisticOptions.metric_name = "DiskWriteOps";
             this.diskWriteOpsData.fetch({ data: $.param(metricStatisticOptions) });
         },
+
+        addMonitorGraph: function(element, collection, yKeys, labels, lineColors) {
+            $(element).empty();
+            var data = collection.toJSON();
+            if(data.length > 0) {
+                Morris.Line({
+                    element: element.substr(1, element.length-1),
+                    data: data,
+                    xkey: 'Timestamp',
+                    ykeys: yKeys,
+                    labels: labels,
+                    lineColors: lineColors
+                });
+            }else {
+                $(element).html(this.emptyGraphTemplate);
+            }
+        },
         
         addCPUData: function() {
             $("#cpu_utilization").empty();
@@ -202,78 +223,6 @@ define([
                 ymax: ['100'],
                 labels: ['CPU'],
                 lineColors: ["#000099"]
-            });
-        },
-        
-        addDiskReadBytesData: function() {
-            $("#disk_read_bytes").empty();
-            Morris.Line({
-                element: 'disk_read_bytes',
-                data: this.diskReadBytesData.toJSON(),
-                xkey: 'Timestamp',
-                ykeys: ['Average'],
-                labels: ['Disk Read Bytes'],
-                lineColors: ["#FF8000"]
-            });
-        },
-        
-        addDiskReadOpsData: function() {
-            $("#disk_read_ops").empty();
-            Morris.Line({
-                element: 'disk_read_ops',
-                data: this.diskReadOpsData.toJSON(),
-                xkey: 'Timestamp',
-                ykeys: ['Average'],
-                labels: ['Disk Read Ops'],
-                lineColors: ["#009900"]
-            });
-        },
-        
-        addDiskWriteBytesData: function() {
-            $("#disk_write_bytes").empty();
-            Morris.Line({
-                element: 'disk_write_bytes',
-                data: this.diskWriteBytesData.toJSON(),
-                xkey: 'Timestamp',
-                ykeys: ['Average'],
-                labels: ['Disk Write Bytes'],
-                lineColors: ["#660066"]
-            });
-        },
-        
-        addDiskWriteOpsData: function() {
-            $("#disk_write_ops").empty();
-            Morris.Line({
-                element: 'disk_write_ops',
-                data: this.diskWriteOpsData.toJSON(),
-                xkey: 'Timestamp',
-                ykeys: ['Average'],
-                labels: ['Disk Write Ops'],
-                lineColors: ["#FF0000"]
-            });
-        },
-        
-        addNetworkInData: function() {
-            $("#network_in").empty();
-            Morris.Line({
-                element: 'network_in',
-                data: this.networkInData.toJSON(),
-                xkey: 'Timestamp',
-                ykeys: ['Average'],
-                labels: ['Network In Bytes'],
-                lineColors: ["#3399FF"]
-            });
-        },
-        
-        addNetworkOutData: function() {
-            $("#network_out").empty();
-            Morris.Line({
-                element: 'network_out',
-                data: this.networkOutData.toJSON(),
-                xkey: 'Timestamp',
-                ykeys: ['Average'],
-                labels: ['Network Out Bytes'],
-                lineColors: ["#996633"]
             });
         }
     });

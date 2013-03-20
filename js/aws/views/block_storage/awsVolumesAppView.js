@@ -17,28 +17,19 @@ define([
         '/js/aws/views/block_storage/awsVolumeAttachView.js',
         '/js/aws/views/block_storage/awsSnapshotCreateView.js',
         '/js/aws/collections/cloud_watch/awsMetricStatistics.js',
+        'text!templates/emptyGraphTemplate.html',
         'icanhaz',
         'common',
         'morris',
         'spinner',
         'jquery.dataTables'
-], function( $, _, Backbone, AppView, awsVolumeAppTemplate, Volume, Volumes, AwsVolumeCreateView, AwsVolumeAttachView, AwsSnapshotCreateView, MetricStatistics, ich, Common, Morris, Spinner ) {
+], function( $, _, Backbone, AppView, volumeAppTemplate, Volume, Volumes, VolumeCreateView, VolumeAttachView, SnapshotCreateView, MetricStatistics, emptyGraph, ich, Common, Morris, Spinner ) {
 	'use strict';
 
-	// Aws Application View
-	// ------------------------------
-
-    /**
-     * Aws AppView is UI view list of cloud items.
-     *
-     * @name AppView
-     * @constructor
-     * @category Resources
-     * @param {Object} initialization object.
-     * @returns {Object} Returns an AwsAppView instance.
-     */
 	var AwsVolumesAppView = AppView.extend({
-	    template: _.template(awsVolumeAppTemplate),
+	    template: _.template(volumeAppTemplate),
+
+        emptyGraphTemplate: _.template(emptyGraph),
 	    
         modelStringIdentifier: "id",
         
@@ -54,7 +45,7 @@ define([
         
         subtype: "volumes",
         
-        CreateView: AwsVolumeCreateView,
+        CreateView: VolumeCreateView,
 
         idleTimeData: new MetricStatistics(),
         
@@ -92,14 +83,15 @@ define([
             Common.vent.on("volumeAppRefresh", function() {
                 volumeApp.render();
             });
-            this.idleTimeData.on( 'reset', this.addIdleTimeData, this );
-            this.queueLengthData.on( 'reset', this.addQueueLengthData, this );
-            this.readBytesData.on( 'reset', this.addReadBytesData, this );
-            this.readOpsData.on( 'reset', this.addReadOpsData, this );
-            this.totalReadTimeData.on( 'reset', this.addTotalReadTimeData, this );
-            this.totalWriteTimeData.on( 'reset', this.addTotalWriteTimeData, this );
-            this.writeBytesData.on( 'reset', this.addWriteBytesData, this );
-            this.writeOpsData.on( 'reset', this.addWriteOpsData, this );
+
+            this.idleTimeData.on( 'reset', function() {this.addMonitorGraph("#volume_idle_time", this.idleTimeData, ["Average"], ["Idle Time"], ["#000099"])}, this );
+            this.queueLengthData.on( 'reset', function() {this.addMonitorGraph("#volume_queue_length", this.queueLengthData, ["Average"], ["Queue Length"], ["#FF8000"])}, this );
+            this.readBytesData.on( 'reset', function() {this.addMonitorGraph("#volume_read_bytes", this.readBytesData, ["Average"], ["Read Bytes"], ["#00CC00"])}, this );
+            this.readOpsData.on( 'reset', function() {this.addMonitorGraph("#volume_read_ops", this.readOpsData, ["Average"], ["Read Ops"], ["#660066"])}, this );
+            this.totalReadTimeData.on( 'reset', function() {this.addMonitorGraph("#volume_total_read_time", this.totalReadTimeData, ["Average"], ["Total Read Time"], ["#FF0000"])}, this );
+            this.totalWriteTimeData.on( 'reset', function() {this.addMonitorGraph("#volume_total_write_time", this.totalWriteTimeData, ["Average"], ["Total Write Time"], ["#3399FF"])}, this );
+            this.writeBytesData.on( 'reset', function() {this.addMonitorGraph("#volume_write_bytes", this.writeBytesData, ["Average"], ["Write Bytes"], ["#996633"])}, this );
+            this.writeOpsData.on( 'reset', function() {this.addMonitorGraph("#volume_write_ops", this.writeOpsData, ["Average"], ["Write Ops"], ["#FF0066"])}, this );
         },
         
         toggleActions: function(e) {
@@ -115,7 +107,7 @@ define([
                 volume.destroy(this.credentialId, this.region);
                 break;
             case "Attach Volume":
-                new AwsVolumeAttachView({cred_id: this.credentialId, region: this.region, volume: volume});
+                new VolumeAttachView({cred_id: this.credentialId, region: this.region, volume: volume});
                 break;
             case "Detach Volume":
                 volume.detach(this.credentialId, this.region);
@@ -124,7 +116,7 @@ define([
                 volume.forceDetach(this.credentialId, this.region);
                 break;
             case "Create Snapshot":
-                new AwsSnapshotCreateView({cred_id: this.credentialId, region: this.region, volume: volume});
+                new SnapshotCreateView({cred_id: this.credentialId, region: this.region, volume: volume});
                 break;
             }
         },
@@ -198,100 +190,21 @@ define([
             this.writeOpsData.fetch({ data: $.param(metricStatisticOptions) });
         },
 
-        addIdleTimeData: function() {
-            $("#volume_idle_time").empty();
-            Morris.Line({
-                element: 'volume_idle_time',
-                data: this.idleTimeData.toJSON(),
-                xkey: 'Timestamp',
-                ykeys: ['Average'],
-                labels: ['Idle Time'],
-                lineColors: ["#000099"]
-            });
-        },
-        
-        addQueueLengthData: function() {
-            $("#volume_queue_length").empty();
-            Morris.Line({
-                element: 'volume_queue_length',
-                data: this.queueLengthData.toJSON(),
-                xkey: 'Timestamp',
-                ykeys: ['Average'],
-                labels: ['Queue Length'],
-                lineColors: ["#FF8000"]
-            });
-        },
-        
-        addReadBytesData: function() {
-            $("#volume_read_bytes").empty();
-            Morris.Line({
-                element: 'volume_read_bytes',
-                data: this.readBytesData.toJSON(),
-                xkey: 'Timestamp',
-                ykeys: ['Average'],
-                labels: ['Read Bytes'],
-                lineColors: ["#009900"]
-            });
-        },
-        
-        addReadOpsData: function() {
-            $("#volume_read_ops").empty();
-            Morris.Line({
-                element: 'volume_read_ops',
-                data: this.readOpsData.toJSON(),
-                xkey: 'Timestamp',
-                ykeys: ['Average'],
-                labels: ['Read Ops'],
-                lineColors: ["#660066"]
-            });
-        },
-        
-        addTotalReadTimeData: function() {
-            $("#volume_total_read_time").empty();
-            Morris.Line({
-                element: 'volume_total_read_time',
-                data: this.totalReadTimeData.toJSON(),
-                xkey: 'Timestamp',
-                ykeys: ['Average'],
-                labels: ['Total Read Time'],
-                lineColors: ["#FF0000"]
-            });
-        },
-        
-        addTotalWriteTimeData: function() {
-            $("#volume_total_write_time").empty();
-            Morris.Line({
-                element: 'volume_total_write_time',
-                data: this.totalWriteTimeData.toJSON(),
-                xkey: 'Timestamp',
-                ykeys: ['Average'],
-                labels: ['Total Write Time'],
-                lineColors: ["#3399FF"]
-            });
-        },
-        
-        addWriteBytesData: function() {
-            $("#volume_write_bytes").empty();
-            Morris.Line({
-                element: 'volume_write_bytes',
-                data: this.writeBytesData.toJSON(),
-                xkey: 'Timestamp',
-                ykeys: ['Average'],
-                labels: ['Write Bytes'],
-                lineColors: ["#996633"]
-            });
-        },
-
-        addWriteOpsData: function() {
-            $("#volume_write_ops").empty();
-            Morris.Line({
-                element: 'volume_write_ops',
-                data: this.writeOpsData.toJSON(),
-                xkey: 'Timestamp',
-                ykeys: ['Average'],
-                labels: ['Write Ops'],
-                lineColors: ["#FF0066"]
-            });
+        addMonitorGraph: function(element, collection, yKeys, labels, lineColors) {
+            $(element).empty();
+            var data = collection.toJSON();
+            if(data.length > 0) {
+                Morris.Line({
+                    element: element.substr(1, element.length-1),
+                    data: data,
+                    xkey: 'Timestamp',
+                    ykeys: yKeys,
+                    labels: labels,
+                    lineColors: lineColors
+                });
+            }else {
+                $(element).html(this.emptyGraphTemplate);
+            }
         }
 	});
     
