@@ -7,7 +7,7 @@ private and public clouds.
 Getting Started
 ---------------
 
-1. This application requires the StackCore back end, for cloud operations (coming soon)
+1. This application requires the CloudMux back end, which provides REST APIs to perform cloud operations.  CloudMux is available here: https://github.com/TranscendComputing/CloudMux
 
 2. We use Node.JS and Grunt for build and release steps.  You'll need to install Node and NPM, from:
 
