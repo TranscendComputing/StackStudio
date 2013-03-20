@@ -12,12 +12,14 @@ define([
         'icanhaz',
         'common',
         'text!templates/resources/resourcesTemplate.html',
+        'text!templates/resources/breadcrumb.html',
         'models/cloudCredential',
         'collections/cloudCredentials',
         'views/subServiceMenuView',
         'jquery-plugins',
         'jquery-ui-plugins'
-], function( $, _, Backbone, ich, Common, resourcesTemplate, cloudCredential, CloudCredentials, SubServiceMenuView ) {
+], function( $, _, Backbone, ich, Common, resourcesTemplate, breadcrumbTemplate,
+        cloudCredential, CloudCredentials, SubServiceMenuView ) {
 	// The Resources Navigation View
 	// ------------------------------
 
@@ -37,6 +39,8 @@ define([
 		className: ['twelvecol', 'last'],
 
 		template: _.template(resourcesTemplate),
+
+		crumbTemplate: _.template(breadcrumbTemplate),
 
         cloudProvider: undefined,
 
@@ -70,7 +74,6 @@ define([
             $("#resource_summary").accordion({
                 collapsible: true
             });
-
             var response = $.ajax({
                 url: "samples/cloudDefinitions.json",
                 async: false
@@ -183,8 +186,9 @@ define([
 		            row = 1;
 		        }
 		    });
-
-		    $("#cloud_nav").html(this.cloudDefinitions[this.cloudProvider].name+" ->");
+		    ;
+		    $("#cloud_nav").html(this.crumbTemplate({pathElt: this.cloudDefinitions[this.cloudProvider].name
+            }));
 
             this.refreshCloudSpecs();
 		},
@@ -272,11 +276,13 @@ define([
 		},
 
 		resourceSelect: function(selectionId) {
+		    view = this;
 			$('.resources').each(function() {
 			    var selection = selectionId + "Link";
 				if(selection === $(this).find(":first").attr("id")) {
 					$(this).addClass("selected_item");
-					$("#service_nav").html($(this).text() + " ->");
+					$("#service_nav").html(view.crumbTemplate(
+					        {pathElt: $(this).text()}));
 				}else {
 					$(this).removeClass("selected_item");
 				}
