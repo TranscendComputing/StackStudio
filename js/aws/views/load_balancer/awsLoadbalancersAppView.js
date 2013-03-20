@@ -29,7 +29,11 @@ define([
         },
 
         initialize: function() {
-            var featureNotImplemented = new FeatureNotImplementedView({feature_url: "https://github.com/TranscendComputing/StackStudio/issues/9", element: "#resource_app"});
+            this.render();
+        },
+
+        render: function() {
+            var featureNotImplemented = new FeatureNotImplementedView({feature_url: "https://github.com/TranscendComputing/StackStudio/issues/8", element: "#resource_app"});
             featureNotImplemented.render();
         },
         

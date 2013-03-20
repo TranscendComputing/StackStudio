@@ -29,6 +29,10 @@ define([
         },
 
         initialize: function() {
+            this.render();
+        },
+
+        render: function() {
             var featureNotImplemented = new FeatureNotImplementedView({feature_url: "https://github.com/TranscendComputing/StackStudio/issues/8", element: "#resource_app"});
             featureNotImplemented.render();
         },

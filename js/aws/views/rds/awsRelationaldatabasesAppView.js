@@ -50,8 +50,7 @@ define([
         },
 
         initialize: function(options) {
-            var featureNotImplemented = new FeatureNotImplementedView({feature_url: "https://github.com/TranscendComputing/StackStudio/issues/6", element: "#resource_app"});
-            featureNotImplemented.render();
+            this.render();
             /* COMMENTED OUT UNTIL COMPLETE
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
@@ -66,6 +65,11 @@ define([
                 rdsApp.render();
             });
             */
+        },
+
+        render: function() {
+            var featureNotImplemented = new FeatureNotImplementedView({feature_url: "https://github.com/TranscendComputing/StackStudio/issues/8", element: "#resource_app"});
+            featureNotImplemented.render();
         },
         
         toggleActions: function(e) {
