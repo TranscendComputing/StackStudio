@@ -241,7 +241,8 @@ define([
                 $.each(resourceNav.cloudDefinitions[this.cloudProvider].regions, function(index, region) {
                     if(resourceNav.selectedRegion === region.zone) {
                         $('#region_select').append($("<option value='" + region.zone + "' selected></option>").text(region.name));
-                        $("#region_nav").html(region.name + " ->");
+                        $("#region_nav").html(resourceNav.crumbTemplate(
+                                {pathElt: region.name}));
                         regionFound = true;
                     }else {
                         $('#region_select').append($("<option value='" + region.zone + "'></option>").text(region.name));
