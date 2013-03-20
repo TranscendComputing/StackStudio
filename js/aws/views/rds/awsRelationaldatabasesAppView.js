@@ -9,6 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'views/featureNotImplementedView',
         'views/resourceAppView',
         'text!templates/aws/rds/awsRelationalDatabaseAppTemplate.html',
         '/js/aws/models/rds/awsRelationalDatabase.js',
@@ -19,7 +20,7 @@ define([
         'morris',
         'spinner',
         'jquery.dataTables'
-], function( $, _, Backbone, ResourceAppView, relationalDatabaseAppTemplate, RelationalDatabase, RelationalDatabases, RelationalDatabaseCreate, ich, Common, Morris, Spinner ) {
+], function( $, _, Backbone, FeatureNotImplementedView, ResourceAppView, relationalDatabaseAppTemplate, RelationalDatabase, RelationalDatabases, RelationalDatabaseCreate, ich, Common, Morris, Spinner ) {
     'use strict';
 
     var AwsRdsAppView = ResourceAppView.extend({
@@ -49,6 +50,9 @@ define([
         },
 
         initialize: function(options) {
+            var featureNotImplemented = new FeatureNotImplementedView({feature_url: "https://github.com/TranscendComputing/StackStudio/issues/6", element: "#resource_app"});
+            featureNotImplemented.render();
+            /* COMMENTED OUT UNTIL COMPLETE
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
             }
@@ -61,6 +65,7 @@ define([
             Common.vent.on("rdsAppRefresh", function() {
                 rdsApp.render();
             });
+            */
         },
         
         toggleActions: function(e) {

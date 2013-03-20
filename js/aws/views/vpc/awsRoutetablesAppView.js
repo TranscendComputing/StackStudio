@@ -9,6 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'views/featureNotImplementedView',
         'views/resourceAppView',
         'text!templates/aws/vpc/awsRouteTableAppTemplate.html',
         '/js/aws/models/vpc/awsRouteTable.js',
@@ -17,7 +18,7 @@ define([
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, ResourceAppView, awsRouteTableAppTemplate, RouteTable, RouteTables, AwsRouteTableCreate, ich, Common ) {
+], function( $, _, Backbone, FeatureNotImplementedView, ResourceAppView, awsRouteTableAppTemplate, RouteTable, RouteTables, AwsRouteTableCreate, ich, Common ) {
     'use strict';
 
     // Aws RouteTable Application View
@@ -57,8 +58,8 @@ define([
         },
 
         initialize: function() {
-            this.render();
-            this.$el.html("<div><center><h3>Coming Soon!</h3></center></div>");
+            var featureNotImplemented = new FeatureNotImplementedView({feature_url: "https://github.com/TranscendComputing/StackStudio/issues/11", element: "#resource_app"});
+            featureNotImplemented.render();
         },
         
         toggleActions: function(e) {
