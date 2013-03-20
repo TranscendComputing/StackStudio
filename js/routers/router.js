@@ -36,9 +36,10 @@ define([
             'account/management(/:action)': 'accountManagement',
 			'resources': 'resourcesRoute',
 			'resources/:cloud': 'resourcesRoute',
-			'resources/:cloud/:type': 'resourcesRoute',
-			'resources/:cloud/:type/:subtype' : 'resourcesRoute',
-			'resources/:cloud/:type/:subtype/:id': 'resourcesRoute',
+			'resources/:cloud/:region': 'resourcesRoute',
+			'resources/:cloud/:region/:type': 'resourcesRoute',
+			'resources/:cloud/:region/:type/:subtype' : 'resourcesRoute',
+			'resources/:cloud/:region/:type/:subtype/:id': 'resourcesRoute',
 			'projects': 'projects',
 			'project/new': 'projectCreate',
 			'projects/:url': 'projectEdit',
@@ -61,10 +62,10 @@ define([
 		    }
 		},
 		
-		resourcesRoute: function(cloud, type, subtype, id, action) {
+		resourcesRoute: function(cloud, region, type, subtype, id, action) {
 		    $("#sidebar").empty();
 		    $("#sidebar").hide();
-		    this.trigger("route:resources", cloud, type, subtype, id);
+		    this.trigger("route:resources", cloud, region, type, subtype, id);
 		}
 	});
 	

@@ -94,7 +94,7 @@ define([
             console.log("ROW DATA", rowData, "COLUMN NUMBER", this.idColumnNumber);
             //TODO -- make more dynamic in order to allow user to define columns
             id = rowData[this.idColumnNumber];
-            Common.router.navigate("#resources/" + this.cloudProvider + "/"+this.type+"/"+this.subtype+"/"+id, {trigger: false});
+            Common.router.navigate("#resources/" + this.cloudProvider + "/"+this.region+"/"+this.type+"/"+this.subtype+"/"+id, {trigger: false});
             this.selectOne(id, event.currentTarget);
         },
 

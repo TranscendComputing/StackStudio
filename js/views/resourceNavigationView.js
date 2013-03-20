@@ -68,8 +68,7 @@ define([
             $("#main").html(this.el);
             this.$el.html(this.template);
             $("#resource_summary").accordion({
-                collapsible: true,
-                event: "click hoverintent"
+                collapsible: true
             });
 
             var response = $.ajax({
@@ -177,7 +176,6 @@ define([
                 $("#"+service.type).append($("<a></a>").attr({
                     "id": service.type+"Link",
                     "class": "resourceLink",
-                    "href": "/#resources/"+resourceNav.cloudProvider+"/"+resourceNav.selectedRegion+"/"+service.type
                 }).text(service.name));
                 row++;
                 //reset row if greater than 3
@@ -249,6 +247,7 @@ define([
                     change: function() {
                         resourceNav.selectedRegion = $("#region_select").val();
                         resourceNav.refreshCloudSpecs();
+                        resourceNav.refreshPath();
                         resourceNav.render();
                     }
                 });
@@ -265,9 +264,11 @@ define([
         },
 
 		resourceClick: function(id) {
-			var selectionId = id.target.id;
+			var selectionId = id.target.id.split("Link")[0];
 			this.type = selectionId;
+            this.subtype = undefined;
 			this.resourceSelect(selectionId);
+            this.render();
 		},
 
 		resourceSelect: function(selectionId) {
@@ -305,10 +306,9 @@ define([
                         serviceObject = service;
                     }
                 });
-
                 //Load SubServiceMenu if applies
-                if(serviceObject.hasOwnProperty("subServices") && serviceObject.subServices.length > 0) {
-                    this.subServiceMenu.render({service: serviceObject, cloudProvider: this.cloudProvider, selectedSubtype: this.subtype});
+                if(serviceObject && serviceObject.hasOwnProperty("subServices") && serviceObject.subServices.length > 0) {
+                    this.subServiceMenu.render({service: serviceObject, cloudProvider: this.cloudProvider, region: this.selectedRegion, selectedSubtype: this.subtype});
                     $("#service_menu").show();
                 }else {
                     $("#service_menu").hide();
@@ -335,13 +335,17 @@ define([
                     resourceAppView.cloudProvider = resourceNav.cloudProvider;
                     resourceNav.resourceApp = resourceAppView;
                     resourceNav.resourceSelect(resourceNav.type);
-                    if(resourceNav.resourceId) {
-                        Common.router.navigate("#resources/"+resourceNav.cloudProvider+"/"+resourceNav.selectedRegion+"/"+resourceNav.type+"/"+resourceNav.subtype+"/"+resourceNav.resourceId, {trigger: false});
-                        resourceAppView.selectedId = resourceNav.resourceId;
-                    }else {
-                        Common.router.navigate("#resources/"+resourceNav.cloudProvider+"/"+resourceNav.selectedRegion+"/"+resourceNav.type+"/"+resourceNav.subtype, {trigger: false});
-                    }
+                    resourceNav.refreshPath();
                 });
+            }
+        },
+
+        refreshPath: function() {
+            if(this.resourceId) {
+                Common.router.navigate("#resources/"+this.cloudProvider+"/"+this.selectedRegion+"/"+this.type+"/"+this.subtype+"/"+this.resourceId, {trigger: false});
+                this.resourceApp.selectedId = this.resourceId;
+            }else {
+                Common.router.navigate("#resources/"+this.cloudProvider+"/"+this.selectedRegion+"/"+this.type+"/"+this.subtype, {trigger: false});
             }
         },
 

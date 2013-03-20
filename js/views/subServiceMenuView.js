@@ -21,6 +21,8 @@ define([
         template: _.template(subServiceMenuTemplate),
         
         cloudProvider: undefined,
+
+        region: undefined,
         
         service: undefined,
         
@@ -41,6 +43,7 @@ define([
             if(options) {
                 this.service = options.service;
                 this.cloudProvider = options.cloudProvider;
+                this.region = options.region;
                 $("#subservice_menu_title").html(this.service.name);
                 // Build Menu
                 $.each(options.service.subServices, function(index, subService) {
@@ -59,7 +62,7 @@ define([
             this.clearSelection();
             $(click.target).addClass("selected_item");
             
-            Common.router.navigate("#resources/"+this.cloudProvider+"/"+this.service.type+"/"+click.target.id, {trigger: true});
+            Common.router.navigate("#resources/"+this.cloudProvider+"/"+this.region+"/"+this.service.type+"/"+click.target.id, {trigger: true});
         },
         
         clearSelection: function() {
