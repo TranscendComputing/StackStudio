@@ -1,34 +1,91 @@
-<div id="instance_create">
-    <table>
-        <tr>
-            <td>Platform:</td>
-            <td>
-                <select id="platform_select" style="width:250px;"></select>
-            </td>
-        </tr>
-        <tr>
-            <td>Instance Type:</td>
-            <td>
-                <select id="instance_type_select" style="width:200px;"></select>
-            </td>
-        </tr>
-        <tr>
-            <td>Availability Zone:</td>
-            <td>
-                <select id="az_select" style="width:200px;"></select>
-            </td>
-        </tr>
-        <tr>
-            <td>Term:</td>
-            <td>
-                <select id="term_select" style="width:200px;"></select>
-            </td>
-        </tr>
-        <tr>
-            <td>Offering Type:</td>
-            <td>
-                <select id="offering_type_select" style="width:200px;"></select>
-            </td>
-        </tr>
-    </table>
+<div class="controls_container">
+    <div id="view1" class="view_stack">
+        <div class="controls">
+            <table>
+                <tr>
+                    <td>
+                        <label>Platform:</label><br>
+                        <select id="platform_select" class="select-300">
+                              <option selected="selected">Linux/UNIX</option>
+                              <option>Linux/UNIX (Amazon VPC)</option>
+                              <option>SUSE Linux</option>
+                              <option>SUSE Linux (Amazon VPC)</option>
+                              <option>Red Hat Enterprise Linux</option>
+                              <option>Red Hat Enterprise Linux (Amazon VPC)</option>
+                              <option>Windows</option>
+                              <option>Windows (Amazon VPC)</option>
+                              <option>Windows with SQL Server Standard</option>
+                              <option>Windows with SQL Server Standard (Amazon VPC)</option>
+                              <option>Windows with SQL Server Web</option>
+                              <option>Windows with SQL Server Web (Amazon VPC)</option>
+                        </select>
+                    </td>
+                    <td>
+                        <label>Instance Type:</label><br>
+                        <select id="type_select" class="select-300">
+                               <option>t1.micro</option>
+                               <option>m1.small</option>
+                               <option>m1.medium</option> 
+                               <option>m1.large</option> 
+                               <option>m1.xlarge</option>
+                               <option>m3.xlarge</option> 
+                               <option>m3.2xlarge</option>
+                               <option>m2.xlarge</option> 
+                               <option>m2.2xlarge</option> 
+                               <option>m2.4xlarge</option>
+                               <option>c1.medium</option> 
+                               <option>c1.xlarge</option>
+                               <option>cc1.4xlarge</option> 
+                               <option>cc2.8xlarge</option> 
+                               <option>cr1.8xlarge</option>
+                               <option>cg1.4xlarge</option> 
+                               <option>hi1.4xlarge</option>
+                               <option>hs1.8xlarge</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Availability Zone:</label><br>
+                        <select id="zone_select" class="select-300">
+                           <option value="Any">Any</option>
+                           <option>us-east-1a</option> 
+                           <option>us-east-1b</option> 
+                           <option>us-east-1d</option>
+                        </select>
+                    </td>
+                    <td>
+                        <label>Term:</label><br>
+                        <select id="term_select" class="select-300">
+                               <option value="Any">Any</option>
+                               <option value="31536000">1 year</option>
+                               <option value="94608000">3 years</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+            <button id="search_button">Search</button>
+        </div>
+        <div id="details">
+            <p>
+                Reserved Instances help cut down your computing costs.  You pay a low, one-time fee, then a disconted hourly rate so that you know what you're paying and that you're instance is available when you need it.  Reserved instances are available for terms of 12 or 36 months, and when your term is up, there will be no interruption to your compute instance, the price will just be adjusted to the current on-demand price.
+
+                Note: Additional taxes may apply.
+            </p>
+        </div>
+        <table class="offerings_table">
+        </table>
+    </div>
+    <div id="view2" class="view_stack">
+        <table class="cart_table">
+        </table>
+        <div id="cart_total">
+        <div>
+    </div>
 </div>
+
+<script type="text/html" id="total_template">
+<p>Your cart: {{count}} Reserved Instances, Total Due Now: {{total}}<p>
+<p>Additional taxes may apply</p>
+</script>
+

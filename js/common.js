@@ -32,6 +32,10 @@ requirejs.config({
         'base64': {
             exports: 'Base64'
         },
+        'dataTables.fnReloadAjax': {
+            deps: ['jquery.dataTables'],
+            exports: 'fnReloadAjax'
+        },
         'FeedEk': {
             deps: ['jquery']
         },

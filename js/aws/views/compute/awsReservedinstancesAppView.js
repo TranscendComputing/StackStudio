@@ -64,6 +64,11 @@ define([
                 this.region = options.region;
             }
             this.render();
+
+            var reservedInstanceApp = this;
+            Common.vent.on("reservedInstanceAppRefresh", function() {
+                reservedInstanceApp.render();
+            });
         },
         
         toggleActions: function(e) {
