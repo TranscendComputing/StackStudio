@@ -191,7 +191,7 @@ define([
                 $("#"+service.type).append($("<a></a>").attr({
                     "id": service.type+"Link",
                     "class": "resourceLink",
-                    "href": "/#resources/"+resourceNav.cloudProvider+"/"+service.type
+                    "href": "/#resources/"+resourceNav.cloudProvider+"/"+resourceNav.selectedRegion+"/"+service.type
                 }).text(service.name));
                 row++;
                 //reset row if greater than 3
@@ -226,7 +226,6 @@ define([
                     }else {
                         $('#credential_select').append($("<option value='" + credential.get("id") + "'></option>").text(credential.get("name")));
                     }
-                    
                 }
             });
             $("#credential_select").selectmenu({
@@ -301,6 +300,13 @@ define([
 		    var resourceNav = this;
 		    var serviceObject;
             if(this.cloudProvider) {
+                if (!this.selectedRegion) {
+                    try {
+                        this.selectedRegion = this.cloudDefinitions[this.cloudProvider].regions[0].zone;
+                    }catch(error) {
+
+                    }
+                }
                 if (!this.type) {
                     this.type = "compute";
                     this.subtype = "instances";
@@ -344,10 +350,10 @@ define([
                     resourceNav.resourceApp = resourceAppView;
                     resourceNav.resourceSelect(resourceNav.type);
                     if(resourceNav.resourceId) {
-                        Common.router.navigate("#resources/"+resourceNav.cloudProvider+"/"+resourceNav.type+"/"+resourceNav.subtype+"/"+resourceNav.resourceId, {trigger: false});
+                        Common.router.navigate("#resources/"+resourceNav.cloudProvider+"/"+resourceNav.selectedRegion+"/"+resourceNav.type+"/"+resourceNav.subtype+"/"+resourceNav.resourceId, {trigger: false});
                         resourceAppView.selectedId = resourceNav.resourceId;
                     }else {
-                        Common.router.navigate("#resources/"+resourceNav.cloudProvider+"/"+resourceNav.type+"/"+resourceNav.subtype, {trigger: false});
+                        Common.router.navigate("#resources/"+resourceNav.cloudProvider+"/"+resourceNav.selectedRegion+"/"+resourceNav.type+"/"+resourceNav.subtype, {trigger: false});
                     }
                 });
             }
@@ -369,7 +375,7 @@ define([
 
 	var resourcesView;
 
-    Common.router.on('route:resources', function (cloud, type, subtype, id) {
+    Common.router.on('route:resources', function (cloud, region, type, subtype, id) {
         if(sessionStorage.account_id) {
             if (this.previousView !== resourcesView) {
                 this.unloadPreviousState();
@@ -377,6 +383,7 @@ define([
                 this.setPreviousState(resourcesView);
             }
             resourcesView.cloudProvider = cloud;
+            resourcesView.selectedRegion = region;
             resourcesView.type = type;
             resourcesView.subtype = subtype;
             resourcesView.resourceId = id;
