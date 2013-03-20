@@ -31,7 +31,7 @@ define([
      * @returns {Object} Returns a ResourcesView project.
      */
 	var ResourcesView = Backbone.View.extend({
-	    
+
 		id: 'resource_navigation_view',
 
 		className: ['twelvecol', 'last'],
@@ -47,42 +47,43 @@ define([
 		resourceId: undefined,
 
         cloudDefinitions: undefined,
-        
+
         cloudCredentials: undefined,
-        
+
         selectedCredential: undefined,
 
         selectedRegion: undefined,
-        
-        subServiceMenu: undefined,
-        
-        resourceApp: undefined,
 
-        navOpen: false,
+        subServiceMenu: undefined,
+
+        resourceApp: undefined,
 
         events: {
 			"click .resourceLink" : "resourceClick",
 			"click #cloud_coverflow img" : "cloudChange",
-			"click #resource_summary" : "toggleResourceNav"
 		},
 
 		initialize: function() {
             this.subViews = [];
             $("#main").html(this.el);
             this.$el.html(this.template);
-            
+            $("#resource_summary").accordion({
+                collapsible: true,
+                event: "click hoverintent"
+            });
+
             var response = $.ajax({
                 url: "samples/cloudDefinitions.json",
                 async: false
             }).responseText;
-            
+
             this.subServiceMenu = new SubServiceMenuView();
-            
+
             this.cloudDefinitions = $.parseJSON(response);
-            
+
             this.cloudCredentials = new CloudCredentials();
             this.cloudCredentials.on('reset', this.addAllClouds, this );
-            
+
             //load user's cloud selections
             this.cloudCredentials.fetch();
         },
@@ -108,22 +109,8 @@ define([
                     Common.router.navigate("#resources/"+firstCloudProvider, {trigger: false});
                     this.cloudSelection(firstCloudProvider);
                 }
-            }    
-		    this.loadResourceApp();
-		},
-
-		toggleResourceNav: function() {
-		    if(this.navOpen) {
-                $("#resource_nav").hide();
-                this.navOpen = false;
-                $("#resource_summary_icon").removeClass("ui-icon-triangle-1-n");
-                $("#resource_summary_icon").addClass("ui-icon-triangle-1-s");
-            }else {
-                $("#resource_nav").show();
-                this.navOpen = true;
-                $("#resource_summary_icon").removeClass("ui-icon-triangle-1-s");
-                $("#resource_summary_icon").addClass("ui-icon-triangle-1-n");
             }
+		    this.loadResourceApp();
 		},
 
 		addCloud: function( cloudCredential ) {
@@ -167,8 +154,7 @@ define([
 		},
 
 		addAllClouds: function() {
-		    this.cloudCredentials.each(this.addCloud, this); 
-		    $("#resource_nav").hide();
+		    this.cloudCredentials.each(this.addCloud, this);
 		},
 
 		cloudChange: function(event) {
@@ -202,7 +188,7 @@ define([
 
 		    $("#cloud_nav").html(this.cloudDefinitions[this.cloudProvider].name+" ->");
 
-            this.refreshCloudSpecs();       
+            this.refreshCloudSpecs();
 		},
 
         refreshCloudSpecs: function() {
@@ -319,7 +305,7 @@ define([
                         serviceObject = service;
                     }
                 });
-                
+
                 //Load SubServiceMenu if applies
                 if(serviceObject.hasOwnProperty("subServices") && serviceObject.subServices.length > 0) {
                     this.subServiceMenu.render({service: serviceObject, cloudProvider: this.cloudProvider, selectedSubtype: this.subtype});
@@ -344,7 +330,7 @@ define([
                         resourceNav.resourceApp.render();
                         return;
                     }
-                    
+
                     var resourceAppView = new AppView({cred_id: resourceNav.selectedCredential, region: resourceNav.selectedRegion});
                     resourceAppView.cloudProvider = resourceNav.cloudProvider;
                     resourceNav.resourceApp = resourceAppView;
