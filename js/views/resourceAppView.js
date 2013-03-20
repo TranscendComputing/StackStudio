@@ -13,33 +13,34 @@ define([
         'common',
         'views/resourceRowView',
         'jquery.dataTables',
+        'jquery.dataTables.fnProcessingIndicator',
         'wijmo'
 ], function( $, _, Backbone, ich, Common , ResourceRowView ) {
     'use strict';
-    
+
     var ResourceAppView = Backbone.View.extend({
         selectedId: undefined,
-        
+
         credentialId: undefined,
 
         region: undefined,
-        
+
         modelStringIdentifier: undefined,
-        
+
         collection: undefined,
-        
+
         columns: [],
-        
+
         idColumnNumber: 0,
-        
+
         type: undefined,
-        
+
         subtype: undefined,
-        
+
         CreateView: undefined,
-        
+
         tagName: 'div',
-        
+
         render: function() {
             this.$el.html(this.template);
             $("#resource_app").html(this.$el);
@@ -47,10 +48,13 @@ define([
             ich.refresh();
             $('button').button();
             $("#action_menu").menu();
-            
-            this.$table = $('#resource_table').dataTable({"bJQueryUI": true});
+
+            this.$table = $('#resource_table').dataTable({"bJQueryUI": true,
+                "bProcessing": true});
+            this.$table.fnProcessingIndicator(true);
+
             var CollectionType = this.collectionType;
-            this.collection = new CollectionType(); 
+            this.collection = new CollectionType();
             this.collection.on( 'add', this.addOne, this );
             this.collection.on( 'reset', this.addAll, this );
             $("#action_menu li").addClass("ui-state-disabled");
@@ -63,7 +67,7 @@ define([
             }
             this.setResourceAppHeightify();
         },
-        
+
         addOne: function( model ) {
             if (model.get(this.modelStringIdentifier) === "") {
                 return;
@@ -75,13 +79,14 @@ define([
 
         addAll: function() {
             this.$table.fnClearTable();
+            this.$table.fnProcessingIndicator(false);
             this.collection.each(this.addOne, this);
-            
+
             if(this.selectedId) {
                 this.selectOne(this.selectedId, $("tr:contains("+this.selectedId+")"));
             }
         },
-        
+
         clickOne: function (event) {
             console.log($(event.currentTarget).data());
             var id, parentNode;
@@ -101,13 +106,13 @@ define([
             if(rowNode) {
                 $(rowNode).addClass('row_selected');
             }
-            
+
             this.collection.each(function(e) {
                 if (e.get(modelStringIdentifier) === id) {
                     selectedModel = e;
                 }
             });
-            
+
             if(selectedModel) {
                 this.selectedId = id;
                 $("#action_menu li").removeClass("ui-state-disabled");
@@ -121,12 +126,12 @@ define([
             }
             this.setResourceAppHeightify();
         },
-        
+
         clearSelection: function () {
             this.$table.$('tr').removeClass('row_selected');
             //$('#details').empty();
         },
-        
+
         createNew : function () {
             var CreateView = this.CreateView;
             if(this.region) {
@@ -136,7 +141,7 @@ define([
             }
             this.newResourceDialog.render();
         },
-        
+
         setResourceAppHeightify: function() {
             //set resource_app_heightify for other elements to reference
             $(".resource_app_heightify").height($("#resource_app").height());
@@ -144,6 +149,6 @@ define([
     });
 
     console.log("resource app view defined");
-    
+
     return ResourceAppView;
 });

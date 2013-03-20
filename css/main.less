@@ -5,7 +5,7 @@
  * Credit left inline and big thanks to Nicolas Gallagher, Jonathan Neal,
  * Kroc Camen, and the H5BP dev community and team.
  */
- 
+
 @import "notifications.less";
 
 @import "console.less";
@@ -131,6 +131,19 @@ textarea {
             border-radius:@radius;
 }
 
+.BoxShadow() {
+    -webkit-box-shadow: inset 0px 5px rgba(255, 255, 255, 0.24), 0px 1px 5px rgba(0, 0, 0, 0.6);
+    -moz-box-shadow: inset 0px 1px rgba(255, 255, 255, 0.24), 0px 1px 5px rgba(0, 0, 0, 0.6);
+    box-shadow: inset 0px 1px rgba(255, 255, 255, 0.24), 0px 1px 5px rgba(0, 0, 0, 0.6);
+}
+
+.UserSelect() {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
 .full_width {
     width:100%;
 }
@@ -169,7 +182,7 @@ nav ul.main {
     display: block;
 }
 
-#navLogin {   
+#navLogin {
     float:right;
     background-color: #CCC;
     background: url('../css/../images/noise.png');
@@ -280,22 +293,22 @@ footer a:visited {
     border-style:solid;
     border-radius:5px;
     border-width:1px;
-    border-color:#AAAAAA; 
+    border-color:#AAAAAA;
     list-style-type: none;
     width:185px;
-    margin-right:2px; 
+    margin-right:2px;
     padding:0px;
     background: -webkit-linear-gradient(top, #F2F2F2, #FFFFFF);
 }
 
-.selectable_list li { 
-    margin: 2px; 
+.selectable_list li {
+    margin: 2px;
     height: 18px;
     cursor: pointer;
     padding-left:10px;
 }
 
-.selectable_list li img { 
+.selectable_list li img {
     padding-right:5px;
 }
 
@@ -655,4 +668,26 @@ img {
     h3 {
         page-break-after: avoid;
     }
+}
+
+/*
+ * Processing indicator
+ */
+.dataTables_processing {
+    .RoundedShape(4px);
+    .BoxShadow();
+    /*.UserSelect();*/
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 250px;
+    height: 30px;
+    margin-left: -125px;
+    margin-top: -15px;
+    padding: 14px 0 2px 0;
+    border: 1px solid #ddd;
+    text-align: center;
+    color: black;
+    font-size: 14px;
+    background-color: white;
 }
