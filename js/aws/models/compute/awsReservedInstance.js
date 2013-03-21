@@ -33,6 +33,27 @@ define([
             productDescription: '',
             start: '',
             state: ''
+        },
+
+        create: function(options, credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/reserved_instances/create?_method=PUT&cred_id=" + credentialId + "&region=" + region;
+            this.sendPostAction(url, options);
+        },
+        
+        sendPostAction: function(url, options) {
+            $.ajax({
+                url: url,
+                type: 'POST',
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: JSON.stringify(options),
+                success: function(data) {
+                    Common.vent.trigger("");
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            }); 
         }
     });
 

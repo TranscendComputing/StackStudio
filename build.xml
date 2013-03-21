@@ -56,7 +56,8 @@
 	<target name="deploy" depends="package">
         <echo message="Deploying StackStudio to ${deploy.ip}"/>
 		<exec command="scp ${build}/${package.file} ${deploy.ip}:/${sstudio2.home}" failonerror="true"/>
-		<exec command="ssh ${deploy.ip} sudo tar xvzf ${sstudio2.home}/${package.file} -C ${sstudio2.home}" failonerror="true"/>
+        <exec command="ssh ${deploy.ip} sudo rm -r ${sstudio2.home}/StackStudio" failonerror="true"/>
+        <exec command="ssh ${deploy.ip} sudo tar xvzf ${sstudio2.home}/${package.file} -C ${sstudio2.home}" failonerror="true"/>
 		<exec command="ssh ${deploy.ip} sudo chmod 755 ${sstudio2.home}/StackStudio" failonerror="true"/>
 		<exec command="ssh ${deploy.ip} sudo find ${sstudio2.home}/StackStudio -type d -exec chmod 755 {} \;" failonerror="true"/>
         <exec command="ssh ${deploy.ip} sudo find ${sstudio2.home}/StackStudio -type f -exec chmod 644 {} \;" failonerror="true"/>

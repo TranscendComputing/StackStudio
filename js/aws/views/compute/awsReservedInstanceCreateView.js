@@ -12,138 +12,242 @@ define([
         'views/dialogView',
         'text!templates/aws/compute/awsReservedInstanceCreateTemplate.html',
         '/js/aws/models/compute/awsReservedInstance.js',
+        '/js/aws/collections/compute/awsReservedInstancesOfferings.js',
         'icanhaz',
         'common',
-        'jquery.ui.selectmenu'
+        'jquery.ui.selectmenu',
+        'jquery.dataTables',
+        'dataTables.fnReloadAjax'
         
-], function( $, _, Backbone, DialogView, reservedInstanceCreateTemplate, ReservedInstance, ich, Common ) {
-    
-    var platformList = [
-                        "Linux/UNIX",
-                        "Linux/UNIX (Amazon VPC)",
-                        "SUSE Linux",
-                        "SUSE Linux (Amazon VPC)",
-                        "Red Hat Enterprise Linux",
-                        "Red Hat Enterprise Linux (Amazon VPC)",
-                        "Windows",
-                        "Windows (Amazon VPC)",
-                        "Windows with SQL Server Standard",
-                        "Windows with SQL Server Standard (Amazon VPC)",
-                        "Windows with SQL Server Web",
-                        "Windows with SQL Server Web (Amazon VPC)"
-                       ];
-    
-    var azList = ["us-east-1a", "us-east-1b", "us-east-1d"];
-    
-    var instanceTypes = [
-                        "t1.micro", 
-                        "m1.small",
-                        "m1.medium", 
-                        "m1.large", 
-                        "m1.xlarge",
-                        "m3.xlarge", 
-                        "m3.2xlarge",
-                        "m2.xlarge", 
-                        "m2.2xlarge", 
-                        "m2.4xlarge",
-                        "c1.medium", 
-                        "c1.xlarge",
-                        "cc1.4xlarge", 
-                        "cc2.8xlarge", 
-                        "cr1.8xlarge",
-                        "cg1.4xlarge", 
-                        "hi1.4xlarge",
-                        "hs1.8xlarge"
-                       ];
-    
-    var termList = [
-                    "1 month - 6 months",
-                    "7 months - 12 months",
-                    "1 year - 2 years",
-                    "2 years - 3 years"
-                   ];
-    
-    var offeringTypes = [
-                         "Light Utilization",
-                         "Medium Utilization", 
-                         "Heavy Utilization"
-                        ];
+], function( $, _, Backbone, DialogView, reservedInstanceCreateTemplate, ReservedInstance, ReservedInstancesOfferings, ich, Common ) {
 
     var ReservedInstanceCreateView = DialogView.extend({
-
+        offerings: new ReservedInstancesOfferings(),
+        cartOfferings: new ReservedInstancesOfferings(),
+        template: _.template(reservedInstanceCreateTemplate),
         // Delegated events for creating new instances, etc.
         events: {
-            "dialogclose": "close"
+            "dialogclose": "close",
+            "click button#search_button": "performSearch",
+            "click a.add_to_cart": "addToCart",
+            "click a.remove_from_cart": "removeFromCart",
+            "change input.desired_count_input": "updateCount"
         },
 
-        initialize: function() {
-            var createView = this;
-            var compiledTemplate = _.template(reservedInstanceCreateTemplate);
-            this.$el.html(compiledTemplate);
+        reservedInstance: new ReservedInstance(),
+
+        initialize: function(options) {
+            this.credentialId = options.cred_id;
+            this.region = options.region;
+            this.cartOfferings.credentialId = this.credentialId;
+            this.offerings.on("reset", this.refreshTable, this);
+            this.render();
+            this.refreshView(1);
+        },
+
+        next: function() {
+            if(this.currentViewIndex === 2) {
+                this.create();
+            }else {
+                this.currentViewIndex++;
+                this.refreshView(this.currentViewIndex);
+            }
+        },
+
+        previous: function() {
+            this.currentViewIndex--;
+            this.refreshView(this.currentViewIndex);
+        },
+
+        refreshView: function (viewIndex) {
+            $(".view_stack").hide();
+            $("#view"+viewIndex).show();
+            this.currentViewIndex = viewIndex;
+
+            if(this.currentViewIndex === 1) {
+                $("#previous_button").addClass("ui-state-disabled");
+                $("#previous_button").attr("disabled", true);
+            }else {
+                $("#previous_button").removeClass("ui-state-disabled");
+                $("#previous_button").attr("disabled", false);
+            }
+
+            if(this.currentViewIndex === 2) {
+                $("#next_button span").text("Purchase");
+            }else {
+                $("#next_button span").text("View Cart");
+            }
+            $("#next_button").button();
+        },
+
+        render: function() {
+            var view = this;
+            this.$el.html(this.template);
+            this.$("button").button();
 
             this.$el.dialog({
                 autoOpen: true,
                 title: "Purchase Reserved Instance",
-                width:450,
-                minHeight: 150,
+                width:800,
+                minHeight: 400,
                 resizable: false,
                 modal: true,
                 buttons: {
-                    Create: function () {
-                        createView.create();
+                    Previous: {
+                        text: "Back",
+                        id: "previous_button",
+                        click: function() {
+                            view.previous();
+                        }
                     },
-                    Cancel: function() {
-                        createView.cancel();
+                    ViewCart: {
+                        text: "View Cart",
+                        id: "next_button",
+                        click: function() {
+                            view.next();
+                        }
                     }
                 }
             });
-            
-            $.each(platformList, function (index, value) {
-                $('#platform_select')
-                    .append($("<option></option>")
-                    .attr("value",index)
-                    .text(value));
-            });
-            
-            $.each(instanceTypes, function (index, value) {
-                $('#instance_type_select')
-                    .append($("<option></option>")
-                    .attr("value",index)
-                    .text(value));
-            });
-            
-            $.each(azList, function (index, value) {
-                $('#az_select')
-                    .append($("<option></option>")
-                    .attr("value",index)
-                    .text(value));
-            });
-            
-            $.each(termList, function (index, value) {
-                $('#term_select')
-                    .append($("<option></option>")
-                    .attr("value",index)
-                    .text(value));
-            });
-            
-            $.each(offeringTypes, function (index, value) {
-                $('#offering_type_select')
-                    .append($("<option></option>")
-                    .attr("value",index)
-                    .text(value));
-            });
-            
             $("select").selectmenu();
+
+            $("table.offerings_table").hide();
+            this.$table = $('table.offerings_table').dataTable({
+                "bJQueryUI": true,
+                "aoColumns": [
+                    {"sTitle": "Platform", "mDataProp": "productDescription"},
+                    {"sTitle": "Term", "mDataProp": "term"},
+                    {"sTitle": "Upfront Price", "mDataProp": "upfrontPrice"},
+                    {"sTitle": "Hourly Rate", "mDataProp": "hourlyRate"},
+                    {"sTitle": "Availability Zone", "mDataProp": "availabilityZone"},
+                    {"sTitle": "Offering Type", "mDataProp": "offeringType"},
+                    {"sTitle": "", "mDataProp": "addButton"}
+                ],
+                sDefaultContent: "",
+                sAjaxDataProp: "",
+                fnServerData: function(sSource, aoData, fnCallback) {
+                    fnCallback(view.offerings.toJSON());
+                }
+            }, view);
+            $("div#details").hide();
+
+            this.renderCart();
+            ich.grabTemplates();
         },
 
-        render: function() {
-            
+        renderCart: function() {
+            var view = this;
+            this.$cart = $('table.cart_table').dataTable({
+                "bJQueryUI": true,
+                "bFilter": false,
+                "bInfo": false,
+                "aoColumns": [
+                    {"sTitle": "Platform", "mDataProp": "productDescription"},
+                    {"sTitle": "Term", "mDataProp": "term"},
+                    {"sTitle": "Upfront Price", "mDataProp": "upfrontPrice"},
+                    {"sTitle": "Hourly Rate", "mDataProp": "hourlyRate"},
+                    {"sTitle": "Availability Zone", "mDataProp": "availabilityZone"},
+                    {"sTitle": "Offering Type", "mDataProp": "offeringType"},
+                    {"sTitle": "Desired Count", "mDataProp": "desiredCount"},
+                    {"sTitle": "", "mDataProp": "removeButton"}
+                ],
+                sDefaultContent: "",
+                sAjaxDataProp: "",
+                fnServerData: function(sSource, aoData, fnCallback) {
+                    fnCallback(view.cartOfferings.toJSON());
+                }
+            }, view);
+            this.$cart.fnReloadAjax();
+            this.refreshView(1);
         },
-        
+
         create: function() {
-            console.log("create_initiated");
-            //Validate and create
+            this.cartOfferings.region = this.region;
+            this.cartOfferings.purchase();
             this.$el.dialog('close');
+        },
+
+        performSearch: function() {
+            $("div#details").hide();
+            var options = {};
+            if($('#zone_select').selectmenu("value") !== "Any")
+            {
+                options["availability-zone"] = $("#zone_select").val();
+            }
+            if($("#term_select").selectmenu("value") !== "Any")
+            {
+                options["term"] = $("#term_select").val();
+            }
+            options["instance-type"] = $("#type_select").val();
+            options["product-description"] = $("#platform_select").val();
+            this.offerings.fetch({data: {cred_id: this.credentialId, filters: options, region: this.region}});
+            this.refreshTable();
+        },
+
+        addToCart: function(event) {
+            var row = event.currentTarget.parentElement.parentElement,
+                data = this.$table.fnGetData(row);
+            this.cartOfferings.add(data);
+            this.$cart.fnReloadAjax();
+            var count = this.$cart.fnGetData().length;
+            var details = this.calculatePrice(this.$cart);
+            $("#cart_total").html(ich['total_template'](details));
+            $("#notif").html(ich['notif_template']({count: count}));
+            return false;
+        },
+
+        refreshTable: function() {
+            $("table.offerings_table").hide();
+            $("table.offerings_table").show();
+            var offeringsTable = $("table.offerings_table").dataTable();
+            offeringsTable.fnReloadAjax();
+        },
+
+        removeFromCart: function(event) {
+            var row = event.currentTarget.parentElement.parentElement,
+                data = this.$cart.fnGetData(row);
+            this.$cart.fnDeleteRow(row);    
+            this.cartOfferings.remove(data);
+            var count = this.$cart.fnGetData().length;
+            var details = this.calculatePrice(this.$cart);
+            $("#cart_total").html(ich['total_template'](details));
+            $("#notif").html(ich['notif_template']({count: count}));
+            return false;
+        },
+
+        calculatePrice: function(cartTable) {
+            var count = cartTable.fnGetData().length;
+            var total = 0;
+            var amt, usagePrice;
+            _.each(cartTable.fnGetData(), function(offering) {
+                if(offering.usagePrice.toFixed(3) === "0.000")
+                {
+                    usagePrice = 0.005;
+                }else{
+                    usagePrice = offering.usagePrice;
+                }
+                amt = usagePrice * (offering.duration / 60) + offering.fixedPrice;
+                if(offering.count)
+                {
+                    count = count + (offering.count - 1);
+                    total = total + offering.count * (amt + offering.fixedPrice);
+                }else{
+                    total = total + amt + offering.fixedPrice;
+                }
+            }, cartTable);
+            total = "$" + total.toFixed(2);
+            return {total: total, count: count};
+        },
+
+        updateCount: function(event) {
+            var row = event.currentTarget.parentElement.parentElement,
+                data = this.$cart.fnGetData(row);  
+            var offering = this.cartOfferings.get(data);
+            var count = $(event.currentTarget).val();
+            offering.set({count: count}, {update: true});
+            this.$cart.fnReloadAjax();
+            var details = this.calculatePrice(this.$cart);
+            $("#cart_total").html(ich['total_template'](details));
         }
 
     });

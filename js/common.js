@@ -32,6 +32,10 @@ requirejs.config({
         'base64': {
             exports: 'Base64'
         },
+        'dataTables.fnReloadAjax': {
+            deps: ['jquery.dataTables'],
+            exports: 'fnReloadAjax'
+        },
         'FeedEk': {
             deps: ['jquery']
         },
@@ -245,7 +249,7 @@ define(
          'views/errorDialog',
          'jquery-ui',
          'jquery-ui-plugins'
-         ], function ($, _, Backbone, CommandLineView, Router, ErrorDialog) {            
+         ], function ($, _, Backbone, CommandLineView, Router, ErrorDialog) {
     // Within this scope, jquery and jquery UI have been loaded.
 
     // Initialize routing
@@ -253,10 +257,14 @@ define(
 
     //Base url for API calls
     var apiUrl;
-    if(location.hostname === "stackstudio2.appspot.com") {
+    // Automatically choose URL based on current hostname.
+    // TODO: need a cleaner solution for this, w/o requiring too much config
+    if(location.hostname.indexOf("stackstudio2.appspot.com") !== -1 ") {
         apiUrl = "http://208.86.59.108.bc.googleusercontent.com:9292";
     }else if(location.hostname === "localhost") {
         apiUrl = "http://localhost:9292";
+    }else if(location.hostname === "stackstudio-dev") {
+        apiUrl = "http://devessex.essex.momentumsoftware.com:8000";
     }else if(location.hostname === "stackstudio-local") {
         apiUrl = "http://stackstudio-api:9292";
     }else if(location.hostname === "devessex.essex.momentumsoftware.com") {
@@ -289,7 +297,7 @@ define(
         backbone: Backbone,
 
         previousView: {},
-        
+
         errorDialog: function(title, message) {
             new ErrorDialog({title: title, message: message});
         },
