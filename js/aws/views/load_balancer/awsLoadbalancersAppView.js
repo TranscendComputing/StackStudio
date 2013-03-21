@@ -9,19 +9,40 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'views/featureNotImplementedView',
         'views/resourceAppView',
+        'text!templates/aws/load_balancer/awsLoadBalancerAppTemplate.html',
+        '/js/aws/models/load_balancer/awsLoadBalancer.js',
+        '/js/aws/collections/load_balancer/awsLoadBalancers.js',
+        '/js/aws/views/load_balancer/awsLoadBalancerCreateView.js',
+        '/js/aws/collections/cloud_watch/awsMetricStatistics.js',
+        'text!templates/emptyGraphTemplate.html',
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, FeatureNotImplementedView, ResourceAppView, ich, Common ) {
+], function( $, _, Backbone, ResourceAppView, loadBalancerAppTemplate, LoadBalancer, LoadBalancers, LoadBalancerCreate, MetricStatistics, emptyGraph, ich, Common ) {
     'use strict';
 
     var AwsLoadBalancersAppView = ResourceAppView.extend({
 
+        template: _.template(loadBalancerAppTemplate),
+
+        emptyGraphTemplate: _.template(emptyGraph),
+        
+        modelStringIdentifier: "id",
+        
+        columns: ["id", "dns_name", "instance_count", "created_at"],
+        
+        idColumnNumber: 1,
+        
+        model: LoadBalancer,
+        
+        collectionType: LoadBalancers,
+        
         type: "load_balancer",
         
         subtype: "loadbalancers",
+        
+        CreateView: AwsInstanceCreate,
         
         events: {
             'click .create_button': 'createNew',
