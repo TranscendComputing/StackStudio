@@ -28,7 +28,7 @@ define([
             if(options.title) {
                 title = options.title;
             }else {
-                title = "";
+                title = "Error";
             }
             
             if(options.message) {
@@ -39,7 +39,7 @@ define([
                     message = options.message;
                 }
             }else {
-                message = "";
+                message = "Invalid Request.";
             } 
 
             this.$el.dialog({
