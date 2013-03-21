@@ -86,7 +86,12 @@
 		<delete dir="${dist}"/>
 	</target>
 
-	<target name="package" depends="clean,init">
+    <target name="grunt">
+        <exec command="npm install" failonerror="true"/>
+        <exec command="grunt less" failonerror="true"/>
+    </target>
+
+	<target name="package" depends="clean,init,grunt">
 	    <package destfile="${build}/${package.file}">
 	        <include-patterns/>
 	        <exclude-patterns/>
