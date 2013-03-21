@@ -38,6 +38,7 @@ define([
 
         initialize: function(options) {
             this.credentialId = options.cred_id;
+            this.region = options.region;
             this.cartOfferings.credentialId = this.credentialId;
             this.offerings.on("reset", this.refreshTable, this);
             this.render();
@@ -161,6 +162,7 @@ define([
         },
 
         create: function() {
+            this.cartOfferings.region = this.region;
             this.cartOfferings.purchase();
             this.$el.dialog('close');
         },
@@ -178,7 +180,7 @@ define([
             }
             options["instance-type"] = $("#type_select").val();
             options["product-description"] = $("#platform_select").val();
-            this.offerings.fetch({data: {cred_id: this.credentialId, filters: options}});
+            this.offerings.fetch({data: {cred_id: this.credentialId, filters: options, region: this.region}});
             this.refreshTable();
         },
 

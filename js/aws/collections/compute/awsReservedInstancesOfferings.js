@@ -25,7 +25,7 @@ define([
 
         purchase: function() {
             var col = this;
-            var url = Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/reserved_instances/create?_method=PUT&cred_id=' + this.credentialId;
+            var url = Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/reserved_instances/create?_method=PUT&cred_id=' + this.credentialId + '&region=' + this.region;
             var count;
             col.each(function(m){
                 if(m.attributes.count)
