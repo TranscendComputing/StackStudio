@@ -17,7 +17,6 @@ define([
         '/js/aws/collections/compute/awsFlavors.js',
         '/js/aws/collections/compute/awsKeyPairs.js',
         '/js/aws/collections/compute/awsSecurityGroups.js',
-        'icanhaz',
         'common',
         'jquery.ui.selectmenu',
         'jquery.multiselect',
