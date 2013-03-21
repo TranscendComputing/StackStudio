@@ -87,6 +87,7 @@
 	</target>
 
     <target name="grunt">
+        <exec command="npm install" failonerror="true"/>
         <exec command="grunt less" failonerror="true"/>
     </target>
 
