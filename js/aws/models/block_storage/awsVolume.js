@@ -7,8 +7,9 @@
 /*global define:true console:true */
 define([
         'jquery',
-        'backbone'
-], function( $, Backbone ) {
+        'backbone',
+        'common'
+], function( $, Backbone, Common ) {
     'use strict';
 
     // Base Volume Model
@@ -24,33 +25,64 @@ define([
      */
     var Volume = Backbone.Model.extend({
 
-        /** Default attributes for compute */
         defaults: {
-			name: '',
-			description: '',
-			volumeId: '',
-			size: '',
-			snapshotId: '',
-			zone: '',
+            id: '',
+			attached_at: '',
+			availability_zone: '',
+			created_at: '',
+			delete_on_termination: '',
+			device: '',
+			iops: '',
+			server_id: '',
+			size: 0,
+			snapshot_id: '',
 			state: '',
-			createTime: '-',
-			attachmentSet: '',
-			tagSet: '',
-			volumeType: '',
-			iops: ''
+			tags: {},
+			type: ''
 		},
-
-	    /**
-	     * Override the base Backbone set method, for debugging.
-	     *
-	     * @memberOf BloackStorage
-	     * @category Internal
-	     * @param {Object} hash of attribute values to set.
-	     * @param {Object} (optional) options to tweak (see Backbone docs).
-	     */
-		set: function(attributes, options) {
-		    Backbone.Model.prototype.set.apply(this, arguments);
-		}
+		
+		create: function(options, credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/block_storage/volumes/create?_method=PUT&cred_id=" + credentialId + "&region=" + region;
+            this.sendPostAction(url, options);
+        },
+        
+        attach: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/block_storage/volumes/attach?cred_id=" + credentialId + "&region=" + region;
+            this.sendPostAction(url, this.attributes);
+        },
+        
+        detach: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/block_storage/volumes/detach?cred_id=" + credentialId + "&region=" + region;
+            this.sendPostAction(url, this.attributes);
+        },
+        
+        forceDetach: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/block_storage/volumes/force_detach?cred_id=" + credentialId + "&region=" + region;
+            this.sendPostAction(url, this.attributes);
+        },
+        
+        destroy: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/block_storage/volumes/delete?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            this.sendPostAction(url, this.attributes);
+        },
+		
+		sendPostAction: function(url, options) {
+            var volume = {"volume": options};
+            $.ajax({
+                url: url,
+                type: 'POST',
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: JSON.stringify(volume),
+                success: function(data) {
+                    Common.vent.trigger("volumeAppRefresh");
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            }); 
+        }
+    
     });
 
     return Volume;

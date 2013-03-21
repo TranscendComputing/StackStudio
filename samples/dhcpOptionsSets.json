@@ -1,0 +1,26 @@
+[
+    {
+          "dhcpOptionsId": "dopt-7a8b9c2d",
+          "dhcpConfigurationSet": [
+            {
+                  "key": "domain-name",
+                  "valueSet" : [
+                      "example.com" 
+                  ]
+            },
+            {
+                  "key": "domain-name-servers",
+                  "valueSet" : [
+                      "10.2.5.1"
+                  ]
+            },
+            {
+                  "key": "domain-name-servers",
+                  "valueSet" : [
+                      "10.2.5.2"
+                  ]
+            } 
+          ],
+          "tagSet": []        
+      }
+]

@@ -22,27 +22,33 @@ define([
      * @param {Object} initialization object.
      * @returns {Object} Returns a Router instance.
      */
-    //Backbone.Router.namedParameters = true;
-    
+	
+	if(window.app === "stackplace") {
+	    Backbone.Router.namedParameters = true;
+	}else {
+	    Backbone.Router.namedParameters = false;
+	}
+	
 	var Router = Backbone.Router.extend({
-	    //namedParameters: true,
 	    
 		routes:{
+            'account/cloudcredentials': 'cloudCredentials',
+            'account/management(/:action)': 'accountManagement',
 			'resources': 'resourcesRoute',
 			'resources/:cloud': 'resourcesRoute',
-			'resources/:cloud/:type': 'resourcesRoute',
-			'resources/:cloud/:type/:subtype' : 'resourcesRoute',
-			'resources/:cloud/:type/:subtype/:id': 'resourcesRoute',
+			'resources/:cloud/:region': 'resourcesRoute',
+			'resources/:cloud/:region/:type': 'resourcesRoute',
+			'resources/:cloud/:region/:type/:subtype' : 'resourcesRoute',
+			'resources/:cloud/:region/:type/:subtype/:id': 'resourcesRoute',
 			'projects': 'projects',
 			'project/new': 'projectCreate',
 			'projects/:url': 'projectEdit',
 			'open?:url': 'loadTemplate',
 			'projects/:id/update/:resource': 'projectUpdate',
-			'account/login': 'accountLogin',
 			'*actions': 'defaultRoute'
 		},
 		
-		defaultRoute: function( actions ) {
+		defaultRoute: function( actions ) {   
 		    if (window.app === "stackplace") {
 		        if ( (typeof actions === 'object') && (actions.url !== undefined) ) {
 		            this.trigger('route:projectEdit', actions.url);
@@ -50,19 +56,16 @@ define([
 		          this.trigger('route:projectEdit');
 		        }
 		    } else {
-    		    $("#sidebar").empty();
+                $("#sidebar").empty();
                 $("#sidebar").hide();
-                $("#main").load('/templates/dashboard.html');
-                console.log("Running default route.  Dashboard");    
+                this.trigger("route:dashboard");    
 		    }
 		},
 		
-		resourcesRoute: function(cloud, type, subtype, id, action) {
+		resourcesRoute: function(cloud, region, type, subtype, id, action) {
 		    $("#sidebar").empty();
 		    $("#sidebar").hide();
-		    $("#main").empty();
-		    
-		    this.trigger("route:resources", cloud, type, subtype, id);
+		    this.trigger("route:resources", cloud, region, type, subtype, id);
 		}
 	});
 	

@@ -21,10 +21,10 @@ define([
         // Reference to this collection's model.
         model: SecurityGroup,
 
-        url: 'samples/securityGroups.json',
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/security_groups/describe'
     });
     
     // Create our global collection of **Security Groups**.
-    return new SecurityGroupList();
+    return SecurityGroupList;
 
 });

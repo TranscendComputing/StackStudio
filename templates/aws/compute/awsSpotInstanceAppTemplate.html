@@ -1,0 +1,65 @@
+<div>
+    <div class="button_bar">
+        <table>
+            <tr>
+                <td>
+                    <button class="create_button">Create Spot Instance</button>
+                </td>
+                <td>
+                    <button id="price_history_button">Price History</button>
+                </td>
+                <td>
+                    <ul id="action_menu">
+                        <li style="z-index: 1000">
+                            <a id="action_button">Actions</a>
+                            <ul>
+                                <li><a>Cancel</a></li>                       
+                            </ul>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table id="resource_table" class="full_width">
+        <thead>
+            <tr>
+                <th>Request ID</th>
+                <th>Max Price</th>
+                <th>Image ID</th>
+                <th>Instance ID</th>
+                <th>Type</th>
+                <th>State</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    <div id="details" class="detail_panel"></div>
+</div>
+
+<script type="text/html" id="resource_detail">
+    <div id="detail_tabs">
+        <ul>
+            <li><a href="#tabs-1">Details</a></li>
+        </ul>
+        <div id="tabs-1" class="tab">
+            <table>
+                <tbody>
+                    <tr><td><b>Request ID:</b></td>         <td>{{ id }}</td>                   <td><b>Image ID:</b></td>       <td>{{ image_id }}</td></tr>
+                    <tr><td><b>Price:</b></td>              <td>{{ price }}</td>                <td><b>Machine Type:</b></td>   <td>{{ flavor_id }}</td></tr>
+                    <tr><td><b>Request Type:</b></td>       <td>{{ request_type }}</td>         <td><b>Key Name:</b></td>       <td>{{ key_name }}</td></tr>
+                    <tr><td><b>Created At:</b></td>         <td>{{ created_at }}</td>           <td><b>Monitoring:</b></td>     <td>{{ monitoring }}</td></tr>
+                    <tr><td><b>State:</b></td>              <td>{{ state }}</td>                <td><b>Subnet ID:</b></td>      <td>{{ subnet_id }}</td></tr>
+                    <tr><td><b>Valid From:</b></td>         <td>{{ valid_from }}</td></tr>
+                    <tr><td><b>Valid Until:</b></td>        <td>{{ valid_until }}</td></tr>
+                    <tr><td><b>Instance Id:</b></td>        <td>{{ instance_id }}</td></tr>
+                    <tr><td><b>Availability Zone:</b></td>  <td>{{ availability_zone }}</td></tr>
+                    <tr></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</script>

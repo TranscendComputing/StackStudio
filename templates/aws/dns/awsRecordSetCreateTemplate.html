@@ -1,0 +1,53 @@
+<div>
+	<table>
+		<tbody>
+			<tr>
+				<td>Name:</td>
+				<td>
+					<input id="record_name_input" type="text" style="width:200px;"/>
+				</td>
+				<td>
+					<span id="hosted_zone_domain"></span>
+				</td>
+			</tr>
+			<tr>
+				<td>Type:</td>
+				<td>
+					<select id="record_type_select" style="width:200px;">
+						<option value="A">A - IPv4 address</option>
+						<option value="CNAME">CNAME - Canonical name</option>
+						<option value="MX">MX - Mail exchange</option>
+						<option value="AAAA">AAAA - IPv6 address</option>
+						<option value="TXT">TXT- Text</option>
+						<option value="PTR">PTR - Pointer</option>
+						<option value="SRV">SRV - Service locator</option>
+						<option value="SPF">SPF - Sender Policy Framework</option>
+						<option value="NS">NS- Name server</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>TTL:</td>
+				<td>
+					<input id="record_ttl_input" type="text" style="width:100px;"/>&nbsp;<span>seconds</span>
+				</td>
+			</tr>
+			<tr>
+				<td>Value:</td>
+				<td>
+					<textarea id="record_value_input" type="text" style="width:200px;min-height:100px;font-size:1.1em;"/>
+				</td>
+				<td>
+					<p id="record_value_example">
+						IPv4 address. Enter multiple addresses on separate lines. <br />
+                        Example: <br />
+                        &nbsp;&nbsp;192.0.2.235 <br />
+                        &nbsp;&nbsp;198.51.100.234
+					</p>
+				</td>
+					
+				
+			</tr>
+		</tbody>
+	</table>
+</div>

@@ -1,0 +1,83 @@
+<div>
+    <div class="button_bar">
+        <table>
+            <tr>
+                <td>
+                    <button class="create_button">Create Route Table</button>
+                </td>
+                <td>                    
+                    <ul id="action_menu">
+                        <li style="z-index: 1000">
+                            <a id="action_button">Actions</a>
+                            <ul>
+                                <li><a>Delete</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table id="resource_table" class="full_width">
+        <thead>
+            <tr>
+                <th>VPC ID</th>
+                <th>Route Table ID</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    <div id="details" class="detail_panel"></div>
+</div>
+
+<script type="text/html" id="resource_detail">
+    <div id="detail_tabs">
+        <ul>
+            <li><a href="#routes_tab">Routes</a></li>
+            <li><a href="#associations_tab">Associations</a></li>
+            <li><a href="#route_propagation_tab">Route Propagation</a></li>
+        </ul>
+        <div id="routes_tab" class="tab">
+            <table class="display_table">
+                <thead>
+                    <tr>
+                        <th>Destination</th>
+                        <th>Target</th>
+                        <th>Status</th>
+                        <th>Propagated</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>            
+                <tbody></tbody>
+                <tfoot></tfoot>
+            </table>        
+        </div>
+        <div id="associations_tab">
+            <table class="display_table">
+                <thead>
+                    <tr>
+                        <th>Subnet</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>            
+                <tbody></tbody>
+                <tfoot></tfoot>
+            </table>
+        </div>
+        <div id="route_propagation_tab">
+            <table class="display_table">
+                <thead>
+                    <tr>
+                        <th>Virtual Private Gateways</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>            
+                <tbody></tbody>
+                <tfoot></tfoot>
+            </table>          
+        </div>
+    </div>
+</script>

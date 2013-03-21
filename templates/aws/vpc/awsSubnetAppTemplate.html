@@ -1,0 +1,58 @@
+<div>
+    <div class="button_bar">
+        <table>
+            <tr>
+                <td>
+                    <button class="create_button">Create Subnet</button>
+                </td>
+                <td>                    
+                    <ul id="action_menu">
+                        <li style="z-index: 1000">
+                            <a id="action_button">Actions</a>
+                            <ul>
+                                <li><a>Delete</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table id="resource_table" class="full_width">
+        <thead>
+            <tr>
+                <th>Subnet ID</th>
+                <th>State</th>
+                <th>VPC ID</th>
+                <th>CIDR</th>
+                <th>Available IPs</th>
+                <th>Availability Zone</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    <div id="details" class="detail_panel"></div>
+</div>
+
+<script type="text/html" id="resource_detail">
+    <div id="detail_tabs">
+        <ul>
+            <li><a href="#tabs-1">Details</a></li>
+        </ul>
+        <div id="tabs-1" class="tab">
+            <table>
+                <tbody>
+                    <tr><td><b>Subnet ID:</b></td>          <td>{{ subnet_id }}</tr>
+                    <tr><td><b>State:</b></td>              <td>{{ state }}</td></tr>
+                    <tr><td><b>VPC ID:</b></td>             <td>{{ vpc_id }}</tr>
+                    <tr><td><b>CIDR Block:</b></td>         <td>{{ cidr_block }}</td></tr>
+                    <tr><td><b>Available IP Count:</b></td> <td>{{ available_ip_address_count }}</tr>
+                    <tr><td><b>Availability Zone:</b></td>  <td>{{ availability_zone }}</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</script>

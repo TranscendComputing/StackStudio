@@ -21,17 +21,11 @@ define([
         // Reference to this collection's model.
         model: Instance,
 
-        url: 'samples/data2.json',
-
-        // Filter down the list of all instance items that are running.
-        running: function() {
-            return this.filter(function( instance ) {
-                return instance.get('running');
-            });
-        }
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/instances/describe'
+        
     });
     
     // Create our global collection of **Instances**.
-    return new InstanceList();
+    return InstanceList;
 
 });

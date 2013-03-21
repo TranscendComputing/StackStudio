@@ -27,3 +27,5 @@ css/*.css
 .settings/
 .settings/*
 _SpecRunner.html
+js/*-all*js*
+.tags*

@@ -4,106 +4,140 @@
  * Available under ASL2 license <http://www.apache.org/licenses/LICENSE-2.0.html>
  */
 /*jshint smarttabs:true */
-/*global define:true console:true */
+/*global define:true console:true alert:true*/
 define([
         'jquery',
         'underscore',
         'backbone',
+        'views/dialogView',
         'models/account',
-        'text!/templates/account/accountLoginTemplate.html',
-        'icanhaz',
+        'text!templates/account/stackplaceLoginTemplate.html',
+        'text!templates/account/stackstudioLoginTemplate.html',
+        'views/newLoginView',
         'common'      
-], function( $, _, Backbone, Account, accountLoginTemplate, ich, Common ) {
+], function( $, _, Backbone, DialogView, Account, stackplaceLoginTemplate, stackstudioLoginTemplate, NewLoginView, Common ) {
     
-    /**
-     * AccountLoginView is UI wizard to create cloud instances.
-     *
-     * @name AccountLoginView
-     * @constructor
-     * @category Instance
-     * @param {Object} initialization object.
-     * @returns {Object} Returns a InstanceCreateWizardView instance.
-     */
-    
-    var AccountLoginView = Backbone.View.extend({
-        
-        tagName: "div",
-        
-        template: _.template(accountLoginTemplate),
-        
-        // Delegated events for creating new instances, etc.
+    var AccountLoginView = DialogView.extend({
+
         events: {
-            "change input#username": "usernameChanged",
-            "change input#password": "passwordChanged"
+            "dialogclose": "close"
         },
 
         initialize: function() {
-            Common.vent.on("account:login", this.close, this);
-        },
-        
-        usernameChanged: function(e) {
-            var u = this.username;
-            this.model.set({username: u.val()});
-        },
-        
-        passwordChanged: function(e) {
-            var p = this.password;
-            this.model.set({password: p.val()});
+            
         },
 
         render: function() {
-            var accountLoginView = this;
+            var accountLoginView = this,
+                title, template;
             
-            this.$el.html(this.template);
+            if (window.app === "stackplace") {
+                title = "GitHub Login";
+                template = _.template( stackplaceLoginTemplate );
+            } else {
+                title = "Login";
+                template = _.template( stackstudioLoginTemplate );
+            }
+            
+            this.$el.html( template );
 
             this.$el.dialog({
+                title: title,
                 autoOpen: true,
-                title: "GitHub Login",
-                width:500,
+                width:400,
                 minHeight: 150,
                 resizable: false,
                 modal: true,
-                buttons: {
-                    "Login": function () {
-                        accountLoginView.login();
+                buttons: [
+                    {
+                        text: "Login",
+                        click: function() {
+                            accountLoginView.login();
+                        }
                     },
-                    "Cancel": function() {
-                        accountLoginView.cancel();
+                    {
+                        text: "Register",
+                        click: function() {
+                            accountLoginView.createNew();
+                        }
+                    },
+                    {
+                        text: "Cancel",
+                        click: function() {
+                            accountLoginView.cancel();
+                        }
                     }
+                ]
+            });
+            this.$el.keypress(function(e) {
+                if(e.keyCode === $.ui.keyCode.ENTER) {
+                    accountLoginView.login();
                 }
             });
-            
             this.$(".accordion").accordion();
-            this.username = this.$('input#username');
-            this.password = this.$('input#password');
-            
-            if (this.loginMessage) {
-                $("#login_message").append(this.loginMessage);
-            }
-            return this;
-        },
-        
-        close: function() {
-            //document.location.hash = this.previous_location;
-            this.$el.dialog('close');
-        },
-        
-        cancel: function() {
-            //document.location.hash = this.previous_location;
-            this.$el.dialog('close');
+            this.$el.dialog('open');
         },
         
         login: function() {
-            this.model.login();
+            var accountLoginView = this;
+            var username = $('input#username').val(),
+                password = $('input#password').val();
+            if (window.app === "stackplace") {
+                this.model.githubLogin(username, password);
+            } else {
+                var url = Common.apiUrl + "/identity/v1/accounts/auth";
+                
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    contentType: 'application/x-www-form-urlencoded',
+                    dataType: 'json',
+                    data: {
+                        'login' : username,
+                        'password' : password
+                    },
+                    success: function(data) {
+                        accountLoginView.successfulLogin(data);
+                    },
+                    error: function(jqXHR) {
+                        Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                    }
+                });
+            }
+        },
+        
+        successfulLogin: function(data) {
+            if(typeof(Storage) !== "undefined") {
+                sessionStorage.account_id = data.account.id;
+                sessionStorage.login = data.account.login;
+                sessionStorage.first_name = data.account.first_name;
+                sessionStorage.last_name = data.account.last_name;
+                sessionStorage.company = data.account.company;
+                sessionStorage.email = data.account.email;
+                sessionStorage.org_id = data.account.org_id;
+                sessionStorage.cloud_credentials = JSON.stringify(data.account.cloud_credentials);
+                sessionStorage.permissions = JSON.stringify(data.account.permissions);
+                sessionStorage.project_memeberships = JSON.stringify(data.account.project_memberships);
+                
+                console.log("session login:" + sessionStorage.login);
+                Common.vent.trigger("loginSuccess");
+                if(data.account.cloud_credentials && data.account.cloud_credentials.length > 0) {
+                    Common.router.navigate("#resources", {trigger: true});
+                }else {
+                    Common.router.navigate("#account/management", {trigger: true});
+                }
+
+            }else {
+                Common.errorDialog("Browser Issue", "Your browser does not support web storage.");
+            }
+            this.$el.dialog('close');
+        },
+        
+        createNew: function() {
+            new NewLoginView();
         }
 
     });
-    
-    Common.router.on("route:accountLogin", function() {
-        var accountLoginView = new AccountLoginView({model: new Account()});
-        accountLoginView.render();
-        //$("#app_container").append(accountLoginView.render().el);
-    }, this);
     
     return AccountLoginView;
 });

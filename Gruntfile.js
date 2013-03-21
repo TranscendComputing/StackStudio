@@ -1,5 +1,5 @@
 /*jshint smarttabs:true */
-/*global module:false*/
+/*global module:false require:true*/
 module.exports = function(grunt) {
 
   // Project configuration.
@@ -21,6 +21,7 @@ module.exports = function(grunt) {
     },
     lint: {
       files: ['Gruntfile.js',
+              'js/stackplace.build.js',
               '<%= spec.files %>',
               '<%= source.files %>']
     },
@@ -69,23 +70,33 @@ module.exports = function(grunt) {
       }
     },
     server: {
-      port: 9001
+      port: 9002
     },
     connect: {
         sstudio: {
             options: {
-                port: 9000
+                port: 9001
             }
         },
         test : {
-            port : 9001
+            port : 9002
+        }
+    },
+    selenium: {
+        options: {
+            browsers: ['firefox']
+        },
+        suite: {
+            files: {
+                'example': ['test/*.suite']
+            }
         }
     },
     jasmine: {
-        requirejs: {
+        test: {
             options: {
                 specs: '<%= spec.files %>',
-                template: 'requirejs',
+                template: require('grunt-template-jasmine-requirejs'),
                 templateOptions: {
                     requireConfig: {
                         baseUrl: '',
@@ -153,6 +164,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-connect');
+  grunt.loadNpmTasks('grunt-selenium');
 
   // Default task.
   grunt.registerTask('default', ['jshint', 'jasmine']);

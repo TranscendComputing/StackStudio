@@ -1,0 +1,67 @@
+[
+    {
+        "vpcId" : "vpc-09av123d",
+        "state": "pending",
+        "cidrBlock": "10.0.0.0/16",
+        "dhcpOptionsId": "dopt-7a8b9c2d",
+        "instanceTenancy": "default",
+        "tagSet": [
+            {
+                "key": "Description",
+                "value": "This is my second VPC"
+            }
+        ]
+    },
+    {
+        "vpcId" : "vpc-av45d234",
+        "state": "pending",
+        "cidrBlock": "10.0.0.0/23",
+        "dhcpOptionsId": "dopt-7a8b9c2d",
+        "instanceTenancy": "default",
+        "tagSet": [
+            {
+                "key": "Description",
+                "value": "This is my first VPC"
+            }
+        ]
+    },
+    {
+        "vpcId" : "vpc-12345678",
+        "state": "available",
+        "cidrBlock": "10.0.0.0/23",
+        "dhcpOptionsId": "dopt-7a8b9c2d",
+        "instanceTenancy": "default",
+        "tagSet": [
+            {
+                "key": "Description",
+                "value": "This is my first VPC"
+            }
+        ]
+    },
+    {
+        "vpcId" : "vpc-12av5678",
+        "state": "pending",
+        "cidrBlock": "10.0.0.0/23",
+        "dhcpOptionsId": "dopt-7a8b9c2d",
+        "instanceTenancy": "default",
+        "tagSet": [
+            {
+                "key": "Description",
+                "value": "This is my first VPC"
+            }
+        ]
+    },
+    {
+        "vpcId" : "vpc-1234br78",
+        "state": "available",
+        "cidrBlock": "10.0.0.0/23",
+        "dhcpOptionsId": "dopt-7a8b9c2d",
+        "instanceTenancy": "default",
+        "tagSet": [
+            {
+                "key": "Description",
+                "value": "This is my first VPC"
+            }
+        ]
+    }
+]

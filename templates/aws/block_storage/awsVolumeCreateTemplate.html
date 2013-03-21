@@ -7,25 +7,30 @@
             </td>
         </tr>
         <tr>
-            <td>Volume Type:</td>
+            <td>Volume Type*:</td>
             <td>
-                <select id="volume_type_select" style="width:150px;"></select>
+                <select id="volume_type_select" style="width:200px;">
+                    <option value="standard">Standard</option>
+                    <option value="io1">Provisioned IOPS (io1)</option>
+                </select>
             </td>
         </tr>
         <tr>
-            <td>Size:</td>
+            <td>Size*:</td>
             <td>
-                <input id="volume_size_input" type="text" style="width:200px;"/>
+                <input id="volume_size_input" type="text" style="width:100px;"/>
+                GB (Min: 1 GB, Max: 1000 GB)
             </td>
         </tr>
-        <tr>
+        <tr id="volume_iops">
             <td>IOPS:</td>
             <td>
-                <input id="volume_iops_input" type="text" style="width:200px;"/>
+                <input id="volume_iops_input" type="text" style="width:100px;"/>
+                (Min: 100 IOPS, Max: 2000 IOPS)
             </td>
         </tr>
         <tr>
-            <td>Availability Zone:</td>
+            <td>Availability Zone*:</td>
             <td>
                 <select id="az_select" style="width:150px;"></select>
             </td>
@@ -33,7 +38,9 @@
         <tr>
             <td>Snapshot:</td>
             <td>
-                <select id="snapshot_select" style="width:360px;"></select>
+                <select id="snapshot_select" style="width:400px;">
+                    <option value="none">---No Snapshot---</option>
+                </select>
             </td>
         </tr>
     </table>

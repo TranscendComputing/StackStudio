@@ -31,8 +31,11 @@ define([
 
         /** Default attributes for the project */
         defaults: {
-            username: '',
+            login: '',
             password: '',
+            email: '',
+            subscriptions: [],
+            projectMemberships: [],
             auth: 'basic'
         },
 
@@ -49,10 +52,10 @@ define([
             //console.log("Setting attributes on model:", attributes);
         },
         
-        login: function() {
+        githubLogin: function(login, password) {
             Common.github = new Github({
-                username: this.get('username'),
-                password: this.get('password'),
+                username: login,
+                password: password,
                 auth: this.get('auth')
             });
             var templatesRepo = Common.github.getRepo("TranscendComputing", "CloudFormationTemplates");
@@ -60,9 +63,13 @@ define([
                     if (err === null || err === undefined) {
                         Common.vent.trigger("account:login");
                     } else {
-                        alert("Bad credentials, please re-enter and try again.");
+                        Common.errorDialog("Bad Credentials", "Please re-enter and try again.");
                     }
             });
+        },
+        
+        login: function(login, password) {
+            console.log(this);
         }
     });
 

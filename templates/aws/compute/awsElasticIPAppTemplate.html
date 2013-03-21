@@ -1,0 +1,54 @@
+<div>
+    <div class="button_bar">
+        <table>
+            <tr>
+                <td>
+                    <button class="create_button">Allocate New Address</button>
+                </td>
+                <td>
+                    <ul id="action_menu">
+                        <li style="z-index: 1000">
+                            <a id="action_button">Actions</a>
+                            <ul>
+                                <li><a>Release Address</a></li>
+                                <li><a>Associate Address</a></li>
+                                <li><a>Disassociate Address</a></li>                   
+                            </ul>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table id="resource_table" class="full_width">
+        <thead>
+            <tr>
+                <th>Address</th>
+                <th>Instance ID</th>
+                <th>Scope</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    <div id="details" class="detail_panel"></div>
+</div>
+
+<script type="text/html" id="resource_detail">
+    <div id="detail_tabs">
+        <ul>
+            <li><a href="#tabs-1">Details</a></li>
+        </ul>
+        <div id="tabs-1" class="tab">
+            <table>
+                <tbody>
+                    <tr><td><b>Public IP:</b></td>      <td>{{ public_ip }}</td></tr>
+                    <tr><td><b>Instance ID:</b></td>    <td>{{ server_id }}</td></tr>
+                    <tr><td><b>Scope:</b></td>          <td>{{ domain }}</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</script>

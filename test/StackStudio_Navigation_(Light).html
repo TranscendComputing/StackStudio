@@ -1,0 +1,396 @@
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr>
+<td rowspan="1" colspan="3">StackStudio Navigation (Light)</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+	<td>open</td>
+	<td>/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='message']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='message']</td>
+	<td>You must login.</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//html/body/div[7]/div[3]/div/button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='navLogin']/li/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='navLogin']/li/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='username']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//*[@id='username']</td>
+	<td>ehansen</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//*[@id='password']</td>
+	<td>tester</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//html/body/div[7]/div[3]/div/button[1]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='navAccount']/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//*[@id='navAccount']/a</td>
+	<td>ehansen</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[1]/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertElementPresent</td>
+	<td>//*[@id='instances']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertElementPresent</td>
+	<td>//*[@id='spotinstances']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertElementPresent</td>
+	<td>//*[@id='reservedinstances']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertElementPresent</td>
+	<td>//*[@id='securitygroups']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertElementPresent</td>
+	<td>//*[@id='keypairs']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertElementPresent</td>
+	<td>//*[@id='elasticips']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[1]/div</td>
+	<td>Name</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[2]/div</td>
+	<td>Instance ID</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[3]/div</td>
+	<td>Image ID</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[4]/div</td>
+	<td>Root Device</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[5]/div</td>
+	<td>Type</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[6]/div</td>
+	<td>Key Pair</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[7]/div</td>
+	<td>State</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='spotinstances']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[1]/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[1]/div</td>
+	<td>Request ID</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[2]/div</td>
+	<td>Max Price</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[3]/div</td>
+	<td>Image ID</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[4]/div</td>
+	<td>Instance ID</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[5]/div</td>
+	<td>Type</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[6]/div</td>
+	<td>State</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='reservedinstances']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[1]/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[1]/div</td>
+	<td>Reserved ID</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[2]/div</td>
+	<td>Type</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[3]/div</td>
+	<td>State</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='securitygroups']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[1]/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[1]/div</td>
+	<td>Group ID</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[2]/div</td>
+	<td>Name</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[3]/div</td>
+	<td>Description</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='keypairs']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[1]/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[1]/div</td>
+	<td>Name</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[2]/div</td>
+	<td>Fingerprint</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='elasticips']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[1]/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[1]/div</td>
+	<td>Address</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[2]/div</td>
+	<td>Instance ID</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[3]/div</td>
+	<td>Scope</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='instances']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[1]/div</td>
+	<td>Name</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[2]/div</td>
+	<td>Instance ID</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[3]/div</td>
+	<td>Image ID</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[4]/div</td>
+	<td>Root Device</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[5]/div</td>
+	<td>Type</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[6]/div</td>
+	<td>Key Pair</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[7]/div</td>
+	<td>State</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='navAccount']/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='credential_list']/li</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='credential_list']/li</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='credential_form']/div/table/tbody/tr[1]/td[1]/b</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='credential_form']/div/table/tbody/tr[1]/td[1]/b</td>
+	<td>Credential Name:</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='credential_form']/div/table/tbody/tr[2]/td[1]/b</td>
+	<td>Description:</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='credential_form']/div/table/tbody/tr[3]/td[1]/b</td>
+	<td>Access Key ID:</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='credential_form']/div/table/tbody/tr[4]/td[1]/b</td>
+	<td>Secret Key ID:</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='navLogin']/li[2]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='navLogin']/li/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='navLogin']/li/a</td>
+	<td>Login</td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>ehansen</td>
+	<td></td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>

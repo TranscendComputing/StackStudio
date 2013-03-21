@@ -13,7 +13,7 @@ define([
 ], function( $, Backbone, Volume, Common ) {
     'use strict';
 
-    // Instance Collection
+    // Volume Collection
     // ---------------
 
     var VolumesList = Backbone.Collection.extend({
@@ -21,17 +21,10 @@ define([
         // Reference to this collection's model.
         model: Volume,
 
-        url: 'samples/volumes.json',
-
-        // Filter down the list of all instance items that are running.
-        available: function() {
-            return this.filter(function( item ) {
-                return item.get('state') === 'available';
-            });
-        }
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/block_storage/volumes/describe'
     });
 
     // Create our global collection of **Volumes**.
-    return new VolumesList();
+    return VolumesList;
 
 });

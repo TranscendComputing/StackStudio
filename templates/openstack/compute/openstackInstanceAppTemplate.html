@@ -1,0 +1,82 @@
+<div>
+    <div class="button_bar">
+        <table>
+            <tr>
+                <td>
+                    <button class="create_button">Create Instance</button>
+                </td>
+                <td>
+                    <ul id="action_menu">
+                        <li style="z-index: 1000">
+                            <a id="action_button">Actions</a>
+                            <ul>
+                                <li><a>Start</a></li>
+                                <li><a>Stop</a></li>
+                                <li><a>Reboot</a></li>
+                                <li><a>Terminate</a></li>
+                                <li><a>Disassociate Address</a></li>                
+                            </ul>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table id="resource_table" class="full_width">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Instance ID</th>
+                <th>ID</th>
+                <th>Key Pair</th>
+                <th>State</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    <div id="details" class="detail_panel"></div>
+</div>
+
+<script type="text/html" id="resource_detail">
+    <div id="detail_tabs">
+        <ul>
+            <li><a id="instance_details" href="#tabs-1">Details</a></li>
+            <li><a id="monitoring" href="#tabs-2">Monitoring</a></li>
+        </ul>
+        <div id="tabs-1" class="tab row">
+            <table class="sixcol">
+                <tbody>
+                    <tr><td><b>Name:</b></td>                  <td>{{ name }}</td>                     
+                    <tr><td><b>ID:</b></td>                    <td>{{ id }}</td>                       
+                    <tr><td><b>Image ID:</b></td>              <td>{{ image.id }}</td>                 
+                    <tr><td><b>Instance ID:</b></td>           <td>{{ os_ext_srv_attr_instance_name }}</td></tr>        
+                    <tr><td><b>Type:</b></td>                  <td>{{ flavor.id }}</td></tr>
+                    <tr><td><b>Key Name:</b></td>              <td>{{ key_name }}</td></tr>
+                </tbody>
+            </table>
+            <table class="fivecol">
+                <tbody>
+                    <tr><td><b>Host:</b></td>                  <td>{{ os_ext_srv_attr_host }}</td></tr>
+                    <tr><td><b>State:</b></td>                 <td>{{ state }}</td></tr>
+                    <tr><td><b>Launch Time:</b></td>           <td>{{ created }}</td></tr>
+                    {{#addresses.private}}
+                    <tr><td><b>Private Address:</b></td>           <td>{{ addr }}</td></tr>
+                    {{/addresses.private}}
+                </tbody>
+            </table>
+        </div>
+        <div id="tabs-2" class="tab">
+            <div id="cpuGraph" class="monitor_graph"></div>
+            <div id="diskReadBytesGraph" class="monitor_graph"></div>
+            <div id="diskReadOpsGraph" class="monitor_graph"></div>
+            <div id="diskWriteBytesGraph" class="monitor_graph"></div>
+            <div id="diskWriteOpsGraph" class="monitor_graph"></div>
+            <div id="networkInGraph" class="monitor_graph"></div>
+            <div id="networkOutGraph" class="monitor_graph"></div>
+        </div>
+    </div>
+    
+</script>

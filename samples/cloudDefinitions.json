@@ -4,14 +4,14 @@
         "logo": "/images/CloudLogos/amazon800.jpg",
         "services": [
             {
-                "name": "Alarm",
-                "type": "alarm",
-                "defaultSubtype": "alarm"
+                "name": "Auto Scale",
+                "type": "auto_scale",
+                "defaultSubtype": "autoscalegroups"
             },
             {
-                "name": "Auto Scale",
-                "type": "autoscale",
-                "defaultSubtype": "autoscalegroups"
+                "name": "CloudWatch",
+                "type": "cloud_watch",
+                "defaultSubtype": "alarms"
             },
             {
                 "name": "Elasticache",
@@ -20,7 +20,7 @@
             },
             {
                 "name": "Elastic Beanstalk",
-                "type": "application",
+                "type": "beanstalk",
                 "defaultSubtype": "applications"
             },
             {
@@ -31,23 +31,58 @@
             {
                 "name": "Elastic Compute Cloud",
                 "type": "compute",
-                "defaultSubtype": "instances"
-                
+                "defaultSubtype": "instances",
+                "subServices" : [
+                    {
+                        "name": "Instances",
+                        "type": "instances"
+                    },
+                    {
+                        "name": "Spot Requests",
+                        "type": "spotinstances"
+                    },
+                    {
+                        "name": "Reserved Instances",
+                        "type": "reservedinstances"
+                    },
+                    {
+                        "name": "Security Groups",
+                        "type": "securitygroups"
+                    },
+                    {
+                        "name": "Key Pairs",
+                        "type": "keypairs"
+                    },
+                    {
+                        "name": "Elastic IPs",
+                        "type": "elasticips"
+                    }
+                ]
             },
             {
                 "name": "Elastic Load Balancer",
-                "type": "load-balancer",
+                "type": "load_balancer",
                 "defaultSubtype": "loadbalancers"
             },
             {
                 "name": "IAM",
-                "type": "identity",
-                "defaultSubtype": "users"
+                "type": "iam",
+                "defaultSubtype": "groups",
+                "subServices" : [
+                    {
+                        "name": "Groups",
+                        "type": "groups"
+                    },
+                    {
+                        "name": "Users",
+                        "type": "users"
+                    }
+                ]
             },
             {
                 "name": "Relational Database",
                 "type": "rds",
-                "defaultSubtype": "databases"
+                "defaultSubtype": "relationaldatabases"
             },
             {
                 "name": "Route 53",
@@ -55,14 +90,9 @@
                 "defaultSubtype": "hostedzones"
             },
             {
-                "name": "Simple DB",
-                "type": "non-rds",
-                "defaultSubtype": "databases"
-            },
-            {
                 "name": "Simple Notification",
                 "type": "notification",
-                "defaultSubtype": "notifications"
+                "defaultSubtype": "topics"
             },
             {
                 "name": "Simple Queue",
@@ -71,8 +101,39 @@
             },
             {
                 "name": "Simple Storage",
-                "type": "object-storage",
+                "type": "object_storage",
                 "defaultSubtype": "buckets"
+            },
+            {
+                "name": "VPC",
+                "type": "vpc",
+                "defaultSubtype": "vpcs",
+                "subServices" : [
+                    {
+                        "name": "VPCs",
+                        "type": "vpcs"
+                    },
+                    {
+                        "name": "Subnets",
+                        "type": "subnets"
+                    },
+                    {
+                        "name": "Route Tables",
+                        "type": "routetables"
+                    },
+                    {
+                        "name": "Internet Gateways",
+                        "type": "internetgateways"
+                    },
+                    {
+                        "name": "DHCP Options Sets",
+                        "type": "dhcpoptionsets"
+                    },
+                    {
+                        "name": "Network ACLs",
+                        "type": "networkacls"
+                    }
+                ]
             }
         ],
         "regions": [
@@ -113,7 +174,24 @@
     "openstack" : {
         "name": "OpenStack",
         "logo": "/images/CloudLogos/openstack300.jpg",
-        "services": [],
+        "services": [
+            {
+                "name": "Elastic Compute Cloud",
+                "type": "compute",
+                "defaultSubtype": "instances",
+                "subServices" : [
+                    {
+                        "name": "Instances",
+                        "type": "instances"
+                    },
+                    {
+                        "name": "Security Groups",
+                        "type": "securitygroups"
+                    }
+                ]
+                
+            }   
+        ],
         "regions": []
     },
     "google" : {

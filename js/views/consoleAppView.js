@@ -12,7 +12,7 @@ define([
         'icanhaz',
         'interpreters/cloud_interpreter',
         'jquery.terminal',
-        'jquery.purr'
+        'jquery-plugins' // for jquery.purr
 ], function( $, _, Backbone, ich, Interpreter ) {
     'use strict';
 
@@ -64,6 +64,10 @@ define([
             'click .export_to': 'exportTo',
             'click .con_clear': 'clear',
             'hover': 'toggleActive'
+        },
+
+        chooseInterpreter: function(newInterpreter) {
+            //TODO: dynamically load different interpreters
         },
 
         /** At initialization, initialize any components that still require JS. */
@@ -128,6 +132,9 @@ define([
 		},
 
 		toggleFullSize: function() {
+		    if ($('#cloud_cmd')['cmd'] === undefined) {
+		        return;
+		    }
 			this.expanded = ! this.expanded;
 			if (this.expanded) {
 				if (this.$cmd) {

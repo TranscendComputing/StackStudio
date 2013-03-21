@@ -11,114 +11,144 @@ define([
         'backbone',
         'icanhaz',
         'common',
-        'jquery.dataTables'
-], function( $, _, Backbone, ich, Common ) {
+        'views/resourceRowView',
+        'jquery.dataTables',
+        'jquery.dataTables.fnProcessingIndicator',
+        'wijmo'
+], function( $, _, Backbone, ich, Common , ResourceRowView ) {
     'use strict';
 
-    // Instances Application View
-    // ------------------------------
-
-    /**
-     * InstancesAppView is UI view list of cloud instances.
-     *
-     * @name InstancesAppView
-     * @constructor
-     * @category Resources
-     * @param {Object} initialization object.
-     * @returns {Object} Returns a ComputeAppView instance.
-     */
     var ResourceAppView = Backbone.View.extend({
         selectedId: undefined,
-        
+
+        credentialId: undefined,
+
+        region: undefined,
+
         modelStringIdentifier: undefined,
-        
-        idRowNumber: 0,
-        
+
+        collection: undefined,
+
+        columns: [],
+
+        idColumnNumber: 0,
+
         type: undefined,
-        
+
         subtype: undefined,
-        
+
         CreateView: undefined,
-        
-        RowView: undefined,
-        
-        el: '#resource_app',
+
+        tagName: 'div',
 
         render: function() {
             this.$el.html(this.template);
+            $("#resource_app").html(this.$el);
+            this.delegateEvents(this.events);
             ich.refresh();
-            $('#create_button').button();
-            this.$table = $('#resource_table').dataTable({"bJQueryUI": true});
+            $('button').button();
+            $("#action_menu").menu();
+
+            this.$table = $('#resource_table').dataTable({"bJQueryUI": true,
+                "bProcessing": true});
+            this.$table.fnProcessingIndicator(true);
+
+            var CollectionType = this.collectionType;
+            this.collection = new CollectionType();
             this.collection.on( 'add', this.addOne, this );
             this.collection.on( 'reset', this.addAll, this );
-
-            // Fetch will pull results from the server
-            this.collection.fetch();
-            
-            if(this.selectedId) {
-                this.selectOne(this.selectedId, $("tr:contains("+this.selectedId+")"));
+            $("#action_menu li").addClass("ui-state-disabled");
+            if(this.credentialId && this.region) {
+                this.collection.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }) });
+            }else if(this.credentialId) {
+                this.collection.fetch({ data: $.param({ cred_id: this.credentialId }) });
+            }else {
+                this.collection.fetch();
             }
+            this.setResourceAppHeightify();
         },
-        
+
         addOne: function( model ) {
             if (model.get(this.modelStringIdentifier) === "") {
                 return;
             }
-            var RowView = this.RowView;
-            var view = new RowView({ model: model });
+            var view = new ResourceRowView({ tableId: "#resource_table", model: model });
+            view.columns = this.columns;
             view.render();
         },
 
         addAll: function() {
+            this.$table.fnClearTable();
+            this.$table.fnProcessingIndicator(false);
             this.collection.each(this.addOne, this);
-        },
-        
-        clickOne: function (event) {
-            var id, parentNode;
-            console.log("event:", event);
-            parentNode = event.target.parentNode;
-            id = $(parentNode).find(':nth-child('+this.idRowNumber+')').html();
-            Common.router.navigate("#resources/aws/"+this.type+"/"+this.subtype+"/"+id, {trigger: false});
-            this.selectOne(id, parentNode);
+
+            if(this.selectedId) {
+                this.selectOne(this.selectedId, $("tr:contains("+this.selectedId+")"));
+            }
         },
 
-        selectOne : function (id, parentNode) {
+        clickOne: function (event) {
+            console.log($(event.currentTarget).data());
+            var id, parentNode;
+            var rowData = this.$table.fnGetData(event.currentTarget);
+            console.log("ROW DATA", rowData, "COLUMN NUMBER", this.idColumnNumber);
+            //TODO -- make more dynamic in order to allow user to define columns
+            id = rowData[this.idColumnNumber];
+            Common.router.navigate("#resources/" + this.cloudProvider + "/"+this.region+"/"+this.type+"/"+this.subtype+"/"+id, {trigger: false});
+            this.selectOne(id, event.currentTarget);
+        },
+
+        selectOne : function (id, rowNode) {
             var selectedModel;
             var modelStringIdentifier = this.modelStringIdentifier;
             this.clearSelection();
             console.log("Selecting ID:", id);
-            if(parentNode) {
-                $(parentNode).addClass('row_selected');
+            if(rowNode) {
+                $(rowNode).addClass('row_selected');
             }
-            
+
             this.collection.each(function(e) {
                 if (e.get(modelStringIdentifier) === id) {
                     selectedModel = e;
                 }
             });
-            
+
             if(selectedModel) {
                 this.selectedId = id;
-                $("#details").html(ich.resource_detail(selectedModel.attributes));
-                $("#detail_tabs").tabs();
-            }else {
-                
+                $("#action_menu li").removeClass("ui-state-disabled");
+                this.toggleActions();
+                var template = this.cloudProvider + "_resource_detail";
+                if (ich.templates.resource_detail) {
+                    $("#details").html(ich.resource_detail(selectedModel.attributes));
+                    $("#detail_tabs").tabs();
+                    $('.create_button').button();
+                }
             }
+            this.setResourceAppHeightify();
         },
-        
+
         clearSelection: function () {
             this.$table.$('tr').removeClass('row_selected');
-            $('#details').html("");
+            //$('#details').empty();
         },
-        
+
         createNew : function () {
             var CreateView = this.CreateView;
-            var createNew = new CreateView();
-            createNew.render();
+            if(this.region) {
+                this.newResourceDialog = new CreateView({cred_id: this.credentialId, region: this.region});
+            }else {
+                this.newResourceDialog = new CreateView({cred_id: this.credentialId});
+            }
+            this.newResourceDialog.render();
+        },
+
+        setResourceAppHeightify: function() {
+            //set resource_app_heightify for other elements to reference
+            $(".resource_app_heightify").height($("#resource_app").height());
         }
     });
 
     console.log("resource app view defined");
-    
+
     return ResourceAppView;
 });

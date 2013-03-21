@@ -1,0 +1,42 @@
+[
+    {
+        "subnetId" : "subnet-9d4a7b6c",
+        "vpcId" : "vpc-1a2b3c4d",
+        "state": "available",
+        "cidrBlock" : "10.0.1.0/24",
+        "availableIpAddressCount": 125,
+        "availabiltyZone": "us-east-1a"
+    },
+    {
+        "subnetId" : "subnet-1234asdf",
+        "vpcId" : "vpc-2a2b3c4d",
+        "state": "available",
+        "cidrBlock" : "10.0.2.0/24",
+        "availableIpAddressCount": 125,
+        "availabiltyZone": "us-east-1a"
+    },
+    {
+        "subnetId" : "subnet-4567zxcv",
+        "vpcId" : "vpc-xcv12sd2",
+        "state": "available",
+        "cidrBlock" : "10.0.1.0/24",
+        "availableIpAddressCount": 250,
+        "availabiltyZone": "us-east-1a"
+    },
+    {
+        "subnetId" : "subnet-qwer1235",
+        "vpcId" : "vpc-xdv12sd2",
+        "state": "available",
+        "cidrBlock" : "10.0.1.0/24",
+        "availableIpAddressCount": 250,
+        "availabiltyZone": "us-east-1a"
+    },
+    {
+        "subnetId" : "subnet-asdfer34",
+        "vpcId" : "vpc-3a2b3c4d",
+        "state": "available",
+        "cidrBlock" : "10.0.1.0/24",
+        "availableIpAddressCount": 250,
+        "availabiltyZone": "us-east-1a"
+    }
+]

@@ -1,0 +1,12 @@
+[
+    {
+        "internetGatewayId" : "igw-eaad4883EXAMPLE",
+         "attachmentSet" : [
+            {
+               "vpcId" : "vpc-11ad4878",
+               "state" : "available"
+            }
+         ],
+         "tagSet" :[]
+    }
+]

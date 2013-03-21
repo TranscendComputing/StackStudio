@@ -13,12 +13,11 @@ define([
         'text!templates/aws/compute/awsSecurityGroupAppTemplate.html',
         '/js/aws/models/compute/awsSecurityGroup.js',
         '/js/aws/collections/compute/awsSecurityGroups.js',
-        '/js/aws/views/compute/awsSecurityGroupRowView.js',
         '/js/aws/views/compute/awsSecurityGroupCreateView.js',
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, ResourceAppView, awsSecurityGroupAppTemplate, Securitygroup, securitygroups, AwsSecurityGroupRowView, AwsSecurityGroupCreate, ich, Common ) {
+], function( $, _, Backbone, ResourceAppView, awsSecurityGroupAppTemplate, Securitygroup, Securitygroups, AwsSecurityGroupCreate, ich, Common ) {
     'use strict';
 
     // Aws Security Group Application View
@@ -36,13 +35,15 @@ define([
     var AwsSecurityGroupsAppView = ResourceAppView.extend({
         template: _.template(awsSecurityGroupAppTemplate),
         
-        modelStringIdentifier: "name",
+        modelStringIdentifier: "group_id",
         
-        idRowNumber: 1,
+        columns: ["group_id", "name", "description"],
+        
+        idColumnNumber: 0,
         
         model: Securitygroup,
         
-        collection: securitygroups,
+        collectionType: Securitygroups,
         
         type: "compute",
         
@@ -50,15 +51,40 @@ define([
         
         CreateView: AwsSecurityGroupCreate,
         
-        RowView: AwsSecurityGroupRowView,
-        
         events: {
-            'click #create_button': 'createNew',
-            'click #resource_table tbody': 'clickOne'
+            'click .create_button': 'createNew',
+            'click #action_menu ul li': 'performAction',
+            'click #resource_table tr': "clickOne"
         },
 
-        initialize: function() {
+        initialize: function(options) {
+            if(options.cred_id) {
+                this.credentialId = options.cred_id;
+            }
+            if(options.region) {
+                this.region = options.region;
+            }
             this.render();
+            
+            var securityGroupApp = this;
+            Common.vent.on("securityGroupAppRefresh", function() {
+                securityGroupApp.render();
+            });
+        },
+        
+        toggleActions: function(e) {
+            //Disable any needed actions
+        },
+        
+        performAction: function(event) {
+            var securityGroup = this.collection.get(this.selectedId);
+
+            switch(event.target.text)
+            {
+            case "Delete Security Group":
+                securityGroup.destroy(this.credentialId, this.region);
+                break;
+            }
         }
     });
     

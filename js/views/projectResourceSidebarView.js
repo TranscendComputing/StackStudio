@@ -16,11 +16,10 @@ define([
         'views/projectNewResourcesListView',
         'views/projectCurrentResourcesListView',
         'views/templatesListView',
-        'views/accountLoginView',
         'icanhaz',
         'common',
         'wijmo'
-], function( $, _, Backbone, sidebarTemplate, projects, resources, Account, ProjectNewResourcesListView, ProjectCurrentResourcesListView, TemplatesListView, AccountLoginView, ich, Common ) {
+], function( $, _, Backbone, sidebarTemplate, projects, resources, Account, ProjectNewResourcesListView, ProjectCurrentResourcesListView, TemplatesListView, ich, Common ) {
     
     var SidebarView = Backbone.View.extend({
         el: "#sidebar",
