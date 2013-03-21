@@ -155,6 +155,24 @@ module.exports = function(grunt) {
                 }
             }
         }
+    },
+    less: {
+      "2.0.0-rc1": {
+        options: {
+          paths: ["css"],
+          compress: true
+        },
+        files: {
+            "css/main.css": "css/main.less",
+            "css/jquery.dataTables.css": "css/jquery.dataTables.less",
+            "css/jquery.terminal.css": "css/jquery.terminal.less",
+            "css/jquery.multiselect.css": "css/jquery.multiselect.less",
+            "css/jquery.multiselect.filter.css": "css/jquery.multiselect.filter.less",
+            "css/jquery-ui.css": "css/jquery-ui.less",
+            "css/jquery.ui.selectmenu.css": "css/jquery.ui.selectmenu.less",
+            "css/morris.css": "css/morris.less"
+        }        
+      }
     }
   });
 
@@ -163,12 +181,13 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-less');
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-selenium');
 
   // Default task.
   grunt.registerTask('default', ['jshint', 'jasmine']);
-  grunt.registerTask('run', ['connect:sstudio', 'watch']);
+  grunt.registerTask('run', ['less', 'connect:sstudio', 'watch']);
   grunt.registerTask('build', ['jasmine', 'concat', 'uglify']);
 
 };
