@@ -189,8 +189,10 @@ define([
                 data = this.$table.fnGetData(row);
             this.cartOfferings.add(data);
             this.$cart.fnReloadAjax();
+            var count = this.$cart.fnGetData().length;
             var details = this.calculatePrice(this.$cart);
             $("#cart_total").html(ich['total_template'](details));
+            $("#notif").html(ich['notif_template']({count: count}));
             return false;
         },
 
@@ -206,8 +208,10 @@ define([
                 data = this.$cart.fnGetData(row);
             this.$cart.fnDeleteRow(row);    
             this.cartOfferings.remove(data);
+            var count = this.$cart.fnGetData().length;
             var details = this.calculatePrice(this.$cart);
             $("#cart_total").html(ich['total_template'](details));
+            $("#notif").html(ich['notif_template']({count: count}));
             return false;
         },
 
