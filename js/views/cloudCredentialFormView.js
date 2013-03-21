@@ -31,9 +31,9 @@ define([
         render: function () {
             /**
              * [ich.grabTemplates() description]
-             * 
-             * Looks for any <script type="text/html"> tags to make templates out of. 
-             * Then removes those elements from the dom (this is the method that runs 
+             *
+             * Looks for any <script type="text/html"> tags to make templates out of.
+             * Then removes those elements from the dom (this is the method that runs
              * on document ready when ich first inits).
              */
             this.cloudProvider = this.model.attributes.cloud_provider.toLocaleLowerCase();
@@ -43,7 +43,7 @@ define([
             var form =  ich[template](attributes);
             //Render my template
             this.$el.append(form);
-        },        
+        },
 
         contentChanged: function(event) {
             var form = $("form")[0];
@@ -63,7 +63,7 @@ define([
                 }else{
                     view.model.attributes[this.id] = this.value;
                 }
-            }, view);            
+            }, view);
             if(this.formIsComplete(form))
             {
                 Common.vent.trigger("form:completed");
@@ -75,7 +75,7 @@ define([
             $.each(form, function(index, value){
                 if(value.tagName === "INPUT" || value.tagName === "TEXTAREA")
                 {
-                    if(value.value === "")
+                    if ($(value).hasClass("required") && value.value === "")
                     {
                         complete = false;
                         return;

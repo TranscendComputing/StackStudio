@@ -37,7 +37,7 @@ define([
 		            cloudCreds.push(cloudCred);
 		        });
 		    }
-		    
+
 		    this.reset(cloudCreds);
 		},
 		/**
@@ -52,9 +52,9 @@ define([
                 theme: 'future'
             };
             var coll = this;
-		    var url = Common.apiUrl + "/identity/v1/accounts/" + sessionStorage.account_id + "/" + options.cloud_account_id + "/cloud_credentials";
-		    var cloudCredential = {"cloud_credential": model.attributes};
-            Messenger().run({
+            var url = Common.apiUrl + "/identity/v1/accounts/" + sessionStorage.account_id + "/" + options.cloud_account_id + "/cloud_credentials";
+            var cloudCredential = {"cloud_credential": model.attributes};
+            new Messenger().run({
                 errorMessage: "Unable to save credentials.",
                 successMessage: "Credentials saved.",
                 showCloseButton: true,
@@ -87,7 +87,7 @@ define([
 		update: function(model, options) {
 		    var url = Common.apiUrl + "/identity/v1/accounts/" + sessionStorage.account_id + "/cloud_credentials/" + model.attributes.id + "?_method=PUT";
 		    var cloudCredential = {"cloud_credential": model.attributes};
-            Messenger().run({
+		    new Messenger().run({
                 errorMessage: "Unable to save credentials.",
                 successMessage: "Credentials saved.",
                 showCloseButton: true,
@@ -112,7 +112,7 @@ define([
 		deleteCredential: function(cloudCredential) {
             var coll = this;
 		    var url = Common.apiUrl + "/identity/v1/accounts/" + sessionStorage.account_id + "/cloud_credentials/" + cloudCredential.id + "?_method=DELETE";
-            Messenger().run({
+            new Messenger().run({
                 errorMessage: "Unable to delete credentials.",
                 successMessage: "Credentials deleted.",
                 showCloseButton: true,
@@ -130,8 +130,8 @@ define([
                 }
             });
 		}
-	
-	
+
+
 	});
 
 	return CloudCredentialList;
