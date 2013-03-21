@@ -43,6 +43,7 @@ define([
             var form =  ich[template](attributes);
             //Render my template
             this.$el.append(form);
+            this.$(".required").after("<span class='required'/>");
         },
 
         contentChanged: function(event) {
