@@ -258,7 +258,8 @@ define([
                 });
 
                 if(!regionFound) {
-                    $("#region_nav").html($("#region_select option:first").text() + " ->");
+                    $("#region_nav").html(resourceNav.crumbTemplate(
+                            {pathElt: $("#region_select option:first").text()}));
                     this.selectedRegion = $("#region_select option:first").val();
                 }
                 $("#region_nav").show();
