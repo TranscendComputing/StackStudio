@@ -1,0 +1,2973 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://devessex.essex.momentumsoftware.com:9000/" />
+<title>Elements_Present</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">Elements_Present</td></tr>
+</thead><tbody>
+<!--Navigates through StackStudio verifying all major elements and most minor elements are present and verifies any text-->
+<tr>
+	<td>open</td>
+	<td>/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='main']/div/h1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>loginCheck</td>
+	<td></td>
+</tr>
+<!--Logs out if logged in-->
+<tr>
+	<td>storeTextPresent</td>
+	<td>ehansen</td>
+	<td>loggedIn</td>
+</tr>
+<tr>
+	<td>while</td>
+	<td>${loggedIn}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='account_logout']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextNotPresent</td>
+	<td>ehansen</td>
+	<td></td>
+</tr>
+<tr>
+	<td>store</td>
+	<td>!${loggedIn}</td>
+	<td>loggedIn</td>
+</tr>
+<tr>
+	<td>endWhile</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>loginElements</td>
+	<td></td>
+</tr>
+<!--Verifies all login elements are present-->
+<tr>
+	<td>waitForElementPresent</td>
+	<td>id=account_login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=account_login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='ui-id-1']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='ui-id-1']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[7]/div[1]/a/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='login_message']/p</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='ui-accordion-1-header-0']/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='ui-accordion-1-header-0']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='ui-accordion-1-panel-0']/table/tbody/tr[1]/td[1]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='username']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='ui-accordion-1-panel-0']/table/tbody/tr[2]/td[1]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='password']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[7]/div[3]/div/button[1]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[7]/div[3]/div/button[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[7]/div[3]/div/button[3]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='ui-id-1']</td>
+	<td>Login</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='login_message']/p</td>
+	<td>Please enter your username and password.</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='ui-accordion-1-header-0']</td>
+	<td>Basic</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='ui-accordion-1-panel-0']/table/tbody/tr[1]/td[1]</td>
+	<td>Username:</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='ui-accordion-1-panel-0']/table/tbody/tr[2]/td[1]</td>
+	<td>Password:</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[7]/div[3]/div/button[1]</td>
+	<td>Login</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[7]/div[3]/div/button[2]</td>
+	<td>Register</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[7]/div[3]/div/button[3]</td>
+	<td>Cancel</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>xpath=(//button[@type='button'])[3]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>registerElements</td>
+	<td></td>
+</tr>
+<!--Verifies register login elements are present-->
+<tr>
+	<td>click</td>
+	<td>id=account_login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>xpath=(//button[@type='button'])[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>xpath=(//button[@type='button'])[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='ui-id-3']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='ui-id-3']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[9]/div[1]/a/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[9]/div[2]/div/table/tbody/tr[1]/td[1]/b</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='first_name']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[9]/div[2]/div/table/tbody/tr[2]/td[1]/b</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='last_name']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[9]/div[2]/div/table/tbody/tr[3]/td[1]/b</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='new_username']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[9]/div[2]/div/table/tbody/tr[4]/td[1]/b</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='email_address']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[9]/div[2]/div/table/tbody/tr[5]/td[1]/b</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='country_select-button']/span[1]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[9]/div[2]/div/table/tbody/tr[6]/td[1]/b</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='company']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[9]/div[2]/div/table/tbody/tr[7]/td[1]/b</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='new_password']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[9]/div[2]/div/table/tbody/tr[8]/td[1]/b</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='confirm_password']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='terms_checkbox']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[9]/div[2]/div/center/b</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[9]/div[2]/div/center/a/b</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[9]/div[3]/div/button[1]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[9]/div[3]/div/button[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='ui-id-3']</td>
+	<td>Register Login</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[9]/div[2]/div/table/tbody/tr[1]/td[1]/b</td>
+	<td>First Name:</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[9]/div[2]/div/table/tbody/tr[2]/td[1]/b</td>
+	<td>Last Name:</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[9]/div[2]/div/table/tbody/tr[3]/td[1]/b</td>
+	<td>Username*:</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[9]/div[2]/div/table/tbody/tr[4]/td[1]/b</td>
+	<td>Email Address*:</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[9]/div[2]/div/table/tbody/tr[5]/td[1]/b</td>
+	<td>Country*:</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[9]/div[2]/div/table/tbody/tr[6]/td[1]/b</td>
+	<td>Company:</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[9]/div[2]/div/table/tbody/tr[7]/td[1]/b</td>
+	<td>Password*:</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[9]/div[2]/div/table/tbody/tr[8]/td[1]/b</td>
+	<td>Confirm Password*:</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[9]/div[2]/div/center/b</td>
+	<td>I agree to the Transcend</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[9]/div[2]/div/center/a/b</td>
+	<td>Terms of Service</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[9]/div[3]/div/button[1]</td>
+	<td>Register</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[9]/div[3]/div/button[2]</td>
+	<td>Cancel</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//html/body/div[9]/div[3]/div/button[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//html/body/div[7]/div[3]/div/button[3]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//html/body/div[7]/div[3]/div/button[3]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>homeElements</td>
+	<td></td>
+</tr>
+<!--Verifies elements of home page are present-->
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//html/body/div[1]/div/nav/a/img</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/a/img</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[2]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='account_login']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/footer/p</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/footer/p/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
+	<td>Cloud Management</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[2]/a</td>
+	<td>Projects</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='account_login']</td>
+	<td>Login</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/footer/p</td>
+	<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Copyright © 2012 - </td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/footer/p/a</td>
+	<td>Transcend Computing</td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>login</td>
+	<td></td>
+</tr>
+<!--Logs in-->
+<tr>
+	<td>click</td>
+	<td>id=account_login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>id=username</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=username</td>
+	<td>ehansen</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=password</td>
+	<td>tester</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>xpath=(//button[@type='button'])[3]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>splashElements</td>
+	<td></td>
+	<td></td>
+</tr>
+<!--Verifies elements of splash page after login-->
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='navAccount']/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/a/img</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[2]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='navAccount']/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='account_logout']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/footer/p</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/footer/p/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
+	<td>Cloud Management</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[2]/a</td>
+	<td>Projects</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='navAccount']/a</td>
+	<td>ehansen</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='account_logout']</td>
+	<td>Logout</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/footer/p/a</td>
+	<td>Transcend Computing</td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>accountElements</td>
+	<td></td>
+</tr>
+<!--Verifies elements of account page are present-->
+<tr>
+	<td>click</td>
+	<td>link=ehansen</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='navAccount']/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/a/img</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[2]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='navAccount']/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='account_logout']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/footer/p</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/footer/p/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='credential_list']/li</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='new_credential']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='save_credential']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='delete_credential']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
+	<td>Cloud Management</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[2]/a</td>
+	<td>Projects</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='navAccount']/a</td>
+	<td>ehansen</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='account_logout']</td>
+	<td>Logout</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/footer/p/a</td>
+	<td>Transcend Computing</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='credential_list']/li</td>
+	<td>TranscendDev</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='new_credential']</td>
+	<td>New</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='save_credential']</td>
+	<td>Save</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='delete_credential']</td>
+	<td>Delete</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='credential_list']/li</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='credential_form']/div/table/tbody/tr[1]/td[1]/b</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/a/img</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[2]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='navAccount']/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='account_logout']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/footer/p</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/footer/p/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='credential_list']/li</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='new_credential']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='save_credential']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='delete_credential']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='credential_form']/div/table/tbody/tr[1]/td[1]/b</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='credential_name']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='credential_form']/div/table/tbody/tr[2]/td[1]/b</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='credential_description']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='credential_form']/div/table/tbody/tr[3]/td[1]/b</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='access_key']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='credential_form']/div/table/tbody/tr[4]/td[1]/b</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='secret_key']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
+	<td>Cloud Management</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[2]/a</td>
+	<td>Projects</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='navAccount']/a</td>
+	<td>ehansen</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='account_logout']</td>
+	<td>Logout</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/footer/p/a</td>
+	<td>Transcend Computing</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='credential_list']/li</td>
+	<td>TranscendDev</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='new_credential']</td>
+	<td>New</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='save_credential']</td>
+	<td>Save</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='delete_credential']</td>
+	<td>Delete</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='credential_form']/div/table/tbody/tr[1]/td[1]/b</td>
+	<td>Credential Name:</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='credential_form']/div/table/tbody/tr[2]/td[1]/b</td>
+	<td>Description:</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='credential_form']/div/table/tbody/tr[3]/td[1]/b</td>
+	<td>Access Key ID:</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='credential_form']/div/table/tbody/tr[4]/td[1]/b</td>
+	<td>Secret Key ID:</td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>cloudManagementElements</td>
+	<td></td>
+</tr>
+<!--Verifies elements of Cloud Management-->
+<tr>
+	<td>label</td>
+	<td>instancesElements</td>
+	<td></td>
+</tr>
+<!--Verifies elements of Instances sublink-->
+<tr>
+	<td>click</td>
+	<td>link=Cloud Management</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='resource_table_info']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/a/img</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[2]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='navAccount']/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='account_logout']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='subservice_menu_title']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='menu_toggle_button']/a/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='instances']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='spotinstances']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='reservedinstances']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='securitygroups']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='keypairs']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='elasticips']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_app']/div/div/div[1]/table/tbody/tr/td[1]/button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='action_button']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_length']/label</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_length']/label/select</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_filter']/label</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_filter']/label/input</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[1]/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[1]/div/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[2]/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[2]/div/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[3]/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[3]/div/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[4]/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[4]/div/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[5]/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[5]/div/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[6]/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[6]/div/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[7]/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[7]/div/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_info']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_previous']/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_next']/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/footer/p/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='cloud_nav']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='region_nav']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='service_nav']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='credential_nav']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_summary_icon']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
+	<td>Cloud Management</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[2]/a</td>
+	<td>Projects</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='navAccount']/a</td>
+	<td>ehansen</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='account_logout']</td>
+	<td>Logout</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='cloud_nav']</td>
+	<td>Amazon Web Services -&gt;</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='region_nav']</td>
+	<td>US East (Northern Virginia) -&gt;</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='service_nav']</td>
+	<td>Elastic Compute Cloud -&gt;</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='credential_nav']</td>
+	<td>TranscendDev</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='subservice_menu_title']</td>
+	<td>Elastic Compute Cloud</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='instances']</td>
+	<td>Instances</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='spotinstances']</td>
+	<td>Spot Requests</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='reservedinstances']</td>
+	<td>Reserved Instances</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='securitygroups']</td>
+	<td>Security Groups</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='keypairs']</td>
+	<td>Key Pairs</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='elasticips']</td>
+	<td>Elastic IPs</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_app']/div/div/div[1]/table/tbody/tr/td[1]/button</td>
+	<td>Create Instance</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='action_button']</td>
+	<td>Actions</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table_length']/label</td>
+	<td>Show</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table_length']/label</td>
+	<td>entries</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table_filter']/label</td>
+	<td>Search:</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[1]/div</td>
+	<td>Name</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[2]/div</td>
+	<td>Instance ID</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[3]/div</td>
+	<td>Image ID</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[4]/div</td>
+	<td>Root Device</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[5]/div</td>
+	<td>Type</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[6]/div</td>
+	<td>Key Pair</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[7]/div</td>
+	<td>State</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table_info']</td>
+	<td>Showing 1 to 2 of 2 entries</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/footer/p/a</td>
+	<td>Transcend Computing</td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>spotRequestsElements</td>
+	<td></td>
+</tr>
+<!--Verifies elements of Spot Requests sublink-->
+<tr>
+	<td>click</td>
+	<td>id=spotinstances</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='resource_app']/div/div/div[1]/table/tbody/tr/td[1]/button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/a/img</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[2]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='navAccount']/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='account_logout']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='subservice_menu_title']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='menu_toggle_button']/a/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='instances']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='spotinstances']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='reservedinstances']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='securitygroups']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='keypairs']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='elasticips']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='cloud_nav']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='region_nav']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='service_nav']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='credential_nav']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_summary_icon']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/footer/p/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
+	<td>Cloud Management</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[2]/a</td>
+	<td>Projects</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='navAccount']/a</td>
+	<td>ehansen</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='account_logout']</td>
+	<td>Logout</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='subservice_menu_title']</td>
+	<td>Elastic Compute Cloud</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='instances']</td>
+	<td>Instances</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='spotinstances']</td>
+	<td>Spot Requests</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='reservedinstances']</td>
+	<td>Reserved Instances</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='securitygroups']</td>
+	<td>Security Groups</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='keypairs']</td>
+	<td>Key Pairs</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='elasticips']</td>
+	<td>Elastic IPs</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='cloud_nav']</td>
+	<td>Amazon Web Services -&gt;</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='region_nav']</td>
+	<td>US East (Northern Virginia) -&gt;</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='service_nav']</td>
+	<td>Elastic Compute Cloud -&gt;</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='credential_nav']</td>
+	<td>TranscendDev</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/footer/p/a</td>
+	<td>Transcend Computing</td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_app']/div/div/div[1]/table/tbody/tr/td[1]/button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='price_history_button']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='action_button']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_length']/label</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_length']/label/select</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_filter']/label</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_filter']/label/input</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[1]/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[1]/div/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[2]/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[2]/div/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[3]/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[3]/div/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[4]/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[4]/div/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[5]/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[5]/div/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[6]/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[6]/div/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_info']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_previous']/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_next']/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_app']/div/div/div[1]/table/tbody/tr/td[1]/button</td>
+	<td>Create Spot Instance</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='price_history_button']</td>
+	<td>Price History</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='action_button']</td>
+	<td>Actions</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table_length']/label</td>
+	<td>Show</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table_length']/label</td>
+	<td>entries</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table_filter']/label</td>
+	<td>Search:</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[1]/div</td>
+	<td>Request ID</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[2]/div</td>
+	<td>Max Price</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[3]/div</td>
+	<td>Image ID</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[4]/div</td>
+	<td>Instance ID</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[5]/div</td>
+	<td>Type</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[6]/div</td>
+	<td>State</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table_info']</td>
+	<td>Showing 1 to 1 of 1 entries</td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>reservedInstancesElements</td>
+	<td></td>
+</tr>
+<!--Verifies elements of Reserved Instances sublink-->
+<tr>
+	<td>click</td>
+	<td>id=reservedinstances</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='resource_table_info']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/a/img</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[2]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='navAccount']/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='account_logout']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='subservice_menu_title']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='menu_toggle_button']/a/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='instances']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='spotinstances']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='reservedinstances']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='securitygroups']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='keypairs']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='elasticips']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='cloud_nav']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='region_nav']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='service_nav']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='credential_nav']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_summary_icon']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/footer/p/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
+	<td>Cloud Management</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[2]/a</td>
+	<td>Projects</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='navAccount']/a</td>
+	<td>ehansen</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='account_logout']</td>
+	<td>Logout</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='subservice_menu_title']</td>
+	<td>Elastic Compute Cloud</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='instances']</td>
+	<td>Instances</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='spotinstances']</td>
+	<td>Spot Requests</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='reservedinstances']</td>
+	<td>Reserved Instances</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='securitygroups']</td>
+	<td>Security Groups</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='keypairs']</td>
+	<td>Key Pairs</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='elasticips']</td>
+	<td>Elastic IPs</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='cloud_nav']</td>
+	<td>Amazon Web Services -&gt;</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='region_nav']</td>
+	<td>US East (Northern Virginia) -&gt;</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='service_nav']</td>
+	<td>Elastic Compute Cloud -&gt;</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='credential_nav']</td>
+	<td>TranscendDev</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/footer/p/a</td>
+	<td>Transcend Computing</td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_app']/div/div/div[1]/table/tbody/tr/td[1]/button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='action_button']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_length']/label</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_length']/label/select</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_filter']/label</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_filter']/label/input</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[1]/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[1]/div/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[2]/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[2]/div/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[3]/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[3]/div/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_info']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_previous']/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_next']/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_app']/div/div/div[1]/table/tbody/tr/td[1]/button</td>
+	<td>Purchase Reserved Instance</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='action_button']</td>
+	<td>Actions</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table_length']/label</td>
+	<td>Show</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table_length']/label</td>
+	<td>entries</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table_filter']/label</td>
+	<td>Search:</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[1]/div</td>
+	<td>Reserved ID</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[2]/div</td>
+	<td>Type</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[3]/div</td>
+	<td>State</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table_info']</td>
+	<td>Showing 0 to 0 of 0 entries</td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>securityGroupsElements</td>
+	<td></td>
+</tr>
+<!--Verifies elements of Security Groups sublink are present-->
+<tr>
+	<td>click</td>
+	<td>id=securitygroups</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='resource_app']/div/div/div[1]/table/tbody/tr/td[1]/button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/a/img</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[2]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='navAccount']/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='account_logout']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='subservice_menu_title']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='menu_toggle_button']/a/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='instances']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='spotinstances']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='reservedinstances']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='securitygroups']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='keypairs']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='elasticips']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='cloud_nav']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='region_nav']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='service_nav']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='credential_nav']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_summary_icon']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/footer/p/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
+	<td>Cloud Management</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[2]/a</td>
+	<td>Projects</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='navAccount']/a</td>
+	<td>ehansen</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='account_logout']</td>
+	<td>Logout</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='subservice_menu_title']</td>
+	<td>Elastic Compute Cloud</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='instances']</td>
+	<td>Instances</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='spotinstances']</td>
+	<td>Spot Requests</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='reservedinstances']</td>
+	<td>Reserved Instances</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='securitygroups']</td>
+	<td>Security Groups</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='keypairs']</td>
+	<td>Key Pairs</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='elasticips']</td>
+	<td>Elastic IPs</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='cloud_nav']</td>
+	<td>Amazon Web Services -&gt;</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='region_nav']</td>
+	<td>US East (Northern Virginia) -&gt;</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='service_nav']</td>
+	<td>Elastic Compute Cloud -&gt;</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='credential_nav']</td>
+	<td>TranscendDev</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/footer/p/a</td>
+	<td>Transcend Computing</td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_app']/div/div/div[1]/table/tbody/tr/td[1]/button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='action_button']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_length']/label</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_length']/label/select</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_filter']/label</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_filter']/label/input</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[1]/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[1]/div/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[2]/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[2]/div/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[3]/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[3]/div/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_info']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_previous']/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_next']/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_app']/div/div/div[1]/table/tbody/tr/td[1]/button</td>
+	<td>Create Security Group</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='action_button']</td>
+	<td>Actions</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table_length']/label</td>
+	<td>Show</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table_length']/label</td>
+	<td>entries</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table_filter']/label</td>
+	<td>Search:</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[1]/div</td>
+	<td>Group ID</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[2]/div</td>
+	<td>Name</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[3]/div</td>
+	<td>Description</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table_info']</td>
+	<td>Showing 1 to 10 of 10 entries</td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>keyPairsElements</td>
+	<td></td>
+</tr>
+<!--Verifies elements of Key Pairs sublink are present-->
+<tr>
+	<td>click</td>
+	<td>id=keypairs</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='resource_app']/div/div/div[1]/table/tbody/tr/td[1]/button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/a/img</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[2]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='navAccount']/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='account_logout']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='subservice_menu_title']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='menu_toggle_button']/a/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='instances']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='spotinstances']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='reservedinstances']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='securitygroups']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='keypairs']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='elasticips']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='cloud_nav']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='region_nav']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='service_nav']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='credential_nav']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_summary_icon']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/footer/p/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
+	<td>Cloud Management</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[2]/a</td>
+	<td>Projects</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='navAccount']/a</td>
+	<td>ehansen</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='account_logout']</td>
+	<td>Logout</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='subservice_menu_title']</td>
+	<td>Elastic Compute Cloud</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='instances']</td>
+	<td>Instances</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='spotinstances']</td>
+	<td>Spot Requests</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='reservedinstances']</td>
+	<td>Reserved Instances</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='securitygroups']</td>
+	<td>Security Groups</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='keypairs']</td>
+	<td>Key Pairs</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='elasticips']</td>
+	<td>Elastic IPs</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='cloud_nav']</td>
+	<td>Amazon Web Services -&gt;</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='region_nav']</td>
+	<td>US East (Northern Virginia) -&gt;</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='service_nav']</td>
+	<td>Elastic Compute Cloud -&gt;</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='credential_nav']</td>
+	<td>TranscendDev</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/footer/p/a</td>
+	<td>Transcend Computing</td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_app']/div/div/div[1]/table/tbody/tr/td[1]/button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='action_button']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_length']/label</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_length']/label/select</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_filter']/label</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_filter']/label/input</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[1]/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[1]/div/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[2]/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[2]/div/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_info']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_previous']/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_next']/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_app']/div/div/div[1]/table/tbody/tr/td[1]/button</td>
+	<td>Create Key Pair</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='action_button']</td>
+	<td>Actions</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table_length']/label</td>
+	<td>Show</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table_length']/label</td>
+	<td>entries</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table_filter']/label</td>
+	<td>Search:</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[1]/div</td>
+	<td>Name</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[2]/div</td>
+	<td>Fingerprint</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table_info']</td>
+	<td>Showing 1 to 7 of 7 entries</td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>elasticIPsElements</td>
+	<td></td>
+</tr>
+<!--Verifies elements of Elastic IPs sublink are present-->
+<tr>
+	<td>click</td>
+	<td>id=elasticips</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='resource_app']/div/div/div[1]/table/tbody/tr/td[1]/button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/a/img</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[2]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='navAccount']/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='account_logout']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='subservice_menu_title']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='menu_toggle_button']/a/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='instances']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='spotinstances']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='reservedinstances']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='securitygroups']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='keypairs']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='elasticips']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='cloud_nav']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='region_nav']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='service_nav']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='credential_nav']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_summary_icon']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/footer/p/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
+	<td>Cloud Management</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[2]/a</td>
+	<td>Projects</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='navAccount']/a</td>
+	<td>ehansen</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='account_logout']</td>
+	<td>Logout</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='subservice_menu_title']</td>
+	<td>Elastic Compute Cloud</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='instances']</td>
+	<td>Instances</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='spotinstances']</td>
+	<td>Spot Requests</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='reservedinstances']</td>
+	<td>Reserved Instances</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='securitygroups']</td>
+	<td>Security Groups</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='keypairs']</td>
+	<td>Key Pairs</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='elasticips']</td>
+	<td>Elastic IPs</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='cloud_nav']</td>
+	<td>Amazon Web Services -&gt;</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='region_nav']</td>
+	<td>US East (Northern Virginia) -&gt;</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='service_nav']</td>
+	<td>Elastic Compute Cloud -&gt;</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='credential_nav']</td>
+	<td>TranscendDev</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/footer/p/a</td>
+	<td>Transcend Computing</td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_app']/div/div/div[1]/table/tbody/tr/td[1]/button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='action_button']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_length']/label</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_length']/label/select</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_filter']/label</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_filter']/label/input</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[1]/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[1]/div/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[2]/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[2]/div/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[3]/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table']/thead/tr/th[3]/div/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_info']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_previous']/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='resource_table_next']/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_app']/div/div/div[1]/table/tbody/tr/td[1]/button</td>
+	<td>Allocate New Address</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='action_button']</td>
+	<td>Actions</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table_length']/label</td>
+	<td>Show</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table_length']/label</td>
+	<td>entries</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table_filter']/label</td>
+	<td>Search:</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[1]/div</td>
+	<td>Address</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[2]/div</td>
+	<td>Instance ID</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table']/thead/tr/th[3]/div</td>
+	<td>Scope</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='resource_table_info']</td>
+	<td>Showing 1 to 2 of 2 entries</td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>projectsElements</td>
+	<td></td>
+</tr>
+<!--Verifies elements of Projects are present-->
+<tr>
+	<td>click</td>
+	<td>link=Projects</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='project_back']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/a/img</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[2]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='navAccount']/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='account_logout']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='project_back']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='project_edit']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='project_delete']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/footer/p</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/footer/p/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
+	<td>Cloud Management</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[2]/a</td>
+	<td>Projects</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='navAccount']/a</td>
+	<td>ehansen</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='account_logout']</td>
+	<td>Logout</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='project_back']</td>
+	<td>Done</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='project_edit']</td>
+	<td>Edit</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='project_delete']</td>
+	<td>Delete</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/footer/p</td>
+	<td>Copyright © 2012 -</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//html/body/footer/p/a</td>
+	<td>Transcend Computing</td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<!--Logging out-->
+<tr>
+	<td>click</td>
+	<td>id=account_logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='main']/div/h1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>//*[@id='navAccount']/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>end</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>
