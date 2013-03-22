@@ -18,4 +18,3 @@ define(['interpreters/cloud_interpreter'], function(CloudInterpreter) {
 
 	});
 });
-

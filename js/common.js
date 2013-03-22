@@ -19,7 +19,7 @@ requirejs.config({
         },
         'backbone': {
             deps: [
-                'underscore',
+                  'underscore',
                 'jquery'
             ],
             exports: 'Backbone'
@@ -254,6 +254,9 @@ define(
 
     // Initialize routing
     router = new Router();
+
+    /** http://backbonejs.org/#Sync-emulateHTTP */
+    //Backbone.emulateHTTP = true;
 
     //Base url for API calls
     var apiUrl;

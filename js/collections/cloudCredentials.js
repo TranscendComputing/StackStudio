@@ -3,7 +3,7 @@
  * (c) 2012 Transcend Computing <http://www.transcendcomputing.com/>
  * Available under ASL2 license <http://www.apache.org/licenses/LICENSE-2.0.html>
  */
-/*jshint smarttabs:true */
+/*jshint smarttabs:true*/
 /*global define:true console:true alert:true*/
 define([
         'jquery',
@@ -28,17 +28,17 @@ define([
          * @param  {Object} options
          * @return {nil}
          */
-		fetch: function(options) {
-		    var cloudCreds = [];
-		    if(sessionStorage.cloud_credentials) {
-		        var cloudCredentials = JSON.parse(sessionStorage.cloud_credentials);
-		        $.each(cloudCredentials, function(index, value) {
-		            var cloudCred = new CloudCredential(value.cloud_credential);
-		            cloudCreds.push(cloudCred);
-		        });
-		    }
-		    
-		    this.reset(cloudCreds);
+        fetch: function(options) {
+            var cloudCreds = [];
+            if(sessionStorage.cloud_credentials) {
+                var cloudCredentials = JSON.parse(sessionStorage.cloud_credentials);
+                $.each(cloudCredentials, function(index, value) {
+                    var cloudCred = new CloudCredential(value.cloud_credential);
+                    cloudCreds.push(cloudCred);
+                });
+            }
+            
+            this.reset(cloudCreds);
 		},
 		/**
          * Creates a new set of cloud credentials for the user
@@ -52,9 +52,9 @@ define([
                 theme: 'future'
             };
             var coll = this;
-		    var url = Common.apiUrl + "/identity/v1/accounts/" + sessionStorage.account_id + "/" + options.cloud_account_id + "/cloud_credentials";
-		    var cloudCredential = {"cloud_credential": model.attributes};
-            Messenger().run({
+            var url = Common.apiUrl + "/identity/v1/accounts/" + sessionStorage.account_id + "/" + options.cloud_account_id + "/cloud_credentials";
+            var cloudCredential = {"cloud_credential": model.attributes};
+            new Messenger().run({
                 errorMessage: "Unable to save credentials.",
                 successMessage: "Credentials saved.",
                 showCloseButton: true,
@@ -85,9 +85,9 @@ define([
          * @return {nil}
          */
 		update: function(model, options) {
-		    var url = Common.apiUrl + "/identity/v1/accounts/" + sessionStorage.account_id + "/cloud_credentials/" + model.attributes.id + "?_method=PUT";
-		    var cloudCredential = {"cloud_credential": model.attributes};
-            Messenger().run({
+            var url = Common.apiUrl + "/identity/v1/accounts/" + sessionStorage.account_id + "/cloud_credentials/" + model.attributes.id + "?_method=PUT";
+            var cloudCredential = {"cloud_credential": model.attributes};
+            new Messenger().run({
                 errorMessage: "Unable to save credentials.",
                 successMessage: "Credentials saved.",
                 showCloseButton: true,
@@ -111,8 +111,8 @@ define([
          */
 		deleteCredential: function(cloudCredential) {
             var coll = this;
-		    var url = Common.apiUrl + "/identity/v1/accounts/" + sessionStorage.account_id + "/cloud_credentials/" + cloudCredential.id + "?_method=DELETE";
-            Messenger().run({
+            var url = Common.apiUrl + "/identity/v1/accounts/" + sessionStorage.account_id + "/cloud_credentials/" + cloudCredential.id + "?_method=DELETE";
+            new Messenger().run({
                 errorMessage: "Unable to delete credentials.",
                 successMessage: "Credentials deleted.",
                 showCloseButton: true,
@@ -130,8 +130,8 @@ define([
                 }
             });
 		}
-	
-	
+
+
 	});
 
 	return CloudCredentialList;

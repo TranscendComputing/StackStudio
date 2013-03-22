@@ -21,7 +21,7 @@ define([
         // Reference to this collection's model.
         model: SecurityGroup,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/compute/security_groups/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/compute/security_groups'
     });
     
     // Create our global collection of **Security Groups**.

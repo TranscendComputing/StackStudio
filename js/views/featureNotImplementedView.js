@@ -6,32 +6,32 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery'
-        
-], function( $) {
+        'jquery',
+        'backbone'
+], function( $, Backbone) {
     
-    FeatureNotImplementedView  = Backbone.View.extend({
+    var FeatureNotImplementedView  = Backbone.View.extend({
         
         featureUrl: undefined,
 
         element: undefined,
 
         initialize: function(options) {
-        	this.featureUrl = options.feature_url;
-        	this.element = options.element;
+            this.featureUrl = options.feature_url;
+            this.element = options.element;
         },
 
         render: function() {
-        	$(this.element).html("<div class='feature_not_implemented ninecol'>" +
-        							"<p>" +
-		        					"This feature is not currently implemented in StackStudio."  +
-			        				"</p>" +
-			        				"<p>StackStudio is open source!</p>" +
-			        				"<p>" +
-			        					"Feel free to contribute to the StackStudio project on GitHub." +
-			        					" Additional information may be found here: <a href=" + this.featureUrl + " target='new'>" + this.featureUrl + "</a>" +
-	        						"</p>" +
-        						"</div>");
+            $(this.element).html("<div class='feature_not_implemented ninecol'>" +
+                                    "<p>" +
+                                    "This feature is not currently implemented in StackStudio."  +
+                                    "</p>" +
+                                    "<p>StackStudio is open source!</p>" +
+                                    "<p>" +
+                                        "Feel free to contribute to the StackStudio project on GitHub." +
+                                        " Additional information may be found here: <a href=" + this.featureUrl + " target='new'>" + this.featureUrl + "</a>" +
+                                    "</p>" +
+                                 "</div>");
         }
     });
     return FeatureNotImplementedView;

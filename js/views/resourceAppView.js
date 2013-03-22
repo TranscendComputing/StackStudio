@@ -58,6 +58,7 @@ define([
             this.collection.on( 'add', this.addOne, this );
             this.collection.on( 'reset', this.addAll, this );
             $("#action_menu li").addClass("ui-state-disabled");
+
             if(this.credentialId && this.region) {
                 this.collection.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }) });
             }else if(this.credentialId) {
@@ -116,13 +117,13 @@ define([
             if(selectedModel) {
                 this.selectedId = id;
                 $("#action_menu li").removeClass("ui-state-disabled");
-                this.toggleActions();
                 var template = this.cloudProvider + "_resource_detail";
                 if (ich.templates.resource_detail) {
                     $("#details").html(ich.resource_detail(selectedModel.attributes));
                     $("#detail_tabs").tabs();
                     $('.create_button').button();
                 }
+                this.toggleActions();
             }
             this.setResourceAppHeightify();
         },

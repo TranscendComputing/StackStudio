@@ -64,7 +64,7 @@ define([
 
         events: {
 			"click .resourceLink" : "resourceClick",
-			"click #cloud_coverflow img" : "cloudChange",
+			"click #cloud_coverflow img" : "cloudChange"
 		},
 
 		initialize: function() {
@@ -178,7 +178,7 @@ define([
                 }));
                 $("#"+service.type).append($("<a></a>").attr({
                     "id": service.type+"Link",
-                    "class": "resourceLink",
+                    "class": "resourceLink"
                 }).text(service.name));
                 row++;
                 //reset row if greater than 3
@@ -186,7 +186,6 @@ define([
 		            row = 1;
 		        }
 		    });
-		    ;
 		    $("#cloud_nav").html(this.crumbTemplate({pathElt: this.cloudDefinitions[this.cloudProvider].name
             }));
 
@@ -278,7 +277,7 @@ define([
 		},
 
 		resourceSelect: function(selectionId) {
-		    view = this;
+		    var view = this;
 			$('.resources').each(function() {
 			    var selection = selectionId + "Link";
 				if(selection === $(this).find(":first").attr("id")) {
