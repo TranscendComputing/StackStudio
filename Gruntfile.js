@@ -71,6 +71,16 @@ module.exports = function(grunt) {
             require: true,
             requirejs: true
         }
+      },
+      with_overrides: {
+        options: {
+          describe: true,
+          it: true,
+          expect: true
+        },
+        files: {
+          src: ['spec/**/*.js', 'spec/*.js']
+        }
       }
     },
     server: {

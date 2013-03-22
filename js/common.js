@@ -255,6 +255,9 @@ define(
     // Initialize routing
     router = new Router();
 
+    /** http://backbonejs.org/#Sync-emulateHTTP */
+    //Backbone.emulateHTTP = true;
+
     //Base url for API calls
     var apiUrl;
     // Automatically choose URL based on current hostname.

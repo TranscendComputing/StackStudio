@@ -8,11 +8,10 @@
 define([
         'jquery',
         'backbone'
-
-], function($, Backbone) {
-
+], function( $, Backbone) {
+    
     var FeatureNotImplementedView  = Backbone.View.extend({
-
+        
         featureUrl: undefined,
 
         element: undefined,
@@ -24,15 +23,15 @@ define([
 
         render: function() {
             $(this.element).html("<div class='feature_not_implemented ninecol'>" +
-                    "<p>" +
-                    "This feature is not currently implemented in StackStudio."  +
-                    "</p>" +
-                    "<p>StackStudio is open source!</p>" +
-                    "<p>" +
-                    "Feel free to contribute to the StackStudio project on GitHub." +
-                    " Additional information may be found here: <a href=" + this.featureUrl + " target='new'>" + this.featureUrl + "</a>" +
-                    "</p>" +
-            "</div>");
+                                    "<p>" +
+                                    "This feature is not currently implemented in StackStudio."  +
+                                    "</p>" +
+                                    "<p>StackStudio is open source!</p>" +
+                                    "<p>" +
+                                        "Feel free to contribute to the StackStudio project on GitHub." +
+                                        " Additional information may be found here: <a href=" + this.featureUrl + " target='new'>" + this.featureUrl + "</a>" +
+                                    "</p>" +
+                                 "</div>");
         }
     });
     return FeatureNotImplementedView;
