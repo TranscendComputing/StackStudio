@@ -1,0 +1,141 @@
+<div style="min-height:400px;">
+    <div id="accordion">
+        <h3>Load Balancer Configuration</h3>
+        <div>
+            <table>
+                <tr>
+                    <td><b>Name:</b></td>
+                    <td>
+                        <input id="lb_name_input" type="text" style="width:200px;"/><span> e.g. MyLoadBalancer</span>
+                    </td>
+                </tr>
+                <!-- TODO VPC LB Support
+                <tr>
+                    <td><b>Create LB Inside:</b></td>
+                    <td>
+                        <select id="lb_create_inside_select" style="width:150px;">
+                            <option value="ec2">EC2</option>
+                        </select>
+                    </td>
+                </tr>
+                -->
+            </table>
+            <div id="dynamic_additions"></div>
+        </div>
+        <h3>Listener Configuration</h3>
+        <div>
+            <div style="padding-bottom:10px;">
+                <span><b>LB Protocol:</b></span>
+                <select id="lb_protocol_select" style="width:70px;padding-right:10px;">
+                    <option value="HTTP">HTTP</option>
+                    <option value="HTTPS">HTTPS</option>
+                    <option value="TCP">TCP</option>
+                    <option value="SSL">SSL</option>
+                </select>
+                <span><b>LB Port:</b></span>
+                <input id="lb_port_input" type="text" style="width:50px;padding-right:10px;"/>
+                <span><b>Instance Protocol:</b></span>
+                <select id="instance_protocol_select" style="width:70px;padding-right:10px;">
+                    <option value="HTTP">HTTP</option>
+                    <option value="HTTPS">HTTPS</option>
+                    <option value="TCP">TCP</option>
+                    <option value="SSL">SSL</option>
+                </select>
+                <span><b>Instance Port:</b></span>
+                <input id="instance_port_input" type="text" style="width:50px;padding-right:20px;"/>
+                <button id="listener_save_button">Save</button>
+            </div>
+            <table id="listeners_table">
+                <thead>
+                    <tr>
+                        <th>Load Balancer Protocol</th>
+                        <th>Load Balancer Port</th>
+                        <th>Instance Protocol</th>
+                        <th>Instance Port</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+                <tfoot>
+                </tfoot>
+            </table>
+            <button id="remove_listener_button">Remove Listener</button>
+        </div>
+        <h3>Health Check Configuration</h3>
+        <div>
+            <span><b>Configuration Options:</b></span>
+            <table style="margin:10px;">
+                <tr>
+                    <td><b>Ping Protocol:</b></td>
+                    <td>
+                        <select id="health_check_protocol_select" style="width:80px;">
+                            <option value="HTTP">HTTP</option>
+                            <option value="HTTPS">HTTPS</option>
+                            <option value="TCP">TCP</option>
+                            <option value="SSL">SSL</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>Ping Port:</b></td>
+                    <td>
+                        <input id="health_check_port_input" type="text" value="80" style="width:50px;"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>Ping Path:</b></td>
+                    <td>
+                        <input id="health_check_path_input" type="text" value="/index.html" style="width:150px;"/>
+                    </td>
+                </tr>
+            </table>
+            <span><b>Advanced Options:</b></span>
+            <table style="margin:10px;">
+                <tr>
+                    <td><b>Response Timeout:</b></td>
+                    <td>
+                        <input id="health_check_timeout_input" type="text" value="5" style="width:50px;"/><span> Seconds</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>Health Check Interval:</b></td>
+                    <td>
+                        <input id="health_check_interval_input" type="text" value="30" style="width:50px;"/><span> Seconds</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>Unheathly Threshold:</b></td>
+                    <td>
+                        <select id="unhealthy_threshold_select" style="width:50px;">
+                            <option value="2" selected>2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>Heathly Threshold:</b></td>
+                    <td>
+                        <select id="healthy_threshold_select" style="width:50px;">
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10" selected>10</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

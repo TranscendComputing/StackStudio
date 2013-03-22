@@ -22,7 +22,7 @@ define([
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
-], function( $, _, Backbone, DialogView, instanceCreateTemplate, Instance, Images, AvailabilityZones, Flavors, KeyPairs, SecurityGroups, ich, Common ) {
+], function( $, _, Backbone, DialogView, instanceCreateTemplate, Instance, Images, AvailabilityZones, Flavors, KeyPairs, SecurityGroups, Common ) {
     
     /**
      * InstanceCreateView is UI form to create compute.
@@ -35,6 +35,8 @@ define([
      */
     
     var InstanceCreateView = DialogView.extend({
+
+        template: _.template(instanceCreateTemplate),
 
         credentialId: undefined,
 
@@ -66,8 +68,7 @@ define([
 
         render: function() {
             var createView = this;
-            var compiledTemplate = _.template(instanceCreateTemplate);
-            this.$el.html(compiledTemplate);
+            this.$el.html(this.template);
 
             this.$el.dialog({
                 autoOpen: true,
