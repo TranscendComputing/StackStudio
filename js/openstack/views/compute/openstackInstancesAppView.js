@@ -117,7 +117,7 @@ define([
                 var actionItem = $(item);
                 if(actionItem.text() === "Disassociate Address")
                 {
-                    this.toggleActionItem(actionItem, instance.get("addresses").private.length < 2);
+                    this.toggleActionItem(actionItem, (instance.get("addresses").private && instance.get("addresses").private.length < 2));
                 }
                 if(actionItem.text() === "Terminate")
                 {

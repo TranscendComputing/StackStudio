@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/openstack/compute/openstackInstanceCreateTemplate.html',
-        '/js/openstack/models/compute/openstackInstance.js',
+        '/js/openstack/collections/compute/openstackInstances.js',
         '/js/openstack/collections/compute/openstackImages.js',
         '/js/openstack/collections/compute/openstackAvailabilityZones.js',
         '/js/openstack/collections/compute/openstackFlavors.js',
@@ -22,7 +22,7 @@ define([
         'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter'
-], function( $, _, Backbone, DialogView, instanceCreateTemplate, Instance, Images, AvailabilityZones, Flavors, KeyPairs, SecurityGroups, ich, Common ) {
+], function( $, _, Backbone, DialogView, instanceCreateTemplate, Instances, Images, AvailabilityZones, Flavors, KeyPairs, SecurityGroups, ich, Common ) {
     
     /**
      * InstanceCreateView is UI form to create compute.
@@ -50,7 +50,7 @@ define([
         
         securityGroups: new SecurityGroups(),
         
-        instance: new Instance(),
+        collection: new Instances(),
         
         /** @type {Hash} Event listeners for new Openstack instance dialog */
         events: {
@@ -220,9 +220,7 @@ define([
          * @return {nil}
          */
         create: function() {
-            var newInstance = this.instance;
             var options = {};
-            console.log("create_initiated");
             //#TODO: Validate before create
             if($("#instance_name").val() !== "") {
                 options.name = $("#instance_name").val();
@@ -244,6 +242,7 @@ define([
             //options.availability_zone = $("#az_select").val();
             options.key_name = $("#key_pair_select").val();
             options.groups = $("#security_group_select").val();
+            var newInstance = this.collection.create();
             newInstance.create(options, this.credentialId);
             
             this.$el.dialog('close');

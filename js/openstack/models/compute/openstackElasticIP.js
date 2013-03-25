@@ -59,6 +59,10 @@ define([
                     Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
                 }
             }, this); 
+        },
+
+        sync: function() {
+            return false;
         }
     });
 

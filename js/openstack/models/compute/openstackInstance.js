@@ -100,12 +100,16 @@ define([
                 dataType: 'json',
                 data: JSON.stringify(options),
                 success: function(data) {
-                    Common.vent.trigger("instanceAppRefresh");
+                    Common.vent.trigger(trigger);
                 },
                 error: function(jqXHR) {
                     Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
                 }
             });
+        },
+
+        sync: function() {
+            return false;
         }
     });
 
