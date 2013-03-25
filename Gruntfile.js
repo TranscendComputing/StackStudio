@@ -98,6 +98,7 @@ module.exports = function(grunt) {
     },
     selenium: {
         options: {
+            startURL: 'http://localhost:9001',
             browsers: ['firefox']
         },
         suite: {
