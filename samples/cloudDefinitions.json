@@ -185,6 +185,10 @@
                         "type": "instances"
                     },
                     {
+                        "name": "Elastic IPs",
+                        "type": "elasticips"
+                    },
+                    {
                         "name": "Security Groups",
                         "type": "securitygroups"
                     }

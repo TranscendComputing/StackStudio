@@ -146,7 +146,23 @@ define([
         setResourceAppHeightify: function() {
             //set resource_app_heightify for other elements to reference
             $(".resource_app_heightify").height($("#resource_app").height());
+        },
+
+        /**
+         *    This function is used to disable/enable any resource action menu items
+         *    @author Curtis   Stewart
+         *    @param  {jQuerySelector} menuItem [HTML node to be disabled/enabled]
+         *    @param  {Boolean} condition [Condition to be met for enable/disable]
+         */
+        toggleActionItem: function(menuItem, condition) {
+            if(condition)
+            {
+                menuItem.addClass("ui-state-disabled");
+            }else{
+                menuItem.removeClass("ui-state-disabled");
+            }
         }
+
     });
 
     console.log("resource app view defined");
