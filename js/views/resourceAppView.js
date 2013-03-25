@@ -49,8 +49,11 @@ define([
             $('button').button();
             $("#action_menu").menu();
 
-            this.$table = $('#resource_table').dataTable({"bJQueryUI": true,
-                "bProcessing": true});
+            this.$table = $('#resource_table').dataTable({
+                "bJQueryUI": true,
+                "bProcessing": true,
+                "bDestroy": true
+            });
             this.$table.fnProcessingIndicator(true);
 
             var CollectionType = this.collectionType;
@@ -161,6 +164,23 @@ define([
             }else{
                 menuItem.removeClass("ui-state-disabled");
             }
+        },
+
+        close: function(){
+            //if(this.$table)
+            //{
+            //    this.$table.fnDestroy();
+            //}
+            this.$el.empty();
+            this.undelegateEvents();
+            this.stopListening();
+            this.unbind();
+            // handle other unbinding needs, here
+            _.each(this.subViews, function(childView){
+              if (childView.close){
+                childView.close();
+              }
+            });
         }
 
     });

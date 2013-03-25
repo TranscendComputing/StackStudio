@@ -326,6 +326,10 @@ define([
                 var capSubtype = this.subtype.charAt(0).toUpperCase() + this.subtype.slice(1);
                 var appPath = "../"+this.cloudProvider+"/views/"+this.type+"/"+this.cloudProvider+capSubtype+"AppView";
 
+                if(resourceNav.resourceApp)
+                {
+                    resourceNav.resourceApp.close();
+                }
                 require([appPath], function (AppView) {
                     if (resourceNav.resourceApp instanceof AppView) {
                         resourceNav.resourceApp.credentialId = resourceNav.selectedCredential;

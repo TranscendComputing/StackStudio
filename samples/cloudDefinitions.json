@@ -191,6 +191,10 @@
                     {
                         "name": "Security Groups",
                         "type": "securitygroups"
+                    },
+                    {
+                        "name": "Key Pairs",
+                        "type": "keypairs"
                     }
                 ]
                 
