@@ -22,7 +22,6 @@ module.exports = function(grunt) {
     lint: {
       files: ['Gruntfile.js',
               'js/stackplace.build.js',
-              '<%= spec.files %>',
               '<%= source.files %>']
     },
     concat: {
@@ -51,7 +50,6 @@ module.exports = function(grunt) {
       tasks: 'default'
     },
     jshint: {
-      all: '<%= lint.files %>',
       options: {
         curly: true,
         eqeqeq: true,
@@ -72,14 +70,17 @@ module.exports = function(grunt) {
             requirejs: true
         }
       },
-      with_overrides: {
+      source_files: '<%= lint.files %>',
+      spec_files: {
         options: {
-          describe: true,
-          it: true,
-          expect: true
+          globals: {
+            describe: true,
+            it: true,
+            expect: true
+          }
         },
         files: {
-          src: ['spec/**/*.js', 'spec/*.js']
+          src: '<%= spec.files %>'
         }
       }
     },
