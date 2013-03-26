@@ -8,22 +8,24 @@
 define([
         'jquery',
         'backbone',
-        '/js/openstack/models/compute/openstackAvailabilityZone.js',
+        '/js/openstack/models/block_storage/openstackSnapshot.js',
         'common'
-], function( $, Backbone, AvailabilityZone, Common ) {
+], function( $, Backbone, Snapshot, Common ) {
     'use strict';
 
-    // AvailabilityZone Collection
+    // Snapshot Collection
     // ---------------
 
-    var AvailabilityZoneList = Backbone.Collection.extend({
+    var SnapshotList = Backbone.Collection.extend({
 
         // Reference to this collection's model.
-        model: AvailabilityZone,
+        model: Snapshot,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/compute/address_pools'
+        // CloudMux url for AWS EBS snapshots
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/block_storage/snapshots'
     });
-    
-    return AvailabilityZoneList;
+
+    // Create our global collection of **Volumes**.
+    return SnapshotList;
 
 });

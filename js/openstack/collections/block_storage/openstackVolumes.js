@@ -8,22 +8,23 @@
 define([
         'jquery',
         'backbone',
-        '/js/openstack/models/compute/openstackAvailabilityZone.js',
+        '/js/openstack/models/block_storage/openstackVolume.js',
         'common'
-], function( $, Backbone, AvailabilityZone, Common ) {
+], function( $, Backbone, Volume, Common ) {
     'use strict';
 
-    // AvailabilityZone Collection
+    // Volume Collection
     // ---------------
 
-    var AvailabilityZoneList = Backbone.Collection.extend({
+    var VolumesList = Backbone.Collection.extend({
 
         // Reference to this collection's model.
-        model: AvailabilityZone,
+        model: Volume,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/compute/address_pools'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/block_storage/volumes'
     });
-    
-    return AvailabilityZoneList;
+
+    // Create our global collection of **Volumes**.
+    return VolumesList;
 
 });

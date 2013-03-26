@@ -13,12 +13,6 @@ define([
 
     var AvailabilityZone = Backbone.Model.extend({
 
-        /** Default attributes for availability zone */
-        defaults: {
-            zoneName: '',
-            zoneState: '',
-            regionName: ''
-        }
     });
 
     return AvailabilityZone;

@@ -197,8 +197,12 @@
                         "type": "keypairs"
                     }
                 ]
-                
-            }   
+            },
+            {
+                "name": "Elastic Block Storage",
+                "type": "block_storage",
+                "defaultSubtype": "volumes"
+            }
         ],
         "regions": []
     },
