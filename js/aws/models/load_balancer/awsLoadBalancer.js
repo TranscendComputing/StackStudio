@@ -43,11 +43,65 @@ define([
             return this.attributes.instances.length;
         },
         
+        configureHealthCheck: function(healthCheckOptions, credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/configure_health_check?cred_id=" + credentialId + "&region=" + region;
+            var options = {id: this.attributes.id, health_check: healthCheckOptions};
+            var loadBalancer = {"load_balancer": options};
+            this.sendPostAction(url, loadBalancer, "loadBalancerAppRefresh");
+        },
+
+        createListeners: function(listeners, credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/listeners/create?_method=PUT&cred_id=" + credentialId + "&region=" + region;
+            var options = {id: this.attributes.id, listeners: listeners};
+            var loadBalancer = {"load_balancer": options};
+            this.sendPostAction(url, loadBalancer, "listenersRefresh");
+        },
+
+        destroyListeners: function(ports, credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/listeners/delete?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            var options = {id: this.attributes.id, ports: ports};
+            var loadBalancer = {"load_balancer": options};
+            this.sendPostAction(url, loadBalancer, "listenersRefresh");
+        },
+
+        enableAvailabilityZones: function(availabilityZones, credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/availability_zones/enable?cred_id=" + credentialId + "&region=" + region;
+            var options = {id: this.attributes.id, availability_zones: availabilityZones};
+            this.sendPostAction(url, options, "instancesRefresh");
+        },
+
+        disableAvailabilityZones: function(availabilityZones, credentialId, region, disableTrigger) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/availability_zones/disable?cred_id=" + credentialId + "&region=" + region;
+            var options = {id: this.attributes.id, availability_zones: availabilityZones};
+            if(disableTrigger) {
+                this.sendPostAction(url, options);
+            }else {
+              this.sendPostAction(url, options, "instancesRefresh");  
+            }
+        },
+
+        registerInstances: function(instanceIds, credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/instances/register?cred_id=" + credentialId + "&region=" + region;
+            var options = {id: this.attributes.id, instance_ids: instanceIds};
+            this.sendPostAction(url, options, "instancesRefresh");
+        },
+
+        deregisterInstances: function(instanceIds, credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/instances/deregister?cred_id=" + credentialId + "&region=" + region;
+            var options = {id: this.attributes.id, instance_ids: instanceIds};
+            this.sendPostAction(url, options, "instancesRefresh");
+        },
+        
+        destroy: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/delete?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            var loadBalancer = {"load_balancer": this.attributes};
+            this.sendPostAction(url, loadBalancer, "loadBalancerAppRefresh");
+        },
+
         create: function(options, healthCheckOptions, credentialId, region) {
             var lb = this;
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/create?_method=PUT&cred_id=" + credentialId + "&region=" + region;
             var loadBalancer = {"load_balancer": options};
-            //Use its own ajax call to call configure health check upon success
             $.ajax({
                 url: url,
                 type: 'POST',
@@ -63,27 +117,29 @@ define([
             }); 
         },
 
-        configureHealthCheck: function(healthCheckOptions, credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/configure_health_check?cred_id=" + credentialId + "&region=" + region;
-            var options = {id: this.attributes.id, health_check: healthCheckOptions};
-            this.sendPostAction(url, options);
+        describeHealth: function(credentialId, region) {
+            $.ajax({
+                url: Common.apiUrl + "/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/describe_health?cred_id=" + credentialId + "&region=" + region + "&id=" + this.attributes.id + "&availability_zones=" + JSON.stringify(this.attributes.availability_zones),
+                type: 'GET',
+                contentType: 'application/x-www-form-urlencoded',
+                success: function(data) {
+                    Common.vent.trigger("resetDescribeHealth", data.AvailabilityZonesHealth, data.InstancesHealth);
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            }); 
         },
         
-        destroy: function(credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/delete?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
-            this.sendPostAction(url, this.attributes);
-        },
-        
-        sendPostAction: function(url, options) {
-            var loadBalancer = {"load_balancer": options};
+        sendPostAction: function(url, options, triggerString) {
             $.ajax({
                 url: url,
                 type: 'POST',
                 contentType: 'application/x-www-form-urlencoded',
                 dataType: 'json',
-                data: JSON.stringify(loadBalancer),
+                data: JSON.stringify(options),
                 success: function(data) {
-                    Common.vent.trigger("loadBalancerAppRefresh");
+                    Common.vent.trigger(triggerString);
                 },
                 error: function(jqXHR) {
                     Common.errorDialog(jqXHR.statusText, jqXHR.responseText);

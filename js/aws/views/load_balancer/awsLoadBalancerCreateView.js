@@ -46,7 +46,7 @@ define([
             "dialogclose": "close",
             "click #listener_save_button": 'saveListener',
             "click #listeners_table tr": 'selectListener',
-            "click #remove_listener_button": "removeListener"
+            "click #listener_remove_button": "removeListener"
         },
 
         initialize: function(options) {
