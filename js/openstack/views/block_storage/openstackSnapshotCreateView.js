@@ -9,11 +9,16 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'common',
+        'icanhaz',
         'views/dialogView',
         'text!templates/openstack/block_storage/openstackSnapshotCreateTemplate.html',
         '/js/openstack/collections/block_storage/openstackSnapshots.js',
-        'common'  
-], function( $, _, Backbone, DialogView, snapshotCreateTemplate, Snapshots, Common ) {
+        '/js/openstack/collections/block_storage/openstackVolumes.js',
+        'jquery.ui.selectmenu',
+        'jquery.multiselect',
+        'jquery.multiselect.filter'
+], function( $, _, Backbone, Common, ich, DialogView, snapshotCreateTemplate, Snapshots, Volumes ) {
 
     var VolumeCreateView = DialogView.extend({
         
@@ -21,22 +26,47 @@ define([
 
         region: undefined,
         
-        template: _.template(snapshotCreateTemplate),
+        template: snapshotCreateTemplate,
         
         collection: new Snapshots(),
-        
-        volume: undefined,
 
         events: {
-            "dialogclose": "close"
+            "dialogclose": "close",
+            "selectmenuchange select#volume_select": "setSelectedVolume"
         },
 
         initialize: function(options) {
             this.credentialId = options.cred_id;
             this.region = options.region;
             this.volume = options.volume;
+            if(this.volume)
+            {
+                this.renderView();
+            }else{
+                this.volumes = new Volumes();
+                this.volumes.on("reset", function(){
+                    this.renderView();
+                }, this);
+                this.volumes.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region}) });
+            }
+        },
+        
+        render: function() {
+            // Use render view instead
+        },
+
+        // User renderView here because this view is rendered differently
+        // depending on conditions
+        renderView: function() {
             var createView = this;
-            this.$el.html(this.template);
+            ich.addTemplate("snapshot_create_template", this.template);
+
+            if(this.volume)
+            {
+                this.$el.html( ich.snapshot_create_template(this.volume.attributes) );
+            }else{
+                this.$el.html( ich.snapshot_create_template({list: true, volumes: this.volumes.toJSON()}) );
+            }
 
             this.$el.dialog({
                 autoOpen: true,
@@ -53,16 +83,22 @@ define([
                         createView.cancel();
                     }
                 }
-            });
-            var volumeName = "";
-            if(this.volume.has("name")) {
-                volumeName = " (" + this.volume.get("name") + ")";
+            }); 
+
+            if(!this.volume)
+            {
+                this.volume = this.volumes.at(0);
+                $("#volume_select").selectmenu();
             }
-            $("#volume_display").text(this.volume.get("id") + volumeName);
         },
-        
-        render: function() {
-            
+
+        setSelectedVolume: function(event, object) {
+            var volId = $(object.option).data().id;
+            this.volume = this.volumes.get(volId);
+            var newSnapName = this.volume.get("name") + "Snapshot";
+            var newSnapDesc = this.volume.get("name") + "Snapshot Description";
+            $("#snapshot_name").val(newSnapName);
+            $("#snapshot_description").val(newSnapDesc);
         },
         
         create: function() {

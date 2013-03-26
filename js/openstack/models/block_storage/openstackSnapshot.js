@@ -29,6 +29,11 @@ define([
             var url = "?cred_id=" + credentialId + "&region=" + region;
             this.sendPostAction(url, {snapshot: this.attributes});
         },
+
+        destroy: function(credentialId, region) {
+            var url = "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            this.sendPostAction(url);
+        },
         
         sendPostAction: function(url, options, trigger) {
             //Set default values for options and trigger if nothing is passed

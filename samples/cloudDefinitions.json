@@ -201,7 +201,17 @@
             {
                 "name": "Elastic Block Storage",
                 "type": "block_storage",
-                "defaultSubtype": "volumes"
+                "defaultSubtype": "volumes",
+                "subServices" : [
+                    {
+                        "name": "Volumes",
+                        "type": "volumes"
+                    },
+                    {
+                        "name": "Snapshots",
+                        "type": "snapshots"
+                    }
+                ]
             }
         ],
         "regions": []
