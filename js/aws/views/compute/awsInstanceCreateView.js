@@ -193,32 +193,32 @@ define([
             case "none":
                 console.log("none selected");
                 $("#elasticity_image").attr("src", "/images/IconPNGs/NewServer.png");
-                noneHTML = "";
+                var noneHTML = "";
                 $("#elasticity_config").html(noneHTML);
                 break;
             case "autoRecovery":
                 console.log("auto recover selected");
                 $("#elasticity_image").attr("src", "/images/IconPNGs/Autorestart.png");
-                autoRecoveryHTML = "";
+                var autoRecoveryHTML = "";
                 $("#elasticity_config").html(autoRecoveryHTML);
                 break;
             case "fixedArray":
                 console.log("fixed array selected");
                 $("#elasticity_image").attr("src", "/images/IconPNGs/Autoscale.png");
-                fixedArrayHTML = "<table><tr><td>Size:</td><td><input id='fixedArraySize'/></td></tr></table>";
+                var fixedArrayHTML = "<table><tr><td>Size:</td><td><input id='fixedArraySize'/></td></tr></table>";
                 $("#elasticity_config").html(fixedArrayHTML);
                 break;
             case "autoScale":
                 console.log("auto scale selected");
                 $("#elasticity_image").attr("src", "/images/IconPNGs/Autoscale.png");
-                autoScaleHTML = "<table>" +
+                var autoScaleHTML = "<table>" +
                         "<tr><td>Min:</td><td><input id='asMin'/></td></tr>" +
                         "<tr><td>Max:</td><td><input id='asMax'/></td></tr>" +
                         "<tr><td>Desired Capacity:</td><td><input id='asDesiredCapacity'/></td></tr>" +
                         "</table>";
                 $("#elasticity_config").html(autoScaleHTML);
                 break;
-            };
+            }
         },
         
         create: function() {

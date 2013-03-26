@@ -119,7 +119,7 @@ define([
         
         getPriceHistory: function() {
             if($("#product_select").val() !== "" && $("#az_select").val() !== null && $("#flavor_select").val() !== null) {
-                filters = {};
+                var filters = {};
                 this.flavors.each(function(flavor) {
                     if(flavor.attributes.name === $("#flavor_select").val()) {
                         filters["instance-type"] = flavor.attributes.id;
@@ -147,7 +147,7 @@ define([
                 ykeys: ['spotPrice'],
                 labels: ['Price']
             });
-        },
+        }
 
     });
     

@@ -48,7 +48,7 @@ define([
             "dialogclose": "close",
             "click #actions_table tr": 'selectAction',
             "click #add_action_button": "addAction",
-            "click #remove_action_button": "removeAction",
+            "click #remove_action_button": "removeAction"
         },
 
         initialize: function(options) {
@@ -191,7 +191,7 @@ define([
             }
             
             if($("#threshold_input").val() !== "") {
-                var thresholdInt = parseInt($("#threshold_input").val());
+                var thresholdInt = parseInt($("#threshold_input").val(), 10);
                 if(isNaN(thresholdInt)) {
                     issue = true;
                 }else {

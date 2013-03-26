@@ -46,7 +46,7 @@ define([
 	     */
 		set: function(attributes, options) {
 		    Backbone.Model.prototype.set.apply(this, arguments);
-		},
+		}
 		
 		/*
 		get: function(attr) {

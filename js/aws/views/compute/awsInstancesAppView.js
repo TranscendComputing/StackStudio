@@ -95,12 +95,12 @@ define([
             });
             //CPU has its own graph function because ymax is used
             this.cpuData.on( 'reset', this.addCPUData, this );
-            this.diskReadBytesData.on( 'reset', function() {this.addMonitorGraph("#disk_read_bytes", this.diskReadBytesData, ["Average"], ["Disk Read Bytes"], ["#FF8000"])}, this );
-            this.diskReadOpsData.on( 'reset', function() {this.addMonitorGraph("#disk_read_ops", this.diskReadOpsData, ["Average"], ["Disk Read Ops"], ["#00CC00"])}, this );
-            this.diskWriteBytesData.on( 'reset', function() {this.addMonitorGraph("#disk_write_bytes", this.diskWriteBytesData, ["Average"], ["Disk Write Bytes"], ["#660066"])}, this );
-            this.diskWriteOpsData.on( 'reset', function() {this.addMonitorGraph("#disk_write_ops", this.diskWriteOpsData, ["Average"], ["Disk Write Ops"], ["#FF0000"])}, this );
-            this.networkInData.on( 'reset', function() {this.addMonitorGraph("#network_in", this.networkInData, ["Average"], ["Network In Bytes"], ["#3399FF"])}, this );
-            this.networkOutData.on( 'reset', function() {this.addMonitorGraph("#network_out", this.networkOutData, ["Average"], ["Network Out Bytes"], ["#996633"])}, this );
+            this.diskReadBytesData.on( 'reset', function() {this.addMonitorGraph("#disk_read_bytes", this.diskReadBytesData, ["Average"], ["Disk Read Bytes"], ["#FF8000"]);}, this );
+            this.diskReadOpsData.on( 'reset', function() {this.addMonitorGraph("#disk_read_ops", this.diskReadOpsData, ["Average"], ["Disk Read Ops"], ["#00CC00"]);}, this );
+            this.diskWriteBytesData.on( 'reset', function() {this.addMonitorGraph("#disk_write_bytes", this.diskWriteBytesData, ["Average"], ["Disk Write Bytes"], ["#660066"]);}, this );
+            this.diskWriteOpsData.on( 'reset', function() {this.addMonitorGraph("#disk_write_ops", this.diskWriteOpsData, ["Average"], ["Disk Write Ops"], ["#FF0000"]);}, this );
+            this.networkInData.on( 'reset', function() {this.addMonitorGraph("#network_in", this.networkInData, ["Average"], ["Network In Bytes"], ["#3399FF"]);}, this );
+            this.networkOutData.on( 'reset', function() {this.addMonitorGraph("#network_out", this.networkOutData, ["Average"], ["Network Out Bytes"], ["#996633"]);}, this );
         },
         
         toggleActions: function(e) {
@@ -178,7 +178,7 @@ define([
                 statistic: "Average",
                 dimension_name: "InstanceId",
                 dimension_value: this.selectedId
-            }
+            };
             
             metricStatisticOptions.metric_name = "CPUUtilization";
             this.cpuData.fetch({ data: $.param(metricStatisticOptions) });

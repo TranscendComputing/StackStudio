@@ -37,8 +37,6 @@ define([
 		credentialId: undefined,
 
         region: undefined,
-
-        region: undefined,
 		
 		availabilityZones: new AvailabilityZones(),
 		
@@ -147,7 +145,7 @@ define([
             }
             
             if($("#volume_size_input").val() !== "") {
-                var sizeInt = parseInt($("#volume_size_input").val());
+                var sizeInt = parseInt($("#volume_size_input").val(), 10);
                 if(sizeInt > 0 && sizeInt < 1001) {
                     options.size = sizeInt;
                 }else {
@@ -159,7 +157,7 @@ define([
             
             if($("#volume_type_select").val() === "io1") {
                 if($("#volume_iops_input").val() !== "") {
-                    var iopsInt = parseInt($("#volume_iops_input").val());
+                    var iopsInt = parseInt($("#volume_iops_input").val(), 10);
                     if(iopsInt > 99 && iopsInt < 2001) {
                         options.type = $("#volume_type_select").val();
                         options.iops = iopsInt;
