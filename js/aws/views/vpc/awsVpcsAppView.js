@@ -89,7 +89,7 @@ define([
                 new AssociateDhcpView({vpc: vpc, cred_id: this.credentialId, region: this.region});
                 break;
             }
-        },
+        }
 	});
     
 	return AwsVpcsAppView;

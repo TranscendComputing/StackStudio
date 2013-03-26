@@ -69,7 +69,7 @@ define([
             var issue = false;
 			//Validate and create
 
-            if($("#cidr_block_input").val() != "") {
+            if($("#cidr_block_input").val() !== "") {
                 options.CidrBlock = $("#cidr_block_input").val();
                 options.InstanceTenancy = $("#tenancy_select").val();
             }else {

@@ -62,7 +62,7 @@ define([
                         click: function() {
                             createView.next();
                         }
-                    },
+                    }
                 }
             });
             $("select").selectmenu();

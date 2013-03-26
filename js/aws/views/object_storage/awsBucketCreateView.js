@@ -82,9 +82,9 @@ define([
 		
 		create: function() {
 			//Validate and create
-		    newBucket = this.bucket;
-		    options = {};
-		    issue = false;
+		    var newBucket = this.bucket,
+                options = {},
+                issue = false;
 		    
 		    if($("#bucket_name_input").val() !== "") {
 		        options.key = $("#bucket_name_input").val();

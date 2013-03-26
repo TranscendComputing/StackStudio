@@ -14,7 +14,11 @@ module.exports = function(grunt) {
       },
     source: {
         files: ['js/interpreters/**/*.js',
-                'js/models/**/*.js', 'js/views/**/*.js', 'js/collections/**/*.js']
+                'js/models/**/*.js', 
+                'js/views/**/*.js', 
+                'js/collections/**/*.js',
+                'js/aws/**/*.js',
+                'js/openstack/**/*.js']
     },
     spec: {
         files: ['spec/**/*.js']

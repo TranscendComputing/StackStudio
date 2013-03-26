@@ -42,7 +42,7 @@ define([
 	    
         modelStringIdentifier: "id",
         
-        columns: ["tags.Name", "id", "size", "state"],
+        columns: ["name", "id", "size", "status"],
         
         idColumnNumber: 1,
         
@@ -76,7 +76,7 @@ define([
             'click .create_button': 'createNew',
             'click #action_menu ul li': 'performAction',
             'click #resource_table tr': "clickOne",
-            'click #monitoring': 'refreshMonitors',
+            'click #monitoring': 'refreshMonitors'
         },
 
         initialize: function(options) {
@@ -101,6 +101,23 @@ define([
         
         toggleActions: function(e) {
             //Disable any needed actions
+            var volume = this.collection.get(this.selectedId);
+            var actionsMenu = $("#action_menu").menu("option", "menus");
+            _.each($("#action_menu").find(actionsMenu).find("li"), function(item){
+                var actionItem = $(item);
+                if(actionItem.text() === "Attach Volume" || actionItem.text() === "Create Snapshot")
+                {
+                    this.toggleActionItem(actionItem, volume.get("status") !== "available");
+                }
+                if(actionItem.text() === "Delete Volume")
+                {
+                    this.toggleActionItem(actionItem, volume.get("status") === "in-use");
+                }
+                if(actionItem.text() === "Detach Volume")
+                {
+                    this.toggleActionItem(actionItem, volume.get("status") !== "in-use");
+                }
+            }, this);
         },
         
         performAction: function(event) {
@@ -116,9 +133,6 @@ define([
                 break;
             case "Detach Volume":
                 volume.detach(this.credentialId);
-                break;
-            case "Force Detach":
-                volume.forceDetach(this.credentialId);
                 break;
             case "Create Snapshot":
                 new OpenstackSnapshotCreateView({cred_id: this.credentialId, volume: volume});
@@ -174,7 +188,7 @@ define([
                 statistic: "Average",
                 dimension_name: "VolumeId",
                 dimension_value: this.selectedId
-            }
+            };
 
             metricStatisticOptions.metric_name = "VolumeIdleTime";
             this.idleTimeData.fetch({ data: $.param(metricStatisticOptions) });

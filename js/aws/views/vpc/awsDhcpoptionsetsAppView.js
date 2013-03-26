@@ -85,7 +85,7 @@ define([
                 dhcpOption.destroy(this.credentialId, this.region);
                 break;
             }
-        },
+        }
 	});
     
 	return AwsDhcpOptionsSetsAppView;

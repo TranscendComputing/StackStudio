@@ -1,0 +1,31 @@
+<div>
+    <table>
+        <tr>
+            <td>Volume:</td>
+            <td>
+                {{#list}}
+                <select id="volume_select">
+                    {{#volumes}}
+                    <option data-id="{{id}}">{{name}} ({{id}})</option>
+                    {{/volumes}}
+                </select>
+                {{/list}}
+                {{^list}}
+                <span id="volume_display">{{id}} ({{name}})</span>
+                {{/list}}
+            </td>
+        </tr>
+        <tr>
+            <td>Name:</td>
+            <td>
+                <input id="snapshot_name" style="width:150px;" />
+            </td>
+        </tr>
+        <tr>
+            <td>Description:</td>
+            <td>
+                <input id="snapshot_description" type="text" style="width:250px;"/>
+            </td>
+        </tr>
+    </table>
+</div>

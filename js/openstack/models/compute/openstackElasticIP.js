@@ -21,52 +21,48 @@ define([
      * @returns {Object} Returns a ElasticIP.
      */
     var ElasticIP = Backbone.Model.extend({
-        idAttribute: "public_ip",
-
-        /** Default attributes for key pair */
-        defaults: {
-            public_ip: '',
-            allocation_id: '',
-            server_id: '',
-            network_interface_id: '',
-            domain: ''
-        },
         
-        create: function(options, credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/compute/addresses/create?_method=PUT&cred_id=" + credentialId;
-            this.sendPostAction(url, options);
+        create: function(credentialId) {
+            var url = "?cred_id=" + credentialId;
+            this.sendPostAction(url);
         },
         
         destroy: function(credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/compute/addresses/delete?_method=DELETE&cred_id=" + credentialId;
-            this.sendPostAction(url, this.attributes);
+            var url = "?_method=DELETE&cred_id=" + credentialId;
+            this.sendPostAction(url);
         },
         
-        associateAddress: function(credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/compute/addresses/associate?cred_id=" + credentialId;
-            this.sendPostAction(url, this.attributes);
+        associateAddress: function(serverId, credentialId) {
+            var url = "/associate/" + serverId+ "?cred_id=" + credentialId;
+            this.sendPostAction(url);
         },
         
         disassociateAddress: function(credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/compute/addresses/disassociate?cred_id=" + credentialId;
-            this.sendPostAction(url, this.attributes);
+            var url = "/disassociate?cred_id=" + credentialId;
+            this.sendPostAction(url);
         },
         
-        sendPostAction: function(url, options) {
-            var address = {"address": options};
+        sendPostAction: function(url, options, trigger) {
+            //Set default values for options and trigger if nothing is passed
+            options = typeof options !== 'undefined' ? options : {};
+            trigger = typeof trigger !== 'undefined' ? trigger : "elasticIPAppRefresh";
             $.ajax({
-                url: url,
+                url: this.url() + url,
                 type: 'POST',
                 contentType: 'application/x-www-form-urlencoded',
                 dataType: 'json',
-                data: JSON.stringify(address),
+                data: JSON.stringify(options),
                 success: function(data) {
-                    Common.vent.trigger("elasticIPAppRefresh");
+                    Common.vent.trigger(trigger);
                 },
                 error: function(jqXHR) {
                     Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
                 }
-            }); 
+            }, this); 
+        },
+
+        sync: function() {
+            return false;
         }
     });
 

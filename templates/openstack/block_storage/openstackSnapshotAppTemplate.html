@@ -1,0 +1,57 @@
+<div>
+    <div class="button_bar">
+        <table>
+            <tr>
+                <td>
+                    <button class="create_button">Create Snapshot</button>
+                </td>
+                <td>                    
+                    <ul id="action_menu">
+                        <li style="z-index: 1000">
+                            <a id="action_button">Actions</a>
+                            <ul>
+                                <li><a>Delete Snapshot</a></li>                 
+                            </ul>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </table>        
+    </div>
+    <table id="resource_table" class="full_width">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Snapshot ID</th>
+                <th>Size</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    <div id="details" class="detail_panel"></div>
+</div>
+
+<script type="text/html" id="resource_detail">
+    <div id="detail_tabs">
+        <ul>
+            <li><a href="#tabs-1">Details</a></li>
+        </ul>
+        <div id="tabs-1" class="tab">
+            <table>
+                <tbody>
+                    <tr><td><b>Name:</b></td>                   <td>{{ name }}</td></tr>
+                    <tr><td><b>Description:</b></td>                   <td>{{ description }}</td></tr>
+                    <tr><td><b>Snapshot ID:</b></td>              <td>{{ id }}</td></tr>
+                    <tr><td><b>Volume ID:</b></td>              <td><a href="#resources/openstack/undefined/block_storage/volumes/{{volume_id}}">{{ volume_id }}</a></td></tr>
+                    <tr><td><b>Size:</b></td>                   <td>{{ size }}</td></tr>
+                    <tr><td><b>Status:</b></td>                  <td>{{ status }}</td></tr>
+                    <tr><td><b>Created At:</b></td>             <td>{{ created_at }}</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</script>

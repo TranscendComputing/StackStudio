@@ -21,7 +21,7 @@ define([
         // Reference to this collection's model.
         model: Instance,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/compute/instances/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/compute/instances'
     });
     // Create our global collection of **Instances**.
     return InstanceList;

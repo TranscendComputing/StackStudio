@@ -61,6 +61,9 @@
                 <tbody>
                     <tr><td><b>Host:</b></td>                  <td>{{ os_ext_srv_attr_host }}</td></tr>
                     <tr><td><b>State:</b></td>                 <td>{{ state }}</td></tr>
+                    {{#fault}}
+                    <tr class="alert-field"><td><b>Fault:</b></td>           <td>{{ message }}</td></tr>
+                    {{/fault}}
                     <tr><td><b>Launch Time:</b></td>           <td>{{ created }}</td></tr>
                     {{#addresses.private}}
                     <tr><td><b>Private Address:</b></td>           <td>{{ addr }}</td></tr>

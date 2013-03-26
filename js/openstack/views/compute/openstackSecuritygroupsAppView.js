@@ -124,7 +124,7 @@ define([
             var portRange = "";
             if(this.newRuleData.fromPort !== undefined)
             {
-                portRange = this.newRuleData.fromPort == this.newRuleData.toPort ? this.newRuleData.fromPort : (this.newRuleData.fromPort + "-" + this.newRuleData.toPort);
+                portRange = this.newRuleData.fromPort === this.newRuleData.toPort ? this.newRuleData.fromPort : (this.newRuleData.fromPort + "-" + this.newRuleData.toPort);
             }
             $("input#port_range_input").val(portRange);
             $("input#cidr_input").val(this.newRuleData.cidr);
@@ -134,7 +134,7 @@ define([
             var rule = {};
             var ports = $("input#port_range_input").val().split("-");
 
-            if(ports.length == 1)
+            if(ports.length === 1)
             {
                 rule["fromPort"] = ports[0];
                 rule["toPort"] = ports[0];
@@ -142,7 +142,7 @@ define([
                 rule["fromPort"] = ports[0];
                 rule["toPort"] = ports[1];
             }
-            if(this.$("input[name=source]:checked").val() == "cidr")
+            if(this.$("input[name=source]:checked").val() === "cidr")
             {
                 rule["cidr"] = this.$("input#cidr_input").val();
             }else{

@@ -21,24 +21,6 @@ define([
      * @returns {Object} Returns an Instance.
      */
     var Instance = Backbone.Model.extend({
-
-        /** Default attributes for instance */
-        defaults: {
-            id: '',
-            image: {},
-            flavor: {},
-            instance_name: '',
-            addresses: {},
-            name: '',
-            state: '',
-            created: '',
-            udpated: '',
-            tenant_id: '',
-            user_id: '',
-            key_name: '',
-            host: '',
-            instance_id: ''
-        },
         /**
          * [create description]
          * Launches a new Openstack instance
@@ -47,9 +29,8 @@ define([
          * @return {nil}
          */
         create: function(options, credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/compute/instances/create?_method=PUT&cred_id=" + credentialId;
-            console.log(options);
-            this.sendPostAction(url, options);
+            var url = "?cred_id=" + credentialId;
+            this.sendPostAction(url, {instance: options});
         },
         /**
          * [unpause description]
@@ -58,8 +39,8 @@ define([
          * @return {nil}
          */
         unpause: function(credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/compute/instances/unpause?cred_id=" + credentialId;
-            this.sendPostAction(url, this.attributes);
+            var url = "/unpause?cred_id=" + credentialId;
+            this.sendPostAction(url);
         },
         /**
          * [pause description]
@@ -67,9 +48,9 @@ define([
          * @param  {String} credentialId
          * @return {nil}
          */
-        stop: function(credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/compute/instances/pause?cred_id=" + credentialId;
-            this.sendPostAction(url, this.attributes);
+        pause: function(credentialId) {
+            var url = "/pause?cred_id=" + credentialId;
+            this.sendPostAction(url);
         },
         /**
          * [reboot description]
@@ -78,8 +59,8 @@ define([
          * @return {nil}
          */
         reboot: function(credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/compute/instances/reboot?cred_id=" + credentialId;
-            this.sendPostAction(url, this.attributes);
+            var url = "/reboot?cred_id=" + credentialId;
+            this.sendPostAction(url);
         },
         /**
          * [delete description]
@@ -88,8 +69,8 @@ define([
          * @return {nil}
          */
         terminate: function(credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/compute/instances/terminate?_method=DELETE&cred_id=" + credentialId;
-            this.sendPostAction(url, this.attributes);
+            var url = "?_method=DELETE&cred_id=" + credentialId;
+            this.sendPostAction(url);
         },
         /**
          * [disassociateAddress description]
@@ -97,22 +78,9 @@ define([
          * @param  {String} credentialId
          * @return {nil}
          */
-        disassociateAddress: function(credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/compute/addresses/disassociate?cred_id=" + credentialId;
-            var address = {"address": {"public_ip": this.attributes.public_ip_address}};
-            $.ajax({
-                url: url,
-                type: 'POST',
-                contentType: 'application/x-www-form-urlencoded',
-                dataType: 'json',
-                data: JSON.stringify(address),
-                success: function(data) {
-                    Common.vent.trigger("instanceAppRefresh");
-                },
-                error: function(jqXHR) {
-                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
-                }
-            });
+        disassociateAddress: function(address, credentialId) {
+            var url = "/disassociate_address?cred_id=" + credentialId;
+            this.sendPostAction(url, {ip_address: address});
         },
         /**
          * [sendPostAction description]
@@ -121,21 +89,27 @@ define([
          * @param  {Hash} options
          * @return {Hash}
          */
-        sendPostAction: function(url, options) {
-            var instance = {"instance": options};
+        sendPostAction: function(url, options, trigger) {
+            //Set default values for options and trigger if nothing is passed
+            options = typeof options !== 'undefined' ? options : {};
+            trigger = typeof trigger !== 'undefined' ? trigger : "instanceAppRefresh";
             $.ajax({
-                url: url,
+                url: this.url() + url,
                 type: 'POST',
                 contentType: 'application/x-www-form-urlencoded',
                 dataType: 'json',
-                data: JSON.stringify(instance),
+                data: JSON.stringify(options),
                 success: function(data) {
-                    Common.vent.trigger("instanceAppRefresh");
+                    Common.vent.trigger(trigger);
                 },
                 error: function(jqXHR) {
                     Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
                 }
             });
+        },
+
+        sync: function() {
+            return false;
         }
     });
 

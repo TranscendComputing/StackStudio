@@ -21,7 +21,7 @@ define([
         // Reference to this collection's model.
         model: KeyPair,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/compute/key_pairs/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/compute/key_pairs'
     });
     
     return KeyPairList;

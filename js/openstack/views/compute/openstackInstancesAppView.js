@@ -111,6 +111,27 @@ define([
         toggleActions: function(e) {
             this.unloadMonitors();
             //Disable any needed actions
+            var instance = this.collection.get(this.selectedId);
+            var actionsMenu = $("#action_menu").menu("option", "menus");
+            _.each($("#action_menu").find(actionsMenu).find("li"), function(item){
+                var actionItem = $(item);
+                if(actionItem.text() === "Disassociate Address")
+                {
+                    this.toggleActionItem(actionItem, (instance.get("addresses").private && instance.get("addresses").private.length < 2));
+                }
+                if(actionItem.text() === "Terminate")
+                {
+                    //TODO: Disable terminate under certain conditions   
+                }
+                if(actionItem.text() === "Start")
+                {
+                    this.toggleActionItem(actionItem, instance.get("state") !== "PAUSED");
+                }
+                if(actionItem.text() === "Stop" || actionItem.text() === "Reboot")
+                {
+                    this.toggleActionItem(actionItem, instance.get("state") !== "ACTIVE");
+                }
+            }, this);
         },
         /**
          * [performAction description]
@@ -120,7 +141,6 @@ define([
          */
         performAction: function(event) {
             var instance = this.collection.get(this.selectedId);
-            
             switch(event.target.text)
             {
             case "Start":
@@ -136,7 +156,8 @@ define([
                 instance.terminate(this.credentialId);
                 break;
             case "Disassociate Address":
-                instance.disassociateAddress(this.credentialId);
+                var address = instance.get("addresses").private[1].addr;
+                instance.disassociateAddress(address, this.credentialId);
                 break;
             }
         },

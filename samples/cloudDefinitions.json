@@ -185,12 +185,34 @@
                         "type": "instances"
                     },
                     {
+                        "name": "Elastic IPs",
+                        "type": "elasticips"
+                    },
+                    {
                         "name": "Security Groups",
                         "type": "securitygroups"
+                    },
+                    {
+                        "name": "Key Pairs",
+                        "type": "keypairs"
                     }
                 ]
-                
-            }   
+            },
+            {
+                "name": "Elastic Block Storage",
+                "type": "block_storage",
+                "defaultSubtype": "volumes",
+                "subServices" : [
+                    {
+                        "name": "Volumes",
+                        "type": "volumes"
+                    },
+                    {
+                        "name": "Snapshots",
+                        "type": "snapshots"
+                    }
+                ]
+            }
         ],
         "regions": []
     },
