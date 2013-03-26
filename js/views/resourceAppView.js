@@ -39,6 +39,8 @@ define([
 
         CreateView: undefined,
 
+        selectedTabIndex: undefined,
+
         tagName: 'div',
 
         render: function() {
@@ -115,12 +117,18 @@ define([
             });
 
             if(selectedModel) {
+
                 this.selectedId = id;
                 $("#action_menu li").removeClass("ui-state-disabled");
                 var template = this.cloudProvider + "_resource_detail";
                 if (ich.templates.resource_detail) {
                     $("#details").html(ich.resource_detail(selectedModel.attributes));
-                    $("#detail_tabs").tabs();
+                    var resourceApp = this;
+                    $("#detail_tabs").tabs({
+                        select: function(event, ui) {
+                            resourceApp.selectedTabIndex = ui.index
+                        }
+                    });
                     $('.create_button').button();
                 }
                 this.toggleActions();
