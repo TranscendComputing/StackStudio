@@ -7,10 +7,11 @@
 /*global define:true console:true */
 define([
         'jquery',
+        'underscore',
         'backbone',
         'common',
         '/js/openstack/models/compute/openstackSecurityGroupRule.js'
-], function( $, Backbone, Common ) {
+], function( $, _, Backbone, Common ) {
     'use strict';   
 
     Backbone.emulateHTTP = true;
@@ -38,7 +39,7 @@ define([
                 rule.source = $.isEmptyObject(rule.group) ? rule.ip_range.cidr : rule.group.name;
                 // If from_ and to_ ports are same, set port = to from_port
                 // Otherwise, set port to range
-                rule.port = (rule.from_port == rule.to_port) ? rule.from_port : rule.from_port + "-" + rule.to_port;
+                rule.port = (rule.from_port === rule.to_port) ? rule.from_port : rule.from_port + "-" + rule.to_port;
                 rule.action = '<a class="delete_rule" href="">Delete</a>';
             });
             return data;

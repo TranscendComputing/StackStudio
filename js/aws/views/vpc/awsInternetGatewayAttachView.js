@@ -77,7 +77,7 @@ define([
             var options = {};
             var issue = false;
 
-            if($("#vpc_select").val() != null && $("#vpc_select").val() != "") {
+            if($("#vpc_select").val() != null && $("#vpc_select").val() !== "") {
                 options.vpc_id = $("#vpc_select").val();
             }
 

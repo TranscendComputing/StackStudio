@@ -72,11 +72,6 @@ define([
                     }
                 }
             });
-            $("#volume_type_select").selectmenu({
-                change: function() {
-                    createView.volumeTypeChange();
-                }
-            });
             this.volumeTypeChange();
             $("#az_select").selectmenu();
             $("#snapshot_select").selectmenu();
@@ -110,14 +105,6 @@ define([
             });
             $("#snapshot_select").selectmenu();
         },
-
-		volumeTypeChange: function() {
-            if($("#volume_type_select").val() === "standard") {
-		        $("#volume_iops").addClass("ui-state-disabled");
-		    }else {
-		        $("#volume_iops").removeClass();
-		    }
-		},
 		
 		create: function() {
             var issue = false,
@@ -127,7 +114,7 @@ define([
             //Validate before create
             
             if($("#volume_size_input").val() !== "") {
-                var sizeInt = parseInt($("#volume_size_input").val());
+                var sizeInt = parseInt($("#volume_size_input").val(), 10);
                 if(sizeInt > 0 && sizeInt < 1001) {
                     size = sizeInt;
                 }else {

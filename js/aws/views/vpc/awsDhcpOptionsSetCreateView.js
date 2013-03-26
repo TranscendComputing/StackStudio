@@ -65,19 +65,19 @@ define([
             var dhcpOption = this.dhcpOption;
             var options = {};
             options.dhcp_configuration_set = {};
-            if($("#domain_name_input").val() != "") {
+            if($("#domain_name_input").val() !== "") {
                 options.dhcp_configuration_set["domain-name"] = $("#domain_name_input").val();
             }
-            if($("#domain_name_servers_input").val() != "") {
+            if($("#domain_name_servers_input").val() !== "") {
                 options.dhcp_configuration_set["domain-name-servers"] = $("#domain_name_servers_input").val();
             }
-            if($("#ntp_servers_input").val() != "") {
+            if($("#ntp_servers_input").val() !== "") {
                 options.dhcp_configuration_set["ntp-servers"] = $("#ntp_servers_input").val();
             }
-            if($("#netbios_name_servers_input").val() != "") {
+            if($("#netbios_name_servers_input").val() !== "") {
                 options.dhcp_configuration_set["netbios-name-servers"] = $("#netbios_name_servers_input").val();
             }
-            if($("#netbios_node_type_input").val() != "") {
+            if($("#netbios_node_type_input").val() !== "") {
                 options.dhcp_configuration_set["netbios-node-type"] = $("#netbios_node_type_input").val();
             }
 

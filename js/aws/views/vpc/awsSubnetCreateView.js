@@ -94,17 +94,17 @@ define([
             var issue = false;
 
 			//Validate and create
-            if($("#vpc_select").val != null && $("#vpc_select").val() != "") {
+            if($("#vpc_select").val !== null && $("#vpc_select").val() !== "") {
                 options.vpc_id = $("#vpc_select").val();
             }else {
                 issue = true;
             }
 
-            if($("#zone_select").val() != null && $("#zone_select").val() != "") {
+            if($("#zone_select").val() !== null && $("#zone_select").val() !== "") {
                 options.availability_zone = $("#zone_select").val();
             }
 
-            if($("#cidr_block_input").val() != "") {
+            if($("#cidr_block_input").val() !== "") {
                 options.cidr_block = $("#cidr_block_input").val();
             }else {
                 issue = true;

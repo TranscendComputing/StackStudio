@@ -34,7 +34,7 @@ define([
         parse: function(data) {
             // Some volumes are returned with empty objects as attachments,
             // remove those here in order to display correctly
-            if(data.attachments.length == 1)
+            if(data.attachments.length === 1)
             {
                 if($.isEmptyObject( data.attachments[0] ))
                 {

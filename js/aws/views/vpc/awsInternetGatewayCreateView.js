@@ -12,8 +12,7 @@ define([
         'views/dialogView',
         'text!templates/aws/vpc/awsInternetGatewayCreateTemplate.html',
         '/js/aws/models/vpc/awsInternetGateway.js',
-        'common',
-        
+        'common'
 ], function( $, _, Backbone, DialogView, internetGatewayCreateTemplate, InternetGateway, Common ) {
 	
 	var InternetGatewayCreateView = DialogView.extend({
