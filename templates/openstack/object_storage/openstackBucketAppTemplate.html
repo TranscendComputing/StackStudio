@@ -1,0 +1,78 @@
+<div>
+    <div class="button_bar">
+        <table>
+            <tr>
+                <td>
+                    <button class="create_button">Create Bucket</button>
+                </td>
+                <td>                    
+                    <ul id="action_menu">
+                        <li style="z-index: 1000">
+                            <a id="action_button">Actions</a>
+                            <ul>
+                                <li><a>Delete</a></li>                
+                            </ul>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table id="resource_table" class="full_width">
+        <thead>
+            <tr>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <div id="details" class="detail_panel"></div>
+</div>
+
+<script type="text/html" id="resource_detail">
+    <div id="detail_tabs">
+        <ul>
+            <li id="properties"><a href="#properties_tab">Details</a></li>
+            <li id="objects"><a href="#object_tab">Objects</a></li>
+        </ul>
+        <div id="properties_tab" class="tab">
+            <table>
+                <tbody>
+                    <tr><td><b>Name:</b></td>                   <td>{{ key }}</td></tr>
+                    <tr><td><b>Size:</b></td>          <td>{{ size }}</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="object_tab" class="tab">
+            <table>
+                <tr>
+                    <td><button id='object_refresh_button'>Refresh Object</button></td>
+                    <td><button id='object_upload_button'>Upload Object</button></td>
+                    <td>
+                        <ul id='object_action_menu'>
+                            <li style='z-index: 1000'><a id='action_button'>Actions</a>
+                                <ul>
+                                    <li><a>Delete</a></li>
+                                    <li><a>Download</a></li>
+                                </ul></li>
+                        </ul>
+                    </td>
+                </tr>
+             </table>
+             <table id='object_table' class='full_width'>
+             </table>
+        </div>
+    </div>
+</script>
+
+ <script type="text/html" id="file_template">
+<form id='file_form' style='visibility:hidden' method='post' action='{{actionUrl}}'>
+    {{#download}}
+    <input id='download_file_name' name='file' value=''/>
+    {{/download}}
+    {{^download}}
+    <input id='file_dialog' name='file_upload' type='file'>
+    {{/download}}
+</form>
+</script>
+

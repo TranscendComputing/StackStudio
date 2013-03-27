@@ -212,6 +212,11 @@
                         "type": "snapshots"
                     }
                 ]
+            },
+            {
+                "name": "Simple Storage",
+                "type": "object_storage",
+                "defaultSubtype": "buckets"
             }
         ],
         "regions": []
