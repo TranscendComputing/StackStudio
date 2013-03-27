@@ -23,7 +23,7 @@ define([
 
     var CloudCredentialManagementView = Backbone.View.extend({
         /** @type {String} DOM element to attach view to */
-        el: "#submanagement_app",
+        tagName: 'div',
         /** @type {Collection} Database collection of cloud accounts */
         cloudCredentials: new CloudCredentials(),
         /** @type {Template} HTML template to generate view from */
@@ -61,6 +61,7 @@ define([
         render: function () {
             //Render my template
             this.$el.html(this.template);
+            $("#submanagement_app").html(this.$el);
             $("div#detail_tabs").tabs();
             $("button").button({
                 disabled: true
@@ -80,7 +81,6 @@ define([
         },
 
         addOne: function(model) {
-            console.log("CloudCred: " + model.attributes.name);
             $("#credential_list").prepend("<li class='list_item' id='"+model.attributes.name+"'>"+model.attributes.name+"</li>");
             this.selectedCloudCredential = model;
         },
@@ -165,16 +165,7 @@ define([
         },
 
         close: function(){
-            this.$el.empty();
-            this.undelegateEvents();
-            this.stopListening();
-            this.unbind();
-            // handle other unbinding needs, here
-            _.each(this.subViews, function(childView){
-              if (childView.close){
-                childView.close();
-              }
-            });
+            this.$el.remove();
         }        
     });
 

@@ -12,10 +12,11 @@ define([
         'common',
         'text!templates/account/managementTemplate.html',
         'views/account/cloudAccountManagementView',
-        'views/account/cloudCredentialManagementView',        
+        'views/account/cloudCredentialManagementView',
+        'views/account/usersManagementView',     
         'jquery-plugins',
         'jquery-ui-plugins'
-], function( $, _, Backbone, Common, managementTemplate, CloudAccountManagementView, CloudCredentialManagementView ) {
+], function( $, _, Backbone, Common, managementTemplate, CloudAccountManagementView, CloudCredentialManagementView, UsersManagementView ) {
 
     var AccountManagementView = Backbone.View.extend({
         /** @type {String} DOM element to attach view to */
@@ -84,6 +85,17 @@ define([
                         accountManagementView.subApp.close();
                     }
                     accountManagementView.subApp = new CloudCredentialManagementView();
+                }
+                break;
+            case "users":
+                if(accountManagementView.subApp instanceof UsersManagementView)
+                {
+                    //do nothing
+                }else{
+                    if(accountManagementView.subApp !== undefined){
+                        accountManagementView.subApp.close();
+                    }
+                    accountManagementView.subApp = new UsersManagementView();
                 }
                 break;
         }
