@@ -13,7 +13,7 @@ define([
         'models/account',
         'text!templates/account/stackplaceLoginTemplate.html',
         'text!templates/account/stackstudioLoginTemplate.html',
-        'views/newLoginView',
+        'views/account/newLoginView',
         'common'      
 ], function( $, _, Backbone, DialogView, Account, stackplaceLoginTemplate, stackstudioLoginTemplate, NewLoginView, Common ) {
     

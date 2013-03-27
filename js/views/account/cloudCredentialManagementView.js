@@ -15,7 +15,7 @@ define([
         'models/cloudCredential',
         'collections/cloudAccounts',
         'collections/cloudCredentials',        
-        'views/cloudCredentialFormView',
+        'views/account/cloudCredentialFormView',
         'views/notificationDialogView',
         'jquery-plugins',
         'jquery-ui-plugins'

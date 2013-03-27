@@ -11,8 +11,8 @@ define([
         'backbone',
         'common',
         'text!templates/account/managementTemplate.html',
-        'views/cloudAccountManagementView',
-        'views/cloudCredentialManagementView',        
+        'views/account/cloudAccountManagementView',
+        'views/account/cloudCredentialManagementView',        
         'jquery-plugins',
         'jquery-ui-plugins'
 ], function( $, _, Backbone, Common, managementTemplate, CloudAccountManagementView, CloudCredentialManagementView ) {

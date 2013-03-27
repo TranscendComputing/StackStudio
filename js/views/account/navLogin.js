@@ -10,7 +10,7 @@ define([
         'underscore',
         'backbone',
         'common',
-        'views/accountLoginView',
+        'views/account/accountLoginView',
         'jquery-ui'
 ], function( $, _, Backbone, Common, AccountLoginView ) {
     'use strict';

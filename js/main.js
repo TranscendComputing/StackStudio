@@ -13,16 +13,15 @@ if (DEBUG) {
 
 require(['./common'], function (common) {
     require([
-            'views/navLogin',
+            'views/account/navLogin',
             'views/projectSidebarView',
-            'views/accountManagementView',
+            'views/account/accountManagementView',
             'views/projectAppView',
              // 'views/projectNavigationSidebarView',
              'views/projectResourceSidebarView',
              // 'views/projectListItemView',
              'views/projectEditView',
              'views/resourceNavigationView',
-             'views/cloudCredentialView',
              'views/dashboardView'
             ], function(NavLogin) {
         
