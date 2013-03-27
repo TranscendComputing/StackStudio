@@ -113,11 +113,7 @@ define([
                 $(rowNode).addClass('row_selected');
             }
 
-            this.collection.each(function(e) {
-                if (e.get(modelStringIdentifier) === id) {
-                    selectedModel = e;
-                }
-            });
+            selectedModel = this.collection.get(id);
 
             if(selectedModel) {
 
