@@ -338,6 +338,7 @@ define([
                         }else {
                             resourceNav.resourceApp.region = undefined;
                         }
+                        resourceNav.refreshPath();
                         resourceNav.resourceApp.render();
                         return;
                     }
@@ -382,12 +383,12 @@ define([
                 this.unloadPreviousState();
                 resourcesView = new ResourcesView();
                 this.setPreviousState(resourcesView);
+                resourcesView.cloudProvider = cloud;
+                resourcesView.selectedRegion = region;
+                resourcesView.type = type;
+                resourcesView.subtype = subtype;
+                resourcesView.resourceId = id;
             }
-            resourcesView.cloudProvider = cloud;
-            resourcesView.selectedRegion = region;
-            resourcesView.type = type;
-            resourcesView.subtype = subtype;
-            resourcesView.resourceId = id;
             resourcesView.render();
         }else {
             Common.router.navigate("", {trigger: true});
