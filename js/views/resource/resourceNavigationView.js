@@ -326,10 +326,6 @@ define([
                 var capSubtype = this.subtype.charAt(0).toUpperCase() + this.subtype.slice(1);
                 var appPath = "../"+this.cloudProvider+"/views/"+this.type+"/"+this.cloudProvider+capSubtype+"AppView";
 
-                if(resourceNav.resourceApp)
-                {
-                    resourceNav.resourceApp.close();
-                }
                 require([appPath], function (AppView) {
                     if (resourceNav.resourceApp instanceof AppView) {
                         resourceNav.resourceApp.credentialId = resourceNav.selectedCredential;
@@ -338,7 +334,6 @@ define([
                         }else {
                             resourceNav.resourceApp.region = undefined;
                         }
-                        resourceNav.refreshPath();
                         resourceNav.resourceApp.render();
                         return;
                     }
@@ -383,12 +378,12 @@ define([
                 this.unloadPreviousState();
                 resourcesView = new ResourcesView();
                 this.setPreviousState(resourcesView);
-                resourcesView.cloudProvider = cloud;
-                resourcesView.selectedRegion = region;
-                resourcesView.type = type;
-                resourcesView.subtype = subtype;
-                resourcesView.resourceId = id;
             }
+            resourcesView.cloudProvider = cloud;
+            resourcesView.selectedRegion = region;
+            resourcesView.type = type;
+            resourcesView.subtype = subtype;
+            resourcesView.resourceId = id;
             resourcesView.render();
         }else {
             Common.router.navigate("", {trigger: true});

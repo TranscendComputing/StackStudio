@@ -64,14 +64,30 @@ define([
             this.collection.on( 'reset', this.addAll, this );
             $("#action_menu li").addClass("ui-state-disabled");
 
-            if(this.credentialId && this.region) {
-                this.collection.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }) });
-            }else if(this.credentialId) {
-                this.collection.fetch({ data: $.param({ cred_id: this.credentialId }) });
+            var view = this;
+            // Fetch error callback function is defined here to 
+            // ensure variable scopes
+            var fetchErrorFunction = function(collection, response, options) {
+                view.$table.fnProcessingIndicator(false);
+                Common.errorDialog("Connection Error", "Unable to connect to server to fetch resources.");
+            };
+            
+            if(view.credentialId && view.region) {
+                view.collection.fetch({ 
+                    error: fetchErrorFunction,
+                    data: $.param({ cred_id: view.credentialId, region: view.region }) 
+                });
+            }else if(view.credentialId) {
+                view.collection.fetch({  
+                    error: fetchErrorFunction,
+                    data: $.param({ cred_id: view.credentialId }) 
+                });
             }else {
-                this.collection.fetch();
+                view.collection.fetch({ 
+                    error: fetchErrorFunction
+                });
             }
-            this.setResourceAppHeightify();
+            view.setResourceAppHeightify();
         },
 
         addOne: function( model ) {
@@ -125,7 +141,7 @@ define([
                     var resourceApp = this;
                     $("#detail_tabs").tabs({
                         select: function(event, ui) {
-                            resourceApp.selectedTabIndex = ui.index
+                            resourceApp.selectedTabIndex = ui.index;
                         }
                     });
                     $('.create_button').button();
