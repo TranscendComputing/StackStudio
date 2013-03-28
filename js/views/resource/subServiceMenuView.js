@@ -93,10 +93,6 @@ define([
             $("#resource_app").width("1079px");
             $("#menu_toggle_button a span").removeClass("ui-icon-arrowthick-1-w");
             $("#menu_toggle_button a span").addClass("ui-icon-arrowthick-1-e");
-        },
-        
-        selectSubType: function() {
-            
         }
     });
     
