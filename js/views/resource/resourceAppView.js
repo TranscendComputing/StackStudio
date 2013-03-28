@@ -11,7 +11,7 @@ define([
         'backbone',
         'icanhaz',
         'common',
-        'views/resourceRowView',
+        'views/resource/resourceRowView',
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator',
         'wijmo'

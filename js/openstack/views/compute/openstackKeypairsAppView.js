@@ -9,7 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'views/resourceAppView',
+        'views/resource/resourceAppView',
         'text!templates/openstack/compute/openstackKeyPairAppTemplate.html',
         '/js/openstack/models/compute/openstackKeyPair.js',
         '/js/openstack/collections/compute/openstackKeyPairs.js',

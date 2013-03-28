@@ -9,7 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'views/resourceAppView',
+        'views/resource/resourceAppView',
         'text!templates/openstack/compute/openstackSecurityGroupAppTemplate.html',
         '/js/openstack/models/compute/openstackSecurityGroup.js',
         '/js/openstack/models/compute/openstackSecurityGroupRule.js',

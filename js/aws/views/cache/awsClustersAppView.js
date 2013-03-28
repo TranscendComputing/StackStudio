@@ -10,7 +10,7 @@ define([
         'underscore',
         'backbone',
         'views/featureNotImplementedView',
-        'views/resourceAppView',
+        'views/resource/resourceAppView',
         'icanhaz',
         'common',
         'jquery.dataTables'

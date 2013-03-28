@@ -10,7 +10,7 @@ define([
         'underscore',
         'backbone',
         'views/featureNotImplementedView',
-        'views/resourceAppView',
+        'views/resource/resourceAppView',
         'text!templates/aws/vpc/awsRouteTableAppTemplate.html',
         '/js/aws/models/vpc/awsRouteTable.js',
         '/js/aws/collections/vpc/awsRouteTables.js',

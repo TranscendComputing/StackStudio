@@ -9,7 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'views/resourceAppView',
+        'views/resource/resourceAppView',
         'text!templates/openstack/compute/openstackInstanceAppTemplate.html',
         '/js/openstack/models/compute/openstackInstance.js',
         '/js/openstack/collections/compute/openstackInstances.js',

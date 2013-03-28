@@ -10,7 +10,7 @@ define([
         'underscore',
         'backbone',
         'views/featureNotImplementedView',
-        'views/resourceAppView',
+        'views/resource/resourceAppView',
         'text!templates/aws/rds/awsRelationalDatabaseAppTemplate.html',
         '/js/aws/models/rds/awsRelationalDatabase.js',
         '/js/aws/collections/rds/awsRelationalDatabases.js',

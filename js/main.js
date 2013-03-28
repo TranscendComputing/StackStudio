@@ -21,7 +21,7 @@ require(['./common'], function (common) {
              'views/projectResourceSidebarView',
              // 'views/projectListItemView',
              'views/projectEditView',
-             'views/resourceNavigationView',
+             'views/resource/resourceNavigationView',
              'views/dashboardView'
             ], function(NavLogin) {
         

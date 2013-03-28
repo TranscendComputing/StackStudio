@@ -9,7 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'views/resourceAppView',
+        'views/resource/resourceAppView',
         'text!templates/openstack/compute/openstackElasticIPAppTemplate.html',
         '/js/openstack/models/compute/openstackElasticIP.js',
         '/js/openstack/collections/compute/openstackElasticIPs.js',

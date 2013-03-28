@@ -9,7 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'views/resourceAppView',
+        'views/resource/resourceAppView',
         'text!templates/aws/compute/awsSpotInstanceAppTemplate.html',
         '/js/aws/models/compute/awsSpotInstanceRequest.js',
         '/js/aws/collections/compute/awsSpotInstanceRequests.js',

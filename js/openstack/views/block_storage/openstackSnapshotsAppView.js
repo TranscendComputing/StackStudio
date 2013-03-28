@@ -9,7 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'views/resourceAppView',
+        'views/resource/resourceAppView',
         'text!templates/openstack/block_storage/openstackSnapshotAppTemplate.html',
         '/js/openstack/models/block_storage/openstackSnapshot.js',
         '/js/openstack/collections/block_storage/openstackSnapshots.js',

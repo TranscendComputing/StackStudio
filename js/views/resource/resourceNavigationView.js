@@ -15,7 +15,7 @@ define([
         'text!templates/resources/breadcrumb.html',
         'models/cloudCredential',
         'collections/cloudCredentials',
-        'views/subServiceMenuView',
+        'views/resource/subServiceMenuView',
         'jquery-plugins',
         'jquery-ui-plugins'
 ], function( $, _, Backbone, ich, Common, resourcesTemplate, breadcrumbTemplate,

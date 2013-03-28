@@ -9,7 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'views/resourceAppView',
+        'views/resource/resourceAppView',
         'text!templates/openstack/block_storage/openstackVolumeAppTemplate.html',
         '/js/openstack/models/block_storage/openstackVolume.js',
         '/js/openstack/collections/block_storage/openstackVolumes.js',

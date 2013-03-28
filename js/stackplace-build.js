@@ -14,7 +14,7 @@
               'views/projectAppView',
               'views/projectResourceSidebarView',
               'views/projectEditView',
-              'views/resourceNavigationView',
+              'views/resource/resourceNavigationView',
               ],
     excludeShallow: ['jquery.jstree'], // doesn't play well minified.
     mainConfigFile: 'common.js',

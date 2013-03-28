@@ -9,7 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'views/resourceAppView',
+        'views/resource/resourceAppView',
         'text!templates/aws/compute/awsKeyPairAppTemplate.html',
         '/js/aws/models/compute/awsKeyPair.js',
         '/js/aws/collections/compute/awsKeyPairs.js',

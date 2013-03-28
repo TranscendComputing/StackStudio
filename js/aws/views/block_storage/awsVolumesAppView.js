@@ -9,7 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'views/resourceAppView',
+        'views/resource/resourceAppView',
         'text!templates/aws/block_storage/awsVolumeAppTemplate.html',
         '/js/aws/models/block_storage/awsVolume.js',
         '/js/aws/collections/block_storage/awsVolumes.js',
