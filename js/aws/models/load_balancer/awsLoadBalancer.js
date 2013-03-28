@@ -31,7 +31,7 @@ define([
         },
 
         get: function(attr) {
-            if(typeof this[attr] == 'function') {
+            if(typeof this[attr] === 'function') {
                 var attribute = this[attr]();
                 return attribute;
             }

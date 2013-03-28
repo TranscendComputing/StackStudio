@@ -99,8 +99,8 @@ define([
                 loadBalancerApp.refreshListenersTab();
             });
             this.listeners.on( 'reset', this.addAllListeners, this );
-            this.healthyHostCountData.on( 'reset', function() {this.addMonitorGraph("#healthy_host_count", this.healthyHostCountData, ["Average"], ["Healthy Host Count"], ["#FF8000"])}, this );
-            this.unhealthyHostCountData.on( 'reset', function() {this.addMonitorGraph("#unhealthy_host_count", this.unhealthyHostCountData, ["Average"], ["Unhealthy Host Count"], ["#00CC00"])}, this );
+            this.healthyHostCountData.on( 'reset', function() {this.addMonitorGraph("#healthy_host_count", this.healthyHostCountData, ["Average"], ["Healthy Host Count"], ["#FF8000"]);}, this );
+            this.unhealthyHostCountData.on( 'reset', function() {this.addMonitorGraph("#unhealthy_host_count", this.unhealthyHostCountData, ["Average"], ["Unhealthy Host Count"], ["#00CC00"]);}, this );
         },
 
         toggleActions: function(e) {
@@ -244,12 +244,12 @@ define([
         },
 
         saveListener: function() {
-            var lbPortInt = parseInt($("#lb_port_input").val());
-            var instancePortInt = parseInt($("#instance_port_input").val());
+            var lbPortInt = parseInt($("#lb_port_input").val(), 10);
+            var instancePortInt = parseInt($("#instance_port_input").val(), 10);
             if(lbPortInt > 0 && instancePortInt > 0 ) {
                 var listenerFound = false;
                 this.listeners.each(function(listener) {
-                    if(lbPortInt == listener.attributes.lb_port) {
+                    if(lbPortInt === listener.attributes.lb_port) {
                         listenerFound = true;
                     }
                 });
@@ -257,7 +257,7 @@ define([
                     Common.errorDialog("Invalid Request", "You cannot have duplicate load balancer ports.");
                 }else {
                     var loadBalancer = this.collection.get(this.selectedId);
-                    var listeners = [{"Protocol": $("#lb_protocol_select").val(), "LoadBalancerPort": $("#lb_port_input").val(), "InstanceProtocol": $("#instance_protocol_select").val(), "InstancePort": $("#instance_port_input").val()}]
+                    var listeners = [{"Protocol": $("#lb_protocol_select").val(), "LoadBalancerPort": $("#lb_port_input").val(), "InstanceProtocol": $("#instance_protocol_select").val(), "InstancePort": $("#instance_port_input").val()}];
                     loadBalancer.createListeners(listeners, this.credentialId, this.region);
                 }
             }else {
@@ -327,7 +327,7 @@ define([
                 statistic: "Average",
                 dimension_name: "LoadBalancerName",
                 dimension_value: this.selectedId
-            }
+            };
             
             metricStatisticOptions.metric_name = "HealthyHostCount";
             this.healthyHostCountData.fetch({ data: $.param(metricStatisticOptions) });
@@ -350,7 +350,7 @@ define([
             }else {
                 $(element).html(this.emptyGraphTemplate);
             }
-        },
+        }
     });
     
     return AwsLoadBalancersAppView;

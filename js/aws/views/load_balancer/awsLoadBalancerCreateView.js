@@ -106,13 +106,13 @@ define([
         },
 
         saveListener: function() {
-            var lbPortInt = parseInt($("#lb_port_input").val());
-            var instancePortInt = parseInt($("#instance_port_input").val());
+            var lbPortInt = parseInt($("#lb_port_input").val(), 10);
+            var instancePortInt = parseInt($("#instance_port_input").val(), 10);
             if(lbPortInt > 0 && instancePortInt > 0) {
                 var listenersArray = $("#listeners_table").dataTable().fnGetData();
                 var lbPortFound = false;
                 $.each(listenersArray, function(index, value) {
-                    if(value[1] == lbPortInt) {
+                    if(value[1] === lbPortInt) {
                         lbPortFound = true;
                     }
                 });
@@ -156,7 +156,7 @@ define([
             var options = {};
             var issue = false;
 
-            if($("#lb_name_input").val() != "") {
+            if($("#lb_name_input").val() !== "") {
                 options.id = $("#lb_name_input").val();
             }else {
                 issue = true;
