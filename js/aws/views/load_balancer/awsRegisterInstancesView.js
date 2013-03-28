@@ -74,7 +74,7 @@ define([
         render: function() {
             $("#zone_distribution_content").empty();
             $.each(this.zonesDistribution, function(index, value) {
-                $("#zone_distribution_content").append("<span>" + value + " instances in " + index + "</span><br />")
+                $("#zone_distribution_content").append("<span>" + value + " instances in " + index + "</span><br />");
             });
         },
         
@@ -83,7 +83,7 @@ define([
             this.instances.each(function(instance) {
                 var alreadyRegistered = false;
                 $.each(registerView.loadBalancer.attributes.instances, function(index, value) {
-                    if(value == instance.attributes.id) {
+                    if(value === instance.attributes.id) {
                         alreadyRegistered = true;
                     }
                 });
@@ -91,7 +91,10 @@ define([
                     registerView.addToZoneDistribtuion(instance);
                 }else {
                     var instanceName = "";
-                    if(instance.attributes.tags.Name) { instanceName = instance.attributes.tags.Name }
+                    if(instance.attributes.tags.Name) 
+                    { 
+                        instanceName = instance.attributes.tags.Name;
+                    }
                     var rowData = [instance.attributes.id, instanceName, instance.attributes.availability_zone, instance.attributes.state];
                     $('#register_instance_table').dataTable().fnAddData(rowData);
                 }
@@ -111,7 +114,8 @@ define([
             $("#register_instance_table tr").removeClass("row_selected");
             if(this.selectedInstance) {
                 this.zonesDistribution[this.selectedInstance.attributes.availability_zone]--;
-                if(this.zonesDistribution[this.selectedInstance.attributes.availability_zone] == 0) {
+                if(this.zonesDistribution[this.selectedInstance.attributes.availability_zone] === 0) 
+                {
                     delete this.zonesDistribution[this.selectedInstance.attributes.availability_zone];
                 }
             }

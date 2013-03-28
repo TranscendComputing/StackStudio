@@ -103,12 +103,12 @@ module.exports = function(grunt) {
     },
     selenium: {
         options: {
-            startURL: 'http://localhost:9001',
+            startURL: 'http://devessex.essex.momentumsoftware.com:9000/',
             browsers: ['firefox']
         },
         suite: {
             files: {
-                'example': ['test/*.suite']
+                'StackStudio': ['test/*.suite']
             }
         }
     },

@@ -61,7 +61,7 @@ define([
         },
 
         render: function() {
-            var assignedAzCount = $("input.zone:checked").length
+            var assignedAzCount = $("input.zone:checked").length;
             if(assignedAzCount > 1) {
                 $("input.zone:checked").removeAttr("disabled");
             }else {
@@ -74,7 +74,7 @@ define([
             this.availabilityZones.each(function(az) {
                 var azFound = false;
                 $.each(manageView.loadBalancer.attributes.availability_zones, function(index, value) {
-                    if(value == az.attributes.zoneName) {
+                    if(value === az.attributes.zoneName) {
                         azFound = true;
                     }
                 });
@@ -88,11 +88,12 @@ define([
         },
 
         save: function() {
-            var options = {};
-            var enabledAvailabilityZones = [];
-            var disableAvailabilityZones = [];
-            checkedZones = $("input.zone:checked");
-            uncheckedZones = $("input.zone:not(:checked)");
+            var options = {},
+                enabledAvailabilityZones = [],
+                disableAvailabilityZones = [],
+                checkedZones = $("input.zone:checked"),
+                uncheckedZones = $("input.zone:not(:checked)");
+                
             $.each(checkedZones, function(index, value) {
                 enabledAvailabilityZones.push(value.id);
             });
