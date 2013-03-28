@@ -217,6 +217,25 @@
                 "name": "Simple Storage",
                 "type": "object_storage",
                 "defaultSubtype": "buckets"
+            },
+            {
+                "name": "Identity",
+                "type": "identity",
+                "defaultSubtype": "users",
+                "subServices" : [
+                    {
+                        "name": "Users",
+                        "type": "users"
+                    },
+                    {
+                        "name": "Tenants",
+                        "type": "tenants"
+                    },
+                    {
+                        "name": "Roles",
+                        "type": "roles"
+                    }
+                ]
             }
         ],
         "regions": []

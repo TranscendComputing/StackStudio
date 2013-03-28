@@ -1,0 +1,18 @@
+<div id="user_create_template">
+    <form>
+        <fieldset>
+            <p><label class="small-tabbed-left-field" for="name">User Name:</label><input id="username_input" type="text" class="textbox-250 required" value="{{name}}"/></p>
+            <p><label class="small-tabbed-left-field" for="email">Email:</label><input id="email_input" type="text" class="textbox-250 required" value="{{email}}"></p>
+            <p><label class="small-tabbed-left-field" for="password">Password:</label><input id="password_input" type="password" class="textbox-250 required"/></p>
+            <p><label class="small-tabbed-left-field" for="passwordConfirmation">Password Confirmation:</label><input id="password_confirm_input" type="password" class="textbox-250 required"></p>
+            <p><label class="small-tabbed-left-field" for="tenantId">Primary Project:</label>
+                <select id="tenant_select" style="width:250px;">
+                        <option data-id="default">Select a project</option>
+                        {{#tenants}}
+                        <option data-id="{{id}}">{{name}}</option>
+                        {{/tenants}}
+                </select>
+            </p>
+        </fieldset>
+    </form>
+</div>
