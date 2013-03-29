@@ -47,18 +47,15 @@ define([
             }, this);
             if(requiredError)
             {
-                this.validationError = requiredError + " must not be blank.";
-                return requiredError;
+                return  requiredError + " must not be blank.";
             }
 
             if(attrs.tenant_id === null || attrs.tenant_id === "" || attrs.tenant_id === undefined)
             {
-                this.validationError = "Must select a Primary Project.";
                 return "Must select a Primary Project.";
             }
 
             if (attrs.password !== attrs.passwordConfirmation) {
-                this.validationError = "Password and Password Confirmation do not match.";
                 return "Password and Password Confirmation do not match.";
             }
 
@@ -67,7 +64,6 @@ define([
             var dotpos=attrs.email.lastIndexOf(".");
             if (atpos<1 || dotpos<atpos+2 || dotpos+2>=attrs.email.length)
             {
-                this.validationError = "Not a valid e-mail address";
                 return "Not a valid e-mail address";
             }
 

@@ -44,7 +44,7 @@ define([
             this.tenants.on("reset", function(){
                 this.renderView();
             }, this);
-            this.tenants.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region}) });
+            this.tenants.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region}), reset: true });
         },
         
         renderView: function() {

@@ -49,7 +49,8 @@ define([
              */
             this.collection.fetch({ 
                 data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id}),
-                success: _.bind(this.renderAccountAttributes, this)
+                success: _.bind(this.renderAccountAttributes, this),
+                reset: true
 
             });
             //Render my own view

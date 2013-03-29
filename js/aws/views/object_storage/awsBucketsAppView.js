@@ -178,7 +178,7 @@ define([
             $("#object_action_menu li").addClass("ui-state-disabled");
             this.files = new Files();
             this.files.on( 'reset', this.addAllFiles, this );
-            this.files.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region, directory: this.selectedId}) });
+            this.files.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region, directory: this.selectedId}), reset: true });
         },
         
         openFileDialog: function() {

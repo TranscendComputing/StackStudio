@@ -79,7 +79,7 @@ define([
             this.users.on("reset", this.refreshTable, this);
             this.users.on("add", this.refreshTable, this);
             this.users.on("destroy", this.refreshTable, this);
-            this.users.fetch({data: {tenant_id: this.selectedId, cred_id: this.credentialId, region: this.region}});
+            this.users.fetch({data: {tenant_id: this.selectedId, cred_id: this.credentialId, region: this.region}, reset: true});
             //Disable any needed actions
         },
 
@@ -124,7 +124,7 @@ define([
         },
 
         fetchUsers: function() {
-            this.users.fetch({data: {tenant_id: this.selectedId, cred_id: this.credentialId, region: this.region}});
+            this.users.fetch({data: {tenant_id: this.selectedId, cred_id: this.credentialId, region: this.region}, reset: true});
         },
         
         refreshTable: function() {

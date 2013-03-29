@@ -28,7 +28,6 @@ define([
         validate: function(attrs, options) {
             if(attrs.name === "" || attrs.name === undefined)
             {
-                this.validationError = "Name is required.";
                 return this.validationError;
             }
         },

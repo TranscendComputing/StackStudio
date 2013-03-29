@@ -84,13 +84,22 @@ define([
             $("#snapshot_select").selectmenu();
             
             this.availabilityZones.on( 'reset', this.addAllAvailabilityZones, this );
-            this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region}) });
+            this.availabilityZones.fetch({ 
+                data: $.param({ cred_id: this.credentialId, region: this.region}),
+                reset: true
+            });
             
             this.ownedSnapshots.on( 'reset', this.addAllOwnedSnapshots, this );
-            this.ownedSnapshots.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region}) });
+            this.ownedSnapshots.fetch({ 
+                data: $.param({ cred_id: this.credentialId, region: this.region}),
+                reset: true
+            });
             
             this.publicSnapshots.on( 'reset', this.addAllPublicSnapshots, this );
-            this.publicSnapshots.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region, filters: {"RestorableBy":"all"}}) });
+            this.publicSnapshots.fetch({ 
+                data: $.param({ cred_id: this.credentialId, region: this.region, filters: {"RestorableBy":"all"}}),
+                reset: true
+            });
 		},
 		
 		render: function() {

@@ -165,8 +165,8 @@ module.exports = function(grunt) {
                             interpreters: 'js/interpreters',
                             'jquery': 'js/vendor/jquery-1.8.3.min',
                             'jquery-ui': 'js/vendor/jquery-ui-1.8.17.custom.min',
-                            'underscore': 'js/vendor/lodash',
-                            'backbone': 'js/vendor/backbone-0.9.9',
+                            'underscore': 'js/vendor/lodash-1.1.1.min',
+                            'backbone': 'js/vendor/backbone-1.0.min',
                             'icanhaz': 'js/vendor/ICanHaz',
                             'jquery.terminal': 'js/vendor/jquery.terminal-0.4.22',
                             'jquery.mousewheel': 'js/vendor/jquery.mousewheel-min'

@@ -89,16 +89,19 @@ define([
             if(view.credentialId && view.region) {
                 view.collection.fetch({ 
                     error: fetchErrorFunction,
-                    data: $.param({ cred_id: view.credentialId, region: view.region }) 
+                    data: $.param({ cred_id: view.credentialId, region: view.region }),
+                    reset: true
                 });
             }else if(view.credentialId) {
                 view.collection.fetch({  
                     error: fetchErrorFunction,
-                    data: $.param({ cred_id: view.credentialId }) 
+                    data: $.param({ cred_id: view.credentialId }),
+                    reset: true 
                 });
             }else {
                 view.collection.fetch({ 
-                    error: fetchErrorFunction
+                    error: fetchErrorFunction,
+                    reset: true
                 });
             }
             view.setResourceAppHeightify();

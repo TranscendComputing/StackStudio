@@ -72,7 +72,10 @@ define([
             $("#instance_zone_message").text("in " + this.volume.get("availability_zone"));
             $("#instance_select").selectmenu();
             this.instances.on( 'reset', this.addAllInstances, this );
-            this.instances.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region, filters: {"availability-zone": this.volume.get("availability_zone")}}) });
+            this.instances.fetch({ 
+                data: $.param({ cred_id: this.credentialId, region: this.region, filters: {"availability-zone": this.volume.get("availability_zone")}}),
+                reset: true
+            });
         },
 
         render: function() {

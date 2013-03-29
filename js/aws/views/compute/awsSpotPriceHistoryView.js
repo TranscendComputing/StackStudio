@@ -79,10 +79,10 @@ define([
                 }
             });
             this.flavors.on( 'reset', this.addAllFlavors, this );
-            this.flavors.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }) });
+            this.flavors.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true });
             
             this.availabilityZones.on( 'reset', this.addAllAvailabilityZones, this );
-            this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }) });
+            this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true });
         },
 
         render: function() {
@@ -127,7 +127,7 @@ define([
                  });
                 filters["product-description"] = $("#product_select").val();
                 filters["availability-zone"] = $("#az_select").val();
-                this.spotPrices.fetch({ data: $.param({ "cred_id": this.credentialId, "region": this.region, "filters": filters }) });
+                this.spotPrices.fetch({ data: $.param({ "cred_id": this.credentialId, "region": this.region, "filters": filters }), reset: true });
             }
         },
         

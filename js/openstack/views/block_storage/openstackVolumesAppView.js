@@ -191,21 +191,21 @@ define([
             };
 
             metricStatisticOptions.metric_name = "VolumeIdleTime";
-            this.idleTimeData.fetch({ data: $.param(metricStatisticOptions) });
+            this.idleTimeData.fetch({ data: $.param(metricStatisticOptions), reset: true });
             metricStatisticOptions.metric_name = "VolumeQueueLength";
-            this.queueLengthData.fetch({ data: $.param(metricStatisticOptions) });
+            this.queueLengthData.fetch({ data: $.param(metricStatisticOptions), reset: true });
             metricStatisticOptions.metric_name = "VolumeReadBytes";
-            this.readBytesData.fetch({ data: $.param(metricStatisticOptions) });
+            this.readBytesData.fetch({ data: $.param(metricStatisticOptions), reset: true });
             metricStatisticOptions.metric_name = "VolumeReadOps";
-            this.readOpsData.fetch({ data: $.param(metricStatisticOptions) });
+            this.readOpsData.fetch({ data: $.param(metricStatisticOptions), reset: true });
             metricStatisticOptions.metric_name = "VolumeTotalReadTime";
-            this.totalReadTimeData.fetch({ data: $.param(metricStatisticOptions) });
+            this.totalReadTimeData.fetch({ data: $.param(metricStatisticOptions), reset: true });
             metricStatisticOptions.metric_name = "VolumeTotalWriteTime";
-            this.totalWriteTimeData.fetch({ data: $.param(metricStatisticOptions) });
+            this.totalWriteTimeData.fetch({ data: $.param(metricStatisticOptions), reset: true });
             metricStatisticOptions.metric_name = "VolumeWriteBytes";
-            this.writeBytesData.fetch({ data: $.param(metricStatisticOptions) });
+            this.writeBytesData.fetch({ data: $.param(metricStatisticOptions), reset: true });
             metricStatisticOptions.metric_name = "VolumeWriteOps";
-            this.writeOpsData.fetch({ data: $.param(metricStatisticOptions) });
+            this.writeOpsData.fetch({ data: $.param(metricStatisticOptions), reset: true });
         },
 
         addIdleTimeData: function() {

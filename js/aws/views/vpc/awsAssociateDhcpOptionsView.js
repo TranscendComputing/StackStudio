@@ -61,7 +61,7 @@ define([
             $("#dhcp_options_select").selectmenu();
 
             this.dhcps.on( 'reset', this.addAllDhcpOptions, this );
-            this.dhcps.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }) });
+            this.dhcps.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true });
         },
 
         render: function() {
