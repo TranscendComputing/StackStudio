@@ -55,7 +55,9 @@ define([
         render: function () {
             this.disableSelectionRequiredButtons(true);
             $("#group_users_table").dataTable().fnClearTable();
-            this.groups.fetch();
+            this.groups.fetch({
+                reset: true
+            });
         },
 
         addAllGroups: function() {
