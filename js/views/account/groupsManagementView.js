@@ -89,7 +89,7 @@ define([
         addAllGroupUsers: function() {
             $("#group_users_table").dataTable().fnClearTable();
             $.each(this.selectedGroup.attributes.group_memberships, function(index, value) {
-                rowData = [value.group_membership.account.login, value.group_membership.account.first_name, value.group_membership.account.last_name];
+                var rowData = [value.group_membership.account.login, value.group_membership.account.first_name, value.group_membership.account.last_name];
                 $("#group_users_table").dataTable().fnAddData(rowData);
             });
         },

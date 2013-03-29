@@ -94,9 +94,9 @@ define([
             $("#group_users_menu_list").empty();
             $.each(accounts, function(index, value) {
                 if(view.group.hasUser(value.account.id)) {
-                    $("#group_users_menu_list").append("<li id=" + value.account.id + " class='group_user'>" + value.account.login + "</li>")
+                    $("#group_users_menu_list").append("<li id=" + value.account.id + " class='group_user'>" + value.account.login + "</li>");
                 }else {
-                    $("#non_group_users_menu_list").append("<li id=" + value.account.id + " class='non_group_user'>" + value.account.login + "</li>")
+                    $("#non_group_users_menu_list").append("<li id=" + value.account.id + " class='non_group_user'>" + value.account.login + "</li>");
                 }
             });
         },
