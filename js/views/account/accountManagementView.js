@@ -99,7 +99,7 @@ define([
                     accountManagementView.subApp = new UsersManagementView();
                 }
                 break;
-            case "users":
+            case "groups":
                 if(accountManagementView.subApp instanceof GroupsManagementView)
                 {
                     //do nothing

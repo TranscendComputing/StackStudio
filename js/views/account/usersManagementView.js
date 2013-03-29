@@ -17,7 +17,7 @@ define([
         'jquery.dataTables.fnProcessingIndicator'
 ], function( $, _, Backbone, Common, usersManagementTemplate, Users, NewLoginView) {
 
-    var CloudCredentialManagementView = Backbone.View.extend({
+    var UserManagementView = Backbone.View.extend({
 
         tagName: 'div',
 
@@ -111,5 +111,5 @@ define([
         }  
     });
 
-    return CloudCredentialManagementView;
+    return UserManagementView;
 });
