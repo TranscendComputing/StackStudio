@@ -20,7 +20,7 @@ define([
         'jquery.multiselect.filter'
 ], function( $, _, Backbone, Common, ich, DialogView, tenantCreateTemplate, Tenant, Tenants ) {
 
-    var VolumeCreateView = DialogView.extend({
+    var TenantCreateView = DialogView.extend({
         
         credentialId: undefined,
 
@@ -89,5 +89,5 @@ define([
 
     });
     
-    return VolumeCreateView;
+    return TenantCreateView;
 });

@@ -4,7 +4,7 @@
  * Available under ASL2 license <http://www.apache.org/licenses/LICENSE-2.0.html>
  */
 /*jshint smarttabs:true */
-/*global define:true console:true */
+/*global define:true console:true alert:true */
 define([
         'jquery',
         'underscore',
@@ -15,10 +15,11 @@ define([
         '/js/openstack/collections/identity/openstackTenants.js',
         '/js/openstack/collections/identity/openstackUsers.js',
         '/js/openstack/views/identity/openstackTenantCreateView.js',
+        '/js/openstack/views/identity/openstackTenantConfirmRemoveView.js',
         'icanhaz',
         'common',
         'dataTables.fnReloadAjax'
-], function( $, _, Backbone, AppView, openstackTenantAppTemplate, Tenant, Tenants, Users, OpenstackTenantCreateView, ich, Common ) {
+], function( $, _, Backbone, AppView, openstackTenantAppTemplate, Tenant, Tenants, Users, OpenstackTenantCreateView, ConfirmDialog, ich, Common ) {
 	'use strict';
 
 	// Openstack Application View
@@ -58,7 +59,12 @@ define([
             'click #resource_table tr': "clickOne",
             'click #users_refresh_button': 'fetchUsers',
             'click #users_table tr': 'toggleUserActions',
-            'click #user_action_menu ul li': 'performUserAction'
+            'click #user_action_menu ul li': 'performUserAction',
+            'click input.remove-all': 'toggleRemoveAll',
+            'click input.remove-one': 'toggleRemoveOne',
+            'click a#users_table_next': 'renderNextPage',
+            'click button.remove': 'confirmRemove',
+            'click button.remove-one': 'confirmRemove'
         },
 
         initialize: function(options) {
@@ -87,27 +93,34 @@ define([
             var view = this;
             this.$("button").button();
             this.$("#user_action_menu").menu();
-            $("#user_action_menu li").addClass("ui-state-disabled");
+            this.$("button.remove").button("option", "disabled", true);
             this.$usersTable = $('#users_table').dataTable({
                 "bJQueryUI": true,
                 "sDom": "ipt",
                 "aoColumns": [
-                    {"sTitle": "ID", "mDataProp": "id"},
+                    {"sTitle": "<input type='checkbox' class='remove-all'></input>", "mDataProp": "remove"},                
+                    {"sTitle": "ID", "mDataProp": "idLink"},
                     {"sTitle": "Name", "mDataProp": "name"},
                     {"sTitle": "Email", "mDataProp": "email"},
-                    {"sTitle": "Enabled", "mDataProp": "enabled"}
+                    {"sTitle": "Enabled", "mDataProp": "enabled"},
+                    {"sTitle": "Actions", "mDataProp": "action"}
                 ],
                 sDefaultContent: "",
                 sAjaxDataProp: "",
                 fnServerData: function(sSource, aoData, fnCallback) {
-                    $("#user_action_menu li").addClass("ui-state-disabled");
+                    view.$("button.remove").button("option", "disabled", true);
                     var users = view.users.toJSON(),
                         id;
                     _.each(users, function(u){
                         var id = u.id;
-                        u.id = '<a href="#resources/openstack/undefined/identity/users/' + id + '">' + id + '</a>';
+                        // Add link to users table
+                        u.idLink = '<a href="#resources/openstack/' +  view.region + '/identity/users/' + id + '">' + id + '</a>';
+                        // Add remove checkbox
+                        u.remove = '<input type="checkbox" class="remove-one"></input>';
+                        u.action = "<button class='remove-one'>Remove</button>";
                     });
                     fnCallback(users);
+                    view.$("button.remove-one").button();
                 }
             }, view);
         },
@@ -138,12 +151,12 @@ define([
         },
         
         selectUser: function (event) {
-            this.$userTable.$('tr').removeClass('row_selected');
-            $(event.currentTarget).addClass('row_selected');
-            var userData = this.$userTable.fnGetData(event.currentTarget);
-            this.selectedUser = this.users.get(userData.id);
-            if(this.selectedUser) {
-                $("#user_action_menu li").removeClass("ui-state-disabled");
+            var userData = this.$usersTable.fnGetData(event.currentTarget);
+            if(userData)
+            {
+                this.selectedUser = this.users.get(userData.id);
+            }else{
+                this.selectedUser = undefined;
             }
         },
         
@@ -158,6 +171,95 @@ define([
                     // TODO: Remove user
                     break;
                 }
+            }
+        },
+
+        /**
+         *    Checkbox toggle listener for all rows that determines whether to enable or
+         *    disable to Remove Users button as well as checking/unchecking all rows in table
+         *    @author Curtis   Stewart
+         *    @param  {MouseEvent} event   handler for input.remove-all click
+         */
+        toggleRemoveAll: function(event) {
+            var checked = $(event.currentTarget).is(":checked"),
+                nodes = this.$usersTable.fnGetNodes(),
+                input;
+            _.each(nodes, function(node) {
+                input = $(node).find("input");
+                $(input).prop('checked', checked);
+            });
+            this.$("button.remove").button("option", "disabled", !checked);
+            this.selectedUser = undefined;
+        },
+
+        /**
+         *    Checkbox toggle listener for single row that determines whether to enable or
+         *    disable the Remove Users button as well as to determine if 'checkall' box should
+         *    be checked.
+         *    @author Curtis   Stewart
+         *    @param  {MouseEvent} event   handler for input.remove-one click
+         */
+        toggleRemoveOne: function(event) {
+            var checked = false,
+                nodes = this.$usersTable.fnGetNodes(),
+                input;
+            _.each(nodes, function(node) {
+                input = $(node).find("input");
+                if($(input).is(":checked"))
+                {
+                    checked = true;
+                }
+            });
+            this.$("button.remove").button("option", "disabled", !checked);
+            // Check if all rows are checked or not, then check/uncheck 'remove-all' checkbox
+            var allChecked = this.$("input.remove-one:checked").length === this.$("input.remove-one").length;
+            $("input.remove-all").prop('checked', allChecked);
+        },
+
+        /**
+         *    Only first page is completely rendered initially.  This
+         *    handler takes care of rendering all other pages by listening
+         *    to click of '<table>_next_page' anchor'
+         *    @author Curtis   Stewart
+         */
+        renderNextPage: function() {
+            this.$("button.remove-one").button();
+        },
+
+        confirmRemove: function(event) {
+            var removing = this.$usersTable.fnGetData(event.currentTarget.parentElement.parentElement);
+            if(removing)
+            {
+                this.selectedUser = this.users.get(removing.id);
+            }else{
+                this.selectedUser = undefined;
+            }
+            var confirmDialog = new ConfirmDialog({
+                message: "Please confirm your selection. This action cannot be undone."
+            });
+            Common.vent.on("tenant:confirmRemove", this.removeUsers, this);
+        },
+
+        removeUsers: function() {
+            var view = this;
+            if(view.selectedUser)
+            {
+                alert("User will be removed.");
+            }else{
+                var selectedUsers = [],
+                    user,
+                    rows = view.$usersTable.fnGetNodes(),
+                    rowData;
+                // Iterate through each row, if checked, add to selected users array
+                _.each(rows, function(row){
+                    if($(row).find("input:checked").length > 0)
+                    {
+                        rowData = view.$usersTable.fnGetData(row);
+                        user = view.users.get(rowData.id);
+                        selectedUsers.push(user);
+                    }
+                }, view);
+                alert("All users will be removed.");
             }
         }
 	});
