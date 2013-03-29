@@ -24,7 +24,7 @@ define([
 
         template: _.template(groupsManagementTemplate),
 
-        groups: new Groups(),
+        groups: undefined,
 
         selectedGroup: undefined,
 
@@ -48,6 +48,8 @@ define([
             Common.vent.on("groupRefresh", function() {
                 groupsView.render();
             });
+            this.selectedGroup = undefined;
+            this.groups = new Groups();
             this.groups.on('reset', this.addAllGroups, this);
             this.render();
         },
