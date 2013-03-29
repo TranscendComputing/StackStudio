@@ -87,7 +87,7 @@ define([
             this.cloudCredentials.on('reset', this.addAllClouds, this );
 
             //load user's cloud selections
-            this.cloudCredentials.fetch();
+            this.cloudCredentials.fetch({reset: true});
         },
 
         render: function () {

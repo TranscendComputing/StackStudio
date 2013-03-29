@@ -94,7 +94,7 @@ define([
             this.files.on("reset", this.refreshTable, this);
             this.files.on("add", this.refreshTable, this);
             this.files.on("destroy", this.refreshTable, this);
-            this.files.fetch({data: {cred_id: this.credentialId, region: this.region}});
+            this.files.fetch({data: {cred_id: this.credentialId, region: this.region}, reset: true});
             //Disable any needed actions
         },
 
@@ -132,7 +132,7 @@ define([
         },
 
         fetchFiles: function() {
-            this.files.fetch({data: {cred_id: this.credentialId, region: this.region}});
+            this.files.fetch({data: {cred_id: this.credentialId, region: this.region}, reset: true});
         },
         
         refreshTable: function() {

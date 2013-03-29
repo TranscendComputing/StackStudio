@@ -68,7 +68,7 @@ define([
 
             this.instances = new Instances();
             this.instances.on( 'reset', this.addAllInstances, this );
-            this.instances.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region })});
+            this.instances.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true});
         },
 
         render: function() {

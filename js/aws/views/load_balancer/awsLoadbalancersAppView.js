@@ -231,7 +231,7 @@ define([
             $("#lb_protocol_select").selectmenu();
             $("#instance_protocol_select").selectmenu();
             $("#listener_save_button").button();
-            this.listeners.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region, load_balancer: this.selectedId})});
+            this.listeners.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region, load_balancer: this.selectedId}), reset: true});
         },
 
         addAllListeners: function() {
@@ -330,9 +330,9 @@ define([
             };
             
             metricStatisticOptions.metric_name = "HealthyHostCount";
-            this.healthyHostCountData.fetch({ data: $.param(metricStatisticOptions) });
+            this.healthyHostCountData.fetch({ data: $.param(metricStatisticOptions), reset: true });
             metricStatisticOptions.metric_name = "UnHealthyHostCount";
-            this.unhealthyHostCountData.fetch({ data: $.param(metricStatisticOptions) });
+            this.unhealthyHostCountData.fetch({ data: $.param(metricStatisticOptions), reset: true });
         },
 
         addMonitorGraph: function(element, collection, yKeys, labels, lineColors) {

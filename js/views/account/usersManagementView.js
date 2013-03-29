@@ -51,7 +51,7 @@ define([
 
         render: function () {
             $("#users_table").dataTable().fnProcessingIndicator(true);
-            this.users.fetch();
+            this.users.fetch({reset: true});
             this.disableDeleteButton(true);
         },
 

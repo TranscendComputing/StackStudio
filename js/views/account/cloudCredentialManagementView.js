@@ -48,13 +48,14 @@ define([
             this.cloudCredentials.on( 'add', this.addOne, this );
             this.cloudCredentials.on( 'reset', this.addAll, this );
             this.cloudCredentials.on( 'remove', this.addAll, this );
-            this.cloudCredentials.fetch();
+            this.cloudCredentials.fetch({reset: true});
             //Add listeners and fetch db for cloud accounts collection
             this.cloudAccounts = new CloudAccounts();
             this.cloudAccounts.on( 'add', this.addCloudAccount, this);
             this.cloudAccounts.on( 'reset', this.addAllCloudAccounts, this);
             this.cloudAccounts.fetch({ 
-                data: $.param({ org_id: sessionStorage.org_id })
+                data: $.param({ org_id: sessionStorage.org_id }),
+                reset: true
             });
         },
         /** Add all of my own html elements */

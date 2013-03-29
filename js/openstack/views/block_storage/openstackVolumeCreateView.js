@@ -77,10 +77,10 @@ define([
             $("#snapshot_select").selectmenu();
             
             this.availabilityZones.on( 'reset', this.addAllAvailabilityZones, this );
-            this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region}) });
+            this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region}), reset: true });
             
             this.snapshots.on( 'reset', this.addAllSnapshots, this );
-            this.snapshots.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region}) });
+            this.snapshots.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region}), reset: true });
 		},
 		
 		render: function() {

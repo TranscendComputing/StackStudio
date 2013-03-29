@@ -82,10 +82,10 @@ define([
             $("#listeners_table").dataTable().fnAddData(["HTTP", "80", "HTTP", "80"]);
             $("select").selectmenu();
             $("button").button();
-            this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region})});
+            this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region}), reset: true});
             //#TODO VPC LB Support
             //this.vpcs.on("reset", this.addVpcOptions, this);
-            //this.vpcs.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region})});
+            //this.vpcs.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region}), reset: true});
         },
 
         addVpcOptions: function() {

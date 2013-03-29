@@ -55,7 +55,7 @@ define([
             });
             this.countries = new Countries();
             this.countries.on( 'reset', this.addAllCountries, this );
-            this.countries.fetch();
+            this.countries.fetch({reset: true});
             $("#country_select").selectmenu();
             if(options && options.org_id) {
                 this.orgId = options.org_id;

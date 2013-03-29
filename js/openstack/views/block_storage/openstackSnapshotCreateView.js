@@ -47,7 +47,7 @@ define([
                 this.volumes.on("reset", function(){
                     this.renderView();
                 }, this);
-                this.volumes.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region}) });
+                this.volumes.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region}), reset: true });
             }
         },
         

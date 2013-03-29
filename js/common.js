@@ -133,8 +133,8 @@ requirejs.config({
         wrappers: '../../wrappers',
         'jquery': '//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min',
         'jquery-ui': '//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min',
-        'underscore': '//cdnjs.cloudflare.com/ajax/libs/lodash.js/1.0.0-rc.3/lodash.min',
-        'backbone': '//cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.10/backbone-min',
+        'underscore': '//cdnjs.cloudflare.com/ajax/libs/lodash.js/1.1.0/lodash.min',
+        'backbone': '//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min',
         //'backbone': 'backbone-0.9.9',
         'icanhaz': 'ICanHaz',
         'jquery.form': 'jquery.form',
@@ -209,7 +209,7 @@ require(
             requirejs.undef(failedId);
             requirejs.config({
                 paths: {
-                    'underscore': 'lodash'
+                    'underscore': 'lodash-1.1.1.min'
                 }
             });
             require(['underscore'], function () {});
@@ -225,7 +225,7 @@ require(
             requirejs.undef(failedId);
             requirejs.config({
                 paths: {
-                    'backbone': 'backbone-0.9.9.min'
+                    'backbone': 'backbone-1.0.min'
                 }
             });
             require(['backbone'], function () {});

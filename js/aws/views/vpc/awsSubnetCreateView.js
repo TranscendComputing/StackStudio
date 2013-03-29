@@ -66,10 +66,10 @@ define([
             $("#zone_select").selectmenu();
 
             this.vpcs.on( 'reset', this.addAllVpcs, this );
-            this.vpcs.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }) });
+            this.vpcs.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true });
 
             this.availabilityZones.on( 'reset', this.addAllAvailabilityZones, this );
-            this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }) });
+            this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true });
 		},
 
         addAllVpcs: function() {

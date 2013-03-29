@@ -57,7 +57,7 @@ define([
             });
             this.availabilityZones = new AvailabilityZones();
             this.availabilityZones.on( 'reset', this.addAllAvailabilityZones, this );
-            this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region })});
+            this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true});
         },
 
         render: function() {

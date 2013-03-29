@@ -195,19 +195,19 @@ define([
                     dimension_value: this.selectedId
                 };
                 metricStatisticOptions.metric_name = "CPUUtilization";
-                this.cpuData.fetch({ data: $.param(metricStatisticOptions) });
+                this.cpuData.fetch({ data: $.param(metricStatisticOptions), reset: true });
                 metricStatisticOptions.metric_name = "DiskReadBytes";
-                this.diskReadBytesData.fetch({ data: $.param(metricStatisticOptions) });
+                this.diskReadBytesData.fetch({ data: $.param(metricStatisticOptions), reset: true });
                 metricStatisticOptions.metric_name = "DiskWriteBytes";
-                this.diskWriteBytesData.fetch({ data: $.param(metricStatisticOptions) });
+                this.diskWriteBytesData.fetch({ data: $.param(metricStatisticOptions), reset: true });
                 metricStatisticOptions.metric_name = "NetworkIn";
-                this.networkInData.fetch({ data: $.param(metricStatisticOptions) });
+                this.networkInData.fetch({ data: $.param(metricStatisticOptions), reset: true });
                 metricStatisticOptions.metric_name = "NetworkOut";
-                this.networkOutData.fetch({ data: $.param(metricStatisticOptions) });
+                this.networkOutData.fetch({ data: $.param(metricStatisticOptions), reset: true });
                 metricStatisticOptions.metric_name = "DiskReadOps";
-                this.diskReadOpsData.fetch({ data: $.param(metricStatisticOptions) });
+                this.diskReadOpsData.fetch({ data: $.param(metricStatisticOptions), reset: true });
                 metricStatisticOptions.metric_name = "DiskWriteOps";
-                this.diskWriteOpsData.fetch({ data: $.param(metricStatisticOptions) });
+                this.diskWriteOpsData.fetch({ data: $.param(metricStatisticOptions), reset: true });
                 
                 this.initialMonitorLoad = true;
             }

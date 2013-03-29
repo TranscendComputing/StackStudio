@@ -96,19 +96,19 @@ define([
             }).multiselectfilter();
             
             this.images.on( 'reset', this.addAllImages, this );
-            this.images.fetch();
+            this.images.fetch({reset: true});
             
             this.flavors.on( 'reset', this.addAllFlavors, this );
-            this.flavors.fetch({ data: $.param({ cred_id: this.credentialId}) });
+            this.flavors.fetch({ data: $.param({ cred_id: this.credentialId}), reset: true });
             
             //this.availabilityZones.on( 'reset', this.addAllAvailabilityZones, this );
-            //this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId}) });
+            //this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId}), reset: true });
             
             this.keyPairs.on( 'reset', this.addAllKeyPairs, this );
-            this.keyPairs.fetch({ data: $.param({ cred_id: this.credentialId}) });
+            this.keyPairs.fetch({ data: $.param({ cred_id: this.credentialId}), reset: true });
             
             this.securityGroups.on( 'reset', this.addAllSecurityGroups, this );
-            this.securityGroups.fetch({ data: $.param({ cred_id: this.credentialId}) });
+            this.securityGroups.fetch({ data: $.param({ cred_id: this.credentialId}), reset: true });
         },
 
         render: function() {

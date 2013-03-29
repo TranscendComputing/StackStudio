@@ -69,22 +69,39 @@ define([
             // ensure variable scopes
             var fetchErrorFunction = function(collection, response, options) {
                 view.$table.fnProcessingIndicator(false);
-                Common.errorDialog("Connection Error", "Unable to connect to server to fetch resources.");
+                var status,
+                    message;
+                if(response.statusText !== "")
+                {
+                    status = response.statusText;
+                }else{
+                    status = "Connection Error";
+                }
+                if(response.responseText !== "")
+                {
+                    message = response.responseText;
+                }else{
+                    message = "Unable to connect to server to fetch resources.";
+                }
+                Common.errorDialog(status, message);
             };
             
             if(view.credentialId && view.region) {
                 view.collection.fetch({ 
                     error: fetchErrorFunction,
-                    data: $.param({ cred_id: view.credentialId, region: view.region }) 
+                    data: $.param({ cred_id: view.credentialId, region: view.region }),
+                    reset: true
                 });
             }else if(view.credentialId) {
                 view.collection.fetch({  
                     error: fetchErrorFunction,
-                    data: $.param({ cred_id: view.credentialId }) 
+                    data: $.param({ cred_id: view.credentialId }),
+                    reset: true 
                 });
             }else {
                 view.collection.fetch({ 
-                    error: fetchErrorFunction
+                    error: fetchErrorFunction,
+                    reset: true
                 });
             }
             view.setResourceAppHeightify();
