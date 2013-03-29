@@ -18,8 +18,9 @@ define([
         '/js/openstack/views/identity/openstackTenantConfirmRemoveView.js',
         'icanhaz',
         'common',
+        'messenger',
         'dataTables.fnReloadAjax'
-], function( $, _, Backbone, AppView, openstackTenantAppTemplate, Tenant, Tenants, Users, OpenstackTenantCreateView, ConfirmDialog, ich, Common ) {
+], function( $, _, Backbone, AppView, openstackTenantAppTemplate, Tenant, Tenants, Users, OpenstackTenantCreateView, ConfirmDialog, ich, Common, Messenger ) {
 	'use strict';
 
 	// Openstack Application View
@@ -74,6 +75,7 @@ define([
             this.render();
             
             var tenantApp = this;
+            Common.vent.on("tenant:userRemoved", this.fetchUsers, this);
             Common.vent.on("tenantAppRefresh", function() {
                 tenantApp.render();
             });
@@ -242,9 +244,10 @@ define([
 
         removeUsers: function() {
             var view = this;
+            var tenant = this.collection.get(this.selectedId);
             if(view.selectedUser)
             {
-                alert("User will be removed.");
+                tenant.removeUser(view.selectedUser.id, "tenant:userRemoved", this.credentialId, this.region);
             }else{
                 var selectedUsers = [],
                     user,

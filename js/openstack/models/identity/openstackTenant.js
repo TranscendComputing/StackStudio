@@ -9,7 +9,7 @@ define([
         'jquery',
         'backbone',
         'common'
-], function( $, Backbone, Common ) {
+], function( $, Backbone, Common) {
     'use strict';
 
     // Base Tenant Model
@@ -41,11 +41,17 @@ define([
             var url = "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
             this.sendPostAction(url);
         },
+
+        removeUser: function(userId, trigger, credentialId, region) {
+            var url = "/users/" + userId + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            this.sendPostAction(url, {}, trigger);
+        },
 		
 		sendPostAction: function(url, options, trigger) {
             //Set default values for options and trigger if nothing is passed
             options = typeof options !== 'undefined' ? options : {};
             trigger = typeof trigger !== 'undefined' ? trigger : "tenantAppRefresh";
+
             $.ajax({
                 url: this.url() + url,
                 type: 'POST',
