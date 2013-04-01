@@ -9,36 +9,113 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'views/featureNotImplementedView',
         'views/resource/resourceAppView',
+        'text!templates/aws/iam/awsGroupAppTemplate.html',
+        '/js/aws/models/iam/awsGroup.js',
+        '/js/aws/collections/iam/awsGroups.js',
+        '/js/aws/collections/iam/awsGroupUsers.js',
+        '/js/aws/views/iam/awsGroupCreateView.js',
         'icanhaz',
-        'common',
-        'jquery.dataTables'
-], function( $, _, Backbone, FeatureNotImplementedView, ResourceAppView, ich, Common ) {
+        'common'
+], function( $, _, Backbone, ResourceAppView, GroupAppTemplate, Group, Groups, GroupUsers, GroupCreateView, ich, Common ) {
     'use strict';
 
     var AwsGroupsAppView = ResourceAppView.extend({
 
+        template: _.template(GroupAppTemplate),
+        
+        modelStringIdentifier: "GroupName",
+        
+        columns: ["GroupName"],
+        
+        idColumnNumber: 0,
+        
+        model: Group,
+        
+        collectionType: Groups,
+
         type: "iam",
         
         subtype: "groups",
+
+        CreateView: GroupCreateView,
+
+        selectedGroupUsers: new GroupUsers(),
         
         events: {
             'click .create_button': 'createNew',
-            'click #resource_table tr': 'clickOne'
+            'click #action_menu ul li': 'performAction',
+            'click #resource_table tr': "clickOne",
+            'click #users' : 'refreshUsersTab',
+            'click .remove_user_from_group': 'removeUserFromGroup'
         },
 
-        initialize: function() {
+        initialize: function(options) {
+            if(options.cred_id) {
+                this.credentialId = options.cred_id;
+            }
+            if(options.region) {
+                this.region = options.region;
+            }
             this.render();
-        },
-
-        render: function() {
-            var featureNotImplemented = new FeatureNotImplementedView({feature_url: "https://github.com/TranscendComputing/StackStudio/issues/8", element: "#resource_app"});
-            featureNotImplemented.render();
+            
+            var groupApp = this;
+            Common.vent.off("groupAppRefresh");
+            Common.vent.on("groupAppRefresh", function() {
+                groupApp.render();
+            });
+            this.selectedGroupUsers.on('reset', this.addAllGroupUsers, this);
         },
         
         toggleActions: function(e) {
             //Disable any needed actions
+        },
+        
+        performAction: function(event) {
+            var group = this.collection.get(this.selectedId);
+            
+            switch(event.target.text)
+            {
+            case "Delete Group":
+                group.destroy(this.credentialId, this.region);
+                break;
+            }
+        },
+
+        refreshUsersTab: function() {
+            $("#users_tab_content").empty();
+            $("#users_tab_content").append("<div>" +
+                                                    "<div style='padding-bottom:10px;'>" +
+                                                        "<button id='add_users_to_group_button'>Add Users to Group</button>" +
+                                                    "</div>" +
+                                                    "<table id='group_users_table'>" +
+                                                        "<thead>" +
+                                                            "<tr>" +
+                                                                "<th>User Name</th><th>Actions</th>" +
+                                                            "</tr>" +
+                                                        "</thead>" +
+                                                        "<tbody></tbody><tfoot></tfoot>" +
+                                                    "</table>" +
+                                                "</div>");
+            $("#group_users_table").dataTable({
+                "bJQueryUI": true,
+                "sDom": 't'
+            });
+            $("#add_users_to_group_button").button();
+            this.selectedGroupUsers.fetch({ data: $.param({ cred_id: this.credentialId, group_name: this.selectedId}), reset: true});
+        },
+
+        addAllGroupUsers: function() {
+            $("#group_users_table").dataTable().fnClearTable();
+            this.selectedGroupUsers.each(function(groupUser) {
+                var rowData = [groupUser.attributes.UserName, "<a href='' class='remove_user_from_group'>Remove from group</a>"];
+                $("#group_users_table").dataTable().fnAddData(rowData);
+            });
+        },
+
+        removeUserFromGroup: function() {
+            //remove from group
+            return false;
         }
     });
     
