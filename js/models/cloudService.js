@@ -26,14 +26,12 @@ define([
 
         /** Default attributes for cloud service */
         defaults: {
-            id: "",
-            service_type: "",
-            protocol: "",
-            host: "",
-            path: "",
-            port: "",
             enabled: true
-		}
+		},
+
+        parse: function(data) {
+            return data.cloud_service;
+        }
 
     });
 

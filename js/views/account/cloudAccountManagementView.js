@@ -29,8 +29,9 @@ define([
         /** @type {Object} Object of events for view to listen on */
         events: {
             "click .list_item": "selectCloudAccount",
-            "click button#save_button": "saveServices",
-            "click button#new_cloud_account": "newCloudAccount"
+            "click button.save-button": "saveService",
+            "click button#new_cloud_account": "newCloudAccount",
+            "click button.delete-button": "deleteService"
         },
         /** Constructor method for current view */
         initialize: function() {
@@ -102,33 +103,31 @@ define([
                $(this).removeClass("selected_item");
             });
         },
-        saveServices: function() {
-            var view = this;
+        saveService: function(event) {
             var uri, service;
-            _.each($("form#cloud_services_form")[0], function(item, index){
-                if(item.tagName === "INPUT")
-                {
-                    if(item.value !== "")
-                    {
-                        uri = URI.parse(item.value);
-                        service = new CloudService(uri);
-                        service.set({
-                            host: uri.hostname,
-                            service_type: item.name
-                        });
-                        if(item.id !== "")
-                        {
-                            this.selectedCloudAccount.deleteCloudService(item.id);
-                        }
-                        this.selectedCloudAccount.saveCloudService(service);
-                    }
-                }
-            }, view);
+            var endpointValue = $(event.currentTarget.parentElement).find("input").val();
+            var inputData = $(event.currentTarget.parentElement).find("input").data();
+            uri = URI.parse(endpointValue);
+            service = new CloudService(uri);
+            service.set({
+                host: uri.hostname,
+                service_type: inputData.name,
+                id: inputData.id
+            });
+            service.unset("password");
+            service.unset("username");
+            this.selectedCloudAccount.updateService(service);
             return false;
         },
 
         newCloudAccount: function(){
             
+        },
+
+        deleteService: function(event) {
+            var serviceData = $(event.currentTarget.parentElement).find("input").data();
+            this.selectedCloudAccount.deleteService(serviceData);
+            return false;
         },
 
         close: function(){
