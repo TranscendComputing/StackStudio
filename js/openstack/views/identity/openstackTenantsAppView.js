@@ -16,11 +16,13 @@ define([
         '/js/openstack/collections/identity/openstackUsers.js',
         '/js/openstack/views/identity/openstackTenantCreateView.js',
         '/js/openstack/views/identity/openstackTenantConfirmRemoveView.js',
+        '/js/openstack/views/identity/openstackTenantAddUsersView.js',
+        '/js/openstack/views/identity/openstackTenantEditUserView.js',
         'icanhaz',
         'common',
         'messenger',
         'dataTables.fnReloadAjax'
-], function( $, _, Backbone, AppView, openstackTenantAppTemplate, Tenant, Tenants, Users, OpenstackTenantCreateView, ConfirmDialog, ich, Common, Messenger ) {
+], function( $, _, Backbone, AppView, openstackTenantAppTemplate, Tenant, Tenants, Users, OpenstackTenantCreateView, ConfirmDialog, AddUsersView, EditUserView, ich, Common, Messenger ) {
 	'use strict';
 
 	// Openstack Application View
@@ -65,7 +67,9 @@ define([
             'click input.remove-one': 'toggleRemoveOne',
             'click a#users_table_next': 'renderNextPage',
             'click button.remove': 'confirmRemove',
-            'click button.remove-one': 'confirmRemove'
+            'click a.remove-one': 'confirmRemove',
+            'click a.edit-one': 'editUserRoles',
+            'click button#users_add_button': 'addUsers'
         },
 
         initialize: function(options) {
@@ -75,7 +79,7 @@ define([
             this.render();
             
             var tenantApp = this;
-            Common.vent.on("tenant:userRemoved", this.fetchUsers, this);
+            Common.vent.on("tenant:usersUpdated", this.fetchUsers, this);
             Common.vent.on("tenantAppRefresh", function() {
                 tenantApp.render();
             });
@@ -119,7 +123,7 @@ define([
                         u.idLink = '<a href="#resources/openstack/' +  view.region + '/identity/users/' + id + '">' + id + '</a>';
                         // Add remove checkbox
                         u.remove = '<input type="checkbox" class="remove-one"></input>';
-                        u.action = "<button class='remove-one'>Remove</button>";
+                        u.action = "<a class='remove-one table-action' href=''>Remove</a>/<a class='edit-one table-action' href=''>Edit Roles</a>";
                     });
                     fnCallback(users);
                     view.$("button.remove-one").button();
@@ -240,6 +244,7 @@ define([
                 message: "Please confirm your selection. This action cannot be undone."
             });
             Common.vent.on("tenant:confirmRemove", this.removeUsers, this);
+            return false;
         },
 
         removeUsers: function() {
@@ -247,7 +252,7 @@ define([
             var tenant = this.collection.get(this.selectedId);
             if(view.selectedUser)
             {
-                tenant.removeUser(view.selectedUser.id, "tenant:userRemoved", this.credentialId, this.region);
+                tenant.removeUser(view.selectedUser, "tenant:usersUpdated", this.credentialId, this.region);
             }else{
                 var selectedUsers = [],
                     user,
@@ -262,8 +267,24 @@ define([
                         selectedUsers.push(user);
                     }
                 }, view);
-                alert("All users will be removed.");
             }
+        },
+
+        addUsers: function() {
+            var tenant = this.collection.get(this.selectedId);
+            tenant.set({users: this.users});
+            var addUsersView = new AddUsersView({credentialId: this.credentialId, region: this.region, model: tenant});
+        },
+
+        editUserRoles: function(event) {
+            var tenant = this.collection.get(this.selectedId);
+            var userRow = this.$usersTable.fnGetData(event.currentTarget.parentElement.parentElement);
+            if(userRow)
+            {
+                this.selectedUser = this.users.get(userRow.id);
+            }
+            var editUserView = new EditUserView({credentialId: this.credentialId, region: this.region, model: this.selectedUser, tenant: tenant});
+            return false;
         }
 	});
     

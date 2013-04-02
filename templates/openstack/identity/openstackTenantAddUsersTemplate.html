@@ -1,0 +1,34 @@
+<div>
+    <span><p>Use select box below to set default role for new users.</p></span>
+    <div id="default_roles">
+    </div>
+    <div>
+        <table id="added_users_table">
+        </table>
+    </div>
+    <div>
+        <table id="all_users_table">
+        </table>
+    </div>
+</div>
+
+<script type="text/html" id="role_select">
+<select class="user-roles" multiple="multiple">
+    {{#roles}}
+    <option value={{id}}>{{name}}</option>
+    {{/roles}}
+    {{#userRoles}}
+    <option value={{id}} selected="selected">{{name}}</option>
+    {{/userRoles}}
+</select>
+</script>
+
+<script type="text/html" id="default_roles_select">
+<select class="default-roles" multiple="multiple">
+    {{#roles}}
+    <option value={{id}}>{{name}}</option>
+    {{/roles}}
+</select>
+</script>
+
+

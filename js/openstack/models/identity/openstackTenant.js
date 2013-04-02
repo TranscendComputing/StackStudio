@@ -8,8 +8,9 @@
 define([
         'jquery',
         'backbone',
-        'common'
-], function( $, Backbone, Common) {
+        'common',
+        'messenger'
+], function( $, Backbone, Common, Messenger) {
     'use strict';
 
     // Base Tenant Model
@@ -42,9 +43,64 @@ define([
             this.sendPostAction(url);
         },
 
-        removeUser: function(userId, trigger, credentialId, region) {
-            var url = "/users/" + userId + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
-            this.sendPostAction(url, {}, trigger);
+        removeUser: function(userModel, roleModel, trigger, credentialId, region) {
+            var url = "/users/" + userModel.id + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region,
+                data,
+                messageOptions;
+
+            if(roleModel)
+            {
+                data = {role_id: roleModel.id};
+                messageOptions = {
+                    successMessage: roleModel.get("name") + " role removed from " + userModel.get("name") + " user on " + this.get("name"),
+                    progressMessage: "Removing " + roleModel.get("name") + " role from " + userModel.get("name") + " user on " + this.get("name"),
+                    errorMessage: "Error removing " + roleModel.get("name") + " role from " + userModel.get("name") + " user on " + this.get("name"),
+                    showCloseButton: true
+                };
+            }else{
+                data = {};
+                messageOptions = {
+                    successMessage: userModel.get("name") + " has been removed from " + this.get("name"),
+                    progressMessage: "Removing " + userModel.get("name") + " from " + this.get("name"),
+                    errorMessage: "Error removing " + userModel.get("name") + " from " + this.get("name"),
+                    showCloseButton: true
+                };
+            }
+            Messenger.options = {
+                extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-left'
+            };
+            new Messenger().run(messageOptions,{
+                url: this.url() + url,
+                type: 'POST',
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: JSON.stringify(data),
+                success: function(data) {
+                    Common.vent.trigger(trigger);
+                }
+            }, this);
+        },
+
+        addUser: function(userModel, roleModel, trigger, credentialId, region) {
+            var url = "/users/" + userModel.id + "?cred_id=" + credentialId + "&region=" + region;
+            Messenger.options = {
+                extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-left'
+            };
+            new Messenger().run({
+                successMessage: roleModel.get("name") + " role added for " + userModel.get("name") + " on " + this.get("name"),
+                progressMessage: "Adding " + roleModel.get("name") + " role to " + userModel.get("name") + " on " + this.get("name"),
+                errorMessage: "Error adding " + roleModel.get("name") + " role to " + userModel.get("name") + " on " + this.get("name"),
+                showCloseButton: true
+            },{
+                url: this.url() + url,
+                type: 'POST',
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: JSON.stringify({role_id: roleModel.id}),
+                success: function(data) {
+                    Common.vent.trigger(trigger);
+                }
+            }, this);
         },
 		
 		sendPostAction: function(url, options, trigger) {

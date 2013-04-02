@@ -7,10 +7,11 @@
 /*global define:true console:true */
 define([
         'jquery',
+        'underscore',
         'backbone',
         '/js/openstack/models/identity/openstackUser.js',
         'common'
-], function( $, Backbone, User, Common ) {
+], function( $, _, Backbone, User, Common ) {
     'use strict';
 
     // User Collection
@@ -22,7 +23,18 @@ define([
         model: User,
 
         // CloudMux url for Openstack User APIs
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/identity/users'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/identity/users',
+
+        without: function(collection) {
+            var result = new Backbone.Collection();
+            _.each(this.models, function(model) {
+                if(!collection.get(model.id))
+                {
+                    result.add(model);
+                }
+            });
+            return result;
+        }
     });
 
     // Create our global collection of **Users**.
