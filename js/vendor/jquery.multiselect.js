@@ -630,6 +630,10 @@
       return this.menu.find('input').filter(':checked');
     },
 
+    getUnchecked: function() {
+      return this.menu.find('input').filter(':not(:checked)');
+    },
+
     destroy: function() {
       // remove classes + data
       $.Widget.prototype.destroy.call(this);

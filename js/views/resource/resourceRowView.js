@@ -19,7 +19,6 @@ define([
 
         initialize: function(options) {
             this.tableId = options.tableId;
-            this.model.on( 'change', this.render, this );
             this.model.on( 'destroy', this.remove, this );
             this.model.on( 'visible', this.toggleVisible, this );
         },

@@ -7,10 +7,11 @@
 /*global define:true console:true */
 define([
         'jquery',
+        'underscore',
         'backbone',
         '/js/openstack/models/identity/openstackTenant.js',
         'common'
-], function( $, Backbone, Tenant, Common ) {
+], function( $, _, Backbone, Tenant, Common ) {
     'use strict';
 
     // Tenant Collection

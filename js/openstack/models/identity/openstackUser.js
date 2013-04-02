@@ -9,8 +9,10 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'common'
-], function( $, _, Backbone, Common ) {
+        'common',
+        '/js/openstack/models/identity/openstackRole.js',
+        '/js/openstack/collections/identity/openstackRoles.js'
+], function( $, _, Backbone, Common, Role, Roles ) {
     'use strict';
 
     Backbone.emulateHTTP = true;
@@ -79,6 +81,32 @@ define([
         destroy: function(credentialId, region) {
             var url = "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
             this.sendPostAction(url);
+        },
+
+        getRoles: function(tenantId, credentialId, region) {
+            var model = this;
+            var url = "/" + tenantId + "/roles?cred_id=" + credentialId + "&region=" + region;
+            $.ajax({
+                url: model.url() + url,
+                type: 'GET',
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                success: function(data) {
+                    var roles = [];
+                    var availableRoles = [];
+                    _.each(data.roles, function(role) {
+                        roles.push(new Role(role));
+                    });
+                    _.each(data.available_roles, function(role) {
+                        availableRoles.push(new Role(role));
+                    });
+                   model.set({roles: new Roles(roles), availableRoles: new Roles(availableRoles)});
+                   model.trigger("user:listRoles");
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            });
         },
         
         sendPostAction: function(url, options, trigger) {
