@@ -25,8 +25,8 @@ define([
 
         create: function(options, credentialId) {
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/iam/groups/create?_method=PUT&cred_id=" + credentialId;
-            var options = {group: options};
-            this.sendPostAction(url, options, "groupAppRefresh");
+            var newGroup = {group: options};
+            this.sendPostAction(url, newGroup, "groupAppRefresh");
         },
 
         addUser: function(user, credentialId) {
