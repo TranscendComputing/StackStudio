@@ -15,9 +15,10 @@ define([
         '/js/aws/collections/iam/awsGroups.js',
         '/js/aws/collections/iam/awsGroupUsers.js',
         '/js/aws/views/iam/awsGroupCreateView.js',
+        '/js/aws/views/iam/awsAddUsersToGroupView.js',
         'icanhaz',
         'common'
-], function( $, _, Backbone, ResourceAppView, GroupAppTemplate, Group, Groups, GroupUsers, GroupCreateView, ich, Common ) {
+], function( $, _, Backbone, ResourceAppView, GroupAppTemplate, Group, Groups, GroupUsers, GroupCreateView, AddUsersToGroupView, ich, Common ) {
     'use strict';
 
     var AwsGroupsAppView = ResourceAppView.extend({
@@ -47,15 +48,13 @@ define([
             'click #action_menu ul li': 'performAction',
             'click #resource_table tr': "clickOne",
             'click #users' : 'refreshUsersTab',
-            'click .remove_user_from_group': 'removeUserFromGroup'
+            'click .remove_user_from_group': 'removeUserFromGroup',
+            'click #add_users_to_group_button': 'addUsersToGroup'
         },
 
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
-            }
-            if(options.region) {
-                this.region = options.region;
             }
             this.render();
             
@@ -63,6 +62,10 @@ define([
             Common.vent.off("groupAppRefresh");
             Common.vent.on("groupAppRefresh", function() {
                 groupApp.render();
+            });
+            Common.vent.off("groupUsersRefresh");
+            Common.vent.on("groupUsersRefresh", function() {
+                groupApp.refreshUsersTab();
             });
             this.selectedGroupUsers.on('reset', this.addAllGroupUsers, this);
         },
@@ -77,7 +80,7 @@ define([
             switch(event.target.text)
             {
             case "Delete Group":
-                group.destroy(this.credentialId, this.region);
+                group.destroy(this.credentialId);
                 break;
             }
         },
@@ -99,22 +102,36 @@ define([
                                                 "</div>");
             $("#group_users_table").dataTable({
                 "bJQueryUI": true,
-                "sDom": 't'
+                "sDom": 't',
+                "sScrollY": "300px",
+                "bPaginate": false,
+                "bScrollCollapse": true
             });
             $("#add_users_to_group_button").button();
+            $("#add_users_to_group_button").attr("disabled", true);
+            $("#add_users_to_group_button").addClass("ui-state-disabled");
             this.selectedGroupUsers.fetch({ data: $.param({ cred_id: this.credentialId, group_name: this.selectedId}), reset: true});
         },
 
         addAllGroupUsers: function() {
             $("#group_users_table").dataTable().fnClearTable();
             this.selectedGroupUsers.each(function(groupUser) {
-                var rowData = [groupUser.attributes.UserName, "<a href='' class='remove_user_from_group'>Remove from group</a>"];
+                var rowData = [groupUser.attributes.UserName, "<a name="+ groupUser.attributes.UserName +" href='' class='remove_user_from_group'>Remove from group</a>"];
                 $("#group_users_table").dataTable().fnAddData(rowData);
             });
+            $("#add_users_to_group_button").attr("disabled", false);
+            $("#add_users_to_group_button").removeClass("ui-state-disabled");
         },
 
-        removeUserFromGroup: function() {
-            //remove from group
+        addUsersToGroup: function() {
+            var group = this.collection.get(this.selectedId);
+            new AddUsersToGroupView({cred_id: this.credentialId, group: group, group_users: this.selectedGroupUsers.toJSON()});
+        },
+
+        removeUserFromGroup: function(event) {
+            var group = this.collection.get(this.selectedId);
+            var user = {id: event.target.name};
+            group.removeUser(user, this.credentialId);
             return false;
         }
     });
