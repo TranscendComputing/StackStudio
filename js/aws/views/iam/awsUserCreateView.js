@@ -33,7 +33,7 @@ define([
             Common.vent.off("userCreated");
             Common.vent.on("userCreated", function() {
                 createView.finish();
-            })
+            });
         },
 
         render: function() {
@@ -82,13 +82,14 @@ define([
         },
 
         finish: function() {
-            var newUser = this.user;
+            var newUser = this.user,
+                options;
             if($("#user_password_input").val() !== "") {
-                var options = {id: $("#user_name_input").val(), password: $("#user_password_input").val()};
+                options = {id: $("#user_name_input").val(), password: $("#user_password_input").val()};
                 newUser.createLoginProfile(options, this.credentialId);
             }
             if($("#generate_keys_checkbox").is(":checked")) {
-                var options = {"UserName": $("#user_name_input").val()};
+                options = {"UserName": $("#user_name_input").val()};
                 newUser.createAccessKey(options, this.credentialId);
             }
             Common.vent.trigger("userAppRefresh");
