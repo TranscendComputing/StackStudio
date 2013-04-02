@@ -45,7 +45,11 @@ define([
                 if(dataValue) {
                     rowData.push(dataValue);
                 } else {
-                    rowData.push("");
+                    if(dataValue === 0) {
+                        rowData.push("0");
+                    }else {
+                        rowData.push("");
+                    }
                 }
             });
             var added = $(this.tableId).dataTable().fnAddData(rowData);
