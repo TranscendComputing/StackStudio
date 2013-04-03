@@ -168,6 +168,10 @@
             {
                 "name": "South America (Sao Paulo)",
                 "zone": "sa-east-1"
+            },
+            {
+                "name": "US Gov",
+                "zone": "us-gov-west-1"
             }
         ]
     },
