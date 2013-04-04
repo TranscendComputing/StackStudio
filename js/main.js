@@ -20,9 +20,12 @@ require(['./common'], function (common) {
         dashboardView = "views/dashboardView";
         common.rssFeed = "http://www.transcendcomputing.com/feed/";
     }
-    if(dashboardView === undefined || siteParam)
+    if(dashboardView === undefined || siteParam !== "")
     {
-        site = siteParam.toLowerCase();
+        if(siteParam !== "")
+        {
+            site = siteParam.toLowerCase();
+        }
         var siteCss = "css/sites/" + site + ".css";
         var siteJs = "./js/sites/" + site + ".js"; 
         var fileref=document.createElement("link");
