@@ -10,20 +10,28 @@ define([
         'underscore',
         'backbone',
         'common',
-        'text!templates/dashboard.html',
-        'FeedEk'
-], function( $, _, Backbone, Common, dashboardTemplate, FeedEk ) {
+        'icanhaz',
+        'text!templates/mspDashboard.html',
+        'collections/serviceOfferings',
+        'FeedEk',
+        'jquery.list'
+], function( $, _, Backbone, Common, ich, dashboardTemplate, Offerings, FeedEk ) {
     
     var DashboardView = Backbone.View.extend({
         el: "#main",
-        template: _.template(dashboardTemplate),
-
+        template: dashboardTemplate,
+        collection: Offerings,
+        events: {
+            "click ul.dashboard-list li a": "handleClick"
+        },
         initialize: function() {
-            this.render();
+            this.collection.on("reset", this.render, this);
+            this.collection.fetch({reset: true});
         },
 
         render: function() {
-            this.$el.html(this.template);
+            ich.addTemplate("dashboard_view", this.template);
+            this.$el.html(ich.dashboard_view({company: Common.companyName, offerings: this.collection.toJSON()}));
             $("#divRss").FeedEk({
                 FeedUrl: Common.rssFeed,
                 MaxCount: 5,
@@ -32,6 +40,10 @@ define([
                 DescCharacterLimit: 200,
                 TitleLinkTarget: '_blank'
             });
+            
+            //this.$('ul').list({
+            //    headerSelector: 'li.dashboard-list-heading'
+            //});
         },
 
         close: function(){
@@ -39,11 +51,18 @@ define([
             this.undelegateEvents();
             this.stopListening();
             this.unbind();
+        },
+
+        handleClick: function() {
+            if(!sessionStorage.cloud_credentials)
+            {
+                return false;
+            }
         }
     });
     /** Variable to track whether view has been initialized or not */
     var dashboardView;
-    
+
     Common.router.on("route:dashboard", function () {
         if (this.previousView !== dashboardView) {
             this.unloadPreviousState();

@@ -29,6 +29,13 @@ requirejs.config({
                'backbone'
             ]
         },
+        'backbone.stickit': {
+            deps: [
+               'backbone',
+               'underscore',
+               'jquery'
+            ]
+        },
         'base64': {
             exports: 'Base64'
         },
@@ -52,6 +59,9 @@ requirejs.config({
             exports: 'ich'
         },
         'jquery.form': {
+            deps: ['jquery']
+        },
+        'jquery.list': {
             deps: ['jquery']
         },
         'jquery.terminal': {
@@ -135,9 +145,10 @@ requirejs.config({
         'jquery-ui': '//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min',
         'underscore': '//cdnjs.cloudflare.com/ajax/libs/lodash.js/1.1.0/lodash.min',
         'backbone': '//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min',
-        //'backbone': 'backbone-0.9.9',
+        //'backbone.stickit': 'backbone.stickit.min',
         'icanhaz': 'ICanHaz',
         'jquery.form': 'jquery.form',
+        //'jquery.list': 'jquery.list.min',
         'jquery.terminal': 'jquery.terminal-0.4.22',
         'jquery.mousewheel': 'jquery.mousewheel-min',
         'messenger': 'messenger.min',

@@ -71,13 +71,14 @@ define([
         
         diskWriteOpsData: new MetricStatistics(),
         
-        /** @type {Hash} Event listeners for current Vuew */
+        /** @type {Object} Event listeners for current Vuew */
         events: {
             'click .create_button': 'createNew',
             'click #action_menu ul li': 'performAction',
             'click #resource_table tr': "clickOne",
             'click #monitoring': 'refreshMonitors'
         },
+
         /**
          * [initialize description]
          * Initializes new OpenstackInstancesAppView and sets app event listeners
@@ -85,8 +86,11 @@ define([
          * @return {nil}
          */
         initialize: function(options) {
-            if(options.cred_id) {
+            if(options.region) {
                 this.credentialId = options.cred_id;
+            }
+            if(options.region) {
+                this.region = options.region;
             }
             this.render();
             

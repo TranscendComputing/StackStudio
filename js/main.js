@@ -12,8 +12,26 @@ if (DEBUG) {
 }
 
 require(['./common'], function (common) {
+    var dashboardView;
+    var site = window.location.hostname.split(".")[0];
+    if(site.indexOf("localhost") > -1 || site.indexOf("stackstudio") > -1)
+    {
+        dashboardView = "views/dashboardView";
+        common.rssFeed = "http://www.transcendcomputing.com/feed/";
+    }else{
+        var siteCss = "css/sites/" + site + ".css";
+        var siteJs = "./js/sites/" + site + ".js"; 
+        var fileref=document.createElement("link");
+        fileref.setAttribute("rel", "stylesheet");
+        fileref.setAttribute("type", "text/css");
+        fileref.setAttribute("href", siteCss);
+        document.getElementsByTagName("head")[0].appendChild(fileref);
+        require([siteJs], function(){});
+        dashboardView = "views/mspDashboardView";
+    }
     require([
             'views/account/navLogin',
+             dashboardView,
             'views/projectSidebarView',
             'views/account/accountManagementView',
             'views/projectAppView',
@@ -21,10 +39,8 @@ require(['./common'], function (common) {
              'views/projectResourceSidebarView',
              // 'views/projectListItemView',
              'views/projectEditView',
-             'views/resource/resourceNavigationView',
-             'views/dashboardView'
-            ], function(NavLogin) {
-        
+             'views/resource/resourceNavigationView'
+            ], function(NavLogin, DashboardView) {
         var navLogin = new NavLogin();
         navLogin.render();
         common.backbone.history.start();

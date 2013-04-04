@@ -154,7 +154,12 @@ define([
                 $("#action_menu li").removeClass("ui-state-disabled");
                 var template = this.cloudProvider + "_resource_detail";
                 if (ich.templates.resource_detail) {
+                    // Some templates use links to navigate to related resources, so merge the selected
+                    // into the model attributes in order to use in template links
+                    selectedModel.attributes['region'] = this.region;
                     $("#details").html(ich.resource_detail(selectedModel.attributes));
+                    // Delete region attribute added above, as it was only needed for templating
+                    delete selectedModel.attributes['region'];
                     var resourceApp = this;
                     $("#detail_tabs").tabs({
                         select: function(event, ui) {

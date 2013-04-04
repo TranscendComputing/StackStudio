@@ -151,7 +151,12 @@ define([
                     'scale':true // scale down steps
                 },
                 'bendamount':2, // amount of "bending" of the CoverScroll (values 0.1 to 1 bend down, -0.1 to -1 bend up, 2 is straight (no bending), 1.5 sligtly bends down)
-                'movecallback':function(item){} // callback function triggered after click on an item - parameter is the item's jQuery object
+                'movecallback':function(item) {
+                    if( $(item).attr("id") !== resourceNav.cloudProvider )
+                    {
+                        $("#cloud_coverflow").coverscroll("next");
+                    }
+                } // callback function triggered after click on an item - parameter is the item's jQuery object
             });
 		},
 

@@ -60,6 +60,9 @@ define([
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
             }
+            if(options.region) {
+                this.region = options.region;
+            }
             this.render();
             
             var roleApp = this;
