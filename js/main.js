@@ -14,11 +14,15 @@ if (DEBUG) {
 require(['./common'], function (common) {
     var dashboardView;
     var site = window.location.hostname.split(".")[0];
+    var siteParam = window.location.search.replace("?site=", "");
     if(site.indexOf("localhost") > -1 || site.indexOf("stackstudio") > -1 || site.indexOf("devessex") > -1)
     {
         dashboardView = "views/dashboardView";
         common.rssFeed = "http://www.transcendcomputing.com/feed/";
-    }else{
+    }
+    if(dashboardView === undefined || siteParam)
+    {
+        site = siteParam.toLowerCase();
         var siteCss = "css/sites/" + site + ".css";
         var siteJs = "./js/sites/" + site + ".js"; 
         var fileref=document.createElement("link");
