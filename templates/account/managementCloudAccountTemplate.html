@@ -34,12 +34,16 @@
         <fieldset>
             <legend>{{name}} Service Endpoints</legend>
             {{#cloud_services}}
-            <p><label class="field">{{cloud_service.service_type}} Endpoint URL:</label><input id="{{cloud_service.id}}" type="text" name="{{cloud_service.service_type}}" class="textbox-300" value="{{cloud_service.protocol}}://{{cloud_service.host}}:{{cloud_service.port}}{{cloud_service.path}}"></input></p>
+            <p>
+                <label class="tabbed-field">{{cloud_service.service_type}} Endpoint URL:</label>
+                <input data-id="{{cloud_service.id}}" type="text" data-name="{{cloud_service.service_type}}" class="textbox-300" value="{{cloud_service.protocol}}://{{cloud_service.host}}:{{cloud_service.port}}{{cloud_service.path}}"></input>
+                <button class="delete-button">Delete</button>
+                <button class="save-button">Save</button>
+            </p>
             {{/cloud_services}}
             {{^cloud_services}}
             <p><label>No cloud services defined for {{name}}.</label></p>
             {{/cloud_services}}
-            <button id="save_button">Save</button>
         </fieldset>
     </form>
 </script>

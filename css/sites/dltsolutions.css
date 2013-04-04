@@ -1,0 +1,58 @@
+.company-logo {
+    background-image: url('../../images/sites/dlt/dltLogo.png');
+    background-repeat: no-repeat;
+    width: 200px; /*or your image's width*/
+    height: 100px; /*or your image's height*/
+    margin: 0;
+    padding: 0;
+}
+.dashboard-left {
+    padding-top: 20px;
+}
+h1.dashboard-welcome {
+    padding-top: 10px;
+    padding-left: 10px;
+    font-size: 40px;
+}
+ul.dashboard-list{
+    border: 1px solid #2683BD;
+    height: 450px;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+    font-family: sans-serif;
+    font-size: 1em;
+}
+ul.dashboard-list li.dashboard-list-heading{
+    margin: 0;
+    background: #2683BD url(http://www.teamdf.com/jquery-plugins/resources/images/overlay-sprite.png) repeat-x 0 -50px;
+    font-weight: bold;
+    text-shadow: -1px -1px 0px rgba( 0, 0, 0, 0.2 ), 1px 1px 0px rgba( 255, 255, 255, 0.3 );
+    color: white;
+    padding: 8px 5px;
+    border-bottom: 1px solid #1D6FA2;
+}
+ul.dashboard-list li.dashboard-list-heading h3{
+    margin: 0;
+}
+ul.dashboard-list li{
+    padding: 5px;
+    margin: 0;
+    border-bottom: 1px solid #F2F6FB;
+    font-size: 0.8em;
+    color: #2A5673;
+}
+ul.dashboard-list li a{
+    display: inline-block;
+    color: #2A5673;
+    text-decoration: none;  
+}
+ul.dashboard-list li a:hover{
+    text-decoration: underline;
+}
+ul.dashboard-list li a::before{
+    position: relative;
+    top: 3px;
+    content: url(http://www.teamdf.com/jquery-plugins/resources/images/arrow.png);
+}

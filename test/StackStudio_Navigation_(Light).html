@@ -10,15 +10,78 @@
 </tr>
 </thead>
 <tbody>
+<!--Navigates through StackStudio and checks text of major items-->
 <tr>
 	<td>open</td>
 	<td>/</td>
 	<td></td>
 </tr>
 <tr>
+	<td>label</td>
+	<td>loginCheck</td>
+	<td></td>
+</tr>
+<!--Logs out if logged in-->
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='main']/div/h1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeTextPresent</td>
+	<td>ehansen</td>
+	<td>loggedIn</td>
+</tr>
+<tr>
+	<td>while</td>
+	<td>${loggedIn}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='account_logout']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextNotPresent</td>
+	<td>ehansen</td>
+	<td></td>
+</tr>
+<tr>
+	<td>store</td>
+	<td>!${loggedIn}</td>
+	<td>loggedIn</td>
+</tr>
+<tr>
+	<td>endWhile</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>loginRequiredCM</td>
+	<td></td>
+</tr>
+<!--Verifies login required-->
+<tr>
 	<td>waitForElementPresent</td>
 	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
 	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
+	<td>cloudManagement</td>
+</tr>
+<tr>
+	<td>gotoIf</td>
+	<td>!${cloudManagement}</td>
+	<td>login</td>
 </tr>
 <tr>
 	<td>click</td>
@@ -41,9 +104,30 @@
 	<td></td>
 </tr>
 <tr>
+	<td>label</td>
+	<td>login</td>
+	<td></td>
+</tr>
+<!--Logs into StackStudio-->
+<tr>
 	<td>waitForElementPresent</td>
 	<td>//*[@id='navLogin']/li/a</td>
 	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='navLogin']/li/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeElementPresent</td>
+	<td>//*[@id='navLogin']/li/a</td>
+	<td>login</td>
+</tr>
+<tr>
+	<td>gotoIf</td>
+	<td>!${login}</td>
+	<td>end</td>
 </tr>
 <tr>
 	<td>click</td>
@@ -81,6 +165,27 @@
 	<td>ehansen</td>
 </tr>
 <tr>
+	<td>label</td>
+	<td>cloudManagement</td>
+	<td></td>
+</tr>
+<!--Enters Cloud Management-->
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
+	<td>cloudManagement</td>
+</tr>
+<tr>
+	<td>gotoIf</td>
+	<td>!${cloudManagement}</td>
+	<td>account</td>
+</tr>
+<tr>
 	<td>click</td>
 	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
 	<td></td>
@@ -91,33 +196,38 @@
 	<td></td>
 </tr>
 <tr>
-	<td>assertElementPresent</td>
+	<td>verifyElementPresent</td>
 	<td>//*[@id='instances']</td>
 	<td></td>
 </tr>
 <tr>
-	<td>assertElementPresent</td>
+	<td>verifyElementPresent</td>
 	<td>//*[@id='spotinstances']</td>
 	<td></td>
 </tr>
 <tr>
-	<td>assertElementPresent</td>
+	<td>verifyElementPresent</td>
 	<td>//*[@id='reservedinstances']</td>
 	<td></td>
 </tr>
 <tr>
-	<td>assertElementPresent</td>
+	<td>verifyElementPresent</td>
 	<td>//*[@id='securitygroups']</td>
 	<td></td>
 </tr>
 <tr>
-	<td>assertElementPresent</td>
+	<td>verifyElementPresent</td>
 	<td>//*[@id='keypairs']</td>
 	<td></td>
 </tr>
 <tr>
-	<td>assertElementPresent</td>
+	<td>verifyElementPresent</td>
 	<td>//*[@id='elasticips']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>instances0</td>
 	<td></td>
 </tr>
 <tr>
@@ -154,6 +264,26 @@
 	<td>verifyText</td>
 	<td>//*[@id='resource_table']/thead/tr/th[7]/div</td>
 	<td>State</td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>spotRequests</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='spotinstances']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeElementPresent</td>
+	<td>//*[@id='spotinstances']</td>
+	<td>spotRequests</td>
+</tr>
+<tr>
+	<td>gotoIf</td>
+	<td>!${spotRequests}</td>
+	<td>reservedInstances</td>
 </tr>
 <tr>
 	<td>click</td>
@@ -196,6 +326,26 @@
 	<td>State</td>
 </tr>
 <tr>
+	<td>label</td>
+	<td>reservedInstances</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='reservedinstances']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeElementPresent</td>
+	<td>//*[@id='reservedinstances']</td>
+	<td>reservedInstances</td>
+</tr>
+<tr>
+	<td>gotoIf</td>
+	<td>!${reservedInstances}</td>
+	<td>securityGroups</td>
+</tr>
+<tr>
 	<td>click</td>
 	<td>//*[@id='reservedinstances']</td>
 	<td></td>
@@ -219,6 +369,26 @@
 	<td>verifyText</td>
 	<td>//*[@id='resource_table']/thead/tr/th[3]/div</td>
 	<td>State</td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>securityGroups</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='securitygroups']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeElementPresent</td>
+	<td>//*[@id='securitygroups']</td>
+	<td>securityGroups</td>
+</tr>
+<tr>
+	<td>gotoIf</td>
+	<td>!${securityGroups}</td>
+	<td>keyPairs</td>
 </tr>
 <tr>
 	<td>click</td>
@@ -246,6 +416,26 @@
 	<td>Description</td>
 </tr>
 <tr>
+	<td>label</td>
+	<td>keyPairs</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='keypairs']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeElementPresent</td>
+	<td>//*[@id='keypairs']</td>
+	<td>keyPairs</td>
+</tr>
+<tr>
+	<td>gotoIf</td>
+	<td>!${keyPairs}</td>
+	<td>elasticIPs</td>
+</tr>
+<tr>
 	<td>click</td>
 	<td>//*[@id='keypairs']</td>
 	<td></td>
@@ -264,6 +454,26 @@
 	<td>verifyText</td>
 	<td>//*[@id='resource_table']/thead/tr/th[2]/div</td>
 	<td>Fingerprint</td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>elasticIPs</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='elasticips']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeElementPresent</td>
+	<td>//*[@id='elasticips']</td>
+	<td>elasticIPs</td>
+</tr>
+<tr>
+	<td>gotoIf</td>
+	<td>!${elasticIPs}</td>
+	<td>instances1</td>
 </tr>
 <tr>
 	<td>click</td>
@@ -289,6 +499,26 @@
 	<td>verifyText</td>
 	<td>//*[@id='resource_table']/thead/tr/th[3]/div</td>
 	<td>Scope</td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>instances1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='instances']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeElementPresent</td>
+	<td>//*[@id='instances']</td>
+	<td>instances1</td>
+</tr>
+<tr>
+	<td>gotoIf</td>
+	<td>!${instances1}</td>
+	<td>account</td>
 </tr>
 <tr>
 	<td>click</td>
@@ -331,48 +561,89 @@
 	<td>State</td>
 </tr>
 <tr>
+	<td>label</td>
+	<td>account</td>
+	<td></td>
+</tr>
+<!--Enters account page-->
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='navAccount']/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeElementPresent</td>
+	<td>//*[@id='navAccount']/a</td>
+	<td>account</td>
+</tr>
+<tr>
+	<td>gotoIf</td>
+	<td>!${account}</td>
+	<td>logout</td>
+</tr>
+<tr>
 	<td>click</td>
 	<td>//*[@id='navAccount']/a</td>
 	<td></td>
 </tr>
 <tr>
 	<td>waitForElementPresent</td>
-	<td>//*[@id='credential_list']/li</td>
+	<td>//*[@id='TranscendDev']</td>
 	<td></td>
 </tr>
 <tr>
 	<td>click</td>
-	<td>//*[@id='credential_list']/li</td>
+	<td>//*[@id='TranscendDev']</td>
 	<td></td>
 </tr>
 <tr>
 	<td>waitForElementPresent</td>
-	<td>//*[@id='credential_form']/div/table/tbody/tr[1]/td[1]/b</td>
+	<td>//*[@id='form_area']/form/fieldset/p[1]/label</td>
 	<td></td>
 </tr>
 <tr>
 	<td>verifyText</td>
-	<td>//*[@id='credential_form']/div/table/tbody/tr[1]/td[1]/b</td>
-	<td>Credential Name:</td>
+	<td>//*[@id='form_area']/form/fieldset/p[1]/label</td>
+	<td>Name:</td>
 </tr>
 <tr>
 	<td>verifyText</td>
-	<td>//*[@id='credential_form']/div/table/tbody/tr[2]/td[1]/b</td>
+	<td>//*[@id='form_area']/form/fieldset/p[2]/label</td>
 	<td>Description:</td>
 </tr>
 <tr>
 	<td>verifyText</td>
-	<td>//*[@id='credential_form']/div/table/tbody/tr[3]/td[1]/b</td>
+	<td>//*[@id='form_area']/form/fieldset/p[3]/label</td>
 	<td>Access Key ID:</td>
 </tr>
 <tr>
 	<td>verifyText</td>
-	<td>//*[@id='credential_form']/div/table/tbody/tr[4]/td[1]/b</td>
-	<td>Secret Key ID:</td>
+	<td>//*[@id='form_area']/form/fieldset/p[4]/label</td>
+	<td>Secret Access Key:</td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='account_logout']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeElementPresent</td>
+	<td>//*[@id='account_logout']</td>
+	<td>logout</td>
+</tr>
+<tr>
+	<td>gotoIf</td>
+	<td>!${logout}</td>
+	<td>end</td>
 </tr>
 <tr>
 	<td>click</td>
-	<td>//*[@id='navLogin']/li[2]/a</td>
+	<td>//*[@id='account_logout']</td>
 	<td></td>
 </tr>
 <tr>
@@ -388,6 +659,11 @@
 <tr>
 	<td>verifyTextNotPresent</td>
 	<td>ehansen</td>
+	<td></td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>end</td>
 	<td></td>
 </tr>
 </tbody>

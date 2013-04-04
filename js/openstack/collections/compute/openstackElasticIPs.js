@@ -21,7 +21,7 @@ define([
         // Reference to this collection's model.
         model: ElasticIP,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/compute/addresses/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/compute/addresses'
     });
     
     return ElasticIPList;

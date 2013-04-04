@@ -1,0 +1,27 @@
+<div>
+    <div id="default_roles">
+    </div>
+    <div id="overview">
+    </div>
+</div>
+
+<script type="text/html" id="overview_template">
+{{#rolesAdded}}
+<p>The following roles will be added: {{#addedRoles}} {{name}} {{/addedRoles}}</p>
+{{/rolesAdded}}
+{{#rolesRemoved}}
+<p>The following roles will be removed: {{#removedRoles}} {{name}} {{/removedRoles}}</p>
+{{/rolesRemoved}}
+</script>
+
+<script type="text/html" id="roles_list_template">
+<span><p>Use select box below to set roles for {{name}}.</p></span>
+<select class="user-roles multiselect" multiple="multiple">
+    {{#roles}}
+    <option value={{id}} selected="selected">{{name}}</option>
+    {{/roles}}
+    {{#availableRoles}}
+    <option value={{id}}>{{name}}</option>
+    {{/availableRoles}}
+</select>
+</script>

@@ -17,13 +17,12 @@ define([
         '/js/aws/collections/compute/awsFlavors.js',
         '/js/aws/collections/compute/awsKeyPairs.js',
         '/js/aws/collections/compute/awsSecurityGroups.js',
-        'icanhaz',
         'common',
         'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
-], function( $, _, Backbone, DialogView, instanceCreateTemplate, Instance, Images, AvailabilityZones, Flavors, KeyPairs, SecurityGroups, ich, Common ) {
+], function( $, _, Backbone, DialogView, instanceCreateTemplate, Instance, Images, AvailabilityZones, Flavors, KeyPairs, SecurityGroups, Common ) {
     
     /**
      * InstanceCreateView is UI form to create compute.
@@ -36,6 +35,8 @@ define([
      */
     
     var InstanceCreateView = DialogView.extend({
+
+        template: _.template(instanceCreateTemplate),
 
         credentialId: undefined,
 
@@ -67,8 +68,7 @@ define([
 
         render: function() {
             var createView = this;
-            var compiledTemplate = _.template(instanceCreateTemplate);
-            this.$el.html(compiledTemplate);
+            this.$el.html(this.template);
 
             this.$el.dialog({
                 autoOpen: true,
@@ -98,19 +98,19 @@ define([
             }).multiselectfilter();
             
             this.images.on( 'reset', this.addAllImages, this );
-            this.images.fetch();
+            this.images.fetch({reset: true});
             
             this.flavors.on( 'reset', this.addAllFlavors, this );
-            this.flavors.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }) });
+            this.flavors.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset:true });
             
             this.availabilityZones.on( 'reset', this.addAllAvailabilityZones, this );
-            this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }) });
+            this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true });
             
             this.keyPairs.on( 'reset', this.addAllKeyPairs, this );
-            this.keyPairs.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }) });
+            this.keyPairs.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true });
             
             this.securityGroups.on( 'reset', this.addAllSecurityGroups, this );
-            this.securityGroups.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }) });
+            this.securityGroups.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true });
         },
         
         addAllImages: function() {
@@ -193,32 +193,32 @@ define([
             case "none":
                 console.log("none selected");
                 $("#elasticity_image").attr("src", "/images/IconPNGs/NewServer.png");
-                noneHTML = "";
+                var noneHTML = "";
                 $("#elasticity_config").html(noneHTML);
                 break;
             case "autoRecovery":
                 console.log("auto recover selected");
                 $("#elasticity_image").attr("src", "/images/IconPNGs/Autorestart.png");
-                autoRecoveryHTML = "";
+                var autoRecoveryHTML = "";
                 $("#elasticity_config").html(autoRecoveryHTML);
                 break;
             case "fixedArray":
                 console.log("fixed array selected");
                 $("#elasticity_image").attr("src", "/images/IconPNGs/Autoscale.png");
-                fixedArrayHTML = "<table><tr><td>Size:</td><td><input id='fixedArraySize'/></td></tr></table>";
+                var fixedArrayHTML = "<table><tr><td>Size:</td><td><input id='fixedArraySize'/></td></tr></table>";
                 $("#elasticity_config").html(fixedArrayHTML);
                 break;
             case "autoScale":
                 console.log("auto scale selected");
                 $("#elasticity_image").attr("src", "/images/IconPNGs/Autoscale.png");
-                autoScaleHTML = "<table>" +
+                var autoScaleHTML = "<table>" +
                         "<tr><td>Min:</td><td><input id='asMin'/></td></tr>" +
                         "<tr><td>Max:</td><td><input id='asMax'/></td></tr>" +
                         "<tr><td>Desired Capacity:</td><td><input id='asDesiredCapacity'/></td></tr>" +
                         "</table>";
                 $("#elasticity_config").html(autoScaleHTML);
                 break;
-            };
+            }
         },
         
         create: function() {

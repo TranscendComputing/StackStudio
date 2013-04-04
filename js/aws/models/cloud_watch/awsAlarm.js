@@ -48,7 +48,7 @@ define([
         },
         
         get: function(attr) {
-            if(typeof this[attr] == 'function') {
+            if(typeof this[attr] === 'function') {
                 var attribute = this[attr]();
                 return attribute;
             }
@@ -61,20 +61,20 @@ define([
             switch(this.attributes.comparison_operator)
             {
                     case "GreaterThanOrEqualToThreshold":
-                            comparisonSign = ">="
+                            comparisonSign = ">=";
                             break;
                     case "LessThanOrEqualToThreshold":
-                            comparisonSign = "<="
+                            comparisonSign = "<=";
                             break;
                     case "GreaterThanThreshold":
-                            comparisonSign = ">"
+                            comparisonSign = ">";
                             break;
                     case "LessThanThreshold":
-                            comparisonSign = "<"
+                            comparisonSign = "<";
                             break;
             }
             var timeLength = (this.attributes.period * this.attributes.evaluation_periods/60).toString();
-            return this.attributes.metric_name + " " + comparisonSign + " " + this.attributes.threshold.toString() + " " + this.attributes.unit + " for " + timeLength + " minutes.";;
+            return this.attributes.metric_name + " " + comparisonSign + " " + this.attributes.threshold.toString() + " " + this.attributes.unit + " for " + timeLength + " minutes.";
         },
         
         create: function(options, credentialId, region) {

@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone'
-], function( $, Backbone ) {
+], function( $, Backbone, Common ) {
     'use strict';
 
     /**

@@ -9,7 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'views/resourceAppView',
+        'views/resource/resourceAppView',
         'text!templates/aws/block_storage/awsVolumeAppTemplate.html',
         '/js/aws/models/block_storage/awsVolume.js',
         '/js/aws/collections/block_storage/awsVolumes.js',
@@ -67,7 +67,7 @@ define([
             'click .create_button': 'createNew',
             'click #action_menu ul li': 'performAction',
             'click #resource_table tr': "clickOne",
-            'click #monitoring': 'refreshMonitors',
+            'click #monitoring': 'refreshMonitors'
         },
 
         initialize: function(options) {
@@ -84,14 +84,14 @@ define([
                 volumeApp.render();
             });
 
-            this.idleTimeData.on( 'reset', function() {this.addMonitorGraph("#volume_idle_time", this.idleTimeData, ["Average"], ["Idle Time"], ["#000099"])}, this );
-            this.queueLengthData.on( 'reset', function() {this.addMonitorGraph("#volume_queue_length", this.queueLengthData, ["Average"], ["Queue Length"], ["#FF8000"])}, this );
-            this.readBytesData.on( 'reset', function() {this.addMonitorGraph("#volume_read_bytes", this.readBytesData, ["Average"], ["Read Bytes"], ["#00CC00"])}, this );
-            this.readOpsData.on( 'reset', function() {this.addMonitorGraph("#volume_read_ops", this.readOpsData, ["Average"], ["Read Ops"], ["#660066"])}, this );
-            this.totalReadTimeData.on( 'reset', function() {this.addMonitorGraph("#volume_total_read_time", this.totalReadTimeData, ["Average"], ["Total Read Time"], ["#FF0000"])}, this );
-            this.totalWriteTimeData.on( 'reset', function() {this.addMonitorGraph("#volume_total_write_time", this.totalWriteTimeData, ["Average"], ["Total Write Time"], ["#3399FF"])}, this );
-            this.writeBytesData.on( 'reset', function() {this.addMonitorGraph("#volume_write_bytes", this.writeBytesData, ["Average"], ["Write Bytes"], ["#996633"])}, this );
-            this.writeOpsData.on( 'reset', function() {this.addMonitorGraph("#volume_write_ops", this.writeOpsData, ["Average"], ["Write Ops"], ["#FF0066"])}, this );
+            this.idleTimeData.on( 'reset', function() {this.addMonitorGraph("#volume_idle_time", this.idleTimeData, ["Average"], ["Idle Time"], ["#000099"]);}, this );
+            this.queueLengthData.on( 'reset', function() {this.addMonitorGraph("#volume_queue_length", this.queueLengthData, ["Average"], ["Queue Length"], ["#FF8000"]);}, this );
+            this.readBytesData.on( 'reset', function() {this.addMonitorGraph("#volume_read_bytes", this.readBytesData, ["Average"], ["Read Bytes"], ["#00CC00"]);}, this );
+            this.readOpsData.on( 'reset', function() {this.addMonitorGraph("#volume_read_ops", this.readOpsData, ["Average"], ["Read Ops"], ["#660066"]);}, this );
+            this.totalReadTimeData.on( 'reset', function() {this.addMonitorGraph("#volume_total_read_time", this.totalReadTimeData, ["Average"], ["Total Read Time"], ["#FF0000"]);}, this );
+            this.totalWriteTimeData.on( 'reset', function() {this.addMonitorGraph("#volume_total_write_time", this.totalWriteTimeData, ["Average"], ["Total Write Time"], ["#3399FF"]);}, this );
+            this.writeBytesData.on( 'reset', function() {this.addMonitorGraph("#volume_write_bytes", this.writeBytesData, ["Average"], ["Write Bytes"], ["#996633"]);}, this );
+            this.writeOpsData.on( 'reset', function() {this.addMonitorGraph("#volume_write_ops", this.writeOpsData, ["Average"], ["Write Ops"], ["#FF0066"]);}, this );
         },
         
         toggleActions: function(e) {
@@ -170,24 +170,24 @@ define([
                 statistic: "Average",
                 dimension_name: "VolumeId",
                 dimension_value: this.selectedId
-            }
+            };
 
             metricStatisticOptions.metric_name = "VolumeIdleTime";
-            this.idleTimeData.fetch({ data: $.param(metricStatisticOptions) });
+            this.idleTimeData.fetch({ data: $.param(metricStatisticOptions), reset: true });
             metricStatisticOptions.metric_name = "VolumeQueueLength";
-            this.queueLengthData.fetch({ data: $.param(metricStatisticOptions) });
+            this.queueLengthData.fetch({ data: $.param(metricStatisticOptions), reset: true  });
             metricStatisticOptions.metric_name = "VolumeReadBytes";
-            this.readBytesData.fetch({ data: $.param(metricStatisticOptions) });
+            this.readBytesData.fetch({ data: $.param(metricStatisticOptions), reset: true  });
             metricStatisticOptions.metric_name = "VolumeReadOps";
-            this.readOpsData.fetch({ data: $.param(metricStatisticOptions) });
+            this.readOpsData.fetch({ data: $.param(metricStatisticOptions), reset: true  });
             metricStatisticOptions.metric_name = "VolumeTotalReadTime";
-            this.totalReadTimeData.fetch({ data: $.param(metricStatisticOptions) });
+            this.totalReadTimeData.fetch({ data: $.param(metricStatisticOptions), reset: true  });
             metricStatisticOptions.metric_name = "VolumeTotalWriteTime";
-            this.totalWriteTimeData.fetch({ data: $.param(metricStatisticOptions) });
+            this.totalWriteTimeData.fetch({ data: $.param(metricStatisticOptions), reset: true  });
             metricStatisticOptions.metric_name = "VolumeWriteBytes";
-            this.writeBytesData.fetch({ data: $.param(metricStatisticOptions) });
+            this.writeBytesData.fetch({ data: $.param(metricStatisticOptions), reset: true  });
             metricStatisticOptions.metric_name = "VolumeWriteOps";
-            this.writeOpsData.fetch({ data: $.param(metricStatisticOptions) });
+            this.writeOpsData.fetch({ data: $.param(metricStatisticOptions), reset: true  });
         },
 
         addMonitorGraph: function(element, collection, yKeys, labels, lineColors) {

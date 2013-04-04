@@ -9,7 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'views/resourceAppView',
+        'views/resource/resourceAppView',
         'text!templates/aws/vpc/awsSubnetAppTemplate.html',
         '/js/aws/models/vpc/awsSubnet.js',
         '/js/aws/collections/vpc/awsSubnets.js',

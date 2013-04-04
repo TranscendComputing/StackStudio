@@ -29,3 +29,5 @@ css/*.css
 _SpecRunner.html
 js/*-all*js*
 .tags*
+*.sublime*
+.DS_Store

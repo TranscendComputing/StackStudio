@@ -21,7 +21,7 @@ define([
         // Reference to this collection's model.
         model: AvailabilityZone,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/compute/availability_zones/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/compute/address_pools'
     });
     
     return AvailabilityZoneList;

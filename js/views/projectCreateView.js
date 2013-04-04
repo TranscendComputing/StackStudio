@@ -52,7 +52,12 @@ define([
                 title: "New Project"
           });
           
-          stacks.fetch({ success: this.handleAll, error: this.handleError, emulateJSON: true });
+          stacks.fetch({ 
+            success: this.handleAll, 
+            error: this.handleError, 
+            emulateJSON: true, 
+            reset: true 
+          });
           
           return this;  
         },

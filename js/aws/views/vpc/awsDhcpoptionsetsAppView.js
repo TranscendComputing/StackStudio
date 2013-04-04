@@ -9,7 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'views/resourceAppView',
+        'views/resource/resourceAppView',
         'text!templates/aws/vpc/awsDhcpOptionsSetAppTemplate.html',
         '/js/aws/models/vpc/awsDhcpOptionsSet.js',
         '/js/aws/collections/vpc/awsDhcpOptionsSets.js',
@@ -85,7 +85,7 @@ define([
                 dhcpOption.destroy(this.credentialId, this.region);
                 break;
             }
-        },
+        }
 	});
     
 	return AwsDhcpOptionsSetsAppView;

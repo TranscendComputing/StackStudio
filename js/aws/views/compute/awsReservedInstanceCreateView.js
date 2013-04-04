@@ -180,7 +180,10 @@ define([
             }
             options["instance-type"] = $("#type_select").val();
             options["product-description"] = $("#platform_select").val();
-            this.offerings.fetch({data: {cred_id: this.credentialId, filters: options, region: this.region}});
+            this.offerings.fetch({
+                data: {cred_id: this.credentialId, filters: options, region: this.region},
+                reset: true
+            });
             this.refreshTable();
         },
 

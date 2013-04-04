@@ -9,7 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'views/resourceAppView',
+        'views/resource/resourceAppView',
         'text!templates/aws/compute/awsSecurityGroupAppTemplate.html',
         '/js/aws/models/compute/awsSecurityGroup.js',
         '/js/aws/collections/compute/awsSecurityGroups.js',

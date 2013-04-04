@@ -61,7 +61,7 @@ define([
             $("#dhcp_options_select").selectmenu();
 
             this.dhcps.on( 'reset', this.addAllDhcpOptions, this );
-            this.dhcps.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }) });
+            this.dhcps.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true });
         },
 
         render: function() {
@@ -83,7 +83,7 @@ define([
             var options = {};
             var issue = false;
             //Validate and create
-            if($("#dhcp_options_select").val() != null && $("#dhcp_options_select").val() != "") {
+            if($("#dhcp_options_select").val() != null && $("#dhcp_options_select").val() !== "") {
                 options.id = this.vpc.attributes.id;
                 options.dhcp_options_id = $("#dhcp_options_select").val();
             }else {

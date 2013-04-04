@@ -37,8 +37,6 @@ define([
 		credentialId: undefined,
 
         region: undefined,
-
-        region: undefined,
 		
 		availabilityZones: new AvailabilityZones(),
 		
@@ -86,13 +84,22 @@ define([
             $("#snapshot_select").selectmenu();
             
             this.availabilityZones.on( 'reset', this.addAllAvailabilityZones, this );
-            this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region}) });
+            this.availabilityZones.fetch({ 
+                data: $.param({ cred_id: this.credentialId, region: this.region}),
+                reset: true
+            });
             
             this.ownedSnapshots.on( 'reset', this.addAllOwnedSnapshots, this );
-            this.ownedSnapshots.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region}) });
+            this.ownedSnapshots.fetch({ 
+                data: $.param({ cred_id: this.credentialId, region: this.region}),
+                reset: true
+            });
             
             this.publicSnapshots.on( 'reset', this.addAllPublicSnapshots, this );
-            this.publicSnapshots.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region, filters: {"RestorableBy":"all"}}) });
+            this.publicSnapshots.fetch({ 
+                data: $.param({ cred_id: this.credentialId, region: this.region, filters: {"RestorableBy":"all"}}),
+                reset: true
+            });
 		},
 		
 		render: function() {
@@ -147,7 +154,7 @@ define([
             }
             
             if($("#volume_size_input").val() !== "") {
-                var sizeInt = parseInt($("#volume_size_input").val());
+                var sizeInt = parseInt($("#volume_size_input").val(), 10);
                 if(sizeInt > 0 && sizeInt < 1001) {
                     options.size = sizeInt;
                 }else {
@@ -159,7 +166,7 @@ define([
             
             if($("#volume_type_select").val() === "io1") {
                 if($("#volume_iops_input").val() !== "") {
-                    var iopsInt = parseInt($("#volume_iops_input").val());
+                    var iopsInt = parseInt($("#volume_iops_input").val(), 10);
                     if(iopsInt > 99 && iopsInt < 2001) {
                         options.type = $("#volume_type_select").val();
                         options.iops = iopsInt;

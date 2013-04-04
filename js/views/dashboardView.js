@@ -25,7 +25,7 @@ define([
         render: function() {
             this.$el.html(this.template);
             $("#divRss").FeedEk({
-                FeedUrl: "http://www.transcendcomputing.com/feed/",
+                FeedUrl: Common.rssFeed,
                 MaxCount: 5,
                 ShowDesc: true,
                 ShowPubDate: true,
@@ -43,7 +43,7 @@ define([
     });
     /** Variable to track whether view has been initialized or not */
     var dashboardView;
-
+    
     Common.router.on("route:dashboard", function () {
         if (this.previousView !== dashboardView) {
             this.unloadPreviousState();

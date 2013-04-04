@@ -10,7 +10,7 @@ define([
         'underscore',
         'backbone',
         'views/featureNotImplementedView',
-        'views/resourceAppView',
+        'views/resource/resourceAppView',
         'text!templates/aws/vpc/awsNetworkAclAppTemplate.html',
         '/js/aws/models/vpc/awsNetworkAcl.js',
         '/js/aws/collections/vpc/awsNetworkAcls.js',

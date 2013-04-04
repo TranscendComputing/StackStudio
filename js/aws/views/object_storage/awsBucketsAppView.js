@@ -9,23 +9,23 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'views/resourceAppView',
+        'views/resource/resourceAppView',
         'text!templates/aws/object_storage/awsBucketAppTemplate.html',
         '/js/aws/models/object_storage/awsBucket.js',
         '/js/aws/collections/object_storage/awsBuckets.js',
         '/js/aws/views/object_storage/awsBucketCreateView.js',
         '/js/aws/collections/object_storage/awsFiles.js',
-        'views/resourceRowView',
+        'views/resource/resourceRowView',
         'icanhaz',
         'common',
         'jquery.dataTables',
         'jquery.jstree',
         'jquery.form'
 ], function( $, _, Backbone, AppView, awsBucketAppTemplate, Bucket, Buckets, AwsBucketCreateView, Files, ResourceRowView, ich, Common ) {
-	'use strict';
+    'use strict';
 
-	// Aws Application View
-	// ------------------------------
+    // Aws Application View
+    // ------------------------------
 
     /**
      * Aws AppView is UI view list of cloud items.
@@ -36,9 +36,9 @@ define([
      * @param {Object} initialization object.
      * @returns {Object} Returns an AwsAppView instance.
      */
-	var AwsBucketsAppView = AppView.extend({
-	    template: _.template(awsBucketAppTemplate),
-	    
+    var AwsBucketsAppView = AppView.extend({
+        template: _.template(awsBucketAppTemplate),
+        
         modelStringIdentifier: "key",
         
         columns: ["key"],
@@ -111,30 +111,30 @@ define([
             if(!this.initialObjectLoad) {
                 //Add button bar
                 $("#object_tab").append("<table>" +
-                		                    "<tr>" +
-                		                        "<td><button id='object_refresh_button'>Refresh Object</button></td>" +
-                		                        "<td><button id='object_upload_button'>Upload Object</button></td>" +
-                		                        "<td>" +
-                		                            "<ul id='object_action_menu'>" +
-                		                                "<li style='z-index: 1000'><a id='action_button'>Actions</a>" +
-                		                                    "<ul>" +
-                		                                        "<li><a>Delete</a></li>" +
-                		                                        "<li><a>Download</a></li>" +
-                		                                    "</ul></li>" +
-                		                            "</ul>" +
-                		                        "</td>" +
-                		                    "</tr>" +
-                		                 "</table>");
+                                            "<tr>" +
+                                                "<td><button id='object_refresh_button'>Refresh Object</button></td>" +
+                                                "<td><button id='object_upload_button'>Upload Object</button></td>" +
+                                                "<td>" +
+                                                    "<ul id='object_action_menu'>" +
+                                                        "<li style='z-index: 1000'><a id='action_button'>Actions</a>" +
+                                                            "<ul>" +
+                                                                "<li><a>Delete</a></li>" +
+                                                                "<li><a>Download</a></li>" +
+                                                            "</ul></li>" +
+                                                    "</ul>" +
+                                                "</td>" +
+                                            "</tr>" +
+                                         "</table>");
                 $("#object_action_menu li").addClass("ui-state-disabled");
                 //Add place holder for upload progress bar
                 //$("#object_tab").append("<div id='upload_progress_bar'></div>");
                 //Add objects data table
                 $("#object_tab").append("<table id='object_table' class='full_width'>" +
-                                    		"<thead>" +
-                                    		    "<tr><th>Name</th><th style='width:150px;'>Size</th><th style='width:150px;'>Last Modified</th></tr>" +
-                                    		"</thead>" +
-                                    		"<tbody></tbody>" +
-                                		"</table>");
+                                            "<thead>" +
+                                                "<tr><th>Name</th><th style='width:150px;'>Size</th><th style='width:150px;'>Last Modified</th></tr>" +
+                                            "</thead>" +
+                                            "<tbody></tbody>" +
+                                        "</table>");
                 //Add hidden form for file upload
                 this.refreshFileInputForm();
                 //Add hidden form for file download
@@ -178,7 +178,7 @@ define([
             $("#object_action_menu li").addClass("ui-state-disabled");
             this.files = new Files();
             this.files.on( 'reset', this.addAllFiles, this );
-            this.files.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region, directory: this.selectedId}) });
+            this.files.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region, directory: this.selectedId}), reset: true });
         },
         
         openFileDialog: function() {
@@ -257,7 +257,7 @@ define([
             }
         }
         
-	});
+    });
     
-	return AwsBucketsAppView;
+    return AwsBucketsAppView;
 });

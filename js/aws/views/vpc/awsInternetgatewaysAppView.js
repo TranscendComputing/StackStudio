@@ -9,7 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'views/resourceAppView',
+        'views/resource/resourceAppView',
         'text!templates/aws/vpc/awsInternetGatewayAppTemplate.html',
         '/js/aws/models/vpc/awsInternetGateway.js',
         '/js/aws/collections/vpc/awsInternetGateways.js',
@@ -56,7 +56,7 @@ define([
         events: {
             'click .create_button': 'createNew',
             'click #action_menu ul li': 'performAction',
-            'click #resource_table tr': "clickOne",
+            'click #resource_table tr': "clickOne"
         },
 
         initialize: function(options) {

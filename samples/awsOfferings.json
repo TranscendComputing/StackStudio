@@ -1,0 +1,65 @@
+[
+    {
+        "id": "5032ad95d75aa23cf40000e2",
+        "sku": "SKU002",
+        "offering": "VMware-to-AWS Migration",
+        "description": "Virtual Machines in the VMware environment are automatically migrated to the Amazon cloud.",
+        "constraints": "Only supports Windows Server 2003, Windows Server 2003 R2 and Windows Server 2008 (Datacenter, Enterprise, and Standard editions)",
+        "price": "155",
+        "currency": "USD",
+        "unit": "VM"
+    },
+    {
+        "id": "5032ad95d75aa23cf40000e3",
+        "sku": "SKU003",
+        "offering": "Microsoft Hyper-V-to-AWS Migration",
+        "description": "Virtual Machines in the Microsoft Hyper-V environment are automatically migrated to the Amazon cloud.",
+        "constraints": "Only supports Windows Server 2003, Windows Server 2003 R2 and Windows Server 2008 (Datacenter, Enterprise, and Standard editions)",
+        "price": "155",
+        "currency": "USD",
+        "unit": "VM"
+    },
+    {
+        "id": "5032ad95d75aa23cf40000e4",
+        "sku": "SKU004",
+        "offering": "Microsoft Citrix Xen-to-AWS Migration",
+        "description": "Virtual Machines in the Citrix Xen environment are migrated to the Amazon cloud.",
+        "constraints": "Only supports Windows Server 2003, Windows Server 2003 R2 and Windows Server 2008 (Datacenter, Enterprise, and Standard editions)",
+        "price": "155",
+        "currency": "USD",
+        "unit": "VM"
+    },
+    {
+        "id": "5032ad95d75aa23cf40000e5",
+        "sku": "SKU005",
+        "offering": "AWS Migration Workshop",
+        "audience": "This workshop is for management and technical personnel who are considering moving a significant number of applications to the AWS cloud.",
+        "description": "The workshop provides a methodical look at the considerations of making a large-scale move to the AWS cloud. It covers the financial considerations, technical obstacles, common methods and reviews a template plan for making the move.  The workshop covers common issues like moving shared storage, migrating IP/DNS addresses, migrating network routing tables and firewall settings, etc.",
+        "constraints": "Recommend that fewer than 8 attend the workshop.",
+        "price": "5500",
+        "currency": "USD",
+        "unit": "2 days"
+    },
+    {
+        "id": "5032ad95d75aa23cf40000e6",
+        "sku": "SKU006",
+        "offering": "AWS Architecture Days",
+        "audience": "Technical personnel including architects, engineers and operations specialists",
+        "description": "‘Architecture Days’ are interactive sessions where your team and an expert in AWS discuss your projects and possible solutions for deploying it on the Amazon cloud.",
+        "constraints": "Recommend that fewer than 8 attend the workshop.",
+        "price": "1800",
+        "currency": "USD",
+        "unit": "day"
+    },
+    {
+        "id": "5032ad95d75aa23cf40000e7",
+        "sku": "SKU007",
+        "offering": "AWS Activation Service",
+        "audience": "Technical personnel including architects, engineers and operations specialists",
+        "description": "8 hours of online training material covering the fundamentals of the AWS cloud offering including: Images & instances, Elastic IP’s, Security Groups, Virtual Private Clouds (VPC), Identity & Access Management, Simple Storage and more.",
+        "constraints": "Video is available to one user for a single viewing. Additional seats can be purchased.",
+        "price": "400",
+        "currency": "USD",
+        "unit": "user"
+    }
+]

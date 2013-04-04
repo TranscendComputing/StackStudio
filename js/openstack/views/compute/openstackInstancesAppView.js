@@ -9,7 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'views/resourceAppView',
+        'views/resource/resourceAppView',
         'text!templates/openstack/compute/openstackInstanceAppTemplate.html',
         '/js/openstack/models/compute/openstackInstance.js',
         '/js/openstack/collections/compute/openstackInstances.js',
@@ -71,13 +71,14 @@ define([
         
         diskWriteOpsData: new MetricStatistics(),
         
-        /** @type {Hash} Event listeners for current Vuew */
+        /** @type {Object} Event listeners for current Vuew */
         events: {
             'click .create_button': 'createNew',
             'click #action_menu ul li': 'performAction',
             'click #resource_table tr': "clickOne",
             'click #monitoring': 'refreshMonitors'
         },
+
         /**
          * [initialize description]
          * Initializes new OpenstackInstancesAppView and sets app event listeners
@@ -85,8 +86,11 @@ define([
          * @return {nil}
          */
         initialize: function(options) {
-            if(options.cred_id) {
+            if(options.region) {
                 this.credentialId = options.cred_id;
+            }
+            if(options.region) {
+                this.region = options.region;
             }
             this.render();
             
@@ -111,6 +115,27 @@ define([
         toggleActions: function(e) {
             this.unloadMonitors();
             //Disable any needed actions
+            var instance = this.collection.get(this.selectedId);
+            var actionsMenu = $("#action_menu").menu("option", "menus");
+            _.each($("#action_menu").find(actionsMenu).find("li"), function(item){
+                var actionItem = $(item);
+                if(actionItem.text() === "Disassociate Address")
+                {
+                    this.toggleActionItem(actionItem, (instance.get("addresses").private && instance.get("addresses").private.length < 2));
+                }
+                if(actionItem.text() === "Terminate")
+                {
+                    //TODO: Disable terminate under certain conditions   
+                }
+                if(actionItem.text() === "Start")
+                {
+                    this.toggleActionItem(actionItem, instance.get("state") !== "PAUSED");
+                }
+                if(actionItem.text() === "Stop" || actionItem.text() === "Reboot")
+                {
+                    this.toggleActionItem(actionItem, instance.get("state") !== "ACTIVE");
+                }
+            }, this);
         },
         /**
          * [performAction description]
@@ -120,7 +145,6 @@ define([
          */
         performAction: function(event) {
             var instance = this.collection.get(this.selectedId);
-            
             switch(event.target.text)
             {
             case "Start":
@@ -136,7 +160,8 @@ define([
                 instance.terminate(this.credentialId);
                 break;
             case "Disassociate Address":
-                instance.disassociateAddress(this.credentialId);
+                var address = instance.get("addresses").private[1].addr;
+                instance.disassociateAddress(address, this.credentialId);
                 break;
             }
         },
@@ -174,19 +199,19 @@ define([
                     dimension_value: this.selectedId
                 };
                 metricStatisticOptions.metric_name = "CPUUtilization";
-                this.cpuData.fetch({ data: $.param(metricStatisticOptions) });
+                this.cpuData.fetch({ data: $.param(metricStatisticOptions), reset: true });
                 metricStatisticOptions.metric_name = "DiskReadBytes";
-                this.diskReadBytesData.fetch({ data: $.param(metricStatisticOptions) });
+                this.diskReadBytesData.fetch({ data: $.param(metricStatisticOptions), reset: true });
                 metricStatisticOptions.metric_name = "DiskWriteBytes";
-                this.diskWriteBytesData.fetch({ data: $.param(metricStatisticOptions) });
+                this.diskWriteBytesData.fetch({ data: $.param(metricStatisticOptions), reset: true });
                 metricStatisticOptions.metric_name = "NetworkIn";
-                this.networkInData.fetch({ data: $.param(metricStatisticOptions) });
+                this.networkInData.fetch({ data: $.param(metricStatisticOptions), reset: true });
                 metricStatisticOptions.metric_name = "NetworkOut";
-                this.networkOutData.fetch({ data: $.param(metricStatisticOptions) });
+                this.networkOutData.fetch({ data: $.param(metricStatisticOptions), reset: true });
                 metricStatisticOptions.metric_name = "DiskReadOps";
-                this.diskReadOpsData.fetch({ data: $.param(metricStatisticOptions) });
+                this.diskReadOpsData.fetch({ data: $.param(metricStatisticOptions), reset: true });
                 metricStatisticOptions.metric_name = "DiskWriteOps";
-                this.diskWriteOpsData.fetch({ data: $.param(metricStatisticOptions) });
+                this.diskWriteOpsData.fetch({ data: $.param(metricStatisticOptions), reset: true });
                 
                 this.initialMonitorLoad = true;
             }

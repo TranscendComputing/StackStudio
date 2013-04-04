@@ -9,7 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'views/resourceAppView',
+        'views/resource/resourceAppView',
         'text!templates/openstack/block_storage/openstackVolumeAppTemplate.html',
         '/js/openstack/models/block_storage/openstackVolume.js',
         '/js/openstack/collections/block_storage/openstackVolumes.js',
@@ -42,7 +42,7 @@ define([
 	    
         modelStringIdentifier: "id",
         
-        columns: ["tags.Name", "id", "size", "state"],
+        columns: ["name", "id", "size", "status"],
         
         idColumnNumber: 1,
         
@@ -76,12 +76,15 @@ define([
             'click .create_button': 'createNew',
             'click #action_menu ul li': 'performAction',
             'click #resource_table tr': "clickOne",
-            'click #monitoring': 'refreshMonitors',
+            'click #monitoring': 'refreshMonitors'
         },
 
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
+            }
+            if(options.region) {
+                this.region = options.region;
             }
             this.render();
             
@@ -101,6 +104,23 @@ define([
         
         toggleActions: function(e) {
             //Disable any needed actions
+            var volume = this.collection.get(this.selectedId);
+            var actionsMenu = $("#action_menu").menu("option", "menus");
+            _.each($("#action_menu").find(actionsMenu).find("li"), function(item){
+                var actionItem = $(item);
+                if(actionItem.text() === "Attach Volume" || actionItem.text() === "Create Snapshot")
+                {
+                    this.toggleActionItem(actionItem, volume.get("status") !== "available");
+                }
+                if(actionItem.text() === "Delete Volume")
+                {
+                    this.toggleActionItem(actionItem, volume.get("status") === "in-use");
+                }
+                if(actionItem.text() === "Detach Volume")
+                {
+                    this.toggleActionItem(actionItem, volume.get("status") !== "in-use");
+                }
+            }, this);
         },
         
         performAction: function(event) {
@@ -116,9 +136,6 @@ define([
                 break;
             case "Detach Volume":
                 volume.detach(this.credentialId);
-                break;
-            case "Force Detach":
-                volume.forceDetach(this.credentialId);
                 break;
             case "Create Snapshot":
                 new OpenstackSnapshotCreateView({cred_id: this.credentialId, volume: volume});
@@ -174,24 +191,24 @@ define([
                 statistic: "Average",
                 dimension_name: "VolumeId",
                 dimension_value: this.selectedId
-            }
+            };
 
             metricStatisticOptions.metric_name = "VolumeIdleTime";
-            this.idleTimeData.fetch({ data: $.param(metricStatisticOptions) });
+            this.idleTimeData.fetch({ data: $.param(metricStatisticOptions), reset: true });
             metricStatisticOptions.metric_name = "VolumeQueueLength";
-            this.queueLengthData.fetch({ data: $.param(metricStatisticOptions) });
+            this.queueLengthData.fetch({ data: $.param(metricStatisticOptions), reset: true });
             metricStatisticOptions.metric_name = "VolumeReadBytes";
-            this.readBytesData.fetch({ data: $.param(metricStatisticOptions) });
+            this.readBytesData.fetch({ data: $.param(metricStatisticOptions), reset: true });
             metricStatisticOptions.metric_name = "VolumeReadOps";
-            this.readOpsData.fetch({ data: $.param(metricStatisticOptions) });
+            this.readOpsData.fetch({ data: $.param(metricStatisticOptions), reset: true });
             metricStatisticOptions.metric_name = "VolumeTotalReadTime";
-            this.totalReadTimeData.fetch({ data: $.param(metricStatisticOptions) });
+            this.totalReadTimeData.fetch({ data: $.param(metricStatisticOptions), reset: true });
             metricStatisticOptions.metric_name = "VolumeTotalWriteTime";
-            this.totalWriteTimeData.fetch({ data: $.param(metricStatisticOptions) });
+            this.totalWriteTimeData.fetch({ data: $.param(metricStatisticOptions), reset: true });
             metricStatisticOptions.metric_name = "VolumeWriteBytes";
-            this.writeBytesData.fetch({ data: $.param(metricStatisticOptions) });
+            this.writeBytesData.fetch({ data: $.param(metricStatisticOptions), reset: true });
             metricStatisticOptions.metric_name = "VolumeWriteOps";
-            this.writeOpsData.fetch({ data: $.param(metricStatisticOptions) });
+            this.writeOpsData.fetch({ data: $.param(metricStatisticOptions), reset: true });
         },
 
         addIdleTimeData: function() {

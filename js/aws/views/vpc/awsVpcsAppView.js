@@ -9,7 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'views/resourceAppView',
+        'views/resource/resourceAppView',
         'text!templates/aws/vpc/awsVpcAppTemplate.html',
         '/js/aws/models/vpc/awsVpc.js',
         '/js/aws/collections/vpc/awsVpcs.js',
@@ -89,7 +89,7 @@ define([
                 new AssociateDhcpView({vpc: vpc, cred_id: this.credentialId, region: this.region});
                 break;
             }
-        },
+        }
 	});
     
 	return AwsVpcsAppView;

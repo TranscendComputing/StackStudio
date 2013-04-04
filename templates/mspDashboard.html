@@ -1,0 +1,29 @@
+<div class="dashboard-welcome">
+    <div class="company-logo threecol"/>
+    <h1 class="dashboard-welcome ninecol">
+        Welcome to the {{company}} Cloud Portal
+    </h1>
+</div>
+<div class="row">
+    <div class="sevencol">
+        <div class="tencol dashboard-left">
+            <ul class="dashboard-list">
+                <li class="dashboard-list-heading"><h3>Application Store<h3></li>
+                <li><a href="" title="Wordpress">Wordpress</a></li>
+                <li><a href="" title="Joomla!">Joomla!</a></li>
+                <li class="dashboard-list-heading"><h3>Cloud Store<h3></li>
+                <li><a href="" title="Compute Instance">Compute Instance</a></li>
+                <li><a href="" title="Load Balancer">Load Balancer</a></li>
+                <li><a href="" title="Database">Database</a></li>
+                <li class="dashboard-list-heading"><h3>Service Store<h3></li>
+                {{#offerings}}
+                <li><a href="" title="{{description}}">{{offering}}</a></li>
+                {{/offerings}}
+            </ul>
+        </div>
+    </div>
+    <div class="fivecol">
+        <h3 class="dashboard">Recent News for {{company}}</h3>
+        <div id="divRss"></div>
+    </div>
+</div>

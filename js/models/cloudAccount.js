@@ -8,8 +8,9 @@
 define([
         'jquery',
         'backbone',
-        'common'
-], function( $, Backbone, Common ) {
+        'common',
+        'messenger'
+], function( $, Backbone, Common, Messenger ) {
     'use strict';
 
     // Cloud Account Model
@@ -27,12 +28,7 @@ define([
 
         /** Default attributes for cloud account */
         defaults: {
-            id: "",
             name: "New Account",
-            cloud_id: "",
-            org_id: "",
-            cloud_name: "",
-            cloud_provider: "",
             prices: [],
             cloud_services: [],
             cloud_mappings: [],
@@ -49,12 +45,21 @@ define([
          * @param  {[type]} service
          * @return {[type]}
          */
-        saveCloudService: function(service) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_accounts/" + this.id + "/services";
+        updateService: function(serviceModel) {
+            Messenger.options = {
+                extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-left',
+                theme: 'future'
+            };
             var model = this;
-            var cloudService = {"cloud_service": service.attributes};
-            $.ajax({
-                url: url,
+            var cloudService = {"cloud_service": serviceModel.toJSON()};
+            new Messenger().run({
+                errorMessage: "Unable to save " + serviceModel.get("service_type") + " service.",
+                successMessage: serviceModel.get("service_type") + " service saved.",
+                showCloseButton: true,
+                hideAfter: 2,
+                hideOnNavigate: true
+            },{
+                url: this.url() + "/services/" + serviceModel.id + "?_method=PUT",
                 type: 'POST',
                 contentType: 'application/x-www-form-urlencoded',
                 dataType: 'json',
@@ -62,27 +67,30 @@ define([
                 success: function(data) {
                     model.attributes = model.parse(data);
                     Common.vent.trigger("cloudAccountUpdated");
-                },
-                error: function(jqXHR) {
-                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
                 }
             });
         },
 
-        deleteCloudService: function(service_id) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_accounts/" + this.id + "/services/" + service_id + "?_method=DELETE";
+        deleteService: function(service) {
+            Messenger.options = {
+                extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-left',
+                theme: 'future'
+            };
             var model = this;
-            $.ajax({
-                url: url,
+            new Messenger().run({
+                errorMessage: "Unable to delete " + service.name + " service.",
+                successMessage: service.name + " service deleted.",
+                showCloseButton: true,
+                hideAfter: 2,
+                hideOnNavigate: true
+            },{
+                url: this.url() + "/services/" + service.id + "?_method=DELETE",
                 type: 'POST',
                 contentType: 'application/x-www-form-urlencoded',
                 dataType: 'json',
                 success: function(data) {
                     model.attributes = model.parse(data);
                     Common.vent.trigger("cloudAccountUpdated");
-                },
-                error: function(jqXHR) {
-                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
                 }
             });
         }

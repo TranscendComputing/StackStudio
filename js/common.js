@@ -19,7 +19,7 @@ requirejs.config({
         },
         'backbone': {
             deps: [
-                'underscore',
+                  'underscore',
                 'jquery'
             ],
             exports: 'Backbone'
@@ -27,6 +27,13 @@ requirejs.config({
         'backbone.queryparams': {
             deps: [
                'backbone'
+            ]
+        },
+        'backbone.stickit': {
+            deps: [
+               'backbone',
+               'underscore',
+               'jquery'
             ]
         },
         'base64': {
@@ -52,6 +59,9 @@ requirejs.config({
             exports: 'ich'
         },
         'jquery.form': {
+            deps: ['jquery']
+        },
+        'jquery.list': {
             deps: ['jquery']
         },
         'jquery.terminal': {
@@ -133,11 +143,12 @@ requirejs.config({
         wrappers: '../../wrappers',
         'jquery': '//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min',
         'jquery-ui': '//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min',
-        'underscore': '//cdnjs.cloudflare.com/ajax/libs/lodash.js/1.0.0-rc.3/lodash.min',
-        'backbone': '//cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.10/backbone-min',
-        //'backbone': 'backbone-0.9.9',
+        'underscore': '//cdnjs.cloudflare.com/ajax/libs/lodash.js/1.1.0/lodash.min',
+        'backbone': '//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min',
+        //'backbone.stickit': 'backbone.stickit.min',
         'icanhaz': 'ICanHaz',
         'jquery.form': 'jquery.form',
+        //'jquery.list': 'jquery.list.min',
         'jquery.terminal': 'jquery.terminal-0.4.22',
         'jquery.mousewheel': 'jquery.mousewheel-min',
         'messenger': 'messenger.min',
@@ -209,7 +220,7 @@ require(
             requirejs.undef(failedId);
             requirejs.config({
                 paths: {
-                    'underscore': 'lodash'
+                    'underscore': 'lodash-1.1.1.min'
                 }
             });
             require(['underscore'], function () {});
@@ -225,7 +236,7 @@ require(
             requirejs.undef(failedId);
             requirejs.config({
                 paths: {
-                    'backbone': 'backbone-0.9.9.min'
+                    'backbone': 'backbone-1.0.min'
                 }
             });
             require(['backbone'], function () {});
@@ -249,18 +260,25 @@ define(
          'views/errorDialog',
          'jquery-ui',
          'jquery-ui-plugins'
-         ], function ($, _, Backbone, CommandLineView, Router, ErrorDialog) {            
+         ], function ($, _, Backbone, CommandLineView, Router, ErrorDialog) {
     // Within this scope, jquery and jquery UI have been loaded.
 
     // Initialize routing
     router = new Router();
 
+    /** http://backbonejs.org/#Sync-emulateHTTP */
+    //Backbone.emulateHTTP = true;
+
     //Base url for API calls
     var apiUrl;
-    if(location.hostname.indexOf("stackstudio2.appspot.com") !== -1) {
+    // Automatically choose URL based on current hostname.
+    // TODO: need a cleaner solution for this, w/o requiring too much config
+    if(location.hostname.indexOf("stackstudio2.appspot.com") !== -1 ) {
         apiUrl = "http://191.80.59.108.bc.googleusercontent.com:9292";
     }else if(location.hostname === "localhost") {
         apiUrl = "http://localhost:9292";
+    }else if(location.hostname === "stackstudio-dev") {
+        apiUrl = "http://devessex.essex.momentumsoftware.com:8000";
     }else if(location.hostname === "stackstudio-local") {
         apiUrl = "http://stackstudio-api:9292";
     }else if(location.hostname === "devessex.essex.momentumsoftware.com") {
@@ -293,7 +311,7 @@ define(
         backbone: Backbone,
 
         previousView: {},
-        
+
         errorDialog: function(title, message) {
             new ErrorDialog({title: title, message: message});
         },

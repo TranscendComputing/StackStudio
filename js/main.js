@@ -12,20 +12,42 @@ if (DEBUG) {
 }
 
 require(['./common'], function (common) {
+    var dashboardView;
+    var site = window.location.hostname.split(".")[0];
+    var siteParam = window.location.search.replace("?site=", "");
+    if(site.indexOf("localhost") > -1 || site.indexOf("stackstudio") > -1 || site.indexOf("devessex") > -1 || site.length < 2)
+    {
+        dashboardView = "views/dashboardView";
+        common.rssFeed = "http://www.transcendcomputing.com/feed/";
+    }
+    if(dashboardView === undefined || siteParam !== "")
+    {
+        if(siteParam !== "")
+        {
+            site = siteParam.toLowerCase();
+        }
+        var siteCss = "css/sites/" + site + ".css";
+        var siteJs = "./js/sites/" + site + ".js"; 
+        var fileref=document.createElement("link");
+        fileref.setAttribute("rel", "stylesheet");
+        fileref.setAttribute("type", "text/css");
+        fileref.setAttribute("href", siteCss);
+        document.getElementsByTagName("head")[0].appendChild(fileref);
+        require([siteJs], function(){});
+        dashboardView = "views/mspDashboardView";
+    }
     require([
-            'views/navLogin',
+            'views/account/navLogin',
+             dashboardView,
             'views/projectSidebarView',
-            'views/accountManagementView',
+            'views/account/accountManagementView',
             'views/projectAppView',
              // 'views/projectNavigationSidebarView',
              'views/projectResourceSidebarView',
              // 'views/projectListItemView',
              'views/projectEditView',
-             'views/resourceNavigationView',
-             'views/cloudCredentialView',
-             'views/dashboardView'
-            ], function(NavLogin) {
-        
+             'views/resource/resourceNavigationView'
+            ], function(NavLogin, DashboardView) {
         var navLogin = new NavLogin();
         navLogin.render();
         common.backbone.history.start();

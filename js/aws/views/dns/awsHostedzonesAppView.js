@@ -9,14 +9,14 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'views/resourceAppView',
+        'views/resource/resourceAppView',
         'text!templates/aws/dns/awsHostedZoneAppTemplate.html',
         '/js/aws/models/dns/awsHostedZone.js',
         '/js/aws/collections/dns/awsHostedZones.js',
         '/js/aws/models/dns/awsRecordSet.js',
         '/js/aws/collections/dns/awsRecordSets.js',
         '/js/aws/views/dns/awsHostedZoneCreateView.js',
-        'views/resourceRowView',
+        'views/resource/resourceRowView',
         '/js/aws/views/dns/awsRecordSetCreateView.js',
         'icanhaz',
         'common',
@@ -125,7 +125,7 @@ define([
             $("#record_set_action_menu li").addClass("ui-state-disabled");
             this.records = new RecordSets();
             this.records.on( 'reset', this.addAllRecordSets, this );
-            this.records.fetch({ data: $.param({ cred_id: this.credentialId, hosted_zone_id: this.selectedId}) });
+            this.records.fetch({ data: $.param({ cred_id: this.credentialId, hosted_zone_id: this.selectedId}), reset: true });
         },
 
         addAllRecordSets: function() {

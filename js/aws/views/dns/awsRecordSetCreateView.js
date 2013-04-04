@@ -36,17 +36,18 @@ define([
             this.hostedZone = options.hosted_zone;
             this.previousRecordSet = options.record_set;
 
-            var createView = this;
-            var compiledTemplate = _.template(recordSetCreateTemplate);
-            this.$el.html(compiledTemplate);
-
-            var dialogOptions = {
+            var createView = this,
+                compiledTemplate = _.template(recordSetCreateTemplate),
+                previousRecordName,
+                dialogOptions = {
                     autoOpen: true,
                     title: "Edit Record Set",
                     resizable: false,
                     width: 550,
                     modal: true
             };
+
+            this.$el.html(compiledTemplate);
 
             if(this.previousRecordSet) {
                 dialogOptions.title = "Edit Record Set";
@@ -57,8 +58,7 @@ define([
                     Cancel: function() {
                         createView.cancel();
                     }
-                }
-                var previousRecordName;
+                };
                 try {
                     previousRecordName = this.previousRecordSet.attributes.Name.split(this.hostedZone.attributes.domain)[0];
                 }catch(error) {
@@ -73,7 +73,7 @@ define([
                     Cancel: function() {
                         createView.cancel();
                     }
-                }
+                };
             }
             this.$el.dialog(dialogOptions);
 
@@ -92,7 +92,7 @@ define([
                 var previousRecordValues = "";
                 $.each(this.previousRecordSet.attributes.ResourceRecords, function(index, value) {
                     previousRecordValues = previousRecordValues + value + "\n";
-                })
+                });
                 $("#record_value_input").val(previousRecordValues.trim());
             }
         },
@@ -176,7 +176,7 @@ define([
             options.hosted_zone_id = this.hostedZone.attributes.id;
             var change = {};
             change["action"] = 'CREATE';
-            if($("#record_name_input").val() != "") {
+            if($("#record_name_input").val() !== "") {
                 var nameInput = $("#record_name_input").val();
                 if(nameInput.substr(nameInput.length - 1) === ".") {
                     change["name"] = nameInput + this.hostedZone.attributes.domain;
@@ -189,11 +189,11 @@ define([
 
             change["type"] = $("#record_type_select").val();
 
-            if($("#record_ttl_input").val() != "") {
+            if($("#record_ttl_input").val() !== "") {
                 change["ttl"] = $("#record_ttl_input").val();
             }
 
-            if($("#record_value_input").val() != "") {
+            if($("#record_value_input").val() !== "") {
                 change["resource_records"] = [];
                 var values = $("#record_value_input").val().split("\n");
                 $.each(values, function(index, value) {

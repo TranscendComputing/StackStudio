@@ -9,7 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'views/resourceAppView',
+        'views/resource/resourceAppView',
         'text!templates/aws/cloud_watch/awsAlarmAppTemplate.html',
         '/js/aws/models/cloud_watch/awsAlarm.js',
         '/js/aws/collections/cloud_watch/awsAlarms.js',
@@ -54,7 +54,7 @@ define([
         events: {
             'click .create_button': 'createNew',
             'click #action_menu ul li': 'performAction',
-            'click #resource_table tr': "clickOne",
+            'click #resource_table tr': "clickOne"
         },
 
         initialize: function(options) {

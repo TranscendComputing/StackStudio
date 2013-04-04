@@ -12,6 +12,7 @@ define([
         'views/dialogView',
         'text!templates/openstack/compute/openstackInstanceCreateTemplate.html',
         '/js/openstack/models/compute/openstackInstance.js',
+        '/js/openstack/collections/compute/openstackInstances.js',
         '/js/openstack/collections/compute/openstackImages.js',
         '/js/openstack/collections/compute/openstackAvailabilityZones.js',
         '/js/openstack/collections/compute/openstackFlavors.js',
@@ -21,9 +22,23 @@ define([
         'common',
         'jquery.ui.selectmenu',
         'jquery.multiselect',
-        'jquery.multiselect.filter'
-], function( $, _, Backbone, DialogView, instanceCreateTemplate, Instance, Images, AvailabilityZones, Flavors, KeyPairs, SecurityGroups, ich, Common ) {
-    
+        'jquery.multiselect.filter',
+        'backbone.stickit'
+], function( $, _, Backbone, DialogView, instanceCreateTemplate, Instance, Instances, Images, AvailabilityZones, Flavors, KeyPairs, SecurityGroups, ich, Common ) {
+    Backbone.Stickit.addHandler({
+        selector: 'select',
+        initialize: function($el, model, options) {
+            if($el.is("select[multiple]"))
+            {
+                $el.multiselect({
+                    selectedList: options.selectedList,
+                    noneSelectedText: options.noneSelectedText
+                }).multiselectfilter();   
+            }else{
+                $el.selectmenu();
+            }
+        }
+    });
     /**
      * InstanceCreateView is UI form to create compute.
      *
@@ -41,21 +56,69 @@ define([
         credentialId: undefined,
         
         images: new Images(),
-        
-        availabilityZones: new AvailabilityZones(),
-
         flavors: new Flavors(),
-        
         keyPairs: new KeyPairs(),
-        
         securityGroups: new SecurityGroups(),
+        collectionsCount: 3,
         
-        instance: new Instance(),
+        model: new Instance({collection: new Instances()}),
         
-        /** @type {Hash} Event listeners for new Openstack instance dialog */
+        /** @type {Object} Event listeners for new Openstack instance dialog */
         events: {
             "focus #image_select": "openImageList",
             "dialogclose": "close"
+        },
+
+        /**
+         *    backbone.stickit bindings to map selectors to model attributes
+         *    NOTE: 'this' has scope of view in selectOptions
+         *    @type {Object}
+         *
+         *
+         *
+         */
+        bindings: {
+            '#instance_name': 'name',
+            'select#key_pair_select': {
+                observe: 'key_name',
+                selectOptions: {
+                    collection: function() {
+                        return this.keyPairs;
+                    },
+                    valuePath: 'name',
+                    labelPath: 'name',
+                    defaultOption: {
+                        label: 'Choose Key',
+                        value: null
+                    }
+                }
+            },
+            'select#flavor_select': {
+                observe: 'flavor_ref',
+                selectOptions: {
+                    collection: function() {
+                        return this.flavors;
+                    },
+                    labelPath: 'name',
+                    valuePath: 'id',
+                    defaultOption: {
+                        label: 'Choose Size',
+                        value: null
+                    }
+                }
+            },
+            'select#security_group_select': {
+                observe: 'groups',
+                selectOptions: {
+                    collection: function() {
+                        return this.securityGroups;
+                    },
+                    labelPath: 'name',
+                    valuePath: 'name'
+                },
+                selectedList: 3,
+                noneSelectedText: "Select Security Group(s)"
+            }
         },
 
         /**
@@ -66,6 +129,7 @@ define([
          */
         initialize: function(options) {
             this.credentialId = options.cred_id;
+            this.region = options.region;
             var createView = this;
             var compiledTemplate = _.template(instanceCreateTemplate);
             this.$el.html(compiledTemplate);
@@ -87,28 +151,20 @@ define([
                 }
             });
             $("#accordion").accordion();
-            $("#az_select").selectmenu();
-            $("#flavor_select").selectmenu();
-            $("#key_pair_select").selectmenu();
-            $("#security_group_select").multiselect({
-                selectedList: 3,
-                noneSelectedText: "Select Security Group(s)"
-            }).multiselectfilter();
             
             this.images.on( 'reset', this.addAllImages, this );
-            this.images.fetch();
+            this.images.fetch({reset: true});
             
-            this.flavors.on( 'reset', this.addAllFlavors, this );
-            this.flavors.fetch({ data: $.param({ cred_id: this.credentialId}) });
+            this.flavors.on( 'reset', this.applyBindings, this );
+            this.flavors.fetch({ data: $.param({ cred_id: this.credentialId}), reset: true });
             
-            //this.availabilityZones.on( 'reset', this.addAllAvailabilityZones, this );
-            //this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId}) });
+            this.keyPairs.on( 'reset', this.applyBindings, this );
+            this.keyPairs.fetch({ data: $.param({ cred_id: this.credentialId}), reset: true });
             
-            this.keyPairs.on( 'reset', this.addAllKeyPairs, this );
-            this.keyPairs.fetch({ data: $.param({ cred_id: this.credentialId}) });
+            this.securityGroups.on( 'reset', this.applyBindings, this );
+            this.securityGroups.fetch({ data: $.param({ cred_id: this.credentialId}), reset: true });
+
             
-            this.securityGroups.on( 'reset', this.addAllSecurityGroups, this );
-            this.securityGroups.fetch({ data: $.param({ cred_id: this.credentialId}) });
         },
 
         render: function() {
@@ -152,55 +208,13 @@ define([
                 return $("<li>").data("item.autocomplete", item).append(imageItem).appendTo(ul);
             };
         },
-        
-        /**
-         * [addAllAvailabilityZones description]
-         * Renders view for availability zones drop down list
-         */
-        addAllAvailabilityZones: function() {
-            $("#az_select").empty();
-            this.availabilityZones.each(function(az) {
-                $("#az_select").append($("<option></option>").text(az.attributes.zoneName));
-            });
-            $("#az_select").selectmenu();
-        },
-        
-        /**
-         * [addAllFlavors description]
-         * Renders view for instance types drop down list
-         */
-        addAllFlavors: function() {
-            $("#flavor_select").empty();
-            this.flavors.each(function(flavor) {
-                $("#flavor_select").append($("<option></option>").text(flavor.attributes.name));
-            });
-            $("#flavor_select").selectmenu();
-        },
-        
-        /**
-         * [addAllKeyPairs description]
-         * Renders view for key pairs drop down list
-         */
-        addAllKeyPairs: function() {
-            $("#key_pair_select").empty();
-            this.keyPairs.each(function(keyPair) {
-                $("#key_pair_select").append($("<option></option>").text(keyPair.attributes.name));
-            });
-            $("#key_pair_select").selectmenu();
-        },
-        
-        /**
-         * [addAllSecurityGroups description]
-         * Renders view for security groups drop down list
-         */
-        addAllSecurityGroups: function() {
-            $("#security_group_select").empty();
-            this.securityGroups.each(function(sg) {
-                if(sg.attributes.name) {
-                    $("#security_group_select").append($("<option></option>").text(sg.attributes.name));
-                }
-            });
-            $("#security_group_select").multiselect("refresh");
+
+        applyBindings: function() {
+            this.respondedCount = this.respondedCount ? this.respondedCount + 1 : 1;
+            if(this.respondedCount === this.collectionsCount)
+            {
+                this.stickit();
+            }
         },
         
         /**
@@ -220,38 +234,11 @@ define([
          * @return {nil}
          */
         create: function() {
-            var newInstance = this.instance;
-            var options = {};
-            console.log("create_initiated");
-            //#TODO: Validate before create
-            if($("#instance_name").val() !== "") {
-                options.name = $("#instance_name").val();
-            }
-            //Hack alert, region is currently hardcoded to us-east-1
-            var region = "us-east-1";
-            $.each(this.images.toJSON(), function(index, image) {
-                if(image.label === $("#image_select").val()) {
-                    options.image_ref = image.region[region];
-                }
-            });
-            
-            this.flavors.each(function(flavor) {
-                if(flavor.attributes.name === $("#flavor_select").val()) {
-                    options.flavor_ref = flavor.attributes.id;
-                } 
-             });
-            
-            //options.availability_zone = $("#az_select").val();
-            options.key_name = $("#key_pair_select").val();
-            options.groups = $("#security_group_select").val();
-            newInstance.create(options, this.credentialId);
-            
+            this.model.create(this.credentialId);
             this.$el.dialog('close');
         }
 
     });
-
-    console.log("openstack instance create view defined");
     
     return InstanceCreateView;
 });

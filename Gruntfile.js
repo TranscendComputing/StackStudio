@@ -14,7 +14,11 @@ module.exports = function(grunt) {
       },
     source: {
         files: ['js/interpreters/**/*.js',
-                'js/models/**/*.js', 'js/views/**/*.js', 'js/collections/**/*.js']
+                'js/models/**/*.js', 
+                'js/views/**/*.js', 
+                'js/collections/**/*.js',
+                'js/aws/**/*.js',
+                'js/openstack/**/*.js']
     },
     spec: {
         files: ['spec/**/*.js']
@@ -22,7 +26,6 @@ module.exports = function(grunt) {
     lint: {
       files: ['Gruntfile.js',
               'js/stackplace.build.js',
-              '<%= spec.files %>',
               '<%= source.files %>']
     },
     concat: {
@@ -51,7 +54,6 @@ module.exports = function(grunt) {
       tasks: 'default'
     },
     jshint: {
-      all: '<%= lint.files %>',
       options: {
         curly: true,
         eqeqeq: true,
@@ -64,8 +66,25 @@ module.exports = function(grunt) {
         boss: true,
         eqnull: true,
         browser: true,
+        smarttabs: true,
         globals: {
-            jQuery: true
+            jQuery: true,
+            console: true,
+            require: true,
+            requirejs: true
+        }
+      },
+      source_files: '<%= lint.files %>',
+      spec_files: {
+        options: {
+          globals: {
+            describe: true,
+            it: true,
+            expect: true
+          }
+        },
+        files: {
+          src: '<%= spec.files %>'
         }
       }
     },
@@ -84,11 +103,12 @@ module.exports = function(grunt) {
     },
     selenium: {
         options: {
+            startURL: 'http://devessex.essex.momentumsoftware.com:9000/',
             browsers: ['firefox']
         },
         suite: {
             files: {
-                'example': ['test/*.suite']
+                'StackStudio': ['test/*.suite']
             }
         }
     },
@@ -145,8 +165,8 @@ module.exports = function(grunt) {
                             interpreters: 'js/interpreters',
                             'jquery': 'js/vendor/jquery-1.8.3.min',
                             'jquery-ui': 'js/vendor/jquery-ui-1.8.17.custom.min',
-                            'underscore': 'js/vendor/lodash',
-                            'backbone': 'js/vendor/backbone-0.9.9',
+                            'underscore': 'js/vendor/lodash-1.1.1.min',
+                            'backbone': 'js/vendor/backbone-1.0.min',
                             'icanhaz': 'js/vendor/ICanHaz',
                             'jquery.terminal': 'js/vendor/jquery.terminal-0.4.22',
                             'jquery.mousewheel': 'js/vendor/jquery.mousewheel-min'
@@ -155,6 +175,24 @@ module.exports = function(grunt) {
                 }
             }
         }
+    },
+    less: {
+      "2.0.0-rc1": {
+        options: {
+          paths: ["css"],
+          compress: true
+        },
+        files: {
+            "css/main.css": "css/main.less",
+            "css/jquery.dataTables.css": "css/jquery.dataTables.less",
+            "css/jquery.terminal.css": "css/jquery.terminal.less",
+            "css/jquery.multiselect.css": "css/jquery.multiselect.less",
+            "css/jquery.multiselect.filter.css": "css/jquery.multiselect.filter.less",
+            "css/jquery-ui.css": "css/jquery-ui.less",
+            "css/jquery.ui.selectmenu.css": "css/jquery.ui.selectmenu.less",
+            "css/morris.css": "css/morris.less"
+        }        
+      }
     }
   });
 
@@ -163,12 +201,13 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-less');
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-selenium');
 
   // Default task.
   grunt.registerTask('default', ['jshint', 'jasmine']);
-  grunt.registerTask('run', ['connect:sstudio', 'watch']);
+  grunt.registerTask('run', ['less', 'connect:sstudio', 'watch']);
   grunt.registerTask('build', ['jasmine', 'concat', 'uglify']);
 
 };

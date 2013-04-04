@@ -22,33 +22,29 @@ define([
      */
     var KeyPair = Backbone.Model.extend({
         idAttribute: "name",
-
-        /** Default attributes for key pair */
-        defaults: {
-            name: '',
-            fingerprint: ''
-        },
         
         create: function(options, credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/compute/key_pairs/create?_method=PUT&cred_id=" + credentialId;
-            this.sendPostAction(url, options);
+            var url = "?cred_id=" + credentialId;
+            this.sendPostAction(url, {key_pair: options});
         },
         
         destroy: function(credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/compute/key_pairs/delete?_method=DELETE&cred_id=" + credentialId;
-            this.sendPostAction(url, this.attributes);
+            var url = "?_method=DELETE&cred_id=" + credentialId;
+            this.sendPostAction(url);
         },
         
-        sendPostAction: function(url, options) {
-            var keyPair = {"key_pair": options};
+        sendPostAction: function(url, options, trigger) {
+            //Set default values for options and trigger if nothing is passed
+            options = typeof options !== 'undefined' ? options : {};
+            trigger = typeof trigger !== 'undefined' ? trigger : "keyPairAppRefresh";
             $.ajax({
-                url: url,
+                url: this.url() + url,
                 type: 'POST',
                 contentType: 'application/x-www-form-urlencoded',
                 dataType: 'json',
-                data: JSON.stringify(keyPair),
+                data: JSON.stringify(options),
                 success: function(data) {
-                    Common.vent.trigger("keyPairAppRefresh");
+                    Common.vent.trigger(trigger);
                 },
                 error: function(jqXHR) {
                     Common.errorDialog(jqXHR.statusText, jqXHR.responseText);

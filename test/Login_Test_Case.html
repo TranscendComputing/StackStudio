@@ -11,6 +11,7 @@
 <thead>
 <tr><td rowspan="1" colspan="3">Login Test Case</td></tr>
 </thead><tbody>
+<!--Verifies all cases of bad logins are treated as such-->
 <tr>
 	<td>open</td>
 	<td>/</td>
@@ -18,8 +19,65 @@
 </tr>
 <tr>
 	<td>waitForElementPresent</td>
+	<td>//*[@id='main']/div/h1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>loginCheck</td>
+	<td></td>
+</tr>
+<!--Logs out if logged in-->
+<tr>
+	<td>storeTextPresent</td>
+	<td>ehansen</td>
+	<td>loggedIn</td>
+</tr>
+<tr>
+	<td>while</td>
+	<td>${loggedIn}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='account_logout']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextNotPresent</td>
+	<td>ehansen</td>
+	<td></td>
+</tr>
+<tr>
+	<td>store</td>
+	<td>!${loggedIn}</td>
+	<td>loggedIn</td>
+</tr>
+<tr>
+	<td>endWhile</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>loginRequiredCM</td>
+	<td></td>
+</tr>
+<!--Verifies login required-->
+<tr>
+	<td>waitForElementPresent</td>
 	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
 	<td></td>
+</tr>
+<tr>
+	<td>storeElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[1]/li[1]/a</td>
+	<td>cloudManagement</td>
+</tr>
+<tr>
+	<td>gotoIf</td>
+	<td>!${cloudManagement}</td>
+	<td>badUsername</td>
 </tr>
 <tr>
 	<td>click</td>
@@ -42,14 +100,25 @@
 	<td></td>
 </tr>
 <tr>
-	<td>open</td>
-	<td>/</td>
+	<td>label</td>
+	<td>badUsername</td>
 	<td></td>
 </tr>
+<!--Tests bad username-->
 <tr>
 	<td>waitForElementPresent</td>
 	<td>//html/body/div[1]/div/nav/ul[2]/li/a</td>
 	<td></td>
+</tr>
+<tr>
+	<td>storeElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[2]/li/a</td>
+	<td>login</td>
+</tr>
+<tr>
+	<td>gotoIf</td>
+	<td>!${login}</td>
+	<td>end</td>
 </tr>
 <tr>
 	<td>click</td>
@@ -58,17 +127,17 @@
 </tr>
 <tr>
 	<td>waitForElementPresent</td>
-	<td>//html/body/div[7]/div[2]/div/div/div/div/table/tbody/tr[1]/td[2]/input</td>
+	<td>//*[@id='username']</td>
 	<td></td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//html/body/div[7]/div[2]/div/div/div/div/table/tbody/tr[1]/td[2]/input</td>
+	<td>//*[@id='username']</td>
 	<td>ehan</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//html/body/div[7]/div[2]/div/div/div/div/table/tbody/tr[2]/td[2]/input</td>
+	<td>//*[@id='password']</td>
 	<td>tester</td>
 </tr>
 <tr>
@@ -187,14 +256,25 @@
 	<td></td>
 </tr>
 <tr>
-	<td>open</td>
-	<td>/</td>
+	<td>label</td>
+	<td>badPassword</td>
 	<td></td>
 </tr>
+<!--Tests bad password-->
 <tr>
 	<td>waitForElementPresent</td>
 	<td>//html/body/div[1]/div/nav/ul[2]/li/a</td>
 	<td></td>
+</tr>
+<tr>
+	<td>storeElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[2]/li/a</td>
+	<td>login</td>
+</tr>
+<tr>
+	<td>gotoIf</td>
+	<td>!${login}</td>
+	<td>end</td>
 </tr>
 <tr>
 	<td>click</td>
@@ -203,17 +283,17 @@
 </tr>
 <tr>
 	<td>waitForElementPresent</td>
-	<td>//html/body/div[7]/div[2]/div/div/div/div/table/tbody/tr[1]/td[2]/input</td>
+	<td>//*[@id='username']</td>
 	<td></td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//html/body/div[7]/div[2]/div/div/div/div/table/tbody/tr[1]/td[2]/input</td>
+	<td>//*[@id='username']</td>
 	<td>ehansen</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//html/body/div[7]/div[2]/div/div/div/div/table/tbody/tr[2]/td[2]/input</td>
+	<td>//*[@id='password']</td>
 	<td>test</td>
 </tr>
 <tr>
@@ -332,10 +412,11 @@
 	<td></td>
 </tr>
 <tr>
-	<td>open</td>
-	<td>/</td>
+	<td>label</td>
+	<td>login</td>
 	<td></td>
 </tr>
+<!--Tests successful login-->
 <tr>
 	<td>waitForElementPresent</td>
 	<td>//*[@id='navLogin']/li/a</td>
@@ -372,7 +453,12 @@
 	<td></td>
 </tr>
 <tr>
-	<td>assertText</td>
+	<td>waitForElementNotPresent</td>
+	<td>//html/body/div[7]/div[3]/div/button[1]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
 	<td>//*[@id='navAccount']/a</td>
 	<td>ehansen</td>
 </tr>
@@ -382,19 +468,25 @@
 	<td></td>
 </tr>
 <tr>
+	<td>label</td>
+	<td>badUsernamePostLogin</td>
+	<td></td>
+</tr>
+<!--Tests bad username after a successful login in case credentials are cached-->
+<tr>
 	<td>waitForElementPresent</td>
 	<td>//*[@id='navLogin']/li/a</td>
 	<td></td>
 </tr>
 <tr>
-	<td>open</td>
-	<td>/</td>
-	<td></td>
+	<td>storeElementPresent</td>
+	<td>//*[@id='navLogin']/li/a</td>
+	<td>login</td>
 </tr>
 <tr>
-	<td>waitForElementPresent</td>
-	<td>//*[@id='navLogin']/li/a</td>
-	<td></td>
+	<td>gotoIf</td>
+	<td>!${login}</td>
+	<td>end</td>
 </tr>
 <tr>
 	<td>click</td>
@@ -403,17 +495,17 @@
 </tr>
 <tr>
 	<td>waitForElementPresent</td>
-	<td>//html/body/div[7]/div[2]/div/div/div/div/table/tbody/tr[1]/td[2]/input</td>
+	<td>//*[@id='username']</td>
 	<td></td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//html/body/div[7]/div[2]/div/div/div/div/table/tbody/tr[1]/td[2]/input</td>
+	<td>//*[@id='username']</td>
 	<td>ehan</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//html/body/div[7]/div[2]/div/div/div/div/table/tbody/tr[2]/td[2]/input</td>
+	<td>//*[@id='password']</td>
 	<td>tester</td>
 </tr>
 <tr>
@@ -423,7 +515,7 @@
 </tr>
 <tr>
 	<td>waitForElementPresent</td>
-	<td>//html/body/div[9]/div[2]/div/p/span[2]</td>
+	<td>//*[@id='message']</td>
 	<td></td>
 </tr>
 <tr>
@@ -433,12 +525,12 @@
 </tr>
 <tr>
 	<td>verifyElementPresent</td>
-	<td>//html/body/div[9]/div[2]/div/p/span[2]</td>
+	<td>//*[@id='message']</td>
 	<td></td>
 </tr>
 <tr>
 	<td>storeElementPresent</td>
-	<td>//html/body/div[9]/div[2]/div/p/span[2]</td>
+	<td>//*[@id='message']</td>
 	<td>notLoggedIn</td>
 </tr>
 <tr>
@@ -507,6 +599,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>click</td>
+	<td>//html/body/div[7]/div[3]/div/button[3]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>waitForPageToLoad</td>
 	<td></td>
 	<td>5000</td>
@@ -527,14 +624,25 @@
 	<td></td>
 </tr>
 <tr>
-	<td>open</td>
-	<td>/</td>
+	<td>label</td>
+	<td>badPasswordPostLogin</td>
 	<td></td>
 </tr>
+<!--Tests bad password after successful login-->
 <tr>
 	<td>waitForElementPresent</td>
 	<td>//html/body/div[1]/div/nav/ul[2]/li/a</td>
 	<td></td>
+</tr>
+<tr>
+	<td>storeElementPresent</td>
+	<td>//html/body/div[1]/div/nav/ul[2]/li/a</td>
+	<td>login</td>
+</tr>
+<tr>
+	<td>gotoIf</td>
+	<td>!${login}</td>
+	<td>end</td>
 </tr>
 <tr>
 	<td>click</td>
@@ -543,17 +651,17 @@
 </tr>
 <tr>
 	<td>waitForElementPresent</td>
-	<td>//html/body/div[7]/div[2]/div/div/div/div/table/tbody/tr[1]/td[2]/input</td>
+	<td>//*[@id='username']</td>
 	<td></td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//html/body/div[7]/div[2]/div/div/div/div/table/tbody/tr[1]/td[2]/input</td>
+	<td>//*[@id='username']</td>
 	<td>ehansen</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//html/body/div[7]/div[2]/div/div/div/div/table/tbody/tr[2]/td[2]/input</td>
+	<td>//*[@id='password']</td>
 	<td>test</td>
 </tr>
 <tr>
@@ -563,7 +671,7 @@
 </tr>
 <tr>
 	<td>waitForElementPresent</td>
-	<td>//html/body/div[9]/div[3]/div/button</td>
+	<td>//*[@id='message']</td>
 	<td></td>
 </tr>
 <tr>
@@ -573,12 +681,12 @@
 </tr>
 <tr>
 	<td>verifyElementPresent</td>
-	<td>//html/body/div[9]/div[2]/div/p/span[2]</td>
+	<td>//*[@id='message']</td>
 	<td></td>
 </tr>
 <tr>
 	<td>storeElementPresent</td>
-	<td>//html/body/div[9]/div[2]/div/p/span[2]</td>
+	<td>//*[@id='message']</td>
 	<td>notLoggedIn</td>
 </tr>
 <tr>
@@ -647,6 +755,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>click</td>
+	<td>//html/body/div[7]/div[3]/div/button[3]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>waitForPageToLoad</td>
 	<td></td>
 	<td>5000</td>
@@ -667,10 +780,11 @@
 	<td></td>
 </tr>
 <tr>
-	<td>open</td>
-	<td>/</td>
+	<td>label</td>
+	<td>loginCancel</td>
 	<td></td>
 </tr>
+<!--Verifies login window closes when canceled-->
 <tr>
 	<td>waitForElementPresent</td>
 	<td>link=Login</td>
@@ -702,11 +816,6 @@
 	<td></td>
 </tr>
 <tr>
-	<td>open</td>
-	<td>/</td>
-	<td></td>
-</tr>
-<tr>
 	<td>waitForElementPresent</td>
 	<td>link=Login</td>
 	<td></td>
@@ -734,6 +843,11 @@
 <tr>
 	<td>verifyElementNotPresent</td>
 	<td>//html/body/div[7]/div[3]/div/button[3]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>end</td>
 	<td></td>
 </tr>
 </tbody></table>
