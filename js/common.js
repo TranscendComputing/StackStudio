@@ -257,8 +257,8 @@ define(
 
     //Base url for API calls
     var apiUrl;
-    if(location.hostname === "stackstudio2.appspot.com") {
-        apiUrl = "http://208.86.59.108.bc.googleusercontent.com:9292";
+    if(location.hostname.indexOf("appspot") !== -1) {
+        apiUrl = "http://191.80.59.108.bc.googleusercontent.com:9292";
     }else if(location.hostname === "localhost") {
         apiUrl = "http://localhost:9292";
     }else if(location.hostname === "stackstudio-local") {
