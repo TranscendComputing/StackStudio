@@ -271,6 +271,7 @@ define(
 
     //Base url for API calls
     var apiUrl;
+
     // Automatically choose URL based on current hostname.
     // TODO: need a cleaner solution for this, w/o requiring too much config
     if(location.hostname.indexOf("stackstudio2.appspot.com") !== -1 ) {
