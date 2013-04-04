@@ -13,18 +13,21 @@ define([
         'icanhaz',
         'text!templates/mspDashboard.html',
         'collections/serviceOfferings',
+        'views/account/accountLoginView',
         'FeedEk',
         'jquery.list'
-], function( $, _, Backbone, Common, ich, dashboardTemplate, Offerings, FeedEk ) {
+], function( $, _, Backbone, Common, ich, dashboardTemplate, Offerings, AccountLoginView, FeedEk ) {
     
     var DashboardView = Backbone.View.extend({
         el: "#main",
         template: dashboardTemplate,
         collection: Offerings,
         events: {
-            "click ul.dashboard-list li a": "handleClick"
+            "click ul.dashboard-list li a": "handleClick",
+            "click button.dashboard-login": "accountLogin"
         },
         initialize: function() {
+            Common.vent.on("loginSuccess", this.hideLogin, this);
             this.collection.on("reset", this.render, this);
             this.collection.fetch({reset: true});
         },
@@ -40,10 +43,24 @@ define([
                 DescCharacterLimit: 200,
                 TitleLinkTarget: '_blank'
             });
-            
+            if(sessionStorage.login)
+            {
+                $('button.dashboard-login').hide();
+            }else{
+                $('button.dashboard-login').button();
+            }
             //this.$('ul').list({
             //    headerSelector: 'li.dashboard-list-heading'
             //});
+        },
+
+        accountLogin: function() {
+            var accountLoginView = new AccountLoginView();
+            accountLoginView.render();
+        },
+
+        hideLogin: function() {
+            $('button.dashboard-login').hide();
         },
 
         close: function(){

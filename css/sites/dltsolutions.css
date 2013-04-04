@@ -10,9 +10,14 @@
     padding-top: 20px;
 }
 h1.dashboard-welcome {
-    padding-top: 10px;
+    margin-top: 10px;
     padding-left: 10px;
     font-size: 40px;
+}
+button.dashboard-login {
+    margin-top: 10px;
+    padding: 5;
+    font-size: 30px;
 }
 ul.dashboard-list{
     border: 1px solid #2683BD;
