@@ -15,7 +15,7 @@ require(['./common'], function (common) {
     var dashboardView;
     var site = window.location.hostname.split(".")[0];
     var siteParam = window.location.search.replace("?site=", "");
-    if(site.indexOf("localhost") > -1 || site.indexOf("stackstudio") > -1 || site.indexOf("devessex") > -1)
+    if(site.indexOf("localhost") > -1 || site.indexOf("stackstudio") > -1 || site.indexOf("devessex") > -1 || site.length < 2)
     {
         dashboardView = "views/dashboardView";
         common.rssFeed = "http://www.transcendcomputing.com/feed/";
