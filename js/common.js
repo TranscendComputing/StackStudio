@@ -271,10 +271,11 @@ define(
 
     //Base url for API calls
     var apiUrl;
+
     // Automatically choose URL based on current hostname.
     // TODO: need a cleaner solution for this, w/o requiring too much config
     if(location.hostname.indexOf("stackstudio2.appspot.com") !== -1 ) {
-        apiUrl = "http://208.86.59.108.bc.googleusercontent.com:9292";
+       apiUrl = "http://191.80.59.108.bc.googleusercontent.com:9292";
     }else if(location.hostname === "localhost") {
         apiUrl = "http://localhost:9292";
     }else if(location.hostname === "stackstudio-dev") {
