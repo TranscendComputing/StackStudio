@@ -23,6 +23,16 @@ define([
 
         close: function() {
             this.$el.remove();
+        },
+
+        // For backbone.stickit support
+        // This function calls stickit once all collections have been fetched
+        applyBindings: function() {
+            this.respondedCount = this.respondedCount ? this.respondedCount + 1 : 1;
+            if(this.respondedCount === this.collectionsCount)
+            {
+                this.stickit();
+            }
         }
     });
     return DialogView;

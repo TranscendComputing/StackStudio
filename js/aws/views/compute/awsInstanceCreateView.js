@@ -241,7 +241,7 @@ define([
                 if(flavor.attributes.name === $("#flavor_select").val()) {
                     options.flavor_id = flavor.attributes.id;
                 } 
-             });
+            });
             
             options.availability_zone = $("#az_select").val();
             options.key_name = $("#key_pair_select").val();

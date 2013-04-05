@@ -64,7 +64,8 @@ define([
 
         events: {
 			"click .resourceLink" : "resourceClick",
-			"click #cloud_coverflow img" : "cloudChange"
+			"click #cloud_coverflow img" : "cloudChange",
+            "selectmenuchange #credential_select": "credentialChange"
 		},
 
 		initialize: function() {
@@ -197,6 +198,17 @@ define([
             this.refreshCloudSpecs();
 		},
 
+        /**
+         *    Change handler for cloud credentials list
+         *    @param  {selectmenuchange} event   [description]
+         *    @param  {Object} object  {index: <int>, option: <object: option element itself>, value: <string: value of option>}
+         */
+        credentialChange: function(event, object) {
+            this.selectedCredential = object.value;
+            this.refreshCloudSpecs();
+            this.render();
+        },
+
         refreshCloudSpecs: function() {
             this.refreshCredentials();
             this.refreshRegions();
@@ -220,13 +232,7 @@ define([
                     }
                 }
             });
-            $("#credential_select").selectmenu({
-                change: function() {
-                    resourceNav.selectedCredential = $("#credential_select").val();
-                    resourceNav.refreshCloudSpecs();
-                    resourceNav.render();
-                }
-            });
+            $("#credential_select").selectmenu();
 
             if(!credentialFound) {
                 $("#credential_nav").html($("#credential_select option:first").text());
@@ -327,9 +333,17 @@ define([
                     $("#resource_app").width("1100px");
                 }
 
-                //Capitalize first letter of subtype for the file name
-                var capSubtype = this.subtype.charAt(0).toUpperCase() + this.subtype.slice(1);
-                var appPath = "../"+this.cloudProvider+"/views/"+this.type+"/"+this.cloudProvider+capSubtype+"AppView";
+                //Camelcase the subtype for the file name
+                var split = this.subtype.split("_"),
+                    subType,
+                    camelCase;
+
+                _.each(split, function(s) {
+                    camelCase = s.charAt(0).toUpperCase() + s.slice(1);
+                    subType = subType ? (subType + camelCase) : camelCase;
+                });
+
+                var appPath = "../"+this.cloudProvider+"/views/"+this.type+"/"+this.cloudProvider+subType+"AppView";
 
                 require([appPath], function (AppView) {
                     if (resourceNav.resourceApp instanceof AppView) {

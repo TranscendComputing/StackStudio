@@ -259,8 +259,26 @@ define(
          'routers/router',
          'views/errorDialog',
          'jquery-ui',
-         'jquery-ui-plugins'
+         'jquery-ui-plugins',
+         'backbone.stickit'
          ], function ($, _, Backbone, CommandLineView, Router, ErrorDialog) {
+
+    // Added custom handler for selectmenu
+    Backbone.Stickit.addHandler({
+        selector: 'select',
+        initialize: function($el, model, options) {
+            if($el.is("select[multiple]"))
+            {
+                $el.multiselect({
+                    selectedList: options.selectedList,
+                    noneSelectedText: options.noneSelectedText
+                }).multiselectfilter();   
+            }else{
+                $el.selectmenu();
+            }
+        }
+    });
+
     // Within this scope, jquery and jquery UI have been loaded.
 
     // Initialize routing

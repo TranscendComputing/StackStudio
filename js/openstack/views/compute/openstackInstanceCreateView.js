@@ -25,20 +25,7 @@ define([
         'jquery.multiselect.filter',
         'backbone.stickit'
 ], function( $, _, Backbone, DialogView, instanceCreateTemplate, Instance, Instances, Images, AvailabilityZones, Flavors, KeyPairs, SecurityGroups, ich, Common ) {
-    Backbone.Stickit.addHandler({
-        selector: 'select',
-        initialize: function($el, model, options) {
-            if($el.is("select[multiple]"))
-            {
-                $el.multiselect({
-                    selectedList: options.selectedList,
-                    noneSelectedText: options.noneSelectedText
-                }).multiselectfilter();   
-            }else{
-                $el.selectmenu();
-            }
-        }
-    });
+
     /**
      * InstanceCreateView is UI form to create compute.
      *
