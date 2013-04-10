@@ -261,7 +261,7 @@ define([
         validateInputFields: function(viewIndex) {
             var valid = true;
             if(viewIndex === 2) {
-                var storageInt = parseInt($("#storage_input").val())
+                var storageInt = parseInt($("#storage_input").val(), 10);
                 if(storageInt >= this.storageSizeMinimum && storageInt <= 3072) {
                     this.displayValid(true, "#storage_input");
                 }else {
@@ -322,7 +322,7 @@ define([
 
         addAllAvailabilityZones: function() {
             $("#availability_zone_select").empty();
-            $("#availability_zone_select").append("<option value='false'>No Preference</option>")
+            $("#availability_zone_select").append("<option value='false'>No Preference</option>");
             this.availabilityZones.each(function(az) {
                 $("#availability_zone_select").append("<option value="+az.attributes.zoneName+">"+az.attributes.zoneName+"</option>");
             });
@@ -366,8 +366,8 @@ define([
             }else {
                 backupWindowString = $("#backup_start_time_hour_select").val() + ":" + $("#backup_start_time_minute_select").val() + "-";
                 var bwDur = this.getDurationInMinutes($("#backup_duration").val());
-                var bwMinute = parseInt($("#backup_start_time_minute_select").val());
-                var bwHour = parseInt($("#backup_start_time_hour_select").val());
+                var bwMinute = parseInt($("#backup_start_time_minute_select").val(), 10);
+                var bwHour = parseInt($("#backup_start_time_hour_select").val(), 10);
                 var bwEndMinute = ((bwMinute + bwDur) % 60);
                 var bwEndHour = ((bwHour + Math.floor((bwMinute + bwDur) / 60)) % 24);
                 backupWindowString = backupWindowString + this.setTimeString(bwEndHour) + ":" + this.setTimeString(bwEndMinute);
@@ -408,8 +408,8 @@ define([
             }else {
                 maintWindowString = $("#maintenance_start_time_day_select").val() + ":" + $("#maintenance_start_time_hour_select").val() + ":" + $("#maintenance_start_time_minute_select").val() + "-";
                 var mwDur = this.getDurationInMinutes($("#maintenance_duration").val());
-                var mwMinute = parseInt($("#maintenance_start_time_minute_select").val());
-                var mwHour = parseInt($("#maintenance_start_time_hour_select").val());
+                var mwMinute = parseInt($("#maintenance_start_time_minute_select").val(), 10);
+                var mwHour = parseInt($("#maintenance_start_time_hour_select").val(), 10);
                 var mwEndMinute = ((mwMinute + mwDur) % 60);
                 var mwEndHour = ((mwHour + Math.floor((mwMinute + mwDur) / 60)) % 24);
                 var mwEndDay = $("#maintenance_start_time_day_select").val();

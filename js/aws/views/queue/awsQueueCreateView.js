@@ -71,8 +71,8 @@ define([
             }
             //Validation
             if($("#visibility_timeout_input").val() !== "") {
-                var visibilityInt = parseInt($("#visibility_timeout_input").val());
-                var visibilityUnitInt = parseInt($("#visitibility_timeout_unit_select").val());
+                var visibilityInt = parseInt($("#visibility_timeout_input").val(), 10);
+                var visibilityUnitInt = parseInt($("#visitibility_timeout_unit_select").val(), 10);
                 var visibilityValue = visibilityInt * visibilityUnitInt;
                 if(visibilityValue >= 0 && visibilityValue <= 43200) {
                     options.VisibilityTimeout = visibilityValue; 
@@ -84,8 +84,8 @@ define([
             }
 
             if($("#retention_period_input").val() !== "") {
-                var retentionInt = parseInt($("#retention_period_input").val());
-                var retentionUnitInt = parseInt($("#retention_period_unit_select").val());
+                var retentionInt = parseInt($("#retention_period_input").val(), 10);
+                var retentionUnitInt = parseInt($("#retention_period_unit_select").val(), 10);
                 var retentionValue = retentionInt * retentionUnitInt;
                 if(retentionValue >= 60 && retentionValue <= 1209600) {
                     options.MessageRetentionPeriod = retentionValue; 
@@ -97,7 +97,7 @@ define([
             }
 
             if($("#maximum_message_size_input").val() !== "") {
-                var maxMessageSizeInt = parseInt($("#maximum_message_size_input").val());
+                var maxMessageSizeInt = parseInt($("#maximum_message_size_input").val(), 10);
                 var maxMessageSizeValue = maxMessageSizeInt * 1024;
                 if(maxMessageSizeValue >= 1024  && maxMessageSizeValue <= 65536) {
                     options.MaximumMessageSize = maxMessageSizeValue;
@@ -109,8 +109,8 @@ define([
             }
 
             if($("#delivery_delay_input").val() !== "") {
-                var delayInt = parseInt($("#delivery_delay_input").val());
-                var delayUnitInt = parseInt($("#delivery_delay_unit_select").val());
+                var delayInt = parseInt($("#delivery_delay_input").val(), 10);
+                var delayUnitInt = parseInt($("#delivery_delay_unit_select").val(), 10);
                 var delayValue = delayInt * delayUnitInt;
                 if(delayValue >= 0 && delayValue <= 900) {
                     options.DelaySeconds = delayValue; 
@@ -122,7 +122,7 @@ define([
             }
 
             if($("#receive_message_wait_time_input").val() !== "") {
-                var receiveMessageWaitTimeInt = parseInt($("#receive_message_wait_time_input").val());
+                var receiveMessageWaitTimeInt = parseInt($("#receive_message_wait_time_input").val(), 10);
                 if(receiveMessageWaitTimeInt >= 0  && receiveMessageWaitTimeInt <= 20) {
                     options.ReceiveMessageWaitTimeSeconds = receiveMessageWaitTimeInt; 
                }else {
