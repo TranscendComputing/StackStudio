@@ -18,14 +18,15 @@ define([
         '/js/openstack/collections/network/openstackNetworks.js',
         'jquery.ui.selectmenu',
         'jquery.multiselect',
-        'jquery.multiselect.filter'
+        'jquery.multiselect.filter',
+        'backbone.stickit'
 ], function( $, _, Backbone, Common, ich, DialogView, subnetCreateTemplate, Subnet, Subnets, Networks ) {
 
     var SubnetCreateView = DialogView.extend({
         credentialId: undefined,
         region: undefined,
         collection: new Subnets(),
-        collectionsCount: 1,
+        collectionsCount: 1, // collectionsCount tells stickit how many collections to wait for before initializing bindings
         template: subnetCreateTemplate,
         events: {
             "dialogclose": "close"
@@ -38,7 +39,7 @@ define([
          */
         bindings: {
             '#gateway_ip_input': 'gateway_ip',
-            '#allocation_pools_inptu': {
+            '#allocation_pools_input': {
                 observe: 'allocation_pools'
             },
             'select#ip_version': {

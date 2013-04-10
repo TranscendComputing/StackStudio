@@ -61,7 +61,7 @@ define([
             this.region = options.region;
             this.model = new Network({}, {collection: this.collection});
             this.tenants = new Tenants();
-            this.tenants.on("reset", this.applyBindings, this);
+            this.tenants.on("reset", this.applyBindings, this); // .applyBindings method defined in DialogView
             this.tenants.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region}), reset: true });
             this.render();
         },
@@ -89,14 +89,6 @@ define([
 
             // This line adds required asterisk to all fields with class 'required'
             this.$(".required").after("<span class='required'/>");
-        },
-
-        applyBindings: function() {
-            this.respondedCount = this.respondedCount ? this.respondedCount + 1 : 1;
-            if(this.respondedCount === this.collectionsCount)
-            {
-                this.stickit();
-            }
         },
 
         create: function() {
