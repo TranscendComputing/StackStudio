@@ -6,11 +6,12 @@
                     <td><b>Engine:</b></td>
                     <td>
                         <select id="engine_select" style="width:250px;">
-                            <option value="MySQL">MySQL</option>
+                            <option value="mysql">MySQL</option>
                             <option value="oracle-se1">Oracle Standard Edition One</option>
-                            <option value="oracle-seL">Oracle Standard Edition</option>
+                            <option value="oracle-se">Oracle Standard Edition</option>
                             <option value="oracle-ee">Oracle Enterprise Edition</option>
                             <option value="sqlserver-ex">Microsoft SQL Server Express Edition</option>
+                            <option value="sqlserver-web">Microsoft SQL Server Web Edition</option>
                             <option value="sqlserver-se">Microsoft SQL Server Standard Edition</option>
                             <option value="sqlserver-ee">Microsoft SQL Server Enterprise Edition</option>
                         </select>
@@ -47,8 +48,7 @@
                 <tr>
                     <td><b>Multi-AZ Deployment:</b></td>
                     <td>
-                        <input type="radio" name="multi_az" value="true" checked /> Yes
-                        <input type="radio" name="multi_az" value="false" /> No
+                        <select id="multi_az_deployment_select" style="width:60px;"></select>
                     </td>
                 </tr>
                 <tr>
@@ -64,33 +64,33 @@
         <table>
             <tbody>
                 <tr>
-                    <td><b>Allocated Storage:</b></td>
+                    <td><b>Use Provisioned IOPS:</b></td>
                     <td>
-                        <input id="storage_input" type="text" style="width:80px;" />
+                        <input id="provisioned_iops_check" type="checkbox" /> <input id="provisioned_iops" type="text" />
                     </td>
                 </tr>
                 <tr>
-                    <td><b>Use Provisioned IOPS:</b></td>
+                    <td><b>Allocated Storage:</b></td>
                     <td>
-                        <input id="provisioned_iops_check" type="checkbox" />
+                        <input id="storage_input" type="text" style="width:80px;" /> GBs <span id="storage_label"></span>
                     </td>
                 </tr>
                 <tr>
                     <td><b>DB Instance Identifier:</b></td>
                     <td>
-                        <input id="id_input" type="text" style="width:200px;" />
+                        <input id="id_input" type="text" style="width:200px;" /> (e.g. mydbinstance)
                     </td>
                 </tr>
                 <tr>
                     <td><b>Master Username:</b></td>
                     <td>
-                        <input id="master_username_input" type="text" style="width:200px;" />
+                        <input id="master_username_input" type="text" style="width:200px;" /> (e.g. myuser)
                     </td>
                 </tr>
                 <tr>
                     <td><b>Master Password:</b></td>
                     <td>
-                        <input id="master_password_input" type="password" style="width:200px;" />
+                        <input id="master_password_input" type="password" style="width:200px;" /> (e.g. mypassword)
                     </td>
                 </tr>
             </tbody>
@@ -102,7 +102,7 @@
                 <tr>
                     <td><b>Database Name:</b></td>
                     <td>
-                        <input id="database_name_input" type="text" style="width:80px;" />
+                        <input id="database_name_input" type="text" /> (e.g. mydb)
                     </td>
                 </tr>
                 <tr>
@@ -111,18 +111,10 @@
                         <input id="database_port_input" type="type" />
                     </td>
                 </tr>
-                <tr>
-                    <td><b>Choose a VPC:</b></td>
-                    <td>
-                        <select id="vpc_select" style="width:200px;" class="ui-state-disabled">
-                            <option value="none">Not in VPC</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
+                <tr id="availability_zone_row">
                     <td><b>Availability Zone:</b></td>
                     <td>
-                        <select id="instance_class_select" style="width:200px;"></select>
+                        <select id="availability_zone_select" style="width:200px;"></select>
                     </td>
                 </tr>
                 <tr>
@@ -143,13 +135,6 @@
     <div id="view4" class="view_stack">
         <table>
             <tbody>
-                <tr>
-                    <td><b>Enable Automatic Backups:</b></td>
-                    <td>
-                        <input type="radio" name="automatic_backups" value="true" checked /> Yes
-                        <input type="radio" name="automatic_backups" value="false" /> No
-                    </td>
-                </tr>
                 <tr id="backup_retention_period_row">
                     <td><b>Backup Retention Period:</b></td>
                     <td>
@@ -198,7 +183,7 @@
                         <input type="radio" name="backup_window" value="no_preference" checked /> No Preference
                         <input type="radio" name="backup_window" value="select_window" /> Select Window
                         <br />
-                        <div id="backup_window_options" style="padding-top:5px;padding-left:10px;" class="ui-state-disabled">
+                        <div id="backup_window_options" style="padding-top:5px;padding-left:10px;">
                             Start Time: 
                             <select id="backup_start_time_hour_select">
                                 <option value="00">00</option>
@@ -306,11 +291,11 @@
                     <td>
                         <input type="radio" name="maintenance_window" value="no_preference" checked /> No Preference
                         <input type="radio" name="maintenance_window" value="select_window" /> Select Window
-                        <div id="maintenance_window_options" style="padding-top:5px;padding-left:10px;" class="ui-state-disabled">
+                        <div id="maintenance_window_options" style="padding-top:5px;padding-left:10px;">
                             Start Time: 
                             <select id="maintenance_start_time_day_select">
                                 <option value="mon">Monday</option>
-                                <option value="tue=">Tuesday</option>
+                                <option value="tue">Tuesday</option>
                                 <option value="wed">Wednesday</option>
                                 <option value="thu">Thursday</option>
                                 <option value="fri">Friday</option>
@@ -422,6 +407,27 @@
         </table>
     </div>
     <div id="view5" class="view_stack">
-        Review Screen!
+        <table>
+            <tbody>
+                <tr><td><b>Engine:</b></td><td id="engine_review"></td></tr>
+                <tr><td><b>Engine Version:</b></td><td id="engine_version_review"></td></tr>
+                <tr><td><b>License Model:</b></td><td id="license_review"></td></tr>
+                <tr><td><b>Auto Minor Ver. Upgrade:</b></td><td id="auto_minor_upgrade_review"></td></tr>
+                <tr><td><b>DB Instance Class:</b></td><td id="instance_class_review"></td></tr>
+                <tr><td><b>Mutil-AZ Deployment:</b></td><td id="multi_az_review"></td></tr>
+                <tr><td><b>Allocated Storage:</b></td><td id="storage_review"></td></tr>
+                <tr><td><b>Provisioned IOPS:</b></td><td id="provisioned_iops_review"></td></tr>
+                <tr><td><b>DB Instance Identifier:</b></td><td id="instance_identifier_review"></td></tr>
+                <tr><td><b>Master User Name:</b></td><td id="master_user_name_review"></td></tr>
+                <tr><td><b>Database Name:</b></td><td id="db_name_review"></td></tr>
+                <tr><td><b>Database Port:</b></td><td id="db_port_review"></td></tr>
+                <tr><td><b>Availability Zone:</b></td><td id="availability_zone_review"></td></tr>
+                <tr><td><b>DB Parameter Group:</b></td><td id="db_parameter_group_review"></td></tr>
+                <tr><td><b>DB Security Group(s):</b></td><td id="db_security_groups_review"></td></tr>
+                <tr><td><b>Backup Retention Period:</b></td><td id="backup_retention_period_review"></td></tr>
+                <tr><td><b>Backup Window:</b></td><td id="backup_window_review"></td></tr>
+                <tr><td><b>Maintenance Window:</b></td><td id="maintenance_window_review"></td></tr>
+            </tbody>
+        </table>
     </div>
 </div>
