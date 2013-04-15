@@ -259,8 +259,26 @@ define(
          'routers/router',
          'views/errorDialog',
          'jquery-ui',
-         'jquery-ui-plugins'
+         'jquery-ui-plugins',
+         'backbone.stickit'
          ], function ($, _, Backbone, CommandLineView, Router, ErrorDialog) {
+
+    // Added custom handler for selectmenu
+    Backbone.Stickit.addHandler({
+        selector: 'select',
+        initialize: function($el, model, options) {
+            if($el.is("select[multiple]"))
+            {
+                $el.multiselect({
+                    selectedList: options.selectedList,
+                    noneSelectedText: options.noneSelectedText
+                }).multiselectfilter();   
+            }else{
+                $el.selectmenu();
+            }
+        }
+    });
+
     // Within this scope, jquery and jquery UI have been loaded.
 
     // Initialize routing
@@ -271,10 +289,11 @@ define(
 
     //Base url for API calls
     var apiUrl;
+
     // Automatically choose URL based on current hostname.
     // TODO: need a cleaner solution for this, w/o requiring too much config
     if(location.hostname.indexOf("stackstudio2.appspot.com") !== -1 ) {
-        apiUrl = "http://191.80.59.108.bc.googleusercontent.com:9292";
+       apiUrl = "http://cloudmux-demo.sdlc.transcendcomputing.com:9292";
     }else if(location.hostname === "localhost") {
         apiUrl = "http://localhost:9292";
     }else if(location.hostname === "stackstudio-dev") {

@@ -26,7 +26,7 @@ define([
             LastModifiedTimestamp: '',
             VisibilityTimeout: 0,
             MaximumMessageSize: 0,
-            MessageRetentionPeriod: 0,
+            MessageRetentionPeriod: 0
         },
 
         create: function(options, credentialId, region) {

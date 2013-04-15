@@ -240,6 +240,29 @@
                         "type": "roles"
                     }
                 ]
+            },
+            {
+                "name": "Network",
+                "type": "network",
+                "defaultSubtype": "networks",
+                "subServices" : [
+                    {
+                        "name": "Networks",
+                        "type": "networks"
+                    },
+                    {
+                        "name": "Subnets",
+                        "type": "subnets"
+                    },
+                    {
+                        "name": "Ports",
+                        "type": "ports"
+                    },
+                    {
+                        "name": "Floating IPs",
+                        "type": "floating_ips"
+                    }
+                ]
             }
         ],
         "regions": [

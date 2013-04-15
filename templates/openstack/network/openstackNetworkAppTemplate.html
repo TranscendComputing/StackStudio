@@ -1,0 +1,65 @@
+<div>
+    <div class="button_bar">
+        <table>
+            <tr>
+                <td>
+                    <button class="create_button">Create Network</button>
+                </td>
+                <td>                    
+                    <ul id="action_menu">
+                        <li style="z-index: 1000">
+                            <a id="action_button">Actions</a>
+                            <ul>
+                                <li><a>Delete Network</a></li>                 
+                            </ul>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </table>        
+    </div>
+    <table id="resource_table" class="full_width">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>ID</th>
+                <th>Phyical Network</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    <div id="details" class="detail_panel"></div>
+</div>
+
+<script type="text/html" id="resource_detail">
+    <div id="detail_tabs">
+        <ul>
+            <li><a href="#tabs-1">Details</a></li>
+        </ul>
+        <div id="tabs-1" class="tab">
+            <table>
+                <tbody>
+                    <tr><td><b>Name:</b></td>                   <td>{{ name }}</td></tr>
+                    <tr><td><b>Physical Network:</b></td>                  <td>{{ provider:physical_network }}</td></tr>
+                    <tr><td><b>ID:</b></td>                   <td>{{ id }}</td></tr>
+                    <tr><td><b>Tenant ID:</b></td>              <td><a href="#resources/openstack/{{region}}/identity/tenants/{{tenantId}}">{{ tenant_id }}</a></td></tr>
+                    <tr><td><b>Admin State Up:</b></td>              <td>{{admin_state_up}}</td></tr>
+                    <tr><td><b>Network Type:</b></td>              <td>{{provider:network_type}}</td></tr>
+                    <tr><td><b>Shared:</b></td>                   <td>{{ shared }}</td></tr>
+                    <tr><td><b>Segmentation ID:</b></td>                   <td>{{ provider:segmentation_id }}</td></tr>
+                    <tr><td><b>Subnets:</b></td></tr>
+                    {{#subnets}}
+                    <tr><td><b>ID:</b></td>                   <td><a href="#resources/openstack/{{region}}/network/subnets/{{.}}">{{ . }}</a></td></tr>
+                    {{/subnets}}
+                    {{^subnets}}
+                    <tr><td><b>NONE</b></td></tr>
+                    {{/subnets}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</script>

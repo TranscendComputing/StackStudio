@@ -1,0 +1,17 @@
+<div id="network_create_template">
+    <form>
+        <fieldset>
+            <p><label class="small-tabbed-left-field" for="network_id">Network:</label>
+                <select id="network_select" class="select-250 required">
+                </select>
+            </p>
+            <p><label class="small-tabbed-left-field" for="cidr">CIDR:</label><input id="cidr_input" type="text" class="textbox-250 required" value="{{cidr}}"/></p>
+            <p><label class="small-tabbed-left-field" for="ip_version">IP Version:</label>
+                <select id="ip_version_select" class="select-50">
+                </select>
+            </p>
+            <p><label class="small-tabbed-left-field" for="gateway_ip">Gateway IP:</label><input id="gateway_ip_input" class="textbox-250" type="text"/></p>
+            <p><label class="small-tabbed-left-field" for="allocation_pools">Allocation Pools:</label><input id="allocation_pools_input" class="textbox-250" type="text"/></p>
+        </fieldset>
+    </form>
+</div>
