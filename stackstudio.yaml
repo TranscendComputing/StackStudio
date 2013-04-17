@@ -1,5 +1,5 @@
 application: stackstudio2
-version: 2-0-0-rc1
+version: 2-0-0-rc2
 runtime: python27
 api_version: 1
 threadsafe: yes
@@ -20,19 +20,24 @@ handlers:
 
 - url: /js
   static_dir: js
-  expiration: 1m
+  expiration: 1d
 
 - url: /css
   static_dir: css
-  expiration: 1m
+  expiration: 1d
 
 - url: /images
   static_dir: images
-  expiration: 1m
+  expiration: 1d
 
 - url: /templates
   static_dir: templates
-  expiration: 1m
+  expiration: 1d
+
+# Crunched production files
+- url: /dist
+  static_dir: dist
+  expiration: 1d
 
 # GAE internal handlers
 
@@ -49,8 +54,8 @@ handlers:
 
 # {%PROD
 - url: /
-  static_files: index.html
-  upload: index\.html
+  static_files: index_prod.html
+  upload: index_prod\.html
 # %}
 
 - url: /dev
@@ -62,7 +67,7 @@ handlers:
 
 - url: /samples
   static_dir: samples
-  expiration: 1m
+  expiration: 15m
 
 error_handlers:
   - file: 500.html
@@ -96,3 +101,4 @@ skip_files:
 - ^(.*/)?.*\.jar
 - ^(.*/)?build\.xml
 - ^(.*/)?.*\.md
+- ^(.*/)?LICENSE
