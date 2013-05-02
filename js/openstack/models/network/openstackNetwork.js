@@ -17,7 +17,7 @@ define([
 
     /**
      *
-     * @name Network
+     * @name Network™
      * @constructor
      * @category Network
      * @param {Object} initialization object.

@@ -11,7 +11,8 @@ define([
         'backbone',
         'common',
         '/js/openstack/models/identity/openstackRole.js',
-        '/js/openstack/collections/identity/openstackRoles.js'
+        '/js/openstack/collections/identity/openstackRoles.js',
+        'backbone-validation'
 ], function( $, _, Backbone, Common, Role, Roles ) {
     'use strict';
 
@@ -30,6 +31,35 @@ define([
      * @returns {Object} Returns a User instance.
      */
     var User = Backbone.Model.extend({
+
+        /**
+         *    Sample of using Backbone.validation.
+         *    N0t yet tested
+         *
+         
+        validation: {
+            name: {
+                required: true,
+                msg: 'Please enter a username.'
+            },
+            email: [{
+                required: true,
+                msg: 'Please enter an email address.'
+            },{
+                pattern: 'email',
+                msg: "Please enter a valid email."
+            }],
+            password: {
+                required: true
+            },
+            passwordConfirmation: {
+                required: true
+            },
+            tenant_id: {
+                required: true
+            }
+        },
+        **/
 
         validate: function(attrs, options) {
             var required = ["password", "passwordConfirmation", "email", "name"],

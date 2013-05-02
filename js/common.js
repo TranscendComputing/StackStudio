@@ -36,6 +36,12 @@ requirejs.config({
                'jquery'
             ]
         },
+        'backbone-validation': {
+            deps: [
+               'backbone',
+               'jquery'
+            ]
+        },
         'base64': {
             exports: 'Base64'
         },
@@ -145,7 +151,8 @@ requirejs.config({
         'jquery-ui': '//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min',
         'underscore': '//cdnjs.cloudflare.com/ajax/libs/lodash.js/1.1.0/lodash.min',
         'backbone': '//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min',
-        //'backbone.stickit': 'backbone.stickit.min',
+        'backbone.stickit': 'backbone.stickit.min',
+        'backbone-validation': 'backbone-validation.min',
         'icanhaz': 'ICanHaz',
         'jquery.form': 'jquery.form',
         //'jquery.list': 'jquery.list.min',

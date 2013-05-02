@@ -263,6 +263,11 @@
                         "type": "floating_ips"
                     }
                 ]
+            },
+            {
+                "name": "Load Balancer",
+                "type": "load_balancer",
+                "defaultSubtype": "loadbalancers"
             }
         ],
         "regions": [
