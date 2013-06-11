@@ -123,10 +123,10 @@ define([
 
         refreshMonitors: function() {
             $(".monitor_graph").empty();
-            var instanceApp = this;
+            var rdsApp = this;
             $("#monitor_time_range").selectmenu({
                 change: function() {
-                    instanceApp.refreshMonitors();
+                    rdsApp.refreshMonitors();
                 }
             });
             $("#refresh_monitors_button").button();
