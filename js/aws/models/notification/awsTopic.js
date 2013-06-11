@@ -27,9 +27,43 @@ define([
 
         /** Default attributes for topic */
         defaults: {
-            id: ''
-        }
+            id: '',
+            Name: '',
+            Owner: '',
+            SubscriptionsPending: 0,
+            SubscriptionsConfirmed: 0,
+            SubscriptionsDeleted: 0,
+            EffectiveDeliveryPolicy: '',
+            Policy: '',
+            TopicArn: ''
+        },
 
+        create: function(options, credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/notification/topics/create?_method=PUT&cred_id=" + credentialId + "&region=" + region;
+            this.sendPostAction(url, {"topic": options});
+        },
+
+        destroy: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/notification/topics/delete?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            var topic = {"topic": this.attributes};
+            this.sendPostAction(url, topic);
+        },
+
+        sendPostAction: function(url, options) {
+            $.ajax({
+                url: url,
+                type: 'POST',
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: JSON.stringify(options),
+                success: function(data) {
+                    Common.vent.trigger("topicAppRefresh");
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            }); 
+        }
     });
 
     return Topic;
