@@ -10,8 +10,6 @@
                         <li style="z-index: 1000">
                             <a id="action_button">Actions</a>
                             <ul>
-                                <li><a>Create New Subscription</a></li>
-                                <li><a>Delete Subscriptions</a></li>
                                 <li><a>Publish to this Topic</a></li>
                                 <li><a>Delete Topic</a></li>
                                 <li><a>Edit Topic Display Name</a></li>
@@ -42,7 +40,8 @@
 <script type="text/html" id="resource_detail">
     <div id="detail_tabs">
         <ul>
-            <li><a id="instance_details" href="#tabs-1">Details</a></li>
+            <li><a id="topic_details" href="#tabs-1">Details</a></li>
+            <li><a id="subscription_details" href="#tabs-2">Subscription</a></li>
         </ul>
         <div id="tabs-1" class="tab">
             <table>
@@ -55,6 +54,9 @@
                     <tr><td><b>Subscriptions Deleted:</b></td>      <td>{{ SubscriptionsDeleted }}</td></tr>
                 </tbody>
             </table>
+        </div>
+        <div id="tabs-2" class="tab">
+            <div id="subscriptions_tab_content"></div>
         </div>
     </div>
 </script>

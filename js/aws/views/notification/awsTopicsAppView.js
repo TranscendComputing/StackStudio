@@ -43,6 +43,7 @@ define([
             'click .create_button': 'createNew',
             'click #action_menu ul li': 'performAction',
             'click #resource_table tr': "clickOne",
+            'click #subscription_details' : 'refreshSubscriptionsTab'
         },
 
         initialize: function(options) {
@@ -69,22 +70,39 @@ define([
             
             switch(event.target.text)
             {
-            case "Create New Subscription":
-                break;
-            case "Delete Subscriptions":
-                break;
-            case "Publish to this Topic":
-                break;
-            case "Delete Topic":
-                topic.destroy(this.credentialId, this.region);
-                break;
-            case "Edit Topic Display Name":
-                break;
-            case "View/Edit Topic Policy":
-                break;
-            case "View/Edit Topic Delivery Policy":
-                break;
+                case "Publish to this Topic":
+                    break;
+                case "Delete Topic":
+                    topic.destroy(this.credentialId, this.region);
+                    break;
+                case "Edit Topic Display Name":
+                    break;
+                case "View/Edit Topic Policy":
+                    break;
+                case "View/Edit Topic Delivery Policy":
+                    break;
             }
+        },
+
+        refreshSubscriptionsTab: function() {
+            $("#subscriptions_tab_content").empty();
+            $("#subscriptions_tab_content").append( "<button id='create_subscription_button'>Create Subscription</button>" +
+                                                    "<button id='delete_subscription_button' disabled>Delete Subscription</button><br /><br />" +
+                                                    "<table id='subscriptions_table' class='full_width'>" +
+                                                        "<thead>" +
+                                                            "<tr>" +
+                                                                "<th>Subscription ID</th><th>Protocol</th><th>Endpoint</th><th>Subscriber</th>" +
+                                                            "</tr>" +
+                                                        "</thead>" +
+                                                        "<tbody></tbody><tfoot></tfoot>" +
+                                                    "</table>");
+            $("#subscriptions_table").dataTable({
+                "bJQueryUI": true,
+                "sDom": 't'
+            });
+            $("#create_subscription_button").button();
+            $("#delete_subscription_button").button();
+            //get subscriptions
         }
     });
     
