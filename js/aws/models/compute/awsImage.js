@@ -6,18 +6,13 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'backbone',
+        'models/resource/resourceModel',
         'common'
-], function( $, Backbone, Common ) {
+], function( ResourceModel, Common ) {
     'use strict';
 
-    // Aws Image Model
-    // ----------
+    var Image = ResourceModel.extend({
 
-    var Image = Backbone.Model.extend({
-
-        /** Default attributes for image */
         defaults: {
             label: '',
             description: '',

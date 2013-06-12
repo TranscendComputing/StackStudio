@@ -6,26 +6,13 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'backbone',
+        'models/resource/resourceModel',
         'common'
-], function( $, Backbone, Common ) {
+], function( ResourceModel, Common ) {
     'use strict';
 
-    // Aws Instance Model
-    // ----------
+    var Instance = ResourceModel.extend({
 
-    /**
-     *
-     * @name Instance
-     * @constructor
-     * @category Compute
-     * @param {Object} initialization object.
-     * @returns {Object} Returns an Instance.
-     */
-    var Instance = Backbone.Model.extend({
-
-        /** Default attributes for instance */
         defaults: {
             id: '',
             image_id: '',
@@ -59,63 +46,33 @@ define([
         },
         
         create: function(options, credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/instances/create?_method=PUT&cred_id=" + credentialId + "&region=" + region;
-            this.sendPostAction(url, options);
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/instances?&cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", {"instance": options}, "instanceAppRefresh");
         },
         
         start: function(credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/instances/start?cred_id=" + credentialId + "&region=" + region;
-            this.sendPostAction(url, this.attributes);
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/instances/" + this.attributes.id + "/start?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "instanceAppRefresh");
         },
         
         stop: function(credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/instances/stop?cred_id=" + credentialId + "&region=" + region;
-            this.sendPostAction(url, this.attributes);
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/instances/" + this.attributes.id + "/stop?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "instanceAppRefresh");
         },
         
         reboot: function(credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/instances/reboot?cred_id=" + credentialId + "&region=" + region;
-            this.sendPostAction(url, this.attributes);
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/instances/" + this.attributes.id + "/reboot?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "instanceAppRefresh");
         },
         
         terminate: function(credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/instances/terminate?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
-            this.sendPostAction(url, this.attributes);
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/instances/" + this.attributes.id + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "instanceAppRefresh");
         },
         
         disassociateAddress: function(credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/addresses/disassociate?cred_id=" + credentialId + "&region=" + region;
-            var address = {"address": {"public_ip": this.attributes.public_ip_address}};
-            $.ajax({
-                url: url,
-                type: 'POST',
-                contentType: 'application/x-www-form-urlencoded',
-                dataType: 'json',
-                data: JSON.stringify(address),
-                success: function(data) {
-                    Common.vent.trigger("instanceAppRefresh");
-                },
-                error: function(jqXHR) {
-                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
-                }
-            }); 
-        },
-        
-        sendPostAction: function(url, options) {
-            var instance = {"instance": options};
-            $.ajax({
-                url: url,
-                type: 'POST',
-                contentType: 'application/x-www-form-urlencoded',
-                dataType: 'json',
-                data: JSON.stringify(instance),
-                success: function(data) {
-                    Common.vent.trigger("instanceAppRefresh");
-                },
-                error: function(jqXHR) {
-                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
-                }
-            }); 
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/addresses/" + this.attributes.public_ip_address + "/disassociate?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "instanceAppRefresh");
         }
 
     });

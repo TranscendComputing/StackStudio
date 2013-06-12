@@ -6,18 +6,13 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'backbone',
+        'models/resource/resourceModel',
         'common'
-], function( $, Backbone, Common ) {
+], function( ResourceModel, Common ) {
     'use strict';
 
-    // Aws SpotPrice Model
-    // ----------
+    var SpotPrice = ResourceModel.extend({
 
-    var SpotPrice = Backbone.Model.extend({
-
-        /** Default attributes for instance */
         defaults: {
             instanceType: '',
             productDescription: '',
@@ -27,23 +22,8 @@ define([
         },
         
         currentPrice: function(options, credentialId, region) {
-            var spotPrice = this;
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/spot_prices/current?cred_id=" + credentialId + "&region=" + region;
-            var filters = {"filters": options};
-            $.ajax({
-                url: url,
-                type: 'POST',
-                contentType: 'application/x-www-form-urlencoded',
-                dataType: 'json',
-                data: JSON.stringify(filters),
-                success: function(data) {
-                    spotPrice.attributes = data;
-                    Common.vent.trigger("currentPriceRefresh");
-                },
-                error: function(jqXHR) {
-                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
-                }
-            }); 
+            this.sendAjaxAction(url, "POST", {"filters": options}, "currentPriceRefresh");
         }
     });
 

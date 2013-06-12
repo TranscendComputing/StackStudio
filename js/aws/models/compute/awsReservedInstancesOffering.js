@@ -6,37 +6,21 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'backbone'
-], function( $, Backbone ) {
+        'models/resource/resourceModel',
+        'backbone',
+        'common'
+], function( ResourceModel, Backbone, Common ) {
     'use strict';
 
-    /**
-     *
-     * @name ReservedInstancesOffering
-     * @constructor
-     * @category Compute
-     * @param {Object} initialization object.
-     * @returns {Object} Returns a ReservedInstancesOffering.
-     */
-    var ReservedInstancesOffering = Backbone.Model.extend({
+    var ReservedInstancesOffering = ResourceModel.extend({
         idAttribute: "reservedInstancesOfferingId",
 
-        /** Default attributes for reserved instance */
         defaults: {
             addButton: '<a href="" class="add_to_cart">Add</a>',
             removeButton: '<a href="" class="remove_from_cart">Remove</a>',
             desiredCount: '<input class="desired_count_input" value="1"></input>'
         },
 
-        /**
-         * Override the base Backbone set method, for debugging.
-         *
-         * @memberOf TemplateResource
-         * @category Internal
-         * @param {Object} hash of attribute values to set.
-         * @param {Object} (optional) options to tweak (see Backbone docs).
-         */
         set: function(attributes, options) {
             if(!options.update)
             {

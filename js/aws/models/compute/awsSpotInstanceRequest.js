@@ -6,23 +6,13 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'backbone',
+        'models/resource/resourceModel',
         'common'
-], function( $, Backbone, Common ) {
+], function( ResourceModel, Common ) {
     'use strict';
 
-    /**
-     *
-     * @name SpotInstance
-     * @constructor
-     * @category Compute
-     * @param {Object} initialization object.
-     * @returns {Object} Returns a SpotInstance.
-     */
-    var SpotInstance = Backbone.Model.extend({
+    var SpotInstance = ResourceModel.extend({
 
-        /** Default attributes for spot instance */
         defaults: {
             id: '',
             price: 0.0,
@@ -50,30 +40,13 @@ define([
         },
         
         create: function(options, credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/spot_requests/create?_method=PUT&cred_id=" + credentialId + "&region=" + region;
-            this.sendPostAction(url, options);
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/spot_requests?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", {"spot_request": options}, "spotInstanceAppRefresh");
         },
         
         cancel: function(credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/spot_requests/delete?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
-            this.sendPostAction(url, this.attributes);
-        },
-        
-        sendPostAction: function(url, options) {
-            var spotRequest = {"spot_request": options};
-            $.ajax({
-                url: url,
-                type: 'POST',
-                contentType: 'application/x-www-form-urlencoded',
-                dataType: 'json',
-                data: JSON.stringify(spotRequest),
-                success: function(data) {
-                    Common.vent.trigger("spotInstanceAppRefresh");
-                },
-                error: function(jqXHR) {
-                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
-                }
-            }); 
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/spot_requests/" + this.attributes.id + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "spotInstanceAppRefresh");
         }
     });
     

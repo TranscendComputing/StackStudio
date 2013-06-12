@@ -6,14 +6,13 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'backbone'
-], function( $, Backbone ) {
+        'models/resource/resourceModel',
+        'common'
+], function( ResourceModel, Common ) {
     'use strict';
 
-    var AvailabilityZone = Backbone.Model.extend({
+    var AvailabilityZone = ResourceModel.extend({
 
-        /** Default attributes for availability zone */
         defaults: {
             zoneName: '',
             zoneState: '',

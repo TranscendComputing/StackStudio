@@ -6,28 +6,15 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'backbone',
+        'models/resource/resourceModel',
         'common'
-], function( $, Backbone, Common ) {
+], function( ResourceModel, Common ) {
     'use strict';
 
-    // Base Subnet Model
-    // ----------
-
-    /**
-     *
-     * @name Subnet
-     * @constructor
-     * @category ObjectStorage
-     * @param {Object} initialization object.
-     * @returns {Object} Returns a Subnet instance.
-     */
-    var Subnet = Backbone.Model.extend({
+    var Subnet = ResourceModel.extend({
 
         idAttribute: "subnet_id",
         
-        /** Default attributes for compute */
         defaults: {
             subnet_id: '',
             vpc_id: '',
@@ -39,30 +26,13 @@ define([
 		},
 
         create: function(options, credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/subnets/create?_method=PUT&cred_id=" + credentialId + "&region=" + region;
-            this.sendPostAction(url, options);
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/subnets?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", {"subnet": options}, "subnetAppRefresh");
         },
 
         destroy: function(credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/subnets/delete?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
-            this.sendPostAction(url, this.attributes);
-        },
-
-        sendPostAction: function(url, options) {
-            var subnet = {"subnet": options};
-            $.ajax({
-                url: url,
-                type: 'POST',
-                contentType: 'application/x-www-form-urlencoded',
-                dataType: 'json',
-                data: JSON.stringify(subnet),
-                success: function(data) {
-                    Common.vent.trigger("subnetAppRefresh");
-                },
-                error: function(jqXHR) {
-                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
-                }
-            }); 
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/subnets/" + this.attributes.subnet_id + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "subnetAppRefresh");
         }
     });
 

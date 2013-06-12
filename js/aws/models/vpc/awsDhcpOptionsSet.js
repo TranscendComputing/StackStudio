@@ -8,22 +8,12 @@
 define([
         'jquery',
         'backbone',
+        'models/resource/resourceModel',
         'common'
-], function( $, Backbone, Common ) {
+], function( $, Backbone, ResourceModel, Common ) {
     'use strict';
 
-    // Base DhcpOptionsSet Model
-    // ----------
-
-    /**
-     *
-     * @name DhcpOptionsSet
-     * @constructor
-     * @category ObjectStorage
-     * @param {Object} initialization object.
-     * @returns {Object} Returns a DhcpOptionsSet instance.
-     */
-    var DhcpOptionsSet = Backbone.Model.extend({
+    var DhcpOptionsSet = ResourceModel.extend({
         
         defaults: {
             "id": '',
@@ -49,30 +39,13 @@ define([
         },
 
         create: function(options, credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/dhcp_options/create?_method=PUT&cred_id=" + credentialId + "&region=" + region;
-            this.sendPostAction(url, options);
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/dhcp_options?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", {"dhcp_option": options}, "dhcpOptionAppRefresh");
         },
 
         destroy: function(credentialId,region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/dhcp_options/delete?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
-            this.sendPostAction(url, this.attributes);
-        },
-
-        sendPostAction: function(url, options) {
-            var dhcpOption = {"dhcp_option": options};
-            $.ajax({
-                url: url,
-                type: 'POST',
-                contentType: 'application/x-www-form-urlencoded',
-                dataType: 'json',
-                data: JSON.stringify(dhcpOption),
-                success: function(data) {
-                    Common.vent.trigger("dhcpOptionAppRefresh");
-                },
-                error: function(jqXHR) {
-                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
-                }
-            }); 
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/dhcp_options/" + this.attributes.id + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "dhcpOptionAppRefresh");
         }
     });
 

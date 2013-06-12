@@ -6,24 +6,14 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'backbone',
+        'models/resource/resourceModel',
         'common'
-], function( $, Backbone, Common ) {
+], function( ResourceModel, Common ) {
     'use strict';
 
-    /**
-     *
-     * @name SecurityGroup
-     * @constructor
-     * @category Compute
-     * @param {Object} initialization object.
-     * @returns {Object} Returns a SecurityGroup.
-     */
-    var SecurityGroup = Backbone.Model.extend({
+    var SecurityGroup = ResourceModel.extend({
         idAttribute: "group_id",
         
-        /** Default attributes for security group */
         defaults: {
             name: '',
             description: '',
@@ -35,31 +25,15 @@ define([
         },
         
         create: function(options, credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/security_groups/create?_method=PUT&cred_id=" + credentialId + "&region=" + region;
-            this.sendPostAction(url, options);
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/security_groups?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", {"security_group": options}, "securityGroupAppRefresh");
         },
         
         destroy: function(credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/security_groups/delete?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
-            this.sendPostAction(url, this.attributes);
-        },
-        
-        sendPostAction: function(url, options) {
-            var securityGroup = {"security_group": options};
-            $.ajax({
-                url: url,
-                type: 'POST',
-                contentType: 'application/x-www-form-urlencoded',
-                dataType: 'json',
-                data: JSON.stringify(securityGroup),
-                success: function(data) {
-                    Common.vent.trigger("securityGroupAppRefresh");
-                },
-                error: function(jqXHR) {
-                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
-                }
-            }); 
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/security_groups/" + this.attributes.group_id + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "topicAppRefresh");
         }
+        
     });
 
     return SecurityGroup;

@@ -6,14 +6,13 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'backbone'
-], function( $, Backbone ) {
+        'models/resource/resourceModel',
+        'common'
+], function( ResourceModel, Common ) {
     'use strict';
 
-    var Flavor = Backbone.Model.extend({
+    var Flavor = ResourceModel.extend({
 
-        /** Default attributes for flavor (machine size) */
         defaults: {
             id: '',
             bits: '',
