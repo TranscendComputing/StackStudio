@@ -13,19 +13,14 @@ define([
 ], function( $, Backbone, DhcpOptionsSet, Common ) {
     'use strict';
 
-    // DhcpOptionsSet Collection
-    // ---------------
-
     var DhcpOptionsSetsList = Backbone.Collection.extend({
 
-        // Reference to this collection's model.
         model: DhcpOptionsSet,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/dhcp_options/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/dhcp_options'
         
     });
 
-    // Create our global collection of **DhcpOptionsSets**.
     return DhcpOptionsSetsList;
 
 });

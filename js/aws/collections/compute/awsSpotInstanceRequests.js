@@ -13,15 +13,11 @@ define([
 ], function( $, Backbone, SpotInstance, Common ) {
     'use strict';
 
-    // SpotInstance Collection
-    // ---------------
-
     var SpotInstanceList = Backbone.Collection.extend({
 
-        // Reference to this collection's model.
         model: SpotInstance,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/spot_requests/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/spot_requests'
     });
     
     return SpotInstanceList;

@@ -17,7 +17,7 @@ define([
 
         model: InternetGateway,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/internet_gateways/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/internet_gateways'
         
     });
 

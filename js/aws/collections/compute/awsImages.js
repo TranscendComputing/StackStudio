@@ -13,12 +13,8 @@ define([
 ], function( $, Backbone, Image, Common ) {
     'use strict';
 
-    // Image Collection
-    // ---------------
-
     var ImageList = Backbone.Collection.extend({
 
-        // Reference to this collection's model.
         model: Image,
 
         url: 'samples/awsImages.json'

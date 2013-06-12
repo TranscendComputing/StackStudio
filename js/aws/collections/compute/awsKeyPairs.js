@@ -13,15 +13,11 @@ define([
 ], function( $, Backbone, KeyPair, Common ) {
     'use strict';
 
-    // KeyPair Collection
-    // ---------------
-
     var KeyPairList = Backbone.Collection.extend({
 
-        // Reference to this collection's model.
         model: KeyPair,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/key_pairs/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/key_pairs'
     });
     
     return KeyPairList;

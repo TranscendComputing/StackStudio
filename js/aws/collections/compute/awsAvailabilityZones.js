@@ -13,15 +13,11 @@ define([
 ], function( $, Backbone, AvailabilityZone, Common ) {
     'use strict';
 
-    // AvailabilityZone Collection
-    // ---------------
-
     var AvailabilityZoneList = Backbone.Collection.extend({
 
-        // Reference to this collection's model.
         model: AvailabilityZone,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/availability_zones/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/availability_zones'
     });
     
     return AvailabilityZoneList;
