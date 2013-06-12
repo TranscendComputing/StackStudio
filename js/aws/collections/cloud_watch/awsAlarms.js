@@ -21,7 +21,7 @@ define([
         // Reference to this collection's model.
         model: Alarm,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/monitor/alarms/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/monitor/alarms'
     });
     
     // Create our global collection of **Alarms**.
