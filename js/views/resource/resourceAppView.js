@@ -120,7 +120,7 @@ define([
             this.$table.fnClearTable();
             this.$table.fnProcessingIndicator(false);
             this.collection.each(this.addOne, this);
-
+            this.setResourceAppHeightify();
             if(this.selectedId) {
                 this.selectOne(this.selectedId, $("tr:contains("+this.selectedId+")"));
             }
@@ -169,6 +169,8 @@ define([
                     $('.create_button').button();
                 }
                 this.toggleActions();
+            }else {
+                this.selectedId = undefined;
             }
             this.setResourceAppHeightify();
         },
@@ -190,7 +192,15 @@ define([
 
         setResourceAppHeightify: function() {
             //set resource_app_heightify for other elements to reference
-            $(".resource_app_heightify").height($("#resource_app").height());
+            if($("#subservice_menu_list").height()+56 > $("#resource_app").height()-30) {
+                $(".resource_app_heightify").height($("#subservice_menu_list").height()+56);
+            }else {
+                if(this.selectedId) {
+                    $(".resource_app_heightify").height($("#resource_app").height()-30);
+                }else {
+                    $(".resource_app_heightify").height($("#resource_app").height()-50);
+                }      
+            }
         },
 
         /**
