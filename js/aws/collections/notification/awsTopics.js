@@ -21,7 +21,7 @@ define([
         // Reference to this collection's model.
         model: Topic,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/notification/topics/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/notification/topics'
     });
     
     // Create our global collection of **Topics**.
