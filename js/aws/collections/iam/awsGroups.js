@@ -18,7 +18,7 @@ define([
 
         model: Group,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/iam/groups/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/iam/groups'
         
     });
 

@@ -13,15 +13,11 @@ define([
 ], function( $, Backbone, HostedZone, Common ) {
     'use strict';
 
-    // HostedZone Collection
-    // ---------------
-
     var HostedZoneList = Backbone.Collection.extend({
 
-        // Reference to this collection's model.
         model: HostedZone,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/dns/hosted_zones/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/dns/hosted_zones'
         
     });
     

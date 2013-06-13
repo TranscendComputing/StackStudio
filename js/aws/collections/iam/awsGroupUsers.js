@@ -18,7 +18,9 @@ define([
 
         model: GroupUser,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/iam/groups/users/describe'
+        initialize: function(options) {
+            this.url = Common.apiUrl + '/stackstudio/v1/cloud_management/aws/iam/groups/' + options["group_name"] + '/users';
+        }
         
     });
 
