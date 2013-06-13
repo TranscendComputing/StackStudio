@@ -23,7 +23,7 @@ define([
                     dataType: 'json',
                     data: JSON.stringify(options),
                     success: function(data) {
-                        Common.vent.trigger(triggerString);
+                        Common.vent.trigger(triggerString, data);
                     },
                     error: function(jqXHR) {
                         Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
@@ -35,7 +35,7 @@ define([
                     type: type,
                     contentType: 'application/x-www-form-urlencoded',
                     success: function(data) {
-                        Common.vent.trigger(triggerString);
+                        Common.vent.trigger(triggerString, data);
                     },
                     error: function(jqXHR) {
                         Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
