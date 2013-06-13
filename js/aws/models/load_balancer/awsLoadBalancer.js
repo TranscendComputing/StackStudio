@@ -8,11 +8,12 @@
 define([
         'jquery',
         'backbone',
+        'models/resource/resourceModel',
         'common'
-], function( $, Backbone, Common ) {
+], function( $, Backbone, ResourceModel, Common ) {
     'use strict';
 
-    var LoadBalancer = Backbone.Model.extend({
+    var LoadBalancer = ResourceModel.extend({
 
         defaults: {
             id: '',
@@ -44,63 +45,52 @@ define([
         },
         
         configureHealthCheck: function(healthCheckOptions, credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/configure_health_check?cred_id=" + credentialId + "&region=" + region;
-            var options = {id: this.attributes.id, health_check: healthCheckOptions};
-            var loadBalancer = {"load_balancer": options};
-            this.sendPostAction(url, loadBalancer, "loadBalancerAppRefresh");
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/"+ this.attributes.id +"/configure_health_check?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", {"health_check": healthCheckOptions}, "loadBalancerAppRefresh");
         },
 
         createListeners: function(listeners, credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/listeners/create?_method=PUT&cred_id=" + credentialId + "&region=" + region;
-            var options = {id: this.attributes.id, listeners: listeners};
-            var loadBalancer = {"load_balancer": options};
-            this.sendPostAction(url, loadBalancer, "listenersRefresh");
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/"+ this.attributes.id +"/listeners?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", {"listeners": listeners}, "listenersRefresh");
         },
 
         destroyListeners: function(ports, credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/listeners/delete?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
-            var options = {id: this.attributes.id, ports: ports};
-            var loadBalancer = {"load_balancer": options};
-            this.sendPostAction(url, loadBalancer, "listenersRefresh");
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/"+ this.attributes.id +"/listeners?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", {"ports": ports}, "listenersRefresh");
         },
 
         enableAvailabilityZones: function(availabilityZones, credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/availability_zones/enable?cred_id=" + credentialId + "&region=" + region;
-            var options = {id: this.attributes.id, availability_zones: availabilityZones};
-            this.sendPostAction(url, options, "instancesRefresh");
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/"+ this.attributes.id +"/availability_zones/enable?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", {"availability_zones": availabilityZones}, "instancesRefresh");
         },
 
         disableAvailabilityZones: function(availabilityZones, credentialId, region, disableTrigger) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/availability_zones/disable?cred_id=" + credentialId + "&region=" + region;
-            var options = {id: this.attributes.id, availability_zones: availabilityZones};
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/"+ this.attributes.id +"/availability_zones/disable?cred_id=" + credentialId + "&region=" + region;
             if(disableTrigger) {
-                this.sendPostAction(url, options);
+                this.sendAjaxAction(url, "POST", {"availability_zones": availabilityZones}, "");
             }else {
-              this.sendPostAction(url, options, "instancesRefresh");  
+                this.sendAjaxAction(url, "POST", {"availability_zones": availabilityZones}, "instancesRefresh");
             }
         },
 
         registerInstances: function(instanceIds, credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/instances/register?cred_id=" + credentialId + "&region=" + region;
-            var options = {id: this.attributes.id, instance_ids: instanceIds};
-            this.sendPostAction(url, options, "instancesRefresh");
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/"+ this.attributes.id +"/instances/register?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", {"instance_ids": instanceIds}, "instancesRefresh");
         },
 
         deregisterInstances: function(instanceIds, credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/instances/deregister?cred_id=" + credentialId + "&region=" + region;
-            var options = {id: this.attributes.id, instance_ids: instanceIds};
-            this.sendPostAction(url, options, "instancesRefresh");
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/"+ this.attributes.id +"/instances/deregister?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", {"instance_ids": instanceIds}, "instancesRefresh");
         },
         
         destroy: function(credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/delete?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
-            var loadBalancer = {"load_balancer": this.attributes};
-            this.sendPostAction(url, loadBalancer, "loadBalancerAppRefresh");
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/"+ this.attributes.id +"?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "loadBalancerAppRefresh");
         },
 
         create: function(options, healthCheckOptions, credentialId, region) {
             var lb = this;
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/create?_method=PUT&cred_id=" + credentialId + "&region=" + region;
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers?cred_id=" + credentialId + "&region=" + region;
             var loadBalancer = {"load_balancer": options};
             $.ajax({
                 url: url,
@@ -119,27 +109,11 @@ define([
 
         describeHealth: function(credentialId, region) {
             $.ajax({
-                url: Common.apiUrl + "/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/describe_health?cred_id=" + credentialId + "&region=" + region + "&id=" + this.attributes.id + "&availability_zones=" + JSON.stringify(this.attributes.availability_zones),
+                url: Common.apiUrl + "/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/"+ this.attributes.id +"/describe_health?cred_id=" + credentialId + "&region=" + region + "&id=" + this.attributes.id + "&availability_zones=" + JSON.stringify(this.attributes.availability_zones),
                 type: 'GET',
                 contentType: 'application/x-www-form-urlencoded',
                 success: function(data) {
                     Common.vent.trigger("resetDescribeHealth", data.AvailabilityZonesHealth, data.InstancesHealth);
-                },
-                error: function(jqXHR) {
-                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
-                }
-            }); 
-        },
-        
-        sendPostAction: function(url, options, triggerString) {
-            $.ajax({
-                url: url,
-                type: 'POST',
-                contentType: 'application/x-www-form-urlencoded',
-                dataType: 'json',
-                data: JSON.stringify(options),
-                success: function(data) {
-                    Common.vent.trigger(triggerString);
                 },
                 error: function(jqXHR) {
                     Common.errorDialog(jqXHR.statusText, jqXHR.responseText);

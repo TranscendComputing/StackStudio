@@ -6,13 +6,12 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'backbone',
+        'models/resource/resourceModel',
         'common'
-], function( $, Backbone, Common ) {
+], function( ResourceModel, Common ) {
     'use strict';
 
-    var Listener = Backbone.Model.extend({
+    var Listener = ResourceModel.extend({
 
         idAttribute: 'lb_port',
 
