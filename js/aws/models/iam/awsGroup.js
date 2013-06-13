@@ -8,11 +8,12 @@
 define([
         'jquery',
         'backbone',
+        'models/resource/resourceModel',
         'common'
-], function( $, Backbone, Common ) {
+], function( $, Backbone, ResourceModel, Common ) {
     'use strict';
 
-    var Group = Backbone.Model.extend({
+    var Group = ResourceModel.extend({
 
         idAttribute: 'GroupName',
 
@@ -24,43 +25,23 @@ define([
         },
 
         create: function(options, credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/iam/groups/create?_method=PUT&cred_id=" + credentialId;
-            var newGroup = {group: options};
-            this.sendPostAction(url, newGroup, "groupAppRefresh");
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/iam/groups?&cred_id=" + credentialId;
+            this.sendAjaxAction(url, "POST", {"group": options}, "groupAppRefresh");
         },
 
         addUser: function(user, credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/iam/groups/users/add?cred_id=" + credentialId;
-            var options = {group: this.attributes, user: user};
-            this.sendPostAction(url, options, "groupUsersRefresh");
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/iam/groups/"+ this.attributes.GroupName +"/users/"+ user["id"] +"?cred_id=" + credentialId;
+            this.sendAjaxAction(url, "POST", undefined, "groupUsersRefresh");
         },
 
         removeUser: function(user, credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/iam/groups/users/remove?cred_id=" + credentialId;
-            var options = {group: this.attributes, user: user};
-            this.sendPostAction(url, options, "groupUsersRefresh");
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/iam/groups/"+ this.attributes.GroupName +"/users/"+ user["id"] +"?_method=DELETE&cred_id=" + credentialId;
+            this.sendAjaxAction(url, "POST", undefined, "groupUsersRefresh");
         },
 
         destroy: function(credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/iam/groups/delete?_method=DELETE&cred_id=" + credentialId;
-            var options = {group: this.attributes};
-            this.sendPostAction(url, options, "groupAppRefresh");
-        },
-
-        sendPostAction: function(url, options, triggerString) {
-            $.ajax({
-                url: url,
-                type: 'POST',
-                contentType: 'application/x-www-form-urlencoded',
-                dataType: 'json',
-                data: JSON.stringify(options),
-                success: function(data) {
-                    Common.vent.trigger(triggerString);
-                },
-                error: function(jqXHR) {
-                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
-                }
-            }); 
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/iam/groups/"+ this.attributes.GroupName +"?_method=DELETE&cred_id=" + credentialId;
+            this.sendAjaxAction(url, "POST", undefined, "groupAppRefresh");
         }
     });
 

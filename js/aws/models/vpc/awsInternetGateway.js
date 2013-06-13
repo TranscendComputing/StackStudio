@@ -26,7 +26,7 @@ define([
         },
 
         attach: function(options, credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/vpcs/" + options.vpc_id + "/internet_gateways/" + options.id + "/attach?cred_id=" + credentialId + "&region=" + region;
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/vpcs/" + options["vpc_id"] + "/internet_gateways/" + options["id"] + "/attach?cred_id=" + credentialId + "&region=" + region;
             this.sendAjaxAction(url, "POST", undefined, "internetGatewayAppRefresh");
         },
 
