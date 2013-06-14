@@ -6,17 +6,12 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'backbone',
+        'models/resource/resourceModel',
         'common'
-], function( $, Backbone, Common ) {
+], function( ResourceModel, Common ) {
     'use strict';
 
-    // File Model
-    // ----------
-
-    var File = Backbone.Model.extend({
-
+    var File = ResourceModel.extend({
         idAttribute: "key",
         
         defaults: {
@@ -36,21 +31,10 @@ define([
             encryption: '',
             version: ''
         },
-        
+
         destroy: function(directoryName, credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/object_storage/directory/file/delete?_method=DELETE&directory=" + directoryName + "&file=" + this.attributes.key + "&cred_id=" + credentialId + "&region=" + region;
-            $.ajax({
-                url: url,
-                type: 'POST',
-                contentType: 'application/x-www-form-urlencoded',
-                dataType: 'json',
-                success: function(data) {
-                    Common.vent.trigger("objectStorageObjectRefresh");
-                },
-                error: function(jqXHR) {
-                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
-                }
-            }); 
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/object_storage/directories/" + directoryName + "/files/"+ this.attributes.key +"?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "objectStorageObjectRefresh");
         }
     });
 
