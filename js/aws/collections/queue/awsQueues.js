@@ -18,7 +18,7 @@ define([
 
         model: Queue,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/queue/queues/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/queue/queues'
         
     });
 
