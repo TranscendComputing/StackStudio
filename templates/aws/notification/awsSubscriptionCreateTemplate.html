@@ -1,0 +1,33 @@
+<div id="subscription_create">
+    <div>
+        <table>
+            <tr>
+                <td>Topic:</td>
+                <td>
+                    <span id="topic_name_output"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>Protocol:</td>
+                <td>
+                    <select id="protocol_select">
+                        <option value="email">Email</option>
+                        <option value="email-json">Email-JSON</option>
+                        <option value="http">HTTP</option>
+                        <option value="https">HTTPS</option>
+                        <option value="sms">SMS</option>
+                        <option value="sqs">Amazon SQS</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Endpoint:</td>
+                <td>
+                    <input id="endpoint_input" type="text" style="width:300px;"/>
+                    <br />
+                    <span id="endpoint_message">e.g. user@domain.com</span>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

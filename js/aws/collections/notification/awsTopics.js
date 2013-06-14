@@ -13,18 +13,13 @@ define([
 ], function( $, Backbone, Topic, Common ) {
     'use strict';
 
-    // Topic Collection
-    // ---------------
-
     var TopicList = Backbone.Collection.extend({
 
-        // Reference to this collection's model.
         model: Topic,
 
         url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/notification/topics'
     });
-    
-    // Create our global collection of **Topics**.
+
     return TopicList;
 
 });
