@@ -21,7 +21,9 @@ define([
         // Reference to this collection's model.
         model: File,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/object_storage/directory/files'
+        initialize: function(options) {
+            this.url = Common.apiUrl + '/stackstudio/v1/cloud_management/aws/object_storage/directories/'+ options["directory"] +'/files';
+        }
     });
 
     return FileList;
