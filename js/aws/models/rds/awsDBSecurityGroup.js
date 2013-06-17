@@ -6,12 +6,12 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'backbone'
-], function( $, Backbone ) {
+        'models/resource/resourceModel',
+        'common'
+], function( ResourceModel, Common ) {
     'use strict';
 
-    var DBSecurityGroup = Backbone.Model.extend({
+    var DBSecurityGroup = ResourceModel.extend({
 
         defaults: {
             id: '',
