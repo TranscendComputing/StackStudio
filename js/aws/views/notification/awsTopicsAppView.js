@@ -16,10 +16,12 @@ define([
         '/js/aws/collections/notification/awsTopics.js',
         '/js/aws/collections/notification/awsSubscriptions.js',
         '/js/aws/views/notification/awsTopicsCreateView.js',
+        '/js/aws/views/notification/awsPublishToTopicView.js',
+        '/js/aws/views/notification/awsTopicDisplayNameEditView.js',
         '/js/aws/views/notification/awsSubscriptionCreateView.js',
         'icanhaz',
         'common'
-], function( $, _, Backbone, ResourceAppView, ResourceRowView, awsTopicAppTemplate, Topic, Topics, Subscriptions, AwsTopicCreate, SuscriptionCreate, ich, Common ) {
+], function( $, _, Backbone, ResourceAppView, ResourceRowView, awsTopicAppTemplate, Topic, Topics, Subscriptions, AwsTopicCreate, PublishToTopic, EditTopicDisplayName, SuscriptionCreate, ich, Common ) {
     'use strict';
 
     var AwsTopicsAppView = ResourceAppView.extend({
@@ -85,15 +87,15 @@ define([
             switch(event.target.text)
             {
                 case "Publish to this Topic":
+                    var publish = new PublishToTopic({cred_id: this.credentialId, region: this.region, topic: topic});
+                    publish.render();
                     break;
                 case "Delete Topic":
                     topic.destroy(this.credentialId, this.region);
                     break;
                 case "Edit Topic Display Name":
-                    break;
-                case "View/Edit Topic Policy":
-                    break;
-                case "View/Edit Topic Delivery Policy":
+                    var editTopicDisplayName = new EditTopicDisplayName({cred_id: this.credentialId, region: this.region, topic: topic});
+                    editTopicDisplayName.render();
                     break;
             }
         },

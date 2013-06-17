@@ -1,0 +1,40 @@
+<div id="publish_to_topic">
+    <div>
+        <table>
+            <tr>
+                <td>Topic:</td>
+                <td>
+                    <span id="topic_name_output"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>Subject:</td>
+                <td>
+                    <input id="subject_input" type="text" class="large_width"/>
+                    <br />
+                    <span>Up to 100 printable ASCII characters (optional).</span>
+                </td>
+            </tr>
+            <tr>
+                <td>Message:</td>
+                <td>
+                    <textarea id="message_input" class="large_width" style="height:150px;"></textarea>
+                    <br />
+                    <span>Up to 64KB of Unicode text.</span>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <br />
+                    <input id="same_message_radio" type="radio" name="message_body_handler" checked/>Use same message body for all protocols
+                    <br />
+                    <input id="different_message_radio" type="radio" name="message_body_handler"/>Use different message body for different protocols
+                </td>
+            </tr>
+        </table>
+        <br />
+        <span>For SMS notifications, it is best to leave the Subject field blank and place your text in the Message field to send a maximum of 140 characters.
+        If the Subject field is not blank, the text in the Subject field will be used as content for the SMS messages.</span>
+    </div>
+</div>
