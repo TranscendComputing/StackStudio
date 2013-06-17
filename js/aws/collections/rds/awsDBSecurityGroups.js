@@ -18,7 +18,7 @@ define([
 
         model: DBSecurityGroup,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/rds/security_groups/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/rds/security_groups'
         
     });
 
