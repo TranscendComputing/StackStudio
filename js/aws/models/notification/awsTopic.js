@@ -16,6 +16,7 @@ define([
         defaults: {
             id: '',
             Name: '',
+            DisplayName: '',
             Owner: '',
             SubscriptionsPending: 0,
             SubscriptionsConfirmed: 0,
@@ -28,6 +29,16 @@ define([
         create: function(options, credentialId, region) {
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/notification/topics?cred_id=" + credentialId + "&region=" + region;
             this.sendAjaxAction(url, "POST", {"topic": options}, "topicAppRefresh");
+        },
+
+        publish: function(options, credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/notification/topics/"+ this.attributes.id +"/publish?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", {"publish": options}, "");
+        },
+
+        editDisplayName: function(options, credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/notification/topics/"+ this.attributes.id +"/set_attribute?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", {"attribute": options}, "topicAppRefresh");
         },
 
         destroy: function(credentialId, region) {
