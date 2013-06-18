@@ -5,7 +5,7 @@
         "services": [
             {
                 "name": "Auto Scale",
-                "type": "auto_scale",
+                "type": "autoscale",
                 "defaultSubtype": "autoscalegroups"
             },
             {

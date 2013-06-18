@@ -1,0 +1,68 @@
+<div id="autoscale_group_create">
+    <div id="accordion" style="height:500px;">
+        <h3>Instance Configuration</h3>
+        <div>
+            <table>
+                <tr>
+                    <td>Name:</td>
+                    <td>
+                        <input id="autoscale_group_name" type="text" class="medium_width"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Image:</td>
+                    <td>
+                        <input id="image_select" class="large_width"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Machine Size:</td>
+                    <td>
+                        <select id="flavor_select" class="large_width"></select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Availability Zone:</td>
+                    <td>
+                        <select id="availability_zone_select" multiple="multiple" class="large_width"></select> <span id="az_select_alert" style="color:red;"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Key Pair:</td>
+                    <td>
+                        <select id="key_pair_select" class="medium_width"></select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Security Group(s):</td>
+                    <td>
+                        <select id="security_group_select" multiple="multiple" style="width:360px;"></select>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <h3>Elasticity</h3>
+        <div>
+            <div id="elasticity_radio_group" style="float:left;">
+                <input type="radio" id="auto_recovery" name="elasticity" value="auto_recovery" checked/><label for="auto_recovery">Auto Recovery</label>
+                <input type="radio" id="fixed_array" name="elasticity" value="fixed_array"/><label for="fixed_array">Fixed Array</label>
+                <input type="radio" id="auto_scale" name="elasticity" value="autoscale"/><label for="auto_scale">Auto Scale</label>
+            </div>
+            <img id="elasticity_image" src="/images/IconPNGs/NewServer.png" style="float:right;width:30px"/>
+            <br />
+            <br />
+            <div id="elasticity_config"></div>
+        </div>
+        <h3>Additional Configuration</h3>
+        <div>
+            <table>
+                <tr>
+                    <td>Detailed Monitoring:</td>
+                    <td>
+                        <input id="detailed_monitoring" type="checkbox" checked/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
