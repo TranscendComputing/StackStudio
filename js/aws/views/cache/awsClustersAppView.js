@@ -14,7 +14,7 @@ define([
         'text!templates/aws/cache/awsCacheClusterAppTemplate.html',
         '/js/aws/models/cache/awsCacheCluster.js',
         '/js/aws/collections/cache/awsCacheClusters.js',
-        '/js/aws/views/cache/awsCacheClusterCreateView.js',
+        '/js/aws/views/cache/awsClusterCreateView.js',
         'icanhaz',
         'common',
         'jquery.dataTables'
@@ -39,13 +39,15 @@ define([
         
         subtype: "clusters",
         
+        CreateView: CacheClusterCreate,
+        
         events: {
             'click .create_button': 'createNew',
             'click #action_menu ul li': 'performAction',
             'click #resource_table tr': 'clickOne'
         },
 
-        initialize: function() {
+        initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
             }
