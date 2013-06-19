@@ -90,6 +90,11 @@
                 "defaultSubtype": "hostedzones"
             },
             {
+                "name": "Simple DB",
+                "type": "simple_db",
+                "defaultSubtype": "simpledatabases"
+            },
+            {
                 "name": "Simple Notification",
                 "type": "notification",
                 "defaultSubtype": "topics"
