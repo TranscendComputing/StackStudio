@@ -51,7 +51,7 @@ define([
         
         CreateView: LoadBalancerCreate,
 
-        listeners: new Listeners(),
+        listeners: undefined,
 
         healthyHostCountData: new MetricStatistics(),
         
@@ -98,7 +98,6 @@ define([
             Common.vent.on("listenersRefresh", function() {
                 loadBalancerApp.refreshListenersTab();
             });
-            this.listeners.on( 'reset', this.addAllListeners, this );
             this.healthyHostCountData.on( 'reset', function() {this.addMonitorGraph("#healthy_host_count", this.healthyHostCountData, ["Average"], ["Healthy Host Count"], ["#FF8000"]);}, this );
             this.unhealthyHostCountData.on( 'reset', function() {this.addMonitorGraph("#unhealthy_host_count", this.unhealthyHostCountData, ["Average"], ["Unhealthy Host Count"], ["#00CC00"]);}, this );
         },
@@ -231,6 +230,8 @@ define([
             $("#lb_protocol_select").selectmenu();
             $("#instance_protocol_select").selectmenu();
             $("#listener_save_button").button();
+            this.listeners = new Listeners({"load_balancer_id": this.selectedId});
+            this.listeners.on( 'reset', this.addAllListeners, this );
             this.listeners.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region, load_balancer: this.selectedId}), reset: true});
         },
 

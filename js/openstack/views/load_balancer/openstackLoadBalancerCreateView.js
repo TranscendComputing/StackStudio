@@ -32,8 +32,6 @@ define([
 
         availabilityZones: new AvailabilityZones(),
 
-        selectedVpc: undefined,
-
         listenersTable: undefined,
 
         selectedListener: undefined,
@@ -79,17 +77,6 @@ define([
             $("select").selectmenu();
             $("button").button();
             this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region}), reset: true});
-        },
-
-        addVpcOptions: function() {
-            var createView = this;
-            this.vpcs.each(function(vpc) {
-                $("#lb_create_inside_select").append("<option value=" + vpc.attributes.id + ">" + vpc.attributes.id + "</option>");
-            });
-            $("#lb_create_inside_select").selectmenu({
-                change: function() {
-                }
-            });
         },
 
         saveListener: function() {

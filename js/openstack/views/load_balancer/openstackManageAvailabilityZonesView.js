@@ -74,14 +74,14 @@ define([
             this.availabilityZones.each(function(az) {
                 var azFound = false;
                 $.each(manageView.loadBalancer.attributes.availability_zones, function(index, value) {
-                    if(value === az.attributes.zoneName) {
+                    if(value === az.attributes.name) {
                         azFound = true;
                     }
                 });
                 if(azFound) {
-                    $("#zone_management").append("<input id=" + az.attributes.zoneName + " type='checkbox' class='zone' checked />" + az.attributes.zoneName + "<br />");
+                    $("#zone_management").append("<input id=" + az.attributes.name + " type='checkbox' class='zone' checked />" + az.attributes.name + "<br />");
                 }else {
-                    $("#zone_management").append("<input id=" + az.attributes.zoneName + " type='checkbox' class='zone' />" + az.attributes.zoneName + "<br />");
+                    $("#zone_management").append("<input id=" + az.attributes.name + " type='checkbox' class='zone' />" + az.attributes.name + "<br />");
                 }
             });
             this.render();

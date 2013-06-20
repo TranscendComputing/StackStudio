@@ -48,7 +48,7 @@ define([
                 autoOpen: true,
                 title: "Register Instance",
                 resizable: false,
-                width: 600,
+                width: 800,
                 modal: true,
                 buttons: {
                     Register: function () {
@@ -72,10 +72,7 @@ define([
         },
 
         render: function() {
-            $("#zone_distribution_content").empty();
-            $.each(this.zonesDistribution, function(index, value) {
-                $("#zone_distribution_content").append("<span>" + value + " instances in " + index + "</span><br />");
-            });
+
         },
         
         addAllInstances: function() {
@@ -90,39 +87,18 @@ define([
                 if(alreadyRegistered) {
                     registerView.addToZoneDistribtuion(instance);
                 }else {
-                    var instanceName = "";
-                    if(instance.attributes.tags.Name) 
-                    { 
-                        instanceName = instance.attributes.tags.Name;
-                    }
-                    var rowData = [instance.attributes.id, instanceName, instance.attributes.availability_zone, instance.attributes.state];
+                    var rowData = [instance.attributes.id, instance.attributes.name, instance.attributes.state];
                     $('#register_instance_table').dataTable().fnAddData(rowData);
                 }
             });
             this.render();
         },
 
-        addToZoneDistribtuion: function(instance) {
-            if(this.zonesDistribution.hasOwnProperty(instance.attributes.availability_zone)) {
-                this.zonesDistribution[instance.attributes.availability_zone]++;
-            }else {
-                this.zonesDistribution[instance.attributes.availability_zone]=1;
-            }  
-        },
-
         selectInstance: function(event) {
             $("#register_instance_table tr").removeClass("row_selected");
-            if(this.selectedInstance) {
-                this.zonesDistribution[this.selectedInstance.attributes.availability_zone]--;
-                if(this.zonesDistribution[this.selectedInstance.attributes.availability_zone] === 0) 
-                {
-                    delete this.zonesDistribution[this.selectedInstance.attributes.availability_zone];
-                }
-            }
             $(event.currentTarget).addClass("row_selected");
             var rowData = $("#register_instance_table").dataTable().fnGetData(event.currentTarget);
             this.selectedInstance = this.instances.get(rowData[0]);
-            this.addToZoneDistribtuion(this.selectedInstance);
             this.render();
         },
 
