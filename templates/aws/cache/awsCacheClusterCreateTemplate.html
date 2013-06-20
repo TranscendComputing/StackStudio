@@ -17,73 +17,38 @@
         <table>
             <tbody>
                 <tr>
+                    <td><b>Cluster ID:</b></td>
+                    <td>
+                        <input id="cluster_id_input" type="text" style="width:200px;" /> (e.g. myclusterinstance)
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>Node Type:</b></td>
+                    <td>
+                        <select id="node_type_select" style="width:200px;"></select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>Number of Nodes:</b></td>
+                    <td>
+                        <input id="num_nodes_input" type="text" style="width:80px;" value="1"/> nodes <span id="num_nodes_label"></span>
+                    </td>
+                </tr>
+                <tr>
                     <td><b>Engine:</b></td>
-                    <td><span id="selected_engine_label" style="width:200px;"></span></td>
+                    <td><span id="selected_cluster_engine_label" style="width:200px;"></span></td>
                 </tr>
                 <tr>
-                    <td><b>License Model:</b></td>
+                    <td><b>Cache Port:</b></td>
                     <td>
-                        <select id="licence_model_select" style="width:200px;"></select>
-                    </td>
-                </tr>
-                <tr>
-                    <td><b>Engine Version:</b></td>
-                    <td>
-                        <select id="engine_version_select" style="width:200px;"></select>
-                    </td>
-                </tr>
-                <tr>
-                    <td><b>Instance Class:</b></td>
-                    <td>
-                        <select id="instance_class_select" style="width:200px;"></select>
-                    </td>
-                </tr>
-                <tr>
-                    <td><b>Multi-AZ Deployment:</b></td>
-                    <td>
-                        <select id="multi_az_deployment_select" style="width:60px;"></select>
+                        <input id="cache_port_input" type="text" style="width:80px;" value="11211"/><span id="num_nodes_label"></span>
                     </td>
                 </tr>
                 <tr>
                     <td><b>Auto Minor Version Upgrade:</b></td>
                     <td>
-                        <input type="radio" name="auto_minor_version_upgrade" value="true" checked /> Yes
-                        <input type="radio" name="auto_minor_version_upgrade" value="false" /> No
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <hr />
-        <table>
-            <tbody>
-                <tr>
-                    <td><b>Use Provisioned IOPS:</b></td>
-                    <td>
-                        <input id="provisioned_iops_check" type="checkbox" /> <input id="provisioned_iops" type="text" />
-                    </td>
-                </tr>
-                <tr>
-                    <td><b>Allocated Storage:</b></td>
-                    <td>
-                        <input id="storage_input" type="text" style="width:80px;" /> GBs <span id="storage_label"></span>
-                    </td>
-                </tr>
-                <tr>
-                    <td><b>DB Instance Identifier:</b></td>
-                    <td>
-                        <input id="id_input" type="text" style="width:200px;" /> (e.g. mydbinstance)
-                    </td>
-                </tr>
-                <tr>
-                    <td><b>Master Username:</b></td>
-                    <td>
-                        <input id="master_username_input" type="text" style="width:200px;" /> (e.g. myuser)
-                    </td>
-                </tr>
-                <tr>
-                    <td><b>Master Password:</b></td>
-                    <td>
-                        <input id="master_password_input" type="password" style="width:200px;" /> (e.g. mypassword)
+                        <input id="auto_version_input" type="radio" name="auto_minor_cache_version_upgrade" value="true" checked /> Yes
+                        <input id="auto_version_input" type="radio" name="auto_minor_cache_version_upgrade" value="false" /> No
                     </td>
                 </tr>
             </tbody>
@@ -92,24 +57,6 @@
     <div id="view3" class="view_stack">
         <table>
             <tbody>
-                <tr>
-                    <td><b>Database Name:</b></td>
-                    <td>
-                        <input id="database_name_input" type="text" /> (e.g. mydb)
-                    </td>
-                </tr>
-                <tr>
-                    <td><b>Database Port:</b></td>
-                    <td>
-                        <input id="database_port_input" type="type" />
-                    </td>
-                </tr>
-                <tr id="availability_zone_row">
-                    <td><b>Availability Zone:</b></td>
-                    <td>
-                        <select id="availability_zone_select" style="width:200px;"></select>
-                    </td>
-                </tr>
                 <tr>
                     <td><b>Parameter Group:</b></td>
                     <td>
@@ -125,7 +72,7 @@
             </tbody>
         </table>
     </div>
-    <div id="view4" class="view_stack">
+    <!-- <div id="view4" class="view_stack">
         <table>
             <tbody>
                 <tr id="backup_retention_period_row">
@@ -398,28 +345,19 @@
                 </tr>
             </tbody>
         </table>
-    </div>
-    <div id="view5" class="view_stack">
+    </div>-->
+    <div id="view4" class="view_stack">
         <table>
             <tbody>
-                <tr><td><b>Engine:</b></td><td id="engine_review"></td></tr>
-                <tr><td><b>Engine Version:</b></td><td id="engine_version_review"></td></tr>
-                <tr><td><b>License Model:</b></td><td id="license_review"></td></tr>
-                <tr><td><b>Auto Minor Ver. Upgrade:</b></td><td id="auto_minor_upgrade_review"></td></tr>
-                <tr><td><b>DB Instance Class:</b></td><td id="instance_class_review"></td></tr>
-                <tr><td><b>Mutil-AZ Deployment:</b></td><td id="multi_az_review"></td></tr>
-                <tr><td><b>Allocated Storage:</b></td><td id="storage_review"></td></tr>
-                <tr><td><b>Provisioned IOPS:</b></td><td id="provisioned_iops_review"></td></tr>
-                <tr><td><b>DB Instance Identifier:</b></td><td id="instance_identifier_review"></td></tr>
-                <tr><td><b>Master User Name:</b></td><td id="master_user_name_review"></td></tr>
-                <tr><td><b>Database Name:</b></td><td id="db_name_review"></td></tr>
-                <tr><td><b>Database Port:</b></td><td id="db_port_review"></td></tr>
-                <tr><td><b>Availability Zone:</b></td><td id="availability_zone_review"></td></tr>
+                <tr><td><b>Cluster ID:</b></td><td id="cluster_id_review"></td></tr>
+                <tr><td><b>Node Type:</b></td><td id="node_type_review"></td></tr>
+                <tr><td><b>Number of Nodes:</b></td><td id="num_nodes_review"></td></tr>
+                <tr><td><b>Engine:</b></td><td id="selected_cluster_engine_review"></td></tr>
+                <tr><td><b>Port:</b></td><td id="cache_port_review"></td></tr>
+                <tr><td><b>Auto Version:</b></td><td id="auto_version_review"></td></tr>
+                
                 <tr><td><b>DB Parameter Group:</b></td><td id="db_parameter_group_review"></td></tr>
                 <tr><td><b>DB Security Group(s):</b></td><td id="db_security_groups_review"></td></tr>
-                <tr><td><b>Backup Retention Period:</b></td><td id="backup_retention_period_review"></td></tr>
-                <tr><td><b>Backup Window:</b></td><td id="backup_window_review"></td></tr>
-                <tr><td><b>Maintenance Window:</b></td><td id="maintenance_window_review"></td></tr>
             </tbody>
         </table>
     </div>

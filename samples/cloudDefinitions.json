@@ -16,7 +16,21 @@
             {
                 "name": "Elasticache",
                 "type": "cache",
-                "defaultSubtype": "clusters"
+                "defaultSubtype": "clusters",
+                "subServices" : [
+                    {
+                        "name": "Clusters",
+                        "type": "clusters"
+                    },
+                    {
+                        "name": "Parameter Groups",
+                        "type": "parametergroups"
+                    },
+                    {
+                        "name": "Security Groups",
+                        "type": "securitygroups"
+                    }
+                ]
             },
             {
                 "name": "Elastic Beanstalk",

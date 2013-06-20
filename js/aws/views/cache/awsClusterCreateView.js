@@ -13,8 +13,8 @@ define([
         'text!templates/aws/cache/awsCacheClusterCreateTemplate.html',
         '/js/aws/models/cache/awsCacheCluster.js',
         '/js/aws/collections/rds/awsDBEngineVersions.js',
-        '/js/aws/collections/rds/awsDBParameterGroups.js',
-        '/js/aws/collections/rds/awsDBSecurityGroups.js',
+        '/js/aws/collections/cache/awsCacheParameterGroups.js',
+        '/js/aws/collections/cache/awsCacheSecurityGroups.js',
         '/js/aws/collections/compute/awsAvailabilityZones.js',
         'common',
         'jquery.ui.selectmenu',
@@ -48,8 +48,7 @@ define([
         events: {
             "dialogclose": "close",
             "click input[name='backup_window']": "backupWindowEnabled",
-            "click input[name='maintenance_window']": "maintenanceWindowEnable",
-            "click #provisioned_iops_check" : "iopsToggle"
+            "click input[name='maintenance_window']": "maintenanceWindowEnable"
         },
 
         initialize: function(options) {
@@ -87,41 +86,40 @@ define([
                 }
             });
             $("select").selectmenu();
+            
             $("#security_group_select").selectmenu("destroy");
             $("#security_group_select").multiselect({
                 selectedList: 3,
                 noneSelectedText: "Select Security Group(s)"
             }).multiselectfilter();
-            this.dbEngineVersions = new DBEngineVersions();
-            this.dbEngineVersions.fetch({ 
-                data: $.param({ cred_id: this.credentialId, region: this.region}),
-                reset: true
-            });
+            
+            $("#parameter_group_select").selectmenu("destroy");
+            $("#parameter_group_select").multiselect({
+                selectedList: 3,
+                noneSelectedText: "Select Parameter Group(s)"
+            }).multiselectfilter();
+            
             this.dbParameterGroups = new DBParameterGroups();
+            this.dbParameterGroups.on('reset', this.addAllParameterGroups, this);
             this.dbParameterGroups.fetch({ 
                 data: $.param({ cred_id: this.credentialId, region: this.region}),
                 reset: true
             });
+            
             this.dbSecurityGroups = new DBSecurityGroups();
             this.dbSecurityGroups.on('reset', this.addAllSecurityGroups, this);
             this.dbSecurityGroups.fetch({ 
                 data: $.param({ cred_id: this.credentialId, region: this.region}),
                 reset: true
             });
-            this.availabilityZones = new AvailabilityZones();
-            this.availabilityZones.on('reset', this.addAllAvailabilityZones, this);
-            this.availabilityZones.fetch({ 
-                data: $.param({ cred_id: this.credentialId, region: this.region}),
-                reset: true
-            });
+            
             this.backupWindowEnabled();
             this.maintenanceWindowEnable();
-            this.iopsToggle();
             this.refreshView(1);
         },
 
         next: function() {
-            if(this.currentViewIndex === 5) {
+            if(this.currentViewIndex === 4) {
                 this.create();
             }else {
                 if(this.currentViewIndex === 1) {
@@ -145,7 +143,7 @@ define([
             $("#view"+viewIndex).show();
             this.currentViewIndex = viewIndex;
 
-            if(this.currentViewIndex === 2) {
+            if(this.currentViewIndex <= 2) {
                 $("#previous_button").addClass("ui-state-disabled");
                 $("#previous_button").attr("disabled", true);
             }else {
@@ -153,7 +151,7 @@ define([
                 $("#previous_button").attr("disabled", false);
             }
 
-            if(this.currentViewIndex === 5) {
+            if(this.currentViewIndex === 4) {
                 this.renderReviewScreen();
                 $("#next_button span").text("Create");
             }else {
@@ -163,139 +161,59 @@ define([
         },
 
         setupEngineSpecifics: function() {
-            $("#selected_engine_label").html($("#engine_select").val());
-
-            //Setup License Model Options
-            $("#licence_model_select").empty();
-            if($("#engine_select").val() === "mysql") {
-                $("#licence_model_select").append("<option value='general-public-license'>General Public License</option>");
-            }else if($("#engine_select").val() === "oracle-se1" || $("#engine_select").val() === "sqlserver-se") {
-                $("#licence_model_select").append(  "<option value='bring-your-own-license'>Bring You Own License</option>" +
-                                                    "<option value='license-included'>License Included</option>");
-            }else if($("#engine_select").val() === "oracle-se" || $("#engine_select").val() === "oracle-ee" || $("#engine_select").val() === "sqlserver-ee") {
-                $("#licence_model_select").append("<option value='bring-your-own-license'>Bring You Own License</option>");
-            }else if($("#engine_select").val() === "sqlserver-ex" || $("#engine_select").val() === "sqlserver-web") {
-                $("#licence_model_select").append("<option value='license-included'>License Included</option>");
-            }
-            $("#licence_model_select").selectmenu();
-
-            //Setup Engine Version Options
-            $("#engine_version_select").empty();
-            this.dbEngineVersions.each(function(engineVersion) {
-                if(engineVersion.attributes.Engine === $("#engine_select").val()) {
-                    $("#engine_version_select").append("<option value="+ engineVersion.attributes.EngineVersion +">"+ engineVersion.attributes.DBEngineVersionDescription +"</option>");
-                }
-            });
-            $("#engine_version_select").selectmenu();
-
-            //Setup Instance Class Options
-            $("#instance_class_select").empty();
-            if($("#engine_select").val() === "sqlserver-ex") {
-                $("#instance_class_select").append( "<option value='db.t1.micro'>db.t1.micro</option>" +
-                                                    "<option value='db.m1.small'>db.m1.small</option>");
-            }else {
-                $("#instance_class_select").append( "<option value='db.t1.micro'>db.t1.micro</option>" +
-                                                    "<option value='db.m1.small'>db.m1.small</option>" +
-                                                    "<option value='db.m1.medium'>db.m1.medium</option>" +
-                                                    "<option value='db.m1.large'>db.m1.large</option>" +
-                                                    "<option value='db.m1.xlarge'>db.m1.xlarge</option>" +
-                                                    "<option value='db.m2.xlarge'>db.m2.xlarge</option>" +
-                                                    "<option value='db.m2.2xlarge'>db.m2.2xlarge</option>" +
-                                                    "<option value='db.m2.4xlarge'>db.m2.4xlarge</option>");
-            }
-            $("#instance_class_select").selectmenu();
-
-            //Setup Multi AZ Deployment Options
-            $("#multi_az_deployment_select").empty();
-            if($("#engine_select").val() === "sqlserver-ex" || $("#engine_select").val() === "sqlserver-web" || $("#engine_select").val() === "sqlserver-se" || $("#engine_select").val() === "sqlserver-ee") {
-                $("#multi_az_deployment_select").append("<option value='false'>No</option>");
-            }else {
-                $("#multi_az_deployment_select").append("<option value='false'>No</option>" +
-                                                        "<option value='true'>Yes</option>");
-            }
-            $("#multi_az_deployment_select").selectmenu();
-
-            //Setup Storage label
-            this.setupStorageLabel();
-
-            //Setup Default Port
-            if($("#engine_select").val() === "mysql") {
-                $("#database_port_input").val("3306");
-            }else if($("#engine_select").val() === "oracle-se" || $("#engine_select").val() === "oracle-se1" || $("#engine_select").val() === "oracle-ee") {
-                $("#database_port_input").val("1521");
-            }else if($("#engine_select").val() === "sqlserver-ex" || $("#engine_select").val() === "sqlserver-web" || $("#engine_select").val() === "oracle-ee") {
-                $("#database_port_input").val("1433");
-            }
-        },
-
-        setupStorageLabel: function() {
-            if($("#engine_select").val() === "mysql") {
-                this.storageSizeMinimum = 5;
-            }else if($("#engine_select").val() === "oracle-se" || $("#engine_select").val() === "oracle-se1" || $("#engine_select").val() === "oracle-ee") {
-                this.storageSizeMinimum = 10;
-            }else if($("#engine_select").val() === "sqlserver-ex" || $("#engine_select").val() === "sqlserver-web") {
-                this.storageSizeMinimum = 20;
-            }else if($("#engine_select").val() === "sqlserver-se" || $("#engine_select").val() === "sqlserver-ee") {
-                this.storageSizeMinimum = 200;
-            }
-
-            if($("#provisioned_iops_check").is(":checked") && this.storageSizeMinimum < 100) {
-                this.storageSizeMinimum = 100;
-            }
-            $("#storage_label").html("(between "+this.storageSizeMinimum+" - 3072 GBs)");
-        },
-
-        iopsToggle: function() {
-            if($("#provisioned_iops_check").is(":checked")) {
-                $("#provisioned_iops").removeAttr("disabled");
-                $("#provisioned_iops").removeClass("ui-state-disabled");
-                this.setupStorageLabel();
-                $("#provisioned_iops").val(this.storageSizeMinimum * 10);
-            }else {
-                $("#provisioned_iops").attr("disabled", true);
-                $("#provisioned_iops").addClass("ui-state-disabled");
-                this.setupStorageLabel();
-            }
+            /*
+                Setup Cluster Engine
+            */
+            $("#node_type_select").append("<option value='cache.t1.micro'>cache.t1.micro</option>"+
+                                          "<option value='cache.m1.small'>cache.m1.small</option>"+
+                                          "<option value='cache.m1.medium'>cache.m1.medium</option>"+
+                                          "<option value='cache.m1.large'>cache.m1.large</option>"+
+                                          "<option value='cache.m1.xlarge'>cache.m1.xlarge</option>"+
+                                          "<option value='cache.m3.xlarge'>cache.m3.xlarge</option>"+
+                                          "<option value='cache.m3.2xlarge'>cache.m3.2xlarge</option>"+
+                                          "<option value='cache.m2.xlarge'>cache.m2.xlarge</option>"+
+                                          "<option value='cache.m2.2xlarge'>cache.m2.2xlarge</option>"+
+                                          "<option value='cache.m2.4xlarge'>cache.m2.4xlarge</option>"+
+                                          "<option value='cache.c1.xlarge'>cache.c1.xlarge</option>");
+            $("#node_type_select").selectmenu();
+            
+            $("#selected_cluster_engine_label").html($("#engine_select").val());
+            
         },
 
         validateInputFields: function(viewIndex) {
             var valid = true;
             if(viewIndex === 2) {
-                var storageInt = parseInt($("#storage_input").val(), 10);
-                if(storageInt >= this.storageSizeMinimum && storageInt <= 3072) {
-                    this.displayValid(true, "#storage_input");
+                
+                if($("#cluster_id_input").val().trim() !== "") {
+                    this.displayValid(true, "#cluster_id_input");
+                }else{
+                    valid = false;
+                    this.displayValid(false, "#cluster_id_input");
+                }
+                
+                var nodesInt = parseInt($("#num_nodes_input").val(), 10);
+                if(nodesInt >= 1 && nodesInt <= 20) {
+                    this.displayValid(true, "#num_nodes_input");
                 }else {
                     valid = false;
-                    this.displayValid(false, "#storage_input");
+                    this.displayValid(false, "#num_nodes_input");
                 }
-                if($("#id_input").val().trim() !== "") {
-                    this.displayValid(true, "#id_input");
-                }
-                else{
-                    valid = false;
-                    this.displayValid(false, "#id_input");
-                }
-                if($("#master_username_input").val().trim() !== "") {
-                    this.displayValid(true, "#master_username_input");
-                }
-                else{
-                    valid = false;
-                    this.displayValid(false, "#master_username_input");
-                }
-                if($("#master_password_input").val().trim() !== "" && $("#master_password_input").val().length >= 8) {
-                    this.displayValid(true, "#master_password_input");
+                
+                var portInt = parseInt($("#cache_port_input").val(), 10);
+                if(portInt >= 0 && portInt <= 65535) {
+                    this.displayValid(true, "#cache_port_input");
                 }else {
                     valid = false;
-                    this.displayValid(false, "#master_password_input");
+                    this.displayValid(false, "#cache_port_input");
                 }
-
-                if($("#multi_az_deployment_select").val() === "true") {
-                    $("#availability_zone_row").hide();
-                }else {
-                    $("#availability_zone_row").show();
-                }
+                
+                /*
+                    DB
+                */
 
                 //Add the available parameter groups
+                /*
                 var selectedDBEngineVersion = this.dbEngineVersions.get($("#engine_version_select").val());
                 if(selectedDBEngineVersion) {
                     $("#parameter_group_select").empty();
@@ -307,6 +225,7 @@ define([
                     });
                     $("#parameter_group_select").selectmenu();
                 }
+                */
 
             }
             return valid;
@@ -319,14 +238,13 @@ define([
             });
             $("#security_group_select").multiselect("refresh");
         },
-
-        addAllAvailabilityZones: function() {
-            $("#availability_zone_select").empty();
-            $("#availability_zone_select").append("<option value='false'>No Preference</option>");
-            this.availabilityZones.each(function(az) {
-                $("#availability_zone_select").append("<option value="+az.attributes.zoneName+">"+az.attributes.zoneName+"</option>");
+        
+        addAllParameterGroups: function() {
+            $("#parameter_group_select").empty();
+            this.dbParameterGroups.each(function(parameter_group) {
+                $("#parameter_group_select").append("<option value="+parameter_group.attributes.id+">"+parameter_group.attributes.id+"</option>");
             });
-            $("#availability_zone_select").selectmenu();
+            $("#parameter_group_select").multiselect("refresh");
         },
 
         displayValid: function(valid, selector) {
@@ -457,32 +375,16 @@ define([
         },
 
         renderReviewScreen: function() {
-            $("#engine_review").html($("#engine_select").val());
-            $("#engine_version_review").html($("#engine_version_select").val());
-            $("#license_review").html($("#licence_model_select").val());
-            $("#auto_minor_upgrade_review").html($("input[name='auto_minor_version_upgrade']:checked").val());
-            $("#instance_class_review").html($("#instance_class_select").val());
-            $("#multi_az_review").html($("#multi_az_deployment_select").val());
-            $("#storage_review").html($("#storage_input").val() + " GBs");
-            if($("#provisioned_iops_check").is(":checked")) {
-                $("#provisioned_iops_review").html($("#provisioned_iops").val());
-            }else {
-                $("#provisioned_iops_review").html("default");
-            }
-            $("#instance_identifier_review").html($("#id_input").val());
-            $("#master_user_name_review").html($("#master_username_input").val());
-            $("#db_name_review").html($("#database_name_input").val());
-            $("#db_port_review").html($("#database_port_input").val());
-            if($("#multi_az_deployment_select").val() === "false") {
-                if($("#availability_zone_select").val()) {
-                    $("#availability_zone_review").html($("#availability_zone_select").val());
-                }else {
-                    $("#availability_zone_review").html("No Preference");
-                }
-            }else {
-                $("#availability_zone_review").html("Multi-AZ Deployment disables this option.");
-            }
+            
+            $("#cluster_id_review").html($("#cluster_id_input").val());
+            $("#node_type_review").html($("#node_type_select").val());
+            $("#num_nodes_review").html($("#num_nodes_input").val());
+            $("#selected_cluster_engine_review").html($("#selected_cluster_engine_label").html());
+            $("#cache_port_review").html($("#cache_port_input").val());
+            $("#auto_version_review").html($("#auto_version_input").val());
+            
             $("#db_parameter_group_review").html($("#parameter_group_select").val());
+            
             var securityGroupString = "";
             if($("#security_group_select").val()) {
                 $.each($("#security_group_select").val(), function(index, value) {
@@ -492,44 +394,25 @@ define([
                 securityGroupString = "N/A";
             }
             $("#db_security_groups_review").html(securityGroupString);
-            $("#backup_retention_period_review").html($("#backup_retention_select").val());
-            var backupString = this.getBackUpWindowString();
-            $("#backup_window_review").html(backupString);
-            var maintenanceString = this.getMaintenanceWindowString();
-            $("#maintenance_window_review").html(maintenanceString);
+            
         },
 
         create: function() {
             var newCluster = this.cacheCluster;
             var options = {};
-
-            options.id = $("#id_input").val();
-            options.allocated_storage = $("#storage_input").val();
-            options.engine = $("#selected_engine_label").html();
-            options.engine_version = $("#engine_version_select").val();
-            options.master_username = $("#master_username_input").val();
-            options.password = $("#master_password_input").val();
-            options.auto_minor_version_upgrade = $("input[name='auto_minor_version_upgrade']:checked").val();
-            options.flavor_id = $("#instance_class_select").val();
-            options.license_model = $("#licence_model_select").val();
-            options.multi_az = $("#multi_az_deployment_select").val();
-            if($("#multi_az_deployment_select").val() === "false" && $("#availability_zone_select").val() !== "false") {
-                options.availability_zone = $("#availability_zone_select").val();
+            
+            options.id = $("#cluster_id_input").val();
+            options.node_type = $("#node_type_select").val();
+            options.num_nodes = $("#num_nodes_input").val();
+            options.engine = $("#selected_cluster_engine_label").html();
+            options.auto_minor_version_upgrade = $("#auto_version_input").val();
+            
+            if($("#cache_port_input").val().trim() !== "") {
+                options.port = $("#cache_port_input").val();
             }
-            options.backup_retention_period = $("#backup_retention_select").val();
-            if($("#database_name_input").val().trim() !== "") {
-                options.db_name = $("#database_name_input").val();
-            }
-            if($("#database_port_input").val().trim() !== "") {
-                options.port = $("#database_port_input").val();
-            }
+            
             options.parameter_group_name = $("#parameter_group_select").val();
-            if($("input[name='backup_window']:checked").val() !== "no_preference") {
-                options.preferred_backup_window = this.getBackUpWindowString();
-            }
-            if($("input[name='maintenance_window']:checked").val() !== "no_preference") {
-                options.preferred_maintenance_window = this.getMaintenanceWindowString();
-            }
+            
             if($("#security_group_select").val()) {
                 options.security_group_names = $("#security_group_select").val();
             }
