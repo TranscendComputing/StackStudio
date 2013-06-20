@@ -6,9 +6,9 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'backbone'
-], function( $, Backbone ) {
+        'models/resource/resourceModel',
+        'common'
+], function( ResourceModel, Common ) {
     'use strict';
 
     // Aws MetricStatistic Model
@@ -22,7 +22,7 @@ define([
      * @param {Object} initialization object.
      * @returns {Object} Returns an MetricStatistic.
      */
-    var MetricStatistic = Backbone.Model.extend({
+    var MetricStatistic = ResourceModel.extend({
 
         /** Default attributes for DataPoint */
         defaults: {

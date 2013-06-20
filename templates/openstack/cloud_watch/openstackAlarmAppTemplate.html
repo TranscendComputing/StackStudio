@@ -1,0 +1,57 @@
+<div>
+    <div class="button_bar">
+        <table>
+            <tr>
+                <td>
+                    <button class="create_button">Create Alarm</button>
+                </td>
+                <td>
+                    <ul id="action_menu">
+                        <li style="z-index: 1000">
+                            <a id="action_button">Actions</a>
+                            <ul>
+                                <li><a>Delete Alarm</a></li>                   
+                            </ul>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table id="resource_table" class="full_width">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Threshold</th>
+                <th>State</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    <div id="details" class="detail_panel"></div>
+</div>
+
+<script type="text/html" id="resource_detail">
+    <div id="detail_tabs">
+        <ul>
+            <li><a href="#tabs-1">Details</a></li>
+        </ul>
+        <div id="tabs-1" class="tab">
+            <table>
+                <tbody>
+                    <tr><td><b>Name:</b></td>                   <td>{{ id }}</td>                   <td><b>Comparison Operator:</b></td>    <td>{{ comparison_operator }}</td></tr>
+                    <tr><td><b>Description:</b></td>            <td>{{ alarm_description }}</td>    <td><b>Namespace:</b></td>              <td>{{ namespace }}</td></tr>
+                    <tr><td><b>Resource Name:</b></td>          <td>{{ arn }}</td>                  <td><b>Period:</b></td>                 <td>{{ period }}</td></tr>
+                    <tr><td><b>Actions Enabled:</b></td>        <td>{{ actions_enabled }}</td>      <td><b>Statistic:</b></td>              <td>{{ statistic }}</td></tr>
+                    <tr><td><b>Metric Name:</b></td>            <td>{{ metric_name }}</td></tr>
+                    <tr><td><b>Threshold:</b></td>              <td>{{ threshold }}</td></tr>          
+                    <tr><td><b>State Reason:</b></td>           <td>{{ state_reason }}</td></tr>
+                    <tr><td><b>State Value:</b></td>            <td>{{ state_value }}</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</script>

@@ -13,18 +13,13 @@ define([
 ], function( $, Backbone, MetricStatistic, Common ) {
     'use strict';
 
-    // MetricStatistic Collection
-    // ---------------
-
     var MetricStatisticList = Backbone.Collection.extend({
 
-        // Reference to this collection's model.
         model: MetricStatistic,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/monitor/metric_statistics/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/monitor/metric_statistics'
     });
     
-    // Create our global collection of **MetricStatistic**.
     return MetricStatisticList;
 
 });

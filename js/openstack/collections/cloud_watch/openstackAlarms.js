@@ -8,18 +8,18 @@
 define([
         'jquery',
         'backbone',
-        '/js/openstack/models/cloud_watch/openstackMetric.js',
+        '/js/openstack/models/cloud_watch/openstackAlarm.js',
         'common'
-], function( $, Backbone, Metric, Common ) {
+], function( $, Backbone, Alarm, Common ) {
     'use strict';
 
-    var MetricList = Backbone.Collection.extend({
+    var AlarmList = Backbone.Collection.extend({
 
-        model: Metric,
+        model: Alarm,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/monitor/metrics'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/monitor/alarms'
     });
     
-    return MetricList;
+    return AlarmList;
 
 });

@@ -190,6 +190,26 @@
                 "defaultSubtype": "autoscalegroups"
             },
             {
+                "name": "CloudWatch",
+                "type": "cloud_watch",
+                "defaultSubtype": "alarms"
+            },
+            {
+                "name": "Elastic Block Storage",
+                "type": "block_storage",
+                "defaultSubtype": "volumes",
+                "subServices" : [
+                    {
+                        "name": "Volumes",
+                        "type": "volumes"
+                    },
+                    {
+                        "name": "Snapshots",
+                        "type": "snapshots"
+                    }
+                ]
+            },
+            {
                 "name": "Elastic Compute Cloud",
                 "type": "compute",
                 "defaultSubtype": "instances",
@@ -213,26 +233,6 @@
                 ]
             },
             {
-                "name": "Elastic Block Storage",
-                "type": "block_storage",
-                "defaultSubtype": "volumes",
-                "subServices" : [
-                    {
-                        "name": "Volumes",
-                        "type": "volumes"
-                    },
-                    {
-                        "name": "Snapshots",
-                        "type": "snapshots"
-                    }
-                ]
-            },
-            {
-                "name": "Simple Storage",
-                "type": "object_storage",
-                "defaultSubtype": "buckets"
-            },
-            {
                 "name": "Identity",
                 "type": "identity",
                 "defaultSubtype": "users",
@@ -250,6 +250,11 @@
                         "type": "roles"
                     }
                 ]
+            },
+            {
+                "name": "Load Balancer",
+                "type": "load_balancer",
+                "defaultSubtype": "loadbalancers"
             },
             {
                 "name": "Network",
@@ -275,9 +280,9 @@
                 ]
             },
             {
-                "name": "Load Balancer",
-                "type": "load_balancer",
-                "defaultSubtype": "loadbalancers"
+                "name": "Simple Storage",
+                "type": "object_storage",
+                "defaultSubtype": "buckets"
             }
         ],
         "regions": [
