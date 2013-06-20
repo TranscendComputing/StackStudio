@@ -10,8 +10,8 @@ define([
         'underscore',
         'backbone',
         'views/dialogView',
-        'text!templates/aws/rds/awsRelationalDatabaseCreateTemplate.html',
-        '/js/aws/models/rds/awsRelationalDatabase.js',
+        'text!templates/aws/cache/awsCacheClusterCreateTemplate.html',
+        '/js/aws/models/cache/awsCacheCluster.js',
         '/js/aws/collections/rds/awsDBEngineVersions.js',
         '/js/aws/collections/rds/awsDBParameterGroups.js',
         '/js/aws/collections/rds/awsDBSecurityGroups.js',
@@ -21,9 +21,9 @@ define([
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
-], function( $, _, Backbone, DialogView, databaseCreateTemplate, RelationalDatabase, DBEngineVersions, DBParameterGroups, DBSecurityGroups, AvailabilityZones, Common ) {
+], function( $, _, Backbone, DialogView, clusterCreateTemplate, CacheCluster, DBEngineVersions, DBParameterGroups, DBSecurityGroups, AvailabilityZones, Common ) {
     
-    var RelationalDatabaseCreateView = DialogView.extend({
+    var ClusterCreateView = DialogView.extend({
 
         credentialId: undefined,
 
@@ -43,7 +43,7 @@ define([
 
         storageSizeMinimum: undefined,
 
-        relationalDatabase: new RelationalDatabase(),
+        cacheCluster: new CacheCluster(),
  
         events: {
             "dialogclose": "close",
@@ -59,12 +59,12 @@ define([
 
         render: function() {
             var createView = this;
-            var compiledTemplate = _.template(databaseCreateTemplate);
+            var compiledTemplate = _.template(clusterCreateTemplate);
             this.$el.html(compiledTemplate);
 
             this.$el.dialog({
                 autoOpen: true,
-                title: "Relational Database Wizard",
+                title: "Cache Cluster Wizard",
                 width:625,
                 minHeight: 150,
                 resizable: false,
@@ -145,7 +145,7 @@ define([
             $("#view"+viewIndex).show();
             this.currentViewIndex = viewIndex;
 
-            if(this.currentViewIndex === 1) {
+            if(this.currentViewIndex === 2) {
                 $("#previous_button").addClass("ui-state-disabled");
                 $("#previous_button").attr("disabled", true);
             }else {
@@ -500,12 +500,12 @@ define([
         },
 
         create: function() {
-            var newDB = this.relationalDatabase;
+            var newCluster = this.cacheCluster;
             var options = {};
 
             options.id = $("#id_input").val();
             options.allocated_storage = $("#storage_input").val();
-            options.engine = $("#engine_select").val();
+            options.engine = $("#selected_engine_label").html();
             options.engine_version = $("#engine_version_select").val();
             options.master_username = $("#master_username_input").val();
             options.password = $("#master_password_input").val();
@@ -534,11 +534,11 @@ define([
                 options.security_group_names = $("#security_group_select").val();
             }
 
-            newDB.create(options, this.credentialId, this.region);
+            newCluster.create(options, this.credentialId, this.region);
             this.$el.dialog('close');
         }
 
     });
     
-    return RelationalDatabaseCreateView;
+    return ClusterCreateView;
 });
