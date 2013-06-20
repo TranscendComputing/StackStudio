@@ -185,6 +185,11 @@
         "logo": "/images/CloudLogos/openstack300.jpg",
         "services": [
             {
+                "name": "Auto Scale",
+                "type": "autoscale",
+                "defaultSubtype": "autoscalegroups"
+            },
+            {
                 "name": "Elastic Compute Cloud",
                 "type": "compute",
                 "defaultSubtype": "instances",

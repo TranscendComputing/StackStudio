@@ -1,0 +1,113 @@
+<div>
+    <div class="button_bar">
+        <table>
+            <tr>
+                <td>
+                    <button class="create_button">Create Auto Scale</button>
+                </td>
+                <td>
+                    <ul id="action_menu">
+                        <li style="z-index: 1000">
+                            <a id="action_button">Actions</a>
+                            <ul>
+                                <li><a>Spin Down Group</a></li>
+                                <li><a>Delete Group</a></li>             
+                            </ul>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table id="resource_table" class="full_width">
+        <thead>
+            <tr>
+                <th>Group ID</th>
+                <th>Launch Configuration</th>
+                <th class="medium_width">Desired Capacity</th>
+                <th class="small_width">Min Size</th>
+                <th class="small_width">Max Size</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    <div id="details" class="detail_panel"></div>
+</div>
+
+<script type="text/html" id="resource_detail">
+    <div id="detail_tabs">
+        <ul>
+            <li><a id="instance_details" href="#tabs-1">Details</a></li>
+            <!--<li><a id="monitoring" href="#tabs-2">Monitoring</a></li>-->
+        </ul>
+        <div id="tabs-1" class="tab">
+            <table>
+                <tbody>                
+                    <tr><td><b>Group ID:</b></td>               <td>{{ id }}</td>                       <td><b>Instances:</b></td>          <td><section class="comma_list">{{#instances}}<span>{{InstanceId}}</span>{{/instances}}</section></td></tr>
+                    <tr><td><b>Desired Capacity:</b></td>       <td>{{ desired_capacity }}</td>         <td><b>Availability Zones:</b></td> <td><section class="comma_list">{{#availability_zones}}<span>{{.}}</span>{{/availability_zones}}</section></td></tr>
+                    <tr><td><b>Min Size:</b></td>               <td>{{ min_size }}</td>                 <td><b>Load Balancers:</b></td>     <td><section class="comma_list">{{#load_balancer_names}}<span>{{.}}</span>{{/load_balancer_names}}</section></td></tr>
+                    <tr><td><b>Max Size:</b></td>               <td>{{ max_size }}</td></tr>
+                    <tr><td><b>Cooldown:</b></td>               <td>{{ default_cooldown }}</td></tr>
+                    <tr><td><b>Created At:</b></td>             <td>{{ created_at }}</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <!--
+        <div id="tabs-2" class="tab" style="overflow:hidden;">
+            <div class="monitor_options">
+                <table>
+                    <tr>
+                        <td>Time Range:</td>
+                        <td>
+                            <select id="monitor_time_range">
+                                <option value='{"time_range":3600, "period":300}' selected>Last Hour</option>
+                                <option value='{"time_range":10800, "period":600}'>Last 3 Hours</option>
+                                <option value='{"time_range":21600, "period":900}'>Last 6 Hours</option>
+                                <option value='{"time_range":43200, "period":1800}'>Last 12 Hours</option>
+                                <option value='{"time_range":86400, "period":3600}'>Last 24 Hours</option>
+                                <option value='{"time_range":604800, "period":21600}'>Last Week</option>
+                                <option value='{"time_range":1209600, "period":21600}'>Last 2 Weeks</option>
+                            </select>
+                        </td>
+                        <td>
+                            <button id="refresh_monitors_button">Refresh</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">CPU Utilization</div>
+                <div id="cpu_utilization" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Disk Read Bytes</div>
+                <div id="disk_read_bytes" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Disk Read Ops</div>
+                <div id="disk_read_ops" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Disk Write Bytes</div>
+                <div id="disk_write_bytes" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Disk Write Ops</div>
+                <div id="disk_write_ops" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Network In</div>
+                <div id="network_in" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Network Out</div>
+                <div id="network_out" class="monitor_graph"></div>
+            </div>
+        </div>
+        -->
+    </div>
+    
+</script>
