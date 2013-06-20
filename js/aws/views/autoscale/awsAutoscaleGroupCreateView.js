@@ -395,7 +395,7 @@ define([
             switch($("input[name=elasticity]:checked").val())
             {
                 case "auto_recovery":
-                    autoscale_group_options["MaxSize "]= 1
+                    autoscale_group_options["MaxSize"]= 1
                     autoscale_group_options["MinSize"] = 1
                     autoscale_group_options["DesiredCapacity"] = 1
                     break;
