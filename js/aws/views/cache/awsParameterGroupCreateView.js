@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/compute/awsSecurityGroupCreateTemplate.html',
-        '/js/aws/models/cache/awsCacheSecurityGroup.js',
+        '/js/aws/models/cache/awsCacheParameterGroup.js',
         '/js/aws/collections/vpc/awsVpcs.js',
         'icanhaz',
         'common'
@@ -52,7 +52,7 @@ define([
 
             this.$el.dialog({
                 autoOpen: true,
-                title: "Create Security Group",
+                title: "Create Parameter Group",
                 resizable: false,
                 width: 425,
                 modal: true,

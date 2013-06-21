@@ -14,7 +14,7 @@ define([
         'text!templates/aws/cache/awsParameterGroupAppTemplate.html',
         '/js/aws/models/cache/awsCacheParameterGroup.js',
         '/js/aws/collections/cache/awsCacheParameterGroups.js',
-        '/js/aws/views/cache/awsClusterCreateView.js',
+        '/js/aws/views/cache/awsParameterGroupCreateView.js',
         'icanhaz',
         'common',
         'jquery.dataTables'
@@ -57,7 +57,7 @@ define([
             this.render();
             
             var cacheApp = this;
-            Common.vent.on("cacheAppRefresh", function() {
+            Common.vent.on("parameterGroupAppRefresh", function() {
                 cacheApp.render();
             });
             
@@ -65,6 +65,8 @@ define([
         
         performAction: function(event) {
             var cluster = this.collection.get(this.selectedId);
+            
+            alert(event.target.text);
             
             switch(event.target.text)
             {
