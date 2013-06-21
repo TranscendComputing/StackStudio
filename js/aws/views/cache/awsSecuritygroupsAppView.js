@@ -13,7 +13,7 @@ define([
         'text!templates/aws/cache/awsSecurityGroupAppTemplate.html',
         '/js/aws/models/cache/awsCacheSecurityGroup.js',
         '/js/aws/collections/cache/awsCacheSecurityGroups.js',
-        '/js/aws/views/compute/awsSecurityGroupCreateView.js',
+        '/js/aws/views/cache/awsSecurityGroupCreateView.js',
         'icanhaz',
         'common',
         'jquery.dataTables'

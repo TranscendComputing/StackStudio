@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/compute/awsSecurityGroupCreateTemplate.html',
-        '/js/aws/models/compute/awsSecurityGroup.js',
+        '/js/aws/models/cache/awsCacheSecurityGroup.js',
         '/js/aws/collections/vpc/awsVpcs.js',
         'icanhaz',
         'common'
@@ -88,16 +88,16 @@ define([
             var issue = false;
             
             if($("#sg_name").val() !== "" && $("#sg_desc").val() !== "" ) {
-                options.name = $("#sg_name").val();
+                options.id = $("#sg_name").val();
                 options.description = $("#sg_desc").val();
             }else {
                 issue = true;
             }
-            
+            /*
             if($("#vpc_select").val() !== "No VPC") {
                 options.vpc_id = $("#vpc_select").val();
             }
-            
+            */
             if(!issue) {
                 newSecurityGroup.create(options, this.credentialId, this.region);
                 this.$el.dialog('close');
