@@ -106,6 +106,8 @@ define([
             
             this.securityGroups.on( 'reset', this.addAllSecurityGroups, this );
             this.securityGroups.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true });
+
+            this.elasticityChange();
         },
         
         addAllImages: function() {
@@ -187,11 +189,22 @@ define([
             {
                 case "auto_recovery":
                     $("#elasticity_image").attr("src", "/images/IconPNGs/Autorestart.png");
-                    $("#elasticity_config").html("");
+                    var autoRecoveryHTML = "<table>" +
+                                                "<tr>" +
+                                                    "<td>Min:</td><td>1</td>" +
+                                                "</tr>" +
+                                                "<tr>" +
+                                                    "<td>Max:</td><td>1</td>" +
+                                                "</tr>" +
+                                                "<tr>" +
+                                                    "<td>Desired Capacity:</td><td>1</td>" +
+                                                "</tr>" +
+                                            "</table>";
+                    $("#elasticity_config").html(autoRecoveryHTML);
                     break;
                 case "fixed_array":
                     $("#elasticity_image").attr("src", "/images/IconPNGs/Autoscale.png");
-                    var fixedArrayHTML = "<table><tr><td>Size:</td><td><input id='fixed_array_size'/></td></tr></table>";
+                    var fixedArrayHTML = "<table><tr><td>Number of Instances:</td><td><input id='fixed_array_size'/></td></tr></table>";
                     $("#elasticity_config").html(fixedArrayHTML);
                     break;
                 case "autoscale":
