@@ -7,24 +7,55 @@
     padding: 5px;
     border-radius: 5px;
     font-weight: normal;
-    cursor:pointer;
 }
 
 #resource_summary_icon {
     background-image: url(/images/jqueryUI/ui-icons_ffffff_256x240.png);
 }
    
-#services_table {
-    float:right;
+.services_table {
+    float:left;
+    width:36%;
     border-style:solid;
     border-radius:5px;
     border-width:1px;
     border-color:#AAAAAA;
     list-style-type:none;
     background: -webkit-linear-gradient(top, #F2F2F2, #FFFFFF);
-    width:74%;
-    height:62px;
-    margin-bottom:10px;
+    height:80px;
+    padding:5px;
+}
+
+#native_service_label {
+    -webkit-transform-origin: 200% 200%; 
+    -webkit-transform: rotate(-90deg); /* Safari Chrome */
+    -moz-transform-origin: 200% 200%; 
+    -moz-transform: rotate(-90deg); /* Firefox */
+    -ms-transform: rotate(-90deg); /* IE */
+    -o-transform-origin: 200% 200%;
+    -o-transform: rotate(-90deg); /* Opera */
+    transform-origin: 200% 200%;
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3); /* Internet Explorer */
+}
+
+#topstack_service_label {
+    -webkit-transform-origin: 220% 220%; 
+    -webkit-transform: rotate(-90deg); /* Safari Chrome */
+    -moz-transform-origin: 220% 220%; 
+    -moz-transform: rotate(-90deg); /* Firefox */
+    -ms-transform: rotate(-90deg); /* IE */
+    -o-transform-origin: 220% 220%;
+    -o-transform: rotate(-90deg); /* Opera */
+    transform-origin: 220% 220%;
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3); /* Internet Explorer */
+}
+
+.service_group_label {
+    width:15px;
+    text-align:center;
+    font-weight:bold;
+    color: #4A2E83;
+    float:left;
 }
 
 #services_table tr td {

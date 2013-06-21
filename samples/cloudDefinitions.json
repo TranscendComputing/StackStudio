@@ -2,7 +2,7 @@
     "aws": {
         "name": "Amazon Web Services",
         "logo": "/images/CloudLogos/amazon800.jpg",
-        "services": [
+        "native_services": [
             {
                 "name": "Auto Scale",
                 "type": "autoscale",
@@ -197,19 +197,9 @@
     "openstack" : {
         "name": "OpenStack",
         "logo": "/images/CloudLogos/openstack300.jpg",
-        "services": [
+        "native_services": [
             {
-                "name": "Auto Scale",
-                "type": "autoscale",
-                "defaultSubtype": "autoscalegroups"
-            },
-            {
-                "name": "CloudWatch",
-                "type": "cloud_watch",
-                "defaultSubtype": "alarms"
-            },
-            {
-                "name": "Elastic Block Storage",
+                "name": "Block Storage",
                 "type": "block_storage",
                 "defaultSubtype": "volumes",
                 "subServices" : [
@@ -224,7 +214,7 @@
                 ]
             },
             {
-                "name": "Elastic Compute Cloud",
+                "name": "Compute Service",
                 "type": "compute",
                 "defaultSubtype": "instances",
                 "subServices" : [
@@ -266,12 +256,7 @@
                 ]
             },
             {
-                "name": "Load Balancer",
-                "type": "load_balancer",
-                "defaultSubtype": "loadbalancers"
-            },
-            {
-                "name": "Network",
+                "name": "Network Service",
                 "type": "network",
                 "defaultSubtype": "networks",
                 "subServices" : [
@@ -294,9 +279,26 @@
                 ]
             },
             {
-                "name": "Simple Storage",
+                "name": "Object Storage",
                 "type": "object_storage",
                 "defaultSubtype": "buckets"
+            }
+        ],
+        "topstack_services": [
+            {
+                "name": "Auto Scale",
+                "type": "autoscale",
+                "defaultSubtype": "autoscalegroups"
+            },
+            {
+                "name": "Monitor Service",
+                "type": "cloud_watch",
+                "defaultSubtype": "alarms"
+            },
+            {
+                "name": "Load Balancer",
+                "type": "load_balancer",
+                "defaultSubtype": "loadbalancers"
             }
         ],
         "regions": [
@@ -309,13 +311,13 @@
     "google" : {
         "name": "Google",
         "logo": "/images/CloudLogos/google1920x1107.png",
-        "services": [],
+        "native_services": [],
         "regions": []
     },
     "joyent" : {
         "name": "Joyent",
         "logo": "/images/CloudLogos/joyent200.jpg",
-        "services": [],
+        "native_services": [],
         "regions": []
     }
 }

@@ -73,7 +73,8 @@ define([
             $("#main").html(this.el);
             this.$el.html(this.template);
             $("#resource_summary").accordion({
-                collapsible: true
+                collapsible: true,
+                heightStyle: "content"
             });
             var response = $.ajax({
                 url: "samples/cloudDefinitions.json",
@@ -177,10 +178,10 @@ define([
 		    //Add the services of the cloud to the resource table
 		    var row = 1;
 		    $("#resource_table").empty();
-		    $.each(resourceNav.cloudDefinitions[this.cloudProvider].services, function(index, service) {
-		        $("#row"+row).append($("<td></td>").attr({
+		    $.each(resourceNav.cloudDefinitions[this.cloudProvider].native_services, function(index, service) {
+		        $("#native_row"+row).append($("<td></td>").attr({
                     "id": service.type,
-                    "class": "resources"
+                    "class": "resources selectable_item"
                 }));
                 $("#"+service.type).append($("<a></a>").attr({
                     "id": service.type+"Link",
@@ -192,6 +193,29 @@ define([
 		            row = 1;
 		        }
 		    });
+            if(resourceNav.cloudDefinitions[this.cloudProvider].topstack_services != undefined && resourceNav.cloudDefinitions[this.cloudProvider].topstack_services.length > 0) {
+                $("#topstack_services_table, #topstack_service_label").show();
+                $("#native_services_table, #topstack_services_table").css("width", "36%");
+                $.each(resourceNav.cloudDefinitions[this.cloudProvider].topstack_services, function(index, service) {
+                $("#topstack_row"+row).append($("<td></td>").attr({
+                    "id": service.type,
+                    "class": "resources selectable_item"
+                    }));
+                    $("#"+service.type).append($("<a></a>").attr({
+                        "id": service.type+"Link",
+                        "class": "resourceLink"
+                    }).text(service.name));
+                    row++;
+                    //reset row if greater than 3
+                    if(row > 3) {
+                        row = 1;
+                    }
+                });
+            }else {
+                $("#topstack_services_table, #topstack_service_label").hide();
+                $("#native_services_table").css("width", "73%");
+            }
+            
 		    $("#cloud_nav").html(this.crumbTemplate({pathElt: this.cloudDefinitions[this.cloudProvider].name
             }));
 
@@ -316,7 +340,11 @@ define([
                     this.type = "compute";
                     this.subtype = "instances";
                 }
-                $.each(this.cloudDefinitions[this.cloudProvider].services, function(index, service) {
+                var completeServices = this.cloudDefinitions[this.cloudProvider].native_services;
+                if(resourceNav.cloudDefinitions[this.cloudProvider].topstack_services != undefined && resourceNav.cloudDefinitions[this.cloudProvider].topstack_services.length > 0) {
+                    completeServices = completeServices.concat(resourceNav.cloudDefinitions[this.cloudProvider].topstack_services);
+                }
+                $.each(completeServices, function(index, service) {
                     if (service.type === resourceNav.type) {
                         if(!resourceNav.subtype) {
                             resourceNav.subtype = service.defaultSubtype;
