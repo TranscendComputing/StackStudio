@@ -8,18 +8,18 @@
 define([
         'jquery',
         'backbone',
-        '/js/openstack/models/cloud_watch/openstackMetric.js',
+        '/js/topstack/models/autoscale/topstackAutoscaleGroup.js',
         'common'
-], function( $, Backbone, Metric, Common ) {
+], function( $, Backbone, AutoscaleGroup, Common ) {
     'use strict';
 
-    var MetricList = Backbone.Collection.extend({
+    var AutoscaleGroupList = Backbone.Collection.extend({
 
-        model: Metric,
+        model: AutoscaleGroup,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/monitor/metrics'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/topstack/autoscale/autoscale_groups'
     });
-    
-    return MetricList;
+
+    return AutoscaleGroupList;
 
 });

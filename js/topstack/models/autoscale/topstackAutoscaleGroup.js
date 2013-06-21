@@ -36,7 +36,7 @@ define([
         },
 
         create: function(launch_config_options, autoscale_group_options, trigger_options, credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/autoscale/autoscale_groups?cred_id=" + credentialId + "&region=" + region;
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/topstack/autoscale/autoscale_groups?cred_id=" + credentialId + "&region=" + region;
             var options = {"launch_configuration": launch_config_options, "autoscale_group": autoscale_group_options};
             if(trigger_options) {
                 options["trigger"] = trigger_options;
@@ -45,12 +45,12 @@ define([
         },
 
         spinDown: function(credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/autoscale/autoscale_groups/"+ this.attributes.id +"/spin_down?cred_id=" + credentialId + "&region=" + region;
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/topstack/autoscale/autoscale_groups/"+ this.attributes.id +"/spin_down?cred_id=" + credentialId + "&region=" + region;
             this.sendAjaxAction(url, "POST", undefined, "autoscaleAppRefresh");
         },
 
         destroy: function(credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/autoscale/autoscale_groups/" + this.attributes.id + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/topstack/autoscale/autoscale_groups/" + this.attributes.id + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
             this.sendAjaxAction(url, "POST", undefined, "autoscaleAppRefresh");
         }
     });

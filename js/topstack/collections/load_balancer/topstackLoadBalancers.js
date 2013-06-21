@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/openstack/models/load_balancer/openstackLoadBalancer.js',
+        '/js/topstack/models/load_balancer/topstackLoadBalancer.js',
         'common'
 ], function( $, Backbone, LoadBalancer, Common ) {
     'use strict';
@@ -18,7 +18,7 @@ define([
 
         model: LoadBalancer,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/load_balancer/load_balancers'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/topstack/load_balancer/load_balancers'
         
     });
 

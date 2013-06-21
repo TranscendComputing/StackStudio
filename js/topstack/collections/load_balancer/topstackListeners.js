@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/openstack/models/load_balancer/openstackListener.js',
+        '/js/topstack/models/load_balancer/topstackListener.js',
         'common'
 ], function( $, Backbone, Listener, Common ) {
     'use strict';
@@ -18,7 +18,7 @@ define([
         model: Listener,
 
         initialize: function(options) {
-            this.url = Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/load_balancer/load_balancers/'+ options["load_balancer_id"] +'/listeners';
+            this.url = Common.apiUrl + '/stackstudio/v1/cloud_management/topstack/load_balancer/load_balancers/'+ options["load_balancer_id"] +'/listeners';
         }
         
     });

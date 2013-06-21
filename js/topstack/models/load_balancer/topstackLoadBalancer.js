@@ -45,27 +45,27 @@ define([
         },
         
         configureHealthCheck: function(healthCheckOptions, credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/load_balancer/load_balancers/"+ this.attributes.id +"/configure_health_check?cred_id=" + credentialId + "&region=" + region;
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/topstack/load_balancer/load_balancers/"+ this.attributes.id +"/configure_health_check?cred_id=" + credentialId + "&region=" + region;
             this.sendAjaxAction(url, "POST", {"health_check": healthCheckOptions}, "loadBalancerAppRefresh");
         },
 
         createListeners: function(listeners, credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/load_balancer/load_balancers/"+ this.attributes.id +"/listeners?cred_id=" + credentialId + "&region=" + region;
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/topstack/load_balancer/load_balancers/"+ this.attributes.id +"/listeners?cred_id=" + credentialId + "&region=" + region;
             this.sendAjaxAction(url, "POST", {"listeners": listeners}, "listenersRefresh");
         },
 
         destroyListeners: function(ports, credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/load_balancer/load_balancers/"+ this.attributes.id +"/listeners?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/topstack/load_balancer/load_balancers/"+ this.attributes.id +"/listeners?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
             this.sendAjaxAction(url, "POST", {"ports": ports}, "listenersRefresh");
         },
 
         enableAvailabilityZones: function(availabilityZones, credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/load_balancer/load_balancers/"+ this.attributes.id +"/availability_zones/enable?cred_id=" + credentialId + "&region=" + region;
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/topstack/load_balancer/load_balancers/"+ this.attributes.id +"/availability_zones/enable?cred_id=" + credentialId + "&region=" + region;
             this.sendAjaxAction(url, "POST", {"availability_zones": availabilityZones}, "instancesRefresh");
         },
 
         disableAvailabilityZones: function(availabilityZones, credentialId, region, disableTrigger) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/load_balancer/load_balancers/"+ this.attributes.id +"/availability_zones/disable?cred_id=" + credentialId + "&region=" + region;
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/topstack/load_balancer/load_balancers/"+ this.attributes.id +"/availability_zones/disable?cred_id=" + credentialId + "&region=" + region;
             if(disableTrigger) {
                 this.sendAjaxAction(url, "POST", {"availability_zones": availabilityZones}, "");
             }else {
@@ -74,23 +74,23 @@ define([
         },
 
         registerInstances: function(instanceIds, credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/load_balancer/load_balancers/"+ this.attributes.id +"/instances/register?cred_id=" + credentialId + "&region=" + region;
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/topstack/load_balancer/load_balancers/"+ this.attributes.id +"/instances/register?cred_id=" + credentialId + "&region=" + region;
             this.sendAjaxAction(url, "POST", {"instance_ids": instanceIds}, "instancesRefresh");
         },
 
         deregisterInstances: function(instanceIds, credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/load_balancer/load_balancers/"+ this.attributes.id +"/instances/deregister?cred_id=" + credentialId + "&region=" + region;
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/topstack/load_balancer/load_balancers/"+ this.attributes.id +"/instances/deregister?cred_id=" + credentialId + "&region=" + region;
             this.sendAjaxAction(url, "POST", {"instance_ids": instanceIds}, "instancesRefresh");
         },
         
         destroy: function(credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/load_balancer/load_balancers/"+ this.attributes.id +"?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/topstack/load_balancer/load_balancers/"+ this.attributes.id +"?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
             this.sendAjaxAction(url, "POST", undefined, "loadBalancerAppRefresh");
         },
 
         create: function(options, healthCheckOptions, credentialId, region) {
             var lb = this;
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/load_balancer/load_balancers?cred_id=" + credentialId + "&region=" + region;
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/topstack/load_balancer/load_balancers?cred_id=" + credentialId + "&region=" + region;
             var loadBalancer = {"load_balancer": options};
             $.ajax({
                 url: url,
@@ -109,7 +109,7 @@ define([
 
         describeHealth: function(credentialId, region) {
             $.ajax({
-                url: Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/load_balancer/load_balancers/"+ this.attributes.id +"/describe_health?cred_id=" + credentialId + "&region=" + region + "&id=" + this.attributes.id + "&availability_zones=" + JSON.stringify(this.attributes.availability_zones),
+                url: Common.apiUrl + "/stackstudio/v1/cloud_management/topstack/load_balancer/load_balancers/"+ this.attributes.id +"/describe_health?cred_id=" + credentialId + "&region=" + region + "&id=" + this.attributes.id + "&availability_zones=" + JSON.stringify(this.attributes.availability_zones),
                 type: 'GET',
                 contentType: 'application/x-www-form-urlencoded',
                 success: function(data) {

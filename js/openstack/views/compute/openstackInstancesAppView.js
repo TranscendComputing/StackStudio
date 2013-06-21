@@ -14,7 +14,7 @@ define([
         '/js/openstack/models/compute/openstackInstance.js',
         '/js/openstack/collections/compute/openstackInstances.js',
         '/js/openstack/views/compute/openstackInstanceCreateView.js',
-        '/js/openstack/collections/cloud_watch/openstackMetricStatistics.js',
+        '/js/topstack/collections/cloud_watch/topstackMetricStatistics.js',
         'icanhaz',
         'common',
         'morris',
