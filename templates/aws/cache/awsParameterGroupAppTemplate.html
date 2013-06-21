@@ -3,7 +3,7 @@
         <table>
             <tr>
                 <td>
-                    <button class="create_button">Create Security Group</button>
+                    <button class="create_button">Create Parameter Group</button>
                 </td>
                 <td>
                     <ul id="action_menu">
@@ -22,6 +22,7 @@
         <thead>
             <tr>
                 <th style="width:100px;">Group ID</th>
+                <th>Family</th>
                 <th>Description</th>
             </tr>
         </thead>
@@ -41,9 +42,9 @@
         <div id="properties_tab" class="tab">
             <table>
                 <tbody>
-                    <tr><td><b>Group ID:</b></td>       <td>{{ id }}</td></tr>
+                    <tr><td><b>ID:</b></td>           <td>{{ id }}</td></tr>
                     <tr><td><b>Description:</b></td>    <td>{{ description }}</td></tr>
-                    <tr><td><b>Owner ID:</b></td>       <td>{{ owner_id }}</td></tr>
+                    <tr><td><b>Family:</b></td>       <td>{{ family }}</td></tr>
                 </tbody>
             </table>
         </div>

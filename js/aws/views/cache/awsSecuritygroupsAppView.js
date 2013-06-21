@@ -38,7 +38,7 @@ define([
         modelStringIdentifier: "id",
         
         //columns: ["group_id", "name", "description"],
-        columns: ["id", "id", "description"],
+        columns: ["id", "description"],
         
         idColumnNumber: 0,
         

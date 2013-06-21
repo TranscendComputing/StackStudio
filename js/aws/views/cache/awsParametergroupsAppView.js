@@ -11,9 +11,9 @@ define([
         'backbone',
         'views/featureNotImplementedView',
         'views/resource/resourceAppView',
-        'text!templates/aws/cache/awsCacheParameterGroupTemplate.html',
+        'text!templates/aws/cache/awsParameterGroupAppTemplate.html',
         '/js/aws/models/cache/awsCacheParameterGroup.js',
-        '/js/aws/collections/cache/awsCacheParameterGroup.js',
+        '/js/aws/collections/cache/awsCacheParameterGroups.js',
         '/js/aws/views/cache/awsClusterCreateView.js',
         'icanhaz',
         'common',
@@ -21,13 +21,13 @@ define([
 ], function( $, _, Backbone, FeatureNotImplementedView, ResourceAppView,cacheClusterAppTemplate, CacheCluster, CacheClusters, CacheClusterCreate, ich, Common ) {
     'use strict';
 
-    var AwsClustersAppView = ResourceAppView.extend({
+    var AwsParametergroupsAppView = ResourceAppView.extend({
         
         template: _.template(cacheClusterAppTemplate),
         
         modelStringIdentifier: "id",
         
-        columns: ["id", "status", "node_type", "engine", "zone", "num_nodes"],
+        columns: ["id", "family", "description"],
         
         idColumnNumber: 0,
         
@@ -85,5 +85,5 @@ define([
         }
     });
     
-    return AwsClustersAppView;
+    return AwsParametergroupsAppView;
 });
