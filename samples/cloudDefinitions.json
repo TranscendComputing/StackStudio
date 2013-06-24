@@ -299,6 +299,11 @@
                 "name": "Load Balancer",
                 "type": "load_balancer",
                 "defaultSubtype": "loadbalancers"
+            },
+            {
+                "name": "Relational Database",
+                "type": "rds",
+                "defaultSubtype": "relationaldatabases"
             }
         ],
         "regions": [
