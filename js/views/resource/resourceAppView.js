@@ -237,7 +237,5 @@ define([
 
     });
 
-    console.log("resource app view defined");
-
     return ResourceAppView;
 });
