@@ -63,7 +63,7 @@ define([
         resourceApp: undefined,
 
         events: {
-			"click .resourceLink" : "resourceClick",
+			"click .resource_link" : "resourceClick",
 			"click #cloud_coverflow img" : "cloudChange",
             "selectmenuchange #credential_select": "credentialChange"
 		},
@@ -185,7 +185,7 @@ define([
                 }));
                 $("#"+service.type).append($("<a></a>").attr({
                     "id": service.type+"Link",
-                    "class": "resourceLink"
+                    "class": "resource_link"
                 }).text(service.name));
                 row++;
                 //reset row if greater than 3
@@ -203,7 +203,7 @@ define([
                     }));
                     $("#"+service.type).append($("<a></a>").attr({
                         "id": service.type+"Link",
-                        "class": "resourceLink"
+                        "class": "resource_link"
                     }).text(service.name));
                     row++;
                     //reset row if greater than 3
