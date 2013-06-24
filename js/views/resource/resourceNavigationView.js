@@ -168,6 +168,8 @@ define([
     			$(".resources").remove();
     			Common.router.navigate("#resources/"+event.target.id, {trigger: false});
     			this.cloudSelection(event.target.id);
+                $("#service_menu").hide();
+                $("#resource_app").hide();
             }
 		},
 
@@ -302,6 +304,7 @@ define([
         },
 
 		resourceClick: function(id) {
+            $("#resource_app").show();
 			var selectionId = id.target.id.split("Link")[0];
 			this.type = selectionId;
             this.subtype = undefined;
