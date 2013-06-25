@@ -24,7 +24,8 @@ define([
             engine_version: '',
             auto_upgrade: false,
             maintenance_window: '',
-            num_nodes: 0
+            num_nodes: 0,
+            nodes: []
         },
 
         create: function(options, credentialId, region) {

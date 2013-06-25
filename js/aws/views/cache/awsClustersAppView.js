@@ -41,10 +41,14 @@ define([
         
         CreateView: CacheClusterCreate,
         
+        ModifyView: CacheClusterCreate,
+        
         events: {
             'click .create_button': 'createNew',
             'click #action_menu ul li': 'performAction',
-            'click #resource_table tr': 'clickOne'
+            'click #resource_table tr': 'clickOne',
+            'change #node_select': 'selectNode',
+            'click #modnodes': 'modNodes'
         },
 
         initialize: function(options) {
@@ -82,6 +86,37 @@ define([
         
         toggleActions: function(e) {
             //Disable any needed actions
+        },
+        
+        selectNode: function(e) {
+            var cluster = this.collection.get(this.selectedId);
+            
+            var detailString = "";
+            
+            detailString += "<br><b>CacheNodeId:</b> ";
+            detailString += $("#cid"+$("#node_select").val()).html();
+            detailString += "<br><b>ParameterGroupStatus:</b> ";
+            detailString += $("#pgs"+$("#node_select").val()).html();
+            detailString += "<br><b>CacheNodeStatus:</b> ";
+            detailString += $("#cns"+$("#node_select").val()).html();
+            detailString += "<br><b>CacheNodeCreateTime:</b> ";
+            detailString += $("#cnct"+$("#node_select").val()).html();
+            detailString += "<br><b>Port:</b> ";
+            detailString += $("#port"+$("#node_select").val()).html();
+            detailString += "<br><b>Address:</b> ";
+            detailString += $("#address"+$("#node_select").val()).html();
+            
+            $("#node_detail").html(detailString);
+        },
+        
+        modNodes: function(e) {
+            var ModifyView = this.ModifyView;
+            if(this.region) {
+                this.newResourceDialog = new ModifyView({cred_id: this.credentialId, region: this.region});
+            }else {
+                this.newResourceDialog = new ModifyView({cred_id: this.credentialId});
+            }
+            this.newResourceDialog.render();
         }
     });
     
