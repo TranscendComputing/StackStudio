@@ -74,8 +74,82 @@
                     {{/nodes}}
                 </tbody>
             </table>
+            
             <div id="node_detail">
             </div>
+            
+            <br>
+            
+            <div class="monitor_options">
+                <table>
+                    <tr>
+                        <td>Time Range:</td>
+                        <td>
+                            <select id="monitor_time_range">
+                                <option value='{"time_range":3600, "period":300}' selected>Last Hour</option>
+                                <option value='{"time_range":10800, "period":600}'>Last 3 Hours</option>
+                                <option value='{"time_range":21600, "period":900}'>Last 6 Hours</option>
+                                <option value='{"time_range":43200, "period":1800}'>Last 12 Hours</option>
+                                <option value='{"time_range":86400, "period":3600}'>Last 24 Hours</option>
+                                <option value='{"time_range":604800, "period":21600}'>Last Week</option>
+                                <option value='{"time_range":1209600, "period":21600}'>Last 2 Weeks</option>
+                            </select>
+                        </td>
+                        <td>
+                            <button id="refresh_monitors_button">Refresh</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">CPU Utilization</div>
+                <div id="cpu_utilization" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Database Connections</div>
+                <div id="database_connections" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Freeable Memory</div>
+                <div id="freeable_memory" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Freeable Space</div>
+                <div id="free_storage_space" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Read IOPS</div>
+                <div id="read_iops" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Read Latency</div>
+                <div id="read_latency" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Read Throughput</div>
+                <div id="read_throughput" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Swap Usage</div>
+                <div id="swap_usage" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Write IOPS</div>
+                <div id="write_iops" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Write Latency</div>
+                <div id="write_latency" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Write Throughput</div>
+                <div id="write_throughput" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Disk Queue Depth</div>
+                <div id="disk_queue_depth" class="monitor_graph"></div>
+            </div>
+            
         </div>
     </div>
     
