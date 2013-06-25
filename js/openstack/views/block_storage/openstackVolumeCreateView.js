@@ -84,7 +84,6 @@ define([
         },
         
         addAllSnapshots: function() {
-            debugger
             this.snapshots.each(function(snapshot) {
                 var snapshotText = snapshot.id;
                 if(snapshot.has("description")) {
