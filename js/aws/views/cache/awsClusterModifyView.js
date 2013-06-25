@@ -10,13 +10,12 @@ define([
         'underscore',
         'backbone',
         'views/dialogView',
-        'text!templates/aws/compute/awsSecurityGroupCreateTemplate.html',
+        'text!templates/aws/cache/awsCacheClusterModifyTemplate.html',
         '/js/aws/models/cache/awsCacheSecurityGroup.js',
-        '/js/aws/collections/vpc/awsVpcs.js',
         'icanhaz',
         'common'
         
-], function( $, _, Backbone, DialogView, securityGroupCreateTemplate, SecurityGroup, VPCs, ich, Common ) {
+], function( $, _, Backbone, DialogView, cacheClusterModifyTemplate, SecurityGroup, ich, Common ) {
     
     /**
      * awsSecurityGroupCreateView is UI form to create compute.
@@ -28,15 +27,15 @@ define([
      * @returns {Object} Returns a awsSecurityGroupCreateView instance.
      */
     
-    var AwsSecurityGroupCreateView = DialogView.extend({
+    var AwsClusterModifyView = DialogView.extend({
 
         credentialId: undefined,
 
         region: undefined,
         
-        securityGroup: new SecurityGroup(),
+        modCluster: undefined,
         
-        vpcs: new VPCs(),
+        securityGroup: new SecurityGroup(),
         
         // Delegated events for creating new instances, etc.
         events: {
@@ -46,66 +45,62 @@ define([
         initialize: function(options) {
             this.credentialId = options.cred_id;
             this.region = options.region;
+            this.modCluster = this.options.modCluster;
+            
             var createView = this;
-            var compiledTemplate = _.template(securityGroupCreateTemplate);
+            var compiledTemplate = _.template(cacheClusterModifyTemplate);
             this.$el.html(compiledTemplate);
 
             this.$el.dialog({
                 autoOpen: true,
-                title: "Create Security Group",
+                title: "Modify Cluster",
                 resizable: false,
                 width: 425,
                 modal: true,
                 buttons: {
-                    Create: function () {
-                        createView.create();
+                    Modify: function () {
+                        createView.modify();
                     },
                     Cancel: function() {
                         createView.cancel();
                     }
                 }
             });
-            $("#vpc_select").selectmenu();
             
-            this.vpcs.on( 'reset', this.addAllVPCs, this );
-            this.vpcs.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true });
+            
+            $("#node_count_input").val(this.modCluster.getNumNodes());
         },
 
         render: function() {
             
         },
-        
-        addAllVPCs: function() {
-            this.vpcs.each(function(vpc) {
-               $("#vpc_select").append("<option>" + vpc.id + "</option>");
-            });
-            $("#vpc_select").selectmenu();
-        },
 
-        create: function() {
-            var newSecurityGroup = this.securityGroup;
+        modify: function() {
+            
             var options = {};
             var issue = false;
             
-            if($("#sg_name").val() !== "" && $("#sg_desc").val() !== "" ) {
-                options.id = $("#sg_name").val();
-                options.description = $("#sg_desc").val();
+            alert($("#apply_input").prop("checked"));
+            
+            if($("#node_count_input").val() !== "") {
+                options.apply_immediately = $("#apply_input").prop("checked");
+                options.auto_minor_version_upgrade = $("#version_input").prop("checked");
             }else {
                 issue = true;
             }
+            
+            //this.modCluster.modify();
+            
             /*
-            if($("#vpc_select").val() !== "No VPC") {
-                options.vpc_id = $("#vpc_select").val();
-            }
-            */
             if(!issue) {
                 newSecurityGroup.create(options, this.credentialId, this.region);
                 this.$el.dialog('close');
             } else {
                 Common.errorDialog("Invalid Request", "Please supply all required fields.");
             }
+            */
         }
     });
     
-    return AwsSecurityGroupCreateView;
+    return AwsClusterModifyView;
 });

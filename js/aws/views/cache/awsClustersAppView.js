@@ -76,6 +76,15 @@ define([
             case "Delete":
                 cluster.destroy(this.credentialId, this.region);
                 break;
+            case "Modify Node Count":
+                var ModifyView = this.ModifyView;
+                if(this.region) {
+                    this.newResourceDialog = new ModifyView({cred_id: this.credentialId, region: this.region, modCluster: cluster});
+                }else {
+                    this.newResourceDialog = new ModifyView({cred_id: this.credentialId});
+                }
+                this.newResourceDialog.render();
+                break;
             }
         },
         /*
@@ -111,9 +120,12 @@ define([
         },
         
         modNodes: function(e) {
+            //alert(this.selectedId);
+            var cluster = this.collection.get(this.selectedId);
+            
             var ModifyView = this.ModifyView;
             if(this.region) {
-                this.newResourceDialog = new ModifyView({cred_id: this.credentialId, region: this.region});
+                this.newResourceDialog = new ModifyView({cred_id: this.credentialId, region: this.region, modCluster: cluster});
             }else {
                 this.newResourceDialog = new ModifyView({cred_id: this.credentialId});
             }
