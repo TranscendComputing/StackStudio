@@ -10,7 +10,8 @@
                         <li style="z-index: 1000">
                             <a id="action_button">Actions</a>
                             <ul>
-                                <li><a>Delete</a></li>               
+                                <li><a>Delete</a></li>
+                                <li><a>Modify Node Count</a></li>               
                             </ul>
                         </li>
                     </ul>
@@ -41,6 +42,7 @@
     <div id="detail_tabs">
         <ul>
             <li><a id="database_details" href="#tabs-1">Details</a></li>
+            <li><a id="monitoring" href="#tabs-2">Nodes</a></li>
         </ul>
         <div id="tabs-1" class="tab">
             <table>
@@ -53,6 +55,27 @@
                     <tr><td><b>num_nodes:</b></td><td>{{ num_nodes }}</td></tr>
                 </tbody>
             </table>
+        </div>
+        <div id="tabs-2" class="tab" style="overflow:hidden;">
+            <select id="node_select">
+                {{#nodes}}
+                  <option value="{{CacheNodeId}}">{{CacheNodeId}}</option>
+                {{/nodes}}
+            </select>
+            <!--button to add nodes-->
+            <button id="modnodes">Modify Node Count</button>
+            <table class="full_width" hidden="true">
+                <tbody>
+                    {{#nodes}}
+                        <div id="node_row{{CacheNodeId}}">
+                            <tr><td id="cid{{CacheNodeId}}">{{ CacheNodeId }}</td><td id="pgs{{CacheNodeId}}">{{ ParameterGroupStatus }}</td><td id="cns{{CacheNodeId}}">{{ CacheNodeStatus }}</td>
+                            <td id="cnct{{CacheNodeId}}">{{ CacheNodeCreateTime }}</td><td id="port{{CacheNodeId}}">{{ Port }}</td><td id="address{{CacheNodeId}}">{{ Address }}</td></tr>
+                        </div>
+                    {{/nodes}}
+                </tbody>
+            </table>
+            <div id="node_detail">
+            </div>
         </div>
     </div>
     

@@ -24,7 +24,8 @@ define([
             engine_version: '',
             auto_upgrade: false,
             maintenance_window: '',
-            num_nodes: 0
+            num_nodes: 0,
+            nodes: []
         },
 
         create: function(options, credentialId, region) {
@@ -35,6 +36,14 @@ define([
         destroy: function(credentialId, region) {
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/cache/clusters/" + this.attributes.id + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
             this.sendAjaxAction(url, "POST", undefined, "cacheAppRefresh");
+        },
+        
+        modify: function() {
+            alert("modify");
+        },
+        
+        getNumNodes: function(){
+            return this.attributes.num_nodes;
         }
     });
 
