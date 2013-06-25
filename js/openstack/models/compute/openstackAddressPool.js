@@ -6,20 +6,17 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'backbone',
-        '/js/openstack/models/compute/openstackImage.js',
+        'models/resource/resourceModel',
         'common'
-], function( $, Backbone, Image, Common ) {
+], function( ResourceModel, Common ) {
     'use strict';
 
-    var ImageList = Backbone.Collection.extend({
+    var AddressPool = ResourceModel.extend({
 
-        model: Image,
-
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/compute/images'
+        defaults: {
+            name: ''
+        }
     });
-    
-    return ImageList;
 
+    return AddressPool;
 });

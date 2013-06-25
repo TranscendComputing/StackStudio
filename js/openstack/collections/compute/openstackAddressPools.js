@@ -8,18 +8,18 @@
 define([
         'jquery',
         'backbone',
-        '/js/openstack/models/compute/openstackImage.js',
+        '/js/openstack/models/compute/openstackAddressPool.js',
         'common'
-], function( $, Backbone, Image, Common ) {
+], function( $, Backbone, AddressPool, Common ) {
     'use strict';
 
-    var ImageList = Backbone.Collection.extend({
+    var AddressPoolList = Backbone.Collection.extend({
 
-        model: Image,
+        model: AddressPool,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/compute/images'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/compute/address_pools'
     });
-    
-    return ImageList;
+
+    return AddressPoolList;
 
 });
