@@ -15,10 +15,11 @@ define([
         '/js/aws/models/cache/awsCacheCluster.js',
         '/js/aws/collections/cache/awsCacheClusters.js',
         '/js/aws/views/cache/awsClusterCreateView.js',
+        '/js/aws/views/cache/awsClusterModifyView.js',
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, FeatureNotImplementedView, ResourceAppView,cacheClusterAppTemplate, CacheCluster, CacheClusters, CacheClusterCreate, ich, Common ) {
+], function( $, _, Backbone, FeatureNotImplementedView, ResourceAppView,cacheClusterAppTemplate, CacheCluster, CacheClusters, CacheClusterCreate, CacheClusterModify, ich, Common ) {
     'use strict';
 
     var AwsClustersAppView = ResourceAppView.extend({
@@ -41,7 +42,7 @@ define([
         
         CreateView: CacheClusterCreate,
         
-        ModifyView: CacheClusterCreate,
+        ModifyView: CacheClusterModify,
         
         events: {
             'click .create_button': 'createNew',
