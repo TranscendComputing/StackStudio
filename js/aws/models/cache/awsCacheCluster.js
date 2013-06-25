@@ -38,12 +38,17 @@ define([
             this.sendAjaxAction(url, "POST", undefined, "cacheAppRefresh");
         },
         
-        modify: function() {
-            alert("modify");
+        modify: function(options, credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/cache/clusters/modify/" + this.attributes.id + "?_method=POST&cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", {"options": options}, "cacheAppRefresh");
         },
         
         getNumNodes: function(){
             return this.attributes.num_nodes;
+        },
+        
+        getNodes: function(){
+            return this.attributes.nodes;
         }
     });
 

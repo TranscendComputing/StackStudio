@@ -68,37 +68,46 @@ define([
             });
             
             
-            $("#node_count_input").val(this.modCluster.getNumNodes());
+            
         },
 
         render: function() {
             
+            $("#node_count_input").val(this.modCluster.getNumNodes());
+            
+            var nodeArray = this.modCluster.getNodes();
+            
+            for (var i in nodeArray) {
+              $("#nodes_select").append("<option value="+nodeArray[i].CacheNodeId+">"+nodeArray[i].CacheNodeId+"</option>");
+            }
         },
 
         modify: function() {
+            //alert($("#nodes_select").val());
             
             var options = {};
             var issue = false;
             
-            alert($("#apply_input").prop("checked"));
+            var nodeCount = $("#node_count_input").val();
             
-            if($("#node_count_input").val() !== "") {
+            //validation (check for int)
+            var intRegex = /^\d+$/;
+            if(intRegex.test(nodeCount) && (parseInt(nodeCount, 10) !== this.modCluster.getNumNodes())) {
+                options.num_nodes = $("#node_count_input").val();
                 options.apply_immediately = $("#apply_input").prop("checked");
                 options.auto_minor_version_upgrade = $("#version_input").prop("checked");
+                options.nodes_to_remove = $("#nodes_select").val();
             }else {
                 issue = true;
             }
             
-            //this.modCluster.modify();
-            
-            /*
             if(!issue) {
-                newSecurityGroup.create(options, this.credentialId, this.region);
+                this.modCluster.modify(options, this.credentialId, this.region);
                 this.$el.dialog('close');
             } else {
                 Common.errorDialog("Invalid Request", "Please supply all required fields.");
             }
-            */
+            
         }
     });
     
