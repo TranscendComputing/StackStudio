@@ -196,6 +196,42 @@ define([
             };
 
             new Spinner(spinnerOptions).spin($("#bytes_read").get(0));
+            new Spinner(spinnerOptions).spin($("#bytes_used").get(0));
+            new Spinner(spinnerOptions).spin($("#bytes_written").get(0));
+            
+            new Spinner(spinnerOptions).spin($("#casBadvalData").get(0));
+            new Spinner(spinnerOptions).spin($("#casHitsData").get(0));
+            new Spinner(spinnerOptions).spin($("#casMissesData").get(0));
+            
+            new Spinner(spinnerOptions).spin($("#cmdFlushData").get(0));
+            new Spinner(spinnerOptions).spin($("#cmdGetData").get(0));
+            new Spinner(spinnerOptions).spin($("#cmdSetData").get(0));
+            
+            new Spinner(spinnerOptions).spin($("#cPUUtilizationData").get(0));
+            new Spinner(spinnerOptions).spin($("#currConnectionsData").get(0));
+            new Spinner(spinnerOptions).spin($("#currItemsData").get(0));
+            
+            new Spinner(spinnerOptions).spin($("#decrHitsData").get(0));
+            new Spinner(spinnerOptions).spin($("#decrMissesData").get(0));
+            new Spinner(spinnerOptions).spin($("#deleteHitsData").get(0));
+            new Spinner(spinnerOptions).spin($("#deleteMissesData").get(0));
+            
+            new Spinner(spinnerOptions).spin($("#evictionsData").get(0));
+            new Spinner(spinnerOptions).spin($("#freeableMemoryData").get(0));
+            new Spinner(spinnerOptions).spin($("#getHitsData").get(0));
+            new Spinner(spinnerOptions).spin($("#getMissesData").get(0));
+            
+            new Spinner(spinnerOptions).spin($("#incrHitsData").get(0));
+            new Spinner(spinnerOptions).spin($("#incrMissesData").get(0));
+            
+            new Spinner(spinnerOptions).spin($("#networkBytesInData").get(0));
+            new Spinner(spinnerOptions).spin($("#networkBytesOutData").get(0));
+            new Spinner(spinnerOptions).spin($("#newConnectionsData").get(0));
+            new Spinner(spinnerOptions).spin($("#newItemsData").get(0));
+            
+            new Spinner(spinnerOptions).spin($("#reclaimedData").get(0));
+            new Spinner(spinnerOptions).spin($("#swapUsageData").get(0));
+            new Spinner(spinnerOptions).spin($("#unusedMemoryData").get(0));
 
             var monitorTimeValue = $("#monitor_time_range").val();
             var monitorTime = JSON.parse(monitorTimeValue);
