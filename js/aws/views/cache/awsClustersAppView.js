@@ -64,19 +64,19 @@ define([
         decrMissesData: new MetricStatistics(),
         deleteHitsData: new MetricStatistics(),
         deleteMissesData: new MetricStatistics(),
-        EvictionsData: new MetricStatistics(),
-        FreeableMemoryData: new MetricStatistics(),
-        GetHitsData: new MetricStatistics(),
-        GetMissesData: new MetricStatistics(),
-        IncrHitsData: new MetricStatistics(),
-        IncrMissesData: new MetricStatistics(),
-        NetworkBytesInData: new MetricStatistics(),
-        NetworkBytesOutData: new MetricStatistics(),
-        NewConnectionsData: new MetricStatistics(),
-        NewItemsData: new MetricStatistics(),
-        ReclaimedData: new MetricStatistics(),
-        SwapUsageData: new MetricStatistics(),
-        UnusedMemoryData: new MetricStatistics(),
+        evictionsData: new MetricStatistics(),
+        freeableMemoryData: new MetricStatistics(),
+        getHitsData: new MetricStatistics(),
+        getMissesData: new MetricStatistics(),
+        incrHitsData: new MetricStatistics(),
+        incrMissesData: new MetricStatistics(),
+        networkBytesInData: new MetricStatistics(),
+        networkBytesOutData: new MetricStatistics(),
+        newConnectionsData: new MetricStatistics(),
+        newItemsData: new MetricStatistics(),
+        reclaimedData: new MetricStatistics(),
+        swapUsageData: new MetricStatistics(),
+        unusedMemoryData: new MetricStatistics(),
         
         events: {
             'click .create_button': 'createNew',
@@ -123,6 +123,22 @@ define([
             this.deleteHitsData.on( 'reset', function() {this.addMonitorGraph("#deleteHitsData", this.deleteHitsData, ["Average"], ["deleteHitsData"], ["#FF8000"]);}, this );
             this.deleteMissesData.on( 'reset', function() {this.addMonitorGraph("#deleteMissesData", this.deleteMissesData, ["Average"], ["deleteMissesData"], ["#FF8000"]);}, this );
             
+            this.evictionsData.on( 'reset', function() {this.addMonitorGraph("#evictionsData", this.evictionsData, ["Average"], ["evictionsData"], ["#FF8000"]);}, this );
+            this.freeableMemoryData.on( 'reset', function() {this.addMonitorGraph("#freeableMemoryData", this.freeableMemoryData, ["Average"], ["freeableMemoryData"], ["#FF8000"]);}, this );
+            this.getHitsData.on( 'reset', function() {this.addMonitorGraph("#getHitsData", this.getHitsData, ["Average"], ["getHitsData"], ["#FF8000"]);}, this );
+            this.getMissesData.on( 'reset', function() {this.addMonitorGraph("#getMissesData", this.getMissesData, ["Average"], ["getMissesData"], ["#FF8000"]);}, this );
+            
+            this.incrHitsData.on( 'reset', function() {this.addMonitorGraph("#incrHitsData", this.incrHitsData, ["Average"], ["incrHitsData"], ["#FF8000"]);}, this );
+            this.incrMissesData.on( 'reset', function() {this.addMonitorGraph("#incrMissesData", this.incrMissesData, ["Average"], ["incrMissesData"], ["#FF8000"]);}, this );
+            
+            this.networkBytesInData.on( 'reset', function() {this.addMonitorGraph("#networkBytesInData", this.networkBytesInData, ["Average"], ["networkBytesInData"], ["#FF8000"]);}, this );
+            this.networkBytesOutData.on( 'reset', function() {this.addMonitorGraph("#networkBytesOutData", this.networkBytesOutData, ["Average"], ["networkBytesOutData"], ["#FF8000"]);}, this );
+            this.newConnectionsData.on( 'reset', function() {this.addMonitorGraph("#newConnectionsData", this.newConnectionsData, ["Average"], ["newConnectionsData"], ["#FF8000"]);}, this );
+            this.newItemsData.on( 'reset', function() {this.addMonitorGraph("#newItemsData", this.newItemsData, ["Average"], ["newItemsData"], ["#FF8000"]);}, this );
+            
+            this.reclaimedData.on( 'reset', function() {this.addMonitorGraph("#reclaimedData", this.reclaimedData, ["Average"], ["reclaimedData"], ["#FF8000"]);}, this );
+            this.swapUsageData.on( 'reset', function() {this.addMonitorGraph("#swapUsageData", this.swapUsageData, ["Average"], ["swapUsageData"], ["#FF8000"]);}, this );
+            this.unusedMemoryData.on( 'reset', function() {this.addMonitorGraph("#unusedMemoryData", this.unusedMemoryData, ["Average"], ["unusedMemoryData"], ["#FF8000"]);}, this );
         },
         
         performAction: function(event) {
@@ -234,6 +250,36 @@ define([
             this.deleteHitsData.fetch({ data: $.param(metricStatisticOptions), reset: true });
             metricStatisticOptions.metric_name = "DeleteMisses";
             this.deleteMissesData.fetch({ data: $.param(metricStatisticOptions), reset: true });
+            
+            metricStatisticOptions.metric_name = "Evictions";
+            this.evictionsData.fetch({ data: $.param(metricStatisticOptions), reset: true });
+            metricStatisticOptions.metric_name = "FreeableMemory";
+            this.freeableMemoryData.fetch({ data: $.param(metricStatisticOptions), reset: true });
+            metricStatisticOptions.metric_name = "GetHits";
+            this.getHitsData.fetch({ data: $.param(metricStatisticOptions), reset: true });
+            metricStatisticOptions.metric_name = "GetMisses";
+            this.getMissesData.fetch({ data: $.param(metricStatisticOptions), reset: true });
+            
+            metricStatisticOptions.metric_name = "IncrHits";
+            this.incrHitsData.fetch({ data: $.param(metricStatisticOptions), reset: true });
+            metricStatisticOptions.metric_name = "IncrMisses";
+            this.incrMissesData.fetch({ data: $.param(metricStatisticOptions), reset: true });
+            
+            metricStatisticOptions.metric_name = "NetworkBytesIn";
+            this.networkBytesInData.fetch({ data: $.param(metricStatisticOptions), reset: true });
+            metricStatisticOptions.metric_name = "NetworkBytesOut";
+            this.networkBytesOutData.fetch({ data: $.param(metricStatisticOptions), reset: true });
+            metricStatisticOptions.metric_name = "NewConnections";
+            this.newConnectionsData.fetch({ data: $.param(metricStatisticOptions), reset: true });
+            metricStatisticOptions.metric_name = "NewItems";
+            this.newItemsData.fetch({ data: $.param(metricStatisticOptions), reset: true });
+            
+            metricStatisticOptions.metric_name = "Reclaimed";
+            this.reclaimedData.fetch({ data: $.param(metricStatisticOptions), reset: true });
+            metricStatisticOptions.metric_name = "SwapUsage";
+            this.swapUsageData.fetch({ data: $.param(metricStatisticOptions), reset: true });
+            metricStatisticOptions.metric_name = "UnusedMemory";
+            this.unusedMemoryData.fetch({ data: $.param(metricStatisticOptions), reset: true });
         },
 
         addMonitorGraph: function(element, collection, yKeys, labels, lineColors) {
