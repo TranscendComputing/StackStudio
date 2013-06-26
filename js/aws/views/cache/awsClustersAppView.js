@@ -49,21 +49,21 @@ define([
         ModifyView: CacheClusterModify,
         
         bytesReadIntoMemcachedData: new MetricStatistics(),
-        BytesUsedForCacheItemsData: new MetricStatistics(),
-        BytesWrittenOutFromMemcachedData: new MetricStatistics(),
-        CasBadvalData: new MetricStatistics(),
-        CasHitsData: new MetricStatistics(),
-        CasMissesData: new MetricStatistics(),
-        CmdFlushData: new MetricStatistics(),
-        CmdGetData: new MetricStatistics(),
-        CmdSetData: new MetricStatistics(),
-        CPUUtilizationData: new MetricStatistics(),
-        CurrConnectionsData: new MetricStatistics(),
-        CurrItemsData: new MetricStatistics(),
-        DecrHitsData: new MetricStatistics(),
-        DecrMissesData: new MetricStatistics(),
-        DeleteHitsData: new MetricStatistics(),
-        DeleteMissesData: new MetricStatistics(),
+        bytesUsedForCacheItemsData: new MetricStatistics(),
+        bytesWrittenOutFromMemcachedData: new MetricStatistics(),
+        casBadvalData: new MetricStatistics(),
+        casHitsData: new MetricStatistics(),
+        casMissesData: new MetricStatistics(),
+        cmdFlushData: new MetricStatistics(),
+        cmdGetData: new MetricStatistics(),
+        cmdSetData: new MetricStatistics(),
+        cPUUtilizationData: new MetricStatistics(),
+        currConnectionsData: new MetricStatistics(),
+        currItemsData: new MetricStatistics(),
+        decrHitsData: new MetricStatistics(),
+        decrMissesData: new MetricStatistics(),
+        deleteHitsData: new MetricStatistics(),
+        deleteMissesData: new MetricStatistics(),
         EvictionsData: new MetricStatistics(),
         FreeableMemoryData: new MetricStatistics(),
         GetHitsData: new MetricStatistics(),
@@ -84,7 +84,7 @@ define([
             'click #resource_table tr': 'clickOne',
             'change #node_select': 'selectNode',
             'click #modnodes': 'modNodes',
-            'change #node_select': 'refreshMonitors',
+            //'change #node_select': 'refreshMonitors',
             'click #refresh_monitors_button': 'refreshMonitors'
         },
 
@@ -103,6 +103,25 @@ define([
             });
             
             this.bytesReadIntoMemcachedData.on( 'reset', function() {this.addMonitorGraph("#bytes_read", this.bytesReadIntoMemcachedData, ["Average"], ["Bytes Read Into Memcached"], ["#FF8000"]);}, this );
+            this.bytesUsedForCacheItemsData.on( 'reset', function() {this.addMonitorGraph("#bytes_used", this.bytesUsedForCacheItemsData, ["Average"], ["Bytes Used For Cache Items Data"], ["#FF8000"]);}, this );
+            this.bytesWrittenOutFromMemcachedData.on( 'reset', function() {this.addMonitorGraph("#bytes_written", this.bytesWrittenOutFromMemcachedData, ["Average"], ["bytesWrittenOutFromMemcachedData"], ["#FF8000"]);}, this );
+            
+            this.casBadvalData.on( 'reset', function() {this.addMonitorGraph("#casBadvalData", this.casBadvalData, ["Average"], ["casBadvalData"], ["#FF8000"]);}, this );
+            this.casHitsData.on( 'reset', function() {this.addMonitorGraph("#casHitsData", this.casHitsData, ["Average"], ["casHitsData"], ["#FF8000"]);}, this );
+            this.casMissesData.on( 'reset', function() {this.addMonitorGraph("#casMissesData", this.casMissesData, ["Average"], ["casMissesData"], ["#FF8000"]);}, this );
+            
+            this.cmdFlushData.on( 'reset', function() {this.addMonitorGraph("#cmdFlushData", this.cmdFlushData, ["Average"], ["cmdFlushData"], ["#FF8000"]);}, this );
+            this.cmdGetData.on( 'reset', function() {this.addMonitorGraph("#cmdGetData", this.cmdGetData, ["Average"], ["cmdGetData"], ["#FF8000"]);}, this );
+            this.cmdSetData.on( 'reset', function() {this.addMonitorGraph("#cmdSetData", this.cmdSetData, ["Average"], ["cmdSetData"], ["#FF8000"]);}, this );
+            
+            this.cPUUtilizationData.on( 'reset', function() {this.addMonitorGraph("#cPUUtilizationData", this.cPUUtilizationData, ["Average"], ["cPUUtilizationData"], ["#FF8000"]);}, this );
+            this.currConnectionsData.on( 'reset', function() {this.addMonitorGraph("#currConnectionsData", this.currConnectionsData, ["Average"], ["currConnectionsData"], ["#FF8000"]);}, this );
+            this.currItemsData.on( 'reset', function() {this.addMonitorGraph("#currItemsData", this.currItemsData, ["Average"], ["currItemsData"], ["#FF8000"]);}, this );
+            
+            this.decrHitsData.on( 'reset', function() {this.addMonitorGraph("#decrHitsData", this.decrHitsData, ["Average"], ["decrHitsData"], ["#FF8000"]);}, this );
+            this.decrMissesData.on( 'reset', function() {this.addMonitorGraph("#decrMissesData", this.decrMissesData, ["Average"], ["decrMissesData"], ["#FF8000"]);}, this );
+            this.deleteHitsData.on( 'reset', function() {this.addMonitorGraph("#deleteHitsData", this.deleteHitsData, ["Average"], ["deleteHitsData"], ["#FF8000"]);}, this );
+            this.deleteMissesData.on( 'reset', function() {this.addMonitorGraph("#deleteMissesData", this.deleteMissesData, ["Average"], ["deleteMissesData"], ["#FF8000"]);}, this );
             
         },
         
@@ -172,12 +191,49 @@ define([
                 namespace: "AWS/ElastiCache",
                 period: monitorTime.period,
                 statistic: "Average",
+                //dimensions:[{"name":"CacheClusterId","value":this.selectedId},{"name":"CacheNodeId","value":$("#node_select").val()}]
                 dimension_name: "CacheClusterId",
-                dimension_value: this.selectedId
+                dimension_value: this.selectedId,
+                dimension_name2: "CacheNodeId",
+                dimension_value2: $("#node_select").val()
             };
             
             metricStatisticOptions.metric_name = "BytesReadIntoMemcached";
             this.bytesReadIntoMemcachedData.fetch({ data: $.param(metricStatisticOptions), reset: true });
+            metricStatisticOptions.metric_name = "BytesUsedForCacheItems";
+            this.bytesUsedForCacheItemsData.fetch({ data: $.param(metricStatisticOptions), reset: true });
+            metricStatisticOptions.metric_name = "BytesWrittenOutFromMemcached";
+            this.bytesWrittenOutFromMemcachedData.fetch({ data: $.param(metricStatisticOptions), reset: true });
+            
+            metricStatisticOptions.metric_name = "CasBadval";
+            this.casBadvalData.fetch({ data: $.param(metricStatisticOptions), reset: true });
+            metricStatisticOptions.metric_name = "CasHits";
+            this.casHitsData.fetch({ data: $.param(metricStatisticOptions), reset: true });
+            metricStatisticOptions.metric_name = "CasMisses";
+            this.casMissesData.fetch({ data: $.param(metricStatisticOptions), reset: true });
+            
+            metricStatisticOptions.metric_name = "CmdFlush";
+            this.cmdFlushData.fetch({ data: $.param(metricStatisticOptions), reset: true });
+            metricStatisticOptions.metric_name = "CmdGet";
+            this.cmdGetData.fetch({ data: $.param(metricStatisticOptions), reset: true });
+            metricStatisticOptions.metric_name = "CmdSet";
+            this.cmdSetData.fetch({ data: $.param(metricStatisticOptions), reset: true });
+            
+            metricStatisticOptions.metric_name = "CPUUtilization";
+            this.cPUUtilizationData.fetch({ data: $.param(metricStatisticOptions), reset: true });
+            metricStatisticOptions.metric_name = "CurrConnections";
+            this.currConnectionsData.fetch({ data: $.param(metricStatisticOptions), reset: true });
+            metricStatisticOptions.metric_name = "CurrItems";
+            this.currItemsData.fetch({ data: $.param(metricStatisticOptions), reset: true });
+            
+            metricStatisticOptions.metric_name = "DecrHits";
+            this.decrHitsData.fetch({ data: $.param(metricStatisticOptions), reset: true });
+            metricStatisticOptions.metric_name = "DecrMisses";
+            this.decrMissesData.fetch({ data: $.param(metricStatisticOptions), reset: true });
+            metricStatisticOptions.metric_name = "DeleteHits";
+            this.deleteHitsData.fetch({ data: $.param(metricStatisticOptions), reset: true });
+            metricStatisticOptions.metric_name = "DeleteMisses";
+            this.deleteMissesData.fetch({ data: $.param(metricStatisticOptions), reset: true });
         },
 
         addMonitorGraph: function(element, collection, yKeys, labels, lineColors) {
@@ -218,6 +274,8 @@ define([
             detailString += $("#address"+$("#node_select").val()).html();
             
             $("#node_detail").html(detailString);
+            
+            this.refreshMonitors();
         },
         
         modNodes: function(e) {
