@@ -36,16 +36,16 @@ define([
             this.credentialId = options.credentialId;
             this.region = options.region;
             this.roles = new Roles();
-            this.users = new Users();
+            this.currentUsers = new Users();
             this.newUsers = new Users();
             this.render();
             this.newUsers.on("add", this.refreshNewUsersTable, this);
             this.newUsers.on("remove", this.refreshNewUsersTable, this);
             this.newUsers.on("reset", this.refreshNewUsersTable, this);
-            this.users.on("reset", this.refreshUsersTable, this);
-            this.users.on("remove", this.refreshUsersTable, this);
-            this.users.on("add", this.refreshUsersTable, this);
-            this.users.fetch({data: {cred_id: this.credentialId, region: this.region}, reset: true});
+            this.currentUsers.on("reset", this.refreshUsersTable, this);
+            this.currentUsers.on("remove", this.refreshUsersTable, this);
+            this.currentUsers.on("add", this.refreshUsersTable, this);
+            this.currentUsers.fetch({data: {cred_id: this.credentialId, region: this.region}, reset: true});
             this.roles.on("reset", this.renderDefaultRoles, this);
             this.roles.fetch({data: {cred_id: this.credentialId, region: this.region}, reset: true});
         },
@@ -89,7 +89,7 @@ define([
                 sDefaultContent: "",
                 sAjaxDataProp: "",
                 fnServerData: function(sSource, aoData, fnCallback) {
-                    var users = view.users.without(view.model.get("users")).toJSON();
+                    var users = view.currentUsers.without(view.model.get("users")).toJSON();
                     _.each(users, function(u){
                         // Add roles checkbox
                         u.action = "<a class='add-link' href=''>Add</a>";
@@ -153,12 +153,12 @@ define([
 
         addUser: function(event) {
             var rowData = this.$allTable.fnGetData(event.currentTarget.parentElement.parentElement);
-            var user = this.users.get(rowData.id);
+            var user = this.currentUsers.get(rowData.id);
             if(!user.has("roles"))
             {  
                 user.set({roles: this.selectedRoles});
             }
-            this.users.remove(user);
+            this.currentUsers.remove(user);
             this.newUsers.add(user);
             return false;
         },
@@ -168,7 +168,7 @@ define([
             var user = this.newUsers.get(rowData.id);
             user.unset("roles");
             this.newUsers.remove(user);
-            this.users.add(user);
+            this.currentUsers.add(user);
             return false;
         },
 
@@ -204,7 +204,7 @@ define([
             view.newUsers.each(function(user) {
                 roles = user.get("roles");
                 roles.each(function(role) {
-                    view.model.addUser(user, role, "tenant:usersUpdated", view.credentialId, view.region);
+                    view.model.addUser(user, role, view.credentialId, view.region);
                 });
             });
             this.$el.dialog("close");

@@ -14,15 +14,10 @@ define([
 ], function( $, _, Backbone, User, Common ) {
     'use strict';
 
-    // User Collection
-    // ---------------
-
     var UserList = Backbone.Collection.extend({
 
-        // Reference to this collection's model.
         model: User,
 
-        // CloudMux url for Openstack User APIs
         url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/identity/users',
 
         without: function(collection) {
@@ -37,7 +32,6 @@ define([
         }
     });
 
-    // Create our global collection of **Users**.
     return UserList;
 
 });

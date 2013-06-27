@@ -10,46 +10,38 @@ define([
         'underscore',
         'backbone',
         'common',
-        'icanhaz',
         'views/dialogView',
         'text!templates/openstack/identity/openstackTenantCreateTemplate.html',
         '/js/openstack/models/identity/openstackTenant.js',
-        '/js/openstack/collections/identity/openstackTenants.js',
-        'jquery.ui.selectmenu',
-        'jquery.multiselect',
-        'jquery.multiselect.filter'
-], function( $, _, Backbone, Common, ich, DialogView, tenantCreateTemplate, Tenant, Tenants ) {
+], function( $, _, Backbone, Common, DialogView, tenantCreateTemplate, Tenant ) {
 
     var TenantCreateView = DialogView.extend({
+
+        template: _.template(tenantCreateTemplate),
         
         credentialId: undefined,
 
         region: undefined,
-        
-        collection: new Tenants(),
 
-        template: tenantCreateTemplate,
+        tenant: new Tenant(),
 
         events: {
             "dialogclose": "close",
-            "change input#enabled_input": "toggleEnabled"
         },
 
         initialize: function(options) {
             this.credentialId = options.cred_id;
             this.region = options.region;
-            this.model = new Tenant({}, {collection: this.collection});
-            this.render();
         },
         
         render: function() {
             var createView = this;
-            ich.addTemplate("tenant_create_template", this.template);
-            this.$el.html( ich.tenant_create_template(this.model.toJSON()) );
+            this.$el.html(this.template);
+
             this.$el.dialog({
                 autoOpen: true,
                 title: "Create Tenant",
-                width:500,
+                width: 350,
                 minHeight: 150,
                 resizable: false,
                 modal: true,
@@ -61,28 +53,37 @@ define([
                         createView.cancel();
                     }
                 }
-            }); 
-            $("select").selectmenu();
-
-            // This line adds required asterisk to all fields with class 'required'
-            this.$(".required").after("<span class='required'/>");
+            });
         },
 
-        toggleEnabled: function(event) {
-            // Set enabled attribute to value of checkbox target
-            this.model.set({enabled: $(event.currentTarget).is(":checked")});
+        displayValid: function(valid, selector) {
+            if(valid) {
+                $(selector).css("border-color", "");
+            }else{
+                $(selector).css("border-color", "#FF0000");
+            }
         },
 
         create: function() {
-            this.model.set({
-                name: $("#name_input").val(),
-                description: $("#description_textarea").val()
-            });
-            if(!this.model.isValid())
-            {
-                Common.errorDialog("Validation Error", this.model.validationError);
-            }else{
-                this.model.create(this.credentialId, this.region); 
+            var newTenant = this.tenant;
+            var options = {};
+            var issue = false;
+            if($("#tenant_name_input").val() !== "") {
+                this.displayValid(true, "#tenant_name_input");
+                options.name = $("#tenant_name_input").val();
+            }else {
+                this.displayValid(false, "#tenant_name_input");
+                issue = true;
+            }
+            if($("#description_input").val() !== "") {
+                options.description = $("#description_input").val();
+            }
+            if(! $("#enabled_checkbox").is(":checked")) {
+                options.enabled = false;
+            }
+
+            if(!issue) {
+                newTenant.create(options, this.credentialId, this.region);
                 this.$el.dialog('close');
             }
         }
