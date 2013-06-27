@@ -96,7 +96,21 @@
             {
                 "name": "Relational Database",
                 "type": "rds",
-                "defaultSubtype": "relationaldatabases"
+                "defaultSubtype": "relationaldatabases",
+                "subServices" : [
+                    {
+                        "name": "Relational Databases",
+                        "type": "relationaldatabases"
+                    },
+                    {
+                        "name": "Parameter Groups",
+                        "type": "parametergroups"
+                    },
+                    {
+                        "name": "Security Groups",
+                        "type": "securitygroups"
+                    }
+                ]
             },
             {
                 "name": "Route 53",

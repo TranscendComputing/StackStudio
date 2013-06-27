@@ -74,8 +74,158 @@
                     {{/nodes}}
                 </tbody>
             </table>
+            
             <div id="node_detail">
             </div>
+            
+            <br>
+            
+            <div class="monitor_options">
+                <table>
+                    <tr>
+                        <td>Time Range:</td>
+                        <td>
+                            <select id="monitor_time_range">
+                                <option value='{"time_range":3600, "period":300}' selected>Last Hour</option>
+                                <option value='{"time_range":10800, "period":600}'>Last 3 Hours</option>
+                                <option value='{"time_range":21600, "period":900}'>Last 6 Hours</option>
+                                <option value='{"time_range":43200, "period":1800}'>Last 12 Hours</option>
+                                <option value='{"time_range":86400, "period":3600}'>Last 24 Hours</option>
+                                <option value='{"time_range":604800, "period":21600}'>Last Week</option>
+                                <option value='{"time_range":1209600, "period":21600}'>Last 2 Weeks</option>
+                            </select>
+                        </td>
+                        <td>
+                            <button id="refresh_monitors_button">Refresh</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">BytesReadIntoMemcachedData</div>
+                <div id="bytes_read" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">bytesUsedForCacheItemsData</div>
+                <div id="bytes_used" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">bytesWrittenOutFromMemcachedData</div>
+                <div id="bytes_written" class="monitor_graph"></div>
+            </div>
+            
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">casBadvalData</div>
+                <div id="casBadvalData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">casHitsData</div>
+                <div id="casHitsData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">casMissesData</div>
+                <div id="casMissesData" class="monitor_graph"></div>
+            </div>
+            
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">cmdFlushData</div>
+                <div id="cmdFlushData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">cmdGetData</div>
+                <div id="cmdGetData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">cmdSetData</div>
+                <div id="cmdSetData" class="monitor_graph"></div>
+            </div>
+            
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">cPUUtilizationData</div>
+                <div id="cPUUtilizationData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">currConnectionsData</div>
+                <div id="currConnectionsData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">currItemsData</div>
+                <div id="currItemsData" class="monitor_graph"></div>
+            </div>
+            
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">decrHitsData</div>
+                <div id="decrHitsData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">decrMissesData</div>
+                <div id="decrMissesData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">deleteHitsData</div>
+                <div id="deleteHitsData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">deleteMissesData</div>
+                <div id="deleteMissesData" class="monitor_graph"></div>
+            </div>
+            
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">evictionsData</div>
+                <div id="evictionsData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">freeableMemoryData</div>
+                <div id="freeableMemoryData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">getHitsData</div>
+                <div id="getHitsData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">getMissesData</div>
+                <div id="getMissesData" class="monitor_graph"></div>
+            </div>
+            
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">incrHitsData</div>
+                <div id="incrHitsData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">incrMissesData</div>
+                <div id="incrMissesData" class="monitor_graph"></div>
+            </div>
+            
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">networkBytesInData</div>
+                <div id="networkBytesInData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">networkBytesOutData</div>
+                <div id="networkBytesOutData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">newConnectionsData</div>
+                <div id="newConnectionsData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">newItemsData</div>
+                <div id="newItemsData" class="monitor_graph"></div>
+            </div>
+            
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">reclaimedData</div>
+                <div id="reclaimedData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">swapUsageData</div>
+                <div id="swapUsageData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">unusedMemoryData</div>
+                <div id="unusedMemoryData" class="monitor_graph"></div>
+            </div>
+            
         </div>
     </div>
     
