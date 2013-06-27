@@ -15,6 +15,30 @@ define([
     var resourceModel = Backbone.Model.extend({
 
         sendAjaxAction: function(url, type, options, triggerString) {
+
+            /*
+            
+            TODO: Incorporate this example to wrap our models ajax call to create messages
+            
+            Messenger.options = {
+                extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-left'
+            };
+            new Messenger().run({
+                successMessage: roleModel.get("name") + " role added for " + userModel.get("name") + " on " + this.get("name"),
+                progressMessage: "Adding " + roleModel.get("name") + " role to " + userModel.get("name") + " on " + this.get("name"),
+                errorMessage: "Error adding " + roleModel.get("name") + " role to " + userModel.get("name") + " on " + this.get("name"),
+                showCloseButton: true
+            },{
+                url: this.url() + url,
+                type: 'POST',
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: JSON.stringify({role_id: roleModel.id}),
+                success: function(data) {
+                    Common.vent.trigger(trigger);
+                }
+            }, this);
+            */
             if(options) {
                 $.ajax({
                     url: url,
