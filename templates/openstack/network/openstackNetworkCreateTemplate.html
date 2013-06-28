@@ -1,13 +1,28 @@
 <div id="network_create_template">
-    <form>
-        <fieldset>
-            <p><label class="small-tabbed-left-field" for="name">Name:</label><input id="name_input" type="text" class="textbox-250 required" value="{{name}}"/></p>
-            <p><label class="small-tabbed-left-field" for="tenant_id">Tenant:</label>
-                <select id="tenant_select" style="width:250px;">
-                </select>
-            </p>
-            <p><label class="small-tabbed-left-field" for="admin_state_up">Admin State Up:</label><input id="admin_state_up_checkbox" class="textbox-250" type="checkbox"/></p>
-            <p><label class="small-tabbed-left-field" for="shared">Shared:</label><input id="shared_checkbox" class="textbox-250" type="checkbox"/></p>
-        </fieldset>
-    </form>
+    <table>
+        <tr>
+            <td>Network Name:</td>
+            <td>
+                <input id="network_name_input" type="text" class="medium_width"/>
+            </td>
+        </tr>
+        <tr>
+            <td>Tenant:</td>
+            <td>
+                <select id="tenant_select" class="medium_width"></select>
+            </td>
+        </tr>
+        <tr>
+            <td>Admin State Up:</td>
+            <td>
+                <input id="admin_state_up_checkbox" type="checkbox"/>
+            </td>
+        </tr>
+        <tr>
+            <td>Shared:</td>
+            <td>
+                <input id="shared_checkbox" type="checkbox"/>
+            </td>
+        </tr>
+    </table>
 </div>

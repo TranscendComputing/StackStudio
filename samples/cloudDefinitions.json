@@ -285,10 +285,6 @@
                     {
                         "name": "Ports",
                         "type": "ports"
-                    },
-                    {
-                        "name": "Floating IPs",
-                        "type": "floating_ips"
                     }
                 ]
             },

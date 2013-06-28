@@ -6,24 +6,12 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'backbone',
+        'models/resource/resourceModel',
         'common'
-], function( $, Backbone, Common ) {
+], function( ResourceModel, Common ) {
     'use strict';
 
-    // Base Network Model
-    // ----------
-
-    /**
-     *
-     * @name Network™
-     * @constructor
-     * @category Network
-     * @param {Object} initialization object.
-     * @returns {Object} Returns a Network instance.
-     */
-    var Network = Backbone.Model.extend({
+    var Network = ResourceModel.extend({
         defaults: {
             name: "newNetwork",
             shared: false,
@@ -36,36 +24,16 @@ define([
                 return this.validationError;
             }
         },
-        
-        create: function(credentialId, region) {
-            var url = "?cred_id=" + credentialId + "&region=" + region;
-            this.sendPostAction(url, {network: this.attributes});
-        },
 
-        destroy: function(credentialId, region) {
-            var url = "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
-            this.sendPostAction(url);
+        create: function(options, credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/network/networks?cred_id=" + credentialId;
+            this.sendAjaxAction(url, "POST", {"network": options}, "networkAppRefresh");
         },
         
-        sendPostAction: function(url, options, trigger) {
-            //Set default values for options and trigger if nothing is passed
-            options = typeof options !== 'undefined' ? options : {};
-            trigger = typeof trigger !== 'undefined' ? trigger : "networkAppRefresh";
-            $.ajax({
-                url: this.url() + url,
-                type: 'POST',
-                contentType: 'application/x-www-form-urlencoded',
-                dataType: 'json',
-                data: JSON.stringify(options),
-                success: function(data) {
-                    Common.vent.trigger(trigger);
-                },
-                error: function(jqXHR) {
-                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
-                }
-            }); 
+        destroy: function(credentialId) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/network/networks/"+ this.attributes.id +"?_method=DELETE&cred_id=" + credentialId;
+            this.sendAjaxAction(url, "POST", undefined, "networkAppRefresh");
         }
-    
     });
 
     return Network;

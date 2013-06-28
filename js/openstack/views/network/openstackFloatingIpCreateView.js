@@ -18,17 +18,17 @@ define([
         'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter'
-], function( $, _, Backbone, Common, ich, DialogView, floatingIpCreateTemplate, FloatingIp, FloatingIps ) {
+], function( $, _, Backbone, Common, ich, DialogView, floatingIpCreateTemplate, FloatingIp ) {
 
     var VolumeCreateView = DialogView.extend({
         
         credentialId: undefined,
 
         region: undefined,
-        
-        collection: new FloatingIps(),
 
-        template: floatingIpCreateTemplate,
+        template: _.template(portCreateTemplate),
+
+        model: new FloatingIp(),
 
         events: {
             "dialogclose": "close"
@@ -37,18 +37,16 @@ define([
         initialize: function(options) {
             this.credentialId = options.cred_id;
             this.region = options.region;
-            this.model = new FloatingIp({}, {collection: this.collection});
             this.render();
         },
         
         render: function() {
             var createView = this;
-            ich.addTemplate("floating_ip_create_template", this.template);
-            this.$el.html( ich.floating_ip_create_template(this.model.toJSON()) );
+            this.$el.html(this.template);
             this.$el.dialog({
                 autoOpen: true,
                 title: "Create FloatingIp",
-                width:500,
+                width: 500,
                 minHeight: 150,
                 resizable: false,
                 modal: true,
@@ -62,9 +60,6 @@ define([
                 }
             }); 
             $("select").selectmenu();
-
-            // This line adds required asterisk to all fields with class 'required'
-            this.$(".required").after("<span class='required'/>");
         },
 
         create: function() {
