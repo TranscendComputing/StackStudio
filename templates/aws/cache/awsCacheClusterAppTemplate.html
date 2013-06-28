@@ -22,12 +22,12 @@
     <table id="resource_table" class="full_width">
         <thead>
             <tr>
-                <th>id</th>
-                <th>status</th>
-                <th>node_type</th>
-                <th>engine</th>
-                <th>zone</th>
-                <th>num_nodes</th>
+                <th>Id</th>
+                <th>Node Type</th>
+                <th>Engine</th>
+                <th>Zone</th>
+                <th>Number of Nodes</th>
+                <th>Status</th>
             </tr>
         </thead>
         <tbody>
@@ -47,12 +47,12 @@
         <div id="tabs-1" class="tab">
             <table>
                 <tbody>
-                    <tr><td><b>id:</b></td><td>{{ id }}</td><td><b>status:</b></td><td>{{ status }}</td></tr>
-                    <tr><td><b>node_type:</b></td><td>{{ node_type }}</td><td><b>engine:</b></td><td>{{ engine }}</td></tr>
-                    <tr><td><b>pending_values:</b></td><td>{{ pending_values }}</td><td><b>zone:</b></td><td>{{ zone }}</td></tr>
-                    <tr><td><b>create_time:</b></td><td>{{ create_time }}</td><td><b>engine_version:</b></td><td>{{ engine_version }}</td></tr>
-                    <tr><td><b>auto_upgrade:</b></td><td>{{ auto_upgrade }}</td><td><b>maintenance_window:</b></td><td>{{ maintenance_window }}</td></tr>
-                    <tr><td><b>num_nodes:</b></td><td>{{ num_nodes }}</td></tr>
+                    <tr><td><b>Id:</b></td><td>{{ id }}</td><td><b>Status:</b></td><td>{{ status }}</td></tr>
+                    <tr><td><b>Node Type:</b></td><td>{{ node_type }}</td><td><b>Engine:</b></td><td>{{ engine }}</td></tr>
+                    <tr><td><b>Number of Nodes:</b></td><td>{{ num_nodes }}</td><td><b>Zone:</b></td><td>{{ zone }}</td></tr>
+                    <tr><td><b>Create Time:</b></td><td>{{ create_time }}</td><td><b>Engine Version:</b></td><td>{{ engine_version }}</td></tr>
+                    <tr><td><b>Auto Upgrade:</b></td><td>{{ auto_upgrade }}</td><td><b>Maintenance Window:</b></td><td>{{ maintenance_window }}</td></tr>
+                    <tr></tr>
                 </tbody>
             </table>
         </div>
@@ -63,7 +63,7 @@
                 {{/nodes}}
             </select>
             <!--button to add nodes-->
-            <button id="modnodes">Modify Node Count</button>
+            
             <table class="full_width" hidden="true">
                 <tbody>
                     {{#nodes}}
@@ -102,127 +102,127 @@
                 </table>
             </div>
             <div class="monitor_graph_container">
-                <div class="monitor_caption">BytesReadIntoMemcachedData</div>
+                <div class="monitor_caption">Bytes Read Into Memcached Data</div>
                 <div id="bytes_read" class="monitor_graph"></div>
             </div>
             <div class="monitor_graph_container">
-                <div class="monitor_caption">bytesUsedForCacheItemsData</div>
+                <div class="monitor_caption">Bytes Used For Cache Items Data</div>
                 <div id="bytes_used" class="monitor_graph"></div>
             </div>
             <div class="monitor_graph_container">
-                <div class="monitor_caption">bytesWrittenOutFromMemcachedData</div>
+                <div class="monitor_caption">Bytes Written Out From Memcached Data</div>
                 <div id="bytes_written" class="monitor_graph"></div>
             </div>
             
             <div class="monitor_graph_container">
-                <div class="monitor_caption">casBadvalData</div>
+                <div class="monitor_caption">Cas Bad Val Data</div>
                 <div id="casBadvalData" class="monitor_graph"></div>
             </div>
             <div class="monitor_graph_container">
-                <div class="monitor_caption">casHitsData</div>
+                <div class="monitor_caption">Cas Hits Data</div>
                 <div id="casHitsData" class="monitor_graph"></div>
             </div>
             <div class="monitor_graph_container">
-                <div class="monitor_caption">casMissesData</div>
+                <div class="monitor_caption">Cas Misses Data</div>
                 <div id="casMissesData" class="monitor_graph"></div>
             </div>
             
             <div class="monitor_graph_container">
-                <div class="monitor_caption">cmdFlushData</div>
+                <div class="monitor_caption">Cmd Flush Data</div>
                 <div id="cmdFlushData" class="monitor_graph"></div>
             </div>
             <div class="monitor_graph_container">
-                <div class="monitor_caption">cmdGetData</div>
+                <div class="monitor_caption">Cmd Get Data</div>
                 <div id="cmdGetData" class="monitor_graph"></div>
             </div>
             <div class="monitor_graph_container">
-                <div class="monitor_caption">cmdSetData</div>
+                <div class="monitor_caption">Cmd Set Data</div>
                 <div id="cmdSetData" class="monitor_graph"></div>
             </div>
             
             <div class="monitor_graph_container">
-                <div class="monitor_caption">cPUUtilizationData</div>
+                <div class="monitor_caption">CPU Utilization Data</div>
                 <div id="cPUUtilizationData" class="monitor_graph"></div>
             </div>
             <div class="monitor_graph_container">
-                <div class="monitor_caption">currConnectionsData</div>
+                <div class="monitor_caption">Curr Connections Data</div>
                 <div id="currConnectionsData" class="monitor_graph"></div>
             </div>
             <div class="monitor_graph_container">
-                <div class="monitor_caption">currItemsData</div>
+                <div class="monitor_caption">Curr Items Data</div>
                 <div id="currItemsData" class="monitor_graph"></div>
             </div>
             
             <div class="monitor_graph_container">
-                <div class="monitor_caption">decrHitsData</div>
+                <div class="monitor_caption">Decr Hits Data</div>
                 <div id="decrHitsData" class="monitor_graph"></div>
             </div>
             <div class="monitor_graph_container">
-                <div class="monitor_caption">decrMissesData</div>
+                <div class="monitor_caption">Decr Misses Data</div>
                 <div id="decrMissesData" class="monitor_graph"></div>
             </div>
             <div class="monitor_graph_container">
-                <div class="monitor_caption">deleteHitsData</div>
+                <div class="monitor_caption">Delete Hits Data</div>
                 <div id="deleteHitsData" class="monitor_graph"></div>
             </div>
             <div class="monitor_graph_container">
-                <div class="monitor_caption">deleteMissesData</div>
+                <div class="monitor_caption">Delete Misses Data</div>
                 <div id="deleteMissesData" class="monitor_graph"></div>
             </div>
             
             <div class="monitor_graph_container">
-                <div class="monitor_caption">evictionsData</div>
+                <div class="monitor_caption">Evictions Data</div>
                 <div id="evictionsData" class="monitor_graph"></div>
             </div>
             <div class="monitor_graph_container">
-                <div class="monitor_caption">freeableMemoryData</div>
+                <div class="monitor_caption">Freeable Memory Data</div>
                 <div id="freeableMemoryData" class="monitor_graph"></div>
             </div>
             <div class="monitor_graph_container">
-                <div class="monitor_caption">getHitsData</div>
+                <div class="monitor_caption">Get Hits Data</div>
                 <div id="getHitsData" class="monitor_graph"></div>
             </div>
             <div class="monitor_graph_container">
-                <div class="monitor_caption">getMissesData</div>
+                <div class="monitor_caption">Get Misses Data</div>
                 <div id="getMissesData" class="monitor_graph"></div>
             </div>
             
             <div class="monitor_graph_container">
-                <div class="monitor_caption">incrHitsData</div>
+                <div class="monitor_caption">Incr Hits Data</div>
                 <div id="incrHitsData" class="monitor_graph"></div>
             </div>
             <div class="monitor_graph_container">
-                <div class="monitor_caption">incrMissesData</div>
+                <div class="monitor_caption">Incr Misses Data</div>
                 <div id="incrMissesData" class="monitor_graph"></div>
             </div>
             
             <div class="monitor_graph_container">
-                <div class="monitor_caption">networkBytesInData</div>
+                <div class="monitor_caption">Network Bytes In Data</div>
                 <div id="networkBytesInData" class="monitor_graph"></div>
             </div>
             <div class="monitor_graph_container">
-                <div class="monitor_caption">networkBytesOutData</div>
+                <div class="monitor_caption">Network Bytes Out Data</div>
                 <div id="networkBytesOutData" class="monitor_graph"></div>
             </div>
             <div class="monitor_graph_container">
-                <div class="monitor_caption">newConnectionsData</div>
+                <div class="monitor_caption">New Connections Data</div>
                 <div id="newConnectionsData" class="monitor_graph"></div>
             </div>
             <div class="monitor_graph_container">
-                <div class="monitor_caption">newItemsData</div>
+                <div class="monitor_caption">New Items Data</div>
                 <div id="newItemsData" class="monitor_graph"></div>
             </div>
             
             <div class="monitor_graph_container">
-                <div class="monitor_caption">reclaimedData</div>
+                <div class="monitor_caption">Reclaimed Data</div>
                 <div id="reclaimedData" class="monitor_graph"></div>
             </div>
             <div class="monitor_graph_container">
-                <div class="monitor_caption">swapUsageData</div>
+                <div class="monitor_caption">Swap Usage Data</div>
                 <div id="swapUsageData" class="monitor_graph"></div>
             </div>
             <div class="monitor_graph_container">
-                <div class="monitor_caption">unusedMemoryData</div>
+                <div class="monitor_caption">Unused Memory Data</div>
                 <div id="unusedMemoryData" class="monitor_graph"></div>
             </div>
             

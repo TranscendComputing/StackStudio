@@ -32,7 +32,7 @@ define([
         
         modelStringIdentifier: "id",
         
-        columns: ["id", "status", "node_type", "engine", "zone", "num_nodes"],
+        columns: ["id", "node_type", "engine", "zone", "num_nodes", "status"],
         
         idColumnNumber: 0,
         
@@ -85,7 +85,8 @@ define([
             'change #node_select': 'selectNode',
             'click #modnodes': 'modNodes',
             //'change #node_select': 'refreshMonitors',
-            'click #refresh_monitors_button': 'refreshMonitors'
+            'click #refresh_monitors_button': 'refreshMonitors',
+            'click #monitoring': 'refreshMonitors'
         },
 
         initialize: function(options) {
@@ -176,6 +177,7 @@ define([
                 }
             });
             $("#refresh_monitors_button").button();
+            $("#node_select").selectmenu();
 
             var spinnerOptions = {
                 lines: 13, // The number of lines to draw

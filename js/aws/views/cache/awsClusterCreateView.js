@@ -85,19 +85,13 @@ define([
                     }
                 }
             });
-            $("select").selectmenu();
             
-            $("#security_group_select").selectmenu("destroy");
             $("#security_group_select").multiselect({
                 selectedList: 3,
                 noneSelectedText: "Select Security Group(s)"
             }).multiselectfilter();
             
-            $("#parameter_group_select").selectmenu("destroy");
-            $("#parameter_group_select").multiselect({
-                selectedList: 3,
-                noneSelectedText: "Select Parameter Group(s)"
-            }).multiselectfilter();
+            $("#parameter_group_select").selectmenu();
             
             this.dbParameterGroups = new DBParameterGroups();
             this.dbParameterGroups.on('reset', this.addAllParameterGroups, this);
@@ -207,25 +201,6 @@ define([
                     valid = false;
                     this.displayValid(false, "#cache_port_input");
                 }
-                
-                /*
-                    DB
-                */
-
-                //Add the available parameter groups
-                /*
-                var selectedDBEngineVersion = this.dbEngineVersions.get($("#engine_version_select").val());
-                if(selectedDBEngineVersion) {
-                    $("#parameter_group_select").empty();
-                    $("#parameter_group_select").append("<option value='default."+selectedDBEngineVersion.attributes.DBParameterGroupFamily+"'>default."+selectedDBEngineVersion.attributes.DBParameterGroupFamily+"</option>");
-                    this.dbParameterGroups.each(function(param_group) {
-                        if(param_group.attributes.family === selectedDBEngineVersion.attributes.DBParameterGroupFamily && param_group.attributes.id !== "default."+selectedDBEngineVersion.attributes.DBParameterGroupFamily) {
-                            $("#parameter_group_select").append("<option value="+param_group.attributes.id+">"+param_group.attributes.id+"</option>");
-                        }
-                    });
-                    $("#parameter_group_select").selectmenu();
-                }
-                */
 
             }
             return valid;
@@ -240,11 +215,13 @@ define([
         },
         
         addAllParameterGroups: function() {
-            $("#parameter_group_select").empty();
+            
+            
+            //$("#parameter_group_select").empty();
             this.dbParameterGroups.each(function(parameter_group) {
                 $("#parameter_group_select").append("<option value="+parameter_group.attributes.id+">"+parameter_group.attributes.id+"</option>");
             });
-            $("#parameter_group_select").multiselect("refresh");
+            $("#parameter_group_select").selectmenu();
         },
 
         displayValid: function(valid, selector) {

@@ -1,0 +1,67 @@
+<div>
+    <div class="button_bar">
+        <table>
+            <tr>
+                <td>
+                    <button class="create_button">Create Parameter Group</button>
+                </td>
+                <td>
+                    <ul id="action_menu">
+                        <li style="z-index: 1000">
+                            <a id="action_button">Actions</a>
+                            <ul>
+                                <li><a>Delete</a></li>                   
+                            </ul>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table id="resource_table" class="full_width">
+        <thead>
+            <tr>
+                <th style="width:100px;">Group ID</th>
+                <th>Family</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    <div id="details" class="detail_panel"></div>
+</div>
+
+<script type="text/html" id="resource_detail">
+    <div id="detail_tabs">
+        <ul>
+            <li><a href="#properties_tab">Details</a></li>
+        </ul>
+        <div id="properties_tab" class="tab">
+            <table>
+                <tbody>
+                    <tr><td><b>ID:</b></td>           <td>{{ id }}</td></tr>
+                    <tr><td><b>Description:</b></td>    <td>{{ description }}</td></tr>
+                    <tr><td><b>Family:</b></td>       <td>{{ family }}</td></tr>
+                </tbody>
+            </table>
+            <table border="1">
+                <tbody id="describe_table">
+                    <tr>
+                        <th>ParameterName</th>
+                        <th>ParameterValue</th>
+                        <th>DataType</th>
+                        <th>Source</th>
+                        <th>IsModifiable</th>
+                        <th>Description</th>
+                        <th>ApplyType</th>
+                        <th>AllowedValues</th>
+                        
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</script>
