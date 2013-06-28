@@ -1,0 +1,44 @@
+<div id="security_group_create">
+    <table>
+        <tr>
+            <td>Name*:</td>
+            <td>
+                <input id="sg_name" type="text" style="width:200px;"/>
+            </td>
+        </tr>
+        <tr>
+            <td>Description*:</td>
+            <td>
+                <input id="sg_desc" type="text" style="width:300px;"/>
+            </td>
+        </tr>
+        <tr>
+            <td>Family:</td>
+            <td>
+                <select id="family_select" style="width:200px;">
+                    <option selected>mysql5.1</option>
+                    <option>mysql5.5</option>
+                    <option>oracle-ee-11.2</option>
+                    <option>oracle-se-11.2</option>
+                    <option>oracle-se1-11.2</option>
+                    <option>sqlserver-ee-10.5</option>
+                    <option>sqlserver-ee-11.0</option>
+                    <option>sqlserver-ex-10.5</option>
+                    <option>sqlserver-ex-11.0</option>
+                    <option>sqlserver-se-10.5</option>
+                    <option>sqlserver-se-11.0</option>
+                    <option>sqlserver-web-10.5</option>
+                    <option>sqlserver-web-11.0</option>
+                </select>
+            </td>
+        </tr>
+        <tr style="visibility:hidden">
+            <td>VPC:</td>
+            <td>
+                <select id="vpc_select" style="width:200px;">
+                    <option selected>No VPC</option>
+                </select>
+            </td>
+        </tr>
+    </table>
+</div>

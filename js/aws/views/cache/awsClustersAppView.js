@@ -177,6 +177,7 @@ define([
                 }
             });
             $("#refresh_monitors_button").button();
+            $("#node_select").selectmenu();
 
             var spinnerOptions = {
                 lines: 13, // The number of lines to draw
