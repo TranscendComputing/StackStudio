@@ -66,8 +66,6 @@ define([
         performAction: function(event) {
             var cluster = this.collection.get(this.selectedId);
             
-            alert(event.target.text);
-            
             switch(event.target.text)
             {
             case "Delete":

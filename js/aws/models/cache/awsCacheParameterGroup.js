@@ -25,7 +25,6 @@ define([
         },
 
         destroy: function(credentialId, region) {
-            alert("destroy Paramz");
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/cache/parameter_groups/" + this.attributes.id + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
             this.sendAjaxAction(url, "POST", undefined, "parameterGroupAppRefresh");
         }
