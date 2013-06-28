@@ -6,24 +6,12 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'backbone',
+        'models/resource/resourceModel',
         'common'
-], function( $, Backbone, Common ) {
+], function( ResourceModel, Common ) {
     'use strict';
 
-    // Base Role Model
-    // ----------
-
-    /**
-     *
-     * @name Role
-     * @constructor
-     * @category BlockStorage
-     * @param {Object} initialization object.
-     * @returns {Object} Returns a Volume instance.
-     */
-    var Role = Backbone.Model.extend({
+    var Role = ResourceModel.extend({
 
         validate: function(attrs, options) {
             if(attrs.name === "" || attrs.name === undefined)
@@ -31,36 +19,16 @@ define([
                 return this.validationError;
             }
         },
-        
-        create: function(credentialId, region) {
-            var url = "?cred_id=" + credentialId + "&region=" + region;
-            this.sendPostAction(url, {role: this.attributes});
-        },
 
-        destroy: function(credentialId, region) {
-            var url = "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
-            this.sendPostAction(url);
+        create: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/identity/roles?cred_id=" + credentialId;
+            this.sendAjaxAction(url, "POST", {"role": this.attributes}, "roleAppRefresh");
         },
         
-        sendPostAction: function(url, options, trigger) {
-            //Set default values for options and trigger if nothing is passed
-            options = typeof options !== 'undefined' ? options : {};
-            trigger = typeof trigger !== 'undefined' ? trigger : "roleAppRefresh";
-            $.ajax({
-                url: this.url() + url,
-                type: 'POST',
-                contentType: 'application/x-www-form-urlencoded',
-                dataType: 'json',
-                data: JSON.stringify(options),
-                success: function(data) {
-                    Common.vent.trigger(trigger);
-                },
-                error: function(jqXHR) {
-                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
-                }
-            }); 
+        destroy: function(credentialId) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/identity/roles/"+ this.attributes.id +"?_method=DELETE&cred_id=" + credentialId;
+            this.sendAjaxAction(url, "POST", undefined, "roleAppRefresh");
         }
-    
     });
 
     return Role;
