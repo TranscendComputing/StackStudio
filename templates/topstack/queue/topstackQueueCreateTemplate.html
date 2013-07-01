@@ -1,0 +1,55 @@
+<div>
+	<table>
+		<tbody>
+			<tr>
+				<td><b>Queue Name:</b></td>
+				<td>
+					<input id="queue_name_input" type="text" style="width:200px;"/>
+				</td>
+			</tr>
+			<tr>
+				<td><b>Visibility Timeout:</b></td>
+				<td>
+					<input id="visibility_timeout_input" type="text" value="30" style="width:80px;"/>
+					<select id="visitibility_timeout_unit_select" style="width:100px;">
+						<option value="1" selected>seconds</option>
+						<option value="60">minutes</option>
+						<option value="3600">hours</option>
+					</select>
+				</td>
+				<td><span> between 0 seconds - 12 hours</span></td>
+			</tr>
+			<tr>
+				<td><b>Message Retention Period:</b></td>
+				<td>
+					<input id="retention_period_input" type="text" value="4" style="width:80px;"/>
+					<select id="retention_period_unit_select" style="width:100px;">
+						<option value="1">seconds</option>
+						<option value="60">minutes</option>
+						<option value="3600">hours</option>
+						<option value="43200" selected>days</option>
+					</select>
+				</td>
+				<td><span> between 1 minute - 14 days</span></td>
+			</tr>
+			<tr>
+				<td><b>Maximum Message Size:</b></td>
+				<td>
+					<input id="maximum_message_size_input" type="text" value="64" style="width:80px;"/><span> KB</span>
+				</td>
+				<td><span> between 1 - 64 KB</span></td>
+			</tr>
+			<tr>
+				<td><b>Delivery Delay:</b></td>
+				<td>
+					<input id="delivery_delay_input" type="text" value="0" style="width:80px;"/>
+					<select id="delivery_delay_unit_select" style="width:100px;">
+						<option value="1" selected>seconds</option>
+						<option value="60">minutes</option>
+					</select>
+				</td>
+				<td><span> between 0 seconds - 12 minutes</span></td>
+			</tr>
+		</tbody>
+	</table>
+</div>

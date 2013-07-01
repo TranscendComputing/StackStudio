@@ -306,14 +306,19 @@
                 "defaultSubtype": "alarms"
             },
             {
-                "name": "Load Balancer",
+                "name": "Relational Database",
+                "type": "rds",
+                "defaultSubtype": "relationaldatabases"
+            },
+            {
+                "name": "Scalable Load Balancer",
                 "type": "load_balancer",
                 "defaultSubtype": "loadbalancers"
             },
             {
-                "name": "Relational Database",
-                "type": "rds",
-                "defaultSubtype": "relationaldatabases"
+                "name": "Scalable Queue",
+                "type": "queue",
+                "defaultSubtype": "queues"
             }
         ],
         "regions": [
