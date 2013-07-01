@@ -92,6 +92,7 @@ define([
             }).multiselectfilter();
             
             $("#parameter_group_select").selectmenu();
+            $("#node_type_select").selectmenu();
             
             this.dbParameterGroups = new DBParameterGroups();
             this.dbParameterGroups.on('reset', this.addAllParameterGroups, this);
@@ -109,12 +110,18 @@ define([
             
             this.backupWindowEnabled();
             this.maintenanceWindowEnable();
-            this.refreshView(1);
+            
+            this.refreshView(0);
+            
+            this.setupEngineSpecifics();
         },
 
         next: function() {
-            if(this.currentViewIndex === 4) {
-                this.create();
+            if(this.currentViewIndex === 0) {
+                if(this.validateInputFields(this.currentViewIndex)) {
+                    this.create(); 
+                }
+                
             }else {
                 if(this.currentViewIndex === 1) {
                     this.setupEngineSpecifics();
@@ -145,7 +152,7 @@ define([
                 $("#previous_button").attr("disabled", false);
             }
 
-            if(this.currentViewIndex === 4) {
+            if(this.currentViewIndex === 0) {
                 this.renderReviewScreen();
                 $("#next_button span").text("Create");
             }else {
@@ -177,7 +184,7 @@ define([
 
         validateInputFields: function(viewIndex) {
             var valid = true;
-            if(viewIndex === 2) {
+            if(viewIndex === 0) {
                 
                 if($("#cluster_id_input").val().trim() !== "") {
                     this.displayValid(true, "#cluster_id_input");

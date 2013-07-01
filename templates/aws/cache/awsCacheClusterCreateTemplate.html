@@ -1,76 +1,83 @@
 <div>
+    <div id="view0" class="view_stack"></div>
+    <!--View1-->
+    <table>
+        <tbody>
+            <tr>
+                <td><b>Engine:</b></td>
+                <td>
+                    <select id="engine_select" style="width:250px;">
+                        <option value="memcached">Memcached</option>
+                    </select>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <!--View2-->
+    <table>
+        <tbody>
+            <tr>
+                <td><b>Cluster ID:</b></td>
+                <td>
+                    <input id="cluster_id_input" type="text" style="width:200px;" /> (e.g. myclusterinstance)
+                </td>
+            </tr>
+            <tr>
+                <td><b>Node Type:</b></td>
+                <td>
+                    <select id="node_type_select" style="width:200px;"></select>
+                </td>
+            </tr>
+            <tr>
+                <td><b>Number of Nodes:</b></td>
+                <td>
+                    <input id="num_nodes_input" type="text" style="width:80px;" value="1"/> nodes <span id="num_nodes_label"></span>
+                </td>
+            </tr>
+            <tr>
+                <td><b>Engine:</b></td>
+                <td><span id="selected_cluster_engine_label" style="width:200px;"></span></td>
+            </tr>
+            <tr>
+                <td><b>Cache Port:</b></td>
+                <td>
+                    <input id="cache_port_input" type="text" style="width:80px;" value="11211"/><span id="num_nodes_label"></span>
+                </td>
+            </tr>
+            <tr>
+                <td><b>Auto Minor Version Upgrade:</b></td>
+                <td>
+                    <input id="auto_version_input" type="radio" name="auto_minor_cache_version_upgrade" value="true" checked /> Yes
+                    <input id="auto_version_input" type="radio" name="auto_minor_cache_version_upgrade" value="false" /> No
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <!--View3-->
+    <table>
+        <tbody>
+            <tr>
+                <td><b>Parameter Group:</b></td>
+                <td>
+                    <select id="parameter_group_select" style="width:200px;"></select>
+                </td>
+            </tr>
+            <tr>
+                <td><b>DB Security Group(s):</b></td>
+                <td>
+                    <select id="security_group_select" multiple="multiple" style="width:360px;"></select>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <div id="view1" class="view_stack">
-        <table>
-            <tbody>
-                <tr>
-                    <td><b>Engine:</b></td>
-                    <td>
-                        <select id="engine_select" style="width:250px;">
-                            <option value="memcached">Memcached</option>
-                        </select>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        
     </div>
     <div id="view2" class="view_stack">
-        <table>
-            <tbody>
-                <tr>
-                    <td><b>Cluster ID:</b></td>
-                    <td>
-                        <input id="cluster_id_input" type="text" style="width:200px;" /> (e.g. myclusterinstance)
-                    </td>
-                </tr>
-                <tr>
-                    <td><b>Node Type:</b></td>
-                    <td>
-                        <select id="node_type_select" style="width:200px;"></select>
-                    </td>
-                </tr>
-                <tr>
-                    <td><b>Number of Nodes:</b></td>
-                    <td>
-                        <input id="num_nodes_input" type="text" style="width:80px;" value="1"/> nodes <span id="num_nodes_label"></span>
-                    </td>
-                </tr>
-                <tr>
-                    <td><b>Engine:</b></td>
-                    <td><span id="selected_cluster_engine_label" style="width:200px;"></span></td>
-                </tr>
-                <tr>
-                    <td><b>Cache Port:</b></td>
-                    <td>
-                        <input id="cache_port_input" type="text" style="width:80px;" value="11211"/><span id="num_nodes_label"></span>
-                    </td>
-                </tr>
-                <tr>
-                    <td><b>Auto Minor Version Upgrade:</b></td>
-                    <td>
-                        <input id="auto_version_input" type="radio" name="auto_minor_cache_version_upgrade" value="true" checked /> Yes
-                        <input id="auto_version_input" type="radio" name="auto_minor_cache_version_upgrade" value="false" /> No
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        
     </div>
     <div id="view3" class="view_stack">
-        <table>
-            <tbody>
-                <tr>
-                    <td><b>Parameter Group:</b></td>
-                    <td>
-                        <select id="parameter_group_select" style="width:200px;"></select>
-                    </td>
-                </tr>
-                <tr>
-                    <td><b>DB Security Group(s):</b></td>
-                    <td>
-                        <select id="security_group_select" multiple="multiple" style="width:360px;"></select>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        
     </div>
     <!-- <div id="view4" class="view_stack">
         <table>
