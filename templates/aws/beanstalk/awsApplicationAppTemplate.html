@@ -1,0 +1,65 @@
+<div>
+    <div class="button_bar">
+        <table>
+            <tr>
+                <td>
+                    <button class="create_button">Create Application</button>
+                </td>
+                <td>
+                    <ul id="action_menu">
+                        <li style="z-index: 1000">
+                            <a id="action_button">Actions</a>
+                            <ul>
+                                <li><a>Delete Application</a></li>                   
+                            </ul>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table id="resource_table" class="full_width">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Created</th>
+                <th>Last Updated</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    <div id="details" class="detail_panel"></div>
+</div>
+
+<script type="text/html" id="resource_detail">
+    <div id="detail_tabs">
+        <ul>
+            <li><a id="application_details" href="#tabs-1">Details</a></li>
+            <li><a id="application_environments" href="#tabs-2">Environments</a></li>
+            <li><a id="application_versions" href="#tabs-3">Versions</a></li>
+        </ul>
+        <div id="tabs-1" class="tab">
+            <table>
+                <tbody>
+                    <tr><td><b>Name:</b></td>       <td>{{ name }}</td></tr>
+                    <tr><td><b>Created:</b></td>       <td>{{ created_at }}</td></tr>
+                    <tr><td><b>Last Updated:</b></td>    <td>{{ updated_at }}</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="tabs-2" class="tab">Environments</div>
+        <div id="tabs-3" class="tab">
+            <select id="version_select" size="1" multiple="yes" >
+                {{#version_names}}
+                  <option value="{{version_names}}">{{version_names}}</option>
+                {{/version_names}}
+            </select>
+            
+            <div id="version_detail">
+            </div>
+        </div>
+    </div>
+</script>

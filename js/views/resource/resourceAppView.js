@@ -127,6 +127,7 @@ define([
         },
 
         clickOne: function (event) {
+            //debugger
             console.log($(event.currentTarget).data());
             var id, parentNode;
             var rowData = this.$table.fnGetData(event.currentTarget);
@@ -138,6 +139,7 @@ define([
         },
 
         selectOne : function (id, rowNode) {
+            //debugger
             var selectedModel;
             var modelStringIdentifier = this.modelStringIdentifier;
             this.clearSelection();
