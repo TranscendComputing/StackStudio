@@ -47,22 +47,24 @@
                     <tr><td><b>Family:</b></td>       <td>{{ family }}</td></tr>
                 </tbody>
             </table>
-            <table border="1" width="100px">
-                <thead>
-                    <tr>
-                        <th>ParameterName</th>
-                        <th>ParameterValue</th>
-                        <th>DataType</th>
-                        <th>Source</th>
-                        <th>IsModifiable</th>
-                        <th>Description</th>
-                        <th>ApplyType</th>
-                        <th>AllowedValues</th>
-                    </tr>
-                </thead>
-                <tbody id="describe_table">
-                </tbody>
-            </table>
+            <div>
+                <table border="1" style="table-layout:fixed;" class="full_width">
+                    <thead>
+                        <tr>
+                            <th width="150px;">Parameter Name</th>
+                            <th width="80px;">Parameter Value</th>
+                            <th width="50px;">Data Type</th>
+                            <th width="80px;">Source</th>
+                            <th width="40px;">Modify</th>
+                            <th width="100px;">Description</th>
+                            <th width="50px;">Apply Type</th>
+                            <th width="150px;">Allowed Values</th>
+                        </tr>
+                    </thead>
+                    <tbody id="describe_table">
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </script>
