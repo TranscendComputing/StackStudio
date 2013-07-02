@@ -49,6 +49,10 @@ define([
         
         getNodes: function(){
             return this.attributes.nodes;
+        },
+        
+        getStatus: function(){
+            return this.attributes.status;
         }
     });
 

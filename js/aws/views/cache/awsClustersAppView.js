@@ -100,41 +100,41 @@ define([
             });
             
             this.bytesReadIntoMemcachedData.on( 'reset', function() {this.addMonitorGraph("#bytes_read", this.bytesReadIntoMemcachedData, ["Average"], ["Bytes Read Into Memcached"], ["#FF8000"]);}, this );
-            this.bytesUsedForCacheItemsData.on( 'reset', function() {this.addMonitorGraph("#bytes_used", this.bytesUsedForCacheItemsData, ["Average"], ["Bytes Used For Cache Items Data"], ["#00CC00"]);}, this );
-            this.bytesWrittenOutFromMemcachedData.on( 'reset', function() {this.addMonitorGraph("#bytes_written", this.bytesWrittenOutFromMemcachedData, ["Average"], ["bytesWrittenOutFromMemcachedData"], ["#660066"]);}, this );
+            this.bytesUsedForCacheItemsData.on( 'reset', function() {this.addMonitorGraph("#bytes_used", this.bytesUsedForCacheItemsData, ["Average"], ["Bytes Used For Cache Items"], ["#00CC00"]);}, this );
+            this.bytesWrittenOutFromMemcachedData.on( 'reset', function() {this.addMonitorGraph("#bytes_written", this.bytesWrittenOutFromMemcachedData, ["Average"], ["Bytes Written Out From Memcached"], ["#660066"]);}, this );
             
-            this.casBadvalData.on( 'reset', function() {this.addMonitorGraph("#casBadvalData", this.casBadvalData, ["Average"], ["casBadvalData"], ["#FF0000"]);}, this );
-            this.casHitsData.on( 'reset', function() {this.addMonitorGraph("#casHitsData", this.casHitsData, ["Average"], ["casHitsData"], ["#3399FF"]);}, this );
-            this.casMissesData.on( 'reset', function() {this.addMonitorGraph("#casMissesData", this.casMissesData, ["Average"], ["casMissesData"], ["#996633"]);}, this );
+            this.casBadvalData.on( 'reset', function() {this.addMonitorGraph("#casBadvalData", this.casBadvalData, ["Average"], ["Cas Badval"], ["#FF0000"]);}, this );
+            this.casHitsData.on( 'reset', function() {this.addMonitorGraph("#casHitsData", this.casHitsData, ["Average"], ["Cas Hits"], ["#3399FF"]);}, this );
+            this.casMissesData.on( 'reset', function() {this.addMonitorGraph("#casMissesData", this.casMissesData, ["Average"], ["Cas Misses"], ["#996633"]);}, this );
             
-            this.cmdFlushData.on( 'reset', function() {this.addMonitorGraph("#cmdFlushData", this.cmdFlushData, ["Average"], ["cmdFlushData"], ["#FF0066"]);}, this );
-            this.cmdGetData.on( 'reset', function() {this.addMonitorGraph("#cmdGetData", this.cmdGetData, ["Average"], ["cmdGetData"], ["#00CC99"]);}, this );
-            this.cmdSetData.on( 'reset', function() {this.addMonitorGraph("#cmdSetData", this.cmdSetData, ["Average"], ["cmdSetData"], ["#000000"]);}, this );
+            this.cmdFlushData.on( 'reset', function() {this.addMonitorGraph("#cmdFlushData", this.cmdFlushData, ["Average"], ["Cmd Flush"], ["#FF0066"]);}, this );
+            this.cmdGetData.on( 'reset', function() {this.addMonitorGraph("#cmdGetData", this.cmdGetData, ["Average"], ["Cmd Get"], ["#00CC99"]);}, this );
+            this.cmdSetData.on( 'reset', function() {this.addMonitorGraph("#cmdSetData", this.cmdSetData, ["Average"], ["Cmd Set"], ["#000000"]);}, this );
             
-            this.currConnectionsData.on( 'reset', function() {this.addMonitorGraph("#currConnectionsData", this.currConnectionsData, ["Average"], ["currConnectionsData"], ["#999966"]);}, this );
-            this.currItemsData.on( 'reset', function() {this.addMonitorGraph("#currItemsData", this.currItemsData, ["Average"], ["currItemsData"], ["#00CC00"]);}, this );
+            this.currConnectionsData.on( 'reset', function() {this.addMonitorGraph("#currConnectionsData", this.currConnectionsData, ["Average"], ["Curr Connections"], ["#999966"]);}, this );
+            this.currItemsData.on( 'reset', function() {this.addMonitorGraph("#currItemsData", this.currItemsData, ["Average"], ["Curr Items"], ["#00CC00"]);}, this );
             
-            this.decrHitsData.on( 'reset', function() {this.addMonitorGraph("#decrHitsData", this.decrHitsData, ["Average"], ["decrHitsData"], ["#660066"]);}, this );
-            this.decrMissesData.on( 'reset', function() {this.addMonitorGraph("#decrMissesData", this.decrMissesData, ["Average"], ["decrMissesData"], ["#FF0000"]);}, this );
-            this.deleteHitsData.on( 'reset', function() {this.addMonitorGraph("#deleteHitsData", this.deleteHitsData, ["Average"], ["deleteHitsData"], ["#3399FF"]);}, this );
-            this.deleteMissesData.on( 'reset', function() {this.addMonitorGraph("#deleteMissesData", this.deleteMissesData, ["Average"], ["deleteMissesData"], ["#996633"]);}, this );
+            this.decrHitsData.on( 'reset', function() {this.addMonitorGraph("#decrHitsData", this.decrHitsData, ["Average"], ["Decr Hits"], ["#660066"]);}, this );
+            this.decrMissesData.on( 'reset', function() {this.addMonitorGraph("#decrMissesData", this.decrMissesData, ["Average"], ["Decr Misses"], ["#FF0000"]);}, this );
+            this.deleteHitsData.on( 'reset', function() {this.addMonitorGraph("#deleteHitsData", this.deleteHitsData, ["Average"], ["Delete Hits"], ["#3399FF"]);}, this );
+            this.deleteMissesData.on( 'reset', function() {this.addMonitorGraph("#deleteMissesData", this.deleteMissesData, ["Average"], ["Delete Misses"], ["#996633"]);}, this );
             
-            this.evictionsData.on( 'reset', function() {this.addMonitorGraph("#evictionsData", this.evictionsData, ["Average"], ["evictionsData"], ["#FF0066"]);}, this );
-            this.freeableMemoryData.on( 'reset', function() {this.addMonitorGraph("#freeableMemoryData", this.freeableMemoryData, ["Average"], ["freeableMemoryData"], ["#00CC99"]);}, this );
-            this.getHitsData.on( 'reset', function() {this.addMonitorGraph("#getHitsData", this.getHitsData, ["Average"], ["getHitsData"], ["#000000"]);}, this );
-            this.getMissesData.on( 'reset', function() {this.addMonitorGraph("#getMissesData", this.getMissesData, ["Average"], ["getMissesData"], ["#990033"]);}, this );
+            this.evictionsData.on( 'reset', function() {this.addMonitorGraph("#evictionsData", this.evictionsData, ["Average"], ["Evictions"], ["#FF0066"]);}, this );
+            this.freeableMemoryData.on( 'reset', function() {this.addMonitorGraph("#freeableMemoryData", this.freeableMemoryData, ["Average"], ["Freeable Memory"], ["#00CC99"]);}, this );
+            this.getHitsData.on( 'reset', function() {this.addMonitorGraph("#getHitsData", this.getHitsData, ["Average"], ["Get Hits"], ["#000000"]);}, this );
+            this.getMissesData.on( 'reset', function() {this.addMonitorGraph("#getMissesData", this.getMissesData, ["Average"], ["Get Misses"], ["#990033"]);}, this );
             
-            this.incrHitsData.on( 'reset', function() {this.addMonitorGraph("#incrHitsData", this.incrHitsData, ["Average"], ["incrHitsData"], ["#999966"]);}, this );
-            this.incrMissesData.on( 'reset', function() {this.addMonitorGraph("#incrMissesData", this.incrMissesData, ["Average"], ["incrMissesData"], ["#00CC00"]);}, this );
+            this.incrHitsData.on( 'reset', function() {this.addMonitorGraph("#incrHitsData", this.incrHitsData, ["Average"], ["Incr Hits"], ["#999966"]);}, this );
+            this.incrMissesData.on( 'reset', function() {this.addMonitorGraph("#incrMissesData", this.incrMissesData, ["Average"], ["Incr Misses"], ["#00CC00"]);}, this );
             
-            this.networkBytesInData.on( 'reset', function() {this.addMonitorGraph("#networkBytesInData", this.networkBytesInData, ["Average"], ["networkBytesInData"], ["#660066"]);}, this );
-            this.networkBytesOutData.on( 'reset', function() {this.addMonitorGraph("#networkBytesOutData", this.networkBytesOutData, ["Average"], ["networkBytesOutData"], ["#FF0000"]);}, this );
-            this.newConnectionsData.on( 'reset', function() {this.addMonitorGraph("#newConnectionsData", this.newConnectionsData, ["Average"], ["newConnectionsData"], ["#3399FF"]);}, this );
-            this.newItemsData.on( 'reset', function() {this.addMonitorGraph("#newItemsData", this.newItemsData, ["Average"], ["newItemsData"], ["#996633"]);}, this );
+            this.networkBytesInData.on( 'reset', function() {this.addMonitorGraph("#networkBytesInData", this.networkBytesInData, ["Average"], ["Network Bytes In"], ["#660066"]);}, this );
+            this.networkBytesOutData.on( 'reset', function() {this.addMonitorGraph("#networkBytesOutData", this.networkBytesOutData, ["Average"], ["Network Bytes Out"], ["#FF0000"]);}, this );
+            this.newConnectionsData.on( 'reset', function() {this.addMonitorGraph("#newConnectionsData", this.newConnectionsData, ["Average"], ["New Connections"], ["#3399FF"]);}, this );
+            this.newItemsData.on( 'reset', function() {this.addMonitorGraph("#newItemsData", this.newItemsData, ["Average"], ["New Items"], ["#996633"]);}, this );
             
-            this.reclaimedData.on( 'reset', function() {this.addMonitorGraph("#reclaimedData", this.reclaimedData, ["Average"], ["reclaimedData"], ["#FF0066"]);}, this );
-            this.swapUsageData.on( 'reset', function() {this.addMonitorGraph("#swapUsageData", this.swapUsageData, ["Average"], ["swapUsageData"], ["#00CC99"]);}, this );
-            this.unusedMemoryData.on( 'reset', function() {this.addMonitorGraph("#unusedMemoryData", this.unusedMemoryData, ["Average"], ["unusedMemoryData"], ["#000000"]);}, this );
+            this.reclaimedData.on( 'reset', function() {this.addMonitorGraph("#reclaimedData", this.reclaimedData, ["Average"], ["Reclaimed"], ["#FF0066"]);}, this );
+            this.swapUsageData.on( 'reset', function() {this.addMonitorGraph("#swapUsageData", this.swapUsageData, ["Average"], ["Swap Usage"], ["#00CC99"]);}, this );
+            this.unusedMemoryData.on( 'reset', function() {this.addMonitorGraph("#unusedMemoryData", this.unusedMemoryData, ["Average"], ["Unused Memory"], ["#000000"]);}, this );
         },
         
         performAction: function(event) {
@@ -146,19 +146,33 @@ define([
                 cluster.destroy(this.credentialId, this.region);
                 break;
             case "Modify Node Count":
-                var ModifyView = this.ModifyView;
-                if(this.region) {
-                    this.newResourceDialog = new ModifyView({cred_id: this.credentialId, region: this.region, modCluster: cluster});
-                }else {
-                    this.newResourceDialog = new ModifyView({cred_id: this.credentialId});
+                if(cluster.getStatus() === "available"){
+                    var ModifyView = this.ModifyView;
+                    if(this.region) {
+                        this.newResourceDialog = new ModifyView({cred_id: this.credentialId, region: this.region, modCluster: cluster});
+                    }else {
+                        this.newResourceDialog = new ModifyView({cred_id: this.credentialId});
+                    }
+                    this.newResourceDialog.render();
+                    break;
                 }
-                this.newResourceDialog.render();
-                break;
             }
         },
         
         toggleActions: function(e) {
             //Disable any needed actions
+            var cluster = this.collection.get(this.selectedId);
+            
+            //alert(cluster.getStatus());
+            
+            if(cluster.getStatus() !== "available"){
+                $("#monitoring").hide();
+                this.toggleActionItem($("#mod_node_count"),true);
+            }else{
+                $("#monitoring").show();
+                this.toggleActionItem($("#mod_node_count"),false);
+            }
+            
         },
         
         //Monitors

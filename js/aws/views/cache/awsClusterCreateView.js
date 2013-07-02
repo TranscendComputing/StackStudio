@@ -62,7 +62,7 @@ define([
 
             this.$el.dialog({
                 autoOpen: true,
-                title: "Cache Cluster Wizard",
+                title: "Cache Cluster Create",
                 width:625,
                 minHeight: 150,
                 resizable: false,
