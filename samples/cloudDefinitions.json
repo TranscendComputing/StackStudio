@@ -301,6 +301,25 @@
                 "defaultSubtype": "autoscalegroups"
             },
             {
+                "name": "Elastic Cache",
+                "type": "cache",
+                "defaultSubtype": "clusters",
+                "subServices" : [
+                    {
+                        "name": "Clusters",
+                        "type": "clusters"
+                    },
+                    {
+                        "name": "Parameter Groups",
+                        "type": "parametergroups"
+                    },
+                    {
+                        "name": "Security Groups",
+                        "type": "securitygroups"
+                    }
+                ]
+            },
+            {
                 "name": "Monitor Service",
                 "type": "cloud_watch",
                 "defaultSubtype": "alarms"
