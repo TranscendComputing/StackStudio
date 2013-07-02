@@ -163,8 +163,6 @@ define([
             //Disable any needed actions
             var cluster = this.collection.get(this.selectedId);
             
-            //alert(cluster.getStatus());
-            
             if(cluster.getStatus() !== "available"){
                 $("#monitoring").hide();
                 this.toggleActionItem($("#mod_node_count"),true);
