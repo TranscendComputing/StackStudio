@@ -9,7 +9,6 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'views/featureNotImplementedView',
         'views/resource/resourceAppView',
         'text!templates/aws/cache/awsCacheClusterAppTemplate.html',
         '/js/aws/models/cache/awsCacheCluster.js',
@@ -23,7 +22,7 @@ define([
         'morris',
         'spinner',
         'jquery.dataTables'
-], function( $, _, Backbone, FeatureNotImplementedView, ResourceAppView,cacheClusterAppTemplate, CacheCluster, CacheClusters, CacheClusterCreate, CacheClusterModify, MetricStatistics, emptyGraph, ich, Common, Morris, Spinner) {
+], function( $, _, Backbone, ResourceAppView, cacheClusterAppTemplate, CacheCluster, CacheClusters, CacheClusterCreate, CacheClusterModify, MetricStatistics, emptyGraph, ich, Common, Morris, Spinner) {
     'use strict';
 
     var AwsClustersAppView = ResourceAppView.extend({
@@ -57,7 +56,6 @@ define([
         cmdFlushData: new MetricStatistics(),
         cmdGetData: new MetricStatistics(),
         cmdSetData: new MetricStatistics(),
-        cPUUtilizationData: new MetricStatistics(),
         currConnectionsData: new MetricStatistics(),
         currItemsData: new MetricStatistics(),
         decrHitsData: new MetricStatistics(),
@@ -82,11 +80,9 @@ define([
             'click .create_button': 'createNew',
             'click #action_menu ul li': 'performAction',
             'click #resource_table tr': 'clickOne',
-            'change #node_select': 'selectNode',
             'click #modnodes': 'modNodes',
-            //'change #node_select': 'refreshMonitors',
             'click #refresh_monitors_button': 'refreshMonitors',
-            'click #monitoring': 'refreshMonitors'
+            'click #monitoring': 'selectNode'
         },
 
         initialize: function(options) {
@@ -115,7 +111,6 @@ define([
             this.cmdGetData.on( 'reset', function() {this.addMonitorGraph("#cmdGetData", this.cmdGetData, ["Average"], ["cmdGetData"], ["#00CC99"]);}, this );
             this.cmdSetData.on( 'reset', function() {this.addMonitorGraph("#cmdSetData", this.cmdSetData, ["Average"], ["cmdSetData"], ["#000000"]);}, this );
             
-            this.cPUUtilizationData.on( 'reset', function() {this.addMonitorGraph("#cPUUtilizationData", this.cPUUtilizationData, ["Average"], ["cPUUtilizationData"], ["#990033"]);}, this );
             this.currConnectionsData.on( 'reset', function() {this.addMonitorGraph("#currConnectionsData", this.currConnectionsData, ["Average"], ["currConnectionsData"], ["#999966"]);}, this );
             this.currItemsData.on( 'reset', function() {this.addMonitorGraph("#currItemsData", this.currItemsData, ["Average"], ["currItemsData"], ["#00CC00"]);}, this );
             
@@ -170,10 +165,10 @@ define([
         
         refreshMonitors: function() {
             $(".monitor_graph").empty();
-            var rdsApp = this;
+            var cacheApp = this;
             $("#monitor_time_range").selectmenu({
                 change: function() {
-                    rdsApp.refreshMonitors();
+                    cacheApp.refreshMonitors();
                 }
             });
             $("#refresh_monitors_button").button();
@@ -209,7 +204,6 @@ define([
             new Spinner(spinnerOptions).spin($("#cmdGetData").get(0));
             new Spinner(spinnerOptions).spin($("#cmdSetData").get(0));
             
-            new Spinner(spinnerOptions).spin($("#cPUUtilizationData").get(0));
             new Spinner(spinnerOptions).spin($("#currConnectionsData").get(0));
             new Spinner(spinnerOptions).spin($("#currItemsData").get(0));
             
@@ -273,8 +267,6 @@ define([
             metricStatisticOptions.metric_name = "CmdSet";
             this.cmdSetData.fetch({ data: $.param(metricStatisticOptions), reset: true });
             
-            metricStatisticOptions.metric_name = "CPUUtilization";
-            this.cPUUtilizationData.fetch({ data: $.param(metricStatisticOptions), reset: true });
             metricStatisticOptions.metric_name = "CurrConnections";
             this.currConnectionsData.fetch({ data: $.param(metricStatisticOptions), reset: true });
             metricStatisticOptions.metric_name = "CurrItems";
@@ -337,8 +329,6 @@ define([
             }
         },
         
-        //End Monitors
-        
         selectNode: function(e) {
             var cluster = this.collection.get(this.selectedId);
             
@@ -363,7 +353,6 @@ define([
         },
         
         modNodes: function(e) {
-            //alert(this.selectedId);
             var cluster = this.collection.get(this.selectedId);
             
             var ModifyView = this.ModifyView;

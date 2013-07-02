@@ -47,7 +47,6 @@ define([
  
         events: {
             "dialogclose": "close",
-            "click input[name='backup_window']": "backupWindowEnabled",
             "click input[name='maintenance_window']": "maintenanceWindowEnable"
         },
 
@@ -69,19 +68,11 @@ define([
                 resizable: false,
                 modal: true,
                 buttons: {
-                    Previous: {
-                        text: "Previous",
-                        id: "previous_button",
-                        click: function() {
-                            createView.previous();
-                        }
+                    Create: function () {
+                        createView.create();
                     },
-                    Next: {
-                        text: "Next",
-                        id: "next_button",
-                        click: function() {
-                            createView.next();
-                        }
+                    Cancel: function() {
+                        createView.cancel();
                     }
                 }
             });
@@ -94,6 +85,7 @@ define([
             
             $("#parameter_group_select").selectmenu();
             $("#node_type_select").selectmenu();
+            $("#engine_select").selectmenu();
             
             this.cacheParameterGroups = new ParameterGroups();
             this.cacheParameterGroups.on('reset', this.addAllParameterGroups, this);
@@ -123,63 +115,11 @@ define([
                 reset: true
             });
             
-            this.backupWindowEnabled();
             this.maintenanceWindowEnable();
-            
-            this.refreshView(0);
-            
-            this.setupEngineSpecifics();
+            this.setupNodeType();
         },
 
-        next: function() {
-            if(this.currentViewIndex === 0) {
-                if(this.validateInputFields(this.currentViewIndex)) {
-                    this.create(); 
-                }
-                
-            }else {
-                if(this.currentViewIndex === 1) {
-                    this.setupEngineSpecifics();
-                }
-                
-                if(this.validateInputFields(this.currentViewIndex)) {
-                    this.currentViewIndex++;
-                    this.refreshView(this.currentViewIndex); 
-                }
-            }
-        },
-
-        previous: function() {
-            this.currentViewIndex--;
-            this.refreshView(this.currentViewIndex);
-        },
-
-        refreshView: function (viewIndex) {
-            $(".view_stack").hide();
-            $("#view"+viewIndex).show();
-            this.currentViewIndex = viewIndex;
-
-            if(this.currentViewIndex <= 2) {
-                $("#previous_button").addClass("ui-state-disabled");
-                $("#previous_button").attr("disabled", true);
-            }else {
-                $("#previous_button").removeClass("ui-state-disabled");
-                $("#previous_button").attr("disabled", false);
-            }
-
-            if(this.currentViewIndex === 0) {
-                this.renderReviewScreen();
-                $("#next_button span").text("Create");
-            }else {
-                $("#next_button span").text("Next");
-            }
-            $("#next_button").button();
-        },
-
-        setupEngineSpecifics: function() {
-            /*
-                Setup Cluster Engine
-            */
+        setupNodeType: function() {
             $("#node_type_select").append("<option value='cache.t1.micro'>cache.t1.micro</option>"+
                                           "<option value='cache.m1.small'>cache.m1.small</option>"+
                                           "<option value='cache.m1.medium'>cache.m1.medium</option>"+
@@ -197,37 +137,6 @@ define([
             
         },
 
-        validateInputFields: function(viewIndex) {
-            var valid = true;
-            if(viewIndex === 0) {
-                
-                if($("#cluster_id_input").val().trim() !== "") {
-                    this.displayValid(true, "#cluster_id_input");
-                }else{
-                    valid = false;
-                    this.displayValid(false, "#cluster_id_input");
-                }
-                
-                var nodesInt = parseInt($("#num_nodes_input").val(), 10);
-                if(nodesInt >= 1 && nodesInt <= 20) {
-                    this.displayValid(true, "#num_nodes_input");
-                }else {
-                    valid = false;
-                    this.displayValid(false, "#num_nodes_input");
-                }
-                
-                var portInt = parseInt($("#cache_port_input").val(), 10);
-                if(portInt >= 0 && portInt <= 65535) {
-                    this.displayValid(true, "#cache_port_input");
-                }else {
-                    valid = false;
-                    this.displayValid(false, "#cache_port_input");
-                }
-
-            }
-            return valid;
-        },
-
         addAllSecurityGroups: function() {
             $("#security_group_select").empty();
             this.cacheSecurityGroups.each(function(security_group) {
@@ -237,9 +146,7 @@ define([
         },
         
         addAllParameterGroups: function() {
-            
-            
-            //$("#parameter_group_select").empty();
+            $("#parameter_group_select").empty();
             this.cacheParameterGroups.each(function(parameter_group) {
                 $("#parameter_group_select").append("<option value="+parameter_group.attributes.id+">"+parameter_group.attributes.id+"</option>");
             });
@@ -254,17 +161,6 @@ define([
             }
         },
 
-        backupWindowEnabled: function() {
-            if($("input[name='backup_window']:checked").val() === "no_preference") {
-                $("#backup_window_options select").attr("disabled", true);
-                $("#backup_window_options").addClass("ui-state-disabled");
-            }else {
-                $("#backup_window_options select").removeAttr("disabled");
-                $("#backup_window_options").removeClass("ui-state-disabled");
-            }
-            $("#backup_window_options select").selectmenu();
-        },
-
         maintenanceWindowEnable: function() {
             if($("input[name='maintenance_window']:checked").val() === "no_preference") {
                 $("#maintenance_window_options select").attr("disabled", true);
@@ -274,22 +170,6 @@ define([
                 $("#maintenance_window_options").removeClass("ui-state-disabled");
             }
             $("#maintenance_window_options select").selectmenu();
-        },
-
-        getBackUpWindowString: function() {
-            var backupWindowString = "";
-            if($("input[name='backup_window']:checked").val() === "no_preference") {
-                backupWindowString = "No Preference";
-            }else {
-                backupWindowString = $("#backup_start_time_hour_select").val() + ":" + $("#backup_start_time_minute_select").val() + "-";
-                var bwDur = this.getDurationInMinutes($("#backup_duration").val());
-                var bwMinute = parseInt($("#backup_start_time_minute_select").val(), 10);
-                var bwHour = parseInt($("#backup_start_time_hour_select").val(), 10);
-                var bwEndMinute = ((bwMinute + bwDur) % 60);
-                var bwEndHour = ((bwHour + Math.floor((bwMinute + bwDur) / 60)) % 24);
-                backupWindowString = backupWindowString + this.setTimeString(bwEndHour) + ":" + this.setTimeString(bwEndMinute);
-            }
-            return backupWindowString;
         },
 
         getDurationInMinutes: function(durationString) {
@@ -373,41 +253,39 @@ define([
             return timeSectionString;
         },
 
-        renderReviewScreen: function() {
-            
-            $("#cluster_id_review").html($("#cluster_id_input").val());
-            $("#node_type_review").html($("#node_type_select").val());
-            $("#num_nodes_review").html($("#num_nodes_input").val());
-            $("#selected_cluster_engine_review").html($("#selected_cluster_engine_label").html());
-            $("#cache_port_review").html($("#cache_port_input").val());
-            $("#auto_version_review").html($("#auto_version_input").val());
-            
-            $("#db_parameter_group_review").html($("#parameter_group_select").val());
-            
-            var securityGroupString = "";
-            if($("#security_group_select").val()) {
-                $.each($("#security_group_select").val(), function(index, value) {
-                securityGroupString = securityGroupString + value + ", ";
-                });
-            }else {
-                securityGroupString = "N/A";
-            }
-            $("#db_security_groups_review").html(securityGroupString);
-            
-        },
-
         create: function() {
             var newCluster = this.cacheCluster;
             var options = {};
-            
-            options.id = $("#cluster_id_input").val();
+            var issue = false;
+
             options.node_type = $("#node_type_select").val();
-            options.num_nodes = $("#num_nodes_input").val();
-            options.engine = $("#selected_cluster_engine_label").html();
+            options.engine = $("#engine_select").val();
             options.auto_minor_version_upgrade = $("#auto_version_input").val();
+
+             if($("#cluster_id_input").val().trim() !== "") {
+                this.displayValid(true, "#cluster_id_input");
+                options.id = $("#cluster_id_input").val();
+            }else{
+                issue = true;
+                this.displayValid(false, "#cluster_id_input");
+            }
             
-            if($("#cache_port_input").val().trim() !== "") {
+            var nodesInt = parseInt($("#num_nodes_input").val(), 10);
+            if(nodesInt >= 1 && nodesInt <= 20) {
+                this.displayValid(true, "#num_nodes_input");
+                options.num_nodes = $("#num_nodes_input").val();
+            }else {
+                valid = true;
+                this.displayValid(false, "#num_nodes_input");
+            }
+            
+            var portInt = parseInt($("#cache_port_input").val(), 10);
+            if(portInt > 1000 && portInt <= 65535) {
+                this.displayValid(true, "#cache_port_input");
                 options.port = $("#cache_port_input").val();
+            }else {
+                issue = true;
+                this.displayValid(false, "#cache_port_input");
             }
             
             options.parameter_group_name = $("#parameter_group_select").val();
@@ -428,8 +306,10 @@ define([
                 options.availability_zone = $("#sns_topic_select").val();
             }
 
-            newCluster.create(options, this.credentialId, this.region);
-            this.$el.dialog('close');
+            if(!issue) {
+                newCluster.create(options, this.credentialId, this.region);
+                this.$el.dialog('close');
+            }
         },
         
         addAllAvailabilityZones: function() {
