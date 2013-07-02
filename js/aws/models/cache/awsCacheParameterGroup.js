@@ -27,6 +27,32 @@ define([
         destroy: function(credentialId, region) {
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/cache/parameter_groups/" + this.attributes.id + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
             this.sendAjaxAction(url, "POST", undefined, "parameterGroupAppRefresh");
+        },
+        
+        getParameters: function(credentialId, region){
+            
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/cache/parameter_groups/describe/" + this.attributes.id + "?_method=POST&cred_id=" + credentialId + "&region=" + region;
+            var options = {"options":{}};
+            
+            //alert(url);
+            
+            $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: JSON.stringify(options),
+                //data: {"options":{}},
+                success: function(data) {
+                    //alert(data.data.body.DescribeCacheParametersResult.Parameters);
+                    Common.vent.trigger("describeParameters", data.data.body.DescribeCacheParametersResult.Parameters);
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            });
+            
+            
         }
 
     });

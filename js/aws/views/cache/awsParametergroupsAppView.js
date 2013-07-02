@@ -60,6 +60,9 @@ define([
             Common.vent.on("parameterGroupAppRefresh", function() {
                 cacheApp.render();
             });
+            Common.vent.on("describeParameters", function(data) {
+                cacheApp.addParameters(data);
+            });
             
         },
         
@@ -82,6 +85,17 @@ define([
         
         toggleActions: function(e) {
             //Disable any needed actions
+            
+            var parameterGroup = this.collection.get(this.selectedId);
+            
+            parameterGroup.getParameters(this.credentialId,this.region);
+        },
+        
+        addParameters: function(parameters){
+            
+            $.each(parameters, function(i, parameter) {
+                $("#describe_table").append("<tr><td>"+parameter.ParameterName+"</td><td>"+parameter.ParameterValue+"</td><td>"+parameter.DataType+"</td><td>"+parameter.Source+"</td><td>"+parameter.IsModifiable+"</td><td>"+parameter.Description+"</td><td>"+parameter.ApplyType+"</td><td>"+parameter.AllowedValues+"</td></tr>");
+            });
         }
     });
     
