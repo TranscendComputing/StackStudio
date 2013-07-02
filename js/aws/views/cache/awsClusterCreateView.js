@@ -14,13 +14,14 @@ define([
         '/js/aws/models/cache/awsCacheCluster.js',
         '/js/aws/collections/cache/awsCacheParameterGroups.js',
         '/js/aws/collections/cache/awsCacheSecurityGroups.js',
+        '/js/aws/collections/notification/awsTopics.js',
         '/js/aws/collections/compute/awsAvailabilityZones.js',
         'common',
         'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
-], function( $, _, Backbone, DialogView, clusterCreateTemplate, CacheCluster, ParameterGroups, SecurityGroups, AvailabilityZones, Common ) {
+], function( $, _, Backbone, DialogView, clusterCreateTemplate, CacheCluster, ParameterGroups, SecurityGroups, Topics, AvailabilityZones, Common ) {
     
     var ClusterCreateView = DialogView.extend({
 
@@ -33,6 +34,8 @@ define([
         cacheParameterGroups: undefined,
 
         cacheSecurityGroups: undefined,
+        
+        topics: new Topics(),
 
         availabilityZones: undefined,
 
@@ -82,6 +85,7 @@ define([
                     }
                 }
             });
+            $("#accordion").accordion({ heightStyle: "fill" });
             
             $("#security_group_select").multiselect({
                 selectedList: 3,
@@ -101,6 +105,20 @@ define([
             this.cacheSecurityGroups = new SecurityGroups();
             this.cacheSecurityGroups.on('reset', this.addAllSecurityGroups, this);
             this.cacheSecurityGroups.fetch({ 
+                data: $.param({ cred_id: this.credentialId, region: this.region}),
+                reset: true
+            });
+            
+            this.availabilityZones = new AvailabilityZones();
+            this.availabilityZones.on('reset', this.addAllAvailabilityZones, this);
+            this.availabilityZones.fetch({ 
+                data: $.param({ cred_id: this.credentialId, region: this.region}),
+                reset: true
+            });
+            
+            this.topics = new Topics();
+            this.topics.on('reset', this.addAllTopics, this);
+            this.topics.fetch({ 
                 data: $.param({ cred_id: this.credentialId, region: this.region}),
                 reset: true
             });
@@ -397,9 +415,39 @@ define([
             if($("#security_group_select").val()) {
                 options.security_group_names = $("#security_group_select").val();
             }
+            
+            if($("input[name='maintenance_window']:checked").val() !== "no_preference") {
+                options.preferred_maintenance_window = this.getMaintenanceWindowString();
+            }
+            
+            if($("#availability_zone_select").val() !== "false") {
+                options.availability_zone = $("#availability_zone_select").val();
+            }
+            
+            if($("#sns_topic_select").val() !== "None") {
+                options.availability_zone = $("#sns_topic_select").val();
+            }
 
             newCluster.create(options, this.credentialId, this.region);
             this.$el.dialog('close');
+        },
+        
+        addAllAvailabilityZones: function() {
+            $("#availability_zone_select").empty();
+            $("#availability_zone_select").append("<option value='false'>No Preference</option>");
+            this.availabilityZones.each(function(az) {
+                $("#availability_zone_select").append("<option value="+az.attributes.zoneName+">"+az.attributes.zoneName+"</option>");
+            });
+            $("#availability_zone_select").selectmenu();
+        },
+        
+        addAllTopics: function() {
+            $("#sns_topic_select").empty();
+            $("#sns_topic_select").append("<option>None</option>");
+            this.topics.each(function(topic) {
+                $("#sns_topic_select").append("<option>" + topic.attributes.id + "</option>");
+            });
+            $("#sns_topic_select").selectmenu();
         }
 
     });
