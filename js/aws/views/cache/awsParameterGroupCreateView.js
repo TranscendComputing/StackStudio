@@ -74,9 +74,9 @@ define([
             var options = {};
             var issue = false;
             
-            if($("#sg_name").val() !== "" && $("#sg_desc").val() !== "" ) {
-                options.id = $("#sg_name").val();
-                options.description = $("#sg_desc").val();
+            if($("#pg_name").val() !== "" && $("#pg_desc").val() !== "" ) {
+                options.id = $("#pg_name").val();
+                options.description = $("#pg_desc").val();
             }else {
                 issue = true;
             }
