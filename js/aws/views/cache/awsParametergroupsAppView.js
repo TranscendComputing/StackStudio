@@ -18,12 +18,12 @@ define([
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, FeatureNotImplementedView, ResourceAppView,cacheClusterAppTemplate, CacheCluster, CacheClusters, CacheClusterCreate, ich, Common ) {
+], function( $, _, Backbone, FeatureNotImplementedView, ResourceAppView,cacheParametersAppTemplate, CacheParameterGroup, CacheParameterGroups, CacheParameterGroupCreate, ich, Common ) {
     'use strict';
 
     var AwsParametergroupsAppView = ResourceAppView.extend({
         
-        template: _.template(cacheClusterAppTemplate),
+        template: _.template(cacheParametersAppTemplate),
         
         modelStringIdentifier: "id",
         
@@ -31,15 +31,15 @@ define([
         
         idColumnNumber: 0,
         
-        model: CacheCluster,
+        model: CacheParameterGroup,
         
-        collectionType: CacheClusters,
+        collectionType: CacheParameterGroups,
         
         type: "cache",
         
         subtype: "parametergroups",
         
-        CreateView: CacheClusterCreate,
+        CreateView: CacheParameterGroupCreate,
         
         events: {
             'click .create_button': 'createNew',

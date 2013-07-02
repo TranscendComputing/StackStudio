@@ -16,25 +16,25 @@ define([
         'icanhaz',
         'common'
         
-], function( $, _, Backbone, DialogView, securityGroupCreateTemplate, SecurityGroup, VPCs, ich, Common ) {
+], function( $, _, Backbone, DialogView, parameterGroupCreateTemplate, ParameterGroup, VPCs, ich, Common ) {
     
     /**
-     * awsSecurityGroupCreateView is UI form to create compute.
+     * awsParameterGroupCreateView is UI form to create compute.
      *
      * @name InstanceCreateView
      * @constructor
      * @category Compute
      * @param {Object} initialization object.
-     * @returns {Object} Returns a awsSecurityGroupCreateView instance.
+     * @returns {Object} Returns a awsParameterGroupCreateView instance.
      */
     
-    var AwsSecurityGroupCreateView = DialogView.extend({
+    var AwsParameterGroupCreateView = DialogView.extend({
 
         credentialId: undefined,
 
         region: undefined,
         
-        securityGroup: new SecurityGroup(),
+        securityGroup: new ParameterGroup(),
         
         vpcs: new VPCs(),
         
@@ -47,7 +47,7 @@ define([
             this.credentialId = options.cred_id;
             this.region = options.region;
             var createView = this;
-            var compiledTemplate = _.template(securityGroupCreateTemplate);
+            var compiledTemplate = _.template(parameterGroupCreateTemplate);
             this.$el.html(compiledTemplate);
 
             this.$el.dialog({
@@ -84,7 +84,7 @@ define([
         },
 
         create: function() {
-            var newSecurityGroup = this.securityGroup;
+            var newParameterGroup = this.securityGroup;
             var options = {};
             var issue = false;
             
@@ -101,7 +101,7 @@ define([
             }
             */
             if(!issue) {
-                newSecurityGroup.create(options, this.credentialId, this.region);
+                newParameterGroup.create(options, this.credentialId, this.region);
                 this.$el.dialog('close');
             } else {
                 Common.errorDialog("Invalid Request", "Please supply all required fields.");
@@ -109,5 +109,5 @@ define([
         }
     });
     
-    return AwsSecurityGroupCreateView;
+    return AwsParameterGroupCreateView;
 });

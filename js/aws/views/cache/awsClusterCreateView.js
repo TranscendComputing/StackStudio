@@ -12,7 +12,6 @@ define([
         'views/dialogView',
         'text!templates/aws/cache/awsCacheClusterCreateTemplate.html',
         '/js/aws/models/cache/awsCacheCluster.js',
-        '/js/aws/collections/rds/awsDBEngineVersions.js',
         '/js/aws/collections/cache/awsCacheParameterGroups.js',
         '/js/aws/collections/cache/awsCacheSecurityGroups.js',
         '/js/aws/collections/compute/awsAvailabilityZones.js',
@@ -21,7 +20,7 @@ define([
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
-], function( $, _, Backbone, DialogView, clusterCreateTemplate, CacheCluster, DBEngineVersions, DBParameterGroups, DBSecurityGroups, AvailabilityZones, Common ) {
+], function( $, _, Backbone, DialogView, clusterCreateTemplate, CacheCluster, ParameterGroups, SecurityGroups, AvailabilityZones, Common ) {
     
     var ClusterCreateView = DialogView.extend({
 
@@ -31,11 +30,9 @@ define([
 
         currentViewIndex: undefined,
 
-        dbEngineVersions: undefined,
+        cacheParameterGroups: undefined,
 
-        dbParameterGroups: undefined,
-
-        dbSecurityGroups: undefined,
+        cacheSecurityGroups: undefined,
 
         availabilityZones: undefined,
 
@@ -94,16 +91,16 @@ define([
             $("#parameter_group_select").selectmenu();
             $("#node_type_select").selectmenu();
             
-            this.dbParameterGroups = new DBParameterGroups();
-            this.dbParameterGroups.on('reset', this.addAllParameterGroups, this);
-            this.dbParameterGroups.fetch({ 
+            this.cacheParameterGroups = new ParameterGroups();
+            this.cacheParameterGroups.on('reset', this.addAllParameterGroups, this);
+            this.cacheParameterGroups.fetch({ 
                 data: $.param({ cred_id: this.credentialId, region: this.region}),
                 reset: true
             });
             
-            this.dbSecurityGroups = new DBSecurityGroups();
-            this.dbSecurityGroups.on('reset', this.addAllSecurityGroups, this);
-            this.dbSecurityGroups.fetch({ 
+            this.cacheSecurityGroups = new SecurityGroups();
+            this.cacheSecurityGroups.on('reset', this.addAllSecurityGroups, this);
+            this.cacheSecurityGroups.fetch({ 
                 data: $.param({ cred_id: this.credentialId, region: this.region}),
                 reset: true
             });
@@ -215,7 +212,7 @@ define([
 
         addAllSecurityGroups: function() {
             $("#security_group_select").empty();
-            this.dbSecurityGroups.each(function(security_group) {
+            this.cacheSecurityGroups.each(function(security_group) {
                 $("#security_group_select").append("<option value="+security_group.attributes.id+">"+security_group.attributes.id+"</option>");
             });
             $("#security_group_select").multiselect("refresh");
@@ -225,7 +222,7 @@ define([
             
             
             //$("#parameter_group_select").empty();
-            this.dbParameterGroups.each(function(parameter_group) {
+            this.cacheParameterGroups.each(function(parameter_group) {
                 $("#parameter_group_select").append("<option value="+parameter_group.attributes.id+">"+parameter_group.attributes.id+"</option>");
             });
             $("#parameter_group_select").selectmenu();

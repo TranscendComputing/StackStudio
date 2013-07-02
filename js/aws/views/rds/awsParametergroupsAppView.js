@@ -18,7 +18,7 @@ define([
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, FeatureNotImplementedView, ResourceAppView,cacheClusterAppTemplate, CacheCluster, CacheClusters, CacheClusterCreate, ich, Common ) {
+], function( $, _, Backbone, FeatureNotImplementedView, ResourceAppView,cacheClusterAppTemplate, ParameterGroup, ParameterGroups, ParameterGroupCreate, ich, Common ) {
     'use strict';
 
     var AwsParametergroupsAppView = ResourceAppView.extend({
@@ -31,15 +31,15 @@ define([
         
         idColumnNumber: 0,
         
-        model: CacheCluster,
+        model: ParameterGroup,
         
-        collectionType: CacheClusters,
+        collectionType: ParameterGroups,
         
         type: "rds",
         
         subtype: "parametergroups",
         
-        CreateView: CacheClusterCreate,
+        CreateView: ParameterGroupCreate,
         
         events: {
             'click .create_button': 'createNew',
@@ -76,13 +76,7 @@ define([
                 break;
             }
         },
-        /*
-        render: function() {
-            var featureNotImplemented = new FeatureNotImplementedView({feature_url: "https://github.com/TranscendComputing/StackStudio/issues/8", element: "#resource_app"});
-            featureNotImplemented.render();
-        },
-        */
-        
+
         toggleActions: function(e) {
             //Disable any needed actions
             var parameterGroup = this.collection.get(this.selectedId);
@@ -91,7 +85,7 @@ define([
         },
         
         addParameters: function(parameters){
-            //$("#describe_table").append("<tr><td>1</td><td style='width:10px;'>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td></tr>");
+            
             $.each(parameters, function(i, parameter) {
                 $("#describe_table").append("<tr><td>"+parameter.ParameterName+"</td><td>"+parameter.ParameterValue+"</td><td>"+parameter.DataType+"</td><td>"+parameter.Source+"</td><td>"+parameter.IsModifiable+"</td><td>"+parameter.Description+"</td><td>"+parameter.ApplyType+"</td><td>"+parameter.AllowedValues+"</td></tr>");
             });

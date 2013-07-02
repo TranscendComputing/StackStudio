@@ -11,20 +11,19 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/cache/awsCacheClusterModifyTemplate.html',
-        '/js/aws/models/cache/awsCacheSecurityGroup.js',
         'icanhaz',
         'common'
         
-], function( $, _, Backbone, DialogView, cacheClusterModifyTemplate, SecurityGroup, ich, Common ) {
+], function( $, _, Backbone, DialogView, cacheClusterModifyTemplate, ich, Common ) {
     
     /**
-     * awsSecurityGroupCreateView is UI form to create compute.
+     * awsClusterModifyView is UI form to modify cluster.
      *
-     * @name InstanceCreateView
+     * @name ClusterModifyView
      * @constructor
-     * @category Compute
+     * @category elasticache
      * @param {Object} initialization object.
-     * @returns {Object} Returns a awsSecurityGroupCreateView instance.
+     * @returns {Object} Returns a ClusterModifyView instance.
      */
     
     var AwsClusterModifyView = DialogView.extend({
@@ -35,7 +34,7 @@ define([
         
         modCluster: undefined,
         
-        securityGroup: new SecurityGroup(),
+        //securityGroup: new SecurityGroup(),
         
         // Delegated events for creating new instances, etc.
         events: {
