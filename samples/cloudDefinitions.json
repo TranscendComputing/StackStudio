@@ -301,6 +301,11 @@
                 "defaultSubtype": "autoscalegroups"
             },
             {
+                "name": "DNS 53",
+                "type": "dns",
+                "defaultSubtype": "hostedzones"
+            },
+            {
                 "name": "Elastic Cache",
                 "type": "cache",
                 "defaultSubtype": "clusters",

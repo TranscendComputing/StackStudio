@@ -1,0 +1,51 @@
+<div>
+    <div class="button_bar">
+        <table>
+            <tr>
+                <td>
+                    <button class="create_button">Create Hosted Zone</button>
+                </td>
+                <td>                    
+                    <ul id="action_menu">
+                        <li style="z-index: 1000">
+                            <a id="action_button">Actions</a>
+                            <ul>
+                                <li><a>Delete Hosted Zone</a></li>                
+                            </ul>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table id="resource_table" class="full_width">
+        <thead>
+            <tr>
+                <th>Domain Name</th>
+                <th>Hosted Zone ID</th>
+                <th>Comment</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <div id="details" class="detail_panel"></div>
+</div>
+
+<script type="text/html" id="resource_detail">
+    <div id="detail_tabs">
+        <ul>
+            <li id="properties"><a href="#properties_tab">Details</a></li>
+            <li id="record_sets"><a href="#record_sets_tab">Record Sets</a></li>
+        </ul>
+        <div id="properties_tab" class="tab">
+            <table>
+                <tbody>
+                    <tr><td><b>Domain Name:</b></td>    <td>{{ domain }}</td></tr>
+                    <tr><td><b>Hosted Zone ID:</b></td> <td>{{ id }}</td></tr>
+                    <tr><td><b>Comment:</b></td>        <td>{{ description }}</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="record_sets_tab" class="tab"></div>
+    </div>
+</script>
