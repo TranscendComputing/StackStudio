@@ -10,13 +10,12 @@ define([
         'underscore',
         'backbone',
         'views/dialogView',
-        'text!templates/aws/compute/awsSecurityGroupCreateTemplate.html',
+        'text!templates/aws/cache/awsParameterGroupCreateTemplate.html',
         '/js/aws/models/cache/awsCacheParameterGroup.js',
-        '/js/aws/collections/vpc/awsVpcs.js',
         'icanhaz',
         'common'
         
-], function( $, _, Backbone, DialogView, parameterGroupCreateTemplate, ParameterGroup, VPCs, ich, Common ) {
+], function( $, _, Backbone, DialogView, parameterGroupCreateTemplate, ParameterGroup, ich, Common ) {
     
     /**
      * awsParameterGroupCreateView is UI form to create compute.
@@ -35,8 +34,6 @@ define([
         region: undefined,
         
         parameterGroup: new ParameterGroup(),
-        
-        vpcs: new VPCs(),
         
         // Delegated events for creating new instances, etc.
         events: {
@@ -65,21 +62,11 @@ define([
                     }
                 }
             });
-            $("#vpc_select").selectmenu();
             
-            this.vpcs.on( 'reset', this.addAllVPCs, this );
-            this.vpcs.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true });
         },
 
         render: function() {
             
-        },
-        
-        addAllVPCs: function() {
-            this.vpcs.each(function(vpc) {
-               $("#vpc_select").append("<option>" + vpc.id + "</option>");
-            });
-            $("#vpc_select").selectmenu();
         },
 
         create: function() {
@@ -87,17 +74,13 @@ define([
             var options = {};
             var issue = false;
             
-            if($("#sg_name").val() !== "" && $("#sg_desc").val() !== "" ) {
-                options.id = $("#sg_name").val();
-                options.description = $("#sg_desc").val();
+            if($("#pg_name").val() !== "" && $("#pg_desc").val() !== "" ) {
+                options.id = $("#pg_name").val();
+                options.description = $("#pg_desc").val();
             }else {
                 issue = true;
             }
-            /*
-            if($("#vpc_select").val() !== "No VPC") {
-                options.vpc_id = $("#vpc_select").val();
-            }
-            */
+            
             if(!issue) {
                 newParameterGroup.create(options, this.credentialId, this.region);
                 this.$el.dialog('close');
