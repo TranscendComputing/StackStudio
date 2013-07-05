@@ -37,21 +37,15 @@
 <script type="text/html" id="resource_detail">
     <div id="detail_tabs">
         <ul>
-            <li><a id="application_details" href="#tabs-1">Details</a></li>
-            <li><a id="application_environments" href="#tabs-2">Environments</a></li>
-            <li><a id="application_versions" href="#tabs-3">Versions</a></li>
+            
+            <li><a id="environments" href="#tabs-1">Environments</a></li>
+            <li><a id="application_versions" href="#tabs-2">Versions</a></li>
         </ul>
+        
         <div id="tabs-1" class="tab">
-            <table>
-                <tbody>
-                    <tr><td><b>Name:</b></td>       <td>{{ name }}</td></tr>
-                    <tr><td><b>Created:</b></td>       <td>{{ created_at }}</td></tr>
-                    <tr><td><b>Last Updated:</b></td>    <td>{{ updated_at }}</td></tr>
-                </tbody>
-            </table>
+            <div id="environments_tab_content"></div>
         </div>
-        <div id="tabs-2" class="tab">Environments</div>
-        <div id="tabs-3" class="tab">
+        <div id="tabs-2" class="tab">
             <select id="version_select" size="1" multiple="yes" >
                 {{#version_names}}
                   <option value="{{version_names}}">{{version_names}}</option>
