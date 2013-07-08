@@ -84,6 +84,60 @@ define([
             });
             
             
+        },
+        
+        createVersion: function(options,credentialId, region){
+            
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/beanstalk/applications/versions/create?_method=POST&cred_id=" + credentialId + "&region=" + region;
+            
+            var version = {"version":options};
+            
+            //debugger
+            
+            $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: JSON.stringify(version),
+                //data: {"options":{}},
+                success: function(data) {
+                    //data.data.body.DescribeCacheParametersResult.Parameters
+                    Common.vent.trigger("applicationAppRefresh", data);
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            });
+            
+            
+        },
+        
+        createEnvironment: function(options,credentialId, region){
+            
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/beanstalk/applications/environments/create?_method=POST&cred_id=" + credentialId + "&region=" + region;
+            
+            var environment = {"environment":options};
+            
+            //debugger
+            
+            $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: JSON.stringify(environment),
+                //data: {"options":{}},
+                success: function(data) {
+                    //data.data.body.DescribeCacheParametersResult.Parameters
+                    Common.vent.trigger("applicationAppRefresh", data);
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            });
+            
+            
         }
     });
 

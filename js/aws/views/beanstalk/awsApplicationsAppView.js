@@ -15,10 +15,12 @@ define([
         '/js/aws/models/beanstalk/awsApplication.js',
         '/js/aws/collections/beanstalk/awsApplications.js',
         '/js/aws/views/beanstalk/awsApplicationCreateView.js',
+        '/js/aws/views/beanstalk/awsVersionCreateView.js',
+        '/js/aws/views/beanstalk/awsEnvironmentCreateView.js',
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, FeatureNotImplementedView, ResourceAppView, awsApplicationAppTemplate, Application, Applications, AwsApplicationCreate, ich, Common ) {
+], function( $, _, Backbone, FeatureNotImplementedView, ResourceAppView, awsApplicationAppTemplate, Application, Applications, AwsApplicationCreate, AwsVersionCreate, AwsEnvironmentCreate, ich, Common ) {
     'use strict';
 
     var AwsBeanstalkAppView = ResourceAppView.extend({
@@ -41,6 +43,10 @@ define([
         
         CreateView: AwsApplicationCreate,
         
+        VersionCreateView: AwsVersionCreate,
+        
+        EnvironmentCreateView: AwsEnvironmentCreate,
+        
         reselectTab: true,
         
         events: {
@@ -48,7 +54,7 @@ define([
             'click #action_menu ul li': 'performAction',
             'click #resource_table tr': 'clickOne',
             'change #version_select': 'selectVersion',
-            'click #environments' : 'refreshEnvironmentsTab',
+            'click #environments' : 'refreshEnvironmentsTab'
         },
 
         initialize: function(options) {
@@ -70,6 +76,9 @@ define([
             });
             Common.vent.on("versionsRefresh", function(data) {
                 applicationApp.addVersions(data);
+            });
+            Common.vent.on("newVersion", function(data) {
+                applicationApp.refreshEnvironmentsTab();
             });
         },
         
@@ -97,7 +106,11 @@ define([
                 "bJQueryUI": true,
                 "sDom": 't'
             });
-            $("#add_environment_button").button();
+            
+            var current = this;
+            $("#add_environment_button").button().click(function( event ) {
+                current.createEnvironment();
+            });
             
             $("#environments_tab_content").append("<span><b>Versions:</b></span><button id='add_version_button'>Add Version</button><br /><br />" +
                                     "<table id='versions_table' class='full_width'>" +
@@ -112,7 +125,11 @@ define([
                 "bJQueryUI": true,
                 "sDom": 't'
             });
-            $("#add_version_button").button();
+            
+            //var current = this;
+            $("#add_version_button").button().click(function( event ) {
+                current.createVersion();
+            });
 
             var application = this.collection.get(this.selectedId);
             application.getEnvironments(this.credentialId, this.region);
@@ -126,6 +143,8 @@ define([
             {
             case "Delete Application":
                 application.destroy(this.credentialId, this.region);
+                this.toggleActions();
+                //debugger
                 break;
             }
         },
@@ -140,6 +159,12 @@ define([
            
            $("#environments_table").dataTable().fnClearTable();
            $.each(environments, function(index, value) {
+               if(value.VersionLabel === undefined){
+                   value.VersionLabel = "Not Defined";
+               }
+               if(value.CNAME === undefined){
+                   value.CNAME = "Not Defined";
+               }
                var environmentData = [value.EnvironmentName,value.CNAME, value.VersionLabel, value.SolutionStackName, value.DateUpdated];
                $("#environments_table").dataTable().fnAddData(environmentData);
            });
@@ -157,7 +182,32 @@ define([
                $("#versions_table").dataTable().fnAddData(versionData);
            });
            
+        },
+            
+        createVersion: function(){
+            var application = this.collection.get(this.selectedId);
+            
+            var VersionCreateView = this.VersionCreateView;
+            if(this.region) {
+                this.newResourceDialog = new VersionCreateView({cred_id: this.credentialId, region: this.region, app: application});
+            }else {
+                this.newResourceDialog = new VersionCreateView({cred_id: this.credentialId});
+            }
+            this.newResourceDialog.render();
+        },
+        
+        createEnvironment: function(){
+            var application = this.collection.get(this.selectedId);
+            
+            var EnvironmentCreateView = this.EnvironmentCreateView;
+            if(this.region) {
+                this.newResourceDialog = new EnvironmentCreateView({cred_id: this.credentialId, region: this.region, app: application});
+            }else {
+                this.newResourceDialog = new EnvironmentCreateView({cred_id: this.credentialId});
+            }
+            this.newResourceDialog.render();
         }
+        
     });
     
     return AwsBeanstalkAppView;
