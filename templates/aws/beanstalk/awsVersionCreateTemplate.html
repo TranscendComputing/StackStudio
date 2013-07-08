@@ -1,0 +1,42 @@
+<div id ="main">
+    <table>
+        <tbody>
+            <tr>
+                <td><b>Application Name:</b></td>
+                <td>
+                    <div id="app_name"></div>
+                </td>
+            </tr>
+            <tr>
+                <td><b>Description:</b></td>
+                <td>
+                    <input id="description_input" type="text" style="width:200px;" />
+                </td>
+            </tr>
+            <tr>
+                <td><b>Upload Version:</b></td>
+                <td>
+                    <button id="object_upload_button">Choose File</button>
+                    
+                </td>
+                <td>
+                    
+                    <div style="visibility:hidden;" id="upload_string">No file chosen</div> 
+                </td>
+            </tr>
+            <tr>
+                <td><b>Source Bundle:</b></td>
+                <td>
+                    S3Bucket:<div id="s3bucket"></div>
+                    S3Key:<div id="s3key"></div>
+                </td>
+            </tr>
+            <tr>
+                <td><b>Version Label:</b></td>
+                <td>
+                    <input id="version_label_input" type="text" style="width:200px;" />
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

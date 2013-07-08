@@ -30,8 +30,114 @@ define([
         },
 
         destroy: function(credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/beanstalk/applications/" + this.attributes.id + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/beanstalk/applications/" + this.attributes.name + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
             this.sendAjaxAction(url, "POST", undefined, "applicationAppRefresh");
+        },
+        
+        getEnvironments: function(credentialId, region){
+            
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/beanstalk/applications/environments?_method=POST&cred_id=" + credentialId + "&region=" + region;
+            var options = {"options":{"ApplicationName":this.attributes.name}};
+            
+            //alert(options);
+            
+            $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: JSON.stringify(options),
+                //data: {"options":{}},
+                success: function(data) {
+                    //data.data.body.DescribeCacheParametersResult.Parameters
+                    Common.vent.trigger("environmentsRefresh", data);
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            });
+            
+            
+        },
+        
+        getVersions: function(credentialId, region){
+            
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/beanstalk/applications/versions?_method=POST&cred_id=" + credentialId + "&region=" + region;
+            var options = {"options":{"ApplicationName":this.attributes.name}};
+            
+            //alert(options);
+            
+            $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: JSON.stringify(options),
+                //data: {"options":{}},
+                success: function(data) {
+                    //data.data.body.DescribeCacheParametersResult.Parameters
+                    Common.vent.trigger("versionsRefresh", data);
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            });
+            
+            
+        },
+        
+        createVersion: function(options,credentialId, region){
+            
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/beanstalk/applications/versions/create?_method=POST&cred_id=" + credentialId + "&region=" + region;
+            
+            var version = {"version":options};
+            
+            //debugger
+            
+            $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: JSON.stringify(version),
+                //data: {"options":{}},
+                success: function(data) {
+                    //data.data.body.DescribeCacheParametersResult.Parameters
+                    Common.vent.trigger("applicationAppRefresh", data);
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            });
+            
+            
+        },
+        
+        createEnvironment: function(options,credentialId, region){
+            
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/beanstalk/applications/environments/create?_method=POST&cred_id=" + credentialId + "&region=" + region;
+            
+            var environment = {"environment":options};
+            
+            //debugger
+            
+            $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: JSON.stringify(environment),
+                //data: {"options":{}},
+                success: function(data) {
+                    //data.data.body.DescribeCacheParametersResult.Parameters
+                    Common.vent.trigger("applicationAppRefresh", data);
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            });
+            
+            
         }
     });
 
