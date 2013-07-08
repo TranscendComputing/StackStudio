@@ -197,7 +197,8 @@ define([
             row = 1;
             if(resourceNav.cloudDefinitions[this.cloudProvider].topstack_services != undefined && resourceNav.cloudDefinitions[this.cloudProvider].topstack_services.length > 0) {
                 $("#topstack_services_table, #topstack_service_label").show();
-                $("#native_services_table, #topstack_services_table").css("width", "36%");
+                $("#native_services_table").css("width", "30%");
+                $("#topstack_services_table").css("width", "42%");
                 $.each(resourceNav.cloudDefinitions[this.cloudProvider].topstack_services, function(index, service) {
                 $("#topstack_row"+row).append($("<td></td>").attr({
                     "id": service.type,
@@ -372,7 +373,11 @@ define([
                     subType = subType ? (subType + camelCase) : camelCase;
                 });
 
-                var appPath = "../"+this.cloudProvider+"/views/"+this.type+"/"+this.cloudProvider+subType+"AppView";
+                if(this.type === "admin") {
+                    var appPath = "../topstack/views/"+this.type+"/topstack"+subType+"AppView";
+                }else {
+                    var appPath = "../"+this.cloudProvider+"/views/"+this.type+"/"+this.cloudProvider+subType+"AppView";
+                }
 
                 require([appPath], function (AppView) {
                     if (resourceNav.resourceApp instanceof AppView) {

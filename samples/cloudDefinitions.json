@@ -296,6 +296,11 @@
         ],
         "topstack_services": [
             {
+                "name": "Admin Console",
+                "type": "admin",
+                "defaultSubtype": "adminconsole"
+            },
+            {
                 "name": "Auto Scale",
                 "type": "autoscale",
                 "defaultSubtype": "autoscalegroups"
