@@ -31,6 +31,8 @@ define([
         storageSizeMinimum: undefined,
 
         app: undefined,
+        
+        envId: undefined,
  
         events: {
             "dialogclose": "close",
@@ -41,38 +43,57 @@ define([
             this.credentialId = options.cred_id;
             this.region = options.region;
             this.app = options.app;
+            this.envId = options.envId;
             
             var applicationApp = this;
             Common.vent.on("versionsRefresh", function(data) {
                 applicationApp.addVersionLabels(data);
             });
+            Common.vent.on("envRefresh", function(data) {
+                applicationApp.addEnvData(data);
+            });
+            Common.vent.on("configRefresh", function(data) {
+                applicationApp.addEnvConfigData(data);
+            });
         },
 
         render: function() {
-            var createView = this;
+            var modifyView = this;
             var compiledTemplate = _.template(environmentCreateTemplate);
             this.$el.html(compiledTemplate);
 
             this.$el.dialog({
                 autoOpen: true,
-                title: "Environment Create",
+                title: "Environment Modify",
                 width:650,
                 minHeight: 150,
                 resizable: false,
                 modal: true,
                 buttons: {
-                    Create: function () {
-                        createView.create();
+                    Modify: function () {
+                        modifyView.modify();
                     },
                     Cancel: function() {
-                        createView.cancel();
+                        modifyView.cancel();
                     }
                 }
             });
             $("#accordion").accordion({ heightStyle: "fill" });
+            $("#version_label_select").selectmenu();
+            //$("#container_type_select").selectmenu();
+            
+            $("#env_name_input").prop('disabled', true);
+            $("#env_name_input").addClass("ui-state-disabled");
+            $("#env_url_input").prop('disabled', true);
+            $("#env_url_input").addClass("ui-state-disabled");
+            
+            $("#container_type_select").prop('disabled', true);
+            $("#container_type_select").addClass("ui-state-disabled");
             
             var application = this.app;
             application.getVersions(this.credentialId, this.region);
+            application.describeEnv(this.envId,this.credentialId, this.region);
+            application.describeEnvConfig(this.envId,this.credentialId, this.region);
             
         },
 
@@ -85,7 +106,7 @@ define([
         },
 
 
-        create: function() {
+        modify: function() {
             var newApp = this.app;
             var options = {};
             var issue = false;
@@ -150,18 +171,50 @@ define([
 
             if(!issue) {
                 //debugger
-                newApp.createEnvironment(options, this.credentialId, this.region);
+                newApp.updateEnvironment(options, this.credentialId, this.region);
                 this.$el.dialog('close');
             }
         },
         
         addVersionLabels: function(data){
             var versions = data.data.body.DescribeApplicationVersionsResult.ApplicationVersions;
+           
             $("#version_label_select").empty();
             $.each(versions, function(index, value) {
                 //debugger
                 var versionData = value.VersionLabel;
                 $("#version_label_select").append("<option value='"+versionData+"'>"+versionData+"</option>");
+            });
+            $("#version_label_select").selectmenu();
+        },
+        
+        addEnvData: function(data){
+            //debugger
+            $("#env_name_input").val(data.name);
+            
+            var s = data.cname;
+            s = s.substring(0, s.indexOf('.'));
+            $("#env_url_input").val(s);
+            
+            $("#env_desc_input").val(data.description);
+            $("#version_label_select").val(data.version_label);
+            $("#container_type_select").val(data.solution_stack_name);
+        },
+        
+        addEnvConfigData: function(data){
+            var optSets = data.data.body.DescribeConfigurationSettingsResult.ConfigurationSettings[0].OptionSettings;
+            $.each(optSets, function(index, opt) {
+                if(opt.OptionName === "InstanceType"){
+                    $("#instance_select").val(opt.Value);
+                }else if(opt.OptionName === "EC2KeyName"){
+                    $("#keypair_input").val(opt.Value);
+                }else if(opt.OptionName === "Notification Endpoint"){
+                    $("#email_input").val(opt.Value);
+                }else if(opt.OptionName === "Application Healthcheck URL"){
+                    $("#health_input").val(opt.Value);
+                }else if(opt.OptionName === "IamInstanceProfile"){
+                    $("#profile_select").val(opt.Value);
+                }
             });
         }
 
