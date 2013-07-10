@@ -155,8 +155,8 @@ define([
                                                 "<ul id='environment_action_menu'>" +
                                                     "<li style='z-index: 1000'><a id='action_button'>Actions</a>" +
                                                         "<ul>" +
-                                                            "<li><a>Delete</a></li>" +
                                                             "<li><a>Modify</a></li>" +
+                                                            "<li><a>Delete</a></li>" +
                                                         "</ul></li>" +
                                                 "</ul>" +
                                             "</td>" +
@@ -248,7 +248,7 @@ define([
                if(value.CNAME === undefined){
                    value.CNAME = "Not Defined";
                }
-               var environmentData = [value.EnvironmentName,value.CNAME, value.VersionLabel, value.SolutionStackName, value.DateUpdated, value.Status];
+               var environmentData = [value.EnvironmentName,'<a href="http://'+value.CNAME+'">http://'+value.CNAME+'</a>', value.VersionLabel, value.SolutionStackName, value.DateUpdated, value.Status];
                $("#environments_table").dataTable().fnAddData(environmentData);
            });
            

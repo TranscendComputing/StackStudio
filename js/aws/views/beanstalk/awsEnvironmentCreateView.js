@@ -147,6 +147,12 @@ define([
             }else{
                 issue = true;
             }
+            
+            if($("#droot_input").val() !== "") {
+                options.OptionSettings.push({"Namespace": "aws:elasticbeanstalk:container:php:phpini", "OptionName": "document_root", "Value": $("#droot_input").val()});
+            }else{
+                issue = true;
+            }
 
             if(!issue) {
                 //debugger
