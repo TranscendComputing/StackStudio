@@ -60,8 +60,8 @@ define([
             'click .create_button': 'createNew',
             'click #action_menu ul li': 'performAction',
             'click #resource_table tr': 'clickOne',
-            'change #version_select': 'selectVer',
             'click #environments' : 'refreshEnvironmentsTab',
+            'click #events' : 'refreshEventsTab',
             'click #environments_table tr': 'toggleEnvironmentActions',
             'click #environment_action_menu ul li': 'performEnvironmentAction',
             'click #versions_table tr': 'toggleVersionActions',
@@ -85,6 +85,9 @@ define([
             Common.vent.on("environmentsRefresh", function(data) {
                 applicationApp.addEnvironments(data);
             });
+            Common.vent.on("eventsRefresh", function(data) {
+                applicationApp.addEvents(data);
+            });
             Common.vent.on("versionsRefresh", function(data) {
                 applicationApp.addVersions(data);
             });
@@ -95,49 +98,20 @@ define([
         
         toggleActions: function(e) {
             //Disable any needed actions
+            //debugger
             if(this.reselectTab) {
                 this.refreshEnvironmentsTab();
-                $("#detail_tabs").tabs("select", this.selectedTabIndex);
+                //$("#detail_tabs").tabs("select", this.selectedTabIndex);
+                $("#detail_tabs").tabs("select", 0);
                 this.reselectTab = true;
             }
+            /*if(this.selectedTabIndex === 1){
+               this.refreshEventsTab();
+            }*/
         },
         
         refreshEnvironmentsTab: function() {
             $("#environments_tab_content").empty();
-            //"<span><b>Environments:</b></span><button id='add_environment_button'>Add Environment</button><br /><br />" +
-            $("#environments_tab_content").append("<table>" +
-                                        "<tr>" +
-                                            "<td><button id='add_environment_button'>Add Environment</button></td>" +
-                                            "<td>" +
-                                                "<ul id='environment_action_menu'>" +
-                                                    "<li style='z-index: 1000'><a id='action_button'>Actions</a>" +
-                                                        "<ul>" +
-                                                            "<li><a>Delete</a></li>" +
-                                                            "<li><a>Modify</a></li>" +
-                                                        "</ul></li>" +
-                                                "</ul>" +
-                                            "</td>" +
-                                        "</tr>" +
-                                     "</table><br />");
-            $("#environment_action_menu").menu();
-            $("#environment_action_menu li").addClass("ui-state-disabled");
-            $("#environments_tab_content").append("<table id='environments_table' class='full_width'>" +
-                                                        "<thead>" +
-                                                            "<tr>" +
-                                                                "<th>Environment</th><th>URL</th><th>Running Version</th><th>Container Type</th><th>Changed On</th><th>Status</th>" +
-                                                            "</tr>" +
-                                                        "</thead>" +
-                                                        "<tbody></tbody><tfoot></tfoot>" +
-                                                    "</table>");
-            this.$environmentTable = $("#environments_table").dataTable({
-                "bJQueryUI": true,
-                "sDom": 't'
-            });
-            
-            var current = this;
-            $("#add_environment_button").button().click(function( event ) {
-                current.createEnvironment();
-            });
             
             //"<span><b>Versions:</b></span><button id='add_version_button'>Add Version</button><br /><br />" +
             $("#environments_tab_content").append("<table>" +
@@ -168,14 +142,84 @@ define([
                 "sDom": 't'
             });
             
-            //var current = this;
+            var current = this;
             $("#add_version_button").button().click(function( event ) {
                 current.createVersion();
             });
+            
+            //"<span><b>Environments:</b></span><button id='add_environment_button'>Add Environment</button><br /><br />" +
+            $("#environments_tab_content").append("<table>" +
+                                        "<tr>" +
+                                            "<td><button id='add_environment_button'>Add Environment</button></td>" +
+                                            "<td>" +
+                                                "<ul id='environment_action_menu'>" +
+                                                    "<li style='z-index: 1000'><a id='action_button'>Actions</a>" +
+                                                        "<ul>" +
+                                                            "<li><a>Delete</a></li>" +
+                                                            "<li><a>Modify</a></li>" +
+                                                        "</ul></li>" +
+                                                "</ul>" +
+                                            "</td>" +
+                                        "</tr>" +
+                                     "</table><br />");
+            $("#environment_action_menu").menu();
+            $("#environment_action_menu li").addClass("ui-state-disabled");
+            $("#environments_tab_content").append("<table id='environments_table' class='full_width'>" +
+                                                        "<thead>" +
+                                                            "<tr>" +
+                                                                "<th>Environment</th><th>URL</th><th>Running Version</th><th>Container Type</th><th>Changed On</th><th>Status</th>" +
+                                                            "</tr>" +
+                                                        "</thead>" +
+                                                        "<tbody></tbody><tfoot></tfoot>" +
+                                                    "</table>");
+            this.$environmentTable = $("#environments_table").dataTable({
+                "bJQueryUI": true,
+                "sDom": 't'
+            });
+            
+            //var current = this;
+            $("#add_environment_button").button().click(function( event ) {
+                current.createEnvironment();
+            });
+            
+            
 
             var application = this.collection.get(this.selectedId);
             application.getEnvironments(this.credentialId, this.region);
             application.getVersions(this.credentialId, this.region);
+        },
+        
+        refreshEventsTab: function() {
+            $("#events_tab_content").empty();
+            //"<span><b>Environments:</b></span><button id='add_environment_button'>Add Environment</button><br /><br />" +
+            $("#events_tab_content").append("<table>" +
+                                        "<tr>" +
+                                            "<td><button id='refresh_button'>Refresh</button></td>" +
+                                        "</tr>" +
+                                     "</table><br />");
+            $("#events_tab_content").append("<table id='events_table' class='full_width'>" +
+                                                        "<thead>" +
+                                                            "<tr>" +
+                                                                "<th>Event Time</th><th>Event Type</th><th>Event Details</th><th>Environment</th>" +
+                                                            "</tr>" +
+                                                        "</thead>" +
+                                                        "<tbody></tbody><tfoot></tfoot>" +
+                                                    "</table>");
+            
+            this.$eventTable = $("#events_table").dataTable({
+                "bJQueryUI": true,
+                //"aoColumns": [{ "asSorting": ["desc"] },null,null,null]
+            });
+            this.$eventTable.fnSort( [ [0,'desc'] ] );
+            
+            var current = this;
+            $("#refresh_button").button().click(function( event ) {
+                current.refreshEventsTab();
+            });
+            
+
+            var application = this.collection.get(this.selectedId);
+            application.getEvents(this.credentialId, this.region);
         },
         
         performAction: function(event) {
@@ -189,10 +233,6 @@ define([
                 //debugger
                 break;
             }
-        },
-        
-        selectVer: function(e){
-            $("#version_detail").append("These are the version details.");
         },
         
         addEnvironments: function(data){
@@ -211,6 +251,25 @@ define([
                var environmentData = [value.EnvironmentName,value.CNAME, value.VersionLabel, value.SolutionStackName, value.DateUpdated, value.Status];
                $("#environments_table").dataTable().fnAddData(environmentData);
            });
+           
+        },
+        
+        addEvents: function(data){
+            //debugger
+           
+           var events = data.data.body.DescribeEventsResult.Events;
+           
+           $("#events_table").dataTable().fnClearTable();
+           for(var i = events.length-1; i >= 0; i--){
+               var value = events[i];
+               if(value.EnvironmentName){
+                   var env = value.EnvironmentName;
+               }else{
+                   var env = "app";
+               }
+               var eventData = [value.EventDate,value.Severity, value.Message, env];
+               $("#events_table").dataTable().fnAddData(eventData);
+           }
            
         },
         

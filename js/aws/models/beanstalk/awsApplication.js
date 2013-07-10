@@ -72,6 +72,32 @@ define([
             
         },
         
+        getEvents: function(credentialId, region){
+            
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/beanstalk/applications/events?_method=POST&cred_id=" + credentialId + "&region=" + region;
+            var options = {"options":{"ApplicationName":this.attributes.name}};
+            
+            //alert(options);
+            
+            $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: JSON.stringify(options),
+                //data: {"options":{}},
+                success: function(data) {
+                    //data.data.body.DescribeCacheParametersResult.Parameters
+                    Common.vent.trigger("eventsRefresh", data);
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            });
+            
+            
+        },
+        
         getVersions: function(credentialId, region){
             
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/beanstalk/applications/versions?_method=POST&cred_id=" + credentialId + "&region=" + region;

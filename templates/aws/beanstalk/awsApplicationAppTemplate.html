@@ -38,22 +38,15 @@
     <div id="detail_tabs">
         <ul>
             
-            <li><a id="environments" href="#tabs-1">Environments</a></li>
-            <li><a id="application_versions" href="#tabs-2">Monitoring</a></li>
+            <li><a id="environments" href="#tabs-1">App</a></li>
+            <li><a id="events" href="#tabs-2">Events</a></li>
         </ul>
         
         <div id="tabs-1" class="tab">
             <div id="environments_tab_content"></div>
         </div>
         <div id="tabs-2" class="tab">
-            <select id="version_select" size="1" multiple="yes" >
-                {{#version_names}}
-                  <option value="{{version_names}}">{{version_names}}</option>
-                {{/version_names}}
-            </select>
-            
-            <div id="version_detail">
-            </div>
+            <div id="events_tab_content"></div>
         </div>
     </div>
 </script>
