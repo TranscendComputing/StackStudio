@@ -46,9 +46,6 @@ define([
             this.envId = options.envId;
             
             var applicationApp = this;
-            Common.vent.on("versionsRefresh", function(data) {
-                applicationApp.addVersionLabels(data);
-            });
             Common.vent.on("envRefresh", function(data) {
                 applicationApp.addEnvData(data);
             });
@@ -80,7 +77,11 @@ define([
             });
             $("#accordion").accordion({ heightStyle: "fill" });
             $("#version_label_select").selectmenu();
-            //$("#container_type_select").selectmenu();
+            $("#container_type_select").selectmenu();
+            
+            
+            $("#instance_select").selectmenu();
+            $("#profile_select").selectmenu();
             
             $("#env_name_input").prop('disabled', true);
             $("#env_name_input").addClass("ui-state-disabled");
@@ -91,7 +92,7 @@ define([
             $("#container_type_select").addClass("ui-state-disabled");
             
             var application = this.app;
-            application.getVersions(this.credentialId, this.region);
+            this.populateVersions();
             application.describeEnv(this.envId,this.credentialId, this.region);
             application.describeEnvConfig(this.envId,this.credentialId, this.region);
             
@@ -114,9 +115,6 @@ define([
 
             options.ApplicationName = newApp.id;
             options.SolutionStackName = $("#container_type_select").val();
-            //debugger
-            //options.SourceBundle = {};
-            //options.SourceBundle['S3Bucket'] = "elasticbeanstalk-us-east-1-983391187112";
             
             
             if($("#env_name_input").val().trim() !== "") {
@@ -136,12 +134,6 @@ define([
             if($("#version_label_select").val().trim() !== "") {
                 options.VersionLabel = $("#version_label_select").val();
             }
-            /*
-            if($("#version_label_input").val().trim() !== "") {
-                options.SourceBundle['S3Key'] = $("#version_label_input").val().trim();
-            }else{
-                issue = true;
-            }*/
             
             options.OptionSettings = [];
             
@@ -171,31 +163,15 @@ define([
             
             if($("#droot_input").val() !== "") {
                 options.OptionSettings.push({"Namespace": "aws:elasticbeanstalk:container:php:phpini", "OptionName": "document_root", "Value": $("#droot_input").val()});
-            }else{
-                issue = true;
             }
 
             if(!issue) {
-                //debugger
                 newApp.updateEnvironment(options, this.credentialId, this.region);
                 this.$el.dialog('close');
             }
         },
         
-        addVersionLabels: function(data){
-            var versions = data.data.body.DescribeApplicationVersionsResult.ApplicationVersions;
-           
-            $("#version_label_select").empty();
-            $.each(versions, function(index, value) {
-                //debugger
-                var versionData = value.VersionLabel;
-                $("#version_label_select").append("<option value='"+versionData+"'>"+versionData+"</option>");
-            });
-            $("#version_label_select").selectmenu();
-        },
-        
         addEnvData: function(data){
-            //debugger
             $("#env_name_input").val(data.name);
             
             var s = data.cname;
@@ -203,8 +179,12 @@ define([
             $("#env_url_input").val(s);
             
             $("#env_desc_input").val(data.description);
+            if(data.version_label){
             $("#version_label_select").val(data.version_label);
+            $("#version_label_select").selectmenu();
+            }
             $("#container_type_select").val(data.solution_stack_name);
+            $("#container_type_select").selectmenu();
         },
         
         addEnvConfigData: function(data){
@@ -224,6 +204,16 @@ define([
                     $("#droot_input").val(opt.Value);
                 }
             });
+        },
+        
+        populateVersions: function(){
+            var versions = this.app.attributes.version_names;
+            $("#version_label_select").empty();
+            $.each(versions, function(index, value) {
+                var versionData = value;
+                $("#version_label_select").append("<option value='"+versionData+"'>"+versionData+"</option>");
+            });
+            $("#version_label_select").selectmenu();
         }
 
     });

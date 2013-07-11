@@ -9,7 +9,6 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'views/featureNotImplementedView',
         'views/resource/resourceAppView',
         'text!templates/aws/beanstalk/awsApplicationAppTemplate.html',
         '/js/aws/models/beanstalk/awsApplication.js',
@@ -21,7 +20,7 @@ define([
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, FeatureNotImplementedView, ResourceAppView, awsApplicationAppTemplate, Application, Applications, AwsApplicationCreate, AwsVersionCreate, AwsEnvironmentCreate, AwsEnvironmentModify, ich, Common ) {
+], function( $, _, Backbone, ResourceAppView, awsApplicationAppTemplate, Application, Applications, AwsApplicationCreate, AwsVersionCreate, AwsEnvironmentCreate, AwsEnvironmentModify, ich, Common ) {
     'use strict';
 
     var AwsBeanstalkAppView = ResourceAppView.extend({
@@ -112,8 +111,6 @@ define([
         
         refreshEnvironmentsTab: function() {
             $("#environments_tab_content").empty();
-            
-            //"<span><b>Versions:</b></span><button id='add_version_button'>Add Version</button><br /><br />" +
             $("#environments_tab_content").append("<table>" +
                                         "<tr>" +
                                             "<td><button id='add_version_button'>Add Version</button></td>" +
@@ -141,13 +138,11 @@ define([
                 "bJQueryUI": true,
                 "sDom": 't'
             });
-            
             var current = this;
             $("#add_version_button").button().click(function( event ) {
                 current.createVersion();
             });
             
-            //"<span><b>Environments:</b></span><button id='add_environment_button'>Add Environment</button><br /><br />" +
             $("#environments_tab_content").append("<table>" +
                                         "<tr>" +
                                             "<td><button id='add_environment_button'>Add Environment</button></td>" +
@@ -176,14 +171,9 @@ define([
                 "bJQueryUI": true,
                 "sDom": 't'
             });
-            
-            //var current = this;
             $("#add_environment_button").button().click(function( event ) {
                 current.createEnvironment();
             });
-            
-            
-
             var application = this.collection.get(this.selectedId);
             application.getEnvironments(this.credentialId, this.region);
             application.getVersions(this.credentialId, this.region);
@@ -230,7 +220,6 @@ define([
             case "Delete Application":
                 application.destroy(this.credentialId, this.region);
                 this.toggleActions();
-                //debugger
                 break;
             }
         },
@@ -255,8 +244,6 @@ define([
         },
         
         addEvents: function(data){
-            //debugger
-           
            var events = data.data.body.DescribeEventsResult.Events;
            
            $("#events_table").dataTable().fnClearTable();
@@ -274,7 +261,6 @@ define([
         },
         
         addVersions: function(data){
-            //debugger
            var versions = data.data.body.DescribeApplicationVersionsResult.ApplicationVersions;
            
            $("#versions_table").dataTable().fnClearTable();
@@ -283,7 +269,6 @@ define([
                var versionData = [value.VersionLabel,value.Description, value.DateCreated, value.SourceBundle.S3Key];
                $("#versions_table").dataTable().fnAddData(versionData);
            });
-           
         },
             
         createVersion: function(){
@@ -319,7 +304,6 @@ define([
             $(event.currentTarget).addClass('row_selected');
             var rowData = this.$environmentTable.fnGetData(event.currentTarget);
             this.selectedEnvironment = rowData[0];
-            //debugger
             if(this.selectedEnvironment) {
                 $("#environment_action_menu li").removeClass("ui-state-disabled");
             }
@@ -330,13 +314,10 @@ define([
                 switch(event.target.text)
                 {
                 case "Delete":
-                    //this.selectedEnvironment.destroy(this.selectedId, this.credentialId, this.region);
                     var application = this.collection.get(this.selectedId);
                     application.destroyEnvironment(this.selectedEnvironment,this.credentialId,this.region);
                     break;
                 case "Modify":
-                    //$("#download_file_name").attr("value", this.selectedEnvironment.attributes.key);
-                    //$("#download_file_form").submit();
                     var application = this.collection.get(this.selectedId);
             
                     var EnvironmentModifyView = this.EnvironmentModifyView;
@@ -361,7 +342,6 @@ define([
             $(event.currentTarget).addClass('row_selected');
             var rowData = this.$versionTable.fnGetData(event.currentTarget);
             this.selectedVersion = rowData[0];
-            //debugger
             if(this.selectedVersion) {
                 $("#version_action_menu li").removeClass("ui-state-disabled");
             }
@@ -372,7 +352,6 @@ define([
                 switch(event.target.text)
                 {
                 case "Delete":
-                    //alert("Delete: "+this.selectedVersion);
                     var application = this.collection.get(this.selectedId);
                     application.destroyVersion(this.selectedVersion,this.credentialId,this.region);
                     break;

@@ -31,6 +31,10 @@ define([
         storageSizeMinimum: undefined,
 
         application: new Application(),
+        
+        doCreateEnvironment: false,
+        
+        options: undefined,
  
         events: {
             "dialogclose": "close",
@@ -41,6 +45,11 @@ define([
         initialize: function(options) {
             this.credentialId = options.cred_id;
             this.region = options.region;
+            
+            var createAppView = this;
+            Common.vent.on("applicationAppRefresh", function(data) {
+                createAppView.asyncCreateEnvironment();
+            });
         },
 
         render: function() {
@@ -66,8 +75,9 @@ define([
             });
             $("#accordion").accordion({ heightStyle: "fill" });
             
-            //$("#instance_select").selectmenu();
-            //$("#profile_select").selectmenu();
+            $("#container_type_select").selectmenu();
+            $("#instance_select").selectmenu();
+            $("#profile_select").selectmenu();
             
             this.environmentEnable();
             $("#object_upload_button").button();
@@ -92,96 +102,19 @@ define([
             $("#launch_new_options select").selectmenu();
         },
 
-        getDurationInMinutes: function(durationString) {
-            var durationMinutes = 0;
-            switch(durationString)
-            {
-                case "0.5":
-                    durationMinutes = 30;
-                    break;
-                case "1":
-                    durationMinutes = 60;
-                    break;
-                case "1.5":
-                    durationMinutes = 90;
-                    break;
-                case "2":
-                    durationMinutes = 120;
-                    break;
-                case "2.5":
-                    durationMinutes = 150;
-                    break;
-                case "3":
-                    durationMinutes = 180;
-                    break;
-            }
-            return durationMinutes;
-        },
-
-        getMaintenanceWindowString: function() {
-            var maintWindowString = "";
-            if($("input[name='launch_new']:checked").val() === "no_preference") {
-                maintWindowString = "No Preference";
-            }else {
-                maintWindowString = $("#maintenance_start_time_day_select").val() + ":" + $("#maintenance_start_time_hour_select").val() + ":" + $("#maintenance_start_time_minute_select").val() + "-";
-                var mwDur = this.getDurationInMinutes($("#maintenance_duration").val());
-                var mwMinute = parseInt($("#maintenance_start_time_minute_select").val(), 10);
-                var mwHour = parseInt($("#maintenance_start_time_hour_select").val(), 10);
-                var mwEndMinute = ((mwMinute + mwDur) % 60);
-                var mwEndHour = ((mwHour + Math.floor((mwMinute + mwDur) / 60)) % 24);
-                var mwEndDay = $("#maintenance_start_time_day_select").val();
-                //Add a day if the duration rolls to the next day
-                if((mwHour + (mwMinute + mwDur / 60) / 24) > 1)
-                {
-                    switch($("#maintenance_start_time_day_select").val())
-                    {
-                        case "mon":
-                            mwEndDay = "tue";
-                            break;
-                        case "tue":
-                            mwEndDay = "wed";
-                            break;
-                        case "wed":
-                            mwEndDay = "thu";
-                            break;
-                        case "thu":
-                            mwEndDay = "fri";
-                            break;
-                        case "fri":
-                            mwEndDay = "sat";
-                            break;
-                        case "sat":
-                            mwEndDay = "sun";
-                            break;
-                        case "sun":
-                            mwEndDay = "mon";
-                            break;
-                    }
-                }
-                maintWindowString = maintWindowString + mwEndDay + ":" + this.setTimeString(mwEndHour) + ":" + this.setTimeString(mwEndMinute);
-            }
-            return maintWindowString;
-        },
-
-        setTimeString: function(timeSection) {
-            var timeSectionString;
-            if(timeSection < 10) {
-                timeSectionString = "0" + timeSection.toString();
-            }else {
-                timeSectionString = timeSection.toString();
-            }
-            return timeSectionString;
-        },
-
         create: function() {
             var newApp = this.application;
-            var options = {};
+            this.options = {};
+            
             var issue = false;
+            
+            var doCreateVersion = false;
+            this.doCreateEnvironment = false;
 
 
             if($("#app_name_input").val().trim() !== "") {
                 this.displayValid(true, "#app_name_input");
-                options.ApplicationName = $("#app_name_input").val();
+                this.options.ApplicationName = $("#app_name_input").val();
             }else{
                 issue = true;
                 this.displayValid(false, "#app_name_input");
@@ -189,60 +122,92 @@ define([
             
             if($("#description_input").val().trim() !== "") {
                 this.displayValid(true, "#description_input");
-                options.Description = $("#description_input").val();
+                this.options.Description = $("#description_input").val();
             }else{
                 issue = true;
                 this.displayValid(false, "#description_input");
             }
 
-            if(!issue) {
-                
-                newApp.create(options, this.credentialId, this.region);
-                var a = $("#app_source_input").val();
-                var b = $("#file_string").html().trim();
-                
-                if($("#app_source_input").val() === "true" && $("#upload_string").html() !== "No file chosen"){
-                    
-                    
-                    
-                    options.SourceBundle = {};
-                    options.SourceBundle['S3Bucket'] = "elasticbeanstalk-us-east-1-983391187112";
-                    options.VersionLabel = $("#file_string").html().trim();
-                   
+          
             
-                    if($("#upload_string").html().trim() !== "") {
-                        options.SourceBundle['S3Key'] = $("#file_string").html().trim();
-                    }else{
-                        issue = true;
-                    }
-                    if($("#env_url_input").val().trim() !== "") {
-                        options.CNAMEPrefix = $("#env_url_input").val().trim();
-                    }
-                    
-                    newApp.createVersion(options, this.credentialId, this.region);
-                    if($("input[name='launch_new']:checked").val() !== "no_preference" && $("#env_name_input").val().trim() !== ""){
-                        options.VersionLabel = undefined;
-                        
-                        
-                        options.EnvironmentName = $("#env_name_input").val();
-                        
-                        options.SolutionStackName = $("#container_type_select").val();
-                        
-                        newApp.createEnvironment(options, this.credentialId, this.region);
-                        
-                        //debugger
-                    }
-                    
-                }
-                this.$el.dialog('close');
+            if($("#app_source_input").val() === "true" && $("#upload_string").html() !== "No file chosen"){
                 
+                this.options.SourceBundle = {};
+                this.options.SourceBundle['S3Bucket'] = "elasticbeanstalk-us-east-1-983391187112";
+                this.options.VersionLabel = $("#file_string").html().trim();
+                this.options.SourceBundle['S3Key'] = $("#file_string").html().trim();
+                
+                if($("#env_url_input").val().trim() !== "") {
+                    this.options.CNAMEPrefix = $("#env_url_input").val().trim();
+                }
+                
+                doCreateVersion = true;
+                
+            }
+            
+            if($("input[name='launch_new']:checked").val() !== "no_preference"){
+                //options.VersionLabel = undefined;
+                
+                if($("#env_name_input").val().trim() !== "") {
+                    this.displayValid(true, "#env_name_input");
+                    this.options.EnvironmentName = $("#env_name_input").val();
+                }else{
+                    issue = true;
+                    this.displayValid(false, "#env_name_input");
+                }
+                
+                this.options.SolutionStackName = $("#container_type_select").val();
+                
+                this.options.OptionSettings = [];
+    
+                if($("#instance_select").val() !== "") {
+                    this.options.OptionSettings.push({"Namespace": "aws:autoscaling:launchconfiguration", "OptionName": "InstanceType", "Value": $("#instance_select").val()});
+                }else{
+                    issue = true;
+                }
+    
+                if($("#keypair_input").val() !== "") {
+                    this.options.OptionSettings.push({"Namespace": "aws:autoscaling:launchconfiguration", "OptionName": "EC2KeyName", "Value": $("#keypair_input").val()});
+                }
+    
+                if($("#email_input").val() !== "") {
+                    this.options.OptionSettings.push({"Namespace": "aws:elasticbeanstalk:sns:topics", "OptionName": "Notification Endpoint", "Value": $("#email_input").val()});
+                }
+    
+                if($("#health_input").val() !== "") {
+                    this.options.OptionSettings.push({"Namespace": "aws:elasticbeanstalk:application", "OptionName": "Application Healthcheck URL", "Value": $("#health_input").val()});
+                }
+    
+                if($("#profile_select").val() !== "") {
+                    this.options.OptionSettings.push({"Namespace": "aws:autoscaling:launchconfiguration", "OptionName": "IamInstanceProfile", "Value": $("#profile_select").val()});
+                }else{
+                    issue = true;
+                }
+                
+                this.doCreateEnvironment = true;
+                
+            }
+            
+            if(!issue){
+                
+                newApp.create(this.options, this.credentialId, this.region);
+                if(doCreateVersion) {
+                    newApp.createVersion(this.options, this.credentialId, this.region);
+                    this.$el.dialog('close');
+                }else{
+                    this.$el.dialog('close');
+                }
+                /*
+                if(doCreateEnvironment) {
+                    options.VersionLabel = undefined
+                    newApp.createEnvironment(options, this.credentialId, this.region);
+                }
+                */
             }
         },
         
         openFileDialog: function() {
-            //alert("upload file");
             this.refreshFileInputForm();
-            
             var appView = this;
             $("#file_dialog").click();
             $("#file_dialog").change(function() {
@@ -252,7 +217,6 @@ define([
                         fileName = fileName.replace("C:\\fakepath\\", "");
                         $("#upload_string").html(fileName);
                         $("#file_string").html(fileName);
-                     	//debugger
                     }
                     
                 });
@@ -269,6 +233,13 @@ define([
                                         "<input name='cred_id' value='" + this.credentialId + "'>" +
                                         "<input name='region' value='" + this.region + "'>" +
                                     "</form>");
+        },
+        
+        asyncCreateEnvironment: function() {
+            if(this.doCreateEnvironment){
+                this.application.createEnvironment(this.options, this.credentialId, this.region);
+                this.doCreateEnvironment = false;
+            }
         }
 
     });

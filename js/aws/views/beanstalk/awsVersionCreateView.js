@@ -51,7 +51,7 @@ define([
             this.$el.dialog({
                 autoOpen: true,
                 title: "Version Create",
-                width:400,
+                width: 400,
                 minHeight: 150,
                 resizable: false,
                 modal: true,
@@ -66,7 +66,7 @@ define([
             });
             
             $("#object_upload_button").button();
-            //debugger
+            
             $("#app_name").html(this.app.id);
         },
 
@@ -86,21 +86,25 @@ define([
 
 
             options.ApplicationName = $("#app_name").html();
-            //debugger
+            
             options.SourceBundle = {};
             options.SourceBundle['S3Bucket'] = $("#s3bucket").html();
             
             
             if($("#description_input").val().trim() !== "") {
+                this.displayValid(true, "#description_input");
                 options.Description = $("#description_input").val();
             }else{
                 issue = true;
+                this.displayValid(false, "#description_input");
             }
             
             if($("#version_label_input").val().trim() !== "") {
+                this.displayValid(true, "#version_label_input");
                 options.VersionLabel = $("#version_label_input").val();
             }else{
                 issue = true;
+                this.displayValid(false, "#version_label_input");
             }
             
             if($("#s3key").html().trim() !== "") {
@@ -113,13 +117,12 @@ define([
 
             if(!issue) {
                 newApp.createVersion(options, this.credentialId, this.region);
-                //debugger
                 this.$el.dialog('close');
             }
         },
         
         openFileDialog: function() {
-            //alert("upload file");
+            
             this.refreshFileInputForm();
             
             var appView = this;

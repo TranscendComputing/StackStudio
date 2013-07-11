@@ -41,11 +41,6 @@ define([
             this.credentialId = options.cred_id;
             this.region = options.region;
             this.app = options.app;
-            
-            var applicationApp = this;
-            Common.vent.on("versionsRefresh", function(data) {
-                applicationApp.addVersionLabels(data);
-            });
         },
 
         render: function() {
@@ -71,8 +66,14 @@ define([
             });
             $("#accordion").accordion({ heightStyle: "fill" });
             
-            var application = this.app;
-            application.getVersions(this.credentialId, this.region);
+            $("#version_label_select").selectmenu();
+            $("#container_type_select").selectmenu();
+            
+            
+            $("#instance_select").selectmenu();
+            $("#profile_select").selectmenu();
+            
+            this.populateVersions();
             
         },
 
@@ -93,15 +94,13 @@ define([
 
             options.ApplicationName = newApp.id;
             options.SolutionStackName = $("#container_type_select").val();
-            //debugger
-            //options.SourceBundle = {};
-            //options.SourceBundle['S3Bucket'] = "elasticbeanstalk-us-east-1-983391187112";
-            
             
             if($("#env_name_input").val().trim() !== "") {
+                this.displayValid(true, "#env_name_input");
                 options.EnvironmentName = $("#env_name_input").val();
             }else{
                 issue = true;
+                this.displayValid(false, "#env_name_input");
             }
             
             if($("#env_url_input").val().trim() !== "") {
@@ -115,12 +114,6 @@ define([
             if($("#version_label_select").val().trim() !== "") {
                 options.VersionLabel = $("#version_label_select").val();
             }
-            /*
-            if($("#version_label_input").val().trim() !== "") {
-                options.SourceBundle['S3Key'] = $("#version_label_input").val().trim();
-            }else{
-                issue = true;
-            }*/
             
             options.OptionSettings = [];
             
@@ -150,25 +143,22 @@ define([
             
             if($("#droot_input").val() !== "") {
                 options.OptionSettings.push({"Namespace": "aws:elasticbeanstalk:container:php:phpini", "OptionName": "document_root", "Value": $("#droot_input").val()});
-            }else{
-                issue = true;
             }
 
             if(!issue) {
-                //debugger
                 newApp.createEnvironment(options, this.credentialId, this.region);
                 this.$el.dialog('close');
             }
         },
         
-        addVersionLabels: function(data){
-            var versions = data.data.body.DescribeApplicationVersionsResult.ApplicationVersions;
+        populateVersions: function(){
+            var versions = this.app.attributes.version_names;
             $("#version_label_select").empty();
             $.each(versions, function(index, value) {
-                //debugger
-                var versionData = value.VersionLabel;
+                var versionData = value;
                 $("#version_label_select").append("<option value='"+versionData+"'>"+versionData+"</option>");
             });
+            $("#version_label_select").selectmenu();
         }
 
     });
