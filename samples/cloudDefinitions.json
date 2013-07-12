@@ -337,7 +337,21 @@
             {
                 "name": "Relational Database",
                 "type": "rds",
-                "defaultSubtype": "relationaldatabases"
+                "defaultSubtype": "relationaldatabases",
+                "subServices" : [
+                    {
+                        "name": "Relational Database",
+                        "type": "relationaldatabases"
+                    },
+                    {
+                        "name": "Parameter Groups",
+                        "type": "parametergroups"
+                    },
+                    {
+                        "name": "Security Groups",
+                        "type": "securitygroups"
+                    }
+                ]
             },
             {
                 "name": "Scalable Load Balancer",
