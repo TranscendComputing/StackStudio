@@ -67,6 +67,9 @@ define([
             Common.vent.on("managementRefresh", function() {
                 managementView.refreshManagementView();
             });
+            Common.vent.on("servicesRefresh", function() {
+                managementView.refreshServices();
+            });
         },
         /** Add all of my own html elements */
         render: function () {
@@ -144,7 +147,7 @@ define([
         newCloudService: function(){
             var CloudServiceCreateView = this.CloudServiceCreateView;
             
-            this.newResourceDialog = new CloudServiceCreateView({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id});
+            this.newResourceDialog = new CloudServiceCreateView({ cloud_account: this.selectedCloudAccount});
             
             this.newResourceDialog.render();
             
@@ -153,6 +156,9 @@ define([
         deleteService: function(event) {
             var serviceData = $(event.currentTarget.parentElement).find("input").data();
             this.selectedCloudAccount.deleteService(serviceData);
+            
+            this.refreshServices();
+            
             return false;
         },
 
@@ -175,6 +181,13 @@ define([
                 success: _.bind(this.renderAccountAttributes, this),
                 reset: true
 
+            });
+        },
+        
+        refreshServices: function(){
+            this.collection.fetch({ 
+                data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id}),
+                success: _.bind(this.renderAccountAttributes, this)
             });
         },
         

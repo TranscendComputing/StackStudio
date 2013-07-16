@@ -44,8 +44,6 @@ define([
             var url = Common.apiUrl + "/stackstudio/v1/cloud_accounts?org_id=" + org_id + "&cloud_id=" + cloud_id;
             var cloud_account = {"cloud_account":options};
             
-            //debugger
-            
             $.ajax({
                 url: url,
                 type: "POST",
@@ -72,6 +70,28 @@ define([
                 contentType: 'application/x-www-form-urlencoded',
                 success: function(data) {
                     Common.vent.trigger("managementRefresh");
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            });
+            
+        },
+        
+        addService: function(options) {
+            
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_accounts/" + this.id + "/services?_method=POST";
+            
+            var cloud_service = {"cloud_service":options};
+            
+            $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: JSON.stringify(cloud_service),
+                success: function(data) {
+                    Common.vent.trigger("servicesRefresh");
                 },
                 error: function(jqXHR) {
                     Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
