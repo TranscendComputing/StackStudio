@@ -14,10 +14,12 @@ define([
         'URIjs/URI',
         'text!templates/account/managementCloudAccountTemplate.html',
         'collections/cloudAccounts',
+        'views/account/cloudAccountCreateView',
+        'views/account/cloudServiceCreateView',
         'models/cloudService',
         'jquery-plugins',
         'jquery-ui-plugins'
-], function( $, _, Backbone, Common, ich, URI, managementCloudAccountTemplate, CloudAccounts, CloudService ) {
+], function( $, _, Backbone, Common, ich, URI, managementCloudAccountTemplate, CloudAccounts, CloudAccountCreate, CloudServiceCreate, CloudService ) {
 
     var CloudAccountManagementView = Backbone.View.extend({
         /** @type {String} DOM element to attach view to */
@@ -26,11 +28,14 @@ define([
         collection: new CloudAccounts(),
         /** @type {Template} HTML template to generate view from */
         template: _.template(managementCloudAccountTemplate),
+        CloudAccountCreateView: CloudAccountCreate,
+        CloudServiceCreateView: CloudServiceCreate,
         /** @type {Object} Object of events for view to listen on */
         events: {
             "click .list_item": "selectCloudAccount",
             "click button.save-button": "saveService",
             "click button#new_cloud_account": "newCloudAccount",
+            "click button#new_cloud_service": "newCloudService",
             "click button.delete-button": "deleteService"
         },
         /** Constructor method for current view */
@@ -121,6 +126,20 @@ define([
         },
 
         newCloudAccount: function(){
+            var CloudAccountCreateView = this.CloudAccountCreateView;
+            
+            this.newResourceDialog = new CloudAccountCreateView({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id});
+            
+            this.newResourceDialog.render();
+            
+        },
+        
+        newCloudService: function(){
+            var CloudServiceCreateView = this.CloudServiceCreateView;
+            
+            this.newResourceDialog = new CloudServiceCreateView({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id});
+            
+            this.newResourceDialog.render();
             
         },
 
