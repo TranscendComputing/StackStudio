@@ -69,11 +69,21 @@ define([
             var options = {};
             
             if($("#cloud_account_name_input").val() !== "") {
+                this.displayValid(true, "#cloud_account_name_input");
                 options.name = $("#cloud_account_name_input").val();
                 newCloudAccount.create(options,sessionStorage.org_id,$("#cloud_select").val());
                 this.$el.dialog('close');
             }else {
                 Common.errorDialog("Invalid Request", "Please supply all required fields.");
+                this.displayValid(false, "#cloud_account_name_input");
+            }
+        },
+        
+        displayValid: function(valid, selector) {
+            if(valid) {
+                $(selector).css("border-color", "");
+            }else{
+                $(selector).css("border-color", "#FF0000");
             }
         },
         
