@@ -362,6 +362,11 @@
                 "name": "Scalable Queue",
                 "type": "queue",
                 "defaultSubtype": "queues"
+            },
+            {
+                "name": "Elastic Beanstalk",
+                "type": "beanstalk",
+                "defaultSubtype": "applications"
             }
         ],
         "regions": [
