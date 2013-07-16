@@ -36,6 +36,7 @@ define([
             "click button.save-button": "saveService",
             "click button#new_cloud_account": "newCloudAccount",
             "click button#new_cloud_service": "newCloudService",
+            "click button#delete_cloud_account": "deleteCloudAccount",
             "click button.delete-button": "deleteService"
         },
         /** Constructor method for current view */
@@ -61,6 +62,11 @@ define([
             });
             //Render my own view
             this.render();
+            
+            var managementView = this;
+            Common.vent.on("managementRefresh", function() {
+                managementView.refreshManagementView();
+            });
         },
         /** Add all of my own html elements */
         render: function () {
@@ -126,6 +132,7 @@ define([
         },
 
         newCloudAccount: function(){
+            
             var CloudAccountCreateView = this.CloudAccountCreateView;
             
             this.newResourceDialog = new CloudAccountCreateView({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id});
@@ -160,6 +167,19 @@ define([
                 childView.close();
               }
             });
+        },
+        
+        refreshManagementView: function(){
+            this.collection.fetch({ 
+                data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id}),
+                success: _.bind(this.renderAccountAttributes, this),
+                reset: true
+
+            });
+        },
+        
+        deleteCloudAccount: function(){
+            var cl_ac = this.selectedCloudAccount.destroy();
         } 
     });
 

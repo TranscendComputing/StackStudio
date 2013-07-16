@@ -39,6 +39,46 @@ define([
         parse: function(resp) {
             return resp.cloud_account;
         },
+        
+        create: function(options, org_id, cloud_id) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_accounts?org_id=" + org_id + "&cloud_id=" + cloud_id;
+            var cloud_account = {"cloud_account":options};
+            
+            //debugger
+            
+            $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: JSON.stringify(cloud_account),
+                success: function(data) {
+                    Common.vent.trigger("managementRefresh");
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            });
+            
+        },
+        
+        destroy: function() {
+            
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_accounts/" + this.id + "?_method=DELETE";
+            
+            $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/x-www-form-urlencoded',
+                success: function(data) {
+                    Common.vent.trigger("managementRefresh");
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            });
+            
+        },
 
         /**
          * Saves a cloud account's cloud service

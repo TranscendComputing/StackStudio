@@ -11,22 +11,29 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/account/cloudAccountCreateTemplate.html',
-        '/js/models/group.js',
+        '/js/collections/clouds.js',
+        '/js/models/cloudAccount.js',
         'common'
         
-], function( $, _, Backbone, DialogView, groupCreateTemplate, Group, Common ) {
+], function( $, _, Backbone, DialogView, cloudAccountCreateTemplate, Clouds, CloudAccount, Common ) {
     
-    var GroupCreateView = DialogView.extend({
+    var CloudAccountCreateView = DialogView.extend({
 
-        group: new Group(),
+        cloudAccount: new CloudAccount(),
+        
+        org_id: undefined,
+        
+        clouds: Clouds,
         
         events: {
             "dialogclose": "close"
         },
 
-        initialize: function() {
+        initialize: function(options) {
+            this.org_id = options.org_id;
+            
             var createView = this;
-            var compiledTemplate = _.template(groupCreateTemplate);
+            var compiledTemplate = _.template(cloudAccountCreateTemplate);
             this.$el.html(compiledTemplate);
 
             this.$el.dialog({
@@ -49,22 +56,36 @@ define([
         render: function() {
             $("#org_select").selectmenu();
             $("#cloud_select").selectmenu();
+            
+            this.clouds.on('reset', this.addClouds, this);
+            this.clouds.fetch({ 
+                reset: true
+            });
+            $("#org_html").html(sessionStorage.company);
         },
 
         create: function() {
-            var newGroup = this.group;
+            var newCloudAccount = this.cloudAccount;
             var options = {};
             
-            if($("#group_name_input").val() !== "") {
-                options.name = $("#group_name_input").val();
-                options.description = $("#group_description_input").val();
-                newGroup.create(options);
+            if($("#cloud_account_name_input").val() !== "") {
+                options.name = $("#cloud_account_name_input").val();
+                newCloudAccount.create(options,sessionStorage.org_id,$("#cloud_select").val());
                 this.$el.dialog('close');
             }else {
                 Common.errorDialog("Invalid Request", "Please supply all required fields.");
             }
+        },
+        
+        addClouds: function(){
+            
+            $("#cloud_select").empty();
+            this.clouds.each(function(cloud) {
+                $("#cloud_select").append("<option value="+cloud.attributes.id+">"+cloud.attributes.name+"</option>");
+            });
+            $("#cloud_select").selectmenu();
         }
     });
     
-    return GroupCreateView;
+    return CloudAccountCreateView;
 });
