@@ -33,7 +33,7 @@ define([
                 autoOpen: true,
                 title: "Create Cloud Service",
                 resizable: false,
-                width: 425,
+                width: 325,
                 modal: true,
                 buttons: {
                     Create: function () {

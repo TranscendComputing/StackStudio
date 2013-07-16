@@ -40,7 +40,7 @@ define([
                 autoOpen: true,
                 title: "Create Cloud Account",
                 resizable: false,
-                width: 425,
+                width: 325,
                 modal: true,
                 buttons: {
                     Create: function () {
