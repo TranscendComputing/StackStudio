@@ -26,7 +26,7 @@ define([
         template: _.template(managementTemplate),
         /** @type {Object} Object of events for view to listen on */
         events: {
-            "click .ui-corner-all": "selectManagement"
+            "click .account_list": "selectManagement"
         },
         subApp: undefined,
         /** Constructor method for current view */
@@ -43,7 +43,7 @@ define([
             
         },
         selectManagement: function(event){
-            $(".selected_item", "#account_management_menu").removeClass("selected_item");
+            $(".selected_item").removeClass("selected_item");
             $(event.target).addClass("selected_item");
         },
         close: function(){

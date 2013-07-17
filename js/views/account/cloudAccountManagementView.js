@@ -114,10 +114,10 @@ define([
         },
 
         clearSelection: function() {
-            /*$("#cloud_account_list li").each(function() {
+            $("#cloud_account_list li").each(function() {
                $(this).removeClass("selected_item");
-            });*/
-            $(".list_item").removeClass("selected_item");
+            });
+            //$(".list_item").removeClass("selected_item");
         },
         saveService: function(event) {
             var uri, service;
