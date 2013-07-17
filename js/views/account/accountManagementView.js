@@ -26,7 +26,7 @@ define([
         template: _.template(managementTemplate),
         /** @type {Object} Object of events for view to listen on */
         events: {
-            
+            "click .ui-corner-all": "selectManagement"
         },
         subApp: undefined,
         /** Constructor method for current view */
@@ -40,6 +40,11 @@ define([
             //Render my template
             this.$el.html(this.template);
             $("ul#account_management_menu").menu({role: "listbox"});
+            
+        },
+        selectManagement: function(event){
+            $(".selected_item", "#account_management_menu").removeClass("selected_item");
+            $(event.target).addClass("selected_item");
         },
         close: function(){
             this.$el.empty();

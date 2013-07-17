@@ -103,6 +103,7 @@ define([
             console.log(this.collection);
             $("#cloud_account_list").empty();            
             this.collection.each(this.addOne, this);
+            $("#cloud_account_list").children().first().trigger('click');
         },
 
         selectCloudAccount: function(event) {
@@ -113,9 +114,10 @@ define([
         },
 
         clearSelection: function() {
-            $("#cloud_account_list li").each(function() {
+            /*$("#cloud_account_list li").each(function() {
                $(this).removeClass("selected_item");
-            });
+            });*/
+            $(".list_item").removeClass("selected_item");
         },
         saveService: function(event) {
             var uri, service;
