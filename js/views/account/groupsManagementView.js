@@ -31,7 +31,6 @@ define([
         selectedGroup: undefined,
 
         events: {
-            "click .group_item" : "selectGroup",
             "click #create_group_button" : "createGroup",
             "click #delete_group_button" : "deleteGroup",
             "click #manage_group_users_button" : "manageGroupUsers"
@@ -61,18 +60,10 @@ define([
         render: function () {
             this.disableSelectionRequiredButtons(true);
             $("#group_users_table").dataTable().fnClearTable();
+            
             this.groups.fetch({
                 reset: true
             });
-            
-        },
-
-        selectGroup: function(event) {
-            this.clearSelection();
-            $(event.target).addClass("selected_item");
-            this.selectedGroup = this.groups.get(event.target.id);
-            this.disableSelectionRequiredButtons(false);
-            this.addAllGroupUsers();
         },
         
         treeSelect: function() {
