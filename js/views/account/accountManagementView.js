@@ -11,13 +11,15 @@ define([
         'backbone',
         'common',
         'text!templates/account/managementTemplate.html',
+        'collections/groups',
         'views/account/cloudAccountManagementView',
         'views/account/cloudCredentialManagementView',
         'views/account/usersManagementView',
         'views/account/groupsManagementView',
         'jquery-plugins',
-        'jquery-ui-plugins'
-], function( $, _, Backbone, Common, managementTemplate, CloudAccountManagementView, CloudCredentialManagementView, UsersManagementView, GroupsManagementView ) {
+        'jquery-ui-plugins',
+        'jquery.jstree'
+], function( $, _, Backbone, Common, managementTemplate, Groups, CloudAccountManagementView, CloudCredentialManagementView, UsersManagementView, GroupsManagementView ) {
 
     var AccountManagementView = Backbone.View.extend({
         /** @type {String} DOM element to attach view to */
@@ -29,6 +31,8 @@ define([
             "click .account_list": "selectManagement"
         },
         subApp: undefined,
+        tree: undefined,
+        groups: new Groups(),
         /** Constructor method for current view */
         initialize: function() {
             this.subViews = [];
@@ -39,12 +43,32 @@ define([
         render: function () {
             //Render my template
             this.$el.html(this.template);
-            $("ul#account_management_menu").menu({role: "listbox"});
+            
+            //$("ul#account_management_menu").menu({role: "listbox"});
+            
+            this.groups.on('reset', this.addAllGroups, this);
+            this.groups.fetch({
+                reset: true
+            });
+            
+            $("#management_tree").jstree();
             
         },
+        addAllGroups: function() {
+            $("#groups_sub_list").empty();
+            this.groups.each(function(group) {
+                $("#groups_sub_list").append("<li id=tree" + group.attributes.id + " class='group_item'><a href='#account/management/groups'>" + group.attributes.name + "</a></li>");
+            });
+            $("#management_tree").jstree();
+        },
         selectManagement: function(event){
-            $(".selected_item").removeClass("selected_item");
-            $(event.target).addClass("selected_item");
+            if(event.target.attributes.href){
+                location.href = event.target.attributes.href.nodeValue;
+            }
+            console.log(event.target.attributes.class);
+            if(event.target.attributes.class === "group_item"){
+                debugger
+            }
         },
         close: function(){
             this.$el.empty();
@@ -62,7 +86,7 @@ define([
 
     /** Variable to track whether view has been initialized or not */
     var accountManagementView;
-
+    
     Common.router.on("route:accountManagement", function (action) {
         if (this.previousView !== accountManagementView) {
             this.unloadPreviousState();

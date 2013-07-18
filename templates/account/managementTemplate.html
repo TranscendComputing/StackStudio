@@ -1,13 +1,15 @@
 <div class="twelvecol row">
-    <ul id="account_management_menu" class="twocol">        
-        <!--
-        <li><a href="#account/management">Account Info</a></li>
-        <li><a href="#account/management">Usage</a></li>
-        -->
-        <li class="account_list"><a href="#account/management/cloud-accounts">Cloud Accounts</a></li>
-        <li class="account_list"><a href="#account/management/cloud-credentials">Cloud Credentials</a></li>
-        <li class="account_list"><a href="#account/management/groups">Groups</a></li>
-        <li class="account_list"><a href="#account/management/users">Users</a></li>
-    </ul>
+    <div id="management_tree" class="twocol" style="background-color:transparent;">
+        <ul id="account_management_menu" class="twocol">        
+            <!--
+            <li><a href="#account/management">Account Info</a></li>
+            <li><a href="#account/management">Usage</a></li>
+            -->
+            <li class="account_list"><a href="#account/management/cloud-accounts">Cloud Accounts</a></li>
+            <li class="account_list"><a href="#account/management/cloud-credentials">Cloud Credentials</a></li>
+            <li class="account_list"><a href="#account/management/groups">Groups</a><ul id="groups_sub_list"></ul></li>
+            <li class="account_list"><a href="#account/management/users">Users</a></li>
+        </ul>
+    </div>
     <div id="submanagement_app" class="tencol"></div>
 </div>
