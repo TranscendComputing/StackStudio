@@ -23,6 +23,8 @@ define([
         tagName: 'div',
 
         template: _.template(groupsManagementTemplate),
+        
+        rootView: undefined,
 
         groups: undefined,
 
@@ -37,6 +39,7 @@ define([
 
         initialize: function() {
             this.$el.html(this.template);
+            this.rootView = this.options.rootView;
             $("#submanagement_app").html(this.$el);
             $("button").button();
             $("#group_users_table").dataTable({
@@ -47,10 +50,11 @@ define([
             Common.vent.off("groupRefresh");
             Common.vent.on("groupRefresh", function() {
                 groupsView.render();
+                //refetch tree groups
+                
             });
             this.selectedGroup = undefined;
-            this.groups = new Groups();
-            this.groups.on('reset', this.addAllGroups, this);
+            this.groups = this.rootView.groups;
             this.render();
         },
 
@@ -60,28 +64,22 @@ define([
             this.groups.fetch({
                 reset: true
             });
-        },
-
-        addAllGroups: function() {
-            var view = this;
-            $("#groups_menu_list").empty();
-            this.groups.each(function(group) {
-                if(view.selectedGroup && view.selectedGroup.attributes.id === group.attributes.id) {
-                    $("#groups_menu_list").append("<li id=" + group.attributes.id + " class='group_item selected_item'>" + group.attributes.name + "</li>");
-                    //refresh selectedGroup
-                    view.selectedGroup = group;
-                    view.disableSelectionRequiredButtons(false);
-                    view.addAllGroupUsers();
-                }else {
-                    $("#groups_menu_list").append("<li id=" + group.attributes.id + " class='group_item'>" + group.attributes.name + "</li>");
-                }
-            });
+            
         },
 
         selectGroup: function(event) {
             this.clearSelection();
             $(event.target).addClass("selected_item");
             this.selectedGroup = this.groups.get(event.target.id);
+            this.disableSelectionRequiredButtons(false);
+            this.addAllGroupUsers();
+        },
+        
+        treeSelect: function() {
+            this.clearSelection();
+            //$(event.target).addClass("selected_item");
+            this.selectedGroup = this.rootView.groups.get(this.rootView.treeGroup);
+            $("#selected_group_name").html(this.selectedGroup.attributes.name);
             this.disableSelectionRequiredButtons(false);
             this.addAllGroupUsers();
         },

@@ -28,46 +28,58 @@ define([
         template: _.template(managementTemplate),
         /** @type {Object} Object of events for view to listen on */
         events: {
-            "click .account_list": "selectManagement"
+            "click .account_list": "selectManagement",
+            "click .group_item": "selectGroup"
         },
         subApp: undefined,
         tree: undefined,
-        groups: new Groups(),
+        groups: undefined,
+        treeGroup: undefined,
         /** Constructor method for current view */
         initialize: function() {
             this.subViews = [];
+            //Render my template
+            this.$el.html(this.template);
+            
+            this.groups = new Groups();
+            this.groups.on('reset', this.addAllGroups, this);
             //Render my own view
             this.render();
         },
         /** Add all of my own html elements */
         render: function () {
-            //Render my template
-            this.$el.html(this.template);
-            
-            //$("ul#account_management_menu").menu({role: "listbox"});
-            
-            this.groups.on('reset', this.addAllGroups, this);
             this.groups.fetch({
                 reset: true
             });
+            //$("ul#account_management_menu").menu({role: "listbox"});
             
-            $("#management_tree").jstree();
+            //$("#management_tree").jstree();
             
         },
         addAllGroups: function() {
+            //debugger
             $("#groups_sub_list").empty();
             this.groups.each(function(group) {
-                $("#groups_sub_list").append("<li id=tree" + group.attributes.id + " class='group_item'><a href='#account/management/groups'>" + group.attributes.name + "</a></li>");
+                $("#groups_sub_list").append("<li><a id='" + group.attributes.id + "' href='#account/management/groups' class='group_item'>" + group.attributes.name + "</a></li>");
             });
-            $("#management_tree").jstree();
+            this.tree = $("#management_tree").jstree();
+            
+            if(this.groups.get(this.treeGroup)){
+                this.subApp.treeSelect();
+            }else{
+                $("#selected_group_name").html("No Group Selected");
+            }
         },
         selectManagement: function(event){
             if(event.target.attributes.href){
                 location.href = event.target.attributes.href.nodeValue;
             }
-            console.log(event.target.attributes.class);
-            if(event.target.attributes.class === "group_item"){
-                debugger
+        },
+        selectGroup: function(event){
+            this.treeGroup = event.target.id;
+            //debugger
+            if(typeof(this.subApp.treeSelect) != "undefined"){
+                this.subApp.treeSelect();
             }
         },
         close: function(){
@@ -136,7 +148,7 @@ define([
                     if(accountManagementView.subApp !== undefined){
                         accountManagementView.subApp.close();
                     }
-                    accountManagementView.subApp = new GroupsManagementView();
+                    accountManagementView.subApp = new GroupsManagementView({rootView: accountManagementView});
                 }
                 break;
         }
