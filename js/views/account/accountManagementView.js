@@ -12,6 +12,8 @@ define([
         'common',
         'text!templates/account/managementTemplate.html',
         'collections/groups',
+        'collections/cloudCredentials',
+        'collections/cloudAccounts',
         'views/account/cloudAccountManagementView',
         'views/account/cloudCredentialManagementView',
         'views/account/usersManagementView',
@@ -19,7 +21,7 @@ define([
         'jquery-plugins',
         'jquery-ui-plugins',
         'jquery.jstree'
-], function( $, _, Backbone, Common, managementTemplate, Groups, CloudAccountManagementView, CloudCredentialManagementView, UsersManagementView, GroupsManagementView ) {
+], function( $, _, Backbone, Common, managementTemplate, Groups, CloudCredentials, CloudAccounts, CloudAccountManagementView, CloudCredentialManagementView, UsersManagementView, GroupsManagementView ) {
 
     var AccountManagementView = Backbone.View.extend({
         /** @type {String} DOM element to attach view to */
@@ -34,6 +36,8 @@ define([
         subApp: undefined,
         tree: undefined,
         groups: undefined,
+        cloudCredentials: new CloudCredentials(),
+        cloudAccounts: new CloudAccounts(),
         treeGroup: undefined,
         /** Constructor method for current view */
         initialize: function() {
@@ -43,33 +47,57 @@ define([
             
             this.groups = new Groups();
             this.groups.on('reset', this.addAllGroups, this);
+            
+            this.cloudCredentials.on( 'reset', this.addAllCreds, this );
+            
+            this.cloudAccounts.on( 'reset', this.addAllCloudAccounts, this );
+            
             //Render my own view
             this.render();
         },
         /** Add all of my own html elements */
         render: function () {
+            $("#management_tree").jstree({"plugins":[ "themes", "html_data", "ui", "crrm" ]}).on('loaded.jstree', function() {$("#management_tree").jstree('open_all');});
+            
             this.groups.fetch({
                 reset: true
             });
-            //$("ul#account_management_menu").menu({role: "listbox"});
-            
-            //$("#management_tree").jstree();
-            
         },
         addAllGroups: function() {
-            //debugger
-            $("#groups_sub_list").empty();
+            $('.group_item').remove();
             this.groups.each(function(group) {
-                $("#groups_sub_list").append("<li><a id='" + group.attributes.id + "' href='#account/management/groups' class='group_item'>" + group.attributes.name + "</a></li>");
+                $("#management_tree").jstree("create","#group_list","first",{ attr : {class : "group_item"} , data : { title: group.attributes.name, attr : { id : group.attributes.id, href : "#account/management/groups", class : "group_item" }} },false, true);
             });
-            this.tree = $("#management_tree").jstree();
             
             if(this.groups.get(this.treeGroup)){
                 this.subApp.treeSelect();
             }else{
                 $("#selected_group_name").html("No Group Selected");
             }
+            
+            //async
+            this.cloudCredentials.fetch({reset: true});
         },
+        
+        addAllCreds: function(){
+            $('.credential_item').remove();
+            this.cloudCredentials.each(function(cred) {
+                $("#management_tree").jstree("create","#cred_list","first",{ attr : {class : "credential_item"} , data : { title: cred.attributes.name, attr : { id : cred.attributes.id, href : "#account/management/cloud-credentials", class : "credential_item" }} },false, true);
+            });
+            
+            this.cloudAccounts.fetch({ 
+                data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id}),
+                reset: true
+            });
+        },
+        
+        addAllCloudAccounts: function(){
+            $('.cloud_account_item').remove();
+            this.cloudAccounts.each(function(c_account) {
+                $("#management_tree").jstree("create","#c_account_list","first",{ attr : {class : "cloud_account_item"} , data : { title: c_account.attributes.name, attr : { id : c_account.attributes.id, href : "#account/management/cloud-accounts", class : "cloud_account_item" }} },false, true);
+            });
+        },
+        
         selectManagement: function(event){
             if(event.target.attributes.href){
                 location.href = event.target.attributes.href.nodeValue;
@@ -77,7 +105,6 @@ define([
         },
         selectGroup: function(event){
             this.treeGroup = event.target.id;
-            //debugger
             if(typeof(this.subApp.treeSelect) != "undefined"){
                 this.subApp.treeSelect();
             }
