@@ -37,7 +37,11 @@ define([
              * on document ready when ich first inits).
              */
             this.cloudProvider = this.model.attributes.cloud_provider.toLocaleLowerCase();
-            ich.grabTemplates();
+            
+            if(!ich[this.cloudProvider + "_credential_form"]){
+                ich.grabTemplates();
+            }
+            
             var template = this.cloudProvider + "_credential_form";
             var attributes = (this.model === undefined) ? {} : this.model.attributes;
             var form =  ich[template](attributes);

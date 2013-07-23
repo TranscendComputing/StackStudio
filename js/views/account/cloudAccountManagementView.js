@@ -95,7 +95,10 @@ define([
              * Then removes those elements from the dom (this is the method that runs 
              * on document ready when ich first inits).
              */
-            ich.grabTemplates();
+            
+            if(!ich.templates.cloud_service){
+                ich.grabTemplates();
+            }
             
             var services = ich['cloud_service'](this.selectedCloudAccount.attributes);
             $('#services_page').html(services);
