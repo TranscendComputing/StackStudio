@@ -77,11 +77,7 @@ define([
             this.groups.each(function(group) {
                 $("#management_tree").jstree("create","#group_list","first",{ attr : {class : "group_item"} , data : { title: group.attributes.name, attr : { id : group.attributes.id, href : "#account/management/groups", class : "group_item" }} },false, true);
             });
-            /*
-            if(!this.treeGroup){
-                this.treeGroup = this.groups.models[this.groups.length-1].id;
-            }
-            */
+            
             if(this.groups.get(this.treeGroup) && typeof(this.subApp.treeSelect) != "undefined"){
                 
                 this.subApp.treeSelect();
