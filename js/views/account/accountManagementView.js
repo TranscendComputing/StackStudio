@@ -61,49 +61,54 @@ define([
         },
         /** Add all of my own html elements */
         render: function () {
-            $("#management_tree").jstree({"plugins":[ "themes", "html_data", "ui", "crrm" ]}).on('loaded.jstree', function() {$("#management_tree").jstree('open_all');});
+            //$("#management_tree").jstree({"plugins":[ "themes", "html_data", "ui", "crrm" ]}).on('loaded.jstree', function() {$("#management_tree").jstree('open_all');});
             
+            $("#mCloudAccount_tree").jstree({"plugins":[ "themes", "html_data", "ui", "crrm" ]}).on('loaded.jstree', function() {$("#mCloudAccount_tree").jstree('open_all');});
+            $("#mCloudCredential_tree").jstree({"plugins":[ "themes", "html_data", "ui", "crrm" ]}).on('loaded.jstree', function() {$("#mCloudCredential_tree").jstree('open_all');});
+            $("#mGroup_tree").jstree({"plugins":[ "themes", "html_data", "ui", "crrm" ]}).on('loaded.jstree', function() {$("#mGroup_tree").jstree('open_all');});
+            $("#mUser_tree").jstree({"plugins":[ "themes", "html_data", "ui", "crrm" ]}).on('loaded.jstree', function() {$("#mUser_tree").jstree('open_all');});
+            
+            //Fetch Collections
             this.groups.fetch({
                 reset: true
             });
-        },
-        addAll: function(){
-            this.groups.fetch({
+            
+            //async
+            this.cloudCredentials.fetch({reset: true});
+            
+            //async
+            this.cloudAccounts.fetch({ 
+                data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id}),
                 reset: true
             });
         },
         addAllGroups: function() {
             $('.group_item').remove();
             this.groups.each(function(group) {
-                $("#management_tree").jstree("create","#group_list","first",{ attr : {class : "group_item"} , data : { title: group.attributes.name, attr : { id : group.attributes.id, href : "#account/management/groups", class : "group_item" }} },false, true);
+                $("#mGroup_tree").jstree("create","#group_list","first",{ attr : {class : "group_item"} , data : { title: group.attributes.name, attr : { id : group.attributes.id, href : "#account/management/groups", class : "group_item" }} },false, true);
             });
             
             if(this.groups.get(this.treeGroup) && typeof(this.subApp.treeSelect) != "undefined"){
-                
                 this.subApp.treeSelect();
             }else{
                 $("#selected_group_name").html("No Group Selected");
             }
             
-            //async
-            this.cloudCredentials.fetch({reset: true});
+            
         },
         addAllCreds: function(){
             $('.credential_item').remove();
             this.cloudCredentials.each(function(cred) {
-                $("#management_tree").jstree("create","#cred_list","first",{ attr : {class : "credential_item"} , data : { title: cred.attributes.name, attr : { id : cred.attributes.id, href : "#account/management/cloud-credentials", class : "credential_item" }} },false, true);
+                $("#mCloudCredential_tree").jstree("create","#cred_list","first",{ attr : {class : "credential_item"} , data : { title: cred.attributes.name, attr : { id : cred.attributes.id, href : "#account/management/cloud-credentials", class : "credential_item" }} },false, true);
             });
             
-            this.cloudAccounts.fetch({ 
-                data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id}),
-                reset: true
-            });
+            
         },
         
         addAllCloudAccounts: function(){
             $('.cloud_account_item').remove();
             this.cloudAccounts.each(function(c_account) {
-                $("#management_tree").jstree("create","#c_account_list","first",{ attr : {class : "cloud_account_item"} , data : { title: c_account.attributes.name, attr : { id : c_account.attributes.id, href : "#account/management/cloud-accounts", class : "cloud_account_item" }} },false, true);
+                $("#mCloudAccount_tree").jstree("create","#c_account_list","first",{ attr : {class : "cloud_account_item"} , data : { title: c_account.attributes.name, attr : { id : c_account.attributes.id, href : "#account/management/cloud-accounts", class : "cloud_account_item" }} },false, true);
             });
             //debugger
             if(!this.treeCloudAccount){
