@@ -31,7 +31,8 @@ define([
         /** @type {Object} Object of events for view to listen on */
         events: {
             "click .account_list": "selectManagement",
-            "click .group_item": "selectGroup"
+            "click .group_item": "selectGroup",
+            "click .cloud_account_item": "selectCloudAccount"
         },
         subApp: undefined,
         tree: undefined,
@@ -39,6 +40,7 @@ define([
         cloudCredentials: new CloudCredentials(),
         cloudAccounts: new CloudAccounts(),
         treeGroup: undefined,
+        treeCloudAccount: undefined,
         /** Constructor method for current view */
         initialize: function() {
             this.subViews = [];
@@ -63,13 +65,23 @@ define([
                 reset: true
             });
         },
+        addAll: function(){
+            this.groups.fetch({
+                reset: true
+            });
+        },
         addAllGroups: function() {
             $('.group_item').remove();
             this.groups.each(function(group) {
                 $("#management_tree").jstree("create","#group_list","first",{ attr : {class : "group_item"} , data : { title: group.attributes.name, attr : { id : group.attributes.id, href : "#account/management/groups", class : "group_item" }} },false, true);
             });
-            
-            if(this.groups.get(this.treeGroup)){
+            /*
+            if(!this.treeGroup){
+                this.treeGroup = this.groups.models[this.groups.length-1].id;
+            }
+            */
+            if(this.groups.get(this.treeGroup) && typeof(this.subApp.treeSelect) != "undefined"){
+                
                 this.subApp.treeSelect();
             }else{
                 $("#selected_group_name").html("No Group Selected");
@@ -78,7 +90,6 @@ define([
             //async
             this.cloudCredentials.fetch({reset: true});
         },
-        
         addAllCreds: function(){
             $('.credential_item').remove();
             this.cloudCredentials.each(function(cred) {
@@ -96,18 +107,41 @@ define([
             this.cloudAccounts.each(function(c_account) {
                 $("#management_tree").jstree("create","#c_account_list","first",{ attr : {class : "cloud_account_item"} , data : { title: c_account.attributes.name, attr : { id : c_account.attributes.id, href : "#account/management/cloud-accounts", class : "cloud_account_item" }} },false, true);
             });
+            //debugger
+            if(!this.treeCloudAccount){
+                this.treeCloudAccount = this.cloudAccounts.models[this.cloudAccounts.length-1].id;
+            }
+            
+            if(this.cloudAccounts.get(this.treeCloudAccount) && typeof(this.subApp.treeSelectCloudAccount) != "undefined"){
+                this.subApp.treeSelectCloudAccount();
+            }else if(typeof(this.subApp.treeSelectCloudAccount) != "undefined"){
+                this.treeCloudAccount = this.cloudAccounts.models[this.cloudAccounts.length-1].id;
+                this.subApp.treeSelectCloudAccount();
+            }
         },
         
         selectManagement: function(event){
+            
             if(event.target.attributes.href){
                 location.href = event.target.attributes.href.nodeValue;
             }
         },
         selectGroup: function(event){
+            //debugger
             this.treeGroup = event.target.id;
+            //console.log("Selecting Group: "+this.treeGroup);
             if(typeof(this.subApp.treeSelect) != "undefined"){
                 this.subApp.treeSelect();
             }
+        },
+        selectCloudAccount: function(event){
+            this.treeCloudAccount = event.target.id;
+            //console.log("Selecting Cloud Account: "+this.treeCloudAccount);
+            
+            if(typeof(this.subApp.treeSelectCloudAccount) != "undefined"){
+                this.subApp.treeSelectCloudAccount();
+            }
+            
         },
         close: function(){
             this.$el.empty();
@@ -142,7 +176,7 @@ define([
                     if(accountManagementView.subApp !== undefined){
                         accountManagementView.subApp.close();
                     }
-                    accountManagementView.subApp = new CloudAccountManagementView();
+                    accountManagementView.subApp = new CloudAccountManagementView({rootView: accountManagementView});
                 }
                 break;
             case "cloud-credentials":

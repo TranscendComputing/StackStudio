@@ -30,9 +30,9 @@ define([
         template: _.template(managementCloudAccountTemplate),
         CloudAccountCreateView: CloudAccountCreate,
         CloudServiceCreateView: CloudServiceCreate,
+        rootView: undefined,
         /** @type {Object} Object of events for view to listen on */
         events: {
-            "click .list_item": "selectCloudAccount",
             "click button.save-button": "saveService",
             "click button#new_cloud_account": "newCloudAccount",
             "click button#new_cloud_service": "newCloudService",
@@ -41,10 +41,19 @@ define([
         },
         /** Constructor method for current view */
         initialize: function() {
+            
+            this.rootView = this.options.rootView;
+            //this.rootView.treeCloudAccount = this.rootView.cloudAccounts
+            //var whatisthis = this.rootView.cloudAccounts;
+            //debugger
+            
+            
             this.childViews = [];
             //Add listeners and fetch db for collection
-            this.collection.on( 'add', this.addOne, this );
-            this.collection.on( 'reset', this.addAll, this );
+            //this.collection.on( 'add', this.addOne, this );
+            //this.collection.on( 'reset', this.addAll, this );
+            
+            this.collection = this.rootView.cloudAccounts;
 
             /**
              * Perhaps the single most common JavaScript "gotcha" is the fact that when 
@@ -58,7 +67,6 @@ define([
                 data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id}),
                 success: _.bind(this.renderAccountAttributes, this),
                 reset: true
-
             });
             //Render my own view
             this.render();
@@ -75,7 +83,7 @@ define([
         render: function () {
             //Render my template
             this.$el.append(this.template);
-            $("ul#cloud_account_list").menu();
+            //$("ul#cloud_account_list").menu();
             $("div#detail_tabs").tabs();
         },
 
@@ -88,37 +96,20 @@ define([
              * on document ready when ich first inits).
              */
             ich.grabTemplates();
+            
             var services = ich['cloud_service'](this.selectedCloudAccount.attributes);
             $('#services_page').html(services);
+            
             $('button').button();
         },
-
-        addOne: function(model) {
-            console.log(model);
-            $("#cloud_account_list").prepend("<li class='list_item' id='"+model.attributes.name+"'>"+model.attributes.name+"</li>");
-            this.selectedCloudAccount = model;
-        },
-
-        addAll: function() {
-            console.log(this.collection);
-            $("#cloud_account_list").empty();            
-            this.collection.each(this.addOne, this);
-            $("#cloud_account_list").children().first().trigger('click');
-        },
-
-        selectCloudAccount: function(event) {
-            this.clearSelection();
-            $(event.target).addClass("selected_item");
-            this.selectedCloudAccount = this.collection.where({name: event.target.id})[0];
+        
+        treeSelectCloudAccount: function() {
+            //this.clearSelection();
+            this.selectedCloudAccount = this.rootView.cloudAccounts.get(this.rootView.treeCloudAccount);
+            $("#services_tab").html(this.selectedCloudAccount.attributes.name);
             this.renderAccountAttributes();
         },
 
-        clearSelection: function() {
-            $("#cloud_account_list li").each(function() {
-               $(this).removeClass("selected_item");
-            });
-            //$(".list_item").removeClass("selected_item");
-        },
         saveService: function(event) {
             var uri, service;
             var endpointValue = $(event.currentTarget.parentElement).find("input").val();
@@ -137,7 +128,6 @@ define([
         },
 
         newCloudAccount: function(){
-            
             var CloudAccountCreateView = this.CloudAccountCreateView;
             
             this.newResourceDialog = new CloudAccountCreateView({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id});
