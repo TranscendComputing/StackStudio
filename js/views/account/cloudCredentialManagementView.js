@@ -55,7 +55,7 @@ define([
             this.cloudAccounts.on( 'add', this.addCloudAccount, this);
             this.cloudAccounts.on( 'reset', this.addAllCloudAccounts, this);
             this.cloudAccounts.fetch({ 
-                data: $.param({ org_id: sessionStorage.org_id }),
+                data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id }),
                 reset: true
             });
         },

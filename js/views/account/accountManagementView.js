@@ -62,7 +62,6 @@ define([
         /** Add all of my own html elements */
         render: function () {
             var accMan = this;
-            //$("#management_tree").jstree({"plugins":[ "themes", "html_data", "ui", "crrm" ]}).on('loaded.jstree', function() {$("#management_tree").jstree('open_all');});
             
             $("#mCloudAccount_tree").jstree({"plugins":[ "themes", "html_data", "ui", "crrm" ]}).on('loaded.jstree', function() {
                 //async
@@ -71,25 +70,17 @@ define([
                     reset: true
                 });
             });
-            //$("#mCloudAccount_tree").jstree('open_all');
             $("#mCloudCredential_tree").jstree({"plugins":[ "themes", "html_data", "ui", "crrm" ]}).on('loaded.jstree', function() {
                 //async
                 accMan.cloudCredentials.fetch({reset: true});
             });
-            //$("#mCloudCredential_tree").jstree('open_all');
             $("#mGroup_tree").jstree({"plugins":[ "themes", "html_data", "ui", "crrm" ]}).on('loaded.jstree', function() {
                 //Fetch Collections
                 accMan.groups.fetch({
                     reset: true
                 });
             });
-            //$("#mGroup_tree").jstree('open_all');
             $("#mUser_tree").jstree({"plugins":[ "themes", "html_data", "ui", "crrm" ]}).on('loaded.jstree', function() {$("#mUser_tree").jstree('open_all');});
-            
-            
-            
-            
-            
             
         },
         addAllGroups: function() {
