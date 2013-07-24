@@ -61,26 +61,36 @@ define([
         },
         /** Add all of my own html elements */
         render: function () {
+            var accMan = this;
             //$("#management_tree").jstree({"plugins":[ "themes", "html_data", "ui", "crrm" ]}).on('loaded.jstree', function() {$("#management_tree").jstree('open_all');});
             
-            $("#mCloudAccount_tree").jstree({"plugins":[ "themes", "html_data", "ui", "crrm" ]}).on('loaded.jstree', function() {$("#mCloudAccount_tree").jstree('open_all');});
-            $("#mCloudCredential_tree").jstree({"plugins":[ "themes", "html_data", "ui", "crrm" ]}).on('loaded.jstree', function() {$("#mCloudCredential_tree").jstree('open_all');});
-            $("#mGroup_tree").jstree({"plugins":[ "themes", "html_data", "ui", "crrm" ]}).on('loaded.jstree', function() {$("#mGroup_tree").jstree('open_all');});
+            $("#mCloudAccount_tree").jstree({"plugins":[ "themes", "html_data", "ui", "crrm" ]}).on('loaded.jstree', function() {
+                //async
+                accMan.cloudAccounts.fetch({ 
+                    data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id}),
+                    reset: true
+                });
+            });
+            //$("#mCloudAccount_tree").jstree('open_all');
+            $("#mCloudCredential_tree").jstree({"plugins":[ "themes", "html_data", "ui", "crrm" ]}).on('loaded.jstree', function() {
+                //async
+                accMan.cloudCredentials.fetch({reset: true});
+            });
+            //$("#mCloudCredential_tree").jstree('open_all');
+            $("#mGroup_tree").jstree({"plugins":[ "themes", "html_data", "ui", "crrm" ]}).on('loaded.jstree', function() {
+                //Fetch Collections
+                accMan.groups.fetch({
+                    reset: true
+                });
+            });
+            //$("#mGroup_tree").jstree('open_all');
             $("#mUser_tree").jstree({"plugins":[ "themes", "html_data", "ui", "crrm" ]}).on('loaded.jstree', function() {$("#mUser_tree").jstree('open_all');});
             
-            //Fetch Collections
-            this.groups.fetch({
-                reset: true
-            });
             
-            //async
-            this.cloudCredentials.fetch({reset: true});
             
-            //async
-            this.cloudAccounts.fetch({ 
-                data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id}),
-                reset: true
-            });
+            
+            
+            
         },
         addAllGroups: function() {
             $('.group_item').remove();
