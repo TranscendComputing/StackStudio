@@ -168,7 +168,8 @@ requirejs.config({
         'wijsuperpanel': 'jquery.wijmo.wijsuperpanel',
         'wijsplitter': 'jquery.wijmo.wijsplitter',
         'wijmo': 'wijmo-require',
-        'wijmo-actual': 'jquery.wijmo-open.all.2.3.2.min'
+        'wijmo-actual': 'jquery.wijmo-open.all.2.3.2.min',
+        'bootstrap': '//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min'
     }
 });
 
@@ -279,7 +280,7 @@ define(
                 $el.multiselect({
                     selectedList: options.selectedList,
                     noneSelectedText: options.noneSelectedText
-                }).multiselectfilter();   
+                }).multiselectfilter();
             }else{
                 $el.selectmenu();
             }

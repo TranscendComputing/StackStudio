@@ -27,7 +27,7 @@ require(['./common'], function (common) {
             site = siteParam.toLowerCase();
         }
         var siteCss = "css/sites/" + site + ".css";
-        var siteJs = "./js/sites/" + site + ".js"; 
+        var siteJs = "./js/sites/" + site + ".js";
         var fileref=document.createElement("link");
         fileref.setAttribute("rel", "stylesheet");
         fileref.setAttribute("type", "text/css");
@@ -46,7 +46,8 @@ require(['./common'], function (common) {
              'views/projectResourceSidebarView',
              // 'views/projectListItemView',
              'views/projectEditView',
-             'views/resource/resourceNavigationView'
+             'views/resource/resourceNavigationView',
+             'views/apps/appsAndPlatformsView'
             ], function(NavLogin, DashboardView) {
         var navLogin = new NavLogin();
         navLogin.render();
