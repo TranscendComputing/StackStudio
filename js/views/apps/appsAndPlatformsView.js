@@ -27,35 +27,30 @@ define([
      * @param {Object} initialization object.
      * @returns {Object} Returns a AppsView project.
      */
-	var AppsView = Backbone.View.extend({
+    var AppsView = Backbone.View.extend({
 
-		id: 'apps_view',
+        id: 'apps_view',
 
-		className: ['twelvecol', 'last'],
+        className: ['twelvecol', 'last'],
 
-		template: _.template(appsTemplate),
+        template: _.template(appsTemplate),
 
         cloudProvider: undefined,
-
-		type: undefined,
-
-		subtype:undefined,
-
-		appsId: undefined,
 
         appsApp: undefined,
 
         events: {
             "click .nav a" : "navListClick",
+            "click a.source-search" : "searchClick",
             "click .pick-inst": "onChecked",
             "click #deploy-to": "deployTo",
             "click #deploy-launch": "deployLaunch"
-		},
+        },
 
-		initialize: function() {
-		    console.log("Initialize apps and plat.");
+        initialize: function() {
+            console.log("Initialize apps and plat.");
 
-		    require(['bootstrap'], function() {});
+            require(['bootstrap'], function() {});
 
             this.subViews = [];
             $("#main").html(this.el);
@@ -70,30 +65,62 @@ define([
         },
 
         render: function () {
-            console.log("render apps and plat.");
-		    this.loadAppsApp();
-		},
+            this.loadAppsApp();
+        },
 
-		loadAppsApp: function() {
+        loadAppsApp: function() {
+        },
+
+        searchClick: function(evt) {
+            var label, clicked;
+            clicked = $(evt.target);
+            $("#msg").html('Perform typeahead search, in case of long list of items.');
+            $(".alert").delay(200).addClass("in").show().fadeOut(4000);
+            return false;
         },
 
         navListClick: function(evt) {
-            console.log("click apps and plat.", this, evt.target);
-            $(evt.target).parent().parent().find(".source").removeClass("active");
-            $(evt.target).parent().parent().find(".l2").hide();
-            $(evt.target).parent().find(".l2").show();
-            if ($(evt.target).parent().hasClass("active")) {
-                $(evt.target).parent().removeClass("active");
-                console.log("is active");
+            var label, clicked;
+            clicked = $(evt.target);
+            if (clicked.hasClass("source-search")) {
+                return;
+            }
+            if (clicked.hasClass("source")) {
+                clicked.parent().parent().find(".source").removeClass("active");
+                clicked.parent().parent().find(".l2").hide();
+                clicked.parent().find(".l2").show();
             } else {
-                $(evt.target).parent().addClass("active");
+                label = clicked.text();
+                if (clicked.parent().hasClass("active")) {
+                    clicked.parent().removeClass("active");
+                    $(".selected-apps").children().each(function(i, e) {
+                        if (e.innerHTML === label) {
+                            e.remove();
+                        }
+                    });
+                    if ($(".selected-apps").children().length === 0) {
+                        $(".selected-apps").html("No apps selected.");
+                        $(".hero-unit").find(".btn").addClass("disabled");
+                    }
+                } else {
+                    if ($(".selected-apps").children().length === 0) {
+                        $(".selected-apps").html("");
+                        $("#deploy-launch").removeClass("disabled");
+                    }
+                    clicked.parent().addClass("active");
+                    $(".selected-apps").append('<button class="btn">'+label+'</button>');
+                    this.onChecked(null);
+                }
             }
             return false;
         },
 
         onChecked: function(evt) {
-            console.log("click check.", this, evt.target);
-            $(".hero-unit").find(".btn").removeClass("disabled");
+            if ($(".selected-apps").children().length > 0) {
+                if ($("input:checked").length > 0) {
+                    $(".hero-unit").find(".btn").removeClass("disabled");
+                }
+            }
         },
 
         deployTo: function(evt) {

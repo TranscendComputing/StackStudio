@@ -1,11 +1,12 @@
 <div class="row-fluid">
-<div class="well span3">
+<div class="well span4">
 <ul class="nav nav-tabs nav-stacked">
   <li class="nav-header">Library Sources</li>
-  <li class=""><a class="source" href="#apps/puppet">Puppet</a>
-  <ul class="nav nav-list l2 hide">
-  <li><a href="#" title="Version 1.23, Uploaded 2013-01-25">nexus</a></li>
-  <li><a href="#" title="Version 1.23, Uploaded 2013-01-25">jenkins</a></li>
+  <li class="active"><a class="source" href="#apps/puppet">Puppet</a>
+  <ul class="nav nav-pills nav-stacked l2">
+  <li><a id="pnx" href="#" title="Version 1.23, Uploaded 2013-01-25"><i class="icon-plus"></i> nexus</a></li>
+  <li><a href="#" title="Version 1.23, Uploaded 2013-01-25"><i class="icon-plus"></i> jenkins</a></li>
+  <li><a href="#" class="source-search"><i class="icon-search"></i> More...</a></li>
   </ul>
   </li>
   <li><a class="source" href="#apps/chef">Chef</a>
@@ -16,13 +17,13 @@
   </li>
   <li><a class="source" href="#apps/cloud-formation">Cloud Formation</a>
   <ul class="nav nav-list l2 hide">
-  <li><a href="#" title="Version 1.23, Uploaded 2013-01-25">Riak</a></li>
-  <li><a href="#" title="Version 1.23, Uploaded 2013-01-25">Prod Web App</a></li>
+  <li><a href="#" title="Version 1.23, Uploaded 2013-01-25"><i class="icon-plus"></i> Riak</a></li>
+  <li><a href="#" title="Version 1.23, Uploaded 2013-01-25"><i class="icon-plus"></i> Prod Web App</a></li>
   </ul>
   </li>
 </ul>
 </div>
-<div class="span9">
+<div class="span8">
 <div class="hero-unit">
 <h2>Deploy Apps and Platforms to Instances</h2>
 <div class="row-fluid">
@@ -67,8 +68,14 @@
 </div>
 
 <div class="row-fluid">
+<p>Selected for deployment: <span class="selected-apps empty">No apps selected.</span>
+</p>
+</div>
+
+
+<div class="row-fluid">
 <button id="deploy-to" class="to-inst btn btn-primary disabled" data-loading-text="Deploying...">Deploy to Instances</button>
-<button id="deploy-launch" class="to-inst btn btn-secondary disabled">Deploy to New...</button>
+<button id="deploy-launch" class="to-inst btn btn-success disabled">Deploy to New Instance...</button>
 </div>
 
 <div class="row-fluid">
