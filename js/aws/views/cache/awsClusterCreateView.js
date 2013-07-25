@@ -275,7 +275,7 @@ define([
                 this.displayValid(true, "#num_nodes_input");
                 options.num_nodes = $("#num_nodes_input").val();
             }else {
-                valid = true;
+                issue = true;
                 this.displayValid(false, "#num_nodes_input");
             }
             

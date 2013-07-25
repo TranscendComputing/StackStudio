@@ -57,7 +57,7 @@ define([
             });
 
             if(this.topic) {
-                var topicSplitArray = this.topic.attributes.TopicArn.split(":")
+                var topicSplitArray = this.topic.attributes.TopicArn.split(":");
                 var topicName = topicSplitArray[topicSplitArray.length-1];
                 $("#topic_name_output").html(topicName);
             }

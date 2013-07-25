@@ -149,7 +149,13 @@ define([
         addAllInstanceAndAZs: function(availabilityZonesHealth, instancesHealth) {
             $("#instances_table").dataTable().fnClearTable();
             $.each(instancesHealth, function(index, value) {
-                var instanceHealthData = [value.InstanceId, value.AvailabilityZone, value.State, "<a href='' class='remove_instance'>Remove from Load Balancer</a>"];
+                var aZone;
+                if(value.AvailabilityZone){
+                    aZone = value.AvailabilityZone;
+                }else{
+                    aZone = "";
+                }
+                var instanceHealthData = [value.InstanceId, aZone, value.State, "<a href='' class='remove_instance'>Remove from Load Balancer</a>"];
                 $("#instances_table").dataTable().fnAddData(instanceHealthData);
             });
             $("#availability_zones_table").dataTable().fnClearTable();

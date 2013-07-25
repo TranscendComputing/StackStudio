@@ -19,8 +19,8 @@ define([
             ec2_security_groups: [],
             ip_ranges: [],
             owner_id: ''
-        }
-        ,
+        },
+        
         create: function(options, credentialId, region) {
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/rds/security_groups?cred_id=" + credentialId + "&region=" + region;
             this.sendAjaxAction(url, "POST", {"security_group": options}, "securityGroupAppRefresh");

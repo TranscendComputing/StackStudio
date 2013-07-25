@@ -7,7 +7,7 @@
 /*global define:true console:true */
 define([
         'backbone',
-        '/js/topstack/views/cloud_watch/topstackAlarmCreateView.js',
+        '/js/topstack/views/cloud_watch/topstackAlarmCreateView.js'
 ], function( Backbone, TopStackAlarmCreateView ) {
     
     var OpenStackAlarmCreateView = TopStackAlarmCreateView.extend({

@@ -69,8 +69,9 @@ define([
         
         create: function() {
             var newElasticIp = this.model;
+            var options;
             if($("#address_pool_select").val()) {
-                var options = {"pool":$("#address_pool_select").val()};
+                options = {"pool":$("#address_pool_select").val()};
             }
             newElasticIp.create(options, this.credentialId, this.region);
             this.$el.dialog('close');

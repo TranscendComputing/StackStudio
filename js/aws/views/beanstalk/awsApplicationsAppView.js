@@ -197,7 +197,7 @@ define([
                                                     "</table>");
             
             this.$eventTable = $("#events_table").dataTable({
-                "bJQueryUI": true,
+                "bJQueryUI": true
                 //"aoColumns": [{ "asSorting": ["desc"] },null,null,null]
             });
             this.$eventTable.fnSort( [ [0,'desc'] ] );
@@ -249,10 +249,11 @@ define([
            $("#events_table").dataTable().fnClearTable();
            for(var i = events.length-1; i >= 0; i--){
                var value = events[i];
+               var env;
                if(value.EnvironmentName){
-                   var env = value.EnvironmentName;
+                   env = value.EnvironmentName;
                }else{
-                   var env = "app";
+                   env = "app";
                }
                var eventData = [value.EventDate,value.Severity, value.Message, env];
                $("#events_table").dataTable().fnAddData(eventData);
@@ -311,14 +312,15 @@ define([
         
         performEnvironmentAction: function(event){
             if(this.selectedEnvironment) {
+                var application;
                 switch(event.target.text)
                 {
                 case "Delete":
-                    var application = this.collection.get(this.selectedId);
+                    application = this.collection.get(this.selectedId);
                     application.destroyEnvironment(this.selectedEnvironment,this.credentialId,this.region);
                     break;
                 case "Modify":
-                    var application = this.collection.get(this.selectedId);
+                    application = this.collection.get(this.selectedId);
             
                     var EnvironmentModifyView = this.EnvironmentModifyView;
                     if(this.region) {

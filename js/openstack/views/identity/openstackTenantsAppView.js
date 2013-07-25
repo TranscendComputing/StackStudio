@@ -133,7 +133,7 @@ define([
             var user = this.users.get(e.target.id);
             tenant.removeUser(user, this.credentialId, this.region);
             return false;
-        },
+        }
 	});
     
 	return OpenstackTenantsAppView;

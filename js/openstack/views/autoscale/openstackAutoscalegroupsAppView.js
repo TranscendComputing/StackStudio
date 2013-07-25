@@ -13,7 +13,7 @@ define([
 
     var OpenstackAutoscaleAppView = TopStackAutoScaleGroupsAppView.extend({
         
-    	CreateView: OpenStackAutoScaleGroupCreateView
+        CreateView: OpenStackAutoScaleGroupCreateView
 
     });
     

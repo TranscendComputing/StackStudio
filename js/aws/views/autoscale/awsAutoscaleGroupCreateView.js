@@ -408,9 +408,9 @@ define([
             switch($("input[name=elasticity]:checked").val())
             {
                 case "auto_recovery":
-                    autoscale_group_options["MaxSize"]= 1
-                    autoscale_group_options["MinSize"] = 1
-                    autoscale_group_options["DesiredCapacity"] = 1
+                    autoscale_group_options["MaxSize"]= 1;
+                    autoscale_group_options["MinSize"] = 1;
+                    autoscale_group_options["DesiredCapacity"] = 1;
                     break;
                 case "fixed_array":
                     autoscale_group_options["MaxSize"] = parseInt($("#fixed_array_size").val(), 10);
@@ -439,7 +439,7 @@ define([
                     "scale_increment": parseInt($("#upper_scale_increment_input").val(), 10),
                     "lower_threshold": parseInt($("#lower_threshold_input").val(), 10),
                     "scale_decrement": parseInt($("#lower_scale_increment_input").val(), 10)
-                }
+                };
             }
 
             if(!issue) {

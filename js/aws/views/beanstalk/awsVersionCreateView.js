@@ -130,11 +130,10 @@ define([
             $("#file_dialog").change(function() {
                 $('#upload_file_form').ajaxForm({
                     beforeSubmit : function() {
-                     	var fileName = $('#file_dialog').val();
+                        var fileName = $('#file_dialog').val();
                         fileName = fileName.replace("C:\\fakepath\\", "");
                         $("#s3key").html(fileName);
                         $("#s3bucket").html("elasticbeanstalk-us-east-1-983391187112");
-                     	//debugger
                     }
                 });
                 $('#upload_file_form').submit();

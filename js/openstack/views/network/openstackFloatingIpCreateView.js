@@ -26,7 +26,7 @@ define([
 
         region: undefined,
 
-        template: _.template(portCreateTemplate),
+        template: _.template(floatingIpCreateTemplate),
 
         model: new FloatingIp(),
 

@@ -213,7 +213,7 @@ define([
             $("#file_dialog").change(function() {
                 $('#upload_file_form').ajaxForm({
                     beforeSubmit : function() {
-                     	var fileName = $('#file_dialog').val();
+                        var fileName = $('#file_dialog').val();
                         fileName = fileName.replace("C:\\fakepath\\", "");
                         $("#upload_string").html(fileName);
                         $("#file_string").html(fileName);

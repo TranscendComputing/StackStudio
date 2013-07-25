@@ -59,7 +59,7 @@ define([
                 }
             });
 
-            var topicSplitArray = this.topic.split(":")
+            var topicSplitArray = this.topic.split(":");
             var topicName = topicSplitArray[topicSplitArray.length-1];
             $("#topic_name_output").html(topicName);
 

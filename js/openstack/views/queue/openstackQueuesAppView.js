@@ -13,7 +13,7 @@ define([
 
     var OpenstackQueueAppView = TopStackQueueAppView.extend({
         
-        CreateView: OpenStackQueueCreateView,
+        CreateView: OpenStackQueueCreateView
 
     });
     

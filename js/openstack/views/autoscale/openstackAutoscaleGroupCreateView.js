@@ -12,7 +12,7 @@ define([
         '/js/openstack/collections/compute/openstackAvailabilityZones.js',
         '/js/openstack/collections/compute/openstackFlavors.js',
         '/js/openstack/collections/compute/openstackKeyPairs.js',
-        '/js/openstack/collections/compute/openstackSecurityGroups.js',
+        '/js/openstack/collections/compute/openstackSecurityGroups.js'
 ], function( Backbone, TopStackAutoScaleCreateView, Images, AvailabilityZones, Flavors, KeyPairs, SecurityGroups) {
     
     var AutoscaleGroupCreateView = TopStackAutoScaleCreateView.extend({

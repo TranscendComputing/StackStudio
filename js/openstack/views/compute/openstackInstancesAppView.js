@@ -148,7 +148,7 @@ define([
                 });
                 var formatVariable = "";
                 if(addressesString !== "") {
-                    formatVariable = "<br />"
+                    formatVariable = "<br />";
                 }
                 addressesString = addressesString + formatVariable + key + ": " + addrString + "\n";
             });

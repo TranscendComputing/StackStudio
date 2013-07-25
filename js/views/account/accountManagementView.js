@@ -89,7 +89,7 @@ define([
                 $("#mGroup_tree").jstree("create","#group_list","first",{ attr : {class : "group_item"} , data : { title: group.attributes.name, attr : { id : group.attributes.id, href : "#account/management/groups", class : "group_item" }} },false, true);
             });
             
-            if(this.groups.get(this.treeGroup) && typeof(this.subApp.treeSelect) != "undefined"){
+            if(this.groups.get(this.treeGroup) && typeof(this.subApp.treeSelect) !== "undefined"){
                 this.subApp.treeSelect();
             }else{
                 $("#selected_group_name").html("No Group Selected");
@@ -116,9 +116,9 @@ define([
                 this.treeCloudAccount = this.cloudAccounts.models[this.cloudAccounts.length-1].id;
             }
             
-            if(this.cloudAccounts.get(this.treeCloudAccount) && typeof(this.subApp.treeSelectCloudAccount) != "undefined"){
+            if(this.cloudAccounts.get(this.treeCloudAccount) && typeof(this.subApp.treeSelectCloudAccount) !== "undefined"){
                 this.subApp.treeSelectCloudAccount();
-            }else if(typeof(this.subApp.treeSelectCloudAccount) != "undefined"){
+            }else if(typeof(this.subApp.treeSelectCloudAccount) !== "undefined"){
                 this.treeCloudAccount = this.cloudAccounts.models[this.cloudAccounts.length-1].id;
                 this.subApp.treeSelectCloudAccount();
             }
@@ -131,20 +131,20 @@ define([
         },
         selectGroup: function(event){
             this.treeGroup = event.target.id;
-            if(typeof(this.subApp.treeSelect) != "undefined"){
+            if(typeof(this.subApp.treeSelect) !== "undefined"){
                 this.subApp.treeSelect();
             }
         },
         selectCloudAccount: function(event){
             this.treeCloudAccount = event.target.id;
-            if(typeof(this.subApp.treeSelectCloudAccount) != "undefined"){
+            if(typeof(this.subApp.treeSelectCloudAccount) !== "undefined"){
                 this.subApp.treeSelectCloudAccount();
             }  
         },
         selectCloudCred: function(event){
             this.treeCloudCred = event.target.id;
             //console.log("Selecting Cloud Account: "+this.treeCloudAccount);
-            if(typeof(this.subApp.treeSelectCloudCred) != "undefined"){
+            if(typeof(this.subApp.treeSelectCloudCred) !== "undefined"){
                 this.subApp.treeSelectCloudCred();
             }
         },

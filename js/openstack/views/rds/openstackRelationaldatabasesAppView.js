@@ -13,7 +13,7 @@ define([
 
     var OpenstackRdsAppView = TopStackRelationalDatabaseAppView.extend({
         
-    	CreateView: OpenStackRelationalDatabaseCreateView
+        CreateView: OpenStackRelationalDatabaseCreateView
 
     });
     

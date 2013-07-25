@@ -6,9 +6,10 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
+        'backbone',
         'models/resource/resourceModel',
         'common'
-], function( ResourceModel, Common ) {
+], function( Backbone, ResourceModel, Common ) {
     'use strict';
 
     var MetricStatistic = Backbone.Model.extend({

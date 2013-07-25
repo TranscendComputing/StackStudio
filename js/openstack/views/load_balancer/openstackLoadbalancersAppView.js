@@ -19,7 +19,7 @@ define([
 
         ManageAvailabilityZonesView: OpenStackManageAvailabilityZonesView,
 
-        RegisterInstancesView: OpenStackRegisterInstancesView,
+        RegisterInstancesView: OpenStackRegisterInstancesView
 
     });
     
