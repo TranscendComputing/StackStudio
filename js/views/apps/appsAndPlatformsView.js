@@ -31,7 +31,7 @@ define([
 
         id: 'apps_view',
 
-        className: ['twelvecol', 'last'],
+        //className: [''],
 
         template: _.template(appsTemplate),
 
@@ -40,7 +40,10 @@ define([
         appsApp: undefined,
 
         events: {
-            "click .nav a" : "navListClick",
+            "click a.source" : "packageSourceClick",
+            "click .packages a" : "packageClick",
+            "click a.infra-source" : "infraSourceClick",
+            "click .infra-packages a" : "infraClick",
             "click a.source-search" : "searchClick",
             "click .pick-inst": "onChecked",
             "click #deploy-to": "deployTo",
@@ -65,6 +68,8 @@ define([
         },
 
         render: function () {
+            $("#main").removeClass("twelvecol last");
+            $("#main>div").removeClass("twelvecol last");
             this.loadAppsApp();
         },
 
@@ -79,38 +84,88 @@ define([
             return false;
         },
 
-        navListClick: function(evt) {
+        packageSourceClick: function(evt) {
             var label, clicked;
+            $("#deploy-infra").hide();
+            $("#deploy-inst").show();
+            clicked = $(evt.target);
+            clicked.parent().parent().find(".source").removeClass("active");
+            clicked.parent().parent().find(".l2").hide();
+            clicked.parent().find(".l2").show();
+            return false;
+        },
+
+        packageClick: function(evt) {
+            var label, clicked;
+            $("#deploy-infra").hide();
+            $("#deploy-inst").show();
             clicked = $(evt.target);
             if (clicked.hasClass("source-search")) {
                 return;
             }
-            if (clicked.hasClass("source")) {
-                clicked.parent().parent().find(".source").removeClass("active");
-                clicked.parent().parent().find(".l2").hide();
-                clicked.parent().find(".l2").show();
-            } else {
-                label = clicked.text();
-                if (clicked.parent().hasClass("active")) {
-                    clicked.parent().removeClass("active");
-                    $(".selected-apps").children().each(function(i, e) {
-                        if (e.innerHTML === label) {
-                            e.remove();
-                        }
-                    });
-                    if ($(".selected-apps").children().length === 0) {
-                        $(".selected-apps").html("No apps selected.");
-                        $(".hero-unit").find(".btn").addClass("disabled");
+            label = clicked.text();
+            if (clicked.parent().hasClass("active")) {
+                clicked.parent().removeClass("active");
+                $(".selected-apps").children().each(function(i, e) {
+                    if (e.innerHTML === label) {
+                        e.remove();
                     }
-                } else {
-                    if ($(".selected-apps").children().length === 0) {
-                        $(".selected-apps").html("");
-                        $("#deploy-launch").removeClass("disabled");
-                    }
-                    clicked.parent().addClass("active");
-                    $(".selected-apps").append('<button class="btn">'+label+'</button>');
-                    this.onChecked(null);
+                });
+                if ($(".selected-apps").children().length === 0) {
+                    $(".selected-apps").html("No apps selected.");
+                    $(".hero-unit").find(".btn").addClass("disabled");
                 }
+            } else {
+                if ($(".selected-apps").children().length === 0) {
+                    $(".selected-apps").html("");
+                    $("#deploy-launch").removeClass("disabled");
+                }
+                clicked.parent().addClass("active");
+                $(".selected-apps").append('<button class="btn">'+label+'</button>');
+                this.onChecked(null);
+            }
+            return false;
+        },
+
+        infraSourceClick: function(evt) {
+            var label, clicked;
+            $("#deploy-infra").show();
+            $("#deploy-inst").hide();
+            clicked = $(evt.target);
+            clicked.parent().parent().find(".infra-source").removeClass("active");
+            clicked.parent().parent().find(".l2").hide();
+            clicked.parent().find(".l2").show();
+            return false;
+        },
+
+
+        infraClick: function(evt) {
+            var label, clicked;
+            $("#deploy-infra").show();
+            $("#deploy-inst").hide();
+            clicked = $(evt.target);
+            if (clicked.hasClass("source-search")) {
+                return;
+            }
+            label = clicked.text();
+            if (clicked.parent().hasClass("active")) {
+                clicked.parent().removeClass("active");
+                $(".selected-infra").children().each(function(i, e) {
+                    if (e.innerHTML === label) {
+                        e.remove();
+                    }
+                });
+                if ($(".selected-infra").children().length === 0) {
+                    $(".selected-infra").html("No apps selected.");
+                    $("#deploy-infra").find(".btn").addClass("disabled");
+                }
+            } else {
+                if ($(".selected-infra").children().length === 0) {
+                    $(".selected-infra").html("");
+                    $("#launch").removeClass("disabled");
+                }
+                clicked.parent().addClass("active");
+                $(".selected-infra").append('<button class="btn">'+label+'</button>');
             }
             return false;
         },
@@ -143,9 +198,9 @@ define([
             this.stopListening();
             this.unbind();
         }
-	});
+    });
 
-	var appsView;
+    var appsView;
 
     Common.router.on('route:apps', function () {
         if (this.previousView !== appsView) {
