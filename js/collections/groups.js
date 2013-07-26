@@ -17,7 +17,7 @@ define([
 
         model: Group,
 
-        url: Common.apiUrl + '/identity/v1/orgs/' + sessionStorage.org_id + '.json',
+        url: function(){return Common.apiUrl + '/identity/v1/orgs/' + sessionStorage.org_id + '.json';},
         
         parse: function(resp) {
             return resp.org.groups;
