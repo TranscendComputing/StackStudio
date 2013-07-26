@@ -360,7 +360,8 @@ define([
                     $("#service_menu").show();
                 }else {
                     $("#service_menu").hide();
-                    $("#resource_app").width("1100px");
+                    //$("#resource_app").width("1100px");
+                    $("#resource_app").addClass("full_width");
                 }
 
                 //Camelcase the subtype for the file name
