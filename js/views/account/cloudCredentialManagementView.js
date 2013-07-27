@@ -64,7 +64,7 @@ define([
             //Render my template
             this.$el.html(this.template);
             $("#submanagement_app").html(this.$el);
-            $("div#detail_tabs").tabs();
+            //$("div#detail_tabs").tabs();
             $("button").button({
                 disabled: true
             });

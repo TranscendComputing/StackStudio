@@ -16,15 +16,16 @@ define([
         'collections/cloudAccounts',
         'views/account/newLoginView',
         'views/account/cloudAccountCreateView',
-        'views/account/groupCreateView',
         'views/account/cloudAccountManagementView',
         'views/account/cloudCredentialManagementView',
+        'views/account/cloudCredentialManagementListView',
         'views/account/usersManagementView',
         'views/account/groupsManagementView',
+        'views/account/groupsManagementListView',
         'jquery-plugins',
         'jquery-ui-plugins',
         'jquery.jstree'
-], function( $, _, Backbone, Common, managementTemplate, Groups, CloudCredentials, CloudAccounts, NewLoginView, CloudAccountCreate, CreateGroupView, CloudAccountManagementView, CloudCredentialManagementView, UsersManagementView, GroupsManagementView ) {
+], function( $, _, Backbone, Common, managementTemplate, Groups, CloudCredentials, CloudAccounts, NewLoginView, CloudAccountCreate, CloudAccountManagementView, CloudCredentialManagementView, CloudCredentialManagementListView, UsersManagementView, GroupsManagementView, GroupsManagementListView ) {
 
     var AccountManagementView = Backbone.View.extend({
         /** @type {String} DOM element to attach view to */
@@ -35,11 +36,9 @@ define([
         events: {
             "click .account_list": "selectManagement",
             "click .group_item": "selectGroup",
-            "click #treeAddGroup": "addGroup",
             "click .cloud_account_item": "selectCloudAccount",
             "click #treeAddCloudAccount": "addCloudAccount",
             "click .credential_item": "selectCloudCred",
-            "click #treeAddCred": "addCloudCred",
             "click #treeAddUser": "addUser"
         },
         subApp: undefined,
@@ -68,7 +67,6 @@ define([
         /** Add all of my own html elements */
         render: function () {
             var accMan = this;
-            
             $("#mCloudAccount_tree").jstree({
                 "themeroller":{"item": "jstree_custom_item"},
                 "plugins":[ "themeroller", "html_data", "ui", "crrm" ]
@@ -95,23 +93,19 @@ define([
                     reset: true
                 });
             });
-            
             $("#mUser_tree").jstree({
                 "themeroller":{"item": "jstree_custom_item"},
                 "plugins":[ "themeroller", "html_data", "ui", "crrm" ]
             }).on('loaded.jstree', function() {
-                //$("#mUser_tree").jstree('open_all');
-                accMan.addUserButton();
+                $("#mUser_tree").jstree('open_all');
             });
             
         },
         addAllGroups: function() {
             $('.group_item').remove();
-            $('.group_item_add').remove();
             this.groups.each(function(group) {
                 $("#mGroup_tree").jstree("create","#group_list","first",{ attr : {class : "group_item"} , data : { title: group.attributes.name, attr : { id : group.attributes.id, href : "#account/management/groups", class : "group_item" }} },false, true);
             });
-            $("#mGroup_tree").jstree("create","#group_list","first",{ attr : {class : "group_item_add"} , data : { title: "Create Group", attr : { id : "treeAddGroup", href : "#account/management/groups", class : "group_item_add",style:"font-weight:bold;" }} },false, true);
             
             if(this.groups.get(this.treeGroup) && typeof(this.subApp.treeSelect) !== "undefined"){
                 this.subApp.treeSelect();
@@ -121,11 +115,9 @@ define([
         },
         addAllCreds: function(){
             $('.credential_item').remove();
-            $('.credential_item_add').remove();
             this.cloudCredentials.each(function(cred) {
                 $("#mCloudCredential_tree").jstree("create","#cred_list","first",{ attr : {class : "credential_item"} , data : { title: cred.attributes.name, attr : { id : cred.attributes.id, href : "#account/management/cloud-credentials", class : "credential_item" }} },false, true);
             });
-            $("#mCloudCredential_tree").jstree("create","#cred_list","first",{ attr : {class : "credential_item_add"} , data : { title: "Create Credentials", attr : { id : "treeAddCred", href : "#account/management/cloud-credentials", class : "credential_item_add",style:"font-weight:bold;" }} },false, true);
         },
         
         addAllCloudAccounts: function(){
@@ -161,11 +153,6 @@ define([
                 this.subApp.treeSelect();
             }
         },
-        addGroup: function(event){
-            if(event.target.id == "treeAddGroup"){
-                new CreateGroupView();
-            }
-        },
         selectCloudAccount: function(event){
             this.treeCloudAccount = event.target.id;
             if(typeof(this.subApp.treeSelectCloudAccount) !== "undefined"){
@@ -183,13 +170,6 @@ define([
             if(typeof(this.subApp.treeSelectCloudCred) !== "undefined"){
                 this.subApp.treeSelectCloudCred();
             }
-        },
-        addCloudCred: function(event){
-            this.treeCloudCred = undefined;
-        },
-        addUserButton: function(){
-            $('.user_item_add').remove();
-            $("#mUser_tree").jstree("create","#user_list","first",{ attr : {class : "user_item_add"} , data : { title: "Create User", attr : { id : "treeAddUser", href : "#account/management/users", class : "user_item_add",style:"font-weight:bold;" }} },false, true);
         },
         addUser: function(event){
             new NewLoginView({org_id: sessionStorage.org_id});
@@ -261,6 +241,28 @@ define([
                         accountManagementView.subApp.close();
                     }
                     accountManagementView.subApp = new GroupsManagementView({rootView: accountManagementView});
+                }
+                break;
+            case "groups_list":
+                if(accountManagementView.subApp instanceof GroupsManagementListView)
+                {
+                    //do nothing
+                }else{
+                    if(accountManagementView.subApp !== undefined){
+                        accountManagementView.subApp.close();
+                    }
+                    accountManagementView.subApp = new GroupsManagementListView({rootView: accountManagementView});
+                }
+                break;
+            case "cloud-credentials_list":
+                if(accountManagementView.subApp instanceof GroupsManagementListView)
+                {
+                    //do nothing
+                }else{
+                    if(accountManagementView.subApp !== undefined){
+                        accountManagementView.subApp.close();
+                    }
+                    accountManagementView.subApp = new CloudCredentialManagementListView({rootView: accountManagementView});
                 }
                 break;
         }
