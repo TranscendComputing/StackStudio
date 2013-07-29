@@ -74,7 +74,6 @@ define([
             
             var rowData = $("#group_users_table").dataTable().fnGetData(event.currentTarget);
             this.selectedGroup = this.groups.get(rowData[2]);
-            alert(this.selectedGroup);
             
             if(this.selectedGroup) {
                 this.disableSelectionRequiredButtons(false);

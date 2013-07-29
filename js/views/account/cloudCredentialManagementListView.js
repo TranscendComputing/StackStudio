@@ -11,18 +11,18 @@ define([
         'backbone',
         'common',
         'text!templates/account/cloudCredentialManagementListTemplate.html',
-        'collections/groups',
+        'collections/cloudCredentials',
         'views/account/groupCreateView',
         'views/account/groupManageUsersView',
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator'
-], function( $, _, Backbone, Common, groupsManagementListTemplate, Groups, CreateGroupView, ManageGroupUsers ) {
+], function( $, _, Backbone, Common, cloudCredentialManagementListTemplate, CloudCredentials, CreateGroupView, ManageGroupUsers ) {
 
-    var GroupsManagementListView = Backbone.View.extend({
+    var CloudCredentialManagementListView = Backbone.View.extend({
 
         tagName: 'div',
 
-        template: _.template(groupsManagementListTemplate),
+        template: _.template(cloudCredentialManagementListTemplate),
         
         rootView: undefined,
 
@@ -46,12 +46,18 @@ define([
                 "bProcessing": true
             });
             var groupsView = this;
-            Common.vent.off("groupRefresh");
-            Common.vent.on("groupRefresh", function() {
+            //Common.vent.off("groupRefresh");
+            Common.vent.on("cloudCredentialDeleted", function() {
                 groupsView.render();
+                
+                groupsView.rootView.cloudCredentials.fetch({
+                    reset: true
+                });
             });
             this.selectedGroup = undefined;
-            this.groups = this.rootView.groups;
+            //this.groups = this.rootView.cloudCredentials;
+            this.groups = new CloudCredentials();
+            this.groups.on('reset', this.addAllGroups, this);
             this.render();
         },
 
@@ -60,11 +66,9 @@ define([
             $("#group_users_table").dataTable().fnClearTable();
             
             var groupListView = this;
+            
             this.groups.fetch({
-                reset: true,
-                success: function(){
-                    groupListView.addAllGroups();
-                }
+                reset: true
             });
         },
         
@@ -74,7 +78,6 @@ define([
             
             var rowData = $("#group_users_table").dataTable().fnGetData(event.currentTarget);
             this.selectedGroup = this.groups.get(rowData[2]);
-            alert(this.selectedGroup);
             
             if(this.selectedGroup) {
                 this.disableSelectionRequiredButtons(false);
@@ -84,7 +87,7 @@ define([
         addAllGroups: function() {
             $("#group_users_table").dataTable().fnClearTable();
             $.each(this.groups.models, function(index, value) {
-                var rowData = [value.attributes.name, value.attributes.description, value.attributes.id];
+                var rowData = [value.attributes.name,value.attributes.cloud_provider, value.attributes.id];
                 $("#group_users_table").dataTable().fnAddData(rowData);
             });
         },
@@ -105,12 +108,13 @@ define([
         },
 
         createGroup: function() {
-            new CreateGroupView();
+            //new CreateGroupView();
+            alert("Create Cloud Credential");
         },
 
         deleteGroup: function() {
             if(this.selectedGroup) {
-                this.selectedGroup.destroy();
+                this.groups.deleteCredential(this.selectedGroup);
             }
         },
 
@@ -124,5 +128,5 @@ define([
         }  
     });
 
-    return GroupsManagementListView;
+    return CloudCredentialManagementListView;
 });

@@ -255,7 +255,7 @@ define([
                 }
                 break;
             case "cloud-credentials_list":
-                if(accountManagementView.subApp instanceof GroupsManagementListView)
+                if(accountManagementView.subApp instanceof CloudCredentialManagementListView)
                 {
                     //do nothing
                 }else{
