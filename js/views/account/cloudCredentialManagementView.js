@@ -31,10 +31,10 @@ define([
         rootView: undefined,
         /** @type {Object} Object of events for view to listen on */
         events: {
-            "click button#new_credential": "newCredential",
+            //"click button#new_credential": "newCredential",
             "click button#save_credential": "saveCredential",
             "click button#delete_credential": "deleteCredential",
-            "change select#cloud_accounts_select": "selectCloudAccount"
+            //"change select#cloud_accounts_select": "selectCloudAccount"
         },
         /** Constructor method for current view */
         initialize: function() {
@@ -47,10 +47,12 @@ define([
             //Add listener for form completion to enable buttons
             Common.vent.on("form:completed", this.registerNewCredential, this);
             Common.vent.on("cloudCredentialDeleted", this.notifyDeleted, this);
+            Common.vent.on("cloudCredentialSaved", this.notifySaved, this);
             
             //Add listeners and fetch db for credentials collection
             this.cloudCredentials.fetch({reset: true});
             //Add listeners and fetch db for cloud accounts collection
+            /*
             this.cloudAccounts = new CloudAccounts();
             this.cloudAccounts.on( 'add', this.addCloudAccount, this);
             this.cloudAccounts.on( 'reset', this.addAllCloudAccounts, this);
@@ -58,6 +60,7 @@ define([
                 data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id }),
                 reset: true
             });
+            */
         },
         /** Add all of my own html elements */
         render: function () {
@@ -85,7 +88,7 @@ define([
             $("button#save_credential").show();
             this.subViews.push(this.credentialForm);
         },
-
+        /*
         addCloudAccount: function(model) {
             $("select#cloud_accounts_select").append("<option value='"+model.attributes.name+"'>"+model.attributes.name+"</option>");
             this.selectedCloudAccount = model;
@@ -97,7 +100,7 @@ define([
             this.cloudAccounts.each(this.addCloudAccount, this);
             $("select#cloud_accounts_select").selectmenu();
         },
-
+        
         selectCloudAccount: function(event) {
             var accountName = event.target.selectedOptions[0].value;
             if(accountName !== "All")
@@ -108,7 +111,7 @@ define([
                 $("button#new_credential").button("option", "disabled", true);
             }
         },
-
+        
         selectCloudCredential: function(event) {
             this.clearSelection();
             $(event.target).addClass("selected_item");
@@ -116,10 +119,12 @@ define([
             this.renderCredentialForm();
             $("button#delete_credential").button("option", "disabled", false);
         },
+        */
         
         treeSelectCloudCred: function() {
             this.clearSelection();
             this.selectedCloudCredential = this.rootView.cloudCredentials.get(this.rootView.treeCloudCred);
+            $("#cloud_account_label").html(this.rootView.cloudAccounts.get(this.selectedCloudCredential.attributes.cloud_account_id).attributes.name);
             this.renderCredentialForm();
             $("button#delete_credential").button("option", "disabled", false);
         },
@@ -129,12 +134,12 @@ define([
                $(this).removeClass("selected_item");
             });
         },
-
+        /*
         newCredential: function() {
             this.selectedCloudCredential = new CloudCredential({cloud_provider: this.selectedCloudAccount.attributes.cloud_provider});
             this.renderCredentialForm();
         },
-
+        */
         registerNewCredential: function() {
             $("button#save_credential").button("option", "disabled", false);
         },
@@ -161,6 +166,10 @@ define([
             $("button#delete_credential").button("option", "disabled", true);
             this.cloudCredentials.fetch({reset: true});
             
+        },
+        
+        notifySaved: function() {
+            this.cloudCredentials.fetch({reset: true});
         },
 
         close: function(){

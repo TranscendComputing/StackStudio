@@ -75,6 +75,7 @@ define([
                         cloudCreds.push(cloudCred);
                     });
                     coll.reset(cloudCreds);
+                    Common.vent.trigger("cloudCredentialCreated");
                 }
             }, coll);
 		},
@@ -101,6 +102,7 @@ define([
                 data: JSON.stringify(cloudCredential),
                 success: function(data) {
                     sessionStorage.cloud_credentials = JSON.stringify(data.account.cloud_credentials);
+                    Common.vent.trigger("cloudCredentialSaved");
                 }
             });
 		},

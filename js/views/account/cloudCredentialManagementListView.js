@@ -12,11 +12,11 @@ define([
         'common',
         'text!templates/account/cloudCredentialManagementListTemplate.html',
         'collections/cloudCredentials',
-        'views/account/groupCreateView',
+        'views/account/cloudCredentialCreateView',
         'views/account/groupManageUsersView',
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator'
-], function( $, _, Backbone, Common, cloudCredentialManagementListTemplate, CloudCredentials, CreateGroupView, ManageGroupUsers ) {
+], function( $, _, Backbone, Common, cloudCredentialManagementListTemplate, CloudCredentials, CreateCloudCredentialView, ManageGroupUsers ) {
 
     var CloudCredentialManagementListView = Backbone.View.extend({
 
@@ -47,9 +47,15 @@ define([
             });
             var groupsView = this;
             //Common.vent.off("groupRefresh");
+            Common.vent.on("cloudCredentialCreated", function() {
+                groupsView.render();
+                groupsView.rootView.cloudCredentials.fetch({
+                    reset: true
+                });
+            });
+            
             Common.vent.on("cloudCredentialDeleted", function() {
                 groupsView.render();
-                
                 groupsView.rootView.cloudCredentials.fetch({
                     reset: true
                 });
@@ -108,8 +114,8 @@ define([
         },
 
         createGroup: function() {
-            //new CreateGroupView();
-            alert("Create Cloud Credential");
+            new CreateCloudCredentialView();
+            //alert("Create Cloud Credential");
         },
 
         deleteGroup: function() {
