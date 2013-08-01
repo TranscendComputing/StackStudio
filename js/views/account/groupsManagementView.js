@@ -12,11 +12,12 @@ define([
         'common',
         'text!templates/account/groupsManagementTemplate.html',
         'collections/groups',
+        'collections/users',
         'views/account/groupCreateView',
         'views/account/groupManageUsersView',
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator'
-], function( $, _, Backbone, Common, groupsManagementTemplate, Groups, CreateGroupView, ManageGroupUsers ) {
+], function( $, _, Backbone, Common, groupsManagementTemplate, Groups, Users, CreateGroupView, ManageGroupUsers ) {
 
     var GroupManagementView = Backbone.View.extend({
 
@@ -27,6 +28,8 @@ define([
         rootView: undefined,
 
         groups: undefined,
+        
+        users: new Users(),
 
         selectedGroup: undefined,
 
@@ -84,6 +87,7 @@ define([
         },
 
         disableSelectionRequiredButtons: function(toggle) {
+            
             if(toggle) {
                 $("#delete_group_button").attr("disabled", true);
                 $("#delete_group_button").addClass("ui-state-disabled");
@@ -96,6 +100,27 @@ define([
                 $("#manage_group_users_button").removeAttr("disabled");
                 $("#manage_group_users_button").removeClass("ui-state-disabled");
             }
+            
+            //check admin
+            this.adminCheck();
+            
+        },
+        
+        adminCheck: function(){
+            var groupsView = this;
+            groupsView.users.fetch({success: function(){
+                var isAdmin = false;
+                if(groupsView.users.get(sessionStorage.account_id).attributes.permissions.length > 0){
+                    isAdmin = groupsView.users.get(sessionStorage.account_id).attributes.permissions[0].permission.name === "admin";
+                }
+                if(!isAdmin){
+                    $("#delete_group_button").attr("disabled", true);
+                    $("#delete_group_button").addClass("ui-state-disabled");
+                    $("#delete_group_button").removeClass("ui-state-hover");
+                    $("#manage_group_users_button").attr("disabled", true);
+                    $("#manage_group_users_button").addClass("ui-state-disabled");
+                }
+            }});
         },
 
         createGroup: function() {

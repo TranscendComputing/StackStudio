@@ -12,11 +12,12 @@ define([
         'common',
         'text!templates/account/managementCloudAccountListTemplate.html',
         'collections/groups',
+        'collections/users',
         'views/account/cloudAccountCreateView',
         'views/account/groupManageUsersView',
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator'
-], function( $, _, Backbone, Common, groupsManagementListTemplate, Groups, CloudAccountCreate, ManageGroupUsers ) {
+], function( $, _, Backbone, Common, groupsManagementListTemplate, Groups, Users, CloudAccountCreate, ManageGroupUsers ) {
 
     var CloudAccountsManagementListView = Backbone.View.extend({
 
@@ -27,6 +28,8 @@ define([
         rootView: undefined,
 
         groups: undefined,
+        
+        users: new Users(),
 
         selectedGroup: undefined,
         
@@ -105,6 +108,25 @@ define([
                 $("#manage_group_users_button").removeAttr("disabled");
                 $("#manage_group_users_button").removeClass("ui-state-disabled");
             }
+            
+            this.adminCheck();
+        },
+        
+        adminCheck: function(){
+            var groupsView = this;
+            groupsView.users.fetch({success: function(){
+                var isAdmin = false;
+                if(groupsView.users.get(sessionStorage.account_id).attributes.permissions.length > 0){
+                    isAdmin = groupsView.users.get(sessionStorage.account_id).attributes.permissions[0].permission.name === "admin";
+                }
+                if(!isAdmin){
+                    $("#delete_group_button").attr("disabled", true);
+                    $("#delete_group_button").addClass("ui-state-disabled");
+                    $("#delete_group_button").removeClass("ui-state-hover");
+                    $("#create_group_button").attr("disabled", true);
+                    $("#create_group_button").addClass("ui-state-disabled");
+                }
+            }});
         },
 
         createGroup: function() {
@@ -127,6 +149,7 @@ define([
         },
 
         close: function(){
+            console.log(this.$el);
             this.$el.remove();
         }  
     });

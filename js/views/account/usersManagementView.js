@@ -63,6 +63,8 @@ define([
                 $("#users_table").dataTable().fnAddData(rowData);
             });
             $("#users_table").dataTable().fnProcessingIndicator(false);
+            
+            this.disableCreateButton();
         },
 
         selectUser: function(event) {
@@ -73,7 +75,13 @@ define([
             this.users.each(function(user) {
                 if(user.attributes.login === rowData[0]) {
                     usersView.selectedUser = user;
-                    if(sessionStorage.account_id === user.attributes.id) {
+                    
+                    var isAdmin = false;
+                    if(usersView.users.get(sessionStorage.account_id).attributes.permissions.length > 0){
+                        isAdmin = usersView.users.get(sessionStorage.account_id).attributes.permissions[0].permission.name === "admin";
+                    }
+                    
+                    if(sessionStorage.account_id === user.attributes.id || !isAdmin) {
                         usersView.disableDeleteButton(true);
                     }else {
                         usersView.disableDeleteButton(false);
@@ -89,6 +97,17 @@ define([
             }else {
                 $("#delete_user_button").removeAttr("disabled");
                 $("#delete_user_button").removeClass("ui-state-disabled");
+            }
+        },
+        
+        disableCreateButton: function() {
+            var isAdmin = false;
+            if(this.users.get(sessionStorage.account_id).attributes.permissions.length > 0){
+                isAdmin = usersView.users.get(sessionStorage.account_id).attributes.permissions[0].permission.name === "admin";
+            }
+            if(!isAdmin){
+                $("#create_user_button").attr("disabled", true);
+                $("#create_user_button").addClass("ui-state-disabled");
             }
         },
 

@@ -20,12 +20,13 @@ define([
         'views/account/cloudCredentialManagementListView',
         'views/account/cloudAccountManagementListView',
         'views/account/usersManagementView',
+        'views/account/homeView',
         'views/account/groupsManagementView',
         'views/account/groupsManagementListView',
         'jquery-plugins',
         'jquery-ui-plugins',
         'jquery.jstree'
-], function( $, _, Backbone, Common, managementTemplate, Groups, CloudCredentials, CloudAccounts, NewLoginView, CloudAccountManagementView, CloudCredentialManagementView, CloudCredentialManagementListView, CloudAccountManagementListView, UsersManagementView, GroupsManagementView, GroupsManagementListView ) {
+], function( $, _, Backbone, Common, managementTemplate, Groups, CloudCredentials, CloudAccounts, NewLoginView, CloudAccountManagementView, CloudCredentialManagementView, CloudCredentialManagementListView, CloudAccountManagementListView, UsersManagementView, HomeView, GroupsManagementView, GroupsManagementListView ) {
 
     var AccountManagementView = Backbone.View.extend({
         /** @type {String} DOM element to attach view to */
@@ -264,6 +265,17 @@ define([
                         accountManagementView.subApp.close();
                     }
                     accountManagementView.subApp = new CloudAccountManagementListView({rootView: accountManagementView});
+                }
+                break;
+            case "home":
+                if(accountManagementView.subApp instanceof HomeView)
+                {
+                    //do nothing
+                }else{
+                    if(accountManagementView.subApp !== undefined){
+                        accountManagementView.subApp.close();
+                    }
+                    accountManagementView.subApp = new HomeView({rootView: accountManagementView});
                 }
                 break;
         }

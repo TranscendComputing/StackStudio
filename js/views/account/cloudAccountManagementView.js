@@ -14,18 +14,20 @@ define([
         'URIjs/URI',
         'text!templates/account/managementCloudAccountTemplate.html',
         'collections/cloudAccounts',
+        'collections/users',
         'views/account/cloudAccountCreateView',
         'views/account/cloudServiceCreateView',
         'models/cloudService',
         'jquery-plugins',
         'jquery-ui-plugins'
-], function( $, _, Backbone, Common, ich, URI, managementCloudAccountTemplate, CloudAccounts, CloudAccountCreate, CloudServiceCreate, CloudService ) {
+], function( $, _, Backbone, Common, ich, URI, managementCloudAccountTemplate, CloudAccounts, Users, CloudAccountCreate, CloudServiceCreate, CloudService ) {
 
     var CloudAccountManagementView = Backbone.View.extend({
         /** @type {String} DOM element to attach view to */
         el: "#submanagement_app",
         /** @type {Collection} Database collection of cloud accounts */
         collection: new CloudAccounts(),
+        users: new Users(),
         /** @type {Template} HTML template to generate view from */
         template: _.template(managementCloudAccountTemplate),
         CloudAccountCreateView: CloudAccountCreate,
@@ -103,6 +105,27 @@ define([
             $('#services_page').html(services);
             
             $('button').button();
+            
+            this.adminCheck();
+        },
+        
+        adminCheck: function(){
+            var groupsView = this;
+            groupsView.users.fetch({success: function(){
+                var isAdmin = false;
+                if(groupsView.users.get(sessionStorage.account_id).attributes.permissions.length > 0){
+                    isAdmin = groupsView.users.get(sessionStorage.account_id).attributes.permissions[0].permission.name === "admin";
+                }
+                if(!isAdmin){
+                    $(".delete-button").attr("disabled", true);
+                    $(".delete-button").addClass("ui-state-disabled");
+                    $(".delete-button").removeClass("ui-state-hover");
+                    $(".save-button").attr("disabled", true);
+                    $(".save-button").addClass("ui-state-disabled");
+                    $("#new_cloud_service").attr("disabled", true);
+                    $("#new_cloud_service").addClass("ui-state-disabled");
+                }
+            }});
         },
         
         treeSelectCloudAccount: function() {
@@ -179,6 +202,11 @@ define([
         
         deleteCloudAccount: function(){
             var cl_ac = this.selectedCloudAccount.destroy();
+        },
+        
+        close: function(){
+            console.log(this.$el);
+            //this.$el.remove()
         } 
     });
 
