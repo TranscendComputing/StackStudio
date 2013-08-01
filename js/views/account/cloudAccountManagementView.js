@@ -34,7 +34,6 @@ define([
         /** @type {Object} Object of events for view to listen on */
         events: {
             "click button.save-button": "saveService",
-            "click button#new_cloud_account": "newCloudAccount",
             "click button#new_cloud_service": "newCloudService",
             "click button#delete_cloud_account": "deleteCloudAccount",
             "click button.delete-button": "deleteService"
@@ -84,7 +83,7 @@ define([
             //Render my template
             this.$el.append(this.template);
             //$("ul#cloud_account_list").menu();
-            $("div#detail_tabs").tabs();
+            //$("div#detail_tabs").tabs();
         },
 
         renderAccountAttributes: function() {
@@ -110,6 +109,7 @@ define([
             //this.clearSelection();
             this.selectedCloudAccount = this.rootView.cloudAccounts.get(this.rootView.treeCloudAccount);
             $("#services_tab").html(this.selectedCloudAccount.attributes.name);
+            $("#cloud_provider_label").html(this.selectedCloudAccount.attributes.cloud_provider);
             this.renderAccountAttributes();
         },
 
@@ -128,15 +128,6 @@ define([
             service.unset("username");
             this.selectedCloudAccount.updateService(service);
             return false;
-        },
-
-        newCloudAccount: function(){
-            var CloudAccountCreateView = this.CloudAccountCreateView;
-            
-            this.newResourceDialog = new CloudAccountCreateView({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id});
-            
-            this.newResourceDialog.render();
-            
         },
         
         newCloudService: function(){

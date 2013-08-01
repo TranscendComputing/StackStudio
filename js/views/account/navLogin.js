@@ -34,7 +34,7 @@ define([
 
         render: function() {
             if(sessionStorage.login) {
-                this.$el.html("<li id='navAccount'><a href='/#account/management/cloud-accounts'>"+sessionStorage.login+"</a></li><li><a id='account_logout'>Logout</a></li>");
+                this.$el.html("<li id='navAccount'><a href='/#account/management/cloud-accounts_list'>"+sessionStorage.login+"</a></li><li><a id='account_logout'>Logout</a></li>");
             } else {
                 this.$el.html("<li><a id='account_login'>Login</a></li>");
             }

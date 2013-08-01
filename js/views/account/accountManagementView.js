@@ -15,17 +15,17 @@ define([
         'collections/cloudCredentials',
         'collections/cloudAccounts',
         'views/account/newLoginView',
-        'views/account/cloudAccountCreateView',
         'views/account/cloudAccountManagementView',
         'views/account/cloudCredentialManagementView',
         'views/account/cloudCredentialManagementListView',
+        'views/account/cloudAccountManagementListView',
         'views/account/usersManagementView',
         'views/account/groupsManagementView',
         'views/account/groupsManagementListView',
         'jquery-plugins',
         'jquery-ui-plugins',
         'jquery.jstree'
-], function( $, _, Backbone, Common, managementTemplate, Groups, CloudCredentials, CloudAccounts, NewLoginView, CloudAccountCreate, CloudAccountManagementView, CloudCredentialManagementView, CloudCredentialManagementListView, UsersManagementView, GroupsManagementView, GroupsManagementListView ) {
+], function( $, _, Backbone, Common, managementTemplate, Groups, CloudCredentials, CloudAccounts, NewLoginView, CloudAccountManagementView, CloudCredentialManagementView, CloudCredentialManagementListView, CloudAccountManagementListView, UsersManagementView, GroupsManagementView, GroupsManagementListView ) {
 
     var AccountManagementView = Backbone.View.extend({
         /** @type {String} DOM element to attach view to */
@@ -37,7 +37,6 @@ define([
             "click .account_list": "selectManagement",
             "click .group_item": "selectGroup",
             "click .cloud_account_item": "selectCloudAccount",
-            "click #treeAddCloudAccount": "addCloudAccount",
             "click .credential_item": "selectCloudCred",
             "click #treeAddUser": "addUser"
         },
@@ -122,14 +121,11 @@ define([
         
         addAllCloudAccounts: function(){
             $('.cloud_account_item').remove();
-            $('.cloud_account_item_add').remove();
+            
             this.cloudAccounts.each(function(c_account) {
                 $("#mCloudAccount_tree").jstree("create","#c_account_list","first",{ attr : {class : "cloud_account_item"} , data : { title: c_account.attributes.name, attr : { id : c_account.attributes.id, href : "#account/management/cloud-accounts", class : "cloud_account_item" }} },false, true);
             });
             
-            $("#mCloudAccount_tree").jstree("create","#c_account_list","first",{ attr : {class : "cloud_account_item_add"} , data : { title: "Create Cloud Account", attr : { id : "treeAddCloudAccount", href : "#account/management/cloud-accounts", class : "cloud_account_item_add",style:"font-weight:bold;" }} },false, true);
-            
-            //debugger
             if(!this.treeCloudAccount){
                 this.treeCloudAccount = this.cloudAccounts.models[this.cloudAccounts.length-1].id;
             }
@@ -158,12 +154,6 @@ define([
             if(typeof(this.subApp.treeSelectCloudAccount) !== "undefined"){
                 this.subApp.treeSelectCloudAccount();
             }  
-        },
-        addCloudAccount: function(event){
-            if(event.target.id == "treeAddCloudAccount"){
-                var caCreate = new CloudAccountCreate({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id});
-                caCreate.render();
-            }
         },
         selectCloudCred: function(event){
             this.treeCloudCred = event.target.id;
@@ -263,6 +253,17 @@ define([
                         accountManagementView.subApp.close();
                     }
                     accountManagementView.subApp = new CloudCredentialManagementListView({rootView: accountManagementView});
+                }
+                break;
+            case "cloud-accounts_list":
+                if(accountManagementView.subApp instanceof CloudAccountManagementListView)
+                {
+                    //do nothing
+                }else{
+                    if(accountManagementView.subApp !== undefined){
+                        accountManagementView.subApp.close();
+                    }
+                    accountManagementView.subApp = new CloudAccountManagementListView({rootView: accountManagementView});
                 }
                 break;
         }
