@@ -80,7 +80,8 @@ define([
             $(event.currentTarget).addClass('row_selected');
             
             var rowData = $("#group_users_table").dataTable().fnGetData(event.currentTarget);
-            this.selectedGroup = this.groups.get(rowData[2]);
+            
+            this.selectedGroup = this.groups.get($.parseHTML(rowData[0])[0]);
             
             if(this.selectedGroup) {
                 this.disableSelectionRequiredButtons(false);
@@ -90,7 +91,7 @@ define([
         addAllGroups: function() {
             $("#group_users_table").dataTable().fnClearTable();
             $.each(this.groups.models, function(index, value) {
-                var rowData = [value.attributes.name, value.attributes.cloud_provider, value.attributes.id];
+                var rowData = ['<a href="#account/management/cloud-accounts" id="'+value.attributes.id+'" class="cloud_account_item">'+value.attributes.name+"</a>", value.attributes.cloud_provider];
                 $("#group_users_table").dataTable().fnAddData(rowData);
             });
         },
@@ -149,7 +150,6 @@ define([
         },
 
         close: function(){
-            console.log(this.$el);
             this.$el.remove();
         }  
     });

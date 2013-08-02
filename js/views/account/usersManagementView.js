@@ -23,7 +23,7 @@ define([
 
         template: _.template(usersManagementTemplate),
 
-        users: new Users(),
+        users: undefined,
 
         selectedUser: undefined,
 
@@ -45,6 +45,8 @@ define([
             Common.vent.on("userRefresh", function() {
                 usersView.render();
             });
+            
+            this.users = new Users();
             this.users.on('reset', this.addAllUsers, this);
             this.render();
         },
@@ -103,7 +105,7 @@ define([
         disableCreateButton: function() {
             var isAdmin = false;
             if(this.users.get(sessionStorage.account_id).attributes.permissions.length > 0){
-                isAdmin = usersView.users.get(sessionStorage.account_id).attributes.permissions[0].permission.name === "admin";
+                isAdmin = this.users.get(sessionStorage.account_id).attributes.permissions[0].permission.name === "admin";
             }
             if(!isAdmin){
                 $("#create_user_button").attr("disabled", true);

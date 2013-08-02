@@ -96,8 +96,7 @@ define([
              * Then removes those elements from the dom (this is the method that runs 
              * on document ready when ich first inits).
              */
-            
-            if(!ich.templates.cloud_service){
+            if(typeof(ich['cloud_service']) === 'undefined'){
                 ich.grabTemplates();
             }
             
@@ -202,12 +201,7 @@ define([
         
         deleteCloudAccount: function(){
             var cl_ac = this.selectedCloudAccount.destroy();
-        },
-        
-        close: function(){
-            console.log(this.$el);
-            //this.$el.remove()
-        } 
+        }
     });
 
     return CloudAccountManagementView;

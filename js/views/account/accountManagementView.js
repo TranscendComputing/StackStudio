@@ -43,22 +43,26 @@ define([
         },
         subApp: undefined,
         tree: undefined,
-        groups: new Groups(),
-        cloudCredentials: new CloudCredentials(),
-        cloudAccounts: new CloudAccounts(),
+        groups: undefined,
+        cloudCredentials: undefined,
+        cloudAccounts: undefined,
         treeGroup: undefined,
         treeCloudAccount: undefined,
         treeCloudCred: undefined,
         /** Constructor method for current view */
         initialize: function() {
+            
             this.subViews = [];
             //Render my template
             this.$el.html(this.template);
             
+            this.groups = new Groups();
             this.groups.on('reset', this.addAllGroups, this);
             
+            this.cloudCredentials = new CloudCredentials()
             this.cloudCredentials.on( 'reset', this.addAllCreds, this );
             
+            this.cloudAccounts = new CloudAccounts();
             this.cloudAccounts.on( 'reset', this.addAllCloudAccounts, this );
             
             //Render my own view
@@ -102,9 +106,9 @@ define([
             
         },
         addAllGroups: function() {
-            $('.group_item').remove();
+            $('.group_item.tree_item').remove();
             this.groups.each(function(group) {
-                $("#mGroup_tree").jstree("create","#group_list","first",{ attr : {class : "group_item"} , data : { title: group.attributes.name, attr : { id : group.attributes.id, href : "#account/management/groups", class : "group_item" }} },false, true);
+                $("#mGroup_tree").jstree("create","#group_list","first",{ attr : {class : "group_item tree_item"} , data : { title: group.attributes.name, attr : { id : group.attributes.id, href : "#account/management/groups", class : "group_item tree_item" }} },false, true);
             });
             
             if(this.groups.get(this.treeGroup) && typeof(this.subApp.treeSelect) !== "undefined"){
@@ -114,17 +118,17 @@ define([
             }
         },
         addAllCreds: function(){
-            $('.credential_item').remove();
+            $('.credential_item.tree_item').remove();
             this.cloudCredentials.each(function(cred) {
-                $("#mCloudCredential_tree").jstree("create","#cred_list","first",{ attr : {class : "credential_item"} , data : { title: cred.attributes.name, attr : { id : cred.attributes.id, href : "#account/management/cloud-credentials", class : "credential_item" }} },false, true);
+                $("#mCloudCredential_tree").jstree("create","#cred_list","first",{ attr : {class : "credential_item tree_item"} , data : { title: cred.attributes.name, attr : { id : cred.attributes.id, href : "#account/management/cloud-credentials", class : "credential_item tree_item" }} },false, true);
             });
         },
         
         addAllCloudAccounts: function(){
-            $('.cloud_account_item').remove();
+            $('.cloud_account_item.tree_item').remove();
             
             this.cloudAccounts.each(function(c_account) {
-                $("#mCloudAccount_tree").jstree("create","#c_account_list","first",{ attr : {class : "cloud_account_item"} , data : { title: c_account.attributes.name, attr : { id : c_account.attributes.id, href : "#account/management/cloud-accounts", class : "cloud_account_item" }} },false, true);
+                $("#mCloudAccount_tree").jstree("create","#c_account_list","first",{ attr : {class : "cloud_account_item tree_item"} , data : { title: c_account.attributes.name, attr : { id : c_account.attributes.id, href : "#account/management/cloud-accounts", class : "cloud_account_item tree_item" }} },false, true);
             });
             
             if(!this.treeCloudAccount){

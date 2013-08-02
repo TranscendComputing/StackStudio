@@ -76,7 +76,7 @@ define([
             $(event.currentTarget).addClass('row_selected');
             
             var rowData = $("#group_users_table").dataTable().fnGetData(event.currentTarget);
-            this.selectedGroup = this.groups.get(rowData[2]);
+            this.selectedGroup = this.groups.get($.parseHTML(rowData[0])[0]);
             
             if(this.selectedGroup) {
                 this.disableSelectionRequiredButtons(false);
@@ -86,7 +86,7 @@ define([
         addAllGroups: function() {
             $("#group_users_table").dataTable().fnClearTable();
             $.each(this.groups.models, function(index, value) {
-                var rowData = [value.attributes.name, value.attributes.description, value.attributes.id];
+                var rowData = ['<a href="#account/management/groups" id="'+value.attributes.id+'" class="group_item">'+value.attributes.name+"</a>", value.attributes.description];
                 $("#group_users_table").dataTable().fnAddData(rowData);
             });
         },
