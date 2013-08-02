@@ -159,7 +159,7 @@ define([
                 newUser.addPermission("admin", "transcend");
             }
             
-            //Common.vent.trigger("userRefresh");
+            Common.vent.trigger("userRefresh");
             this.$el.dialog('close');
         }
     });

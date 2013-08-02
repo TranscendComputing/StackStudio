@@ -429,7 +429,10 @@ define([
 	var resourcesView;
 
     Common.router.on('route:resources', function (cloud, region, type, subtype, id) {
-        if(sessionStorage.account_id) {
+        if(JSON.parse(sessionStorage.cloud_credentials).length <= 0){
+            Common.router.navigate("#account/management/cloud-credentials_list", {trigger: true});
+            Common.errorDialog("Credentials Error", "You must enter your Cloud Credentials to view Cloud Resources.");
+        }else if(sessionStorage.account_id) {
             if (this.previousView !== resourcesView) {
                 this.unloadPreviousState();
                 resourcesView = new ResourcesView();
