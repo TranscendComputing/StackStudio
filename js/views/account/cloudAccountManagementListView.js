@@ -91,7 +91,12 @@ define([
         addAllGroups: function() {
             $("#group_users_table").dataTable().fnClearTable();
             $.each(this.groups.models, function(index, value) {
-                var rowData = ['<a href="#account/management/cloud-accounts" id="'+value.attributes.id+'" class="cloud_account_item">'+value.attributes.name+"</a>", value.attributes.cloud_provider];
+                var auth_url = "";
+                if(value.attributes.url){
+                    auth_url = value.attributes.url;
+                }
+                
+                var rowData = ['<a href="#account/management/cloud-accounts" id="'+value.attributes.id+'" class="cloud_account_item">'+value.attributes.name+"</a>", value.attributes.cloud_provider, auth_url];
                 $("#group_users_table").dataTable().fnAddData(rowData);
             });
         },
