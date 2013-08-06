@@ -14,9 +14,10 @@ define([
         '/js/collections/cloudAccounts.js',
         '/js/collections/cloudCredentials.js',
         '/js/models/cloudCredential.js',
+        'views/account/cloudCredentialFormView',
         'common'
         
-], function( $, _, Backbone, DialogView, cloudAccountCreateTemplate, CloudAccounts, CloudCredentials, CloudCredential, Common ) {
+], function( $, _, Backbone, DialogView, cloudAccountCreateTemplate, CloudAccounts, CloudCredentials, CloudCredential, CloudCredentialFormView, Common ) {
     
     var CloudAccountCreateView = DialogView.extend({
 
@@ -27,10 +28,15 @@ define([
         cloudCredentials: new CloudCredentials(),
         
         events: {
-            "dialogclose": "close"
+            "dialogclose": "close",
+            "change select#cloud_accounts_select": "selectCloudAccount"
         },
 
         initialize: function(options) {
+            
+            this.subViews = [];
+            
+            Common.vent.on("form:completed", this.registerNewCredential, this);
             
             var createView = this;
             var compiledTemplate = _.template(cloudAccountCreateTemplate);
@@ -40,7 +46,7 @@ define([
                 autoOpen: true,
                 title: "Create Cloud Credentials",
                 resizable: false,
-                width: 350,
+                width: 525,
                 modal: true,
                 buttons: {
                     Create: function () {
@@ -60,9 +66,11 @@ define([
                 data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id }), 
                 reset: true
             });
+            
+            $(".ui-dialog-buttonpane button:contains('Create')").button("disable");
         },
 
-        create: function() {
+        createLESS: function() {
             var newCloudCredential = this.cloudCredential;
             var options = {};
             
@@ -91,6 +99,49 @@ define([
             }
         },
         
+        create: function(){
+            if(this.selectedCloudCredential.id === ""){
+                this.cloudCredentials.create(this.selectedCloudCredential, {cloud_account_id: this.selectedCloudAccount.id});
+                this.$el.dialog('close');
+            }
+        },
+        
+        selectCloudAccount: function(event) {
+            var accountName = event.target.selectedOptions[0].value;
+            
+            if(accountName !== "All")
+            {
+                this.selectedCloudAccount = this.cloudAccounts.get(accountName);
+                
+                this.selectedCloudCredential = new CloudCredential({cloud_provider: this.selectedCloudAccount.attributes.cloud_provider});
+            
+                if(this.selectedCloudAccount.attributes.url !== ""){
+                    this.selectedCloudCredential.attributes.cloud_attributes = {
+                            "openstack_auth_url": this.selectedCloudAccount.attributes.url
+                    };
+                }
+            
+                this.renderCredentialForm();
+            }
+            
+            
+        },
+        
+        renderCredentialForm: function() {
+            if(this.subViews.length !== 0)
+            {
+                this.subViews[0].close();
+            }
+            this.credentialForm = new CloudCredentialFormView({model: this.selectedCloudCredential});
+            $('button').button();
+            $("button#save_credential").show();
+            this.subViews.push(this.credentialForm);
+        },
+        
+        registerNewCredential: function() {
+            $(".ui-dialog-buttonpane button:contains('Create')").button("enable");
+        },
+        
         displayValid: function(valid, selector) {
             if(valid) {
                 $(selector).css("border-color", "");
@@ -101,6 +152,7 @@ define([
         
         addCloudAccounts: function(){
             $("#cloud_accounts_select").empty();
+            $("#cloud_accounts_select").append("<option value='All'>Select Cloud Account</option>");
             this.cloudAccounts.each(function(cloud) {
                 $("#cloud_accounts_select").append("<option value="+cloud.attributes.id+">"+cloud.attributes.name+"</option>");
             });
