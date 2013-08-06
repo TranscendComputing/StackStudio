@@ -1,14 +1,15 @@
 
 <div class="management_page">
     <div id="detail_tabs">
-        <div class="row" style="padding: 0px 10px;">
+        <div class="row" style="padding: 5px 10px;">
             <h3>Manage Cloud Account</h3>
             <div>Cloud Account: &nbsp;<b id="services_tab" href="#services_page">Cloud Account</b></div>
             <div>Cloud Provider: <b id="cloud_provider_label">Cloud Provider</b></div>
-            <!--
-            <li><a id="mappings_tab" href="#mappings_page">Mappings</a></li>
-            <li><a id="prices_tab" href="#prices_page">Prices</a></li>
-            -->
+            <br/>
+            <div id="auth_url_div">
+                <input id="auth_url_input" style="width:300px;"></input>
+                <button id="update_auth_url_button">Update</button>
+            </div>
         </div>
         <div class="row" style="padding: 10px 10px;">
             <button id="new_cloud_service">Add Service</button>

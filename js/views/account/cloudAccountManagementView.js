@@ -38,7 +38,9 @@ define([
             "click button.save-button": "saveService",
             "click button#new_cloud_service": "newCloudService",
             "click button#delete_cloud_account": "deleteCloudAccount",
-            "click button.delete-button": "deleteService"
+            "click button.delete-button": "deleteService",
+            "click button#update_auth_url_button": "updateAuthUrl",
+            "change input#auth_url_input": "updateAuthModel"
         },
         /** Constructor method for current view */
         initialize: function() {
@@ -79,11 +81,15 @@ define([
             Common.vent.on("servicesRefresh", function() {
                 managementView.refreshServices();
             });
+            Common.vent.on("cloudAccountUpdated", function() {
+                managementView.updateServices();
+            });
         },
         /** Add all of my own html elements */
         render: function () {
             //Render my template
             this.$el.append(this.template);
+            //$("#update_auth_url_button").button();
             //$("ul#cloud_account_list").menu();
             //$("div#detail_tabs").tabs();
         },
@@ -106,6 +112,34 @@ define([
             $('button').button();
             
             this.adminCheck();
+        },
+        
+        updateAuthUrl: function(){
+            this.selectedCloudAccount.attributes.url = $("#auth_url_input").val();
+            this.selectedCloudAccount.update();
+            
+            $("#update_auth_url_button").attr("disabled", true);
+            $("#update_auth_url_button").addClass("ui-state-disabled");
+            $("#update_auth_url_button").removeClass("ui-state-hover");
+            
+        },
+        
+        updateServices: function(){
+            var thisView = this;
+            $.each(thisView.rootView.cloudCredentials.models, function(index, value) {
+                if(thisView.selectedCloudAccount.attributes.id === value.attributes.cloud_account_id){
+                    value.attributes.url = thisView.selectedCloudAccount.attributes.url;
+                    value.attributes.cloud_attributes = {
+                            "openstack_auth_url": thisView.selectedCloudAccount.attributes.url
+                    };
+                    thisView.rootView.cloudCredentials.update(value);
+                }
+            });
+        },
+        
+        updateAuthModel: function(){
+            $("#update_auth_url_button").attr("disabled", false);
+            $("#update_auth_url_button").removeClass("ui-state-disabled");
         },
         
         adminCheck: function(){
@@ -132,6 +166,18 @@ define([
             this.selectedCloudAccount = this.rootView.cloudAccounts.get(this.rootView.treeCloudAccount);
             $("#services_tab").html(this.selectedCloudAccount.attributes.name);
             $("#cloud_provider_label").html(this.selectedCloudAccount.attributes.cloud_provider);
+            
+            if(this.selectedCloudAccount.attributes.cloud_provider === "OpenStack"){
+                $("#auth_url_div").show();
+                if(this.selectedCloudAccount.attributes.url){
+                    $("#auth_url_input").val(this.selectedCloudAccount.attributes.url);
+                }else{
+                    $("#auth_url_input").val("");
+                }
+            }else{
+                $("#auth_url_div").hide();
+            }
+            
             this.renderAccountAttributes();
         },
 
