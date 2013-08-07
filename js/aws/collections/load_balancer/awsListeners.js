@@ -17,7 +17,9 @@ define([
 
         model: Listener,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/listeners/describe'
+        initialize: function(options) {
+            this.url = Common.apiUrl + '/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/'+ options["load_balancer_id"] +'/listeners';
+        }
         
     });
 

@@ -21,7 +21,7 @@ define([
         // Reference to this collection's model.
         model: Volume,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/block_storage/volumes/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/block_storage/volumes'
     });
 
     // Create our global collection of **Volumes**.

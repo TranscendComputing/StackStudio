@@ -13,19 +13,14 @@ define([
 ], function( $, Backbone, Subnet, Common ) {
     'use strict';
 
-    // Subnet Collection
-    // ---------------
-
     var SubnetsList = Backbone.Collection.extend({
 
-        // Reference to this collection's model.
         model: Subnet,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/subnets/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/subnets'
         
     });
 
-    // Create our global collection of **Subnets**.
     return SubnetsList;
 
 });

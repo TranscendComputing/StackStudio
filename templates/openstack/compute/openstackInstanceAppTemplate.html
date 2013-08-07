@@ -13,8 +13,7 @@
                                 <li><a>Start</a></li>
                                 <li><a>Stop</a></li>
                                 <li><a>Reboot</a></li>
-                                <li><a>Terminate</a></li>
-                                <li><a>Disassociate Address</a></li>                
+                                <li><a>Terminate</a></li>           
                             </ul>
                         </li>
                     </ul>
@@ -25,11 +24,11 @@
     <table id="resource_table" class="full_width">
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Instance ID</th>
-                <th>ID</th>
-                <th>Key Pair</th>
-                <th>State</th>
+                <th class="medium_width">Name</th>
+                <th class="medium_width">Instance ID</th>
+                <th class="large_width">ID</th>
+                <th class="small_width">Key Pair</th>
+                <th class="small_width">State</th>
             </tr>
         </thead>
         <tbody>
@@ -65,9 +64,12 @@
                     <tr class="alert-field"><td><b>Fault:</b></td>           <td>{{ message }}</td></tr>
                     {{/fault}}
                     <tr><td><b>Launch Time:</b></td>           <td>{{ created }}</td></tr>
+                    <tr><td><b>Addresses:</b></td><td><span id="addresses_display"></span></td></tr>
+                    <!--
                     {{#addresses.private}}
                     <tr><td><b>Private Address:</b></td>           <td>{{ addr }}</td></tr>
                     {{/addresses.private}}
+                    -->
                 </tbody>
             </table>
         </div>

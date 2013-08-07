@@ -14,78 +14,39 @@ define([
         'views/dialogView',
         'text!templates/openstack/network/openstackSubnetCreateTemplate.html',
         '/js/openstack/models/network/openstackSubnet.js',
-        '/js/openstack/collections/network/openstackSubnets.js',
         '/js/openstack/collections/network/openstackNetworks.js',
         'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter',
         'backbone.stickit'
-], function( $, _, Backbone, Common, ich, DialogView, subnetCreateTemplate, Subnet, Subnets, Networks ) {
+], function( $, _, Backbone, Common, ich, DialogView, subnetCreateTemplate, Subnet, Networks ) {
 
     var SubnetCreateView = DialogView.extend({
         credentialId: undefined,
         region: undefined,
-        collection: new Subnets(),
-        collectionsCount: 1, // collectionsCount tells stickit how many collections to wait for before initializing bindings
-        template: subnetCreateTemplate,
+        template: _.template(subnetCreateTemplate),
+        model: new Subnet(),
+
         events: {
             "dialogclose": "close"
-        },
-
-        /**
-         *    backbone.stickit bindings to map selectors to model attributes
-         *    NOTE: 'this' has scope of view in selectOptions
-         *    @type {Object}
-         */
-        bindings: {
-            '#gateway_ip_input': 'gateway_ip',
-            '#allocation_pools_input': {
-                observe: 'allocation_pools'
-            },
-            'select#ip_version': {
-                observe: 'ip_version',
-                selectOptions: {
-                    collection: function() {
-                        return [4, 6];
-                    }
-                }
-            },
-            '#cidr': 'cidr',
-            'select#network_select': {
-                observe: 'network_id',
-                selectOptions: {
-                    collection: 'this.networks',
-                    labelPath: 'name',
-                    valuePath: 'id',
-                    defaultOption: {
-                        label: "Select Network",
-                        value: null
-                    },
-                    onGet: function(value, options) {
-                        return value;
-                    }
-                }
-            }
         },
 
         initialize: function(options) {
             this.credentialId = options.cred_id;
             this.region = options.region;
-            this.model = new Subnet({}, {collection: this.collection});
             this.networks = new Networks();
-            this.networks.on("reset", this.applyBindings, this); // .applyBindings method defined in DialogView
+            this.networks.on("reset", this.addAllNetworks, this);
             this.networks.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region}), reset: true });
             this.render();
         },
         
         render: function() {
             var createView = this;
-            ich.addTemplate("subnet_create_template", this.template);
-            this.$el.html( ich.subnet_create_template(this.model.toJSON()) );
+            this.$el.html(this.template);
             this.$el.dialog({
                 autoOpen: true,
                 title: "Create Subnet",
-                width:500,
+                width: 400,
                 minHeight: 150,
                 resizable: false,
                 modal: true,
@@ -98,15 +59,51 @@ define([
                     }
                 }
             });
+            $("#network_select, #ip_version_select").selectmenu();
+        },
 
-            // This line adds required asterisk to all fields with class 'required'
-            this.$(".required").after("<span class='required'/>");
+        addAllNetworks: function() {
+            $("#network_select").empty();
+            this.networks.each(function(network) {
+                $("#network_select").append($("<option value="+network.attributes.id+">"+network.attributes.name+"</option>"));
+            });
+            $("#network_select").selectmenu();
+        },
+
+        displayValid: function(valid, selector) {
+            if(valid) {
+                $(selector).css("border-color", "");
+            }else{
+                $(selector).css("border-color", "#FF0000");
+            }
         },
 
         create: function() {
-            console.log(this.model.toJSON());
-            //this.model.create(this.credentialId, this.region); 
-            //this.$el.dialog('close');
+            var newSubnet = this.model;
+            var options = {};
+            var issue = false;
+
+            options.network_id = $("#network_select").val();
+            if($("#cidr_input").val() !== "") {
+                this.displayValid(true, "#cidr_input");
+                options.cidr = $("#cidr_input").val();
+            }else {
+                this.displayValid(false, "#cidr_input");
+                issue = true;
+            }
+
+            options.ip_version = $("#ip_version_select").val();
+            if($("#gateway_ip_input").val() !== "") {
+                options.gateway_ip = $("#gateway_ip_input").val();
+            }
+            if($("#allocation_pools_input").val() !== "") {
+                options.allocation_pools = $("#allocation_pools").val();
+            }
+
+            if(!issue) {
+                this.model.create(options, this.credentialId, this.region);
+                this.$el.dialog('close');
+            }
         }
 
     });

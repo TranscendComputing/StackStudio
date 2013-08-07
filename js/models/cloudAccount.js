@@ -39,6 +39,66 @@ define([
         parse: function(resp) {
             return resp.cloud_account;
         },
+        
+        create: function(options, org_id, cloud_id) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_accounts?org_id=" + org_id + "&cloud_id=" + cloud_id;
+            var cloud_account = {"cloud_account":options};
+            
+            $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: JSON.stringify(cloud_account),
+                success: function(data) {
+                    Common.vent.trigger("managementRefresh");
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            });
+            
+        },
+        
+        destroy: function() {
+            
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_accounts/" + this.id + "?_method=DELETE";
+            
+            $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/x-www-form-urlencoded',
+                success: function(data) {
+                    Common.vent.trigger("managementRefresh");
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            });
+            
+        },
+        
+        addService: function(options) {
+            
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_accounts/" + this.id + "/services?_method=POST";
+            
+            var cloud_service = {"cloud_service":options};
+            
+            $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: JSON.stringify(cloud_service),
+                success: function(data) {
+                    Common.vent.trigger("servicesRefresh");
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            });
+            
+        },
 
         /**
          * Saves a cloud account's cloud service
@@ -70,6 +130,32 @@ define([
                 }
             });
         },
+        
+		/**
+         * Updates a users cloud Account
+         * @param  {CloudAccount} model
+         * @param  {Object} options
+         * @return {nil}
+         */
+		update: function() {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_accounts/"+this.attributes.id+"?_method=PUT";
+            var cloud_account = {"cloud_account":this.attributes};
+            
+            $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: JSON.stringify(cloud_account),
+                success: function(data) {
+                    Common.vent.trigger("cloudAccountUpdated");
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            });
+            
+		},
 
         deleteService: function(service) {
             Messenger.options = {

@@ -21,57 +21,23 @@ define([
 		},
 
         create: function(credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/internet_gateways/create?_method=PUT&cred_id=" + credentialId + "&region=" + region;
-            this.sendPostAction(url);
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/internet_gateways?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "internetGatewayAppRefresh");
         },
 
         attach: function(options, credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/internet_gateways/attach?cred_id=" + credentialId + "&region=" + region;
-            options.id = this.attributes.id;
-            this.sendPostAction(url, options);
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/vpcs/" + options["vpc_id"] + "/internet_gateways/" + options["id"] + "/attach?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "internetGatewayAppRefresh");
         },
 
         detach: function(credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/internet_gateways/detach?cred_id=" + credentialId + "&region=" + region;
-            var options = {id: this.attributes.id, vpc_id: this.attributes.attachment_set.vpcId};
-            this.sendPostAction(url, options);
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/vpcs/" + this.attributes.attachment_set.vpcId + "/internet_gateways/" + this.attributes.id + "/attach?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "internetGatewayAppRefresh");
         },
 
         destroy: function(credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/internet_gateways/delete?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
-            this.sendPostAction(url, this.attributes);
-        },
-
-        sendPostAction: function(url, options) {
-            if(options) {
-                var internetGateway = {"internet_gateway": options};
-                $.ajax({
-                    url: url,
-                    type: 'POST',
-                    contentType: 'application/x-www-form-urlencoded',
-                    dataType: 'json',
-                    data: JSON.stringify(internetGateway),
-                    success: function(data) {
-                        Common.vent.trigger("internetGatewayAppRefresh");
-                    },
-                    error: function(jqXHR) {
-                        Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
-                    }
-                }); 
-            }else {
-                $.ajax({
-                    url: url,
-                    type: 'POST',
-                    contentType: 'application/x-www-form-urlencoded',
-                    success: function(data) {
-                        Common.vent.trigger("internetGatewayAppRefresh");
-                    },
-                    error: function(jqXHR) {
-                        Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
-                    }
-                });
-            }
-            
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/internet_gateways/" + this.attributes.id + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "internetGatewayAppRefresh");
         }
     });
 

@@ -41,7 +41,7 @@ define([
 
         CreateView: GroupCreateView,
 
-        selectedGroupUsers: new GroupUsers(),
+        selectedGroupUsers: undefined,
         
         events: {
             'click .create_button': 'createNew',
@@ -67,7 +67,6 @@ define([
             Common.vent.on("groupUsersRefresh", function() {
                 groupApp.refreshUsersTab();
             });
-            this.selectedGroupUsers.on('reset', this.addAllGroupUsers, this);
         },
         
         toggleActions: function(e) {
@@ -110,6 +109,8 @@ define([
             $("#add_users_to_group_button").button();
             $("#add_users_to_group_button").attr("disabled", true);
             $("#add_users_to_group_button").addClass("ui-state-disabled");
+            this.selectedGroupUsers = new GroupUsers({"group_name": this.selectedId});
+            this.selectedGroupUsers.on('reset', this.addAllGroupUsers, this);
             this.selectedGroupUsers.fetch({ data: $.param({ cred_id: this.credentialId, group_name: this.selectedId}), reset: true});
         },
 

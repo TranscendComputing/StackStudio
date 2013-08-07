@@ -123,9 +123,9 @@ define([
             this.$recordSetTable.fnClearTable();
             this.selectedRecord = undefined;
             $("#record_set_action_menu li").addClass("ui-state-disabled");
-            this.records = new RecordSets();
+            this.records = new RecordSets({"hosted_zone_id": this.selectedId});
             this.records.on( 'reset', this.addAllRecordSets, this );
-            this.records.fetch({ data: $.param({ cred_id: this.credentialId, hosted_zone_id: this.selectedId}), reset: true });
+            this.records.fetch({ data: $.param({ cred_id: this.credentialId}), reset: true });
         },
 
         addAllRecordSets: function() {

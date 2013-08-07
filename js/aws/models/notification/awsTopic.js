@@ -6,30 +6,45 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'backbone',
+        'models/resource/resourceModel',
         'common'
-], function( $, Backbone, Common ) {
+], function( ResourceModel, Common ) {
     'use strict';
 
-    // Aws Topic Model
-    // ----------
+    var Topic = ResourceModel.extend({
 
-    /**
-     *
-     * @name Topic
-     * @constructor
-     * @category Notification
-     * @param {Object} initialization object.
-     * @returns {Object} Returns an Topic.
-     */
-    var Topic = Backbone.Model.extend({
-
-        /** Default attributes for topic */
         defaults: {
-            id: ''
-        }
+            id: '',
+            Name: '',
+            DisplayName: '',
+            Owner: '',
+            SubscriptionsPending: 0,
+            SubscriptionsConfirmed: 0,
+            SubscriptionsDeleted: 0,
+            EffectiveDeliveryPolicy: '',
+            Policy: '',
+            TopicArn: ''
+        },
 
+        create: function(options, credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/notification/topics?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", {"topic": options}, "topicAppRefresh");
+        },
+
+        publish: function(options, credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/notification/topics/"+ this.attributes.id +"/publish?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", {"publish": options}, "");
+        },
+
+        editDisplayName: function(options, credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/notification/topics/"+ this.attributes.id +"/set_attribute?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", {"attribute": options}, "topicAppRefresh");
+        },
+
+        destroy: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/notification/topics/" + this.attributes.id + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "topicAppRefresh");
+        }
     });
 
     return Topic;

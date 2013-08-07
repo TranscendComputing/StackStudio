@@ -6,57 +6,27 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'backbone',
+        'models/resource/resourceModel',
         'common'
-], function( $, Backbone, Common ) {
+], function( ResourceModel, Common ) {
     'use strict';
 
-    // Base Bucket Model
-    // ----------
-
-    /**
-     *
-     * @name Bucket
-     * @constructor
-     * @category ObjectStorage
-     * @param {Object} initialization object.
-     * @returns {Object} Returns a Bucket instance.
-     */
-    var Bucket = Backbone.Model.extend({
-
+    var Bucket = ResourceModel.extend({
         idAttribute: "key",
         
         defaults: {
 			key: '',
 			creation_date: ''
 		},
-		
+
         create: function(options, credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/object_storage/directories/create?_method=PUT&cred_id=" + credentialId + "&region=" + region;
-            this.sendPostAction(url, options);
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/object_storage/directories?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", {"directory": options}, "objectStorageAppRefresh");
         },
-        
+
         destroy: function(credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/object_storage/directories/delete?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
-            this.sendPostAction(url, this.attributes);
-        },
-        
-        sendPostAction: function(url, options) {
-            var directory = {"directory": options};
-            $.ajax({
-                url: url,
-                type: 'POST',
-                contentType: 'application/x-www-form-urlencoded',
-                dataType: 'json',
-                data: JSON.stringify(directory),
-                success: function(data) {
-                    Common.vent.trigger("objectStorageAppRefresh");
-                },
-                error: function(jqXHR) {
-                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
-                }
-            }); 
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/object_storage/directories/" + this.attributes.key + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "objectStorageAppRefresh");
         }
     });
 

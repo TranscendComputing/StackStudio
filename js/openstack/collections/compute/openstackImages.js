@@ -13,15 +13,11 @@ define([
 ], function( $, Backbone, Image, Common ) {
     'use strict';
 
-    // Image Collection
-    // ---------------
-
     var ImageList = Backbone.Collection.extend({
 
-        // Reference to this collection's model.
         model: Image,
 
-        url: 'samples/openstackImages.json'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/compute/images'
     });
     
     return ImageList;

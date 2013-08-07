@@ -63,7 +63,7 @@ define([
         resourceApp: undefined,
 
         events: {
-			"click .resourceLink" : "resourceClick",
+			"click .resource_link" : "resourceClick",
 			"click #cloud_coverflow img" : "cloudChange",
             "selectmenuchange #credential_select": "credentialChange"
 		},
@@ -73,7 +73,8 @@ define([
             $("#main").html(this.el);
             this.$el.html(this.template);
             $("#resource_summary").accordion({
-                collapsible: true
+                collapsible: true,
+                heightStyle: "content"
             });
             var response = $.ajax({
                 url: "samples/cloudDefinitions.json",
@@ -98,8 +99,6 @@ define([
                 var firstCloudProvider = this.cloudCredentials.first().attributes.cloud_provider;
                 firstCloudProvider = firstCloudProvider.toLowerCase();
                 if(this.cloudProvider) {
-                    console.log("cloud path: "+this.cloudProvider);
-                    Common.router.navigate("#resources/"+this.cloudProvider, {trigger: false});
                     if($("#"+this.cloudProvider).length) {
                         this.cloudSelection(this.cloudProvider);
                         Common.router.navigate("#resources/"+this.cloudProvider, {trigger: false});
@@ -108,7 +107,6 @@ define([
                         this.cloudSelection(firstCloudProvider);
                     }
                 }else {
-                    console.log("cloud path undefined");
                     Common.router.navigate("#resources/"+firstCloudProvider, {trigger: false});
                     this.cloudSelection(firstCloudProvider);
                 }
@@ -164,27 +162,31 @@ define([
 		addAllClouds: function() {
 		    this.cloudCredentials.each(this.addCloud, this);
 		},
-
-		cloudChange: function(event) {
-			$(".resources").remove();
-			Common.router.navigate("#resources/"+event.target.id, {trigger: false});
-			this.cloudSelection(event.target.id);
-		},
-
+        
+        cloudChange: function(event) {
+            if(!event.isTrigger) {
+                $(".resources").remove();
+                Common.router.navigate("#resources/"+event.target.id, {trigger: false}); 
+                this.cloudSelection(event.target.id);
+                $("#service_menu").hide(); 
+                $("#resource_app").hide(); 
+            } 
+        },
+        
 		cloudSelection: function (cloudProvider) {
             this.cloudProvider = cloudProvider;
 		    var resourceNav = this;
 		    //Add the services of the cloud to the resource table
 		    var row = 1;
 		    $("#resource_table").empty();
-		    $.each(resourceNav.cloudDefinitions[this.cloudProvider].services, function(index, service) {
-		        $("#row"+row).append($("<td></td>").attr({
+		    $.each(resourceNav.cloudDefinitions[this.cloudProvider].native_services, function(index, service) {
+		        $("#native_row"+row).append($("<td></td>").attr({
                     "id": service.type,
-                    "class": "resources"
+                    "class": "resources selectable_item"
                 }));
                 $("#"+service.type).append($("<a></a>").attr({
                     "id": service.type+"Link",
-                    "class": "resourceLink"
+                    "class": "resource_link"
                 }).text(service.name));
                 row++;
                 //reset row if greater than 3
@@ -192,8 +194,32 @@ define([
 		            row = 1;
 		        }
 		    });
-		    $("#cloud_nav").html(this.crumbTemplate({pathElt: this.cloudDefinitions[this.cloudProvider].name
-            }));
+            row = 1;
+            if(resourceNav.cloudDefinitions[this.cloudProvider].topstack_services !== undefined && resourceNav.cloudDefinitions[this.cloudProvider].topstack_services.length > 0) {
+                $("#topstack_services_table, #topstack_service_label").show();
+                $("#native_services_table").css("width", "30%");
+                $("#topstack_services_table").css("width", "42%");
+                $.each(resourceNav.cloudDefinitions[this.cloudProvider].topstack_services, function(index, service) {
+                $("#topstack_row"+row).append($("<td></td>").attr({
+                    "id": service.type,
+                    "class": "resources selectable_item"
+                    }));
+                    $("#"+service.type).append($("<a></a>").attr({
+                        "id": service.type+"Link",
+                        "class": "resource_link"
+                    }).text(service.name));
+                    row++;
+                    //reset row if greater than 3
+                    if(row > 3) {
+                        row = 1;
+                    }
+                });
+            }else {
+                $("#topstack_services_table, #topstack_service_label").hide();
+                $("#native_services_table").css("width", "73%");
+            }
+            
+		    $("#cloud_nav").html(this.crumbTemplate({pathElt: this.cloudDefinitions[this.cloudProvider].name}));
 
             this.refreshCloudSpecs();
 		},
@@ -206,7 +232,6 @@ define([
         credentialChange: function(event, object) {
             this.selectedCredential = object.value;
             this.refreshCloudSpecs();
-            this.render();
         },
 
         refreshCloudSpecs: function() {
@@ -280,6 +305,7 @@ define([
         },
 
 		resourceClick: function(id) {
+            $("#resource_app").show();
 			var selectionId = id.target.id.split("Link")[0];
 			this.type = selectionId;
             this.subtype = undefined;
@@ -316,7 +342,11 @@ define([
                     this.type = "compute";
                     this.subtype = "instances";
                 }
-                $.each(this.cloudDefinitions[this.cloudProvider].services, function(index, service) {
+                var completeServices = this.cloudDefinitions[this.cloudProvider].native_services;
+                if(resourceNav.cloudDefinitions[this.cloudProvider].topstack_services !== undefined && resourceNav.cloudDefinitions[this.cloudProvider].topstack_services.length > 0) {
+                    completeServices = completeServices.concat(resourceNav.cloudDefinitions[this.cloudProvider].topstack_services);
+                }
+                $.each(completeServices, function(index, service) {
                     if (service.type === resourceNav.type) {
                         if(!resourceNav.subtype) {
                             resourceNav.subtype = service.defaultSubtype;
@@ -330,7 +360,8 @@ define([
                     $("#service_menu").show();
                 }else {
                     $("#service_menu").hide();
-                    $("#resource_app").width("1100px");
+                    //$("#resource_app").width("1100px");
+                    $("#resource_app").addClass("full_width");
                 }
 
                 //Camelcase the subtype for the file name
@@ -342,8 +373,14 @@ define([
                     camelCase = s.charAt(0).toUpperCase() + s.slice(1);
                     subType = subType ? (subType + camelCase) : camelCase;
                 });
-
-                var appPath = "../"+this.cloudProvider+"/views/"+this.type+"/"+this.cloudProvider+subType+"AppView";
+                
+                var appPath;
+                
+                if(this.type === "admin") {
+                    appPath = "../topstack/views/"+this.type+"/topstack"+subType+"AppView";
+                }else {
+                    appPath = "../"+this.cloudProvider+"/views/"+this.type+"/"+this.cloudProvider+subType+"AppView";
+                }
 
                 require([appPath], function (AppView) {
                     if (resourceNav.resourceApp instanceof AppView) {
@@ -392,7 +429,10 @@ define([
 	var resourcesView;
 
     Common.router.on('route:resources', function (cloud, region, type, subtype, id) {
-        if(sessionStorage.account_id) {
+        if(JSON.parse(sessionStorage.cloud_credentials).length <= 0){
+            Common.router.navigate("#account/management/cloud-credentials_list", {trigger: true});
+            Common.errorDialog("Credentials Error", "You must enter your Cloud Credentials to view Cloud Resources.");
+        }else if(sessionStorage.account_id) {
             if (this.previousView !== resourcesView) {
                 this.unloadPreviousState();
                 resourcesView = new ResourcesView();
@@ -409,8 +449,6 @@ define([
             Common.errorDialog("Login Error", "You must login.");
         }
     }, Common);
-
-    console.log("resource view defined");
 
 	return ResourcesView;
 });

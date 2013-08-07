@@ -18,7 +18,7 @@ define([
 
         model: DBEngineVersion,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/rds/engine_versions/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/rds/engine_versions'
         
     });
 

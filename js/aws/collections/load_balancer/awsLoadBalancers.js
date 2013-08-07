@@ -18,7 +18,7 @@ define([
 
         model: LoadBalancer,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/load_balancer/load_balancers'
         
     });
 

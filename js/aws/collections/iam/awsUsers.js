@@ -18,7 +18,7 @@ define([
 
         model: User,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/iam/users/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/iam/users'
         
     });
 

@@ -13,15 +13,11 @@ define([
 ], function( $, Backbone, Flavor, Common ) {
     'use strict';
 
-    // Flavor Collection
-    // ---------------
-
     var FlavorList = Backbone.Collection.extend({
 
-        // Reference to this collection's model.
         model: Flavor,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/flavors/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/flavors'
     });
     
     return FlavorList;

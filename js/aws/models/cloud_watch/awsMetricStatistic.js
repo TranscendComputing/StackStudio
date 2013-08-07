@@ -6,25 +6,14 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'backbone'
-], function( $, Backbone ) {
+        'backbone',
+        'models/resource/resourceModel',
+        'common'
+], function( Backbone, ResourceModel, Common ) {
     'use strict';
 
-    // Aws MetricStatistic Model
-    // ----------
-
-    /**
-     *
-     * @name MetricStatistic
-     * @constructor
-     * @category CloudWatch
-     * @param {Object} initialization object.
-     * @returns {Object} Returns an MetricStatistic.
-     */
     var MetricStatistic = Backbone.Model.extend({
 
-        /** Default attributes for DataPoint */
         defaults: {
             Timestamp: '',
             Unit: '',

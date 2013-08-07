@@ -18,7 +18,7 @@ define([
 
         model: RelationalDatabase,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/rds/databases/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/rds/databases'
         
     });
 

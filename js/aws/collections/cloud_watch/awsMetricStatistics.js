@@ -21,7 +21,7 @@ define([
         // Reference to this collection's model.
         model: MetricStatistic,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/monitor/metric_statistics/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/monitor/metric_statistics'
     });
     
     // Create our global collection of **MetricStatistic**.

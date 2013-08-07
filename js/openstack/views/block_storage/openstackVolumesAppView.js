@@ -16,7 +16,7 @@ define([
         '/js/openstack/views/block_storage/openstackVolumeCreateView.js',
         '/js/openstack/views/block_storage/openstackVolumeAttachView.js',
         '/js/openstack/views/block_storage/openstackSnapshotCreateView.js',
-        '/js/openstack/collections/cloud_watch/openstackMetricStatistics.js',
+        '/js/topstack/collections/cloud_watch/topstackMetricStatistics.js',
         'icanhaz',
         'common',
         'morris',

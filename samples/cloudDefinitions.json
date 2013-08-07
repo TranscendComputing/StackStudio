@@ -2,10 +2,10 @@
     "aws": {
         "name": "Amazon Web Services",
         "logo": "/images/CloudLogos/amazon800.jpg",
-        "services": [
+        "native_services": [
             {
                 "name": "Auto Scale",
-                "type": "auto_scale",
+                "type": "autoscale",
                 "defaultSubtype": "autoscalegroups"
             },
             {
@@ -16,7 +16,21 @@
             {
                 "name": "Elasticache",
                 "type": "cache",
-                "defaultSubtype": "clusters"
+                "defaultSubtype": "clusters",
+                "subServices" : [
+                    {
+                        "name": "Clusters",
+                        "type": "clusters"
+                    },
+                    {
+                        "name": "Parameter Groups",
+                        "type": "parametergroups"
+                    },
+                    {
+                        "name": "Security Groups",
+                        "type": "securitygroups"
+                    }
+                ]
             },
             {
                 "name": "Elastic Beanstalk",
@@ -82,12 +96,31 @@
             {
                 "name": "Relational Database",
                 "type": "rds",
-                "defaultSubtype": "relationaldatabases"
+                "defaultSubtype": "relationaldatabases",
+                "subServices" : [
+                    {
+                        "name": "Relational Databases",
+                        "type": "relationaldatabases"
+                    },
+                    {
+                        "name": "Parameter Groups",
+                        "type": "parametergroups"
+                    },
+                    {
+                        "name": "Security Groups",
+                        "type": "securitygroups"
+                    }
+                ]
             },
             {
                 "name": "Route 53",
                 "type": "dns",
                 "defaultSubtype": "hostedzones"
+            },
+            {
+                "name": "Simple DB",
+                "type": "simple_db",
+                "defaultSubtype": "simpledatabases"
             },
             {
                 "name": "Simple Notification",
@@ -178,9 +211,24 @@
     "openstack" : {
         "name": "OpenStack",
         "logo": "/images/CloudLogos/openstack300.jpg",
-        "services": [
+        "native_services": [
             {
-                "name": "Elastic Compute Cloud",
+                "name": "Block Storage",
+                "type": "block_storage",
+                "defaultSubtype": "volumes",
+                "subServices" : [
+                    {
+                        "name": "Volumes",
+                        "type": "volumes"
+                    },
+                    {
+                        "name": "Snapshots",
+                        "type": "snapshots"
+                    }
+                ]
+            },
+            {
+                "name": "Compute Service",
                 "type": "compute",
                 "defaultSubtype": "instances",
                 "subServices" : [
@@ -203,26 +251,6 @@
                 ]
             },
             {
-                "name": "Elastic Block Storage",
-                "type": "block_storage",
-                "defaultSubtype": "volumes",
-                "subServices" : [
-                    {
-                        "name": "Volumes",
-                        "type": "volumes"
-                    },
-                    {
-                        "name": "Snapshots",
-                        "type": "snapshots"
-                    }
-                ]
-            },
-            {
-                "name": "Simple Storage",
-                "type": "object_storage",
-                "defaultSubtype": "buckets"
-            },
-            {
                 "name": "Identity",
                 "type": "identity",
                 "defaultSubtype": "users",
@@ -242,7 +270,7 @@
                 ]
             },
             {
-                "name": "Network",
+                "name": "Network Service",
                 "type": "network",
                 "defaultSubtype": "networks",
                 "subServices" : [
@@ -257,12 +285,83 @@
                     {
                         "name": "Ports",
                         "type": "ports"
-                    },
-                    {
-                        "name": "Floating IPs",
-                        "type": "floating_ips"
                     }
                 ]
+            },
+            {
+                "name": "Object Storage",
+                "type": "object_storage",
+                "defaultSubtype": "buckets"
+            }
+        ],
+        "topstack_services": [
+            {
+                "name": "Admin Console",
+                "type": "admin",
+                "defaultSubtype": "adminconsole"
+            },
+            {
+                "name": "Auto Scale",
+                "type": "autoscale",
+                "defaultSubtype": "autoscalegroups"
+            },
+            {
+                "name": "DNS 53",
+                "type": "dns",
+                "defaultSubtype": "hostedzones"
+            },
+            {
+                "name": "Elastic Cache",
+                "type": "cache",
+                "defaultSubtype": "clusters",
+                "subServices" : [
+                    {
+                        "name": "Clusters",
+                        "type": "clusters"
+                    },
+                    {
+                        "name": "Parameter Groups",
+                        "type": "parametergroups"
+                    },
+                    {
+                        "name": "Security Groups",
+                        "type": "securitygroups"
+                    }
+                ]
+            },
+            {
+                "name": "Monitor Service",
+                "type": "cloud_watch",
+                "defaultSubtype": "alarms"
+            },
+            {
+                "name": "Relational Database",
+                "type": "rds",
+                "defaultSubtype": "relationaldatabases",
+                "subServices" : [
+                    {
+                        "name": "Relational Database",
+                        "type": "relationaldatabases"
+                    },
+                    {
+                        "name": "Parameter Groups",
+                        "type": "parametergroups"
+                    },
+                    {
+                        "name": "Security Groups",
+                        "type": "securitygroups"
+                    }
+                ]
+            },
+            {
+                "name": "Scalable Load Balancer",
+                "type": "load_balancer",
+                "defaultSubtype": "loadbalancers"
+            },
+            {
+                "name": "Scalable Queue",
+                "type": "queue",
+                "defaultSubtype": "queues"
             }
         ],
         "regions": [
@@ -275,13 +374,13 @@
     "google" : {
         "name": "Google",
         "logo": "/images/CloudLogos/google1920x1107.png",
-        "services": [],
+        "native_services": [],
         "regions": []
     },
     "joyent" : {
         "name": "Joyent",
         "logo": "/images/CloudLogos/joyent200.jpg",
-        "services": [],
+        "native_services": [],
         "regions": []
     }
 }

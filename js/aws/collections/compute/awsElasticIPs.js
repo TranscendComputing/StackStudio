@@ -13,15 +13,11 @@ define([
 ], function( $, Backbone, ElasticIP, Common ) {
     'use strict';
 
-    // ElasticIP Collection
-    // ---------------
-
     var ElasticIPList = Backbone.Collection.extend({
 
-        // Reference to this collection's model.
         model: ElasticIP,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/addresses/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/addresses'
     });
     
     return ElasticIPList;

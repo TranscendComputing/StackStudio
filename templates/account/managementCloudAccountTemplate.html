@@ -1,23 +1,19 @@
-<div id="cloud_accounts" class="threecol">
-    <div class="selectable_list">
-        <h4>Cloud Accounts</h4>
-        <ul id="cloud_account_list">
-        </ul>
-        <div class="row button_row">
-            <button id="new_cloud_account">New</button>
-            <button id="delete_cloud_account">Delete</button>
-        </div>
-    </div>
-</div>
-<div class="management_page ninecol">
+
+<div class="management_page">
     <div id="detail_tabs">
-        <ul>
-            <li><a id="services_tab" href="#services_page">Services</a></li>
-            <!--
-            <li><a id="mappings_tab" href="#mappings_page">Mappings</a></li>
-            <li><a id="prices_tab" href="#prices_page">Prices</a></li>
-            -->
-        </ul>
+        <div class="row" style="padding: 5px 10px;">
+            <h3>Manage Cloud Account</h3>
+            <div>Cloud Account: &nbsp;<b id="services_tab" href="#services_page">Cloud Account</b></div>
+            <div>Cloud Provider: <b id="cloud_provider_label">Cloud Provider</b></div>
+            <br/>
+            <div id="auth_url_div">
+                Auth URL: &nbsp;<input id="auth_url_input" style="width:300px;"></input>
+                <button id="update_auth_url_button">Update</button>
+            </div>
+        </div>
+        <div class="row" style="padding: 10px 10px;">
+            <button id="new_cloud_service">Add Service</button>
+        </div>
         <div id="services_page">
         </div>
         <!--
@@ -32,7 +28,7 @@
 <script type="text/html" id="cloud_service">
     <form id="cloud_services_form" action="" method="">
         <fieldset>
-            <legend>{{name}} Service Endpoints</legend>
+            <legend>Service Endpoints</legend>
             {{#cloud_services}}
             <p>
                 <label class="tabbed-field">{{cloud_service.service_type}} Endpoint URL:</label>

@@ -13,18 +13,13 @@ define([
 ], function( $, Backbone, SecurityGroup, Common ) {
     'use strict';
 
-    // SecurityGroup Collection
-    // ---------------
-
     var SecurityGroupList = Backbone.Collection.extend({
 
-        // Reference to this collection's model.
         model: SecurityGroup,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/security_groups/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/security_groups'
     });
     
-    // Create our global collection of **Security Groups**.
     return SecurityGroupList;
 
 });

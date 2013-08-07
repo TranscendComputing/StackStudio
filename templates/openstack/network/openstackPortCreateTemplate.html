@@ -1,15 +1,22 @@
 <div id="port_create_template">
-    <form>
-        <fieldset>
-            <p><label class="small-tabbed-left-field" for="network_id">Network:</label>
-                <select id="network_select" class="select-250 required">
-                </select>
-            </p>
-            <p><label class="small-tabbed-left-field" for="name">Name:</label><input id="name_input" type="text" class="textbox-250" value="{{name}}"/></p>
-            <p><label class="small-tabbed-left-field" for="mac_address">MAC Address:</label><input id="mac_address_input" type="text" class="textbox-250" value="{{mac_address}}"/></p>
-            <p><label class="small-tabbed-left-field" for="admin_state_up">Admin State Up:</label><input id="admin_state_up_checkbox" class="textbox-250" type="checkbox"/></p>
-            <p><label class="small-tabbed-left-field" for="allocation_pools">Fixed IPs:</label><input id="allocation_pools_input" class="textbox-250" type="text"/></p>
-            <p><label class="small-tabbed-left-field" for="routes">Host Routes:</label><input id="routes_input" class="textbox-250" type="text"/></p>
-        </fieldset>
-    </form>
+    <table>
+        <tr>
+            <td>Network:</td>
+            <td>
+                <select id="network_select" class="medium_width"></select>
+            </td>
+        </tr>
+        <tr>
+            <td>Name:</td>
+            <td>
+                <input id="name_input" type="text" class="medium_width"/>
+            </td>
+        </tr>
+        <tr>
+            <td>Admin State Up:</td>
+            <td>
+                <input id="admin_state_up_checkbox" type="checkbox"/>
+            </td>
+        </tr>
+    </table>
 </div>

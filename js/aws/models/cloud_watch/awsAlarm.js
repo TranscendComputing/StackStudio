@@ -6,23 +6,14 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
         'backbone',
+        'models/resource/resourceModel',
         'common'
-], function( $, Backbone, Common ) {
+], function( Backbone, ResourceModel, Common ) {
     'use strict';
 
-    /**
-     *
-     * @name Alarm
-     * @constructor
-     * @category CloudWatch
-     * @param {Object} initialization object.
-     * @returns {Object} Returns a Alarm.
-     */
-    var Alarm = Backbone.Model.extend({
+    var Alarm = ResourceModel.extend({
 
-        /** Default attributes for alarm */
         defaults: {
             id: '',
             actions_enabled: '',
@@ -78,30 +69,13 @@ define([
         },
         
         create: function(options, credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/monitor/alarms/create?_method=PUT&cred_id=" + credentialId + "&region=" + region;
-            this.sendPostAction(url, options);
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/monitor/alarms?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", {"alarm": options}, "alarmAppRefresh");
         },
         
         destroy: function(credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/monitor/alarms/delete?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
-            this.sendPostAction(url, this.attributes);
-        },
-        
-        sendPostAction: function(url, options) {
-            var alarm = {"alarm": options};
-            $.ajax({
-                url: url,
-                type: 'POST',
-                contentType: 'application/x-www-form-urlencoded',
-                dataType: 'json',
-                data: JSON.stringify(alarm),
-                success: function(data) {
-                    Common.vent.trigger("alarmAppRefresh");
-                },
-                error: function(jqXHR) {
-                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
-                }
-            }); 
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/monitor/alarms/" + this.attributes.id + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "alarmAppRefresh");
         }
     });
 

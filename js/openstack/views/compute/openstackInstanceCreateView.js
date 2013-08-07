@@ -12,114 +12,51 @@ define([
         'views/dialogView',
         'text!templates/openstack/compute/openstackInstanceCreateTemplate.html',
         '/js/openstack/models/compute/openstackInstance.js',
-        '/js/openstack/collections/compute/openstackInstances.js',
         '/js/openstack/collections/compute/openstackImages.js',
         '/js/openstack/collections/compute/openstackAvailabilityZones.js',
         '/js/openstack/collections/compute/openstackFlavors.js',
         '/js/openstack/collections/compute/openstackKeyPairs.js',
         '/js/openstack/collections/compute/openstackSecurityGroups.js',
-        'icanhaz',
         'common',
         'jquery.ui.selectmenu',
         'jquery.multiselect',
-        'jquery.multiselect.filter',
-        'backbone.stickit'
-], function( $, _, Backbone, DialogView, instanceCreateTemplate, Instance, Instances, Images, AvailabilityZones, Flavors, KeyPairs, SecurityGroups, ich, Common ) {
-
-    /**
-     * InstanceCreateView is UI form to create compute.
-     *
-     * @name InstanceCreateView
-     * @constructor
-     * @category Compute
-     * @param {Object} initialization object.
-     * @returns {Object} Returns a ComputeCreateView instance.
-     */
+        'jquery.multiselect.filter'
+], function( $, _, Backbone, DialogView, instanceCreateTemplate, Instance, Images, AvailabilityZones, Flavors, KeyPairs, SecurityGroups, Common ) {
     
     var InstanceCreateView = DialogView.extend({
         
-        tagName: "div",
-        
+        template: _.template(instanceCreateTemplate),
+
         credentialId: undefined,
+
+        region: undefined,
         
         images: new Images(),
+        
+        availabilityZones: new AvailabilityZones(),
+
         flavors: new Flavors(),
+        
         keyPairs: new KeyPairs(),
+        
         securityGroups: new SecurityGroups(),
-        collectionsCount: 3,
         
-        model: new Instance({collection: new Instances()}),
+        instance: new Instance(),
         
-        /** @type {Object} Event listeners for new Openstack instance dialog */
+        // Delegated events for creating new instances, etc.
         events: {
             "focus #image_select": "openImageList",
             "dialogclose": "close"
         },
 
-        /**
-         *    backbone.stickit bindings to map selectors to model attributes
-         *    NOTE: 'this' has scope of view in selectOptions
-         *    @type {Object}
-         *
-         *
-         *
-         */
-        bindings: {
-            '#instance_name': 'name',
-            'select#key_pair_select': {
-                observe: 'key_name',
-                selectOptions: {
-                    collection: function() {
-                        return this.keyPairs;
-                    },
-                    valuePath: 'name',
-                    labelPath: 'name',
-                    defaultOption: {
-                        label: 'Choose Key',
-                        value: null
-                    }
-                }
-            },
-            'select#flavor_select': {
-                observe: 'flavor_ref',
-                selectOptions: {
-                    collection: function() {
-                        return this.flavors;
-                    },
-                    labelPath: 'name',
-                    valuePath: 'id',
-                    defaultOption: {
-                        label: 'Choose Size',
-                        value: null
-                    }
-                }
-            },
-            'select#security_group_select': {
-                observe: 'groups',
-                selectOptions: {
-                    collection: function() {
-                        return this.securityGroups;
-                    },
-                    labelPath: 'name',
-                    valuePath: 'name'
-                },
-                selectedList: 3,
-                noneSelectedText: "Select Security Group(s)"
-            }
-        },
-
-        /**
-         * [initialize description]
-         * Initializes new Openstack CreateInstance view dialog
-         * @param  {Hash} options
-         * @return {nil}
-         */
         initialize: function(options) {
             this.credentialId = options.cred_id;
             this.region = options.region;
+        },
+
+        render: function() {
             var createView = this;
-            var compiledTemplate = _.template(instanceCreateTemplate);
-            this.$el.html(compiledTemplate);
+            this.$el.html(this.template);
 
             this.$el.dialog({
                 autoOpen: true,
@@ -137,32 +74,38 @@ define([
                     }
                 }
             });
-            $("#accordion").accordion();
+            $("#flavor_select").selectmenu();
+            $("#key_pair_select").selectmenu();
+            $("#security_group_select").multiselect({
+                selectedList: 3,
+                noneSelectedText: "Select Security Group(s)"
+            }).multiselectfilter();
             
             this.images.on( 'reset', this.addAllImages, this );
-            this.images.fetch({reset: true});
+            this.images.fetch({data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true});
             
-            this.flavors.on( 'reset', this.applyBindings, this );
-            this.flavors.fetch({ data: $.param({ cred_id: this.credentialId}), reset: true });
-            
-            this.keyPairs.on( 'reset', this.applyBindings, this );
-            this.keyPairs.fetch({ data: $.param({ cred_id: this.credentialId}), reset: true });
-            
-            this.securityGroups.on( 'reset', this.applyBindings, this );
-            this.securityGroups.fetch({ data: $.param({ cred_id: this.credentialId}), reset: true });
+            this.flavors.on( 'reset', this.addAllFlavors, this );
+            this.flavors.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset:true });
 
+            this.keyPairs.on( 'reset', this.addAllKeyPairs, this );
+            this.keyPairs.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true });
             
-        },
-
-        render: function() {
-            
+            this.securityGroups.on( 'reset', this.addAllSecurityGroups, this );
+            this.securityGroups.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true });
         },
         
-        /**
-         * [addAllImages description]
-         * Renders view for images drop down list
-         */
         addAllImages: function() {
+            var createView = this;
+            $("#image_select").autocomplete({
+                source: createView.images.toJSON(),
+                minLength: 0
+            }).data("autocomplete")._renderItem = function (ul, item) {
+                item["label"] = item.name;
+                item["value"] = item.name;
+                var imageItem = "<a>"+item.name+"</a>";
+                return $("<li>").data("item.autocomplete", item).append(imageItem).appendTo(ul);
+            };
+            /*
             var createView = this;
             $("#image_select").autocomplete({
                 source: createView.images.toJSON(),
@@ -194,37 +137,69 @@ define([
                 var imageItem = '<a><table stlye="min-width:150px;"><tr>'+ img + name + '</tr><tr>' + description + '</tr></table></a>';
                 return $("<li>").data("item.autocomplete", item).append(imageItem).appendTo(ul);
             };
-        },
-
-        applyBindings: function() {
-            this.respondedCount = this.respondedCount ? this.respondedCount + 1 : 1;
-            if(this.respondedCount === this.collectionsCount)
-            {
-                this.stickit();
-            }
+            */
         },
         
-        /**
-         * [openImageList description]
-         * Renders autocomplete list for images drop down
-         * @return {nil}
-         */
+        addAllFlavors: function() {
+            $("#flavor_select").empty();
+            this.flavors.each(function(flavor) {
+                $("#flavor_select").append($("<option></option>").text(flavor.attributes.name));
+            });
+            $("#flavor_select").selectmenu();
+        },
+        
+        addAllKeyPairs: function() {
+            $("#key_pair_select").empty();
+            this.keyPairs.each(function(keyPair) {
+                $("#key_pair_select").append($("<option></option>").text(keyPair.attributes.name));
+            });
+            $("#key_pair_select").selectmenu();
+        },
+        
+        addAllSecurityGroups: function() {
+            $("#security_group_select").empty();
+            this.securityGroups.each(function(sg) {
+                if(sg.attributes.name) {
+                    $("#security_group_select").append($("<option></option>").text(sg.attributes.name));
+                }
+            });
+            $("#security_group_select").multiselect("refresh");
+        },
+        
         openImageList: function() {
             if($("ul.ui-autocomplete").is(":hidden")) {
                 $("#image_select").autocomplete("search", "");
             }
         },
-        
-        /**
-         * [create description]
-         * Evaluates dialog values for new instance and calls API layer to launch new instance
-         * @return {nil}
-         */
+
         create: function() {
-            this.model.create(this.credentialId);
+            var createView = this;
+            var newInstance = this.instance;
+            var options = {};
+            //#TODO: Validate before create
+            if($("#instance_name").val() !== "") {
+                options.name = $("#instance_name").val();
+            }
+ 
+            $.each(this.images.toJSON(), function(index, image) {
+                if(image.name === $("#image_select").val()) {
+                    options.image_ref = image.id;
+                }
+            });
+            
+            this.flavors.each(function(flavor) {
+                if(flavor.attributes.name === $("#flavor_select").val()) {
+                    options.flavor_ref = flavor.attributes.id;
+                } 
+            });
+            
+            options.key_name = $("#key_pair_select").val();
+            if($("#security_group_select").val()) {
+                options.security_groups = $("#security_group_select").val();
+            }
+            newInstance.create(options, this.credentialId, this.region);
             this.$el.dialog('close');
         }
-
     });
     
     return InstanceCreateView;

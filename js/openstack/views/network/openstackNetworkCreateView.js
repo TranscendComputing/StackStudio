@@ -19,61 +19,34 @@ define([
         'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter'
-], function( $, _, Backbone, Common, ich, DialogView, networkCreateTemplate, Network, Networks, Tenants ) {
+], function( $, _, Backbone, Common, ich, DialogView, networkCreateTemplate, Network, Tenants ) {
     
     var NetworkCreateView = DialogView.extend({
         credentialId: undefined,
         region: undefined,
-        collection: new Networks(),
-        collectionsCount: 1,
-        template: networkCreateTemplate,
-
+        template: _.template(networkCreateTemplate),
+        model: new Network(),
 
         events: {
             "dialogclose": "close"
         },
 
-        /**
-         *    backbone.stickit bindings to map selectors to model attributes
-         *    NOTE: 'this' has scope of view in selectOptions
-         *    @type {Object}
-         */
-        bindings: {
-            '#name_input': 'name',
-            '#shared_checkbox': 'shared',
-            '#admin_state_up_checkbox': 'admin_state_up',
-            'select#tenant_select': {
-                observe: 'tenant_id',
-                selectOptions: {
-                    collection: 'this.tenants',
-                    labelPath: 'name',
-                    valuePath: 'id',
-                    defaultOption: {
-                        label: "Select Tenant (optional)",
-                        value: null
-                    }
-                }
-            }
-        },
-
         initialize: function(options) {
             this.credentialId = options.cred_id;
             this.region = options.region;
-            this.model = new Network({}, {collection: this.collection});
             this.tenants = new Tenants();
-            this.tenants.on("reset", this.applyBindings, this); // .applyBindings method defined in DialogView
+            this.tenants.on("reset", this.addAllTenants, this);
             this.tenants.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region}), reset: true });
             this.render();
         },
         
         render: function() {
             var createView = this;
-            ich.addTemplate("network_create_template", this.template);
-            this.$el.html( ich.network_create_template(this.model.toJSON()) );
+            this.$el.html(this.template);
             this.$el.dialog({
                 autoOpen: true,
                 title: "Create Network",
-                width:500,
+                width: 400,
                 minHeight: 150,
                 resizable: false,
                 modal: true,
@@ -86,14 +59,53 @@ define([
                     }
                 }
             });
+            $("#tenant_select").selectmenu();
+        },
 
-            // This line adds required asterisk to all fields with class 'required'
-            this.$(".required").after("<span class='required'/>");
+        addAllTenants: function() {
+            $("#tenant_select").empty();
+            this.tenants.each(function(tenant) {
+                $("#tenant_select").append($("<option value="+tenant.attributes.id+">"+tenant.attributes.name+"</option>"));
+            });
+            $("#tenant_select").selectmenu();
+        },
+
+        displayValid: function(valid, selector) {
+            if(valid) {
+                $(selector).css("border-color", "");
+            }else{
+                $(selector).css("border-color", "#FF0000");
+            }
         },
 
         create: function() {
-            this.model.create(this.credentialId, this.region);
-            this.$el.dialog('close');
+            var newNetwork = this.model;
+            var options = {};
+            var issue = false;
+            // Validation
+            if($("#network_name_input").val() !== "") {
+                this.displayValid(true, "#network_name_input");
+                options.name = $("#network_name_input").val();
+            }else {
+                this.displayValid(false, "#network_name_input");
+                issue = true;
+            }
+            options.tenant_id = $("#tenant_select").val();
+            if($("#admin_state_up_checkbox").is(":checked")) {
+                options.admin_state_up = true;
+            }else {
+                options.admin_state_up = false;
+            }
+            if($("#shared_checkbox").is(":checked")) {
+                options.shared = true;
+            }else {
+                options.shared = false;
+            }
+
+            if(!issue) {
+                this.model.create(options, this.credentialId, this.region);
+                this.$el.dialog('close');
+            }
         }
 
     });

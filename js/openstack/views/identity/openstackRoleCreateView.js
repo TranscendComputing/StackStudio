@@ -48,7 +48,7 @@ define([
             this.$el.dialog({
                 autoOpen: true,
                 title: "Create Role",
-                width:500,
+                width: 350,
                 minHeight: 150,
                 resizable: false,
                 modal: true,

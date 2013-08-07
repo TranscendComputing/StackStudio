@@ -22,7 +22,7 @@ define([
         model: Snapshot,
 
         // CloudMux url for AWS EBS snapshots
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/block_storage/snapshots/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/block_storage/snapshots'
     });
 
     // Create our global collection of **Volumes**.

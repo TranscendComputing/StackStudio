@@ -13,19 +13,14 @@ define([
 ], function( $, Backbone, Vpc, Common ) {
     'use strict';
 
-    // Vpc Collection
-    // ---------------
-
     var VpcsList = Backbone.Collection.extend({
 
-        // Reference to this collection's model.
         model: Vpc,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/vpcs/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/vpcs'
         
     });
 
-    // Create our global collection of **Vpcs**.
     return VpcsList;
 
 });

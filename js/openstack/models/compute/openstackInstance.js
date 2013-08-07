@@ -6,111 +6,69 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'backbone',
+        'models/resource/resourceModel',
         'common'
-], function( $, Backbone, Common ) {
+], function( ResourceModel, Common ) {
     'use strict';
 
-    /**
-     *
-     * @name Instance
-     * @constructor
-     * @category Compute
-     * @param {Object} initialization object.
-     * @returns {Object} Returns an Instance.
-     */
-    var Instance = Backbone.Model.extend({
-        /**
-         * [create description]
-         * Launches a new Openstack instance
-         * @param  {Hash} options
-         * @param  {String} credentialId
-         * @return {nil}
-         */
-        create: function(options, credentialId) {
-            var url = "?cred_id=" + credentialId;
-            this.sendPostAction(url, {instance: options});
-        },
-        /**
-         * [unpause description]
-         * Starts a paused server
-         * @param  {String} credentialId
-         * @return {nil}
-         */
-        unpause: function(credentialId) {
-            var url = "/unpause?cred_id=" + credentialId;
-            this.sendPostAction(url);
-        },
-        /**
-         * [pause description]
-         * Pauses a running server
-         * @param  {String} credentialId
-         * @return {nil}
-         */
-        pause: function(credentialId) {
-            var url = "/pause?cred_id=" + credentialId;
-            this.sendPostAction(url);
-        },
-        /**
-         * [reboot description]
-         * Reboots a server
-         * @param  {String} credentialId
-         * @return {nil}
-         */
-        reboot: function(credentialId) {
-            var url = "/reboot?cred_id=" + credentialId;
-            this.sendPostAction(url);
-        },
-        /**
-         * [delete description]
-         * Deletes an Openstack server
-         * @param  {String} credentialId
-         * @return {nil}
-         */
-        terminate: function(credentialId) {
-            var url = "?_method=DELETE&cred_id=" + credentialId;
-            this.sendPostAction(url);
-        },
-        /**
-         * [disassociateAddress description]
-         * Removed elastic IP from server
-         * @param  {String} credentialId
-         * @return {nil}
-         */
-        disassociateAddress: function(address, credentialId) {
-            var url = "/disassociate_address?cred_id=" + credentialId;
-            this.sendPostAction(url, {ip_address: address});
-        },
-        /**
-         * [sendPostAction description]
-         * Ajax action to send API requests to CloudMux backend service
-         * @param  {String} url
-         * @param  {Hash} options
-         * @return {Hash}
-         */
-        sendPostAction: function(url, options, trigger) {
-            //Set default values for options and trigger if nothing is passed
-            options = typeof options !== 'undefined' ? options : {};
-            trigger = typeof trigger !== 'undefined' ? trigger : "instanceAppRefresh";
-            $.ajax({
-                url: this.url() + url,
-                type: 'POST',
-                contentType: 'application/x-www-form-urlencoded',
-                dataType: 'json',
-                data: JSON.stringify(options),
-                success: function(data) {
-                    Common.vent.trigger(trigger);
-                },
-                error: function(jqXHR) {
-                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
-                }
-            });
-        },
+    var Instance = ResourceModel.extend({
 
-        sync: function() {
-            return false;
+        defaults: {
+            id: '',
+            instance_name: '',
+            addresses: {},
+            flavor: {},
+            host_id: '',
+            image: {},
+            metadata: [],
+            links: [],
+            name: '',
+            personality: {},
+            progress: '',
+            accessIPv4: '',
+            accessIPv6: '',
+            availability_zone: '',
+            user_data_encoded: '',
+            state: '',
+            created: '',
+            updated: '',
+            tenant_id: '',
+            key_name: '',
+            fault: '',
+            os_dcf_disk_config: '',
+            os_ext_srv_attr_host: '',
+            os_ext_srv_aatr_hypervisor_hostname: '',
+            os_ext_srv_attr_instance_name: '',
+            os_ext_sts_power_state: 0,
+            os_ext_sts_task_state: '',
+            os_ext_sts_vm_state: ''
+        },
+        
+        create: function(options, credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/compute/instances?&cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", {"instance": options}, "instanceAppRefresh");
+        },
+        
+        unpause: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/compute/instances/" + this.attributes.id + "/unpause?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "instanceAppRefresh");
+        },
+        
+        pause: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/compute/instances/" + this.attributes.id + "/pause?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "instanceAppRefresh");
+        },
+        
+        reboot: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/compute/instances/" + this.attributes.id + "/reboot?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "instanceAppRefresh");
+        },
+        
+        terminate: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/compute/instances/" + this.attributes.id + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "instanceAppRefresh");
         }
+
     });
 
     return Instance;

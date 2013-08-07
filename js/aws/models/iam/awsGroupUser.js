@@ -6,13 +6,12 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'backbone',
+        'models/resource/resourceModel',
         'common'
-], function( $, Backbone, Common ) {
+], function( ResourceModel, Common ) {
     'use strict';
 
-    var GroupUser = Backbone.Model.extend({
+    var GroupUser = ResourceModel.extend({
 
         idAttribute: 'UserName',
 

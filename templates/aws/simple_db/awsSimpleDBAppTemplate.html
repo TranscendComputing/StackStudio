@@ -1,0 +1,54 @@
+<div>
+    <div class="button_bar">
+        <table>
+            <tr>
+                <td>
+                    <button class="create_button">Create Domain</button>
+                </td>
+                <td>
+                    <ul id="action_menu">
+                        <li style="z-index: 1000">
+                            <a id="action_button">Actions</a>
+                            <ul>
+                                <li><a>Delete Domain</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table id="resource_table" class="full_width">
+        <thead>
+            <tr>
+                <th>Domain Name</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    <div id="details" class="detail_panel"></div>
+</div>
+
+<script type="text/html" id="resource_detail">
+    <div id="detail_tabs">
+        <ul>
+            <li><a href="#tabs-1">Details</a></li>
+        </ul>
+        <div id="tabs-1" class="tab">
+            <table>
+                <tbody>
+                    <tr><td><b>Domain Name:</b></td>                <td>{{ DomainName }}</td></tr>
+                    <tr><td><b>Item Count:</b></td>                 <td>{{ ItemCount }}</td></tr>
+                    <tr><td><b>Item Name Size Bytes:</b></td>       <td>{{ ItemNamesSizeBytes }}</td></tr>
+                    <tr><td><b>Attribute Name Count:</b></td>       <td>{{ AttributeNameCount }}</td></tr>
+                    <tr><td><b>Attribute Name Size Bytes:</b></td>  <td>{{ AttributeNamesSizeBytes }}</td></tr>
+                    <tr><td><b>Attribute Value Count:</b></td>      <td>{{ AttributeValueCount }}</td></tr>
+                    <tr><td><b>Attribute Value Size Bytes:</b></td> <td>{{ AttributeValuesSizeBytes }}</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</script>

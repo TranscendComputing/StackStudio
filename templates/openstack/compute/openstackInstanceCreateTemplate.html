@@ -1,47 +1,34 @@
 <div id="instance_create">
-    <div id="accordion">
-        <h3>Instance Configuration</h3>
-        <div>
-            <table>
-                <tr>
-                    <td>Name:</td>
-                    <td>
-                        <input class='autocomplete-binder' id="instance_name" type="text" style="width:200px;"/>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Image:</td>
-                    <td>
-                        <input id="image_select" style="width:250px;"/>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Machine Size:</td>
-                    <td>
-                        <select id="flavor_select" style="width:250px"></select>
-                    </td>
-                </tr>
-                <!--
-                <tr>
-                    <td>Availability Zone:</td>
-                    <td>
-                        <select id="az_select" style="width:200px;"></select>
-                    </td>
-                </tr>
-            -->
-                <tr>
-                    <td>Key Pair:</td>
-                    <td>
-                        <select id="key_pair_select" style="width:200px;"></select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Security Group(s):</td>
-                    <td>
-                        <select id="security_group_select" multiple="multiple" style="width:360px;"></select>
-                    </td>
-                </tr>
-            </table>
-        </div>
-    </div>
+    <table>
+        <tr>
+            <td>Name:</td>
+            <td>
+                <input class='autocomplete-binder medium_width' id="instance_name" type="text"/>
+            </td>
+        </tr>
+        <tr>
+            <td>Image:</td>
+            <td>
+                <input id="image_select" class="large_width"/>
+            </td>
+        </tr>
+        <tr>
+            <td>Machine Size:</td>
+            <td>
+                <select id="flavor_select" class="large_width"></select>
+            </td>
+        </tr>
+        <tr>
+            <td>Key Pair:</td>
+            <td>
+                <select id="key_pair_select" class="large_width"></select>
+            </td>
+        </tr>
+        <tr>
+            <td>Security Group(s):</td>
+            <td>
+                <select id="security_group_select" multiple="multiple" style="width:360px;"></select>
+            </td>
+        </tr>
+    </table>
 </div>

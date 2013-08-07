@@ -13,19 +13,15 @@ define([
 ], function( $, Backbone, ReservedInstancesOffering, Common ) {
     'use strict';
 
-    // ReservedInstancesOffering Collection
-    // ---------------
-
     var ReservedInstancesOfferingList = Backbone.Collection.extend({
 
-        // Reference to this collection's model.
         model: ReservedInstancesOffering,
 
         url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/reserved_instances/describe_offerings',
 
         purchase: function() {
             var col = this;
-            var url = Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/reserved_instances/create?_method=PUT&cred_id=' + this.credentialId + '&region=' + this.region;
+            var url = Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/reserved_instances?cred_id=' + this.credentialId + '&region=' + this.region;
             var count;
             col.each(function(m){
                 if(m.attributes.count)

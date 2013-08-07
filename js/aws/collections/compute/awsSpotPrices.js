@@ -13,15 +13,11 @@ define([
 ], function( $, Backbone, SpotPrice, Common ) {
     'use strict';
 
-    // KeyPair Collection
-    // ---------------
-
     var SpotPriceList = Backbone.Collection.extend({
 
-        // Reference to this collection's model.
         model: SpotPrice,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/spot_prices/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/spot_prices'
     });
     
     return SpotPriceList;

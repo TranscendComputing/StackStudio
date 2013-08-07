@@ -14,24 +14,13 @@ define([
         '/js/openstack/collections/block_storage/openstackVolumes.js',
         '/js/openstack/collections/compute/openstackAvailabilityZones.js',
         '/js/openstack/collections/block_storage/openstackSnapshots.js',
-        'icanhaz',
         'common',
         'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
-], function( $, _, Backbone, DialogView, volumeCreateTemplate, Volumes, AvailabilityZones, Snapshots, ich, Common ) {
-	
-    /**
-     * VolumeCreateView is UI form to create compute.
-     *
-     * @name VolumeCreateView
-     * @constructor
-     * @category Volume
-     * @param {Object} initialization object.
-     * @returns {Object} Returns a VolumeCreateView instance.
-     */
-	
+], function( $, _, Backbone, DialogView, volumeCreateTemplate, Volumes, AvailabilityZones, Snapshots, Common ) {
+
 	var VolumeCreateView = DialogView.extend({
 		
 		credentialId: undefined,
@@ -72,7 +61,6 @@ define([
                     }
                 }
             });
-            this.volumeTypeChange();
             $("#az_select").selectmenu();
             $("#snapshot_select").selectmenu();
             
@@ -98,7 +86,7 @@ define([
         addAllSnapshots: function() {
             this.snapshots.each(function(snapshot) {
                 var snapshotText = snapshot.id;
-                if(snapshot.hase("description")) {
+                if(snapshot.has("description")) {
                     snapshotText = snapshotText + " -- " + snapshot.get("description");
                 }
                 $("#snapshot_select").append($("<option value="+ snapshot.id +">"+ snapshotText +"</option>"));

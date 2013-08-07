@@ -8,13 +8,13 @@
 define([
         'jquery',
         'backbone',
+        'models/resource/resourceModel',
         'common'
-], function( $, Backbone, Common ) {
+], function( $, Backbone, ResourceModel, Common ) {
     'use strict';
 
-    var RecordSet = Backbone.Model.extend({
+    var RecordSet = ResourceModel.extend({
 
-        /** Default attributes for record set */
         defaults: {
             ResourceRecords: [],
             Name: '',
@@ -44,25 +44,8 @@ define([
         },
 
         change: function(options, credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/dns/record_sets/change?_method=PUT&cred_id=" + credentialId + "&region=" + region;
-            this.sendPostAction(url, options);
-        },
-
-        sendPostAction: function(url, options) {
-            var recordSet = {"record_set": options};
-            $.ajax({
-                url: url,
-                type: 'POST',
-                contentType: 'application/x-www-form-urlencoded',
-                dataType: 'json',
-                data: JSON.stringify(recordSet),
-                success: function(data) {
-                    Common.vent.trigger("recordSetRefresh");
-                },
-                error: function(jqXHR) {
-                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
-                }
-            }); 
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/dns/hosted_zones/" + options["hosted_zone_id"] + "/record_sets/change?_method=PUT&cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", {"record_set": options}, "recordSetRefresh");
         }
     });
 

@@ -6,13 +6,12 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'backbone',
+        'models/resource/resourceModel',
         'common'
-], function( $, Backbone, Common ) {
+], function( ResourceModel, Common ) {
     'use strict';
 
-    var User = Backbone.Model.extend({
+    var User = ResourceModel.extend({
 
         defaults: {
             id: '',
@@ -22,51 +21,23 @@ define([
         },
 
         create: function(options, credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/iam/users/create?_method=PUT&cred_id=" + credentialId;
-            this.sendPostAction(url, options, "userCreated");
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/iam/users?cred_id=" + credentialId;
+            this.sendAjaxAction(url, "POST", {"user": options}, "userCreated");
         },
 
         createLoginProfile: function(options, credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/iam/users/create_login_profile?cred_id=" + credentialId;
-            this.sendPostAction(url, options);
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/iam/users/login_profile?cred_id=" + credentialId;
+            this.sendAjaxAction(url, "POST", {"user": options}, "");
         },
 
         createAccessKey: function(options, credentialId) {
-            $.ajax({
-                url: Common.apiUrl + "/stackstudio/v1/cloud_management/aws/iam/users/create_access_key?cred_id=" + credentialId,
-                type: 'POST',
-                contentType: 'application/x-www-form-urlencoded',
-                dataType: 'json',
-                data: JSON.stringify(options),
-                success: function(data) {
-                    Common.vent.trigger("userKeysGenerated", data);
-                },
-                error: function(jqXHR) {
-                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
-                }
-            });
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/iam/users/access_key?cred_id=" + credentialId;
+            this.sendAjaxAction(url, "POST", options, "userKeysGenerated");
         },
 
         destroy: function(credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/iam/users/delete?_method=DELETE&cred_id=" + credentialId;
-            this.sendPostAction(url, this.attributes, "userAppRefresh");
-        },
-
-        sendPostAction: function(url, options, triggerString) {
-            var user = {"user": options};
-            $.ajax({
-                url: url,
-                type: 'POST',
-                contentType: 'application/x-www-form-urlencoded',
-                dataType: 'json',
-                data: JSON.stringify(user),
-                success: function(data) {
-                    Common.vent.trigger(triggerString);
-                },
-                error: function(jqXHR) {
-                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
-                }
-            }); 
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/iam/users/"+ this.attributes.id +"?_method=DELETE&cred_id=" + credentialId;
+            this.sendAjaxAction(url, "POST", undefined, "userAppRefresh");
         }
     });
 

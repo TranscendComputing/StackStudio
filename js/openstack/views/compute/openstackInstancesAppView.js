@@ -14,7 +14,7 @@ define([
         '/js/openstack/models/compute/openstackInstance.js',
         '/js/openstack/collections/compute/openstackInstances.js',
         '/js/openstack/views/compute/openstackInstanceCreateView.js',
-        '/js/openstack/collections/cloud_watch/openstackMetricStatistics.js',
+        '/js/topstack/collections/cloud_watch/topstackMetricStatistics.js',
         'icanhaz',
         'common',
         'morris',
@@ -136,6 +136,23 @@ define([
                     this.toggleActionItem(actionItem, instance.get("state") !== "ACTIVE");
                 }
             }, this);
+            this.setAddressesDisplay(instance);
+        },
+
+        setAddressesDisplay: function(instance) {
+            var addressesString = "";
+            $.each(instance.attributes.addresses, function(key, value) {
+                var addrString = "";
+                $.each(value, function(index, arrayValue) {
+                    addrString = addrString + " " + arrayValue["addr"];
+                });
+                var formatVariable = "";
+                if(addressesString !== "") {
+                    formatVariable = "<br />";
+                }
+                addressesString = addressesString + formatVariable + key + ": " + addrString + "\n";
+            });
+            $("#addresses_display").html(addressesString);
         },
         /**
          * [performAction description]
@@ -159,10 +176,12 @@ define([
             case "Terminate":
                 instance.terminate(this.credentialId);
                 break;
+            /*
             case "Disassociate Address":
                 var address = instance.get("addresses").private[1].addr;
                 instance.disassociateAddress(address, this.credentialId);
                 break;
+            */
             }
         },
         /**

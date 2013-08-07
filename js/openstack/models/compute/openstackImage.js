@@ -19,11 +19,15 @@ define([
 
         /** Default attributes for image */
         defaults: {
-            label: '',
-            description: '',
-            logo: '',
-            product: '',
-            region: {}
+            id: '',
+            name: '',
+            created_at: '',
+            updated_at: '',
+            progress: 0,
+            status: '',
+            minDisk: 0,
+            minRam: 0,
+            server: ''
         }
 
     });

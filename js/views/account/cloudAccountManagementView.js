@@ -14,31 +14,49 @@ define([
         'URIjs/URI',
         'text!templates/account/managementCloudAccountTemplate.html',
         'collections/cloudAccounts',
+        'collections/users',
+        'views/account/cloudAccountCreateView',
+        'views/account/cloudServiceCreateView',
         'models/cloudService',
         'jquery-plugins',
         'jquery-ui-plugins'
-], function( $, _, Backbone, Common, ich, URI, managementCloudAccountTemplate, CloudAccounts, CloudService ) {
+], function( $, _, Backbone, Common, ich, URI, managementCloudAccountTemplate, CloudAccounts, Users, CloudAccountCreate, CloudServiceCreate, CloudService ) {
 
     var CloudAccountManagementView = Backbone.View.extend({
         /** @type {String} DOM element to attach view to */
         el: "#submanagement_app",
         /** @type {Collection} Database collection of cloud accounts */
         collection: new CloudAccounts(),
+        users: new Users(),
         /** @type {Template} HTML template to generate view from */
         template: _.template(managementCloudAccountTemplate),
+        CloudAccountCreateView: CloudAccountCreate,
+        CloudServiceCreateView: CloudServiceCreate,
+        rootView: undefined,
         /** @type {Object} Object of events for view to listen on */
         events: {
-            "click .list_item": "selectCloudAccount",
             "click button.save-button": "saveService",
-            "click button#new_cloud_account": "newCloudAccount",
-            "click button.delete-button": "deleteService"
+            "click button#new_cloud_service": "newCloudService",
+            "click button#delete_cloud_account": "deleteCloudAccount",
+            "click button.delete-button": "deleteService",
+            "click button#update_auth_url_button": "updateAuthUrl",
+            "change input#auth_url_input": "updateAuthModel"
         },
         /** Constructor method for current view */
         initialize: function() {
+            
+            this.rootView = this.options.rootView;
+            //this.rootView.treeCloudAccount = this.rootView.cloudAccounts
+            //var whatisthis = this.rootView.cloudAccounts;
+            //debugger
+            
+            
             this.childViews = [];
             //Add listeners and fetch db for collection
-            this.collection.on( 'add', this.addOne, this );
-            this.collection.on( 'reset', this.addAll, this );
+            //this.collection.on( 'add', this.addOne, this );
+            //this.collection.on( 'reset', this.addAll, this );
+            
+            this.collection = this.rootView.cloudAccounts;
 
             /**
              * Perhaps the single most common JavaScript "gotcha" is the fact that when 
@@ -52,17 +70,28 @@ define([
                 data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id}),
                 success: _.bind(this.renderAccountAttributes, this),
                 reset: true
-
             });
             //Render my own view
             this.render();
+            
+            var managementView = this;
+            Common.vent.on("managementRefresh", function() {
+                managementView.refreshManagementView();
+            });
+            Common.vent.on("servicesRefresh", function() {
+                managementView.refreshServices();
+            });
+            Common.vent.on("cloudAccountUpdated", function() {
+                managementView.updateServices();
+            });
         },
         /** Add all of my own html elements */
         render: function () {
             //Render my template
             this.$el.append(this.template);
-            $("ul#cloud_account_list").menu();
-            $("div#detail_tabs").tabs();
+            //$("#update_auth_url_button").button();
+            //$("ul#cloud_account_list").menu();
+            //$("div#detail_tabs").tabs();
         },
 
         renderAccountAttributes: function() {
@@ -73,36 +102,85 @@ define([
              * Then removes those elements from the dom (this is the method that runs 
              * on document ready when ich first inits).
              */
-            ich.grabTemplates();
+            if(typeof(ich['cloud_service']) === 'undefined'){
+                ich.grabTemplates();
+            }
+            
             var services = ich['cloud_service'](this.selectedCloudAccount.attributes);
             $('#services_page').html(services);
+            
             $('button').button();
+            
+            this.adminCheck();
         },
-
-        addOne: function(model) {
-            console.log(model);
-            $("#cloud_account_list").prepend("<li class='list_item' id='"+model.attributes.name+"'>"+model.attributes.name+"</li>");
-            this.selectedCloudAccount = model;
+        
+        updateAuthUrl: function(){
+            this.selectedCloudAccount.attributes.url = $("#auth_url_input").val();
+            this.selectedCloudAccount.update();
+            
+            $("#update_auth_url_button").attr("disabled", true);
+            $("#update_auth_url_button").addClass("ui-state-disabled");
+            $("#update_auth_url_button").removeClass("ui-state-hover");
+            
         },
-
-        addAll: function() {
-            console.log(this.collection);
-            $("#cloud_account_list").empty();            
-            this.collection.each(this.addOne, this);
+        
+        updateServices: function(){
+            var thisView = this;
+            $.each(thisView.rootView.cloudCredentials.models, function(index, value) {
+                if(thisView.selectedCloudAccount.attributes.id === value.attributes.cloud_account_id){
+                    value.attributes.url = thisView.selectedCloudAccount.attributes.url;
+                    value.attributes.cloud_attributes = {
+                            "openstack_auth_url": thisView.selectedCloudAccount.attributes.url
+                    };
+                    thisView.rootView.cloudCredentials.update(value);
+                }
+            });
         },
-
-        selectCloudAccount: function(event) {
-            this.clearSelection();
-            $(event.target).addClass("selected_item");
-            this.selectedCloudAccount = this.collection.where({name: event.target.id})[0];
+        
+        updateAuthModel: function(){
+            $("#update_auth_url_button").attr("disabled", false);
+            $("#update_auth_url_button").removeClass("ui-state-disabled");
+        },
+        
+        adminCheck: function(){
+            var groupsView = this;
+            groupsView.users.fetch({success: function(){
+                var isAdmin = false;
+                if(groupsView.users.get(sessionStorage.account_id).attributes.permissions.length > 0){
+                    isAdmin = groupsView.users.get(sessionStorage.account_id).attributes.permissions[0].permission.name === "admin";
+                }
+                if(!isAdmin){
+                    $(".delete-button").attr("disabled", true);
+                    $(".delete-button").addClass("ui-state-disabled");
+                    $(".delete-button").removeClass("ui-state-hover");
+                    $(".save-button").attr("disabled", true);
+                    $(".save-button").addClass("ui-state-disabled");
+                    $("#new_cloud_service").attr("disabled", true);
+                    $("#new_cloud_service").addClass("ui-state-disabled");
+                }
+            }});
+        },
+        
+        treeSelectCloudAccount: function() {
+            //this.clearSelection();
+            this.selectedCloudAccount = this.rootView.cloudAccounts.get(this.rootView.treeCloudAccount);
+            $("#services_tab").html(this.selectedCloudAccount.attributes.name);
+            $("#cloud_provider_label").html(this.selectedCloudAccount.attributes.cloud_provider);
+            
+            if(this.selectedCloudAccount.attributes.cloud_provider === "OpenStack"){
+                $("#auth_url_div").show();
+                if(this.selectedCloudAccount.attributes.url){
+                    $("#auth_url_input").val(this.selectedCloudAccount.attributes.url);
+                }else{
+                    $("#auth_url_input").val("");
+                }
+            }else{
+                $("#auth_url_div").hide();
+            }
+            
             this.renderAccountAttributes();
         },
 
-        clearSelection: function() {
-            $("#cloud_account_list li").each(function() {
-               $(this).removeClass("selected_item");
-            });
-        },
         saveService: function(event) {
             var uri, service;
             var endpointValue = $(event.currentTarget.parentElement).find("input").val();
@@ -119,14 +197,22 @@ define([
             this.selectedCloudAccount.updateService(service);
             return false;
         },
-
-        newCloudAccount: function(){
+        
+        newCloudService: function(){
+            var CloudServiceCreateView = this.CloudServiceCreateView;
+            
+            this.newResourceDialog = new CloudServiceCreateView({ cloud_account: this.selectedCloudAccount});
+            
+            this.newResourceDialog.render();
             
         },
 
         deleteService: function(event) {
             var serviceData = $(event.currentTarget.parentElement).find("input").data();
             this.selectedCloudAccount.deleteService(serviceData);
+            
+            this.refreshServices();
+            
             return false;
         },
 
@@ -141,7 +227,27 @@ define([
                 childView.close();
               }
             });
-        } 
+        },
+        
+        refreshManagementView: function(){
+            this.collection.fetch({ 
+                data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id}),
+                success: _.bind(this.renderAccountAttributes, this),
+                reset: true
+
+            });
+        },
+        
+        refreshServices: function(){
+            this.collection.fetch({ 
+                data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id}),
+                success: _.bind(this.renderAccountAttributes, this)
+            });
+        },
+        
+        deleteCloudAccount: function(){
+            var cl_ac = this.selectedCloudAccount.destroy();
+        }
     });
 
     return CloudAccountManagementView;

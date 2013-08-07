@@ -13,15 +13,13 @@ define([
 ], function( $, Backbone, RecordSet, Common ) {
     'use strict';
 
-    // RecordSet Collection
-    // ---------------
-
     var RecordSetList = Backbone.Collection.extend({
 
-        // Reference to this collection's model.
         model: RecordSet,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/dns/record_sets/describe'
+        initialize: function(options) {
+            this.url = Common.apiUrl + '/stackstudio/v1/cloud_management/aws/dns/hosted_zones/' + options["hosted_zone_id"] + '/record_sets';
+        }
         
     });
     

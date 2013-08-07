@@ -1,0 +1,148 @@
+<div id="alarm_create">
+    <!--
+    <div id="accordion">
+        <h3>Alarm Configuration</h3>
+    -->
+        <div>
+            <table>
+                <tr>
+                    <td>Name*:</td>
+                    <td>
+                        <input id="alarm_name" type="text" style="width:200px;"/>
+                    </td>
+                </tr>
+                <tr>  
+                    <td>Description:</td>
+                    <td>
+                        <input id="alarm_description" type="text" style="width:420px;"/>
+                    </td>
+                </tr>
+                <tr>  
+                    <td>Resource Namespace*:</td>
+                    <td>
+                        <select id="namespace_select" style="width:200px;">
+                            <option value="AWS/EBS">Elastic Block Storage</option>
+                            <option value="AWS/EC2" selected>Elastic Compute Cloud</option>
+                            <option value="AWS/ELB">Load Balancer</option>
+                            <option value="AWS/RDS">Relational Database</option>
+                            <option value="AWS/SQS">Simple Queue</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+            <hr />
+            <table>
+                <tr>
+                    <td>Metric*:</td>
+                    <td>
+                        <input id="metric_input" type="text" class="medium_width"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Dimension*:</td>
+                    <td>
+                        <div>
+                            Name:<input id="dimension_name_input" type="text"/>
+                            Value:<input id="dimension_value_input" type="text"/>
+                        </div>
+                    </td>
+                </tr>
+                <!--
+                <tr>
+                    <td>Metric*:</td>
+                    <td><select id="metric_select" style="width:300px;"></select></td>
+                </tr>
+                -->
+                <tr>
+                    <td>Comparison*:</td>
+                    <td>
+                        <select id="comparison_select" style="width:50px;">
+                            <option value="GreaterThanOrEqualToThreshold" selected>&gt;=</option>
+                            <option value="LessThanOrEqualToThreshold">&lt;=</option>
+                            <option value="GreaterThanThreshold">&gt;</option>
+                            <option value="LessThanThreshold">&lt;</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Threshold*</td>
+                    <td><input id="threshold_input" type="text" /></td>
+                </tr>
+                <tr>
+                    <td>Statistic*:</td>
+                    <td>
+                        <select id="statistic_select" style="width:200px;">
+                            <option value="Average" selected>Average</option>
+                            <option value="Minimum">Minimum</option>
+                            <option value="Maximum">Maximum</option>
+                            <option value="SampleCount">Sample Count</option>
+                            <option value="Sum">Sum</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Period*:</td>
+                    <td>
+                        <select id="period_select" style="width:200px;">
+                            <option value='{"period":60, "evaluation": 1}'>1 minute</option>
+                            <option value='{"period":300, "evaluation": 1}' selected>5 minutes</option>
+                            <option value='{"period":600, "evaluation": 1}'>10 minutes</option>
+                            <option value='{"period":900, "evaluation": 1}'>15 minutes</option>
+                            <option value='{"period":1200, "evaluation": 1}'>20 minutes</option>
+                            <option value='{"period":1800, "evaluation": 1}'>30 minutes</option>
+                            <option value='{"period":3600, "evaluation": 1}'>1 hour</option>
+                            <option value='{"period":10800, "evaluation": 1}'>3 hours</option>
+                            <option value='{"period":21600, "evaluation": 1}'>6 hours</option>
+                            <option value='{"period":43200, "evaluation": 1}'>12 hours</option>
+                            <option value='{"period":86400, "evaluation": 1}'>24 hours</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!--
+        <h3>Configure Actions</h3>
+        <div>
+            <table>
+                <tr>
+                    <td>Alarm State:</td>
+                    <td>
+                        <select id="alarm_state_select" style="width:200px;">
+                            <option value="ALARM" selected>ALARM</option>
+                            <option value="OK">OK</option>
+                            <option value="INSUFFICIENT_DATA">INSUFFICIENT_DATA</option>
+                        </select>
+                   </td>
+                </tr>
+                <tr>
+                    <td>Action:</td>
+                    <td>Send Notification</td>
+                </tr>
+                <tr>
+                    <td>SNS Topic:</td>
+                    <td><select id="sns_topic_select" style="width:320px;"></select></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><button id="add_action_button">Add Action</button></td>
+                </tr>
+            </table>
+            <hr />
+            <table id="actions_table" class="full_width">
+                <thead>
+                    <tr>
+                        <th>State</th>
+                        <th>Action</th>
+                        <th>Topic</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+                <tfoot>
+                </tfoot>
+            </table>
+            <button id="remove_action_button">Remove Action</button>
+        </div>
+    </div>
+    -->
+</div>

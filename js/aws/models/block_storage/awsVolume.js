@@ -6,24 +6,12 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'backbone',
+        'models/resource/resourceModel',
         'common'
-], function( $, Backbone, Common ) {
+], function( ResourceModel, Common ) {
     'use strict';
 
-    // Base Volume Model
-    // ----------
-
-    /**
-     *
-     * @name Volume
-     * @constructor
-     * @category BlockStorage
-     * @param {Object} initialization object.
-     * @returns {Object} Returns a Volume instance.
-     */
-    var Volume = Backbone.Model.extend({
+    var Volume = ResourceModel.extend({
 
         defaults: {
             id: '',
@@ -42,45 +30,28 @@ define([
 		},
 		
 		create: function(options, credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/block_storage/volumes/create?_method=PUT&cred_id=" + credentialId + "&region=" + region;
-            this.sendPostAction(url, options);
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/block_storage/volumes?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", {"volume": options}, "volumeAppRefresh");
         },
         
         attach: function(credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/block_storage/volumes/attach?cred_id=" + credentialId + "&region=" + region;
-            this.sendPostAction(url, this.attributes);
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/block_storage/volumes/" + this.attributes.id + "/attach?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", {"service_id": this.attributes.server_id, "device": this.attributes.device}, "volumeAppRefresh");
         },
         
         detach: function(credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/block_storage/volumes/detach?cred_id=" + credentialId + "&region=" + region;
-            this.sendPostAction(url, this.attributes);
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/block_storage/volumes/" + this.attributes.id + "/detach?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "volumeAppRefresh");
         },
         
         forceDetach: function(credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/block_storage/volumes/force_detach?cred_id=" + credentialId + "&region=" + region;
-            this.sendPostAction(url, this.attributes);
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/block_storage/volumes/" + this.attributes.id + "/force_detach?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "volumeAppRefresh");
         },
         
         destroy: function(credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/block_storage/volumes/delete?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
-            this.sendPostAction(url, this.attributes);
-        },
-		
-		sendPostAction: function(url, options) {
-            var volume = {"volume": options};
-            $.ajax({
-                url: url,
-                type: 'POST',
-                contentType: 'application/x-www-form-urlencoded',
-                dataType: 'json',
-                data: JSON.stringify(volume),
-                success: function(data) {
-                    Common.vent.trigger("volumeAppRefresh");
-                },
-                error: function(jqXHR) {
-                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
-                }
-            }); 
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/block_storage/volumes/" + this.attributes.id + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "volumeAppRefresh");
         }
     
     });

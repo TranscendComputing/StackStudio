@@ -1,9 +1,22 @@
 <div id="tenant_create_template">
-    <form>
-        <fieldset>
-            <p><label class="smaller-tabbed-left-field" for="name">Name:</label><input id="name_input" type="text" class="textbox-250 required" value="{{name}}"/></p>
-            <p><label class="smaller-tabbed-left-field" for="description">Description:</label><textarea id="description_textarea" cols="33" rows="5">{{description}}</textarea></p>
-            <p><label class="smaller-tabbed-left-field" for="enabled">Enabled:</label><input id="enabled_input" type="checkbox" checked="yes" value="false"/></p>
-        </fieldset>
-    </form>
+	<table>
+        <tr>
+            <td>Tenant Name:</td>
+            <td>
+                <input id="tenant_name_input" type="text" class="medium_width"/>
+            </td>
+        </tr>
+        <tr>
+            <td>Description:</td>
+            <td>
+                <textarea id="description_input" class="medium_width"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>Enabled:</td>
+            <td>
+                <input id="enabled_checkbox" type="checkbox" checked/>
+            </td>
+        </tr>
+    </table>
 </div>

@@ -258,6 +258,7 @@ footer {
     border-bottom-right-radius: 0.4em;
     border-bottom-left-radius: 0.4em;
     z-index: 1;
+    padding: 10px;
 }
 
 footer p {
@@ -303,6 +304,16 @@ footer a:visited {
     background: -webkit-linear-gradient(top, #F2F2F2, #FFFFFF);
 }
 
+.border_group {
+    border-style:solid;
+    border-radius:5px;
+    border-width:1px;
+    border-color:#AAAAAA;
+    list-style-type: none;
+    padding:0px;
+    background: -webkit-linear-gradient(top, #F2F2F2, #FFFFFF);
+}
+
 .selectable_list li {
     margin: 2px;
     height: 18px;
@@ -322,6 +333,27 @@ footer a:visited {
 
 .selected_item a {
     color: #FFFFFF !important;
+}
+
+.large_width {
+    width:300px;
+}
+
+.medium_width {
+    width:200px;
+}
+
+.small_width {
+    width: 100px;
+}
+
+textarea {
+    font-size: .9em !important;
+    font-family: "PT Sans", "Helvetica Neue", Arial, sans-serif !important;
+}
+
+.comma_list span:not(:last-of-type)::after {
+  content: ", "
 }
 
 .feature_not_implemented {
@@ -492,6 +524,11 @@ img {
 }
 #rightnav {
     height: 100%;
+}
+
+/* --- twitter bootstrap styles --- */
+.side-nav {
+    margin-top: 30px;
 }
 
 /* ==========================================================================

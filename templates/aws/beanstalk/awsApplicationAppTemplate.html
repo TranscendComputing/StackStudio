@@ -1,0 +1,52 @@
+<div>
+    <div class="button_bar">
+        <table>
+            <tr>
+                <td>
+                    <button class="create_button">Create Application</button>
+                </td>
+                <td>
+                    <ul id="action_menu">
+                        <li style="z-index: 1000">
+                            <a id="action_button">Actions</a>
+                            <ul>
+                                <li><a>Delete Application</a></li>                   
+                            </ul>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table id="resource_table" class="full_width">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Created</th>
+                <th>Last Updated</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    <div id="details" class="detail_panel"></div>
+</div>
+
+<script type="text/html" id="resource_detail">
+    <div id="detail_tabs">
+        <ul>
+            
+            <li><a id="environments" href="#tabs-1">App</a></li>
+            <li><a id="events" href="#tabs-2">Events</a></li>
+        </ul>
+        
+        <div id="tabs-1" class="tab">
+            <div id="environments_tab_content"></div>
+        </div>
+        <div id="tabs-2" class="tab">
+            <div id="events_tab_content"></div>
+        </div>
+    </div>
+</script>

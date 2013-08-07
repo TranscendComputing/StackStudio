@@ -1,0 +1,232 @@
+<div>
+    <div class="button_bar">
+        <table>
+            <tr>
+                <td>
+                    <button class="create_button">Create Cluster</button>
+                </td>
+                <td>
+                    <ul id="action_menu">
+                        <li style="z-index: 1000">
+                            <a id="action_button">Actions</a>
+                            <ul>
+                                <li><a>Delete</a></li>
+                                <li id="mod_node_count"><a>Modify Node Count</a></li>               
+                            </ul>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table id="resource_table" class="full_width">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Node Type</th>
+                <th>Engine</th>
+                <th>Zone</th>
+                <th>Number of Nodes</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    <div id="details" class="detail_panel"></div>
+</div>
+
+<script type="text/html" id="resource_detail">
+    <div id="detail_tabs">
+        <ul>
+            <li><a id="database_details" href="#tabs-1">Details</a></li>
+            <li><a id="monitoring" href="#tabs-2">Nodes</a></li>
+        </ul>
+        <div id="tabs-1" class="tab">
+            <table>
+                <tbody>
+                    <tr><td><b>Id:</b></td><td>{{ id }}</td><td><b>Status:</b></td><td>{{ status }}</td></tr>
+                    <tr><td><b>Node Type:</b></td><td>{{ node_type }}</td><td><b>Engine:</b></td><td>{{ engine }}</td></tr>
+                    <tr><td><b>Number of Nodes:</b></td><td>{{ num_nodes }}</td><td><b>Zone:</b></td><td>{{ zone }}</td></tr>
+                    <tr><td><b>Create Time:</b></td><td>{{ create_time }}</td><td><b>Engine Version:</b></td><td>{{ engine_version }}</td></tr>
+                    <tr><td><b>Auto Upgrade:</b></td><td>{{ auto_upgrade }}</td><td><b>Maintenance Window:</b></td><td>{{ maintenance_window }}</td></tr>
+                    <tr></tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="tabs-2" class="tab" style="overflow:hidden;">
+            <select id="node_select">
+                {{#nodes}}
+                  <option value="{{CacheNodeId}}">{{CacheNodeId}}</option>
+                {{/nodes}}
+            </select>
+            <!--button to add nodes-->
+            
+            <table class="full_width" hidden="true">
+                <tbody>
+                    {{#nodes}}
+                        <div id="node_row{{CacheNodeId}}">
+                            <tr><td id="cid{{CacheNodeId}}">{{ CacheNodeId }}</td><td id="pgs{{CacheNodeId}}">{{ ParameterGroupStatus }}</td><td id="cns{{CacheNodeId}}">{{ CacheNodeStatus }}</td>
+                            <td id="cnct{{CacheNodeId}}">{{ CacheNodeCreateTime }}</td><td id="port{{CacheNodeId}}">{{ Port }}</td><td id="address{{CacheNodeId}}">{{ Address }}</td></tr>
+                        </div>
+                    {{/nodes}}
+                </tbody>
+            </table>
+            
+            <div id="node_detail">
+            </div>
+            
+            <br>
+            
+            <div class="monitor_options">
+                <table>
+                    <tr>
+                        <td>Time Range:</td>
+                        <td>
+                            <select id="monitor_time_range">
+                                <option value='{"time_range":3600, "period":300}' selected>Last Hour</option>
+                                <option value='{"time_range":10800, "period":600}'>Last 3 Hours</option>
+                                <option value='{"time_range":21600, "period":900}'>Last 6 Hours</option>
+                                <option value='{"time_range":43200, "period":1800}'>Last 12 Hours</option>
+                                <option value='{"time_range":86400, "period":3600}'>Last 24 Hours</option>
+                                <option value='{"time_range":604800, "period":21600}'>Last Week</option>
+                                <option value='{"time_range":1209600, "period":21600}'>Last 2 Weeks</option>
+                            </select>
+                        </td>
+                        <td>
+                            <button id="refresh_monitors_button">Refresh</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Bytes Read Into Memcached</div>
+                <div id="bytes_read" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Bytes Used For Cache Items</div>
+                <div id="bytes_used" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Bytes Written Out From Memcached</div>
+                <div id="bytes_written" class="monitor_graph"></div>
+            </div>
+            
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Cas Bad Val</div>
+                <div id="casBadvalData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Cas Hits</div>
+                <div id="casHitsData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Cas Misses</div>
+                <div id="casMissesData" class="monitor_graph"></div>
+            </div>
+            
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Cmd Flush</div>
+                <div id="cmdFlushData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Cmd Get</div>
+                <div id="cmdGetData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Cmd Set</div>
+                <div id="cmdSetData" class="monitor_graph"></div>
+            </div>
+            
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">CPU Utilization</div>
+                <div id="cPUUtilizationData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Curr Connections</div>
+                <div id="currConnectionsData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Curr Items</div>
+                <div id="currItemsData" class="monitor_graph"></div>
+            </div>
+            
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Decr Hits</div>
+                <div id="decrHitsData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Decr Misses</div>
+                <div id="decrMissesData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Delete Hits</div>
+                <div id="deleteHitsData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Delete Misses</div>
+                <div id="deleteMissesData" class="monitor_graph"></div>
+            </div>
+            
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Evictions</div>
+                <div id="evictionsData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Freeable Memory</div>
+                <div id="freeableMemoryData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Get Hits</div>
+                <div id="getHitsData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Get Misses</div>
+                <div id="getMissesData" class="monitor_graph"></div>
+            </div>
+            
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Incr Hits</div>
+                <div id="incrHitsData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Incr Misses</div>
+                <div id="incrMissesData" class="monitor_graph"></div>
+            </div>
+            
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Network Bytes In</div>
+                <div id="networkBytesInData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Network Bytes Out</div>
+                <div id="networkBytesOutData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">New Connections</div>
+                <div id="newConnectionsData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">New Items</div>
+                <div id="newItemsData" class="monitor_graph"></div>
+            </div>
+            
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Reclaimed</div>
+                <div id="reclaimedData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Swap Usage</div>
+                <div id="swapUsageData" class="monitor_graph"></div>
+            </div>
+            <div class="monitor_graph_container">
+                <div class="monitor_caption">Unused Memory</div>
+                <div id="unusedMemoryData" class="monitor_graph"></div>
+            </div>
+            
+        </div>
+    </div>
+    
+</script>

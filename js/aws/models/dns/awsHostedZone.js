@@ -6,15 +6,13 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'backbone',
+        'models/resource/resourceModel',
         'common'
-], function( $, Backbone, Common ) {
+], function( ResourceModel, Common ) {
     'use strict';
 
-    var HostedZone = Backbone.Model.extend({
+    var HostedZone = ResourceModel.extend({
 
-        /** Default attributes for hosted zone */
         defaults: {
             id: '',
             caller_reference: '',
@@ -25,30 +23,13 @@ define([
         },
 
         create: function(options, credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/dns/hosted_zones/create?_method=PUT&cred_id=" + credentialId;
-            this.sendPostAction(url, options);
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/dns/hosted_zones?cred_id=" + credentialId;
+            this.sendAjaxAction(url, "POST", {"hosted_zone": options}, "hostedZoneAppRefresh");
         },
 
         destroy: function(credentialId) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/dns/hosted_zones/delete?_method=DELETE&cred_id=" + credentialId;
-            this.sendPostAction(url, this.attributes);
-        },
-
-        sendPostAction: function(url, options) {
-            var instance = {"hosted_zone": options};
-            $.ajax({
-                url: url,
-                type: 'POST',
-                contentType: 'application/x-www-form-urlencoded',
-                dataType: 'json',
-                data: JSON.stringify(instance),
-                success: function(data) {
-                    Common.vent.trigger("hostedZoneAppRefresh");
-                },
-                error: function(jqXHR) {
-                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
-                }
-            }); 
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/dns/hosted_zones/" + this.attributes.id + "?_method=DELETE&cred_id=" + credentialId;
+            this.sendAjaxAction(url, "POST", undefined, "hostedZoneAppRefresh");
         }
     });
 

@@ -6,13 +6,12 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'backbone',
+        'models/resource/resourceModel',
         'common'
-], function( $, Backbone, Common ) {
+], function( ResourceModel, Common ) {
     'use strict';
 
-    var Queue = Backbone.Model.extend({
+    var Queue = ResourceModel.extend({
         idAttribute: "QueueName",
 
         defaults: {
@@ -30,33 +29,14 @@ define([
         },
 
         create: function(options, credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/queue/queues/create?_method=PUT&cred_id=" + credentialId + "&region=" + region;
-            var queue = {queue: options};
-            this.sendPostAction(url, queue);
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/queue/queues?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", {"queue": options}, "queueAppRefresh");
         },
 
         destroy: function(credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/queue/queues/delete?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
-            var queue = {queue: this.attributes};
-            this.sendPostAction(url, queue);
-        },
-
-        sendPostAction: function(url, options) {
-            $.ajax({
-                url: url,
-                type: 'POST',
-                contentType: 'application/x-www-form-urlencoded',
-                dataType: 'json',
-                data: JSON.stringify(options),
-                success: function(data) {
-                    Common.vent.trigger("queueAppRefresh");
-                },
-                error: function(jqXHR) {
-                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
-                }
-            }); 
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/queue/queues?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", {"queue": this.attributes}, "queueAppRefresh");
         }
-
     });
 
     return Queue;

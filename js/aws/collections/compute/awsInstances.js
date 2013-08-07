@@ -13,19 +13,14 @@ define([
 ], function( $, Backbone, Instance, Common ) {
     'use strict';
 
-    // Instance Collection
-    // ---------------
-
     var InstanceList = Backbone.Collection.extend({
 
-        // Reference to this collection's model.
         model: Instance,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/instances/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/instances'
         
     });
     
-    // Create our global collection of **Instances**.
     return InstanceList;
 
 });

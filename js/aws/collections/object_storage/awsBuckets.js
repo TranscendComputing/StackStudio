@@ -13,18 +13,13 @@ define([
 ], function( $, Backbone, Bucket, Common ) {
     'use strict';
 
-    // Bucket Collection
-    // ---------------
-
     var BucketsList = Backbone.Collection.extend({
 
-        // Reference to this collection's model.
         model: Bucket,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/object_storage/directories/describe'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/object_storage/directories'
     });
 
-    // Create our global collection of **Buckets**.
     return BucketsList;
 
 });
