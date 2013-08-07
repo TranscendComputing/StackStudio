@@ -374,7 +374,19 @@
     "google" : {
         "name": "Google",
         "logo": "/images/CloudLogos/google1920x1107.png",
-        "native_services": [],
+        "native_services": [
+            {
+                "name": "Compute Engine",
+                "type": "compute",
+                "defaultSubtype": "instances",
+                "subServices" : [
+                    {
+                        "name": "Instances",
+                        "type": "instances"
+                    }
+                ]
+            }
+        ],
         "regions": []
     },
     "joyent" : {
