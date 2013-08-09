@@ -1,0 +1,26 @@
+/*Filename: /css/apps.css*/
+
+.cfg-icon {background-image: url(/images/iconPNGs/icons_configMgmt_sprites.png);background-repeat:no-repeat; width:32px;height:32px;display:block;float:left;margin-right:8px;}
+.cfg-icon-chef {background-position: 0 0;}
+.cfg-icon-puppet {background-position: 0 -37px;}
+.config-name {display:block;float:left;background-color:#FFF;height:32px;width:160px;}
+.config-tool {display:block;float:right;background-color:#FFF;font-style:italic;height:32px;color: #999999;}
+#apps_view .twitter-typeahead .tt-dropdown-menu {
+    background-color:#FFF;
+    .tt-is-under-cursor { 
+        .packageItem {
+            border-color: #0097CF; 
+        }
+    }
+}
+.packageItem {
+    background-color:#FFF;height:32px;border: solid 1px #AAA; display:Block; padding:4px; 
+    width:250px;border-radius: 4px 4px 4px 4px;
+}
+
+.packageItem.removable {
+    width: 270px;
+    .config-tool {
+        padding-right:8px;
+    }
+}

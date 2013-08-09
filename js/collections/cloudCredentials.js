@@ -30,15 +30,28 @@ define([
          */
         fetch: function(options) {
             var cloudCreds = [];
-            if(sessionStorage.cloud_credentials) {
-                var cloudCredentials = JSON.parse(sessionStorage.cloud_credentials);
-                $.each(cloudCredentials, function(index, value) {
-                    var cloudCred = new CloudCredential(value.cloud_credential);
-                    cloudCreds.push(cloudCred);
-                });
+            var d = $.Deferred();
+            if (options){
+                d.done = options.success;
+                d.fail = options.error;
             }
-            
-            this.reset(cloudCreds);
+            try{
+                if(sessionStorage.cloud_credentials) {
+                    var cloudCredentials = JSON.parse(sessionStorage.cloud_credentials);
+                    $.each(cloudCredentials, function(index, value) {
+                        var cloudCred = new CloudCredential(value.cloud_credential);
+                        cloudCreds.push(cloudCred);
+                    });
+                }
+                this.reset(cloudCreds);
+                d.resolve();
+            }
+            catch(ex){
+                console.error(ex);
+                d.reject();
+            }
+            return d.promise();
+
 		},
 		/**
          * Creates a new set of cloud credentials for the user

@@ -160,7 +160,7 @@ define([
             }  
         },
         addCloudAccount: function(event){
-            if(event.target.id == "treeAddCloudAccount"){
+            if(event.target.id === "treeAddCloudAccount"){
                 var caCreate = new CloudAccountCreate({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id});
                 caCreate.render();
             }

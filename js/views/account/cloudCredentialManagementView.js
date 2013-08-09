@@ -33,7 +33,7 @@ define([
         events: {
             //"click button#new_credential": "newCredential",
             "click button#save_credential": "saveCredential",
-            "click button#delete_credential": "deleteCredential",
+            "click button#delete_credential": "deleteCredential"
             //"change select#cloud_accounts_select": "selectCloudAccount"
         },
         /** Constructor method for current view */

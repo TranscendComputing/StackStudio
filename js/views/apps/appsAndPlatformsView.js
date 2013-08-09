@@ -8,13 +8,19 @@
 define([
         'jquery',
         'underscore',
+        'bootstrap',
         'backbone',
         'icanhaz',
         'common',
+        'typeahead', // Not an AMD component!
         'text!templates/apps/appsTemplate.html',
+        'collections/apps',
+        'collections/cloudCredentials',
+        'views/apps/appsListView',
+        'models/app',
         'jquery-plugins',
         'jquery-ui-plugins'
-], function( $, _, Backbone, ich, Common, appsTemplate ) {
+], function( $, _, bootstrap, Backbone, ich, Common, typeahead, appsTemplate, Apps, CloudCredentials, AppsListView, App ) {
 	// The Apps & Platforms View
 	// ------------------------------
 
@@ -28,7 +34,6 @@ define([
      * @returns {Object} Returns a AppsView project.
      */
     var AppsView = Backbone.View.extend({
-
         id: 'apps_view',
 
         //className: [''],
@@ -40,24 +45,64 @@ define([
         appsApp: undefined,
 
         events: {
-            "click a.source" : "packageSourceClick",
-            "click .packages a" : "packageClick",
-            "click a.infra-source" : "infraSourceClick",
-            "click .infra-packages a" : "infraClick",
-            "click a.source-search" : "searchClick",
-            "click .pick-inst": "onChecked",
-            "click #deploy-to": "deployTo",
-            "click #deploy-launch": "deployLaunch"
+            "typeahead:selected": "packageClick"
         },
 
         initialize: function() {
             console.log("Initialize apps and plat.");
+            var $this = this;
 
             require(['bootstrap'], function() {});
 
+            if (!_.compile){
+                _.compile = function(templ) {
+                  var compiled = this.template(templ);
+                  compiled.render = function(ctx) {
+                     return this(ctx);
+                  };
+                  return compiled;
+               };
+            }
+            
             this.subViews = [];
             $("#main").html(this.el);
             this.$el.html(this.template);
+            $(function(){
+                $("#configuration-management-library-source").typeahead({
+                    name: "configManagmentLibrarySource",
+                    prefetch: {
+                        url: "samples/apps.json",
+                        filter: function(parsedResponse){
+                            return parsedResponse;
+                        }
+                    },
+                    template: [
+                        '<div class="packageItem">',
+                            '<p class="packages cfg-icon cfg-icon-<%=tool%>"></p>',
+                            '<p class="config-name"><%=value%></p>',
+                            '<p class="config-tool"><%=tool%></p>',
+                        '</div>'
+                    ].join(''),
+                    engine: _
+                }).on('typeahead:opened', function() { //hack to overcome overflow inside an accordion.
+                    $(this).closest('.accordion-body').css('overflow','visible');
+                    console.log("typeahed:opened");
+                }).on('typeahead:closed', function() {
+                    $(this).closest('.accordion-body').css('overflow','hidden');
+                    console.log("typeahed:closed");
+                });
+                
+                console.log("Typeahead initialized.");
+            });
+
+            $this.listView = new AppsListView({el: $("#selected-apps-list") });
+            $this.listView.render();
+            $this.listView.on("lastAppRemoved", $this.disableDeployLaunch, $this);
+
+            this.cloudCredentials = new CloudCredentials();
+            this.cloudCredentials.on('reset', this.populateCredentials, this);
+
+            $("#selectAccordion").on("shown", this.toggleInstInfra);
             var response = $.ajax({
                 url: "samples/cloudDefinitions.json",
                 async: false
@@ -67,10 +112,145 @@ define([
 
         },
 
+        populateRegions: function(evt){
+            var select = $("#select-region")
+                .empty()
+                .on("change", $.proxy(this.regionChanged, this));
+            var optionSelected = $("option:selected", evt.target);
+            var credential = optionSelected.data("cloudCredentials");
+            var provider = this.cloudDefinitions[credential.get("cloud_provider").toLowerCase()];
+            $.each(provider.regions, function(index, element){
+                $('<option>')
+                    .val(element.zone)
+                    .text(element.name)
+                    .data("region", element)
+                    .data("credential", credential)
+                    .appendTo(select);
+             });
+            this.regionChanged({target:select});
+
+        },
+
+        populateCredentials: function(list, options){
+            var select = $("#select-credentials")
+                .empty()
+                .on("change", $.proxy(this.populateRegions, this));
+            list.forEach(function(element, index, list){
+                $('<option>')
+                    //.val(element.get("id"))
+                    .text(element.get("cloud_name") + ":" + element.get("name"))
+                    .data("cloudCredentials", element)
+                    .appendTo(select);
+             });
+            this.populateRegions(select);
+
+        },
+
+        regionChanged: function(evt){
+            var optionSelected = $("option:selected", evt.target);
+            var region = optionSelected.data("region");
+            var credential = optionSelected.data("credential");
+            this.populateInstances(region, credential);
+        },
+
+        populateInstances: function(region, credential){
+            var $this = this;
+            var providerName = credential.get("cloud_provider").toLowerCase();
+            var appPath = "../" + providerName + "/collections/compute/" + providerName + "Instances";
+
+            require([appPath], function (Instances) {
+                var instances = new Instances();
+                
+                instances
+                    .fetch({ 
+                        data: {
+                            cred_id: credential.id, 
+                            region: region.zone
+                        }
+                    })
+                    .done(function(model, response, options){
+                        $this.renderInstances(model);
+                });
+            });
+        },
+
+        renderInstance: function(instanceContainer, instance){
+            var tr = $("<tr></tr>");
+            var checkTd = $("<td></td>").appendTo(tr);
+            $("<input type='checkbox'></input>")
+                .data("instance",instance)
+                .appendTo(checkTd)
+                .on("change", $.proxy(this.updateDeployButtonState, this));
+            $("<td></td>").text(instance.tags.Name).appendTo(tr);
+            $("<td></td>").text(instance.id).appendTo(tr);
+            //$("<td></td>").text("").appendTo(tr);
+            //$("<td></td>").text("").appendTo(tr);
+            //$("<td></td>").text("").appendTo(tr);
+            tr.appendTo(instanceContainer);
+        },
+
+        updateDeployButtonState: function(){
+            var checked = $("#instance-container input[type='checkbox']:checked").length;
+            var enabled = checked && this.listView.collection.length;
+            if (enabled){
+                $("#deploy-to")
+                    .removeClass("disabled")
+                    .prop("disabled", false);
+            } else {
+                $("#deploy-to")
+                    .addClass("disabled")
+                    .prop("disabled", true);
+            }
+        },
+
+        renderInstances: function(instances){
+            var $this = this;
+            var instanceContainer = $("#instance-container");
+            instanceContainer.empty();
+            $.each(instances, function(index, item){
+                $this.renderInstance(instanceContainer, item);
+            });
+            this.updateDeployButtonState();
+        },
+
+        renderAppSelector: function(){
+
+        },
+
+        loadCredentials: function(){
+            this.cloudCredentials.fetch({
+                reset: true
+            });
+        },
+
+        disableDeployLaunch: function(){
+            $("#deploy-launch").addClass("disabled");
+            this.updateDeployButtonState();
+        },
+
+        enableDeployLaunch: function(){
+            $("#deploy-launch").removeClass("disabled");
+        },
+
+        toggleInstInfra: function(ev){
+            switch(ev.target.id)
+            {
+                case ("collapseConfig"):{
+                    $("#deploy-inst").show();
+                    $("#deploy-infra").hide();
+                }break;
+                case ("collapseInfra"):{
+                    $("#deploy-inst").hide();
+                    $("#deploy-infra").show();
+                }break;
+            }
+        },
+
         render: function () {
             $("#main").removeClass("twelvecol last");
             $("#main>div").removeClass("twelvecol last");
             this.loadAppsApp();
+            this.loadCredentials();
         },
 
         loadAppsApp: function() {
@@ -95,36 +275,10 @@ define([
             return false;
         },
 
-        packageClick: function(evt) {
-            var label, clicked;
-            $("#deploy-infra").hide();
-            $("#deploy-inst").show();
-            clicked = $(evt.target);
-            if (clicked.hasClass("source-search")) {
-                return;
-            }
-            label = clicked.text();
-            if (clicked.parent().hasClass("active")) {
-                clicked.parent().removeClass("active");
-                $(".selected-apps").children().each(function(i, e) {
-                    if (e.innerHTML === label) {
-                        e.remove();
-                    }
-                });
-                if ($(".selected-apps").children().length === 0) {
-                    $(".selected-apps").html("No apps selected.");
-                    $(".hero-unit").find(".btn").addClass("disabled");
-                }
-            } else {
-                if ($(".selected-apps").children().length === 0) {
-                    $(".selected-apps").html("");
-                    $("#deploy-launch").removeClass("disabled");
-                }
-                clicked.parent().addClass("active");
-                $(".selected-apps").append('<button class="btn">'+label+'</button>');
-                this.onChecked(null);
-            }
-            return false;
+        packageClick: function(evt, package) {
+            this.listView.addApp(package);
+            this.enableDeployLaunch();
+            this.updateDeployButtonState();
         },
 
         infraSourceClick: function(evt) {
@@ -168,14 +322,6 @@ define([
                 $(".selected-infra").append('<button class="btn">'+label+'</button>');
             }
             return false;
-        },
-
-        onChecked: function(evt) {
-            if ($(".selected-apps").children().length > 0) {
-                if ($("input:checked").length > 0) {
-                    $(".hero-unit").find(".btn").removeClass("disabled");
-                }
-            }
         },
 
         deployTo: function(evt) {

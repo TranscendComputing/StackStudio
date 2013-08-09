@@ -147,7 +147,7 @@ requirejs.config({
         interpreters: '../interpreters',
         templates: '../../templates',
         wrappers: '../../wrappers',
-        'jquery': '//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min',
+        'jquery': '//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min',
         'jquery-ui': '//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min',
         'underscore': '//cdnjs.cloudflare.com/ajax/libs/lodash.js/1.1.0/lodash.min',
         'backbone': '//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min',
@@ -156,7 +156,7 @@ requirejs.config({
         'icanhaz': 'ICanHaz',
         'jquery.form': 'jquery.form',
         //'jquery.list': 'jquery.list.min',
-        'jquery.terminal': 'jquery.terminal-0.4.22',
+        'jquery.terminal': 'jquery.terminal-0.7.3',
         'jquery.mousewheel': 'jquery.mousewheel-min',
         'messenger': 'messenger.min',
         //'jquery.jstree': '//cachedcommons.org/cache/jquery-jstree/1.0.0/javascripts/jquery-jstree-min',
@@ -168,8 +168,9 @@ requirejs.config({
         'wijsuperpanel': 'jquery.wijmo.wijsuperpanel',
         'wijsplitter': 'jquery.wijmo.wijsplitter',
         'wijmo': 'wijmo-require',
-        'wijmo-actual': 'jquery.wijmo-open.all.2.3.2.min',
-        'bootstrap': '//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min'
+        'wijmo-actual': '//cdn.wijmo.com/jquery.wijmo-open.all.3.20132.8.min', //'jquery.wijmo-open.all.2.3.2.min',
+        'bootstrap': '//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min',
+        'typeahead': '../vendor/twitter/typeahead.min'
     }
 });
 
