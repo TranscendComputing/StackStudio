@@ -32,6 +32,8 @@ define([
 
         adminConsoleUrl: undefined,
 
+        adminConsoleAuthUrl: undefined,
+
         failed: false,
         
         events: {
@@ -56,7 +58,21 @@ define([
             if(this.failed) {
                 $("#resource_app").html("");
             }else if (this.adminConsoleUrl){
-                this.$el.html("<iframe id='admin_frame' src='"+this.adminConsoleUrl+"' class='full_width' height='720' style='-webkit-transform:scale(1);-moz-transform-scale(0.5);'></iframe>");
+                //Find credentials to log in to console with access key and secret key
+                var credentials = JSON.parse(sessionStorage.cloud_credentials);
+                var credential = {};
+                for(var i = 0; i < credentials.length; i++){
+                    if(this.selectedCloudAccount === credentials[i].cloud_credential.cloud_account_id){
+                        credential = credentials[i].cloud_credential;
+                    }
+                }
+                this.$el.html("<iframe id='admin_frame' src='templates/consoleFrame.html?" +
+                    "user=" + credential.access_key +
+                    "&pass=" + credential.secret_key +
+                    "&url=" + this.adminConsoleAuthUrl.split("://")[1] + 
+                    "&protocol=" + this.adminConsoleAuthUrl.split("://")[0] + 
+                    "' class='full_width' height='720' style='-webkit-transform:scale(1);-moz-transform-scale(0.5);'></iframe>");
+
                 $("#resource_app").html(this.$el);
             }
         },
@@ -73,7 +89,7 @@ define([
                 var CloudAccountsType = this.CloudAccountsType;
                 this.cloudAccounts = new CloudAccountsType();
                 this.cloudAccounts.on( 'reset', this.setCloudAccount, this );
-                this.cloudAccounts.fetch({ 
+                this.cloudAccounts.fetch({
                     data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id}),
                     reset: true
                 });
@@ -82,7 +98,7 @@ define([
                 this.failed = true;
                 this.render();
             }
-            
+
         },
 
         setCloudAccount: function() {
@@ -97,8 +113,9 @@ define([
                     });
                 }
             });
-
             if(adminConsoleService) {
+                var appName = adminConsoleService.path.split("/")[1];
+                this.adminConsoleAuthUrl = adminConsoleService.protocol + "://" + adminConsoleService.host + ":" + adminConsoleService.port + "/" +appName + "/j_spring_security_check";
                 this.adminConsoleUrl = adminConsoleService.protocol + "://" + adminConsoleService.host + ":" + adminConsoleService.port + adminConsoleService.path;
             }else {
                 Common.errorDialog("Error", "Could not find Admin Console Service.");
