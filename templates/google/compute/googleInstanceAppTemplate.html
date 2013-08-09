@@ -27,10 +27,8 @@
             <tr>
                 <th>Name</th>
                 <th>Instance ID</th>
-                <th>Image ID</th>
-                <th>Root Device</th>
-                <th>Type</th>
-                <th>Key Pair</th>
+                <th>Description</th>
+                <th>Creation Timestamp</th>
                 <th>State</th>
             </tr>
         </thead>
@@ -51,17 +49,10 @@
         <div id="tabs-1" class="tab">
             <table>
                 <tbody>
-                    <tr><td><b>Name:</b></td>                  <td>{{ tags.Name }}</td>                <td><b>Public DNS:</b></td>    <td>{{ dns_name }}</td></tr>
-                    <tr><td><b>Instance ID:</b></td>           <td>{{ id }}</td>                       <td><b>Public IP:</b></td>     <td>{{ public_ip_address }}</td></tr>
-                    <tr><td><b>Image ID:</b></td>              <td>{{ image_id }}</td>                 <td><b>Private IP:</b></td>    <td>{{ private_ip_address }}</td></tr>
-                    <tr><td><b>Root Device:</b></td>           <td>{{ root_device_type }}</td>         <td><b>Tenancy:</b></td>       <td>{{ tenancy }}</td></tr>
-                    <tr><td><b>Type:</b></td>                  <td>{{ flavor_id }}</td></tr>
-                    <tr><td><b>Key Name:</b></td>              <td>{{ key_name }}</td></tr>
-                    <tr><td><b>Availability Zone:</b></td>     <td>{{ availability_zone }}</td></tr>
-                    <tr><td><b>Detailed Monitoring:</b></td>   <td>{{ monitoring }}</td></tr>
-                    <tr><td><b>EBS Optimized:</b></td>         <td>{{ ebs_optimized }}</td></tr>
-                    <tr><td><b>State:</b></td>                 <td>{{ state }}</td></tr>
-                    <tr><td><b>Launch Time:</b></td>           <td>{{ created_at }}</td></tr>
+                    <tr><td><b>Name:</b></td><td>{{ name }}</td><td><b>External IP:</b></td><td>{{ network_interfaces.0.accessConfigs.0.natIP }}</td></tr>
+                    <tr><td><b>Instance ID:</b></td><td>{{ id }}</td><td><b>Internal IP:</b></td><td>{{ network_interfaces.0.networkIP }}</td></tr>
+                    <tr><td><b>Description:</b></td><td>{{ description }}</td><td><b>Boot Disk:</b></td><td>{{ disks.0.deviceName }}</td></tr>
+                    <tr><td><b>State:</b></td><td>{{ state }}</td><td><b>Disk Type:</b></td><td>{{ disks.0.type }}</td></tr>
                 </tbody>
             </table>
         </div>

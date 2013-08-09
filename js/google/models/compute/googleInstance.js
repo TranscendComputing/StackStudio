@@ -15,34 +15,8 @@ define([
 
         defaults: {
             id: '',
-            image_id: '',
-            flavor_id: '',
-            block_device_mapping: {},
-            network_interfaces: [],
-            iam_instance_profile: {},
-            state: '',
-            monitoring: false,
-            availability_zone: '',
-            placement_group: {},
-            tenancy: '',
-            product_codes: [],
-            state_reason: {},
-            tags: {},
-            ownerId: '',
-            private_dns_name: '',
-            dns_name: '',
-            reason: {},
-            key_name: '',
-            ami_launch_index: 0,
-            created_at: '',
-            kernel_id: '',
-            private_ip_address: '',
-            public_ip_address: '',
-            root_device_type: '',
-            client_token: '',
-            ebs_optimized: false,
-            groups: [],
-            security_group_ids: []
+            name: '',
+            network_interfaces: []
         },
         
         create: function(options, credentialId, region) {

@@ -1,88 +1,17 @@
-<div id="instance_create">
-    <div id="accordion">
-        <h3>Instance Configuration</h3>
-        <div>
-            <table>
-                <tr>
-                    <td>Name:</td>
-                    <td>
-                        <input id="instance_name" type="text" style="width:200px;"/>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Image:</td>
-                    <td>
-                        <input id="image_select" style="width:250px;"/>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Machine Size:</td>
-                    <td>
-                        <select id="flavor_select" style="width:250px"></select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Availability Zone:</td>
-                    <td>
-                        <select id="az_select" style="width:200px;"></select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Key Pair:</td>
-                    <td>
-                        <select id="key_pair_select" style="width:200px;"></select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Security Group(s):</td>
-                    <td>
-                        <select id="security_group_select" multiple="multiple" style="width:360px;"></select>
-                    </td>
-                </tr>
-            </table>
-        </div>
-        <!--
-        <h3>Elasticity</h3>
-        <div>
-            <div id="radio" style="float:left;">
-                <input type="radio" id="radio1" name="radio" value="none" checked="checked"/><label for="radio1">None</label>
-                <input type="radio" id="radio2" name="radio" value="autoRecovery"/><label for="radio2">Auto Recovery</label>
-                <input type="radio" id="radio3" name="radio" value="fixedArray"/><label for="radio3">Fixed Array</label>
-                <input type="radio" id="radio4" name="radio" value="autoScale"/><label for="radio4">Auto Scale</label>
-            </div>
-            <img id="elasticity_image" src="/images/IconPNGs/NewServer.png" style="float:right;width:30px"/>
-            <div id="elasticity_config">
-            </div>
-        </div>
-         -->
-        <h3>Additional Configuration</h3>
-        <div>
-            <table>
-                <tr>
-                    <td>Detailed Monitoring:</td>
-                    <td>
-                        <input id="detailed_monitoring" type="checkbox" />
-                    </td>
-                </tr>
-                <!--
-                <tr>
-                    <td>Termination Protection:</td>
-                    <td>
-                        <input id="term_protection" type="checkbox" />
-                    </td>
-                </tr>
-                 -->
-                <tr>
-                    <td>Shutdown Behavior:</td>
-                    <td>
-                        <select id="shutdown_behavior_select" style="width:150px;">
-                            <option>Stop</option>
-                            <option>Terminate</option>
-                        </select>
-                    </td>
-                </tr>
-               
-            </table>
-        </div>
-    </div>
+<div id="google_instance_create">
+    <table>
+        <tr>
+            <td>Name*:</td>
+            <td>
+                <input id="sg_name" type="text" style="width:200px;"/>
+            </td>
+        </tr>
+        <tr>
+            <td>Availability Zone:</td>
+            <td>
+                <select id="zone_select" style="width:200px;">
+                </select>
+            </td>
+        </tr>
+    </table>
 </div>
