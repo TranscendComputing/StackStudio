@@ -19,7 +19,9 @@ define([
         'views/apps/appsListView',
         'models/app',
         'jquery-plugins',
-        'jquery-ui-plugins'
+        'jquery-ui-plugins',
+        'jquery.dataTables',
+        'jquery.dataTables.fnProcessingIndicator'
 ], function( $, _, bootstrap, Backbone, ich, Common, typeahead, appsTemplate, Apps, CloudCredentials, AppsListView, App ) {
 	// The Apps & Platforms View
 	// ------------------------------
@@ -211,6 +213,12 @@ define([
                 $this.renderInstance(instanceContainer, item);
             });
             this.updateDeployButtonState();
+            instanceContainer.parent().dataTable({
+                "bJQueryUI": true,
+                "bProcessing": true,
+                "bDestroy": true
+            });
+            this.$table.fnProcessingIndicator(true);
         },
 
         renderAppSelector: function(){
