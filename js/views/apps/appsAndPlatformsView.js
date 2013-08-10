@@ -54,9 +54,9 @@ define([
             console.log("Initialize apps and plat.");
             var $this = this;
 
-            require(['bootstrap'], function() {});
+            //require(['bootstrap'], function() {});
 
-            if (!_.compile){
+            if (!_.compile){ // Allows using underscore templating with tyepahead
                 _.compile = function(templ) {
                   var compiled = this.template(templ);
                   compiled.render = function(ctx) {

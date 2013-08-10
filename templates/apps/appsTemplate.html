@@ -9,10 +9,35 @@
         </div>
         <div id="collapseConfig" class="accordion-body collapse in">
           <div class="accordion-inner">
-            <input id="configuration-management-library-source" type="text" placeholder="Puppet or Chef Source" autocomplete="off" spellcheck="false" dir="auto"></input>
-            <div class="row-fluid">
-              <h3>Selected for deployment: </h3>
-              <div id="selected-apps-list"></div>
+            
+            <div id="appAccordion">
+
+              <div class="accordion-group">
+                <div class="accordion-heading">
+                  <a class="accordion-toggle" data-toggle="collapse" data-parent="#appAccordion" href="#collapseChef">Chef</a>
+                </div>
+                <div id="collapseChef" class="accordion-body collapse">
+                  <div class="accordion-inner">
+                    PUT CHEF TREE HERE
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-group">
+                <div class="accordion-heading">
+                  <a class="accordion-toggle" data-toggle="collapse" data-parent="#appAccordion" href="#collapsePuppet">Puppet</a>
+                </div>
+                <div id="collapsePuppet" class="accordion-body collapse">
+                  <div class="accordion-inner">
+                    <input id="configuration-management-library-source" type="text" placeholder="Puppet Module" autocomplete="off" spellcheck="false" dir="auto"></input>
+                    <div class="row-fluid">
+                      <h3>Selected for deployment: </h3>
+                      <div id="selected-apps-list"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
@@ -23,26 +48,46 @@
         </div>
         <div id="collapseInfra" class="accordion-body collapse">
           <div class="accordion-inner">
-            <ul id="collapseInfrastructure" class="side-nav nav nav-tabs nav-stacked">
-            <li><a class="infra-source" href="#apps/cloud-formation">Cloud Formation</a>
-              <ul class="infra-packages nav nav-pills nav-stacked l2 hide">
-                <li><a href="#" title="Version 1.23, Uploaded 2013-01-25"><i class="icon-plus"></i> Riak</a></li>
-                <li><a href="#" title="Version 1.23, Uploaded 2013-01-25"><i class="icon-plus"></i> Prod Web App</a></li>
-              </ul>
-            </li>
-            <li><a class="infra-source" href="#apps/ops-works">OpsWorks</a>
-              <ul class="infra-packages nav nav-pills nav-stacked l2 hide">
-                <li><a href="#" title="Version 1.23, Uploaded 2013-01-25"><i class="icon-plus"></i> Stack 1</a></li>
-                <li><a href="#" title="Version 1.23, Uploaded 2013-01-25"><i class="icon-plus"></i> Stack 2</a></li>
-              </ul>
-            </li>
-            <li><a class="infra-source" href="#apps/vagrant">Vagrant</a>
-              <ul class="infra-packages nav nav-pills nav-stacked l2 hide">
-                <li><a href="#" title="Version 1.23, Uploaded 2013-01-25"><i class="icon-plus"></i> Vagrantfile 1</a></li>
-                <li><a href="#" title="Version 1.23, Uploaded 2013-01-25"><i class="icon-plus"></i> Vagrantfile 2</a></li>
-              </ul>
-            </li>
-          </ul>
+            <div id="infraAccordion">
+
+              <div class="accordion-group">
+                <div class="accordion-heading">
+                  <a class="accordion-toggle" data-toggle="collapse" data-parent="#infraAccordion" href="#collapseCloudFormation">Cloud Formation</a>
+                </div>
+                <div id="collapseCloudFormation" class="accordion-body collapse">
+                  <ul class="accordion-inner">
+                    <li><a href="#" title="Version 1.23, Uploaded 2013-01-25"><i class="icon-plus"></i> Riak</a></li>
+                    <li><a href="#" title="Version 1.23, Uploaded 2013-01-25"><i class="icon-plus"></i> Prod Web App</a></li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="accordion-group">
+                <div class="accordion-heading">
+                  <a class="accordion-toggle" data-toggle="collapse" data-parent="#infraAccordion" href="#collapseOpsWorks">OpsWorks</a>
+                </div>
+                <div id="collapseOpsWorks" class="accordion-body collapse">
+                  <ul class="accordion-inner">
+                    <li><a href="#" title="Version 1.23, Uploaded 2013-01-25"><i class="icon-plus"></i> Stack 1</a></li>
+                  <li><a href="#" title="Version 1.23, Uploaded 2013-01-25"><i class="icon-plus"></i> Stack 2</a></li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="accordion-group">
+                <div class="accordion-heading">
+                  <a class="accordion-toggle" data-toggle="collapse" data-parent="#infraAccordion" href="#collapseVagrant">Vagrant</a>
+                </div>
+                <div id="collapseVagrant" class="accordion-body collapse">
+                  <ul class="accordion-inner">
+                    <li><a href="#" title="Version 1.23, Uploaded 2013-01-25"><i class="icon-plus"></i> Vagrantfile 1</a></li>
+                  <li><a href="#" title="Version 1.23, Uploaded 2013-01-25"><i class="icon-plus"></i> Vagrantfile 2</a></li>
+                  </ul>
+                </div>
+              </div>
+
+              
+            </div>
           </div>
         </div>
       </div>
