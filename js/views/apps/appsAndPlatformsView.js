@@ -87,10 +87,10 @@ define([
                     ].join(''),
                     engine: _
                 }).on('typeahead:opened', function() { //hack to overcome overflow inside an accordion.
-                    $(this).closest('.accordion-body').css('overflow','visible');
+                    $(this).closest('.accordion-body').css('overflow','visible').parent().closest('.accordion-body').css('overflow','visible'); // set overflow for current and parent accordion
                     console.log("typeahed:opened");
                 }).on('typeahead:closed', function() {
-                    $(this).closest('.accordion-body').css('overflow','hidden');
+                    $(this).closest('.accordion-body').css('overflow','hidden').parent().closest('.accordion-body').css('overflow','hidden');
                     console.log("typeahed:closed");
                 });
                 
