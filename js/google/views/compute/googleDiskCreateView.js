@@ -10,35 +10,35 @@ define([
         'underscore',
         'backbone',
         'views/dialogView',
-        'text!templates/google/compute/googleInstanceCreateTemplate.html',
-        '/js/google/models/compute/googleInstance.js',
+        'text!templates/google/compute/googleDiskCreateTemplate.html',
+        '/js/google/models/compute/googleDisk.js',
         '/js/google/collections/compute/googleAvailabilityZones.js',
         'icanhaz',
         'common'
         
-], function( $, _, Backbone, DialogView, instanceCreateTemplate, Instance, Zones, ich, Common ) {
+], function( $, _, Backbone, DialogView, diskCreateTemplate, Disk, Zones, ich, Common ) {
     
     /**
-     * googleInstanceCreateView is UI form to create compute.
+     * googleDiskCreateView is UI form to create compute.
      *
-     * @name InstanceCreateView
+     * @name DiskCreateView
      * @constructor
      * @category Compute
      * @param {Object} initialization object.
-     * @returns {Object} Returns a googleInstanceCreateView instance.
+     * @returns {Object} Returns a googleDiskCreateView disk.
      */
     
-    var AwsSecurityGroupCreateView = DialogView.extend({
+    var GoogleDiskCreateView = DialogView.extend({
 
         credentialId: undefined,
 
         region: undefined,
         
-        instance: new Instance(),
+        disk: new Disk(),
         
         zones: new Zones(),
         
-        // Delegated events for creating new instances, etc.
+        // Delegated events for creating new disks, etc.
         events: {
             "dialogclose": "close",
             "change #zone_select":"zoneSelect"
@@ -48,12 +48,12 @@ define([
             this.credentialId = options.cred_id;
             this.region = options.region;
             var createView = this;
-            var compiledTemplate = _.template(instanceCreateTemplate);
+            var compiledTemplate = _.template(diskCreateTemplate);
             this.$el.html(compiledTemplate);
 
             this.$el.dialog({
                 autoOpen: true,
-                title: "Create Compute Instance",
+                title: "Create Compute Disk",
                 resizable: false,
                 width: 425,
                 modal: true,
@@ -67,12 +67,10 @@ define([
                 }
             });
             $("#zone_select").selectmenu();
-            //$("#machine_select").selectmenu();
             $("#image_select").selectmenu();
             
             this.zones.on( 'reset', this.addAllZones, this );
             this.zones.fetch({ data: $.param({ cred_id: this.credentialId }), reset: true });
-            //this.addAllMachineTypes();
         },
 
         render: function() {
@@ -90,46 +88,30 @@ define([
             //this.addAllDisks(event.target.value);
         },
         
-        addAllMachineTypes: function() {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/google/compute/machine_types?_method=GET&cred_id=" + this.credentialId;
-            
-            $.ajax({
-                url: url,
-                type: "GET",
-                contentType: 'application/x-www-form-urlencoded',
-                dataType: 'json',
-                success: function(payload) {
-                    var disks = payload;
-                    if(disks){
-                        $.each(disks, function(i, disk) {
-                           $("#machine_select").append("<option value='"+disk.name+"'>" + disk.name + "</option>");
-                        });
-                    }
-                    $("#machine_select").selectmenu();
-                },
-                error: function(jqXHR) {
-                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
-                }
-            });
-        },
-
         create: function() {
-            var newInstance = this.instance;
-            var inst = {};
+            var newDisk = this.disk;
+            var dsk = {};
+            
+            dsk.zone_name = $("#zone_select").val();
+            dsk.image_name = $("#image_select").val();
             
             var issue = false;
             
             if($("#sg_name").val() !== "" ) {
-                inst.name = $("#sg_name").val();
-                inst.zone_name = $("#zone_select").val();
-                //inst.machine_type = $("#machine_select").val();
-                inst.image_name = $("#image_select").val();
+                dsk.name = $("#sg_name").val();
+            }else {
+                issue = true;
+            }
+            
+            var sizeInt = parseInt($("#size_input").val(), 10);
+            if(sizeInt >= 10 && sizeInt <= 20) {
+                dsk.size_gb = sizeInt;
             }else {
                 issue = true;
             }
             
             if(!issue) {
-                newInstance.create(inst, this.credentialId);
+                newDisk.create(dsk, this.credentialId);
                 this.$el.dialog('close');
             } else {
                 Common.errorDialog("Invalid Request", "Please supply all required fields.");
@@ -137,5 +119,5 @@ define([
         }
     });
     
-    return AwsSecurityGroupCreateView;
+    return GoogleDiskCreateView;
 });

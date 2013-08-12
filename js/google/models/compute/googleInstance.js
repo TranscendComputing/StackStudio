@@ -19,8 +19,8 @@ define([
             network_interfaces: []
         },
         
-        create: function(options, credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/google/compute/instances?&cred_id=" + credentialId + "&region=" + region;
+        create: function(options, credentialId) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/google/compute/instances?&cred_id=" + credentialId;
             this.sendAjaxAction(url, "POST", {"instance": options}, "instanceAppRefresh");
         },
         
