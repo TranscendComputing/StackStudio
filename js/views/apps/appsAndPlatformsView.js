@@ -49,7 +49,14 @@ define([
 
         events: {
             "typeahead:selected": "packageClick",
-            "shown": "accordionShown" 
+            "shown": "accordionShown",
+            ".recipes input change": "recipeChangeHandler"
+        },
+
+        recipeChangeHandler: function(evt){
+            var recipe = $(evt.target).closest(".accordion-group");
+            var version = recipe.parent().closest(".accordion-group");
+            var cookbook = version.parent().closest(".accordion-group");
         },
 
         accordionShown: function(evt){
@@ -192,13 +199,10 @@ define([
         },
 
         populateCookbooks: function(){
-            var $this = this;
             var cookbooks= new Cookbooks();
-            cookbooks
-                .fetch()
-                .done(function(model, response, options){
-                    $this.renderCookbooks(model);
-                });
+            cookbooks.fetch({
+                success: $.proxy(this.renderCookbooks, this)
+            });
         },
 
         accordionGroupTemplate: ['<div class="accordion-group">',
@@ -222,14 +226,15 @@ define([
 
 
         renderCookbooks: function(cookbooks){
+            cookbooks.sort();
             var $this = this;
             var cb = $("#chef-selection");
-            $.each(cookbooks, function(index, item){
-                var elem = $($this.renderAccordionGroup("chef-selection", item.name))
+            cookbooks.each(function(item){
+                var elem = $($this.renderAccordionGroup("chef-selection", item.get("name")))
                     .data("cookbook", item);
                 var $cookbook = item;
                 var $versionAccordion = $("<div id='" + _.uniqueId("ver") + "'></div>").appendTo(elem.find(".accordion-inner"));
-                $.each(item.versions, function(index, item){
+                $.each(item.get("versions"), function(index, item){
                     var ver = $($this.renderAccordionGroup($versionAccordion.prop("id"),item))
                         .data("cookbook", $cookbook)
                         .data("isVersion", true)

@@ -13,14 +13,23 @@ define([
 ], function( $, Backbone, Cookbook, Common) {
 	'use strict';
 
-	// Cloud Account Collection
+	// Cookbook Collection
 	// ---------------
 
 	var Cookbooks = Backbone.Collection.extend({
 
 		// Reference to this collection's model.
 		model: Cookbook,
-        url: '../samples/cookbooks.json'
+        url: '../samples/cookbooks.json',
+
+        comparator : function(model){
+			return model.get("name");
+        },
+
+        initialize: function() {
+		    this.sortField = 'name';
+		    this.sortDirection = "ASC";
+		}
         
 	
 	});
