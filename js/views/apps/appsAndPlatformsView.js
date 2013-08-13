@@ -58,22 +58,44 @@ define([
             var checkboxes = checkbox.closest("ul").find("input[type='checkbox']:checked");
 
             var recipeGroup = checkbox.closest(".accordion-group");
-            recipeGroup.find(".accordion-toggle span.badge").first().text(checkboxes.length);
+            recipeGroup.find(".accordion-toggle span.badge").first().text(checkboxes.length ? checkboxes.length : '');
             
             var versionGroup = recipeGroup.parent().closest(".accordion-group");
             checkboxes = versionGroup.find("input[type='checkbox']:checked");
-            versionGroup.find(".accordion-toggle span.badge").first().text(checkboxes.length);
+            versionGroup.find(".accordion-toggle span.badge").first().text(checkboxes.length ? checkboxes.length : '');
 
             var cookbookGroup = versionGroup.parent().closest(".accordion-group");
             checkboxes = cookbookGroup.find("input[type='checkbox']:checked");
-            cookbookGroup.find(".accordion-toggle span.badge").first().text(checkboxes.length);
+            cookbookGroup.find(".accordion-toggle span.badge").first().text(checkboxes.length ? checkboxes.length : '');
 
             var chefGroup = cookbookGroup.parent().closest(".accordion-group");
             checkboxes = chefGroup.find("input[type='checkbox']:checked");
-            chefGroup.find(".accordion-toggle span.badge").first().text(checkboxes.length);
+            chefGroup.find(".accordion-toggle span.badge").first().text(checkboxes.length ? checkboxes.length : '');
+        },
+
+        sortRecipes: function(recipes){
+            var sorted = [];
+            $.each(recipes, function( recipe, description ){
+
+                sorted.push({name: recipe, description:description});
+            });
+            sorted.sort(function(a,b){
+                if (a.name < b.name) {
+                    return -1;
+                } else if (a.name > b.name) {
+                    return 1;
+                }
+                return 0;
+
+            });
+            if (sorted[0].name.indexOf("::"<0)){
+                sorted[0].name = sorted[0].name + "::default";
+            }
+            return sorted;
         },
 
         accordionShown: function(evt){
+            var $this = this;
             var data = $(evt.target).closest(".accordion-group").data();
             var $destination = $(evt.target).find(".accordion-inner").first();
             var isLoaded = $destination.data("isLoaded");
@@ -86,16 +108,17 @@ define([
                 var $book = data.cookbook;
                 this.fetchRecipes($book, version)
                     .done(function(recipes){
+                        var sorted = $this.sortRecipes(recipes);
                         $destination.empty()
                             .data("isLoaded", true);
                         var ul = $("<ul class='recipes'></ul>");
-                        $.each(recipes, function( recipe, description ) {
+                        $.each(sorted, function( index, item ) {
                             $("<li></li>")
-                                .data("recipe", recipe)
+                                .data("recipe", item)
                                 .data("cookbook", $book)
                                 .data("isRecipe", true)
                                 .append("<input type='checkbox' class='recipeSelector' />")
-                                .append("<span class='recipe'>" + recipe + "</span>" + "<span class='recipeDescription'>" + description + "</span>")
+                                .append("<span class='recipe'>" + item.name + "</span>" + "<span class='recipeDescription'>" + item.description + "</span>")
                                 .appendTo(ul);
                         });
                         ul.appendTo($destination);
@@ -251,6 +274,7 @@ define([
             cookbooks.each(function(item){
                 var elem = $($this.renderAccordionGroup("chef-selection", item.get("name")))
                     .data("cookbook", item);
+                elem.find(".accordion-heading").prepend($("<input type='checkbox'>").data("isCookbook", true));
                 var $cookbook = item;
                 var $versionAccordion = $("<div id='" + _.uniqueId("ver") + "'></div>").appendTo(elem.find(".accordion-inner"));
                 $.each(item.get("versions"), function(index, item){
