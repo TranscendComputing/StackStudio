@@ -27,3 +27,38 @@
         width: 130px;
     }
 }
+
+#chef-selection{
+    max-height:300px; /* TODO:There should be a better way */
+    overflow-y:auto;
+}
+
+#apps_view .recipeSelector{
+    width:10%;
+    float:left;
+}
+
+#apps_view .recipe{
+    font-weight: bold;
+    float:left;
+    width:90%;
+    text-overflow:ellipsis;
+}
+
+#apps_view {
+    .recipeDescription{
+        color: #666666;
+        font-style: italic;
+        float:left;
+        width:90%;
+        margin-left:10%;
+        text-overflow:ellipsis;
+    }
+}
+
+#apps_view ul.recipes{
+    li {
+        clear:both;
+        height:20px;    
+    }
+}

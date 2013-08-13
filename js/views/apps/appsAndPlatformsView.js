@@ -16,13 +16,14 @@ define([
         'text!templates/apps/appsTemplate.html',
         'collections/apps',
         'collections/cloudCredentials',
+        'collections/cookbooks',
         'views/apps/appsListView',
         'models/app',
         'jquery-plugins',
         'jquery-ui-plugins',
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator'
-], function( $, _, bootstrap, Backbone, ich, Common, typeahead, appsTemplate, Apps, CloudCredentials, AppsListView, App ) {
+], function( $, _, bootstrap, Backbone, ich, Common, typeahead, appsTemplate, Apps, CloudCredentials, Cookbooks, AppsListView, App ) {
 	// The Apps & Platforms View
 	// ------------------------------
 
@@ -47,7 +48,49 @@ define([
         appsApp: undefined,
 
         events: {
-            "typeahead:selected": "packageClick"
+            "typeahead:selected": "packageClick",
+            "shown": "accordionShown" 
+        },
+
+        accordionShown: function(evt){
+            var data = $(evt.target).closest(".accordion-group").data();
+            var $destination = $(evt.target).find(".accordion-inner").first();
+            var isVersion = data.isVersion;
+            if (isVersion){
+                var version = data.version;
+                var $book = data.cookbook;
+                this.fetchRecipes($book, version)
+                    .done(function(recipes){
+                        $destination.empty();
+                        var ul = $("<ul class='recipes'></ul>");
+                        $.each(recipes, function( recipe, description ) {
+                            $("<li></li>")
+                                .data("recipe", recipe)
+                                .data("cookbook", $book)
+                                .data("isRecipe", true)
+                                .append("<input type='checkbox' class='recipeSelector' />")
+                                .append("<span class='recipe'>" + recipe + "</span>" + "<span class='recipeDescription'>" + description + "</span>")
+                                .appendTo(ul);
+                        });
+                        ul.appendTo($destination);
+                    });
+
+                //todo: show spinner
+            }
+        },
+
+        fetchRecipes: function(cookbook, version){
+            var d = $.Deferred();
+            var $this = this;
+             $.ajax({
+                url: "samples/recipes.json"
+            }).done(function(model){
+                d.resolve(model);
+            }).fail(function(){
+                //todo: display an error message
+                d.reject();
+            });
+            return d.promise();
         },
 
         initialize: function() {
@@ -73,7 +116,7 @@ define([
                 $("#configuration-management-library-source").typeahead({
                     name: "configManagmentLibrarySource",
                     prefetch: {
-                        url: "samples/apps.json",
+                        url: "samples/apps_puppet.json",
                         filter: function(parsedResponse){
                             return parsedResponse;
                         }
@@ -148,6 +191,55 @@ define([
 
         },
 
+        populateCookbooks: function(){
+            var $this = this;
+            var cookbooks= new Cookbooks();
+            cookbooks
+                .fetch()
+                .done(function(model, response, options){
+                    $this.renderCookbooks(model);
+                });
+        },
+
+        accordionGroupTemplate: ['<div class="accordion-group">',
+                '<div class="accordion-heading">',
+                  '<a class="accordion-toggle" data-toggle="collapse" data-parent="#{{accordionId}}" href="#{{collapseId}}">{{name}}</a>',
+                '</div>',
+                '<div id="{{collapseId}}" class="accordion-body collapse">',
+                  '<div class="accordion-inner">',
+                  '</div>',
+                '</div>',
+            '</div>']
+            .join(''),
+
+        renderAccordionGroup: function(accordionId, title){ //TODO: make this a common function
+            var elem = this.accordionGroupTemplate
+                .split("{{name}}").join(title)
+                .split("{{collapseId}}").join(_.uniqueId("book"))
+                .split("{{accordionId}}").join(accordionId);
+            return elem;
+        },
+
+
+        renderCookbooks: function(cookbooks){
+            var $this = this;
+            var cb = $("#chef-selection");
+            $.each(cookbooks, function(index, item){
+                var elem = $($this.renderAccordionGroup("chef-selection", item.name))
+                    .data("cookbook", item);
+                var $cookbook = item;
+                var $versionAccordion = $("<div id='" + _.uniqueId("ver") + "'></div>").appendTo(elem.find(".accordion-inner"));
+                $.each(item.versions, function(index, item){
+                    var ver = $($this.renderAccordionGroup($versionAccordion.prop("id"),item))
+                        .data("cookbook", $cookbook)
+                        .data("isVersion", true)
+                        .data("version", item)
+                        .appendTo($versionAccordion);
+                });
+                elem.appendTo(cb); //TODO: if this doesn't perform well, try appending to a list first, then adding to doc. 
+            });
+        },
+
         regionChanged: function(evt){
             var optionSelected = $("option:selected", evt.target);
             var region = optionSelected.data("region");
@@ -217,8 +309,7 @@ define([
                 "bJQueryUI": true,
                 "bProcessing": true,
                 "bDestroy": true
-            });
-            this.$table.fnProcessingIndicator(true);
+            }).fnProcessingIndicator(false);
         },
 
         renderAppSelector: function(){
@@ -259,6 +350,7 @@ define([
             $("#main>div").removeClass("twelvecol last");
             this.loadAppsApp();
             this.loadCredentials();
+            this.populateCookbooks();
         },
 
         loadAppsApp: function() {

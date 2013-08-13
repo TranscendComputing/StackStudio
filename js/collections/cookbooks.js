@@ -8,23 +8,23 @@
 define([
         'jquery',
         'backbone',
-        'models/app',
+        'models/cookbook',
         'common'
-], function( $, Backbone, App, Common) {
+], function( $, Backbone, Cookbook, Common) {
 	'use strict';
 
 	// Cloud Account Collection
 	// ---------------
 
-	var AppList = Backbone.Collection.extend({
+	var Cookbooks = Backbone.Collection.extend({
 
 		// Reference to this collection's model.
-		model: App,
-        url: '../samples/apps_puppet.json'
+		model: Cookbook,
+        url: '../samples/cookbooks.json'
         
 	
 	});
 
-	return AppList;
+	return Cookbooks;
 
 });
