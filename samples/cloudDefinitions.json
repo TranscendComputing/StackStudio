@@ -387,6 +387,10 @@
                     {
                         "name": "Disks",
                         "type": "disks"
+                    },
+                    {
+                        "name": "Networks",
+                        "type": "networks"
                     }
                 ]
             }

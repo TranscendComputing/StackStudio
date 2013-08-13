@@ -21,22 +21,22 @@ define([
         'morris',
         'spinner',
         'jquery.dataTables'
-], function( $, _, Backbone, ResourceAppView, googleInstanceAppTemplate, Instance, Instances, AwsInstanceCreate, MetricStatistics, emptyGraph, ich, Common, Morris, Spinner ) {
+], function( $, _, Backbone, ResourceAppView, googleInstanceAppTemplate, Instance, Instances, GoogleInstanceCreate, MetricStatistics, emptyGraph, ich, Common, Morris, Spinner ) {
     'use strict';
 
-    // Aws Instance Application View
+    // Google Instance Application View
     // ------------------------------
 
     /**
-     * AwsInstancesAppView is UI view list of cloud instances.
+     * GoogleInstancesAppView is UI view list of cloud instances.
      *
      * @name InstanceAppView
      * @constructor
      * @category Resources
      * @param {Object} initialization object.
-     * @returns {Object} Returns a AwsInstancesAppView instance.
+     * @returns {Object} Returns a GoogleInstancesAppView instance.
      */
-    var AwsInstancesAppView = ResourceAppView.extend({
+    var GoogleInstancesAppView = ResourceAppView.extend({
         
         template: _.template(googleInstanceAppTemplate),
 
@@ -56,7 +56,7 @@ define([
         
         subtype: "instances",
         
-        CreateView: AwsInstanceCreate,
+        CreateView: GoogleInstanceCreate,
         
         cpuData: new MetricStatistics(),
         
@@ -109,23 +109,11 @@ define([
         
         performAction: function(event) {
             var instance = this.collection.get(this.selectedId);
-            debugger
             switch(event.target.text)
             {
-            case "Start":
-                instance.start(this.credentialId, this.region);
-                break;
-            case "Stop":
-                instance.stop(this.credentialId, this.region);
-                break;
-            case "Reboot":
-                instance.reboot(this.credentialId, this.region);
-                break;
-            case "Terminate":
-                instance.terminate(this.credentialId, this.region);
-                break;
-            case "Disassociate Address":
-                instance.disassociateAddress(this.credentialId, this.region);
+            case "Delete":
+                //instance.start(this.credentialId, this.region);
+                alert("Delete this instance");
                 break;
             }
         },
@@ -227,5 +215,5 @@ define([
         }
     });
 
-    return AwsInstancesAppView;
+    return GoogleInstancesAppView;
 });

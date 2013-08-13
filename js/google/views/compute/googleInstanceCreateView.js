@@ -36,15 +36,17 @@ define([
         
         instance: new Instance(),
         
-        zones: new Zones(),
+        zones: undefined,
         
         // Delegated events for creating new instances, etc.
         events: {
             "dialogclose": "close",
-            "change #zone_select":"zoneSelect"
+            "change #zone_select":"zoneSelect",
+            "change #disk_select":"diskSelect"
         },
 
         initialize: function(options) {
+            this.zones = new Zones();
             this.credentialId = options.cred_id;
             this.region = options.region;
             var createView = this;
@@ -67,8 +69,9 @@ define([
                 }
             });
             $("#zone_select").selectmenu();
-            //$("#machine_select").selectmenu();
+            $("#disk_select").selectmenu();
             $("#image_select").selectmenu();
+            $("#machine_select").selectmenu();
             
             this.zones.on( 'reset', this.addAllZones, this );
             this.zones.fetch({ data: $.param({ cred_id: this.credentialId }), reset: true });
@@ -87,11 +90,15 @@ define([
         },
         
         zoneSelect: function(event){
-            //this.addAllDisks(event.target.value);
+            this.addAllDisks(event.target.value);
+        },
+        
+        diskSelect: function(){
+            this.addAllMachineTypes();
         },
         
         addAllMachineTypes: function() {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/google/compute/machine_types?_method=GET&cred_id=" + this.credentialId;
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/google/compute/machine_types?_method=GET&cred_id=" + this.credentialId + "&region=" + $("#zone_select").val();
             
             $.ajax({
                 url: url,
@@ -100,9 +107,14 @@ define([
                 dataType: 'json',
                 success: function(payload) {
                     var disks = payload;
+                    $("#machine_select").empty();
                     if(disks){
                         $.each(disks, function(i, disk) {
-                           $("#machine_select").append("<option value='"+disk.name+"'>" + disk.name + "</option>");
+                            if($("#disk_select").val() !== "default_disk"){
+                                $("#machine_select").append("<option value='"+disk.name+"'>" + disk.name + "</option>");
+                            }else if((disk.name !== "f1-micro") && (disk.name !== "g1-small")){
+                                $("#machine_select").append("<option value='"+disk.name+"'>" + disk.name + "</option>");
+                            }
                         });
                     }
                     $("#machine_select").selectmenu();
@@ -113,6 +125,31 @@ define([
             });
         },
 
+        addAllDisks: function(region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/google/compute/disks?_method=GET&cred_id=" + this.credentialId + "&region=" + region;
+            
+            $.ajax({
+                url: url,
+                type: "GET",
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                success: function(payload) {
+                    var disks = payload;
+                    if(disks){
+                        $("#disk_select").empty();
+                        $("#disk_select").append("<option value='default_disk'>Default Disk</option>");
+                        $.each(disks, function(i, disk) {
+                           $("#disk_select").append("<option value='"+disk.name+"'>" + disk.name + "</option>");
+                        });
+                    }
+                    $("#disk_select").selectmenu();
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            });
+        },
+        
         create: function() {
             var newInstance = this.instance;
             var inst = {};
@@ -122,7 +159,10 @@ define([
             if($("#sg_name").val() !== "" ) {
                 inst.name = $("#sg_name").val();
                 inst.zone_name = $("#zone_select").val();
-                //inst.machine_type = $("#machine_select").val();
+                if($("#disk_select").val() !== "default_disk"){
+                    inst.disk = $("#disk_select").val();
+                }
+                inst.machine_type = $("#machine_select").val();
                 inst.image_name = $("#image_select").val();
             }else {
                 issue = true;

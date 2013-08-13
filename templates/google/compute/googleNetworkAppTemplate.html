@@ -3,7 +3,7 @@
         <table>
             <tr>
                 <td>
-                    <button class="create_button">Create Disk</button>
+                    <button class="create_button">Create Network</button>
                 </td>
                 <td>
                     <ul id="action_menu">
@@ -22,9 +22,9 @@
         <thead>
             <tr>
                 <th>Name</th>
-                <th>Disk ID</th>
-                <th>Size (GB)</th>
-                <th>Status</th>
+                <th>Network ID</th>
+                <th>IPv4Range</th>
+                <th>gatewayIPv4</th>
             </tr>
         </thead>
         <tbody>
@@ -44,12 +44,12 @@
             <table>
                 <tbody>
                     <tr><td><b>Name:</b></td><td>{{ name }}</td></tr>
-                    <tr><td><b>Disk ID:</b></td><td>{{ id }}</td></tr>
-                    <tr><td><b>Size (GB):</b></td><td>{{ sizeGb }}</td></tr>
+                    <tr><td><b>Network ID:</b></td><td>{{ id }}</td></tr>
                     <tr><td><b>Description:</b></td><td>{{ description }}</td></tr>
                     <tr><td><b>Self Link:</b></td><td>{{ selfLink }}</td></tr>
-                    <tr><td><b>Creation Time:</b></td><td>{{ creationTimestamp }}</td></tr>
-                    <tr><td><b>Status:</b></td><td>{{ status }}</td></tr>
+                    <tr><td><b>Timestamp:</b></td><td>{{ creationTimestamp }}</td></tr>
+                    <tr><td><b>IPv4Range:</b></td><td>{{ IPv4Range }}</td></tr>
+                    <tr><td><b>gatewayIPv4:</b></td><td>{{ gatewayIPv4 }}</td></tr>
                 </tbody>
             </table>
         </div>
