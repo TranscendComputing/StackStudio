@@ -25,7 +25,7 @@ define([
         /** @type {String} DOM element to attach view to */
         tagName: 'div',
         /** @type {Collection} Database collection of cloud accounts */
-        cloudCredentials: new CloudCredentials(),
+        cloudCredentials: undefined,
         /** @type {Template} HTML template to generate view from */
         template: _.template(managementCloudCredentialTemplate),
         rootView: undefined,
@@ -38,6 +38,7 @@ define([
         },
         /** Constructor method for current view */
         initialize: function() {
+            
             this.rootView = this.options.rootView;
             this.cloudCredentials = this.rootView.cloudCredentials;
             
