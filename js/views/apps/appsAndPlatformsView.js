@@ -50,25 +50,44 @@ define([
         events: {
             "typeahead:selected": "packageClick",
             "shown": "accordionShown",
-            ".recipes input change": "recipeChangeHandler"
+            "change .recipes input": "recipeChangeHandler"
         },
 
         recipeChangeHandler: function(evt){
-            var recipe = $(evt.target).closest(".accordion-group");
-            var version = recipe.parent().closest(".accordion-group");
-            var cookbook = version.parent().closest(".accordion-group");
+            var checkbox = $(evt.target);
+            var checkboxes = checkbox.closest("ul").find("input[type='checkbox']:checked");
+
+            var recipeGroup = checkbox.closest(".accordion-group");
+            recipeGroup.find(".accordion-toggle span.badge").first().text(checkboxes.length);
+            
+            var versionGroup = recipeGroup.parent().closest(".accordion-group");
+            checkboxes = versionGroup.find("input[type='checkbox']:checked");
+            versionGroup.find(".accordion-toggle span.badge").first().text(checkboxes.length);
+
+            var cookbookGroup = versionGroup.parent().closest(".accordion-group");
+            checkboxes = cookbookGroup.find("input[type='checkbox']:checked");
+            cookbookGroup.find(".accordion-toggle span.badge").first().text(checkboxes.length);
+
+            var chefGroup = cookbookGroup.parent().closest(".accordion-group");
+            checkboxes = chefGroup.find("input[type='checkbox']:checked");
+            chefGroup.find(".accordion-toggle span.badge").first().text(checkboxes.length);
         },
 
         accordionShown: function(evt){
             var data = $(evt.target).closest(".accordion-group").data();
             var $destination = $(evt.target).find(".accordion-inner").first();
+            var isLoaded = $destination.data("isLoaded");
+            if (isLoaded){
+                return;
+            }
             var isVersion = data.isVersion;
             if (isVersion){
                 var version = data.version;
                 var $book = data.cookbook;
                 this.fetchRecipes($book, version)
                     .done(function(recipes){
-                        $destination.empty();
+                        $destination.empty()
+                            .data("isLoaded", true);
                         var ul = $("<ul class='recipes'></ul>");
                         $.each(recipes, function( recipe, description ) {
                             $("<li></li>")
@@ -207,7 +226,7 @@ define([
 
         accordionGroupTemplate: ['<div class="accordion-group">',
                 '<div class="accordion-heading">',
-                  '<a class="accordion-toggle" data-toggle="collapse" data-parent="#{{accordionId}}" href="#{{collapseId}}">{{name}}</a>',
+                  '<a class="accordion-toggle" data-toggle="collapse" data-parent="#{{accordionId}}" href="#{{collapseId}}">{{name}}<span class="badge badge-info pull-right"></span></a>',
                 '</div>',
                 '<div id="{{collapseId}}" class="accordion-body collapse">',
                   '<div class="accordion-inner">',
