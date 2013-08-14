@@ -48,6 +48,9 @@ define([
             //Render my template
             this.$el.append(form);
             this.$(".required").after("<span class='required'/>");
+            
+            //debugger
+            $("#public_key_upload").attr("action", Common.apiUrl + "/stackstudio/v1/cloud_management");
         },
 
         contentChanged: function(event) {
