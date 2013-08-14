@@ -50,7 +50,7 @@ define([
             this.$(".required").after("<span class='required'/>");
             
             //debugger
-            $("#public_key_upload").attr("action", Common.apiUrl + "/stackstudio/v1/cloud_management");
+            $("#p12_upload").attr("action", Common.apiUrl + "/identity/v1/accounts/"+ sessionStorage.account_id + "/" + this.model.attributes.id + "/upload_key_pairs");
         },
 
         contentChanged: function(event) {
