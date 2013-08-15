@@ -50,11 +50,137 @@ define([
         events: {
             "typeahead:selected": "packageClick",
             "shown": "accordionShown",
-            "change .recipes input": "recipeChangeHandler"
+            "change .recipes input": "recipeChangeHandler",
+            "change #chef-selection .accordion-heading": "chefGroupChangeHandler"
+        },
+
+        chefGroupChangeHandler: function(evt){
+            this.chefGroupQueue++;
+            var checkbox = $(evt.target);
+            if (!checkbox){ 
+                return;
+            }
+            var level = checkbox.data("level");
+            if (checkbox.prop("checked")){
+                switch(level){
+                    case "cookbook": {
+                        checkbox.closest(".accordion-group")
+                            .find(".accordion-body:first .accordion-group:first")
+                            .siblings()
+                            .each(function(){
+                                var check = $(this).find(".accordion-heading:first input[type='checkbox']:first");
+                                if (check.prop("checked")){
+                                    check.prop("checked", false)
+                                        .trigger("change");
+                                }
+                                check.prop("disabled", true);
+                            });
+                        checkbox.closest(".accordion-group")
+                            .find(".accordion-inner:first .accordion-heading:first input[type='checkbox']:first")
+                            .prop("checked", true)
+                            .prop("disabled", true)
+                            .trigger("change");
+                    } break;
+                    case "version": {
+                        var ver = checkbox.closest(".accordion-group")
+                            .find(".accordion-inner:first");
+                        if (ver.data("isLoaded")){
+                            ver.find("input[type='checkbox']:gt(0)").prop("checked", false).prop("disabled", true);
+                            ver.find("input[type='checkbox']:eq(0)").prop("checked", true).prop("disabled", true);
+                        } else {
+                            var book = {}; //TODO: retrieve
+                            var item = {name: "::default", description: "Loading..."}; //TODO: retrieve
+                            var ul = $("<ul class='recipes'></ul>");
+                            $("<li></li>")
+                                .data("recipe", item)
+                                .data("cookbook", book)
+                                .data("isRecipe", true)
+                                .append("<input type='checkbox' class='recipeSelector' checked='true' />")
+                                .append("<span class='recipe'>" + item.name + "</span>" + "<span class='recipeDescription'>" + item.description + "</span>")
+                                .appendTo(ul);
+                            ver.empty().append(ul);
+                        }
+                    } break;
+                    default: {
+                        console.error("Unknown checkbox level: " + level);
+                    }
+                }
+           
+            } else {
+                switch(level){
+                    case "cookbook": {
+                        checkbox.closest(".accordion-group")
+                            .find(".accordion-body:first .accordion-group:first")
+                            .siblings()
+                            .each(function(){
+                                $(this).find(".accordion-heading:first input[type='checkbox']:first")
+                                    .prop("disabled", false)
+                                    .prop("checked", false);
+                            });
+                        checkbox.closest(".accordion-group")
+                            .find(".accordion-inner:first .accordion-heading:first input[type='checkbox']:first")
+                            .prop("checked", false)
+                            .prop("disabled", false)
+                            .trigger("change");
+                    } break;
+                    case "version": {
+                        checkbox.closest(".accordion-group")
+                            .find(".accordion-inner:first").siblings().each(function(){
+                                $(this).find(".accordion-inner:has(ul)").empty();
+                            });
+                        var ver = checkbox.closest(".accordion-group")
+                            .find(".accordion-inner:first");
+                        if (ver.data("isLoaded")){
+                            ver.find("input[type='checkbox']:gt(0)").prop("checked", false).prop("disabled", false);
+                            ver.find("input[type='checkbox']:eq(0)").prop("checked", false).prop("disabled", false);
+                        } else {
+                            ver.empty();
+                        }
+                    } break;
+                    default: {
+                        console.error("Unknown checkbox level: " + level);
+                    }
+                }
+            }
+            this.recalculateChefBadges();
+        },
+
+        recalculateChefBadges: function(){
+            console.log("recalculating");
+            var chefContainer = $("#chef-selection");
+            var allChecked = chefContainer.find("input[type='checkbox']:checked")
+                .filter(function(){
+                    return !$(this).parent().hasClass("accordion-heading");
+                });
+            chefContainer.closest(".accordion-group").find(".accordion-toggle:first span.badge:first").text(allChecked.length ? allChecked.length : '');
+
+            var cookbooks = $("#chef-selection>.accordion-group");
+            cookbooks.each(function(){
+                var book = $(this);
+                var badge = book.find(".accordion-toggle:first span.badge:first");
+                allChecked = book.find("input[type='checkbox']:checked")
+                    .filter(function(){
+                        return !$(this).parent().hasClass("accordion-heading");
+                    });
+                book.find(".accordion-toggle:first span.badge:first").text(allChecked.length ? allChecked.length : '');
+
+                var versions = book.find(".accordion-inner>div>.accordion-group");
+                versions.each(function(){
+                    var ver = $(this);
+                    badge = ver.find(".accordion-toggle:first span.badge:first");
+                    allChecked = ver.find("input[type='checkbox']:checked")
+                        .filter(function(){
+                            return !$(this).parent().hasClass("accordion-heading");
+                        });
+                        ver.find(".accordion-toggle:first span.badge:first").text(allChecked.length ? allChecked.length : '');
+                });
+            });
+
+
         },
 
         recipeChangeHandler: function(evt){
-            var checkbox = $(evt.target);
+           /* var checkbox = $(evt.target);
             var checkboxes = checkbox.closest("ul").find("input[type='checkbox']:checked");
 
             var recipeGroup = checkbox.closest(".accordion-group");
@@ -67,10 +193,11 @@ define([
             var cookbookGroup = versionGroup.parent().closest(".accordion-group");
             checkboxes = cookbookGroup.find("input[type='checkbox']:checked");
             cookbookGroup.find(".accordion-toggle span.badge").first().text(checkboxes.length ? checkboxes.length : '');
-
-            var chefGroup = cookbookGroup.parent().closest(".accordion-group");
-            checkboxes = chefGroup.find("input[type='checkbox']:checked");
-            chefGroup.find(".accordion-toggle span.badge").first().text(checkboxes.length ? checkboxes.length : '');
+*/
+            //var chefGroup = cookbookGroup.parent().closest(".accordion-group");
+            //checkboxes = chefGroup.find("input[type='checkbox']:checked");
+            //chefGroup.find(".accordion-toggle span.badge").first().text(checkboxes.length ? checkboxes.length : '');
+            this.recalculateChefBadges();
         },
 
         sortRecipes: function(recipes){
@@ -109,17 +236,23 @@ define([
                 this.fetchRecipes($book, version)
                     .done(function(recipes){
                         var sorted = $this.sortRecipes(recipes);
+                        var enabledState = "";
+                        if ($destination.has("input[type='checkbox']:checked").length){
+                            enabledState = " disabled='true' ";
+                        }
                         $destination.empty()
                             .data("isLoaded", true);
                         var ul = $("<ul class='recipes'></ul>");
+                        var checkedState = " checked='true' ";
                         $.each(sorted, function( index, item ) {
                             $("<li></li>")
                                 .data("recipe", item)
                                 .data("cookbook", $book)
                                 .data("isRecipe", true)
-                                .append("<input type='checkbox' class='recipeSelector' />")
+                                .append("<input type='checkbox' " + checkedState + " class='recipeSelector'" + enabledState + " />")
                                 .append("<span class='recipe'>" + item.name + "</span>" + "<span class='recipeDescription'>" + item.description + "</span>")
                                 .appendTo(ul);
+                            checkedState = "";
                         });
                         ul.appendTo($destination);
                     });
@@ -203,7 +336,6 @@ define([
             }).responseText;
 
             this.cloudDefinitions = $.parseJSON(response);
-
         },
 
         populateRegions: function(evt){
@@ -266,6 +398,7 @@ define([
             return elem;
         },
 
+        
 
         renderCookbooks: function(cookbooks){
             cookbooks.sort();
@@ -274,7 +407,10 @@ define([
             cookbooks.each(function(item){
                 var elem = $($this.renderAccordionGroup("chef-selection", item.get("name")))
                     .data("cookbook", item);
-                elem.find(".accordion-heading").prepend($("<input type='checkbox'>").data("isCookbook", true));
+                elem.find(".accordion-heading")
+                    .prepend(
+                        $("<input type='checkbox'>").data("level", "cookbook")
+                    );
                 var $cookbook = item;
                 var $versionAccordion = $("<div id='" + _.uniqueId("ver") + "'></div>").appendTo(elem.find(".accordion-inner"));
                 $.each(item.get("versions"), function(index, item){
@@ -283,10 +419,12 @@ define([
                         .data("isVersion", true)
                         .data("version", item)
                         .appendTo($versionAccordion);
+                    ver.find(".accordion-heading").prepend($("<input type='checkbox'>").data("level", "version"));
                 });
                 elem.appendTo(cb); //TODO: if this doesn't perform well, try appending to a list first, then adding to doc. 
             });
         },
+
 
         regionChanged: function(evt){
             var optionSelected = $("option:selected", evt.target);
