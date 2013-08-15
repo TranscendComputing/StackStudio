@@ -151,7 +151,6 @@ define([
         },
 
         recalculateChefBadges: function(){
-            console.log("recalc");
             var chefContainer = $("#chef-selection");
             var allChecked = chefContainer.find("input[type='checkbox']:checked")
                 .filter(function(){
@@ -209,6 +208,31 @@ define([
             return sorted;
         },
 
+        populateRecipes: function(destination, book, recipes){
+            var sorted = this.sortRecipes(recipes);
+            var enabledState = "";
+            var checkedState = ""; 
+            if (destination.has("input[type='checkbox']:checked").length){
+                enabledState = " disabled='true' ";
+                checkedState = " checked='true' ";    
+            }
+            destination.empty()
+                .data("isLoaded", true);
+            var ul = $("<ul class='recipes'></ul>");
+           
+            $.each(sorted, function( index, item ) {
+                $("<li></li>")
+                    .data("recipe", item)
+                    .data("cookbook", book)
+                    .data("isRecipe", true)
+                    .append("<input type='checkbox' " + checkedState + " class='recipeSelector'" + enabledState + " />")
+                    .append("<span class='recipe'>" + item.name + "</span>" + "<span class='recipeDescription'>" + item.description + "</span>")
+                    .appendTo(ul);
+                checkedState = "";
+            });
+            ul.appendTo(destination);
+        },
+
         accordionShown: function(evt){
             var $this = this;
             var data = $(evt.target).closest(".accordion-group").data();
@@ -221,33 +245,11 @@ define([
             if (isVersion){
                 var version = data.version;
                 var $book = data.cookbook;
-                this.fetchRecipes($book, version)
+                $("<i class='icon-spinner'></i>").appendTo($destination);
+                $this.fetchRecipes($book, version)
                     .done(function(recipes){
-                        var sorted = $this.sortRecipes(recipes);
-                        var enabledState = "";
-                        var checkedState = ""; 
-                        if ($destination.has("input[type='checkbox']:checked").length){
-                            enabledState = " disabled='true' ";
-                            checkedState = " checked='true' ";    
-                        }
-                        $destination.empty()
-                            .data("isLoaded", true);
-                        var ul = $("<ul class='recipes'></ul>");
-                       
-                        $.each(sorted, function( index, item ) {
-                            $("<li></li>")
-                                .data("recipe", item)
-                                .data("cookbook", $book)
-                                .data("isRecipe", true)
-                                .append("<input type='checkbox' " + checkedState + " class='recipeSelector'" + enabledState + " />")
-                                .append("<span class='recipe'>" + item.name + "</span>" + "<span class='recipeDescription'>" + item.description + "</span>")
-                                .appendTo(ul);
-                            checkedState = "";
-                        });
-                        ul.appendTo($destination);
+                        $this.populateRecipes.call($this, $destination, $book, recipes);
                     });
-
-                //todo: show spinner
             }
         },
 
@@ -259,7 +261,7 @@ define([
             }).done(function(model){
                 d.resolve(model);
             }).fail(function(){
-                //todo: display an error message
+                $this.flashError("We're sorry.  Recipes could not be retrieved.");
                 d.reject();
             });
             return d.promise();
@@ -328,14 +330,24 @@ define([
             this.cloudDefinitions = $.parseJSON(response);
         },
 
+        flashError: function(message){
+            $("#msg").html(message);
+            $(".alert")
+                .addClass("alert-danger")
+                .delay(200)
+                .addClass("in")
+                .show()
+                .delay(5000)
+                .fadeOut(4000, function(){
+                    $(".alert").removeClass("alert-danger");
+                });
+        },
+
         populateRegions: function(evt){
             var optionSelected = $("option:selected", evt.target);
             var credential = optionSelected.data("cloudCredentials");
             if (!credential){
-                $("#msg").html("We're sorry.  Cloud credentials could not be retrieved.");
-                $(".alert").addClass("alert-danger").delay(200).addClass("in").show().fadeOut(4000, function(){
-                    $(".alert").removeClass("alert-danger");
-                });
+                this.flashError("We're sorry.  Cloud credentials could not be retrieved.");
                 return;
             }
             var select = $("#select-region")
@@ -460,9 +472,6 @@ define([
                 .on("change", $.proxy(this.updateDeployButtonState, this));
             $("<td></td>").text(instance.tags.Name).appendTo(tr);
             $("<td></td>").text(instance.id).appendTo(tr);
-            //$("<td></td>").text("").appendTo(tr);
-            //$("<td></td>").text("").appendTo(tr);
-            //$("<td></td>").text("").appendTo(tr);
             tr.appendTo(instanceContainer);
         },
 
