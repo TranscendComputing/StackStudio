@@ -54,6 +54,8 @@ define([
             "change #chef-selection .accordion-heading": "chefGroupChangeHandler"
         },
 
+        chefGroupQueue: 0,
+
         chefGroupChangeHandler: function(evt){
             this.chefGroupQueue++;
             var checkbox = $(evt.target);
@@ -142,11 +144,14 @@ define([
                     }
                 }
             }
-            this.recalculateChefBadges();
+            this.chefGroupQueue--;
+            if (!this.chefGroupQueue){
+               this.recalculateChefBadges();
+            }
         },
 
         recalculateChefBadges: function(){
-            console.log("recalculating");
+            console.log("recalc");
             var chefContainer = $("#chef-selection");
             var allChecked = chefContainer.find("input[type='checkbox']:checked")
                 .filter(function(){
@@ -180,23 +185,6 @@ define([
         },
 
         recipeChangeHandler: function(evt){
-           /* var checkbox = $(evt.target);
-            var checkboxes = checkbox.closest("ul").find("input[type='checkbox']:checked");
-
-            var recipeGroup = checkbox.closest(".accordion-group");
-            recipeGroup.find(".accordion-toggle span.badge").first().text(checkboxes.length ? checkboxes.length : '');
-            
-            var versionGroup = recipeGroup.parent().closest(".accordion-group");
-            checkboxes = versionGroup.find("input[type='checkbox']:checked");
-            versionGroup.find(".accordion-toggle span.badge").first().text(checkboxes.length ? checkboxes.length : '');
-
-            var cookbookGroup = versionGroup.parent().closest(".accordion-group");
-            checkboxes = cookbookGroup.find("input[type='checkbox']:checked");
-            cookbookGroup.find(".accordion-toggle span.badge").first().text(checkboxes.length ? checkboxes.length : '');
-*/
-            //var chefGroup = cookbookGroup.parent().closest(".accordion-group");
-            //checkboxes = chefGroup.find("input[type='checkbox']:checked");
-            //chefGroup.find(".accordion-toggle span.badge").first().text(checkboxes.length ? checkboxes.length : '');
             this.recalculateChefBadges();
         },
 
@@ -237,13 +225,15 @@ define([
                     .done(function(recipes){
                         var sorted = $this.sortRecipes(recipes);
                         var enabledState = "";
+                        var checkedState = ""; 
                         if ($destination.has("input[type='checkbox']:checked").length){
                             enabledState = " disabled='true' ";
+                            checkedState = " checked='true' ";    
                         }
                         $destination.empty()
                             .data("isLoaded", true);
                         var ul = $("<ul class='recipes'></ul>");
-                        var checkedState = " checked='true' ";
+                       
                         $.each(sorted, function( index, item ) {
                             $("<li></li>")
                                 .data("recipe", item)
@@ -339,11 +329,18 @@ define([
         },
 
         populateRegions: function(evt){
+            var optionSelected = $("option:selected", evt.target);
+            var credential = optionSelected.data("cloudCredentials");
+            if (!credential){
+                $("#msg").html("We're sorry.  Cloud credentials could not be retrieved.");
+                $(".alert").addClass("alert-danger").delay(200).addClass("in").show().fadeOut(4000, function(){
+                    $(".alert").removeClass("alert-danger");
+                });
+                return;
+            }
             var select = $("#select-region")
                 .empty()
                 .on("change", $.proxy(this.regionChanged, this));
-            var optionSelected = $("option:selected", evt.target);
-            var credential = optionSelected.data("cloudCredentials");
             var provider = this.cloudDefinitions[credential.get("cloud_provider").toLowerCase()];
             $.each(provider.regions, function(index, element){
                 $('<option>')
