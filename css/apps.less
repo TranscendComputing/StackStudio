@@ -33,20 +33,21 @@
     overflow-y:auto;
 }
 
-#apps_view .recipeSelector{
-    width:10%;
-    float:left;
-}
-
-#apps_view .recipe{
-    font-weight: bold;
-    float:left;
-    width:90%;
-    text-overflow:ellipsis;
-}
 
 #apps_view {
-    .recipeDescription{
+    .recipeSelector, .stackSelector{
+        width:10%;
+        float:left;
+    }
+
+    .recipe, .stack {
+        font-weight: bold;
+        float:left;
+        width:90%;
+        text-overflow:ellipsis;
+    }
+
+    .recipeDescription, .stackDescription{
         color: #666666;
         font-style: italic;
         float:left;
@@ -54,19 +55,15 @@
         margin-left:10%;
         text-overflow:ellipsis;
     }
-}
 
-
-
-#apps_view ul.recipes{
-    margin-left:0;
-    li {
-        clear:both;
-        height:20px;    
+    ul.recipes, ul.stacks{
+        margin-left:0;
+        li {
+            clear:both;
+            height:20px;    
+        }
     }
-}
 
-#apps_view{
     .accordion-heading{
         input[type='checkbox']{
             float:left;
@@ -75,9 +72,7 @@
             margin-left:4px;
         }
     }
-}
 
-#apps_view{
     .icon-spinner {
         background-image: url('/images/loader.gif');
         background-position: 0 0;

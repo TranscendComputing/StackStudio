@@ -233,6 +233,32 @@ define([
             ul.appendTo(destination);
         },
 
+        renderCloudFormationList: function(stacks){
+            var ul = $("<ul class='stacks list-group'></ul>");
+            $.each(stacks, function( index, stack ) {
+                $("<li class='list-group-item'></li>")
+                    .data("stack", stack)
+                    .append("<input type='checkbox' class='stackSelector' />")
+                    .append("<span class='stack'>" + stack.name + "</span>" + "<span class='stackDescription'>" + stack.description + "</span>")
+                    .appendTo(ul);
+            });
+            ul.appendTo($("#cloudFormationContainer"));
+        },
+
+        fetchCloudFormationList: function(){
+            var d = $.Deferred();
+            var $this = this;
+            $.ajax({
+                url: "samples/infra_cloudFormation.json"
+            }).done(function(model){
+                d.resolve(model);
+            }).fail(function(){
+                $this.flashError("We're sorry.  Cloud Formation Templates could not be retrieved.");
+                d.reject();
+            });
+            return d.promise();
+        },
+
         accordionShown: function(evt){
             var $this = this;
             var data = $(evt.target).closest(".accordion-group").data();
@@ -407,8 +433,6 @@ define([
             return elem;
         },
 
-        
-
         renderCookbooks: function(cookbooks){
             cookbooks.sort();
             var $this = this;
@@ -433,7 +457,6 @@ define([
                 elem.appendTo(cb); //TODO: if this doesn't perform well, try appending to a list first, then adding to doc. 
             });
         },
-
 
         regionChanged: function(evt){
             var optionSelected = $("option:selected", evt.target);
@@ -538,11 +561,18 @@ define([
         },
 
         render: function () {
+            var $this = this;
             $("#main").removeClass("twelvecol last");
             $("#main>div").removeClass("twelvecol last");
             this.loadAppsApp();
             this.loadCredentials();
             this.populateCookbooks();
+
+            this.fetchCloudFormationList().done(function(list){
+                $this.renderCloudFormationList(list);
+            });
+
+            
         },
 
         loadAppsApp: function() {

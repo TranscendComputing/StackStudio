@@ -1,0 +1,14 @@
+[
+	{
+		"name": "RiakCluster",
+		"description": "Launches a Riak Cluster"
+	},
+	{
+		"name": "RiakVPCCluster",
+		"description": "Launches a Riak Cluster"
+	},
+	{
+		"name": "RiakVPCCClusterWithFEAAppServers",
+		"description": "Launches a Riak Cluster"
+	}
+]
