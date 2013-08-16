@@ -86,6 +86,8 @@ define([
             this.zones.each(function(zone) {
                $("#zone_select").append("<option value='"+zone.attributes.name+"'>" + zone.attributes.name + "</option>");
             });
+            $("#zone_select").val(this.region);
+            $('#zone_select').trigger('change');
             $("#zone_select").selectmenu();
         },
         
@@ -127,7 +129,7 @@ define([
 
         addAllDisks: function(region) {
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/google/compute/disks?_method=GET&cred_id=" + this.credentialId + "&region=" + region;
-            
+            var instCreateView = this;
             $.ajax({
                 url: url,
                 type: "GET",
@@ -143,6 +145,7 @@ define([
                         });
                     }
                     $("#disk_select").selectmenu();
+                    instCreateView.addAllMachineTypes();
                 },
                 error: function(jqXHR) {
                     Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
