@@ -48,6 +48,9 @@ define([
             //Render my template
             this.$el.append(form);
             this.$(".required").after("<span class='required'/>");
+            
+            //debugger
+            $("#p12_upload").attr("action", Common.apiUrl + "/identity/v1/accounts/"+ sessionStorage.account_id + "/" + this.model.attributes.id + "/upload_key_pairs");
         },
 
         contentChanged: function(event) {

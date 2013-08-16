@@ -1,0 +1,58 @@
+<div>
+    <div class="button_bar">
+        <table>
+            <tr>
+                <td>
+                    <button class="create_button">Create Network</button>
+                </td>
+                <td>
+                    <ul id="action_menu">
+                        <li style="z-index: 1000">
+                            <a id="action_button">Actions</a>
+                            <ul>
+                                <li><a>Delete</a></li>                
+                            </ul>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table id="resource_table" class="full_width">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Network ID</th>
+                <th>IPv4Range</th>
+                <th>gatewayIPv4</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    <div id="details" class="detail_panel"></div>
+</div>
+
+<script type="text/html" id="resource_detail">
+    <div id="detail_tabs">
+        <ul>
+            <li><a id="instance_details" href="#tabs-1">Details</a></li>
+        </ul>
+        <div id="tabs-1" class="tab">
+            <table>
+                <tbody>
+                    <tr><td><b>Name:</b></td><td>{{ name }}</td></tr>
+                    <tr><td><b>Network ID:</b></td><td>{{ id }}</td></tr>
+                    <tr><td><b>Description:</b></td><td>{{ description }}</td></tr>
+                    <tr><td><b>Self Link:</b></td><td>{{ selfLink }}</td></tr>
+                    <tr><td><b>Timestamp:</b></td><td>{{ creationTimestamp }}</td></tr>
+                    <tr><td><b>IPv4Range:</b></td><td>{{ IPv4Range }}</td></tr>
+                    <tr><td><b>gatewayIPv4:</b></td><td>{{ gatewayIPv4 }}</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+</script>

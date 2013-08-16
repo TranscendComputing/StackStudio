@@ -56,41 +56,18 @@ define([
             options.enabled = true;
             
             var issue = false;
-            
-            if($("#host_input").val() !== "") {
-                this.displayValid(true, "#host_input");
-                options.host = $("#host_input").val();
-            }else{
-                issue = true;
-                this.displayValid(false, "#host_input");
-            }
-            if($("#path_input").val() !== "") {
-                this.displayValid(true, "#path_input");
-                options.path = $("#path_input").val();
-            }else{
-                issue = true;
-                this.displayValid(false, "#path_input");
-            }
-            if($("#port_input").val() !== "") {
-                this.displayValid(true, "#port_input");
-                options.port = $("#port_input").val();
-            }else{
-                issue = true;
-                this.displayValid(false, "#port_input");
-            }
-            if($("#protocol_input").val() !== "") {
-                this.displayValid(true, "#protocol_input");
-                options.protocol = $("#protocol_input").val();
-            }else{
-                issue = true;
-                this.displayValid(false, "#protocol_input");
-            }
-            if($("#service_type_input").val() !== "") {
-                this.displayValid(true, "#service_type_input");
-                options.service_type = $("#service_type_input").val();
-            }else{
-                issue = true;
-                this.displayValid(false, "#service_type_input");
+
+            $('input', '#create_service_form').each(function(){
+                if($(this).val() === ""){
+                    $(this).css("border-color", "red");
+                    issue = true;
+                }
+                else
+                    $(this).css("border-color", "");
+            });
+            var array = $("#create_service_form").serializeArray();
+            for(var i = 0; i < array.length; i++){
+                options[array[i].name] = array[i].value;
             }
             
             if(!issue){
@@ -98,14 +75,6 @@ define([
                 this.$el.dialog('close');
             }else {
                 Common.errorDialog("Invalid Request", "Please supply all required fields.");
-            }
-        },
-        
-        displayValid: function(valid, selector) {
-            if(valid) {
-                $(selector).css("border-color", "");
-            }else{
-                $(selector).css("border-color", "#FF0000");
             }
         }
     });

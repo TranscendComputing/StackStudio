@@ -130,6 +130,32 @@ define([
                 }
             });
         },
+        
+		/**
+         * Updates a users cloud Account
+         * @param  {CloudAccount} model
+         * @param  {Object} options
+         * @return {nil}
+         */
+		update: function() {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_accounts/"+this.attributes.id+"?_method=PUT";
+            var cloud_account = {"cloud_account":this.attributes};
+            
+            $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: JSON.stringify(cloud_account),
+                success: function(data) {
+                    Common.vent.trigger("cloudAccountUpdated");
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            });
+            
+		},
 
         deleteService: function(service) {
             Messenger.options = {

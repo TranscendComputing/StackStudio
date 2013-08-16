@@ -124,7 +124,7 @@ define([
                 if(data.account.cloud_credentials && data.account.cloud_credentials.length > 0) {
                     Common.router.navigate("#resources", {trigger: true});
                 }else {
-                    Common.router.navigate("#account/management", {trigger: true});
+                    Common.router.navigate("#account/management/home", {trigger: true});
                 }
 
             }else {

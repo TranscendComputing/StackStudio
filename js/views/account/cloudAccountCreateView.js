@@ -26,7 +26,8 @@ define([
         clouds: Clouds,
         
         events: {
-            "dialogclose": "close"
+            "dialogclose": "close",
+            "change #cloud_select": "cloudSelect"
         },
 
         initialize: function(options) {
@@ -67,15 +68,49 @@ define([
         create: function() {
             var newCloudAccount = this.cloudAccount;
             var options = {};
+            var issue = false;
             
             if($("#cloud_account_name_input").val() !== "") {
                 this.displayValid(true, "#cloud_account_name_input");
                 options.name = $("#cloud_account_name_input").val();
+            }else{
+                issue = true;
+                this.displayValid(false, "#cloud_account_name_input");
+            }
+            
+            //if OpenStack is Chosen, ensure URL is submitted
+            if(($("#cloud_select").val() === "51bb825dd39097439c0000f6") && ($("#auth_url_input").val() !== "")) {
+                this.displayValid(true, "#auth_url_input");
+                options.url = $("#auth_url_input").val();
+                
+                //hardcode authurl
+                /*
+                options.url = "";
+                options.protocol = "";
+                options.host = "";
+                options.port = "";*/
+                
+            }else if($("#cloud_select").val() !== "51bb825dd39097439c0000f6"){
+                //no url if not openstack
+            }else{
+                issue = true;
+                this.displayValid(false, "#auth_url_input");
+            }
+            
+            if(!issue){
                 newCloudAccount.create(options,sessionStorage.org_id,$("#cloud_select").val());
                 this.$el.dialog('close');
-            }else {
+            }else{
                 Common.errorDialog("Invalid Request", "Please supply all required fields.");
-                this.displayValid(false, "#cloud_account_name_input");
+            }
+        },
+        
+        cloudSelect: function(event){
+            //show auth url box if OpenStack is chosen
+            if(event.target.value === "51bb825dd39097439c0000f6"){
+                $("#auth_url_row").show();
+            }else{
+                $("#auth_url_row").hide();
             }
         },
         
