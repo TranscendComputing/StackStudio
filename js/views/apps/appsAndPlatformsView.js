@@ -47,6 +47,8 @@ define([
 
         appsApp: undefined,
 
+        subViews: [],
+
         events: {
             "typeahead:selected": "packageClick",
             "shown": "accordionShown",
@@ -55,6 +57,21 @@ define([
         },
 
         chefGroupQueue: 0,
+
+        initialize: function() {
+            console.log("Initialize apps and plat.");
+            if (!_.compile){ // Allows using underscore templating with tyepahead
+                _.compile = function(templ) {
+                  var compiled = this.template(templ);
+                  compiled.render = function(ctx) {
+                     return this(ctx);
+                  };
+                  return compiled;
+               };
+            }
+            $("#main").html(this.el);
+            this.$el.html(this.template);
+        },
 
         chefGroupChangeHandler: function(evt){
             this.chefGroupQueue++;
@@ -245,11 +262,25 @@ define([
             ul.appendTo($("#cloudFormationContainer"));
         },
 
+        fetchCloudCredentials: function(){
+            var d = $.Deferred();
+            var $this = this;
+            $.ajax({
+                url: "samples/cloudDefinitions.json" //TODO: this could be a real model, but it's so simple...
+            }).done(function(model){
+                d.resolve(model);
+            }).fail(function(){
+                $this.flashError("We're sorry.  Cloud Formation Templates could not be retrieved.");
+                d.reject();
+            });
+            return d.promise();
+        },
+
         fetchCloudFormationList: function(){
             var d = $.Deferred();
             var $this = this;
             $.ajax({
-                url: "samples/infra_cloudFormation.json"
+                url: "samples/infra_cloudFormation.json" //TODO: this could be a real model, but it's so simple...
             }).done(function(model){
                 d.resolve(model);
             }).fail(function(){
@@ -291,69 +322,6 @@ define([
                 d.reject();
             });
             return d.promise();
-        },
-
-        initialize: function() {
-            console.log("Initialize apps and plat.");
-            var $this = this;
-
-            //require(['bootstrap'], function() {});
-
-            if (!_.compile){ // Allows using underscore templating with tyepahead
-                _.compile = function(templ) {
-                  var compiled = this.template(templ);
-                  compiled.render = function(ctx) {
-                     return this(ctx);
-                  };
-                  return compiled;
-               };
-            }
-            
-            this.subViews = [];
-            $("#main").html(this.el);
-            this.$el.html(this.template);
-            $(function(){
-                $("#configuration-management-library-source").typeahead({
-                    name: "configManagmentLibrarySource",
-                    prefetch: {
-                        url: "samples/apps_puppet.json",
-                        filter: function(parsedResponse){
-                            return parsedResponse;
-                        }
-                    },
-                    template: [
-                        '<div class="packageItem">',
-                            '<p class="packages cfg-icon cfg-icon-<%=tool%>"></p>',
-                            '<p class="config-name"><%=value%></p>',
-                            '<p class="config-tool"><%=tool%></p>',
-                        '</div>'
-                    ].join(''),
-                    engine: _
-                }).on('typeahead:opened', function() { //hack to overcome overflow inside an accordion.
-                    $(this).closest('.accordion-body').css('overflow','visible').parent().closest('.accordion-body').css('overflow','visible'); // set overflow for current and parent accordion
-                    console.log("typeahed:opened");
-                }).on('typeahead:closed', function() {
-                    $(this).closest('.accordion-body').css('overflow','hidden').parent().closest('.accordion-body').css('overflow','hidden');
-                    console.log("typeahed:closed");
-                });
-                
-                console.log("Typeahead initialized.");
-            });
-
-            $this.listView = new AppsListView({el: $("#selected-apps-list") });
-            $this.listView.render();
-            $this.listView.on("lastAppRemoved", $this.disableDeployLaunch, $this);
-
-            this.cloudCredentials = new CloudCredentials();
-            this.cloudCredentials.on('reset', this.populateCredentials, this);
-
-            $("#selectAccordion").on("shown", this.toggleInstInfra);
-            var response = $.ajax({
-                url: "samples/cloudDefinitions.json",
-                async: false
-            }).responseText;
-
-            this.cloudDefinitions = $.parseJSON(response);
         },
 
         flashError: function(message){
@@ -560,20 +528,64 @@ define([
             }
         },
 
+        setupTypeAhead: function(){
+             $("#configuration-management-library-source").typeahead({
+                name: "configManagmentLibrarySource",
+                prefetch: {
+                    url: "samples/apps_puppet.json",
+                    filter: function(parsedResponse){
+                        return parsedResponse;
+                    }
+                },
+                template: [
+                    '<div class="packageItem">',
+                        '<p class="packages cfg-icon cfg-icon-<%=tool%>"></p>',
+                        '<p class="config-name"><%=value%></p>',
+                        '<p class="config-tool"><%=tool%></p>',
+                    '</div>'
+                ].join(''),
+                engine: _
+            }).on('typeahead:opened', function() { //hack to overcome overflow inside an accordion.
+                $(this).closest('.accordion-body').css('overflow','visible').parent().closest('.accordion-body').css('overflow','visible'); // set overflow for current and parent accordion
+                console.log("typeahed:opened");
+            }).on('typeahead:closed', function() {
+                $(this).closest('.accordion-body').css('overflow','hidden').parent().closest('.accordion-body').css('overflow','hidden');
+                console.log("typeahed:closed");
+            });
+            
+            console.log("Typeahead initialized.");
+        },
+
         render: function () {
             var $this = this;
             $("#main").removeClass("twelvecol last");
             $("#main>div").removeClass("twelvecol last");
-            this.loadAppsApp();
-            this.loadCredentials();
-            this.populateCookbooks();
-
-            this.fetchCloudFormationList().done(function(list){
-                $this.renderCloudFormationList(list);
+            
+            $(function(){
+               $this.setupTypeAhead();
             });
 
+            this.listView = new AppsListView({el: $("#selected-apps-list") });
+            this.listView.render();
+            this.listView.on("lastAppRemoved", this.disableDeployLaunch, this);
+
+            this.cloudCredentials = new CloudCredentials();
+            this.cloudCredentials.on('reset', this.populateCredentials, this);
+
+            $("#selectAccordion").on("shown", this.toggleInstInfra);
             
+            this.fetchCloudCredentials().done($.proxy(function(result){
+                this.cloudDefinitions = result;
+                this.loadAppsApp();
+                this.loadCredentials();
+                this.populateCookbooks();
+                this.fetchCloudFormationList().done(function(list){
+                    $this.renderCloudFormationList(list);
+                });
+            }, this));
         },
+
+
 
         loadAppsApp: function() {
         },
