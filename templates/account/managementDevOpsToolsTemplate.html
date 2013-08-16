@@ -1,0 +1,31 @@
+<div class="devops_tools_page">
+    <div id="detail_tabs">
+        <div class="row" style="padding: 5px 10px;">
+            <h3>Configuration Managers</h3>
+        </div>
+        <div class="row" style="padding: 10px 10px;">
+            <button id="new_config_manager">Add Manager</button>
+        </div>
+        <div id="config_managers_page">
+        </div>
+    </div>
+</div>
+
+<script type="text/html" id="config_managers_template">
+    <form id="config_manager_form" action="" method="">
+        <fieldset>
+            <legend>{{managerType}} Endpoints</legend>
+            {{#managers}}
+            <p>
+                <label class="tabbed-field">{{name}}:</label>
+                <input data-id="{{_id}}" type="text" data-name="{{type}}" class="textbox-300" value="{{protocol}}://{{host}}:{{port}}{{path}}"></input>
+                <button class="delete-manager-button">Delete</button>
+                <!-- <button class="save-manager-button">Save</button> -->
+            </p>
+            {{/managers}}
+            {{^managers}}
+            <p><label>No endpoints defined.</label></p>
+            {{/managers}}
+        </fieldset>
+    </form>
+</script>
