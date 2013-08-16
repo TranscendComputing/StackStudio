@@ -22,7 +22,7 @@ define([
         events: {
             "change input": "contentChanged",
             "change textarea": "contentChanged",
-            "submit form[name=submit]":"uploadFile"
+            //"submit form[name=submit]":"uploadFile"
         },
         /** Constructor method for current view */
         initialize: function() {
