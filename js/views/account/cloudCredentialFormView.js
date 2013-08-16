@@ -37,7 +37,7 @@ define([
         events: {
             "change input": "contentChanged",
             "change textarea": "contentChanged",
-            "click #upload_button":"uploadFile"
+            "submit form[name=submit]":"uploadFile"
         },
         /** Constructor method for current view */
         initialize: function() {
@@ -116,18 +116,18 @@ define([
             return complete;
         },
         
-        uploadFile: function(){
-            var formData = new FormData($('#p12_upload'));
-            //debugger
+        uploadFile: function(e){
             var upUrl = Common.apiUrl + "/identity/v1/accounts/"+ sessionStorage.account_id + "/" + this.model.attributes.id + "/upload_key_pairs";
+            
+            e.preventDefault();
+
             $.ajax({
                 url: upUrl,
                 type: 'POST',
-                success: function(){
-                    alert("uploaded?");
-                },
-                // Form data
-                data: formData
+                data: $("#p12_upload").serialize(),
+                success: function(data){
+                    alert("yo");
+                }
             });
         },
         
