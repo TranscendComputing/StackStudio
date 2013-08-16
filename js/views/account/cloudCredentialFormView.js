@@ -21,7 +21,8 @@ define([
         /** @type {Object} Object of events for view to listen on */
         events: {
             "change input": "contentChanged",
-            "change textarea": "contentChanged"
+            "change textarea": "contentChanged",
+            "click #upload_button":"uploadFile"
         },
         /** Constructor method for current view */
         initialize: function() {
@@ -49,8 +50,15 @@ define([
             this.$el.append(form);
             this.$(".required").after("<span class='required'/>");
             
-            //debugger
             $("#p12_upload").attr("action", Common.apiUrl + "/identity/v1/accounts/"+ sessionStorage.account_id + "/" + this.model.attributes.id + "/upload_key_pairs");
+            
+            if(this.model.attributes.cloud_attributes.google_p12_key !== undefined){
+                $("#p12_is_uploaded").html("Uploaded");
+            }else{
+                $("#p12_is_uploaded").html("Not Uploaded");
+            }
+            
+            $("#p12_upload").button();
         },
 
         contentChanged: function(event) {
@@ -92,6 +100,22 @@ define([
             });
             return complete;
         },
+        
+        uploadFile: function(){
+            var formData = new FormData($('#p12_upload'));
+            //debugger
+            var upUrl = Common.apiUrl + "/identity/v1/accounts/"+ sessionStorage.account_id + "/" + this.model.attributes.id + "/upload_key_pairs";
+            $.ajax({
+                url: upUrl,
+                type: 'POST',
+                success: function(){
+                    alert("uploaded?");
+                },
+                // Form data
+                data: formData
+            });
+        },
+        
         close: function(){
             this.$el.empty();
             this.undelegateEvents();
