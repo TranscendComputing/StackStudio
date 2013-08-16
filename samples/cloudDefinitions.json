@@ -374,8 +374,49 @@
     "google" : {
         "name": "Google",
         "logo": "/images/CloudLogos/google1920x1107.png",
-        "native_services": [],
-        "regions": []
+        "native_services": [
+            {
+                "name": "Compute Engine",
+                "type": "compute",
+                "defaultSubtype": "instances",
+                "subServices" : [
+                    {
+                        "name": "Instances",
+                        "type": "instances"
+                    },
+                    {
+                        "name": "Disks",
+                        "type": "disks"
+                    },
+                    {
+                        "name": "Networks",
+                        "type": "networks"
+                    }
+                ]
+            }
+        ],
+        "regions": [
+            {
+                "name": "us-central1-a",
+                "zone": "us-central1-a"
+            },
+            {
+                "name": "us-central1-b",
+                "zone": "us-central1-b"
+            },
+            {
+                "name": "us-central2-a",
+                "zone": "us-central2-a"
+            },
+            {
+                "name": "europe-west1-a",
+                "zone": "europe-west1-a"
+            },
+            {
+                "name": "europe-west1-b",
+                "zone": "europe-west1-b"
+            }
+        ]
     },
     "joyent" : {
         "name": "Joyent",

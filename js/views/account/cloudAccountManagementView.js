@@ -26,11 +26,10 @@ define([
         /** @type {String} DOM element to attach view to */
         el: "#submanagement_app",
         /** @type {Collection} Database collection of cloud accounts */
-        collection: new CloudAccounts(),
-        users: new Users(),
+        collection: undefined,
+        users: undefined,
         /** @type {Template} HTML template to generate view from */
         template: _.template(managementCloudAccountTemplate),
-        CloudAccountCreateView: CloudAccountCreate,
         CloudServiceCreateView: CloudServiceCreate,
         rootView: undefined,
         /** @type {Object} Object of events for view to listen on */
@@ -44,7 +43,7 @@ define([
         },
         /** Constructor method for current view */
         initialize: function() {
-            
+            this.users = new Users();
             this.rootView = this.options.rootView;
             //this.rootView.treeCloudAccount = this.rootView.cloudAccounts
             //var whatisthis = this.rootView.cloudAccounts;
