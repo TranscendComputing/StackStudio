@@ -12,7 +12,8 @@ define([
         'common',
         'icanhaz',
         'jquery-plugins',
-        'jquery-ui-plugins'
+        'jquery-ui-plugins',
+        'jquery.form'
 ], function( $, _, Backbone, Common, ich ) {
 
     var CloudCredentialFormView = Backbone.View.extend({
@@ -21,7 +22,7 @@ define([
         /** @type {Object} Object of events for view to listen on */
         events: {
             "change input": "contentChanged",
-            "change textarea": "contentChanged",
+            "change textarea": "contentChanged"
             //"submit form[name=submit]":"uploadFile"
         },
         /** Constructor method for current view */
@@ -58,7 +59,12 @@ define([
                 $("#p12_is_uploaded").html("Not Uploaded");
             }
             
-            $("#p12_upload").button();
+            $('#p12_upload').ajaxForm({
+                complete: function() {
+                    $("#p12_is_uploaded").html("Uploaded");
+                }
+            });
+            
         },
 
         contentChanged: function(event) {
@@ -102,16 +108,19 @@ define([
         },
         
         uploadFile: function(e){
-            var upUrl = Common.apiUrl + "/identity/v1/accounts/"+ sessionStorage.account_id + "/" + this.model.attributes.id + "/upload_key_pairs";
+            var upUrl = Common.apiUrl + "/identity/v1/accounts/"+ sessionStorage.account_id + "/" + this.model.attributes.id + "/upload_key_pairs?_method=POST";
             
             e.preventDefault();
 
             $.ajax({
                 url: upUrl,
-                type: 'POST',
                 data: $("#p12_upload").serialize(),
+                contentType: 'application/x-www-form-urlencoded',
                 success: function(data){
                     alert("yo");
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
                 }
             });
         },
