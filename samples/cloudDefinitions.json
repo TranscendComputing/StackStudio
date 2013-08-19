@@ -396,7 +396,17 @@
             },{
                 "name": "Networks",
                 "type": "network",
-                "defaultSubtype": "networks"
+                "defaultSubtype": "networks",
+                "subServices" : [
+                    {
+                        "name": "Networks",
+                        "type": "networks"
+                    },
+                    {
+                        "name": "Firewalls",
+                        "type": "firewalls"
+                    }
+                ]
             }
         ],
         "regions": [

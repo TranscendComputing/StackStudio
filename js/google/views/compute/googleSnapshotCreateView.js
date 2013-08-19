@@ -41,8 +41,7 @@ define([
         // Delegated events for creating new snapshots, etc.
         events: {
             "dialogclose": "close",
-            "change #zone_select":"zoneSelect",
-            "change #disk_select":"diskSelect"
+            "change #zone_select":"zoneSelect"
         },
 
         initialize: function(options) {
@@ -70,8 +69,6 @@ define([
             });
             $("#zone_select").selectmenu();
             $("#disk_select").selectmenu();
-            $("#image_select").selectmenu();
-            $("#machine_select").selectmenu();
             
             this.zones.on( 'reset', this.addAllZones, this );
             this.zones.fetch({ data: $.param({ cred_id: this.credentialId }), reset: true });
@@ -94,42 +91,10 @@ define([
         zoneSelect: function(event){
             this.addAllDisks(event.target.value);
         },
-        
-        diskSelect: function(){
-            this.addAllMachineTypes();
-        },
-        
-        addAllMachineTypes: function() {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/google/compute/machine_types?_method=GET&cred_id=" + this.credentialId + "&region=" + $("#zone_select").val();
-            
-            $.ajax({
-                url: url,
-                type: "GET",
-                contentType: 'application/x-www-form-urlencoded',
-                dataType: 'json',
-                success: function(payload) {
-                    var disks = payload;
-                    $("#machine_select").empty();
-                    if(disks){
-                        $.each(disks, function(i, disk) {
-                            if($("#disk_select").val() !== "default_disk"){
-                                $("#machine_select").append("<option value='"+disk.name+"'>" + disk.name + "</option>");
-                            }else if((disk.name !== "f1-micro") && (disk.name !== "g1-small")){
-                                $("#machine_select").append("<option value='"+disk.name+"'>" + disk.name + "</option>");
-                            }
-                        });
-                    }
-                    $("#machine_select").selectmenu();
-                },
-                error: function(jqXHR) {
-                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
-                }
-            });
-        },
 
         addAllDisks: function(region) {
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/google/compute/disks?_method=GET&cred_id=" + this.credentialId + "&region=" + region;
-            var instCreateView = this;
+            var snpshtCreateView = this;
             $.ajax({
                 url: url,
                 type: "GET",
@@ -139,13 +104,11 @@ define([
                     var disks = payload;
                     if(disks){
                         $("#disk_select").empty();
-                        $("#disk_select").append("<option value='default_disk'>Default Disk</option>");
                         $.each(disks, function(i, disk) {
                            $("#disk_select").append("<option value='"+disk.name+"'>" + disk.name + "</option>");
                         });
                     }
                     $("#disk_select").selectmenu();
-                    instCreateView.addAllMachineTypes();
                 },
                 error: function(jqXHR) {
                     Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
@@ -155,24 +118,20 @@ define([
         
         create: function() {
             var newSnapshot = this.snapshot;
-            var inst = {};
+            var snpsht = {};
             
             var issue = false;
             
             if($("#sg_name").val() !== "" ) {
-                inst.name = $("#sg_name").val();
-                inst.zone_name = $("#zone_select").val();
-                if($("#disk_select").val() !== "default_disk"){
-                    inst.disk = $("#disk_select").val();
-                }
-                inst.machine_type = $("#machine_select").val();
-                inst.image_name = $("#image_select").val();
+                snpsht.name = $("#sg_name").val();
+                snpsht.zone_name = $("#zone_select").val();
+                snpsht.disk = $("#disk_select").val();
             }else {
                 issue = true;
             }
             
             if(!issue) {
-                newSnapshot.create(inst, this.credentialId);
+                newSnapshot.create(snpsht, this.credentialId);
                 this.$el.dialog('close');
             } else {
                 Common.errorDialog("Invalid Request", "Please supply all required fields.");
