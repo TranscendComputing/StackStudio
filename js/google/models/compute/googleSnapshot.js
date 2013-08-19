@@ -11,17 +11,13 @@ define([
 ], function( ResourceModel, Common ) {
     'use strict';
 
-    var Flavor = ResourceModel.extend({
+    var Snapshot = ResourceModel.extend({
 
         defaults: {
             id: '',
-            bits: '',
-            cores: '',
-            disk: '',
-            name: '',
-            ram: ''
+            name: ''
         }
     });
 
-    return Flavor;
+    return Snapshot;
 });

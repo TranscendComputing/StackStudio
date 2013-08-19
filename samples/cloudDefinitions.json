@@ -378,21 +378,25 @@
             {
                 "name": "Compute Engine",
                 "type": "compute",
-                "defaultSubtype": "instances",
+                "defaultSubtype": "instances"
+            },{
+                "name": "Disks",
+                "type": "disk",
+                "defaultSubtype": "disks",
                 "subServices" : [
-                    {
-                        "name": "Instances",
-                        "type": "instances"
-                    },
                     {
                         "name": "Disks",
                         "type": "disks"
                     },
                     {
-                        "name": "Networks",
-                        "type": "networks"
+                        "name": "Snapshots",
+                        "type": "snapshots"
                     }
                 ]
+            },{
+                "name": "Networks",
+                "type": "network",
+                "defaultSubtype": "networks"
             }
         ],
         "regions": [

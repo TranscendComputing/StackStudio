@@ -8,18 +8,18 @@
 define([
         'jquery',
         'backbone',
-        '/js/google/models/compute/googleFlavor.js',
+        '/js/google/models/compute/googleSnapshot.js',
         'common'
-], function( $, Backbone, Flavor, Common ) {
+], function( $, Backbone, Snapshot, Common ) {
     'use strict';
 
-    var FlavorList = Backbone.Collection.extend({
+    var SnapshotList = Backbone.Collection.extend({
 
-        model: Flavor,
+        model: Snapshot,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/google/compute/flavors'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/google/compute/snapshots'
     });
     
-    return FlavorList;
+    return SnapshotList;
 
 });

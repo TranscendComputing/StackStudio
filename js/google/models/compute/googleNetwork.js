@@ -21,6 +21,11 @@ define([
         create: function(options, credentialId) {
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/google/compute/networks?&cred_id=" + credentialId;
             this.sendAjaxAction(url, "POST", {"network": options}, "networkAppRefresh");
+        },
+        
+        delete: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/google/compute/networks/" + this.attributes.name + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "networkAppRefresh");
         }
     });
 

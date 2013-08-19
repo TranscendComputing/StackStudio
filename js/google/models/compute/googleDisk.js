@@ -22,6 +22,11 @@ define([
         create: function(options, credentialId) {
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/google/compute/disks?&cred_id=" + credentialId;
             this.sendAjaxAction(url, "POST", {"disk": options}, "diskAppRefresh");
+        },
+        
+        delete: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/google/compute/disks/" + this.attributes.name + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "diskAppRefresh");
         }
     });
 

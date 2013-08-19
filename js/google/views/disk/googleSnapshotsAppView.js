@@ -10,52 +10,53 @@ define([
         'underscore',
         'backbone',
         'views/resource/resourceAppView',
-        'text!templates/google/compute/googleNetworkAppTemplate.html',
-        '/js/google/models/compute/googleNetwork.js',
-        '/js/google/collections/compute/googleNetworks.js',
-        '/js/google/views/compute/googleNetworkCreateView.js',
+        'text!templates/google/compute/googleSnapshotAppTemplate.html',
+        '/js/google/models/compute/googleSnapshot.js',
+        '/js/google/collections/compute/googleSnapshots.js',
+        '/js/google/views/compute/googleSnapshotCreateView.js',
+        '/js/aws/collections/cloud_watch/awsMetricStatistics.js',
         'text!templates/emptyGraphTemplate.html',
         'icanhaz',
         'common',
         'morris',
         'spinner',
         'jquery.dataTables'
-], function( $, _, Backbone, ResourceAppView, googleNetworkAppTemplate, Network, Networks, GoogleNetworkCreate, emptyGraph, ich, Common, Morris, Spinner ) {
+], function( $, _, Backbone, ResourceAppView, googleInstanceAppTemplate, Instance, Instances, AwsInstanceCreate, MetricStatistics, emptyGraph, ich, Common, Morris, Spinner ) {
     'use strict';
 
-    // Aws Network Application View
+    // Aws Instance Application View
     // ------------------------------
 
     /**
-     * GoogleNetworksAppView is UI view list of cloud networks.
+     * GoogleSnapshotsAppView is UI view list of cloud instances.
      *
-     * @name NetworkAppView
+     * @name InstanceAppView
      * @constructor
      * @category Resources
      * @param {Object} initialization object.
-     * @returns {Object} Returns a GoogleNetworksAppView network.
+     * @returns {Object} Returns a GoogleSnapshotsAppView instance.
      */
-    var GoogleNetworksAppView = ResourceAppView.extend({
+    var GoogleSnapshotsAppView = ResourceAppView.extend({
         
-        template: _.template(googleNetworkAppTemplate),
+        template: _.template(googleInstanceAppTemplate),
 
         emptyGraphTemplate: _.template(emptyGraph),
         
         modelStringIdentifier: "id",
         
-        columns: ["name", "id", "IPv4Range", "gatewayIPv4"],
+        columns: ["name", "id", "diskSizeGb", "status"],
         
         idColumnNumber: 1,
         
-        model: Network,
+        model: Instance,
         
-        collectionType: Networks,
+        collectionType: Instances,
         
-        type: "compute",
+        type: "disk",
         
-        subtype: "networks",
+        subtype: "snapshots",
         
-        CreateView: GoogleNetworkCreate,
+        CreateView: AwsInstanceCreate,
         
         events: {
             'click .create_button': 'createNew',
@@ -74,9 +75,9 @@ define([
             }
             this.render();
             
-            var networkApp = this;
-            Common.vent.on("networkAppRefresh", function() {
-                networkApp.render();
+            var instanceApp = this;
+            Common.vent.on("snapshotAppRefresh", function() {
+                instanceApp.render();
             });
             
         },
@@ -86,16 +87,16 @@ define([
         },
         
         performAction: function(event) {
-            var network = this.collection.get(this.selectedId);
+            var disk = this.collection.get(this.selectedId);
             switch(event.target.text)
             {
             case "Delete":
-                //network.delete(this.credentialId, this.region);
-                alert("Delete this Network");
+                //disk.delete(this.credentialId, this.region);
+                alert('delete snapshot');
                 break;
             }
         }
     });
 
-    return GoogleNetworksAppView;
+    return GoogleSnapshotsAppView;
 });
