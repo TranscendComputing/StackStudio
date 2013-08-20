@@ -22,7 +22,7 @@
         <thead>
             <tr>
                 <th>Name</th>
-                <th>Network ID</th>
+                <th>Firewall ID</th>
                 <th>Description</th>
                 <th>Creation Time</th>
             </tr>
@@ -44,10 +44,14 @@
             <table>
                 <tbody>
                     <tr><td><b>Name:</b></td><td>{{ name }}</td></tr>
-                    <tr><td><b>Network ID:</b></td><td>{{ id }}</td></tr>
+                    <tr><td><b>Firewall ID:</b></td><td>{{ id }}</td></tr>
                     <tr><td><b>Description:</b></td><td>{{ description }}</td></tr>
+                    <tr><td><b>Network:</b></td><td>{{ network }}</td></tr>
                     <tr><td><b>Self Link:</b></td><td>{{ selfLink }}</td></tr>
                     <tr><td><b>Timestamp:</b></td><td>{{ creationTimestamp }}</td></tr>
+                    {{#sourceRanges}}
+                    <tr><td><b>Source Range:</b></td><td>{{ . }}</td></tr>
+                    {{/sourceRanges}}
                 </tbody>
             </table>
         </div>

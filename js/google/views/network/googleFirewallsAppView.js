@@ -86,12 +86,11 @@ define([
         },
         
         performAction: function(event) {
-            var network = this.collection.get(this.selectedId);
+            var firewall = this.collection.get(this.selectedId);
             switch(event.target.text)
             {
             case "Delete":
-                //network.delete(this.credentialId, this.region);
-                alert('delete firewall');
+                firewall.delete(this.credentialId, this.region);
                 break;
             }
         }
