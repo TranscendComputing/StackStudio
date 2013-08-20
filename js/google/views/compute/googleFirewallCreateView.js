@@ -11,12 +11,12 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/google/compute/googleFirewallCreateTemplate.html',
-        '/js/google/models/compute/googleNetwork.js',
+        '/js/google/models/compute/googleFirewall.js',
         'icanhaz',
         'common',
         'jquery.multiselect'
         
-], function( $, _, Backbone, DialogView, networkCreateTemplate, Network, ich, Common ) {
+], function( $, _, Backbone, DialogView, firewallCreateTemplate, Firewall, ich, Common ) {
     
     /**
      * googleNetworkCreateView is UI form to create compute.
@@ -28,13 +28,13 @@ define([
      * @returns {Object} Returns a googleNetworkCreateView network.
      */
     
-    var GoogleNetworkCreateView = DialogView.extend({
+    var GoogleFirewallCreateView = DialogView.extend({
 
         credentialId: undefined,
 
         region: undefined,
         
-        network: new Network(),
+        network: new Firewall(),
         
         // Delegated events for creating new networks, etc.
         events: {
@@ -45,7 +45,7 @@ define([
             this.credentialId = options.cred_id;
             this.region = options.region;
             var createView = this;
-            var compiledTemplate = _.template(networkCreateTemplate);
+            var compiledTemplate = _.template(firewallCreateTemplate);
             this.$el.html(compiledTemplate);
 
             this.$el.dialog({
@@ -138,5 +138,5 @@ define([
         },
     });
     
-    return GoogleNetworkCreateView;
+    return GoogleFirewallCreateView;
 });

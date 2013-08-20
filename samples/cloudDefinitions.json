@@ -378,7 +378,17 @@
             {
                 "name": "Compute Engine",
                 "type": "compute",
-                "defaultSubtype": "instances"
+                "defaultSubtype": "instances",
+                "subServices" : [
+                    {
+                        "name": "Instances",
+                        "type": "instances"
+                    },
+                    {
+                        "name": "Metadata",
+                        "type": "metadata"
+                    }
+                ]
             },{
                 "name": "Disks",
                 "type": "disk",
