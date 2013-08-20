@@ -21,7 +21,7 @@ define([
         // Reference to this collection's model.
         model: ConfigManager,
 
-        url: Common.apiUrl + '/stackstudio/v1/orchestration/manager',
+        url: Common.apiUrl + '/stackstudio/v1/orchestration/managers',
         toJSON: function() {
             var result = {"puppet":[], "chef":[]};
             var models = this.models;
@@ -35,6 +35,7 @@ define([
         },
         createManager : function(model, options) {
             options.wait = true;
+            options.emulateHTTP =true;
             options.success= function(model){
                 Common.vent.trigger("devOpsViewRefresh");
             };
