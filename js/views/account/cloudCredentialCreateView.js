@@ -107,7 +107,7 @@ define([
         },
         
         selectCloudAccount: function(event) {
-            var accountName = event.target.selectedOptions[0].value;
+            var accountName = $(event.target).val();
             
             if(accountName !== "All")
             {
