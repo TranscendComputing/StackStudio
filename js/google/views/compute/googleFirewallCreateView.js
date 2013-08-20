@@ -90,7 +90,7 @@ define([
             }
             
             if($("#iprange_input").val() !== "" ) {
-                frwll.source_range = $("#iprange_input").val();
+                frwll.source_range = [$("#iprange_input").val()];
             }else {
                 issue = true;
             }
