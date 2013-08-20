@@ -13,8 +13,7 @@ define([
         'common',
         'views/resource/resourceRowView',
         'jquery.dataTables',
-        'jquery.dataTables.fnProcessingIndicator',
-        'wijmo'
+        'jquery.dataTables.fnProcessingIndicator'
 ], function( $, _, Backbone, ich, Common , ResourceRowView ) {
     'use strict';
 

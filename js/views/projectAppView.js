@@ -17,7 +17,6 @@ define([
         'views/projectCreateView',
         'icanhaz',
         'common',
-        'wijmo',
         'jquery-ui'
 ], function( $, _, Backbone, projectsTemplate, Project, projects, ProjectDetailsView, ProjectEditView, ProjectCreateView, ich, Common ) {
     'use strict';

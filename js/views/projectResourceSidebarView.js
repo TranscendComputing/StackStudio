@@ -17,8 +17,7 @@ define([
         'views/projectCurrentResourcesListView',
         'views/templatesListView',
         'icanhaz',
-        'common',
-        'wijmo'
+        'common'
 ], function( $, _, Backbone, sidebarTemplate, projects, resources, Account, ProjectNewResourcesListView, ProjectCurrentResourcesListView, TemplatesListView, ich, Common ) {
     
     var SidebarView = Backbone.View.extend({

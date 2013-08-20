@@ -110,21 +110,6 @@ requirejs.config({
         },
         'URIjs': {
 
-        },
-        'wijutil': {
-            deps: ['jquery-ui', 'jquery.mousewheel']
-        },
-        'wijsuperpanel': {
-            deps: ['wijutil']
-        },
-        'wijlist': {
-            deps: ['wijutil', 'wijsuperpanel']
-        },
-        'wijsplitter': {
-            deps: ['wijutil']
-        },
-        'wijmo': {
-            deps: ['jquery-ui', 'jquery.mousewheel']
         }
 	},
 	packages: [
@@ -163,12 +148,6 @@ requirejs.config({
         'raphael': 'raphael-min',
         'spinner': 'spin.min',
          URIjs: 'uri/src',
-        'wijlist': 'jquery.wijmo.wijlist',
-        'wijutil': 'jquery.wijmo.wijutil',
-        'wijsuperpanel': 'jquery.wijmo.wijsuperpanel',
-        'wijsplitter': 'jquery.wijmo.wijsplitter',
-        'wijmo': 'wijmo-require',
-        'wijmo-actual': 'jquery.wijmo-open.all.2.3.2.min',
         'bootstrap': '//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min'
     }
 });

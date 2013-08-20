@@ -16,8 +16,7 @@ define([
         'models/project',
         'views/projectNewTemplateView',
         'icanhaz',
-        'common',
-        'wijmo'
+        'common'
 ], function( $, _, Backbone, DialogView, stacks, projects, Stack, Project, ProjectNewTemplateView, ich, Common ) {
     
     var ProjectCreateView = DialogView.extend({
@@ -25,7 +24,7 @@ define([
         id: "new_project",
                 
         events: {
-            'wijdialogclose' : 'close' 
+            'dialogclose' : 'close' 
         },
         
         initialize: function() {
@@ -38,7 +37,7 @@ define([
           
           this.$el.append( ich.new_project_window() );
           $("#main").append(this.$el);
-          this.$el.wijdialog({
+          this.$el.dialog({
                 autoOpen: true,
                 captionButtons: {
                     refresh: {visible: false},
@@ -94,7 +93,7 @@ define([
         },
         
         createProject: function(stack) {
-            this.$el.wijdialog("close");
+            this.$el.dialog("close");
             var newProject = new Project({
                 name: stack.get('name'),
                 template: stack.template()
