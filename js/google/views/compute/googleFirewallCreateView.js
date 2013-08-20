@@ -13,7 +13,8 @@ define([
         'text!templates/google/compute/googleFirewallCreateTemplate.html',
         '/js/google/models/compute/googleNetwork.js',
         'icanhaz',
-        'common'
+        'common',
+        'jquery.multiselect'
         
 ], function( $, _, Backbone, DialogView, networkCreateTemplate, Network, ich, Common ) {
     
@@ -51,7 +52,7 @@ define([
                 autoOpen: true,
                 title: "Create Compute Firewall",
                 resizable: false,
-                width: 425,
+                width: 450,
                 modal: true,
                 buttons: {
                     Create: function () {
@@ -63,6 +64,13 @@ define([
                 }
             });
             
+            $("#allowed_select").multiselect({
+                selectedList: 3,
+                noneSelectedText: "Select Allowed Protocol(s)"
+            });
+            $("#network_select").selectmenu();
+            
+            this.addAllNetworks();
         },
 
         render: function() {
@@ -70,30 +78,64 @@ define([
         },
         
         create: function() {
-            var newNetwork = this.network;
-            var ntwrk = {};
+            var newFirewall = this.network;
+            var frwll = {};
             
             var issue = false;
             
             if($("#name_input").val() !== "" ) {
-                ntwrk.network_name = $("#name_input").val();
+                frwll.firewall_name = $("#name_input").val();
             }else {
                 issue = true;
             }
             
             if($("#iprange_input").val() !== "" ) {
-                ntwrk.ip_range = $("#iprange_input").val();
+                frwll.source_range = $("#iprange_input").val();
             }else {
                 issue = true;
             }
             
+            frwll.network = $("#network_select").val();
+            
+            frwll.allowed = [];
+            $("#allowed_select > option").each(function() {
+                //alert(this.text + ' ' + this.value);
+                var allowedIPProtocol = {'IPProtocol':this.value};
+                frwll.allowed.push(allowedIPProtocol);
+            });
+            
             if(!issue) {
-                newNetwork.create(ntwrk, this.credentialId);
+                newFirewall.create(frwll, this.credentialId);
+                console.log(frwll);
                 this.$el.dialog('close');
             } else {
                 Common.errorDialog("Invalid Request", "Please supply all required fields.");
             }
-        }
+        },
+        
+        addAllNetworks: function() {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/google/compute/networks?_method=GET&cred_id=" + this.credentialId;
+            
+            $.ajax({
+                url: url,
+                type: "GET",
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                success: function(payload) {
+                    var networks = payload;
+                    $("#network_select").empty();
+                    if(networks){
+                        $.each(networks, function(i, network) {
+                            $("#network_select").append("<option value='"+network.name+"'>" + network.name + "</option>");
+                        });
+                    }
+                    $("#network_select").selectmenu();
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            });
+        },
     });
     
     return GoogleNetworkCreateView;
