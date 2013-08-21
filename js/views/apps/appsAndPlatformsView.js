@@ -1,3 +1,17 @@
+/*
+TODO LIST:
+- Fix Enable/Disable deployment buttons when chef checkboxes checked/unchecked
+- Add Enable/Disable for infra checkboxes
+- Add badges to Puppet
+
+- Need a way to determine whether chef, puppet, or cloudFormation are configured before displaying
+- Wire up deployment buttons (when services available)
+
+- Add mechanism for ordering chef run-list
+
+*/
+
+
 /*!
  * StackStudio 2.0.0-rc.1 <http://stackstudio.transcendcomputing.com>
  * (c) 2012 Transcend Computing <http://www.transcendcomputing.com/>
@@ -17,13 +31,15 @@ define([
         'collections/apps',
         'collections/cloudCredentials',
         'collections/cookbooks',
+        'collections/chefEnvironments',
         'views/apps/appsListView',
         'models/app',
         'jquery-plugins',
         'jquery-ui-plugins',
         'jquery.dataTables',
-        'jquery.dataTables.fnProcessingIndicator'
-], function( $, _, bootstrap, Backbone, ich, Common, typeahead, appsTemplate, Apps, CloudCredentials, Cookbooks, AppsListView, App ) {
+        'jquery.dataTables.fnProcessingIndicator',
+        'jquery.sortable'
+], function( $, _, bootstrap, Backbone, ich, Common, typeahead, appsTemplate, Apps, CloudCredentials, Cookbooks, ChefEnvironments, AppsListView, App ) {
 	// The Apps & Platforms View
 	// ------------------------------
 
@@ -53,7 +69,9 @@ define([
             "typeahead:selected": "packageClick",
             "shown": "accordionShown",
             "change .recipes input": "recipeChangeHandler",
-            "change #chef-selection .accordion-heading": "chefGroupChangeHandler"
+            "change #chef-selection .accordion-heading": "chefGroupChangeHandler",
+            "change #deploy-inst table:first" : "updateDeployButtonState",
+            "change #chefEnvironmentSelect" : "environmentSelectHandler"
         },
 
         chefGroupQueue: 0,
@@ -82,25 +100,7 @@ define([
             var level = checkbox.data("level");
             if (checkbox.prop("checked")){
                 switch(level){
-                    case "cookbook": {
-                        checkbox.closest(".accordion-group")
-                            .find(".accordion-body:first .accordion-group:first")
-                            .siblings()
-                            .each(function(){
-                                var check = $(this).find(".accordion-heading:first input[type='checkbox']:first");
-                                if (check.prop("checked")){
-                                    check.prop("checked", false)
-                                        .trigger("change");
-                                }
-                                check.prop("disabled", true);
-                            });
-                        checkbox.closest(".accordion-group")
-                            .find(".accordion-inner:first .accordion-heading:first input[type='checkbox']:first")
-                            .prop("checked", true)
-                            .prop("disabled", true)
-                            .trigger("change");
-                    } break;
-                    case "version": {
+                     case "cookbook": {
                         var ver = checkbox.closest(".accordion-group")
                             .find(".accordion-inner:first");
                         if (ver.data("isLoaded")){
@@ -128,21 +128,6 @@ define([
             } else {
                 switch(level){
                     case "cookbook": {
-                        checkbox.closest(".accordion-group")
-                            .find(".accordion-body:first .accordion-group:first")
-                            .siblings()
-                            .each(function(){
-                                $(this).find(".accordion-heading:first input[type='checkbox']:first")
-                                    .prop("disabled", false)
-                                    .prop("checked", false);
-                            });
-                        checkbox.closest(".accordion-group")
-                            .find(".accordion-inner:first .accordion-heading:first input[type='checkbox']:first")
-                            .prop("checked", false)
-                            .prop("disabled", false)
-                            .trigger("change");
-                    } break;
-                    case "version": {
                         checkbox.closest(".accordion-group")
                             .find(".accordion-inner:first").siblings().each(function(){
                                 $(this).find(".accordion-inner:has(ul)").empty();
@@ -184,20 +169,7 @@ define([
                         return !$(this).parent().hasClass("accordion-heading");
                     });
                 book.find(".accordion-toggle:first span.badge:first").text(allChecked.length ? allChecked.length : '');
-
-                var versions = book.find(".accordion-inner>div>.accordion-group");
-                versions.each(function(){
-                    var ver = $(this);
-                    badge = ver.find(".accordion-toggle:first span.badge:first");
-                    allChecked = ver.find("input[type='checkbox']:checked")
-                        .filter(function(){
-                            return !$(this).parent().hasClass("accordion-heading");
-                        });
-                        ver.find(".accordion-toggle:first span.badge:first").text(allChecked.length ? allChecked.length : '');
-                });
             });
-
-
         },
 
         recipeChangeHandler: function(evt){
@@ -298,23 +270,31 @@ define([
             if (isLoaded){
                 return;
             }
-            var isVersion = data.isVersion;
-            if (isVersion){
-                var version = data.version;
-                var $book = data.cookbook;
-                $("<i class='icon-spinner'></i>").appendTo($destination);
-                $this.fetchRecipes($book, version)
-                    .done(function(recipes){
-                        $this.populateRecipes.call($this, $destination, $book, recipes);
-                    });
+            var $book = data.cookbook;
+            if (!$book){
+                return;
             }
+            var version = $book.get("latest_version");
+            $("<i class='icon-spinner'></i>").appendTo($destination);
+            $this.fetchRecipes($book, version)
+                .done(function(recipes){
+                    $this.populateRecipes.call($this, $destination, $book, recipes);
+                });
+            
         },
 
         fetchRecipes: function(cookbook, version){
             var d = $.Deferred();
             var $this = this;
              $.ajax({
-                url: "samples/recipes.json"
+                url: [
+                        Common.apiUrl,
+                        "/stackstudio/v1/orchestration/chef/cookbooks/",
+                        encodeURIComponent(cookbook.get("name")),
+                        '/',
+                        encodeURIComponent(version),
+                    ].join(''),
+                data: { account_id: this.credential.get("cloud_account_id")}
             }).done(function(model){
                 d.resolve(model);
             }).fail(function(){
@@ -337,13 +317,7 @@ define([
                 });
         },
 
-        populateRegions: function(evt){
-            var optionSelected = $("option:selected", evt.target);
-            var credential = optionSelected.data("cloudCredentials");
-            if (!credential){
-                this.flashError("We're sorry.  Cloud credentials could not be retrieved.");
-                return;
-            }
+        populateRegions: function(credential){
             var select = $("#select-region")
                 .empty()
                 .on("change", $.proxy(this.regionChanged, this));
@@ -355,29 +329,73 @@ define([
                     .data("region", element)
                     .data("credential", credential)
                     .appendTo(select);
-             });
-            this.regionChanged({target:select});
+            });
+            select.trigger("change");
+        },
 
+        credentialChangeHandler: function(evt){
+            var $this = this;
+            var optionSelected = $("option:selected", evt.target);
+            var credential = this.credential = optionSelected.data("cloudCredentials");
+            if (!credential){
+                this.flashError("We're sorry.  Cloud credentials could not be retrieved.");
+                return;
+            }
+
+            this.populateRegions(credential);
+            this.fetchChefEvironments().done(function(model){
+                $this.populateChefEnvironments(new ChefEnvironments(model));
+            });
+            
+            this.fetchCloudFormationList().done(function(list){
+                $this.renderCloudFormationList(list);
+            });
+        },
+
+        populateChefEnvironments: function(list){
+            var select = $("#chefEnvironmentSelect").empty();
+            $("<option value='' disabled selected style='display:none;'>Select Environment</option></select>").appendTo(select);
+            list.forEach(function(element, index, list){
+                $("<option value='" + element.get("name") + "'>" + element.get("name") + "</option></select>").appendTo(select);
+            });
+        },
+
+        environmentSelectHandler: function(evt){
+            var $this = this;
+            this.populateCookbooks(this.credential).done(function(){
+                $this.recalculateChefBadges();
+            });
         },
 
         populateCredentials: function(list, options){
             var select = $("#select-credentials")
                 .empty()
-                .on("change", $.proxy(this.populateRegions, this));
+                .on("change", $.proxy(this.credentialChangeHandler, this));
             list.forEach(function(element, index, list){
                 $('<option>')
-                    //.val(element.get("id"))
                     .text(element.get("cloud_name") + ":" + element.get("name"))
                     .data("cloudCredentials", element)
                     .appendTo(select);
-             });
-            this.populateRegions(select);
-
+            });
+            select.trigger("change");
         },
 
-        populateCookbooks: function(){
+        fetchChefEvironments: function(){
+            var chefEnvironments = new ChefEnvironments();
+
+            return chefEnvironments.fetch({
+                data: {
+                    account_id: this.credential.get("cloud_account_id")
+                }
+            });
+        },
+
+        populateCookbooks: function(credential){
             var cookbooks= new Cookbooks();
-            cookbooks.fetch({
+            return cookbooks.fetch({
+                data: {
+                    account_id: credential.get("cloud_account_id")
+                },
                 success: $.proxy(this.renderCookbooks, this)
             });
         },
@@ -405,23 +423,14 @@ define([
             cookbooks.sort();
             var $this = this;
             var cb = $("#chef-selection");
+            cb.empty();
             cookbooks.each(function(item){
-                var elem = $($this.renderAccordionGroup("chef-selection", item.get("name")))
+                var elem = $($this.renderAccordionGroup("chef-selection", item.get("name") + " [" + item.get("latest_version") + "]"))
                     .data("cookbook", item);
                 elem.find(".accordion-heading")
                     .prepend(
                         $("<input type='checkbox'>").data("level", "cookbook")
-                    );
-                var $cookbook = item;
-                var $versionAccordion = $("<div id='" + _.uniqueId("ver") + "'></div>").appendTo(elem.find(".accordion-inner"));
-                $.each(item.get("versions"), function(index, item){
-                    var ver = $($this.renderAccordionGroup($versionAccordion.prop("id"),item))
-                        .data("cookbook", $cookbook)
-                        .data("isVersion", true)
-                        .data("version", item)
-                        .appendTo($versionAccordion);
-                    ver.find(".accordion-heading").prepend($("<input type='checkbox'>").data("level", "version"));
-                });
+                    )
                 elem.appendTo(cb); //TODO: if this doesn't perform well, try appending to a list first, then adding to doc. 
             });
         },
@@ -444,7 +453,7 @@ define([
                 instances
                     .fetch({ 
                         data: {
-                            cred_id: credential.id, 
+                            cred_id: credential.get("id"), 
                             region: region.zone
                         }
                     })
@@ -454,20 +463,8 @@ define([
             });
         },
 
-        renderInstance: function(instanceContainer, instance){
-            var tr = $("<tr></tr>");
-            var checkTd = $("<td></td>").appendTo(tr);
-            $("<input type='checkbox'></input>")
-                .data("instance",instance)
-                .appendTo(checkTd)
-                .on("change", $.proxy(this.updateDeployButtonState, this));
-            $("<td></td>").text(instance.tags.Name).appendTo(tr);
-            $("<td></td>").text(instance.id).appendTo(tr);
-            tr.appendTo(instanceContainer);
-        },
-
         updateDeployButtonState: function(){
-            var checked = $("#instance-container input[type='checkbox']:checked").length;
+            var checked = $("#deploy-inst input[type='checkbox']:checked:first").length;
             var enabled = checked && this.listView.collection.length;
             if (enabled){
                 $("#deploy-to")
@@ -481,18 +478,50 @@ define([
         },
 
         renderInstances: function(instances){
-            var $this = this;
-            var instanceContainer = $("#instance-container");
-            instanceContainer.empty();
-            $.each(instances, function(index, item){
-                $this.renderInstance(instanceContainer, item);
-            });
-            this.updateDeployButtonState();
-            instanceContainer.parent().dataTable({
+            var instanceElement = $("#deploy-inst table:first");
+            
+            var instanceTable = instanceElement.dataTable({
                 "bJQueryUI": true,
                 "bProcessing": true,
-                "bDestroy": true
-            }).fnProcessingIndicator(false);
+                "bDestroy": true,
+                bRetrieve: true,
+                "aoColumnDefs": [
+                    { 
+                        "sTitle": "", 
+                        aTargets: [0],
+                        mData: function(instance){
+                            return "<input type='checkbox' data-instance-id='" + instance.id + "'></input>";
+                        }
+                    },
+                    {
+                        "sTitle": "Instance Name",
+                        aTargets: [1],
+                        //mData: "tags.Name"
+                        mData: function(instance){
+                            if (!instance){
+                                return "";
+                            }
+                            if (instance.name){
+                                return instance.name;
+                            }
+                            return instance.tags ? (instance.tags.Name ? instance.tags.Name : "") : "";
+                        }
+                    },
+                    { 
+                        "sTitle": "Id",
+                        aTargets: [2],
+                        mData: "id"
+                        //mData: function(instance){
+                        //    return instance.id;
+                        //}
+                    }
+                ]
+            });
+            instanceTable.fnProcessingIndicator(true);
+            instanceTable.fnClearTable();
+            instanceTable.fnAddData(instances);
+            instanceTable.fnProcessingIndicator(false);
+            this.updateDeployButtonState();
         },
 
         renderAppSelector: function(){
@@ -578,10 +607,6 @@ define([
                 this.cloudDefinitions = result;
                 this.loadAppsApp();
                 this.loadCredentials();
-                this.populateCookbooks();
-                this.fetchCloudFormationList().done(function(list){
-                    $this.renderCloudFormationList(list);
-                });
             }, this));
         },
 

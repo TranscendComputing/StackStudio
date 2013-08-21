@@ -8,20 +8,19 @@
 define([
         'jquery',
         'backbone',
-        'models/cookbook',
+        'models/ChefEnvironment',
         'common'
-], function( $, Backbone, Cookbook, Common) {
+], function( $, Backbone, ChefEnvironment, Common) {
 	'use strict';
 
-	// Cookbook Collection
+	// ChefEnvironments Collection
 	// ---------------
 
-	var Cookbooks = Backbone.Collection.extend({
+	var ChefEnvironments = Backbone.Collection.extend({
 
 		// Reference to this collection's model.
-		model: Cookbook,
-        //url: '../samples/cookbooks.json',
-        url: Common.apiUrl + "/stackstudio/v1/orchestration/chef/cookbooks",
+		model: ChefEnvironment,
+        url: Common.apiUrl + "/stackstudio/v1/orchestration/chef/environments",
 
         comparator : function(model){
 			return model.get("name");
@@ -31,10 +30,9 @@ define([
 		    this.sortField = 'name';
 		    this.sortDirection = "ASC";
 		}
-        
 	
 	});
 
-	return Cookbooks;
+	return ChefEnvironments;
 
 });
