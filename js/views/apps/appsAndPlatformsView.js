@@ -176,6 +176,12 @@ define([
             this.trigger("badge-refresh", {badgeCount: badgeCount});
         },
 
+        recalculatePuppetBadge: function(){
+            var badgeCount = this.listView.collection.length;
+            $("#puppet-badge").text(badgeCount ? badgeCount : "");
+            this.trigger("badge-refresh", {badgeCount: badgeCount});
+        },
+
         recipeChangeHandler: function(evt){
             this.recalculateChefBadges();
         },
@@ -602,7 +608,8 @@ define([
 
             this.listView = new AppsListView({el: $("#selected-apps-list") });
             this.listView.render();
-            this.listView.on("lastAppRemoved", this.disableDeployLaunch, this);
+            this.listView.on("appRemoved", this.recalculatePuppetBadge, this);
+            this.listView.on("appAdded", this.recalculatePuppetBadge, this);
 
             this.cloudCredentials = new CloudCredentials();
             this.cloudCredentials.on('reset', this.populateCredentials, this);
@@ -643,7 +650,8 @@ define([
         packageClick: function(evt, package) {
             this.listView.addApp(package);
             this.enableDeployLaunch();
-            this.updateDeployButtonState();
+            this.recalculatePuppetBadge();
+            //this.updateDeployButtonState();
         },
 
         infraSourceClick: function(evt) {

@@ -33,10 +33,12 @@ define([
             addApp: function(app){
                 var addedApp = new App(app);
                 this.collection.add(addedApp);
+                this.trigger("appAdded", this.collection);
             },
 
             removeApp: function(app){
                 this.collection.remove(app);
+                this.trigger("appRemoved", this.collection);
                 if (this.collection.length === 0){
                     this.trigger("lastAppRemoved", this.collection);
                 }
