@@ -46,6 +46,7 @@ define([
             
             var template = this.cloudProvider + "_credential_form";
             var attributes = (this.model === undefined) ? {} : this.model.attributes;
+            
             var form =  ich[template](attributes);
             //Render my template
             this.$el.append(form);

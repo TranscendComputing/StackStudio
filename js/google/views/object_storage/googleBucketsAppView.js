@@ -11,10 +11,10 @@ define([
         'backbone',
         '/js/aws/views/object_storage/awsBucketsAppView.js',
         'text!templates/aws/object_storage/awsBucketAppTemplate.html',
-        '/js/aws/models/object_storage/awsBucket.js',
-        '/js/aws/collections/object_storage/awsBuckets.js',
+        '/js/google/models/object_storage/googleBucket.js',
+        '/js/google/collections/object_storage/googleBuckets.js',
         '/js/aws/views/object_storage/awsBucketCreateView.js',
-        '/js/aws/collections/object_storage/awsFiles.js',
+        '/js/google/collections/object_storage/googleFiles.js',
         'views/resource/resourceRowView',
         'icanhaz',
         'common',
@@ -70,6 +70,17 @@ define([
             'click #object_upload_button': 'openFileDialog',
             'click #object_table tr': 'toggleObjectActions',
             'click #object_action_menu ul li': 'performObjectAction'
+        },
+        
+        refreshObject: function() {
+            $("#download_file_form").attr("action", Common.apiUrl + "/stackstudio/v1/cloud_management/google/object_storage/directory/file/download");
+            
+            this.$objectTable.fnClearTable();
+            this.selectedFile = undefined;
+            $("#object_action_menu li").addClass("ui-state-disabled");
+            this.files = new Files({"directory": this.selectedId});
+            this.files.on( 'reset', this.addAllFiles, this );
+            this.files.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region}), reset: true });
         }
         
     });
