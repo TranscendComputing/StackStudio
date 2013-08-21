@@ -1,6 +1,5 @@
 /*
 TODO LIST:
-- Fix Enable/Disable deployment buttons when chef checkboxes checked/unchecked
 - Add Enable/Disable for infra checkboxes
 - Add badges to Puppet
 
@@ -89,6 +88,7 @@ define([
             }
             $("#main").html(this.el);
             this.$el.html(this.template);
+            this.bind("badge-refresh", this.updateDeployButtonState, this);
         },
 
         chefGroupChangeHandler: function(evt){
@@ -153,12 +153,15 @@ define([
         },
 
         recalculateChefBadges: function(){
+            var badgeCount = 0;
             var chefContainer = $("#chef-selection");
             var allChecked = chefContainer.find("input[type='checkbox']:checked")
                 .filter(function(){
                     return !$(this).parent().hasClass("accordion-heading");
                 });
             chefContainer.closest(".accordion-group").find(".accordion-toggle:first span.badge:first").text(allChecked.length ? allChecked.length : '');
+
+            badgeCount = allChecked.length;
 
             var cookbooks = $("#chef-selection>.accordion-group");
             cookbooks.each(function(){
@@ -170,6 +173,7 @@ define([
                     });
                 book.find(".accordion-toggle:first span.badge:first").text(allChecked.length ? allChecked.length : '');
             });
+            this.trigger("badge-refresh", {badgeCount: badgeCount});
         },
 
         recipeChangeHandler: function(evt){
@@ -463,9 +467,11 @@ define([
             });
         },
 
-        updateDeployButtonState: function(){
-            var checked = $("#deploy-inst input[type='checkbox']:checked:first").length;
-            var enabled = checked && this.listView.collection.length;
+        updateDeployButtonState: function(data){
+            var instanceChecked = $("#deploy-inst table:first input[type='checkbox']:checked").length;
+            var chefChecked = $("#chef-selection").find("input[type='checkbox']:checked").length
+
+            var enabled = instanceChecked && (chefChecked || this.listView.collection.length);
             if (enabled){
                 $("#deploy-to")
                     .removeClass("disabled")
