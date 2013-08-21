@@ -420,17 +420,7 @@
             },{
                 "name": "Cloud Storage",
                 "type": "object_storage",
-                "defaultSubtype": "buckets",
-                "subServices" : [
-                    {
-                        "name": "Buckets",
-                        "type": "buckets"
-                    },
-                    {
-                        "name": "Objects",
-                        "type": "objects"
-                    }
-                ]
+                "defaultSubtype": "buckets"
             }
         ],
         "regions": [

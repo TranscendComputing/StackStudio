@@ -10,10 +10,10 @@ define([
         'underscore',
         'backbone',
         '/js/aws/views/object_storage/awsBucketsAppView.js',
-        'text!templates/aws/object_storage/awsBucketAppTemplate.html',
+        'text!templates/google/object_storage/googleBucketAppTemplate.html',
         '/js/google/models/object_storage/googleBucket.js',
         '/js/google/collections/object_storage/googleBuckets.js',
-        '/js/aws/views/object_storage/awsBucketCreateView.js',
+        '/js/google/views/object_storage/googleBucketCreateView.js',
         '/js/google/collections/object_storage/googleFiles.js',
         'views/resource/resourceRowView',
         'icanhaz',
@@ -81,6 +81,16 @@ define([
             this.files = new Files({"directory": this.selectedId});
             this.files.on( 'reset', this.addAllFiles, this );
             this.files.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region}), reset: true });
+        },
+        
+        refreshFileInputForm: function() {
+            $("#upload_file_form").remove();
+            $("#object_tab").append("<form id='upload_file_form' style='visibility:hidden' method='post' action='" + Common.apiUrl + "/stackstudio/v1/cloud_management/google/object_storage/directory/file/upload'>" +
+                                        "<input id='file_dialog' name='file_upload' type='file'>" +
+                                        "<input name='directory' value='" + this.selectedId + "'>" +
+                                        "<input name='cred_id' value='" + this.credentialId + "'>" +
+                                        "<input name='region' value='" + this.region + "'>" +
+                                    "</form>");
         }
         
     });
