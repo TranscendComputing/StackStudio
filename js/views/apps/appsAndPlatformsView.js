@@ -1,8 +1,6 @@
 /*
 TODO LIST:
 - Add Enable/Disable for infra checkboxes
-- Add badges to Puppet
-
 - Need a way to determine whether chef, puppet, or cloudFormation are configured before displaying
 - Wire up deployment buttons (when services available)
 
@@ -70,7 +68,8 @@ define([
             "change .recipes input": "recipeChangeHandler",
             "change #chef-selection .accordion-heading": "chefGroupChangeHandler",
             "change #deploy-inst table:first" : "updateDeployButtonState",
-            "change #chefEnvironmentSelect" : "environmentSelectHandler"
+            "change #chefEnvironmentSelect" : "environmentSelectHandler",
+            "change #cloudFormationContainer input" : "cloudFormationChangeHandler"
         },
 
         chefGroupQueue: 0,
@@ -182,6 +181,12 @@ define([
             this.trigger("badge-refresh", {badgeCount: badgeCount});
         },
 
+        recalculateCloudFormationBadges: function(){
+            var badgeCount = $("#cloud-formation-accordion-group input[type='checkbox']:checked").length;
+            $("#cloud-formation-badge").text(badgeCount ? badgeCount : "");
+            this.trigger("badge-refresh", {badgeCount: badgeCount});
+        },
+
         recipeChangeHandler: function(evt){
             this.recalculateChefBadges();
         },
@@ -238,6 +243,10 @@ define([
                     .appendTo(ul);
             });
             ul.appendTo($("#cloudFormationContainer"));
+        },
+
+        cloudFormationChangeHandler: function(evt){
+            this.recalculateCloudFormationBadges();
         },
 
         fetchCloudCredentials: function(){
@@ -471,7 +480,8 @@ define([
 
         updateDeployButtonState: function(data){
             var instanceChecked = $("#deploy-inst table:first input[type='checkbox']:checked").length;
-            var chefChecked = $("#chef-selection").find("input[type='checkbox']:checked").length
+            var chefChecked = $("#chef-selection").find("input[type='checkbox']:checked").length;
+            var infraChecked = $("#cloud-formation-badge input[type='checkbox']:checked").length;
 
             var enabled = instanceChecked && (chefChecked || this.listView.collection.length);
             if (enabled){
@@ -480,6 +490,17 @@ define([
                     .prop("disabled", false);
             } else {
                 $("#deploy-to")
+                    .addClass("disabled")
+                    .prop("disabled", true);
+            }
+
+            var newInstance = $("#cloud-formation-accordion-group input[type='checkbox']:checked").length;
+            if (newInstance){
+                $("#launch")
+                    .removeClass("disabled")
+                    .prop("disabled", false);
+            } else {
+                $("#launch")
                     .addClass("disabled")
                     .prop("disabled", true);
             }
