@@ -188,9 +188,8 @@ define([
 
         sortRecipes: function(recipes){
             var sorted = [];
-            $.each(recipes, function( recipe, description ){
-
-                sorted.push({name: recipe, description:description});
+            $.each(recipes, function( index, recipe ){
+                sorted.push({name: recipe.name, description:recipe.description});
             });
             sorted.sort(function(a,b){
                 if (a.name < b.name) {
@@ -201,9 +200,6 @@ define([
                 return 0;
 
             });
-            if (sorted[0].name.indexOf("::"<0)){
-                sorted[0].name = sorted[0].name + "::default";
-            }
             return sorted;
         },
 
