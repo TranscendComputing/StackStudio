@@ -739,13 +739,17 @@ define([
     var appsView;
 
     Common.router.on('route:apps', function () {
-        if (this.previousView !== appsView) {
-            this.unloadPreviousState();
-            appsView = new AppsView();
-            this.setPreviousState(appsView);
+        if(sessionStorage.account_id) {
+            if (this.previousView !== appsView) {
+                this.unloadPreviousState();
+                appsView = new AppsView();
+                this.setPreviousState(appsView);
+            }
+            appsView.render();
+        }else {
+            Common.router.navigate("", {trigger: true});
+            Common.errorDialog("Login Error", "You must login.");
         }
-        appsView.render();
-
     }, Common);
 
 	return AppsView;
