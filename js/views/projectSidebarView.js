@@ -11,7 +11,8 @@ define([
         'backbone',
         'text!templates/projects/projectsNavSidebarTemplate.html',
         'views/projectsListView',
-        'common'
+        'common',
+        'wijmo'
 ], function( $, _, Backbone, sidebarTemplate, ProjectsListView, Common ) {
     
     var SidebarView = Backbone.View.extend({
@@ -31,7 +32,7 @@ define([
             this.$el.html(this.template);
             
             this.$el.addClass("threecol");
-            $(".accordion").accordion({
+            $(".accordion").wijaccordion({
                 header: "h3",
                 requireOpenedPane: false
             });

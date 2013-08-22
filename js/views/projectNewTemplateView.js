@@ -11,7 +11,8 @@ define([
         'backbone',
         'models/stack',
         'icanhaz',
-        'common'
+        'common',
+        'wijmo'
 ], function( $, _, Backbone, Stack, ich, Common ) {
     
     var ProjectNewTemplateView = Backbone.View.extend({

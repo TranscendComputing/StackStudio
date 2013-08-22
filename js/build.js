@@ -23,6 +23,11 @@
         'backbone': 'backbone-0.9.9',
         'icanhaz': 'ICanHaz',
         'jquery.terminal': 'jquery.terminal-0.4.22',
-        'jquery.mousewheel': 'jquery.mousewheel-min'
+        'jquery.mousewheel': 'jquery.mousewheel-min',
+        'wijlist': 'jquery.wijmo.wijlist',
+        'wijutil': 'jquery.wijmo.wijutil',
+        'wijsuperpanel': 'jquery.wijmo.wijsuperpanel',
+        'wijsplitter': 'jquery.wijmo.wijsplitter',
+        'wijmo': 'jquery.wijmo-open.all.2.3.2.min'
     }
 })

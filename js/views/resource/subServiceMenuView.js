@@ -10,7 +10,8 @@ define([
         'underscore',
         'backbone',
         'text!templates/subServiceMenuTemplate.html',
-        'common'
+        'common',
+        'wijmo-actual'
 ], function( $, _, Backbone, subServiceMenuTemplate, Common ) {
     'use strict';
 
