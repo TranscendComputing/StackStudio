@@ -72,6 +72,31 @@ define([
             'click #object_action_menu ul li': 'performObjectAction'
         },
         
+        initialize: function(options) {
+            if(options.cred_id) {
+                this.credentialId = options.cred_id;
+            }
+            if(options.region) {
+                this.region = options.region;
+            }
+            this.render();
+            
+            $('#resource_table').dataTable({
+                "sDom": 't',
+                "bDestroy": true
+            });
+            
+            var objectStorageApp = this;
+            Common.vent.on("objectStorageAppRefresh", function() {
+                objectStorageApp.render();
+            });
+            
+            Common.vent.on("objectStorageObjectRefresh", function() {
+                objectStorageApp.refreshObject();
+            });
+            
+        },
+        
         refreshObject: function() {
             $("#download_file_form").attr("action", Common.apiUrl + "/stackstudio/v1/cloud_management/google/object_storage/directory/file/download");
             
@@ -91,6 +116,23 @@ define([
                                         "<input name='cred_id' value='" + this.credentialId + "'>" +
                                         "<input name='region' value='" + this.region + "'>" +
                                     "</form>");
+        },
+        
+        addAll: function() {
+            this.$table.fnClearTable();
+            this.$table.fnProcessingIndicator(false);
+            this.collection.each(this.addOne, this);
+            this.setResourceAppHeightify();
+            if(this.selectedId) {
+                this.selectOne(this.selectedId, $("tr:contains("+this.selectedId+")"));
+            }
+            $('#object_url').trigger('click');
+        },
+        
+        toggleActions: function(e) {
+            this.unloadObjectTab();
+            //Disable any needed actions
+            $('#object_url').trigger('click');
         }
         
     });
