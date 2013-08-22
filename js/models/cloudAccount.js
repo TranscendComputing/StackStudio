@@ -182,7 +182,7 @@ define([
         },
 
         updateConfigManager: function(managerId){
-            var url = Common.apiUrl + "/stackstudio/v1/orchestration/manager/" + managerId + "/account?account_id=" + this.get("id");
+            var url = Common.apiUrl + "/stackstudio/v1/orchestration/managers/" + managerId + "/account?account_id=" + this.get("id");
             var options = {};
             $.ajax({
                 url: url,
