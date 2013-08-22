@@ -35,6 +35,8 @@ define([
         
         image: new Image(),
         
+        kernels: undefined,
+        
         // Delegated events for creating new images, etc.
         events: {
             "dialogclose": "close"
@@ -43,6 +45,8 @@ define([
         initialize: function(options) {
             this.credentialId = options.cred_id;
             this.region = options.region;
+            this.kernels = options.kernels;
+            console.log(this.kernels);
             var createView = this;
             var compiledTemplate = _.template(imageCreateTemplate);
             this.$el.html(compiledTemplate);
@@ -63,12 +67,16 @@ define([
                 }
             });
             
-            $("#kernal_input").selectmenu();
-            
+            $("#kernel_input").empty();
+            this.kernels.forEach(
+                function addKernel(value) { 
+                    $("#kernel_input").append("<option>"+value+"</option>");
+                }
+            );
+            $("#kernel_input").selectmenu();
         },
 
         render: function() {
-            
         },
         
         create: function() {

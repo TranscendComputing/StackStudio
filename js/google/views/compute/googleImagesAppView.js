@@ -90,6 +90,27 @@ define([
                 //instance.delete(this.credentialId, this.region);
                 break;
             }
+        },
+        
+        createNew : function () {
+            var CreateView = this.CreateView;
+            if(this.region) {
+                this.newResourceDialog = new CreateView({cred_id: this.credentialId, region: this.region, kernels: this.getKernels()});
+            }else {
+                this.newResourceDialog = new CreateView({cred_id: this.credentialId, kernels: this.getKernels()});
+            }
+            this.newResourceDialog.render();
+        },
+        
+        getKernels : function(){
+            var kernels = []
+            this.collection.each(function(model){
+                if(!model.attributes.deprecated){
+                    var kernel_list = model.attributes.preferred_kernel.split('/');
+                    kernels.push(kernel_list[kernel_list.length-1]);
+                }
+            }, this);
+            return kernels;
         }
     });
 
