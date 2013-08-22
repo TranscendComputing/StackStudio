@@ -8,18 +8,19 @@
 define([
         'jquery',
         'backbone',
-        '/js/google/models/compute/googleFlavor.js',
+        '/js/google/models/compute/googleFirewall.js',
         'common'
-], function( $, Backbone, Flavor, Common ) {
+], function( $, Backbone, Firewall, Common ) {
     'use strict';
 
-    var FlavorList = Backbone.Collection.extend({
+    var FirewallList = Backbone.Collection.extend({
 
-        model: Flavor,
+        model: Firewall,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/google/compute/flavors'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/google/compute/firewalls'
+        
     });
     
-    return FlavorList;
+    return FirewallList;
 
 });

@@ -1,0 +1,50 @@
+<div>
+    <div style="width:24%;float: left;">
+        <div class="button_bar">
+            <table>
+                <tr>
+                    <td>
+                        <button class="create_button">Create Bucket</button>
+                    </td>
+                    <td>                    
+                        <ul id="action_menu">
+                            <li style="z-index: 1000">
+                                <a id="action_button">Actions</a>
+                                <ul>
+                                    <li><a>Delete</a></li>                
+                                </ul>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <table id="resource_table" class="full_width" style="box-shadow: 0 0 5px #888;">
+            <thead>
+                <tr>
+                    <th style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;">Name</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <div style="width:74%;float: right;" id="details" class="detail_panel"></div>
+</div>
+
+<script type="text/html" id="resource_detail">
+    <div id="detail_tabs">
+        <ul>
+            <li id="objects"><a id="object_url" href="#object_tab">Objects</a></li>
+            <li id="properties"><a href="#properties_tab">Details</a></li>
+        </ul>
+        <div id="properties_tab" class="tab">
+            <table>
+                <tbody>
+                    <tr><td><b>Name:</b></td>                   <td>{{ key }}</td></tr>
+                    <tr><td><b>Creation Date:</b></td>          <td>{{ creation_date }}</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="object_tab" class="tab"></div>
+    </div>
+</script>

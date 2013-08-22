@@ -44,7 +44,7 @@ define([
             this.$el.dialog({
                 title: title,
                 autoOpen: true,
-                width:400,
+                width:325,
                 minHeight: 150,
                 resizable: false,
                 modal: true,

@@ -10,10 +10,10 @@ define([
         'underscore',
         'backbone',
         'views/resource/resourceAppView',
-        'text!templates/google/compute/googleNetworkAppTemplate.html',
-        '/js/google/models/compute/googleNetwork.js',
-        '/js/google/collections/compute/googleNetworks.js',
-        '/js/google/views/compute/googleNetworkCreateView.js',
+        'text!templates/google/compute/googleFirewallAppTemplate.html',
+        '/js/google/models/compute/googleFirewall.js',
+        '/js/google/collections/compute/googleFirewalls.js',
+        '/js/google/views/compute/googleFirewallCreateView.js',
         'text!templates/emptyGraphTemplate.html',
         'icanhaz',
         'common',
@@ -43,7 +43,7 @@ define([
         
         modelStringIdentifier: "id",
         
-        columns: ["name", "id", "IPv4Range", "gatewayIPv4"],
+        columns: ["name", "id", "description", "creationTimestamp"],
         
         idColumnNumber: 1,
         
@@ -51,9 +51,9 @@ define([
         
         collectionType: Networks,
         
-        type: "compute",
+        type: "network",
         
-        subtype: "networks",
+        subtype: "firewalls",
         
         CreateView: GoogleNetworkCreate,
         
@@ -75,7 +75,7 @@ define([
             this.render();
             
             var networkApp = this;
-            Common.vent.on("networkAppRefresh", function() {
+            Common.vent.on("firewallAppRefresh", function() {
                 networkApp.render();
             });
             
@@ -86,12 +86,11 @@ define([
         },
         
         performAction: function(event) {
-            var network = this.collection.get(this.selectedId);
+            var firewall = this.collection.get(this.selectedId);
             switch(event.target.text)
             {
             case "Delete":
-                //network.delete(this.credentialId, this.region);
-                alert("Delete this Network");
+                firewall.delete(this.credentialId, this.region);
                 break;
             }
         }

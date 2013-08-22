@@ -12,7 +12,8 @@ define([
         'common',
         'icanhaz',
         'jquery-plugins',
-        'jquery-ui-plugins'
+        'jquery-ui-plugins',
+        'jquery.form'
 ], function( $, _, Backbone, Common, ich ) {
 
     var CloudCredentialFormView = Backbone.View.extend({
@@ -22,6 +23,7 @@ define([
         events: {
             "change input": "contentChanged",
             "change textarea": "contentChanged"
+            //"submit form[name=submit]":"uploadFile"
         },
         /** Constructor method for current view */
         initialize: function() {
@@ -44,13 +46,26 @@ define([
             
             var template = this.cloudProvider + "_credential_form";
             var attributes = (this.model === undefined) ? {} : this.model.attributes;
+            
             var form =  ich[template](attributes);
             //Render my template
             this.$el.append(form);
             this.$(".required").after("<span class='required'/>");
             
-            //debugger
             $("#p12_upload").attr("action", Common.apiUrl + "/identity/v1/accounts/"+ sessionStorage.account_id + "/" + this.model.attributes.id + "/upload_key_pairs");
+            
+            if(this.model.attributes.cloud_attributes.google_p12_key !== undefined){
+                $("#p12_is_uploaded").html("Uploaded");
+            }else{
+                $("#p12_is_uploaded").html("Not Uploaded");
+            }
+            
+            $('#p12_upload').ajaxForm({
+                complete: function() {
+                    $("#p12_is_uploaded").html("Uploaded");
+                }
+            });
+            
         },
 
         contentChanged: function(event) {
@@ -92,6 +107,25 @@ define([
             });
             return complete;
         },
+        
+        uploadFile: function(e){
+            var upUrl = Common.apiUrl + "/identity/v1/accounts/"+ sessionStorage.account_id + "/" + this.model.attributes.id + "/upload_key_pairs?_method=POST";
+            
+            e.preventDefault();
+
+            $.ajax({
+                url: upUrl,
+                data: $("#p12_upload").serialize(),
+                contentType: 'application/x-www-form-urlencoded',
+                success: function(data){
+                    alert("yo");
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            });
+        },
+        
         close: function(){
             this.$el.empty();
             this.undelegateEvents();

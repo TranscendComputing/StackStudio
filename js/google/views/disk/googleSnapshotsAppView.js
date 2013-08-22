@@ -10,10 +10,10 @@ define([
         'underscore',
         'backbone',
         'views/resource/resourceAppView',
-        'text!templates/google/compute/googleDiskAppTemplate.html',
-        '/js/google/models/compute/googleDisk.js',
-        '/js/google/collections/compute/googleDisks.js',
-        '/js/google/views/compute/googleDiskCreateView.js',
+        'text!templates/google/compute/googleSnapshotAppTemplate.html',
+        '/js/google/models/compute/googleSnapshot.js',
+        '/js/google/collections/compute/googleSnapshots.js',
+        '/js/google/views/compute/googleSnapshotCreateView.js',
         '/js/aws/collections/cloud_watch/awsMetricStatistics.js',
         'text!templates/emptyGraphTemplate.html',
         'icanhaz',
@@ -28,15 +28,15 @@ define([
     // ------------------------------
 
     /**
-     * AwsInstancesAppView is UI view list of cloud instances.
+     * GoogleSnapshotsAppView is UI view list of cloud instances.
      *
      * @name InstanceAppView
      * @constructor
      * @category Resources
      * @param {Object} initialization object.
-     * @returns {Object} Returns a AwsInstancesAppView instance.
+     * @returns {Object} Returns a GoogleSnapshotsAppView instance.
      */
-    var AwsInstancesAppView = ResourceAppView.extend({
+    var GoogleSnapshotsAppView = ResourceAppView.extend({
         
         template: _.template(googleInstanceAppTemplate),
 
@@ -44,7 +44,7 @@ define([
         
         modelStringIdentifier: "id",
         
-        columns: ["name", "id", "sizeGb", "status"],
+        columns: ["name", "id", "diskSizeGb", "status"],
         
         idColumnNumber: 1,
         
@@ -52,9 +52,9 @@ define([
         
         collectionType: Instances,
         
-        type: "compute",
+        type: "disk",
         
-        subtype: "disks",
+        subtype: "snapshots",
         
         CreateView: AwsInstanceCreate,
         
@@ -76,7 +76,7 @@ define([
             this.render();
             
             var instanceApp = this;
-            Common.vent.on("diskAppRefresh", function() {
+            Common.vent.on("snapshotAppRefresh", function() {
                 instanceApp.render();
             });
             
@@ -87,16 +87,16 @@ define([
         },
         
         performAction: function(event) {
-            var instance = this.collection.get(this.selectedId);
+            var disk = this.collection.get(this.selectedId);
             switch(event.target.text)
             {
             case "Delete":
-                //instance.start(this.credentialId, this.region);
-                alert("Delete this disk");
+                //disk.delete(this.credentialId, this.region);
+                alert('delete snapshot');
                 break;
             }
         }
     });
 
-    return AwsInstancesAppView;
+    return GoogleSnapshotsAppView;
 });

@@ -82,13 +82,6 @@ define([
                 newCloudCredential.attributes.name = options.name;
                 newCloudCredential.attributes.cloud_provider = options.cloud_account.attributes.cloud_provider;
                 
-                //add auth url to cred
-                if(options.cloud_account.attributes.url !== ""){
-                    newCloudCredential.attributes.cloud_attributes = {
-                            "openstack_auth_url": options.cloud_account.attributes.url
-                    };
-                }
-                
                 this.cloudCredentials.create(newCloudCredential, {cloud_account_id: options.cloud_account.id});
                 
                 this.$el.dialog('close');
@@ -114,12 +107,6 @@ define([
                 this.selectedCloudAccount = this.cloudAccounts.get(accountName);
                 
                 this.selectedCloudCredential = new CloudCredential({cloud_provider: this.selectedCloudAccount.attributes.cloud_provider});
-            
-                if(this.selectedCloudAccount.attributes.url !== ""){
-                    this.selectedCloudCredential.attributes.cloud_attributes = {
-                            "openstack_auth_url": this.selectedCloudAccount.attributes.url
-                    };
-                }
             
                 this.renderCredentialForm();
             }

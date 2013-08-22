@@ -6,22 +6,20 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'models/resource/resourceModel',
+        'jquery',
+        'backbone',
+        '/js/google/models/compute/googleSnapshot.js',
         'common'
-], function( ResourceModel, Common ) {
+], function( $, Backbone, Snapshot, Common ) {
     'use strict';
 
-    var Flavor = ResourceModel.extend({
+    var SnapshotList = Backbone.Collection.extend({
 
-        defaults: {
-            id: '',
-            bits: '',
-            cores: '',
-            disk: '',
-            name: '',
-            ram: ''
-        }
+        model: Snapshot,
+
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/google/compute/snapshots'
     });
+    
+    return SnapshotList;
 
-    return Flavor;
 });

@@ -385,14 +385,42 @@
                         "type": "instances"
                     },
                     {
+                        "name": "Metadata",
+                        "type": "metadata"
+                    }
+                ]
+            },{
+                "name": "Disks",
+                "type": "disk",
+                "defaultSubtype": "disks",
+                "subServices" : [
+                    {
                         "name": "Disks",
                         "type": "disks"
                     },
                     {
-                        "name": "Networks",
-                        "type": "networks"
+                        "name": "Snapshots",
+                        "type": "snapshots"
                     }
                 ]
+            },{
+                "name": "Networks",
+                "type": "network",
+                "defaultSubtype": "networks",
+                "subServices" : [
+                    {
+                        "name": "Networks",
+                        "type": "networks"
+                    },
+                    {
+                        "name": "Firewalls",
+                        "type": "firewalls"
+                    }
+                ]
+            },{
+                "name": "Cloud Storage",
+                "type": "object_storage",
+                "defaultSubtype": "buckets"
             }
         ],
         "regions": [

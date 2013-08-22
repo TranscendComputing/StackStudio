@@ -109,11 +109,11 @@ define([
         
         performAction: function(event) {
             var instance = this.collection.get(this.selectedId);
+            
             switch(event.target.text)
             {
-            case "Delete":
-                //instance.start(this.credentialId, this.region);
-                alert("Delete this instance");
+            case "Terminate":
+                instance.delete(this.credentialId, this.region);
                 break;
             }
         },

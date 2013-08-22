@@ -91,7 +91,7 @@ define([
                 managementView.refreshServices();
             });
             Common.vent.on("cloudAccountUpdated", function() {
-                managementView.updateServices();
+                managementView.updateSession();
             });
         },
         /** Add all of my own html elements */
@@ -132,7 +132,7 @@ define([
             $("#update_auth_url_button").removeClass("ui-state-hover");
             
         },
-        
+        /*
         updateServices: function(){
             var thisView = this;
             $.each(thisView.rootView.cloudCredentials.models, function(index, value) {
@@ -144,6 +144,10 @@ define([
                     thisView.rootView.cloudCredentials.update(value);
                 }
             });
+        },
+        */
+        updateSession: function(){
+            
         },
         
         updateAuthModel: function(){
