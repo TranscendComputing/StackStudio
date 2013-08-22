@@ -14,11 +14,18 @@ define([
     var Image = ResourceModel.extend({
 
         defaults: {
-            label: '',
-            description: '',
-            logo: '',
-            product: '',
-            region: {}
+            id: '',
+            name: ''
+        },
+        
+        create: function(options, credentialId) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/google/compute/images?&cred_id=" + credentialId;
+            this.sendAjaxAction(url, "POST", {"image": options}, "imageAppRefresh");
+        },
+        
+        delete: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/google/compute/images/" + this.attributes.name + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "imageAppRefresh");
         }
 
     });

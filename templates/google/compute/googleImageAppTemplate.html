@@ -1,0 +1,66 @@
+<div>
+    <div class="button_bar">
+        <table>
+            <tr>
+                <td>
+                    <button class="create_button">Create Image</button>
+                </td>
+                <td>
+                    <ul id="action_menu">
+                        <li style="z-index: 1000">
+                            <a id="action_button">Actions</a>
+                            <ul>
+                                <li><a>Terminate</a></li>                
+                            </ul>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table id="resource_table" class="full_width">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Image ID</th>
+                <th>Description</th>
+                <th>Creation Timestamp</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    <div id="details" class="detail_panel"></div>
+</div>
+
+<script type="text/html" id="resource_detail">
+    <div id="detail_tabs">
+        <ul>
+            <li><a id="instance_details" href="#tabs-1">Details</a></li>
+        </ul>
+        <div id="tabs-1" class="tab">
+            <table>
+                <tbody>
+                    <tr><td><b>Name:</b></td><td>{{ name }}</td></tr>
+                    <tr><td><b>Instance ID:</b></td><td>{{ id }}</td></tr>
+                    <tr><td><b>Description:</b></td><td>{{ description }}</td></tr>
+                    
+                    <tr><td><b>Container Type:</b></td><td>{{ rawDisk.containerType }}</td></tr>
+                    <tr><td><b>Source:</b></td><td>{{ rawDisk.source }}</td></tr>
+                    
+                    <tr><td><b>Preferred Kernel:</b></td><td>{{ preferred_kernel }}</td></tr>
+                    <tr><td><b>Self Link:</b></td><td>{{ selfLink }}</td></tr>
+                    <tr><td><b>Source Type:</b></td><td>{{ sourceType }}</td></tr>
+                    <tr><td><b>Project:</b></td><td>{{ project }}</td></tr>
+                    
+                    <tr><td><b>Creation Timestamp:</b></td><td>{{ creation_timestamp }}</td></tr>
+                    <tr><td><b>Status:</b></td><td>{{ status }}</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+</script>
