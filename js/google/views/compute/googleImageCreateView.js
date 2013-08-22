@@ -10,32 +10,32 @@ define([
         'underscore',
         'backbone',
         'views/dialogView',
-        'text!templates/google/compute/googleNetworkCreateTemplate.html',
-        '/js/google/models/compute/googleNetwork.js',
+        'text!templates/google/compute/googleImageCreateTemplate.html',
+        '/js/google/models/compute/googleImage.js',
         'icanhaz',
         'common'
         
-], function( $, _, Backbone, DialogView, networkCreateTemplate, Network, ich, Common ) {
+], function( $, _, Backbone, DialogView, imageCreateTemplate, Image, ich, Common ) {
     
     /**
-     * googleNetworkCreateView is UI form to create compute.
+     * googleImageCreateView is UI form to create compute.
      *
-     * @name NetworkCreateView
+     * @name ImageCreateView
      * @constructor
      * @category Compute
      * @param {Object} initialization object.
-     * @returns {Object} Returns a googleNetworkCreateView network.
+     * @returns {Object} Returns a googleImageCreateView image.
      */
     
-    var GoogleNetworkCreateView = DialogView.extend({
+    var GoogleImageCreateView = DialogView.extend({
 
         credentialId: undefined,
 
         region: undefined,
         
-        network: new Network(),
+        image: new Image(),
         
-        // Delegated events for creating new networks, etc.
+        // Delegated events for creating new images, etc.
         events: {
             "dialogclose": "close"
         },
@@ -44,14 +44,14 @@ define([
             this.credentialId = options.cred_id;
             this.region = options.region;
             var createView = this;
-            var compiledTemplate = _.template(networkCreateTemplate);
+            var compiledTemplate = _.template(imageCreateTemplate);
             this.$el.html(compiledTemplate);
 
             this.$el.dialog({
                 autoOpen: true,
                 title: "Create Compute Image",
                 resizable: false,
-                width: 425,
+                width: 410,
                 modal: true,
                 buttons: {
                     Create: function () {
@@ -63,6 +63,8 @@ define([
                 }
             });
             
+            $("#kernal_input").selectmenu();
+            
         },
 
         render: function() {
@@ -70,25 +72,43 @@ define([
         },
         
         create: function() {
-            var newNetwork = this.network;
-            var ntwrk = {};
+            var newImage = this.image;
+            var imge = {};
             
             var issue = false;
             
             if($("#name_input").val() !== "" ) {
-                ntwrk.network_name = $("#name_input").val();
+                imge.name = $("#name_input").val();
             }else {
                 issue = true;
             }
             
-            if($("#iprange_input").val() !== "" ) {
-                ntwrk.ip_range = $("#iprange_input").val();
+            if($("#description_input").val() !== "" ) {
+                imge.description = $("#description_input").val();
+            }else {
+                issue = true;
+            }
+            
+            if($("#kernal_input").val() !== "" ) {
+                imge.kernal = $("#kernal_input").val();
+            }else {
+                issue = true;
+            }
+            
+            if($("#source_input").val() !== "" ) {
+                imge.raw_disk.source = $("#source_input").val();
+            }else {
+                issue = true;
+            }
+            
+            if($("#container_input").val() !== "" ) {
+                imge.raw_disk.container_type = $("#container_type_input").val();
             }else {
                 issue = true;
             }
             
             if(!issue) {
-                newNetwork.create(ntwrk, this.credentialId);
+                newImage.create(imge, this.credentialId);
                 this.$el.dialog('close');
             } else {
                 Common.errorDialog("Invalid Request", "Please supply all required fields.");
@@ -96,5 +116,5 @@ define([
         }
     });
     
-    return GoogleNetworkCreateView;
+    return GoogleImageCreateView;
 });

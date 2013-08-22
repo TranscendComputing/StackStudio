@@ -84,7 +84,6 @@ define([
         
         performAction: function(event) {
             var instance = this.collection.get(this.selectedId);
-            debugger
             switch(event.target.text)
             {
             case "Terminate":
