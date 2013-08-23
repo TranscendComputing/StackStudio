@@ -24,11 +24,13 @@ Getting Started
 
     (9001 is the default listening port)
 
-6. Allow StackStudio to reach CloudMux as its backend. When CloudMux is running locally, StackStudio will find it at localhost:9292. If CloudMux is running in a remote location, then you must edit your hosts file to specify its location. Add the following lines to your hosts file, while editing (remote host ip).
+6. Allow StackStudio to reach CloudMux as its backend.
 
-	'127.0.0.1 		 stackstudio-local'
+	Copy backend.json.sample to backend.json
 
-	'(remote host ip) stackstudio-api'
+	'cp backend.json.sample backend.json'
+
+	Edit backend.json @backend_endpoint@ field to point to your CloudMux backend (e.g. "http://localhost:9292").
 
 5. If CloudMux is running locally go to http://localhost:9001/ for the StackStudio Dashboard. If CloudMux is running in a remote location go to http://stackstudio-local:9001/ for the StackStudio Dashboard.
 
