@@ -30,9 +30,11 @@ Getting Started
 
 	'cp backend.json.sample backend.json'
 
-	Edit backend.json @backend_endpoint@ field to point to your CloudMux backend (e.g. "http://localhost:9292").
+	Edit backend.json @backend_endpoint@ field to point to your CloudMux backend.
 
-5. If CloudMux is running locally go to http://localhost:9001/ for the StackStudio Dashboard. If CloudMux is running in a remote location go to http://stackstudio-local:9001/ for the StackStudio Dashboard.
+	(e.g. "http://localhost:9292")
+
+5. Go to http://localhost:9001/ and you'll see the StackStudio Dashboard.
 
 Compatibility
 -------------
