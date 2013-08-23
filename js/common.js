@@ -267,10 +267,11 @@ define(
          'views/consoleAppView',
          'routers/router',
          'views/errorDialog',
+         'text!/backend.json',
          'jquery-ui',
          'jquery-ui-plugins',
          'backbone.stickit'
-         ], function ($, _, Backbone, CommandLineView, Router, ErrorDialog) {
+         ], function ($, _, Backbone, CommandLineView, Router, ErrorDialog, backendTxt) {
 
     // Added custom handler for selectmenu
     Backbone.Stickit.addHandler({
@@ -298,20 +299,7 @@ define(
 
     //Base url for API calls
     var apiUrl;
-
-    // Automatically choose URL based on current hostname.
-    // TODO: need a cleaner solution for this, w/o requiring too much config
-    if(location.hostname.indexOf("stackstudio2.appspot.com") !== -1 ) {
-       apiUrl = "http://cloudmux-demo.sdlc.transcendcomputing.com:9292";
-    }else if(location.hostname === "localhost") {
-        apiUrl = "http://localhost:9292";
-    }else if(location.hostname === "stackstudio-dev") {
-        apiUrl = "http://devessex.essex.momentumsoftware.com:8000";
-    }else if(location.hostname === "stackstudio-local") {
-        apiUrl = "http://stackstudio-api:9292";
-    }else if(location.hostname === "devessex.essex.momentumsoftware.com") {
-        apiUrl = "http://devessex.essex.momentumsoftware.com:8000";
-    }
+    apiUrl = JSON.parse(backendTxt).backend_endpoint;
 
     // Initialize custom events object
     var vent = _.extend({}, Backbone.Events);

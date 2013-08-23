@@ -32,4 +32,5 @@ js/*-all*js*
 .tags*
 *.sublime*
 .DS_Store
+backend.json
 
