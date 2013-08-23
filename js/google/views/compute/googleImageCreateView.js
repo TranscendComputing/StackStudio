@@ -82,6 +82,7 @@ define([
         create: function() {
             var newImage = this.image;
             var imge = {};
+            imge.raw_disk = {};
             
             var issue = false;
             
@@ -97,8 +98,8 @@ define([
                 issue = true;
             }
             
-            if($("#kernal_input").val() !== "" ) {
-                imge.kernal = $("#kernal_input").val();
+            if($("#kernel_input").val() !== "" ) {
+                imge.preferred_kernel = $("#kernel_input").val();
             }else {
                 issue = true;
             }
@@ -110,7 +111,7 @@ define([
             }
             
             if($("#container_input").val() !== "" ) {
-                imge.raw_disk.container_type = $("#container_type_input").val();
+                imge.raw_disk.sourceType = $("#container_input").val();
             }else {
                 issue = true;
             }
