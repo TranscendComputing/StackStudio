@@ -64,7 +64,7 @@
         <exec command="ssh stackstudio@${deploy.ip} sudo /etc/init.d/${sstudio.webserver} restart" failonerror="true"/>
 	</target>
 
-	<target name="setBackend" depends="deploy">
+	<target name="setBackend">
     	<copy tofile="${sstudio2.home}/StackStudio/backend.json" file="${sstudio2.home}/StackStudio/backend.json.sample">
     		<filterset>
                 <filter token="backend_endpoint" value="${backend.cloudmux}"/>
