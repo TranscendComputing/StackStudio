@@ -64,14 +64,6 @@
         <exec command="ssh stackstudio@${deploy.ip} sudo /etc/init.d/${sstudio.webserver} restart" failonerror="true"/>
 	</target>
 
-	<target name="setBackend">
-    	<copy tofile="${sstudio2.home}/StackStudio/backend.json" file="${sstudio2.home}/StackStudio/backend.json.sample">
-    		<filterset>
-                <filter token="backend_endpoint" value="${backend.cloudmux}"/>
-            </filterset>
-    	</copy>
-    </target>
-
     <available file=".git" type="dir" property="git.present"/>
 
     <target name="git.revision" description="Store git revision in ${repository.version}" if="git.present">
@@ -98,7 +90,15 @@
         <exec command="grunt less" failonerror="true"/>
     </target>
 
-	<target name="package" depends="clean,init,grunt">
+    <target name="setBackend">
+    	<copy file="${basedir}/backend.json.sample" tofile="${basedir}/backend.json">
+    		<filterset>
+                <filter token="backend_endpoint" value="${backend.cloudmux}"/>
+            </filterset>
+    	</copy>
+    </target>
+
+	<target name="package" depends="clean,init,grunt,setBackend">
 	    <package destfile="${build}/${package.file}">
 	        <include-patterns/>
 	        <exclude-patterns/>
