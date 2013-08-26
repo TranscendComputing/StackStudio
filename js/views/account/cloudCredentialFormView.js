@@ -118,7 +118,7 @@ define([
                 data: $("#p12_upload").serialize(),
                 contentType: 'application/x-www-form-urlencoded',
                 success: function(data){
-                    alert("yo");
+                    //file uploaded
                 },
                 error: function(jqXHR) {
                     Common.errorDialog(jqXHR.statusText, jqXHR.responseText);

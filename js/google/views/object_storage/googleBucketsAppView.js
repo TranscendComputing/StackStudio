@@ -97,6 +97,69 @@ define([
             
         },
         
+        render: function() {
+            this.$el.html(this.template);
+            $("#resource_app").html(this.$el);
+            this.delegateEvents(this.events);
+            ich.refresh();
+            $('button').button();
+            $("#action_menu").menu();
+
+            this.$table = $('#resource_table').dataTable({
+                "sDom": 't',
+                "bDestroy": true
+            });
+            this.$table.fnProcessingIndicator(true);
+
+            var CollectionType = this.collectionType;
+            this.collection = new CollectionType();
+            this.collection.on( 'add', this.addOne, this );
+            this.collection.on( 'reset', this.addAll, this );
+            $("#action_menu li").addClass("ui-state-disabled");
+
+            var view = this;
+            // Fetch error callback function is defined here to 
+            // ensure variable scopes
+            var fetchErrorFunction = function(collection, response, options) {
+                view.$table.fnProcessingIndicator(false);
+                var status,
+                    message;
+                if(response.statusText !== "")
+                {
+                    status = response.statusText;
+                }else{
+                    status = "Connection Error";
+                }
+                if(response.responseText !== "")
+                {
+                    message = response.responseText;
+                }else{
+                    message = "Unable to connect to server to fetch resources.";
+                }
+                Common.errorDialog(status, message);
+            };
+            
+            if(view.credentialId && view.region) {
+                view.collection.fetch({ 
+                    error: fetchErrorFunction,
+                    data: $.param({ cred_id: view.credentialId, region: view.region }),
+                    reset: true
+                });
+            }else if(view.credentialId) {
+                view.collection.fetch({  
+                    error: fetchErrorFunction,
+                    data: $.param({ cred_id: view.credentialId }),
+                    reset: true 
+                });
+            }else {
+                view.collection.fetch({ 
+                    error: fetchErrorFunction,
+                    reset: true
+                });
+            }
+            view.setResourceAppHeightify();
+        },
+        
         refreshObject: function() {
             $("#download_file_form").attr("action", Common.apiUrl + "/stackstudio/v1/cloud_management/google/object_storage/directory/file/download");
             

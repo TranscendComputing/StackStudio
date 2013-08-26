@@ -17,7 +17,8 @@ define([
 
         model: Image,
 
-        url: 'samples/googleImages.json'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/google/compute/images'
+        
     });
     
     return ImageList;

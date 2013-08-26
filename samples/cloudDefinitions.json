@@ -385,8 +385,8 @@
                         "type": "instances"
                     },
                     {
-                        "name": "Metadata",
-                        "type": "metadata"
+                        "name": "Images",
+                        "type": "images"
                     }
                 ]
             },{
