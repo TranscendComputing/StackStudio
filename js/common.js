@@ -147,7 +147,7 @@ requirejs.config({
         interpreters: '../interpreters',
         templates: '../../templates',
         wrappers: '../../wrappers',
-        'jquery': '//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min',
+        'jquery': '//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min',
         'jquery-ui': '//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min',
         'underscore': '//cdnjs.cloudflare.com/ajax/libs/lodash.js/1.1.0/lodash.min',
         'backbone': '//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min',
@@ -156,7 +156,7 @@ requirejs.config({
         'icanhaz': 'ICanHaz',
         'jquery.form': 'jquery.form',
         //'jquery.list': 'jquery.list.min',
-        'jquery.terminal': 'jquery.terminal-0.4.22',
+        'jquery.terminal': 'jquery.terminal-0.7.3',
         'jquery.mousewheel': 'jquery.mousewheel-min',
         'messenger': 'messenger.min',
         //'jquery.jstree': '//cachedcommons.org/cache/jquery-jstree/1.0.0/javascripts/jquery-jstree-min',
@@ -168,8 +168,9 @@ requirejs.config({
         'wijsuperpanel': 'jquery.wijmo.wijsuperpanel',
         'wijsplitter': 'jquery.wijmo.wijsplitter',
         'wijmo': 'wijmo-require',
-        'wijmo-actual': 'jquery.wijmo-open.all.2.3.2.min',
-        'bootstrap': '//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min'
+        'wijmo-actual': '//cdn.wijmo.com/jquery.wijmo-open.all.3.20132.8.min', //'jquery.wijmo-open.all.2.3.2.min',
+        'bootstrap': '//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min',
+        'typeahead': '../vendor/twitter/typeahead.min'
     }
 });
 
@@ -266,10 +267,11 @@ define(
          'views/consoleAppView',
          'routers/router',
          'views/errorDialog',
+         'text!/backend.json',
          'jquery-ui',
          'jquery-ui-plugins',
          'backbone.stickit'
-         ], function ($, _, Backbone, CommandLineView, Router, ErrorDialog) {
+         ], function ($, _, Backbone, CommandLineView, Router, ErrorDialog, backendTxt) {
 
     // Added custom handler for selectmenu
     Backbone.Stickit.addHandler({
@@ -297,20 +299,7 @@ define(
 
     //Base url for API calls
     var apiUrl;
-
-    // Automatically choose URL based on current hostname.
-    // TODO: need a cleaner solution for this, w/o requiring too much config
-    if(location.hostname.indexOf("stackstudio2.appspot.com") !== -1 ) {
-       apiUrl = "http://cloudmux-demo.sdlc.transcendcomputing.com:9292";
-    }else if(location.hostname === "localhost") {
-        apiUrl = "http://localhost:9292";
-    }else if(location.hostname === "stackstudio-dev") {
-        apiUrl = "http://devessex.essex.momentumsoftware.com:8000";
-    }else if(location.hostname === "stackstudio-local") {
-        apiUrl = "http://stackstudio-api:9292";
-    }else if(location.hostname === "devessex.essex.momentumsoftware.com") {
-        apiUrl = "http://devessex.essex.momentumsoftware.com:8000";
-    }
+    apiUrl = JSON.parse(backendTxt).backend_endpoint;
 
     // Initialize custom events object
     var vent = _.extend({}, Backbone.Events);
