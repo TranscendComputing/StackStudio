@@ -11,8 +11,10 @@ define([
         'bootstrap',
         'backbone',
         'common',
-        'text!templates/stacks/stacksTemplate.html'
-], function( $, _, bootstrap, Backbone, Common, stacksTemplate ) {
+        'text!templates/stacks/stacksTemplate.html',
+        'views/stacks/stackDesignView',
+        'views/stacks/stackRunView'
+], function( $, _, bootstrap, Backbone, Common, stacksTemplate, StackDesignView, StackRunView ) {
 
     var StacksView = Backbone.View.extend({
 
@@ -20,13 +22,44 @@ define([
 
         template: _.template(stacksTemplate),
 
-        events: {
+        stackDesignView: undefined,
 
+        stackRunView: undefined,
+
+        events: {
+            
         },
 
         initialize: function() {
             $("#main").html(this.el);
             this.$el.html(this.template);
+
+            //Add event when tabs change
+            $('a[data-toggle="tab"]').off('shown');
+            var stacksView = this;
+            $('a[data-toggle="tab"]').on('shown', function (e) {
+                stacksView.changeTabs();
+            });
+        },
+
+        render: function() {
+            this.stackDesignView = undefined;
+            this.stackRunView = undefined;
+            this.changeTabs();
+        },
+
+        changeTabs: function() {
+            if($("#tabs-design").hasClass("active")) {
+                if(!this.stackDesignView) {
+                    this.stackDesignView = new StackDesignView();
+                }
+                this.stackDesignView.render();
+            }else {
+                if(!this.stackRunView) {
+                    this.stackRunView = new StackRunView();
+                }
+                this.stackRunView.render();
+            }
         },
 
         close: function(){

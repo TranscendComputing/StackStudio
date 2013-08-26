@@ -1,3 +1,34 @@
 <div>
-	Stacks View!
+	<div class="button_bar">
+		<a class="btn dropdown-toggle btn-success" data-toggle="dropdown" href="#">
+	    	Select Stack
+	    	<span class="caret"></span>
+	  	</a>
+	  	<ul class="dropdown-menu">
+	  	</ul>
+	  	<a id="create_stack_button" class="btn btn-primary">Create New Stack</a>
+	  	<a id="delete_stack_button" class="btn btn-danger">Delete Stack</a>
+	</div>
+	<div>
+		<ul class="nav nav-tabs">
+		  	<li class="active"><a href="#tabs-design" data-toggle="tab">Design Time</a></li>
+		  	<li><a href="#tabs-run" data-toggle="tab">Run Time</a></li>
+		</ul>
+		<div class="tab-content">
+			<div id="tabs-design" class="tab-pane active">
+				<div id="design_time_content">
+					<div class="well">
+						A Stack needs to be selected.
+					</div>
+				</div>
+			</div>
+			<div id="tabs-run" class="tab-pane">
+				<div id="run_time_content">
+					<div class="well">
+						A Stack needs to be selected.
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
