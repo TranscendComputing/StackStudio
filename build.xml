@@ -26,8 +26,7 @@
 	<property name="resources" value="${project.base.dir}/resources" />
 	<property name="hudson.url" value="jenkins.momentumsoftware.com:8080/" />
 	<property name="package.file" value="stackstudio2.tar.gz"/>
-	<property name="sstudio.home" value="/home/sstudio"/>
-    <property name="sstudio2.home" value="/home/sstudio/v2"/>
+    <property name="sstudio2.home" value="/home/stackstudio"/>
 	<property name="dist" value="${project.base.dir}/dist" />
 
     <property name="dist.suffix" value=""/>
