@@ -93,7 +93,7 @@
     <target name="setBackend">
     	<copy file="${basedir}/backend.json.sample" tofile="${basedir}/backend.json">
     		<filterset>
-                <filter token="backend_endpoint" value="'${backend.cloudmux}'"/>
+                <filter token="backend_endpoint" value='"${backend.cloudmux}"'/>
             </filterset>
     	</copy>
     </target>
