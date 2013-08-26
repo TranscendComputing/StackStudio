@@ -55,15 +55,23 @@
 
 	<target name="deploy" depends="package">
         <echo message="Deploying StackStudio to ${deploy.ip}"/>
-		<exec command="scp ${build}/${package.file} ${deploy.ip}:/${sstudio2.home}" failonerror="true"/>
-        <exec command="ssh ${deploy.ip} sudo rm -r ${sstudio2.home}/StackStudio" failonerror="true"/>
-        <exec command="ssh ${deploy.ip} sudo tar xvzf ${sstudio2.home}/${package.file} -C ${sstudio2.home}" failonerror="true"/>
-		<exec command="ssh ${deploy.ip} sudo chmod 755 ${sstudio2.home}/StackStudio" failonerror="true"/>
-		<exec command="ssh ${deploy.ip} sudo find ${sstudio2.home}/StackStudio -type d -exec chmod 755 {} \;" failonerror="true"/>
-        <exec command="ssh ${deploy.ip} sudo find ${sstudio2.home}/StackStudio -type f -exec chmod 644 {} \;" failonerror="true"/>
-        <exec command="ssh ${deploy.ip} sudo chown -R sstudio:sstudio ${sstudio2.home}/StackStudio" failonerror="true"/>
-        <exec command="ssh ${deploy.ip} sudo /etc/init.d/${sstudio.webserver} restart" failonerror="true"/>
+		<exec command="scp ${build}/${package.file} stackstudio@${deploy.ip}:/${sstudio2.home}" failonerror="true"/>
+        <exec command="ssh stackstudio@${deploy.ip} sudo rm -r ${sstudio2.home}/StackStudio" failonerror="true"/>
+        <exec command="ssh stackstudio@${deploy.ip} sudo tar xvzf ${sstudio2.home}/${package.file} -C ${sstudio2.home}" failonerror="true"/>
+		<exec command="ssh stackstudio@${deploy.ip} sudo chmod 755 ${sstudio2.home}/StackStudio" failonerror="true"/>
+		<exec command="ssh stackstudio@${deploy.ip} sudo find ${sstudio2.home}/StackStudio -type d -exec chmod 755 {} \;" failonerror="true"/>
+        <exec command="ssh stackstudio@${deploy.ip} sudo find ${sstudio2.home}/StackStudio -type f -exec chmod 644 {} \;" failonerror="true"/>
+        <exec command="ssh stackstudio@${deploy.ip} sudo chown -R sstudio:sstudio ${sstudio2.home}/StackStudio" failonerror="true"/>
+        <exec command="ssh stackstudio@${deploy.ip} sudo /etc/init.d/${sstudio.webserver} restart" failonerror="true"/>
 	</target>
+
+	<target name="setBackend" depends="deploy">
+    	<copy tofile="${sstudio2.home}/StackStudio/backend.json" file="${sstudio2.home}/StackStudio/backend.json.sample">
+    		<filterset>
+                <filter token="backend_endpoint" value="${backend.cloudmux}"/>
+            </filterset>
+    	</copy>
+    </target>
 
     <available file=".git" type="dir" property="git.present"/>
 
