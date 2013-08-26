@@ -60,7 +60,7 @@
 		<exec command="ssh stackstudio@${deploy.ip} sudo chmod 755 ${sstudio2.home}/StackStudio" failonerror="true"/>
 		<exec command="ssh stackstudio@${deploy.ip} sudo find ${sstudio2.home}/StackStudio -type d -exec chmod 755 {} \;" failonerror="true"/>
         <exec command="ssh stackstudio@${deploy.ip} sudo find ${sstudio2.home}/StackStudio -type f -exec chmod 644 {} \;" failonerror="true"/>
-        <exec command="ssh stackstudio@${deploy.ip} sudo chown -R sstudio:sstudio ${sstudio2.home}/StackStudio" failonerror="true"/>
+        <exec command="ssh stackstudio@${deploy.ip} sudo chown -R stackstudio:stackstudio ${sstudio2.home}/StackStudio" failonerror="true"/>
         <exec command="ssh stackstudio@${deploy.ip} sudo /etc/init.d/${sstudio.webserver} restart" failonerror="true"/>
 	</target>
 
