@@ -73,7 +73,7 @@ define([
             this.render();
             
             var instanceApp = this;
-            Common.vent.on("instanceAppRefresh", function() {
+            Common.vent.on("imageAppRefresh", function() {
                 instanceApp.render();
             });
         },
@@ -83,11 +83,11 @@ define([
         },
         
         performAction: function(event) {
-            var instance = this.collection.get(this.selectedId);
+            var image = this.collection.get(this.selectedId);
             switch(event.target.text)
             {
-            case "Terminate":
-                //instance.delete(this.credentialId, this.region);
+            case "Delete":
+                image.delete(this.credentialId, this.region);
                 break;
             }
         },

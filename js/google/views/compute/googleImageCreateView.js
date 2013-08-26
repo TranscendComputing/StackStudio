@@ -82,12 +82,12 @@ define([
         create: function() {
             var newImage = this.image;
             var imge = {};
-            imge.raw_disk = {};
+            imge.rawDisk = {};
             
             var issue = false;
             
             if($("#name_input").val() !== "" ) {
-                imge.name = $("#name_input").val();
+                imge.image_name = $("#name_input").val();
             }else {
                 issue = true;
             }
@@ -99,19 +99,13 @@ define([
             }
             
             if($("#kernel_input").val() !== "" ) {
-                imge.preferred_kernel = $("#kernel_input").val();
+                imge.preferredKernel = $("#kernel_input").val();
             }else {
                 issue = true;
             }
             
             if($("#source_input").val() !== "" ) {
-                imge.raw_disk.source = $("#source_input").val();
-            }else {
-                issue = true;
-            }
-            
-            if($("#container_input").val() !== "" ) {
-                imge.raw_disk.sourceType = $("#container_input").val();
+                imge.rawDisk.source = $("#source_input").val();
             }else {
                 issue = true;
             }
