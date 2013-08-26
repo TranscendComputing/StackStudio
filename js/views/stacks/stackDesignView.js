@@ -44,7 +44,7 @@ define([
             var editor = ace.edit("design_editor");
             var content = editor.getValue();
             Common.vent.trigger('project:updateTemplate', content);
-        },
+        }
     });
 
     return StackDesignView;
