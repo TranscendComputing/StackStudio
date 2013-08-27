@@ -26,8 +26,18 @@ define([
 
         /** Default attributes for the cookbook */
         defaults: {
-            name: '',
-            versions: []
+            name: 'New Offering',
+            version: ""
+        },
+
+        validate: function(offering, opts){
+            var errors = [];
+            //TODO: Add validations
+            if (!offering.name){
+                errors.push({name: 'nameRequired', message: 'Name is required.'});
+            }
+
+            return errors.length > 0 ? errors : false;
         }
 
     });
