@@ -65,7 +65,6 @@ define([
         },
 
         saveOfferingClick: function(evt){
-            debugger;
             this.saveOffering();
         },
         
