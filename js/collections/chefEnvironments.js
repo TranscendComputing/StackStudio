@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        'models/ChefEnvironment',
+        'models/chefEnvironment',
         'common'
 ], function( $, Backbone, ChefEnvironment, Common) {
 	'use strict';

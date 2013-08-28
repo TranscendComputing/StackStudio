@@ -10,23 +10,60 @@ define([
         'underscore',
         'bootstrap',
         'backbone',
+        'views/offerings/offeringDesignView',
+        'views/offerings/PortfoliosView',
         'common',
+        'models/offering',
         'text!templates/offerings/offeringsTemplate.html'
-], function( $, _, bootstrap, Backbone, Common, offeringsTemplate ) {
+], function( $, _, bootstrap, Backbone, OfferingDesignView, PortfoliosView, Common, Offering, offeringsTemplate ) {
 
     var OfferingsView = Backbone.View.extend({
 
         tagName: 'div',
 
         template: _.template(offeringsTemplate),
+        _offeringDesignView: null,
+        currentOffering: {},
 
         events: {
+            "click #newOfferingButton": "newOfferingButtonClickHandler"
+        },
 
+        newOfferingButtonClickHandler: function(evt){
+            this.currentOffering = new Offering();
+            this._offeringDesignView = new OfferingDesignView({el: $("#editOfferingContainer"), model:this.currentOffering});
+            
+            this._offeringDesignView.render();
+            this._offeringDesignView.on("offeringEditCancelled", $.proxy(this.cancelOfferingEditHandler, this));
         },
 
         initialize: function() {
             $("#main").html(this.el);
             this.$el.html(this.template);
+        },
+
+        configureTabs: function(){
+            var $this = this;
+            $("#offeringsTabs a:first").tab("show");
+
+            $("#offeringsTabs a").click(function(e){
+                e.preventDefault();
+                $(this).tab('show');
+                var targetID = $(this).attr("href");
+                if (targetID === "#portfolios"){
+                    var portfoliosView = new PortfoliosView({el: targetID, model: {}});
+                    portfoliosView.render();
+                }
+            });
+        },
+
+        render: function(){
+            this.configureTabs();
+        },
+
+        cancelOfferingEditHandler: function(){
+            $("#editOfferingContainer").empty();
+            this.currentOffering = null;
         },
 
         close: function(){
@@ -53,5 +90,5 @@ define([
         }
     }, Common);
 
-	return OfferingsView;
+    return OfferingsView;
 });

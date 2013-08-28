@@ -1,0 +1,83 @@
+[
+	{
+		"name": "Portfolio 1",
+		"id": "a4fbb179-61c0-4467-bb92-d04eb60ab2dd",
+        "description": "",
+        "version": "",
+        "stacks": [
+	        {
+				"id": "94fbb179-61c0-4467-bb92-d04eb60ab2dd",
+				"name": "Stack 2 openstack",
+				"description": "This stack does really cool things, but it works only on openstack.",
+				"compatibleClouds":[
+					"openstack"
+				]
+			},
+        	{
+				"id": "94fbb179-61c0-4467-bb92-d04eb60ab2e0",
+				"name": "Stack 5 all",
+				"description": "This stack does really cool things, and it works on any cloud!!!",
+				"compatibleClouds":[
+					"aws",
+					"openstack",
+					"joyent",
+					"google"
+				]
+			}
+        ]
+	},
+	{
+		"name": "Portfolio 2",
+		"id": "b4fbb179-61c0-4467-bb92-d04eb60ab2dd",
+        "description": "",
+        "version": "",
+        "stacks": [
+	        {
+				"id": "94fbb179-61c0-4467-bb92-d04eb60ab2dd",
+				"name": "Stack 2 openstack",
+				"description": "This stack does really cool things, but it works only on openstack.",
+				"compatibleClouds":[
+					"openstack"
+				]
+			},
+        	{
+				"id": "94fbb179-61c0-4467-bb92-d04eb60ab2e0",
+				"name": "Stack 5 all",
+				"description": "This stack does really cool things, and it works on any cloud!!!",
+				"compatibleClouds":[
+					"aws",
+					"openstack",
+					"joyent",
+					"google"
+				]
+			}
+		]
+	},
+	{
+		"name": "Portfolio 3",
+		"id": "c4fbb179-61c0-4467-bb92-d04eb60ab2dd",
+        "description": "",
+        "version": "",
+        "stacks": [
+	        {
+				"id": "94fbb179-61c0-4467-bb92-d04eb60ab2dd",
+				"name": "Stack 2 openstack",
+				"description": "This stack does really cool things, but it works only on openstack.",
+				"compatibleClouds":[
+					"openstack"
+				]
+			},
+        	{
+				"id": "94fbb179-61c0-4467-bb92-d04eb60ab2e0",
+				"name": "Stack 5 all",
+				"description": "This stack does really cool things, and it works on any cloud!!!",
+				"compatibleClouds":[
+					"aws",
+					"openstack",
+					"joyent",
+					"google"
+				]
+			}
+        ]
+	}
+]

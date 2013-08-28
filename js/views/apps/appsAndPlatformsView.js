@@ -92,6 +92,7 @@ define([
 
         chefGroupChangeHandler: function(evt){
             this.chefGroupQueue++;
+            var ver = null;
             var checkbox = $(evt.target);
             if (!checkbox){ 
                 return;
@@ -100,7 +101,7 @@ define([
             if (checkbox.prop("checked")){
                 switch(level){
                      case "cookbook": {
-                        var ver = checkbox.closest(".accordion-group")
+                        ver = checkbox.closest(".accordion-group")
                             .find(".accordion-inner:first");
                         if (ver.data("isLoaded")){
                             ver.find("input[type='checkbox']:gt(0)").prop("checked", false).prop("disabled", true);
@@ -131,7 +132,7 @@ define([
                             .find(".accordion-inner:first").siblings().each(function(){
                                 $(this).find(".accordion-inner:has(ul)").empty();
                             });
-                        var ver = checkbox.closest(".accordion-group")
+                        ver = checkbox.closest(".accordion-group")
                             .find(".accordion-inner:first");
                         if (ver.data("isLoaded")){
                             ver.find("input[type='checkbox']:gt(0)").prop("checked", false).prop("disabled", false);
@@ -307,7 +308,7 @@ define([
                         "/stackstudio/v1/orchestration/chef/cookbooks/",
                         encodeURIComponent(cookbook.get("name")),
                         '/',
-                        encodeURIComponent(version),
+                        encodeURIComponent(version)
                     ].join(''),
                 data: { account_id: this.credential.get("cloud_account_id")}
             }).done(function(model){
@@ -445,7 +446,7 @@ define([
                 elem.find(".accordion-heading")
                     .prepend(
                         $("<input type='checkbox'>").data("level", "cookbook")
-                    )
+                    );
                 elem.appendTo(cb); //TODO: if this doesn't perform well, try appending to a list first, then adding to doc. 
             });
         },

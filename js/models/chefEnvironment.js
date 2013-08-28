@@ -25,7 +25,7 @@ define([
             chef_type: '',
             override_attributes: {},
             attrs: null
-        },
+        }
         
     });
 

@@ -1,0 +1,45 @@
+[
+	{
+		"id": "94fbb179-61c0-4467-bb92-d04eb60ab2dc",
+		"name": "Stack 1 aws",
+		"description": "This stack does really cool things, but it works only on AWS.",
+		"compatibleClouds":[
+			"aws"
+		]
+	},
+	{
+		"id": "94fbb179-61c0-4467-bb92-d04eb60ab2dd",
+		"name": "Stack 2 openstack",
+		"description": "This stack does really cool things, but it works only on openstack.",
+		"compatibleClouds":[
+			"openstack"
+		]
+	},
+	{
+		"id": "94fbb179-61c0-4467-bb92-d04eb60ab2de",
+		"name": "Stack 3 google",
+		"description": "This stack does really cool things, but it works only on google.",
+		"compatibleClouds":[
+			"google"
+		]
+	},
+	{
+		"id": "94fbb179-61c0-4467-bb92-d04eb60ab2df",
+		"name": "Stack 4 joyent",
+		"description": "This stack does really cool things, but it works only on joyent.",
+		"compatibleClouds":[
+			"joyent"
+		]
+	},
+	{
+		"id": "94fbb179-61c0-4467-bb92-d04eb60ab2e0",
+		"name": "Stack 5 all",
+		"description": "This stack does really cool things, and it works on any cloud!!!",
+		"compatibleClouds":[
+			"aws",
+			"openstack",
+			"joyent",
+			"google"
+		]
+	}
+]
