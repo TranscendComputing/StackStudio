@@ -11,7 +11,7 @@ define([
         'bootstrap',
         'backbone',
         'views/offerings/offeringDesignView',
-        'views/offerings/PortfoliosView',
+        'views/offerings/portfoliosView',
         'common',
         'models/offering',
         'text!templates/offerings/offeringsTemplate.html'
