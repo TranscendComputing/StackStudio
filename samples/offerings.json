@@ -1,0 +1,39 @@
+[
+	{
+        "name": "Offering 1",
+        "id": "94fbb179-61c1-4467-bb92-d04eb60ab2dd",
+        "version": "1.0.0.0",
+        "url": "http://momentumsi.com/",
+        "sku": "123456",
+        "icon": "",
+        "illustration": "",
+        "briefDescription": "This is a fancy offering",
+        "longDescription": "This is a fantastic offering from the company who brought you 'words and stuff.'",
+        "stacks": [
+        	{
+				"id": "94fbb179-61c0-4467-bb92-d04eb60ab2dd",
+				"name": "Stack 2 openstack",
+				"description": "This stack does really cool things, but it works only on openstack.",
+				"compatibleClouds":[
+					"openstack"
+				]
+			},
+        	{
+				"id": "94fbb179-61c0-4467-bb92-d04eb60ab2e0",
+				"name": "Stack 5 all",
+				"description": "This stack does really cool things, and it works on any cloud!!!",
+				"compatibleClouds":[
+					"aws",
+					"openstack",
+					"joyent",
+					"google"
+				]
+			}
+        ],
+        "eulaName": "Custom",
+        "eulaCustom": "This is a custom EULA",
+        "support": "Please call for support options",
+        "pricing": "Pricing is random.",
+        "relatesTo": "All sorts of things"
+    }
+]

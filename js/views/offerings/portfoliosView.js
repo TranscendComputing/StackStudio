@@ -12,27 +12,48 @@ define([
 		'backbone',
 		'common',
 		'collections/portfolios',
-		'text!templates/offerings/portfoliosTemplate.html'
-], function( $, _, bootstrap, Backbone, Common, Portfolios, PortfolioViewTemplate ) {
+		'models/offering',
+		'models/stack',
+		'text!templates/offerings/portfoliosTemplate.html',
+		'text!templates/offerings/portfolioViewTemplate.html',
+		'text!templates/offerings/offeringItemView.html'
+], function( $, _, bootstrap, Backbone, Common, Portfolios, Offering, Stack, template, PortfolioViewTemplate, OfferingItemViewTemplate ) {
 
 	var OfferingsView = Backbone.View.extend({
 
 		tagName: 'div',
 
-		template: _.template(PortfolioViewTemplate),
+		template: _.template(template),
+		portfolioViewTemplate: _.template(PortfolioViewTemplate),
+		offeringsItemViewTemplate: _.template(OfferingItemViewTemplate),
 
 		model: null,
 		
 		events: {
-			
+			"shown #portfolioList": "accordionShown"
 		},
 
 		initialize: function() {
 			
 		},
 
+		accordionShown: function(evt){
+			var inner = $(evt.target).closest(".accordion-group").find(".accordion-inner:first");
+			var selectedPorfolio = $(evt.target).closest(".accordion-group").data("portfolio");
+			inner.empty();
+			var s = this.portfolioViewTemplate({
+				model: selectedPorfolio,
+				offeringsItemViewTemplate: this.offeringsItemViewTemplate,
+				Offering: Offering,
+				Stack: Stack
+			});
+			$(s).appendTo(inner);
+		},
+
 		render: function(){
-			var s = this.template({model: this.model});
+			var s = this.template({
+				model: this.model 
+			});
 			this.$el.html(s);
 			this.fetchPortfolios()//TODO: Add params?
 				.done($.proxy(this.renderPortfolios, this));
@@ -50,7 +71,7 @@ define([
 			.join(''),
 
 		renderAccordionGroup: function(accordionId, title){ //TODO: make this a common function
-			var elem = this.accordionGroupTemplate
+			var elem = this.accordionGroupTemplate //split/join is faster than replace() for some reason.
 				.split("{{name}}").join(title)
 				.split("{{collapseId}}").join(_.uniqueId("portfolio"))
 				.split("{{accordionId}}").join(accordionId);
@@ -63,6 +84,7 @@ define([
 			portfolios.each(function(portfolio){
 				var s = $this.renderAccordionGroup("portfolioList", portfolio.get("name"));
 				var group = $(s).appendTo(list);
+				group.data("portfolio", portfolio);
 				var inner = group.find("accordion-inner");
 				inner.text("editing: " + portfolio.get("name"));
 			});
