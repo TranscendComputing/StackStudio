@@ -22,31 +22,21 @@ define([
      * @param {Object} initialization object.
      * @returns {Object} Returns a Offering instance.
      */
-    var Offering = Backbone.Model.extend({
+    var Portfolio = Backbone.Model.extend({
 
         /** Default attributes for the cookbook */
         defaults: {
-            name: 'New Offering',
+            name: 'New Portfolio',
             id: "",
+            description: "",
             version: "",
-            url: "",
-            sku: "",
-            icon: "",
-            illustration: "",
-            briefDescription: "",
-            longDescription: "",
-            stacks: [],
-            eulaName: "",
-            eulaCustom: "",
-            support: "",
-            pricing: "",
-            relatesTo: ""
+            offerings: [] //TODO: Do we want an Offerings collection?
         },
 
-        validate: function(offering, opts){
+        validate: function(portfolio, opts){
             var errors = [];
             //TODO: Add validations
-            if (!offering.name){
+            if (!portfolio.name){
                 errors.push({name: 'nameRequired', message: 'Name is required.'});
             }
 
@@ -55,5 +45,5 @@ define([
 
     });
 
-    return Offering;
+    return Portfolio;
 });

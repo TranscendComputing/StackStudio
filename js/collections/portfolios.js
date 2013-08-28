@@ -8,22 +8,22 @@
 define([
         'jquery',
         'backbone',
-        'models/offering',
+        'models/portfolio',
         'common'
-], function( $, Backbone, Offering, Common) {
+], function( $, Backbone, Portfolio, Common) {
 	'use strict';
 
-	// Offering Collection
+	// Portfolio Collection
 	// ---------------
 
-	var OfferingList = Backbone.Collection.extend({
+	var PortfolioList = Backbone.Collection.extend({
 
 		// Reference to this collection's model.
-		model: Offering,
-        url: '../samples/offerings.json'
+		model: Portfolio,
+        url: '../samples/portfolios.json'
 	
 	});
 
-	return OfferingList;
+	return PortfolioList;
 
 });

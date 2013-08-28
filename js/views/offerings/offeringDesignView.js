@@ -12,10 +12,11 @@ define([
         'backbone',
         'common',
         'models/offering',
+        'collections/stacks',
         'text!templates/offerings/offeringDesignViewTemplate.html'
-], function( $, _, bootstrap, Backbone, Common, Offering, offeringDesignViewTemplate ) {
+], function( $, _, bootstrap, Backbone, Common, Offering, Stacks, offeringDesignViewTemplate ) {
 
-    var OfferingsView = Backbone.View.extend({
+    var OfferingDesignView = Backbone.View.extend({
 
         tagName: 'div',
 
@@ -34,8 +35,45 @@ define([
         },
 
         render: function(){
+            this.loadStacks();
             var s = this.template({model: this.model});
             this.$el.html(s);
+        },
+
+        loadStacks: function(){
+            var $this = this;
+            this.fetchStacks()
+                .done(function(model){
+                    $this.renderStacks(model);
+                })
+                .fail(function(obj){
+                    $this.showErrors(obj.errors);
+                });
+        },
+
+        renderStacks: function(stacks){
+            var list = $("#stacksList").empty();
+            stacks.each(function(stack){
+                $('<li><label class="checkbox"><input type="checkbox" value="' + stack.get("id") + '" style="margin-top:1px"> ' + stack.get("name") + '</label></li>')
+                    .appendTo(list);
+            });
+        },
+
+        fetchStacks: function(){
+            var deferred = $.Deferred();
+            var $this = this;
+            Stacks.fetch({
+                data: {
+                    //TODO: What data is necessary for stacks?
+                },
+                success: function(model){
+                    deferred.resolve(model);
+                },
+                error: function(model, errors){
+                    deferred.reject({model: model, errors:errors});
+                }
+            });
+            return deferred.promise();
         },
 
         saveOffering: function(){
@@ -98,21 +136,21 @@ define([
         }
     });
 
-    var offeringsView;
+    var offeringDesignView;
 
     Common.router.on('route:offeringsEdit', function () {
         if(sessionStorage.account_id) {
-            if (this.previousView !== offeringsView) {
+            if (this.previousView !== offeringDesignView) {
                 this.unloadPreviousState();
-                offeringsView = new OfferingsView();
-                this.setPreviousState(offeringsView);
+                offeringDesignView = new OfferingDesignView();
+                this.setPreviousState(offeringDesignView);
             }
-            offeringsView.render();
+            offeringDesignView.render();
         }else {
             Common.router.navigate("", {trigger: true});
             Common.errorDialog("Login Error", "You must login.");
         }
     }, Common);
 
-    return OfferingsView;
+    return OfferingDesignView;
 });

@@ -11,10 +11,11 @@ define([
         'bootstrap',
         'backbone',
         'views/offerings/offeringDesignView',
+        'views/offerings/PortfoliosView',
         'common',
         'models/offering',
         'text!templates/offerings/offeringsTemplate.html'
-], function( $, _, bootstrap, Backbone, OfferingDesignView, Common, Offering, offeringsTemplate ) {
+], function( $, _, bootstrap, Backbone, OfferingDesignView, PortfoliosView, Common, Offering, offeringsTemplate ) {
 
     var OfferingsView = Backbone.View.extend({
 
@@ -42,11 +43,17 @@ define([
         },
 
         configureTabs: function(){
+            var $this = this;
             $("#offeringsTabs a:first").tab("show");
 
             $("#offeringsTabs a").click(function(e){
                 e.preventDefault();
                 $(this).tab('show');
+                var targetID = $(this).attr("href");
+                if (targetID === "#portfolios"){
+                    var portfoliosView = new PortfoliosView({el: targetID, model: {}});
+                    portfoliosView.render();
+                }
             });
         },
 
