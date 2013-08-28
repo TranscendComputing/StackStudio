@@ -11,7 +11,7 @@ define([
         'backbone',
         'common',
         'text!templates/account/policiesManagementTemplate.html',
-        'collections/users',
+        'collections/policies',
         'views/account/newLoginView',
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator'
@@ -53,7 +53,10 @@ define([
 
         render: function () {
             $("#users_table").dataTable().fnProcessingIndicator(true);
-            this.users.fetch({reset: true});
+            this.users.fetch({
+                data: $.param({ org_id: sessionStorage.org_id }),
+                reset: true
+            });
             this.disableDeleteButton(true);
         },
 
@@ -61,12 +64,12 @@ define([
             var usersView = this;
             $("#users_table").dataTable().fnClearTable();
             this.users.each(function(user) {
-                var rowData = [user.attributes.login, user.attributes.first_name, user.attributes.last_name, user.attributes.email, user.role()];
+                var rowData = [user.attributes.name];
                 $("#users_table").dataTable().fnAddData(rowData);
             });
             $("#users_table").dataTable().fnProcessingIndicator(false);
             
-            this.disableCreateButton();
+            //this.disableCreateButton();
         },
 
         selectUser: function(event) {
@@ -75,9 +78,9 @@ define([
             var rowData = $("#users_table").dataTable().fnGetData(event.currentTarget);
             var usersView = this;
             this.users.each(function(user) {
-                if(user.attributes.login === rowData[0]) {
+                if(user.attributes.name === rowData[0]) {
                     usersView.selectedUser = user;
-                    
+                    /*
                     var isAdmin = false;
                     if(usersView.users.get(sessionStorage.account_id).attributes.permissions.length > 0){
                         isAdmin = usersView.users.get(sessionStorage.account_id).attributes.permissions[0].permission.name === "admin";
@@ -87,7 +90,8 @@ define([
                         usersView.disableDeleteButton(true);
                     }else {
                         usersView.disableDeleteButton(false);
-                    }
+                    }*/
+                    usersView.disableDeleteButton(false);
                 }
             });
         },
@@ -101,7 +105,7 @@ define([
                 $("#delete_user_button").removeClass("ui-state-disabled");
             }
         },
-        
+        /*
         disableCreateButton: function() {
             var isAdmin = false;
             if(this.users.get(sessionStorage.account_id).attributes.permissions.length > 0){
@@ -111,7 +115,7 @@ define([
                 $("#create_user_button").attr("disabled", true);
                 $("#create_user_button").addClass("ui-state-disabled");
             }
-        },
+        },*/
 
         createUser: function() {
             new NewLoginView({org_id: sessionStorage.org_id});
