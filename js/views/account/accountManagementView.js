@@ -20,13 +20,14 @@ define([
         'views/account/cloudCredentialManagementListView',
         'views/account/cloudAccountManagementListView',
         'views/account/usersManagementView',
+        'views/account/policiesManagementView',
         'views/account/homeView',
         'views/account/groupsManagementView',
         'views/account/groupsManagementListView',
         'jquery-plugins',
         'jquery-ui-plugins',
         'jquery.jstree'
-], function( $, _, Backbone, Common, managementTemplate, Groups, CloudCredentials, CloudAccounts, NewLoginView, CloudAccountManagementView, CloudCredentialManagementView, CloudCredentialManagementListView, CloudAccountManagementListView, UsersManagementView, HomeView, GroupsManagementView, GroupsManagementListView ) {
+], function( $, _, Backbone, Common, managementTemplate, Groups, CloudCredentials, CloudAccounts, NewLoginView, CloudAccountManagementView, CloudCredentialManagementView, CloudCredentialManagementListView, CloudAccountManagementListView, UsersManagementView, PoliciesManagementView, HomeView, GroupsManagementView, GroupsManagementListView ) {
 
     var AccountManagementView = Backbone.View.extend({
         /** @type {String} DOM element to attach view to */
@@ -102,6 +103,12 @@ define([
                 "plugins":[ "themeroller", "html_data", "ui", "crrm" ]
             }).on('loaded.jstree', function() {
                 $("#mUser_tree").jstree('open_all');
+            });
+            $("#mPolicy_tree").jstree({
+                "themeroller":{"item": "jstree_custom_item"},
+                "plugins":[ "themeroller", "html_data", "ui", "crrm" ]
+            }).on('loaded.jstree', function() {
+                $("#mPolicy_tree").jstree('open_all');
             });
             
         },
@@ -225,6 +232,17 @@ define([
                         accountManagementView.subApp.close();
                     }
                     accountManagementView.subApp = new UsersManagementView();
+                }
+                break;
+            case "policies":
+                if(accountManagementView.subApp instanceof PoliciesManagementView)
+                {
+                    //do nothing
+                }else{
+                    if(accountManagementView.subApp !== undefined){
+                        accountManagementView.subApp.close();
+                    }
+                    accountManagementView.subApp = new PoliciesManagementView();
                 }
                 break;
             case "groups":
