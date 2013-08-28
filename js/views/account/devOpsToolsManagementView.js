@@ -80,8 +80,8 @@ define([
             if(typeof(ich['config_managers_template']) === 'undefined'){
                 ich.grabTemplates();
             }
-            var chefEndpoints = ich['config_managers_template']({"managers":this.configManagers.toJSON().chef, "managerType": "Chef", "authProp":"Node Name"});
-            var puppetEndpoints = ich['config_managers_template']({"managers":this.configManagers.toJSON().puppet, "managerType": "Puppet", "authProp":"Certificate"});
+            var chefEndpoints = ich['config_managers_template']({"managers":this.configManagers.toJSON().chef, "managerType": "Chef"});
+            var puppetEndpoints = ich['config_managers_template']({"managers":this.configManagers.toJSON().puppet, "managerType": "Puppet"});
             $('#config_managers_page').html(chefEndpoints);
             $('#config_managers_page').append(puppetEndpoints);
             

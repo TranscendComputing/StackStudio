@@ -97,10 +97,7 @@ define([
                 $("#otherAuthProp").html(ich["auth_prop_template"](data));
 
             }else if ($("#manager_type_input").val().toLowerCase() === "chef"){
-                data["authPropName"] = "Node Name";
-                data["inputType"] = "input";
-                data["authProp"] = "node_name";
-                data = {"authPropName":"Node Name", inputType:"input", authProp:"node_name"};
+                data = {"authPropName":"Client Name", inputType:"input", authProp:"client_name"};
                 $("#authProp").html(ich["auth_prop_template"](data));
             }
         },
