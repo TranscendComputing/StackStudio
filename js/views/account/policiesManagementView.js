@@ -12,7 +12,7 @@ define([
         'common',
         'text!templates/account/policiesManagementTemplate.html',
         'collections/policies',
-        'views/account/newLoginView',
+        'views/account/policyCreateView',
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator'
 ], function( $, _, Backbone, Common, usersManagementTemplate, Users, NewLoginView) {

@@ -11,25 +11,25 @@ define([
 ], function( ResourceModel, Common ) {
     'use strict';
 
-    var Policy = ResourceModel.extend({
+    var Rule = ResourceModel.extend({
 
         idAttribute: "_id",
         
         defaults: {
-            id: '',
+            _id: '',
             name: ''
         },
         
         create: function(options, credentialId) {
-            var url = Common.apiUrl + "/identity/v1/policies?&cred_id=" + credentialId;
-            this.sendAjaxAction(url, "POST", {"policy": options}, "policyAppRefresh");
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/google/compute/policies?&cred_id=" + credentialId;
+            this.sendAjaxAction(url, "POST", {"rule": options}, "ruleAppRefresh");
         },
         
         delete: function(credentialId, region) {
-            var url = Common.apiUrl + "/identity/v1/policies/" + this.attributes.name + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
-            this.sendAjaxAction(url, "POST", undefined, "policyAppRefresh");
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/google/compute/rules/" + this.attributes.name + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "ruleAppRefresh");
         }
     });
 
-    return Policy;
+    return Rule;
 });
