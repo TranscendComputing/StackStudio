@@ -1,0 +1,30 @@
+[
+  {
+    "label": "myLB",
+    "group": "Resources",
+    "service": "ElasticLoadBalancing",
+    "name": "myLB",
+    "state": "running"
+  },
+  {
+    "label": "App1",
+    "group": "Resources",
+    "service": "EC2",
+    "name": "App1",
+    "state": "running"
+  },
+  {
+    "label": "App2",
+    "group": "Resources",
+    "service": "EC2",
+    "name": "App2",
+    "state": "terminated"
+  },
+  {
+    "label": "myDB",
+    "group": "Resources",
+    "service": "RDS",
+    "name": "myDB",
+    "state": "running"
+  }
+]

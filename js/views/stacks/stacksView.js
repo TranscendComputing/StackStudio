@@ -13,8 +13,9 @@ define([
         'common',
         'text!templates/stacks/stacksTemplate.html',
         'views/stacks/stackDesignView',
-        'views/stacks/stackRunView'
-], function( $, _, bootstrap, Backbone, Common, stacksTemplate, StackDesignView, StackRunView ) {
+        'views/stacks/stackRunView',
+        'views/stacks/stackCreateView'
+], function( $, _, bootstrap, Backbone, Common, stacksTemplate, StackDesignView, StackRunView, StackCreateView ) {
 
     var StacksView = Backbone.View.extend({
 
@@ -27,7 +28,7 @@ define([
         stackRunView: undefined,
 
         events: {
-            
+            "click #create_stack_button": "createStack"
         },
 
         initialize: function() {
@@ -60,6 +61,10 @@ define([
                 }
                 this.stackRunView.render();
             }
+        },
+
+        createStack: function() {
+            new StackCreateView();
         },
 
         close: function(){

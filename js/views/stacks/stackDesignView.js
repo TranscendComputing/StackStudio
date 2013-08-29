@@ -28,7 +28,8 @@ define([
         newResourceTree: undefined,
 
         events: {
-            "click .jstree_custom_item": "treeFolderClick"
+            "click .jstree_custom_item": "treeFolderClick",
+            "click .new_item_link": "addResource",
         },
 
         initialize: function() {
@@ -104,6 +105,29 @@ define([
                     "item": "jstree_custom_item"
                 }
             });
+        },
+
+        addResource: function(event) {
+            var resource = $(event.currentTarget.parentNode).data();
+            var groupSelector = "#current_" + resource.group.toLowerCase();
+            var content;
+
+            content = this.editor.getValue();
+            if (content.replace(/\s/g,"") !== '') {
+                content = jQuery.parseJSON(content);
+            } else {
+                content = {};
+            }
+
+            if (!content[resource.group]) {
+                content[resource.group] = {};
+            }
+
+            $.extend(content[resource.group], resource.template);
+            this.editor.setValue(JSON.stringify(content, null,'\t'));
+
+            var range = this.editor.find(resource.name);
+            this.editor.getSelection().setSelectionRange(range);
         },
 
         treeFolderClick: function(event) {
