@@ -41,7 +41,7 @@
                 <tr>
                     <td><b>Max_Instances:</b></td>
                     <td>
-                        <input style="width:50px;"></input>
+                        <input id="max_inst" style="width:50px;"></input>
                     </td>
                     <td><input type="checkbox" id="check3"></input></td>
                     <td>Unlimited</td>
@@ -49,7 +49,7 @@
                 <tr>
                     <td><b>Max_Cores:</b></td>
                     <td>
-                        <input style="width:50px;"></input>
+                        <input id="max_core" style="width:50px;"></input>
                     </td>
                     <td><input type="checkbox" id="check4"></input></td>
                     <td>Unlimited</td>
@@ -57,8 +57,8 @@
             </table>
         </div>
         <h3>Enabled Services</h3>
-        <div style="height:40px;">
-            <table style="border-collapse:separate; border-spacing: 10px;">
+        <div style="height:128px;">
+            <!--<table style="border-collapse:separate; border-spacing: 10px;">
                 <tr>
                     <td>
                         <select id="enabled_services_select" name="services" multiple="multiple">
@@ -77,9 +77,34 @@
                           <option>Simple Storage</option>
                           <option>VPC</option>
                         </select>
+                            
                     </td>
                     <td><input type="checkbox" id="check5"></input></td>
                     <td>Unlimited</td>
+                </tr>
+            </table>-->
+            <table >
+                <tr>
+                    <td><input type="checkbox">Auto Scale</input></td>
+                    <td><input type="checkbox">CloudWatch</input></td>
+                    <td><input type="checkbox">Elasticache</input></td>
+                    <td><input type="checkbox">Elastic Beanstalk</input></td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox">Elastic Compute Cloud</input></td>
+                    <td><input type="checkbox">Elastic Load Balancer</input></td>
+                    <td><input type="checkbox">IAM</input></td>
+                    <td><input type="checkbox">Relational Database</input></td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox">Route 53</input></td>
+                    <td><input type="checkbox">Simple DB</input></td>
+                    <td><input type="checkbox">Simple Notification</input></td>
+                    <td><input type="checkbox">Simple Queue</input></td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox">Simple Storage</input></td>
+                    <td><input type="checkbox">VPC</input></td>
                 </tr>
             </table>
         </div>

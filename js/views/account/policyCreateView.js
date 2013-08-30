@@ -38,7 +38,8 @@ define([
         
         // Delegated events for creating new networks, etc.
         events: {
-            "dialogclose": "close"
+            "dialogclose": "close",
+            'change input[type=checkbox]': 'checkboxChanged'
         },
 
         initialize: function(options) {
@@ -63,7 +64,7 @@ define([
                     }
                 }
             });
-            $("#accordion").accordion({ heightStyle: "fill" });
+            $("#accordion").accordion({ heightStyle: "content" });
             $("#usable_clouds_select").multiselect({
                 selectedList: 3,
                 noneSelectedText: "Select Allowed Cloud(s)"
@@ -80,6 +81,42 @@ define([
 
         render: function() {
             
+        },
+        
+        checkboxChanged: function(lambda){
+            switch(lambda.target.id)
+            {
+            case "check1":
+                this.disableSelect($("#usable_clouds_select"),$("#"+lambda.target.id).is(':checked'));
+                break;
+            case "check2":
+                this.disableSelect($("#usable_regions_select"),$("#"+lambda.target.id).is(':checked'));
+                break;
+            case "check3":
+                this.disableInput($("#max_inst"),$("#"+lambda.target.id).is(':checked'));
+                break;
+            case "check4":
+                this.disableInput($("#max_core"),$("#"+lambda.target.id).is(':checked'));
+                break;
+            }
+        },
+        
+        disableSelect: function(target,toggle){
+            if(toggle === true){
+                target.multiselect('disable');
+            }else{
+                target.multiselect('enable');
+            }
+        },
+        
+        disableInput: function(target,toggle){
+            if(toggle === true){
+                target.attr("disabled", true);
+                target.addClass("ui-state-disabled");
+            }else{
+                target.removeAttr("disabled");
+                target.removeClass("ui-state-disabled");
+            }
         },
         
         create: function() {
