@@ -27,15 +27,13 @@ define([
         
         rootView: undefined,
 
-        groups: undefined,
+        //groups: undefined,
         
         users: undefined,
 
         selectedGroup: undefined,
 
         events: {
-            "click #create_group_button" : "createGroup",
-            "click #delete_group_button" : "deleteGroup",
             "click #manage_group_users_button" : "manageGroupUsers"
         },
 
@@ -57,36 +55,38 @@ define([
             });
             this.users = new Users();
             this.selectedGroup = undefined;
-            this.groups = new Groups();
-            this.groups.on( 'reset', this.addAllGroupUsers, this );
+            //this.groups = new Groups();
+            //this.groups.on( 'reset', this.addAllGroupUsers, this );
             this.render();
         },
 
         render: function () {
             this.disableSelectionRequiredButtons(false);
-            $("#group_users_table").dataTable().fnClearTable();
+            /*$("#group_users_table").dataTable().fnClearTable();
             
             this.groups.fetch({
                 data: $.param({ group_policy_id: this.rootView.treePolicy }),
                 reset: true
-            });
+            });*/
+            
+            //var view = this;
+            //var policyName = view.rootView.policies.get(view.rootView.treePolicy).attributes.name;
+            //$("#selected_group_name").append(policyName);
         },
         
         treeSelect: function() {
             this.clearSelection();
             this.render();
         },
-
+        /*
         addAllGroupUsers: function() {
-            var view = this;
-            var policyName = view.rootView.policies.get(view.rootView.treePolicy).attributes.name;
-            $("#selected_group_name").append(policyName);
+            
             $("#group_users_table").dataTable().fnClearTable();
             $.each(this.groups.models, function(index, value) {
                 var rowData = [value.attributes.name, value.attributes.who, value.attributes.what, value.attributes.action];
                 $("#group_users_table").dataTable().fnAddData(rowData);
             });
-        },
+        },*/
 
         disableSelectionRequiredButtons: function(toggle) {
             
@@ -124,7 +124,7 @@ define([
                 }
             }});
         },
-
+        /*
         createGroup: function() {
             new CreateGroupView();
         },
@@ -134,7 +134,7 @@ define([
                 this.selectedGroup.destroy();
             }
         },
-
+        */
         manageGroupUsers: function() {
             if(this.selectedGroup) {
                 new ManageGroupUsers({group_id: this.selectedGroup.attributes.id});

@@ -11,12 +11,12 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/account/policyCreateTemplate.html',
-        '/js/google/models/compute/googleNetwork.js',
+        'models/policy',
         'icanhaz',
         'common',
         'jquery.multiselect'
         
-], function( $, _, Backbone, DialogView, networkCreateTemplate, Network, ich, Common ) {
+], function( $, _, Backbone, DialogView, networkCreateTemplate, Policy, ich, Common ) {
     
     /**
      * googleNetworkCreateView is UI form to create compute.
@@ -34,7 +34,7 @@ define([
 
         region: undefined,
         
-        network: new Network(),
+        policy: new Policy(),
         
         // Delegated events for creating new networks, etc.
         events: {
@@ -120,25 +120,25 @@ define([
         },
         
         create: function() {
-            var newNetwork = this.network;
-            var ntwrk = {};
+            var newPolicy = this.policy;
+            var plcy = {};
             
             var issue = false;
             
             if($("#name_input").val() !== "" ) {
-                ntwrk.network_name = $("#name_input").val();
+                plcy.network_name = $("#name_input").val();
             }else {
                 issue = true;
             }
             
             if($("#iprange_input").val() !== "" ) {
-                ntwrk.ip_range = $("#iprange_input").val();
+                plcy.ip_range = $("#iprange_input").val();
             }else {
                 issue = true;
             }
             
             if(!issue) {
-                newNetwork.create(ntwrk, this.credentialId);
+                newPolicy.create(plcy, this.credentialId);
                 this.$el.dialog('close');
             } else {
                 Common.errorDialog("Invalid Request", "Please supply all required fields.");

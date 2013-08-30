@@ -1,19 +1,106 @@
 <div class="management_page" style="margin:10px;">
 	<div style="margin-left:5px;">
 		<div id="group_button_bar" style="margin-bottom:5px;">
-            <h3>Manage Policy Rules: <b><span id="selected_group_name"></span></b>
-            <br/><br/>
-	        <button id="manage_group_users_button">Manage Group Users</button>
+            <h3>Manage Policy Rules:</h3>
     	</div>
-		<table id="group_users_table">
-			<thead>
-				<tr>
-					<th>Name</th>
-					<th>Users/Groups</th>
-					<th>Cloud Resource</th>
-                    <th>Rule</th>
-				</tr>
-			</thead>
-		</table>
+        <form class="form-horizontal">
+        <fieldset>
+
+        <!-- Form Name -->
+        <legend>Policy Rules</legend>
+
+        <!-- Text input-->
+        <div class="control-group">
+          <label class="control-label">Policy Name:</label>
+          <div class="controls">
+            <input id="policy_name" name="policy_name" type="text" placeholder="policy_name" class="input-xlarge">
+    
+          </div>
+        </div>
+
+        <!-- Multiple Checkboxes (inline) -->
+        <div class="control-group">
+          <label class="control-label">Require Admin to Add:</label>
+          <div class="controls">
+            <label class="checkbox inline">
+              <input type="checkbox" name="admin_add" value="Cloud">
+              Cloud
+            </label>
+            <label class="checkbox inline">
+              <input type="checkbox" name="admin_add" value="Region">
+              Region
+            </label>
+            <label class="checkbox inline">
+              <input type="checkbox" name="admin_add" value="Service">
+              Service
+            </label>
+          </div>
+        </div>
+
+        <!-- Multiple Checkboxes (inline) -->
+        <div class="control-group">
+          <label class="control-label">Usable Clouds:</label>
+          <div class="controls">
+            <label class="checkbox inline">
+              <input type="checkbox" name="usable_clouds" value="AWS">
+              AWS
+            </label>
+            <label class="checkbox inline">
+              <input type="checkbox" name="usable_clouds" value="OpenStack">
+              OpenStack
+            </label>
+            <label class="checkbox inline">
+              <input type="checkbox" name="usable_clouds" value="Google">
+              Google
+            </label>
+          </div>
+        </div>
+
+        <!-- Multiple Checkboxes (inline) -->
+        <div class="control-group">
+          <label class="control-label">Usable Regions</label>
+          <div class="controls">
+            <label class="checkbox inline">
+              <input type="checkbox" name="usable_regions" value="US East (Northern Virginia)">
+              US East (Northern Virginia)
+            </label>
+            <label class="checkbox inline">
+              <input type="checkbox" name="usable_regions" value="US West (Oregon)">
+              US West (Oregon)
+            </label>
+            <label class="checkbox inline">
+              <input type="checkbox" name="usable_regions" value="US West (Northern California)">
+              US West (Northern California)
+            </label>
+            <label class="checkbox inline">
+              <input type="checkbox" name="usable_regions" value="EU (Ireland)">
+              EU (Ireland)
+            </label>
+            <label class="checkbox inline">
+              <input type="checkbox" name="usable_regions" value="Asia Pacific (Singapore)">
+              Asia Pacific (Singapore)
+            </label>
+            <label class="checkbox inline">
+              <input type="checkbox" name="usable_regions" value="Asia Pacific (Sydney)">
+              Asia Pacific (Sydney)
+            </label>
+            <label class="checkbox inline">
+              <input type="checkbox" name="usable_regions" value="Asia Pacific (Tokyo)">
+              Asia Pacific (Tokyo)
+            </label>
+            <label class="checkbox inline">
+              <input type="checkbox" name="usable_regions" value="South America (Sao Paulo)">
+              South America (Sao Paulo)
+            </label>
+            <label class="checkbox inline">
+              <input type="checkbox" name="usable_regions" value="US Gov">
+              US Gov
+            </label>
+          </div>
+        </div>
+
+        </fieldset>
+        </form>
+        
 	<div>
 </div>
