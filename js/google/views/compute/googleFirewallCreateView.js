@@ -15,7 +15,6 @@ define([
         'icanhaz',
         'common',
         'jquery.multiselect'
-        
 ], function( $, _, Backbone, DialogView, firewallCreateTemplate, Firewall, ich, Common ) {
     
     /**
@@ -68,7 +67,7 @@ define([
                 selectedList: 3,
                 noneSelectedText: "Select Allowed Protocol(s)"
             });
-            $("#network_select").selectmenu();
+            //$("#network_select").selectmenu();
             
             this.addAllNetworks();
         },
@@ -129,7 +128,7 @@ define([
                             $("#network_select").append("<option value='"+network.name+"'>" + network.name + "</option>");
                         });
                     }
-                    $("#network_select").selectmenu();
+                    //$("#network_select").selectmenu();
                 },
                 error: function(jqXHR) {
                     Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
