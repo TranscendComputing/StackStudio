@@ -111,24 +111,22 @@ define([
             }).on('loaded.jstree', function() {
                 $("#mUser_tree").jstree('open_all');
             });
-
             $("#mPolicy_tree").jstree({
                 "themeroller":{"item": "jstree_custom_item"},
                 "plugins":[ "themeroller", "html_data", "ui", "crrm" ]
             }).on('loaded.jstree', function() {
-            //async
-            accMan.policies.fetch({ 
-                data: $.param({ org_id: sessionStorage.org_id}),
-                reset: true
+                //async
+                accMan.policies.fetch({ 
+                    data: $.param({ org_id: sessionStorage.org_id}),
+                    reset: true
+                });
             });
-
             $("#mdevOps_tree").jstree({
                 "themeroller":{"item": "jstree_custom_item"},
                 "plugins":[ "themeroller", "html_data", "ui", "crrm" ]
             }).on('loaded.jstree', function() {
-                $("#mdevOps_tree").jstree('open_all');
+                    $("#mdevOps_tree").jstree('open_all');
             });
-            
         },
         addAllGroups: function() {
             $('.group_item.tree_item').remove();

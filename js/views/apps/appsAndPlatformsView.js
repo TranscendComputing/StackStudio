@@ -31,7 +31,6 @@ define([
         'collections/chefEnvironments',
         'views/apps/appsListView',
         'models/app',
-        'collections/images',
         'jquery-plugins',
         'jquery-ui-plugins',
         'jquery.dataTables',
