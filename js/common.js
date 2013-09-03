@@ -170,7 +170,8 @@ requirejs.config({
         'wijmo': 'wijmo-require',
         'wijmo-actual': '//cdn.wijmo.com/jquery.wijmo-open.all.3.20132.8.min', //'jquery.wijmo-open.all.2.3.2.min',
         'bootstrap': '//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min',
-        'typeahead': '../vendor/twitter/typeahead.min'
+        'typeahead': '../vendor/twitter/typeahead.min',
+        'ace-cdn': '//d1n0x3qji82z53.cloudfront.net/src-min-noconflict/ace'
     }
 });
 

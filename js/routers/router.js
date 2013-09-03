@@ -40,7 +40,10 @@ define([
 			'resources/:cloud/:region/:type': 'resourcesRoute',
 			'resources/:cloud/:region/:type/:subtype' : 'resourcesRoute',
 			'resources/:cloud/:region/:type/:subtype/:id': 'resourcesRoute',
+			'images': 'imagesRoute',
             'apps': 'appsRoute',
+            'stacks': 'stacksRoute',
+            'offerings': 'offeringsRoute',
 			'projects': 'projects',
 			'project/new': 'projectCreate',
 			'projects/:url': 'projectEdit',
@@ -69,10 +72,28 @@ define([
 		    this.trigger("route:resources", cloud, region, type, subtype, id);
 		},
 
+		imagesRoute: function(action) {
+            $("#sidebar").empty();
+            $("#sidebar").hide();
+            this.trigger("route:images");
+        },
+
 		appsRoute: function(action) {
             $("#sidebar").empty();
             $("#sidebar").hide();
             this.trigger("route:apps");
+        },
+
+        stacksRoute: function(action) {
+            $("#sidebar").empty();
+            $("#sidebar").hide();
+            this.trigger("route:stacks");
+        },
+
+        offeringsRoute: function(action) {
+            $("#sidebar").empty();
+            $("#sidebar").hide();
+            this.trigger("route:offerings");
         }
 	});
 

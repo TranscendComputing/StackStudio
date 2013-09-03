@@ -51,7 +51,10 @@ require(['./common'], function (common) {
              // 'views/projectListItemView',
              'views/projectEditView',
              'views/resource/resourceNavigationView',
-             'views/apps/appsAndPlatformsView'
+             'views/images/imagesView',
+             'views/assemblies/assembliesView',
+             'views/stacks/stacksView',
+             'views/offerings/offeringsView'
             ], function(NavLogin, DashboardView) {
         var navLogin = new NavLogin();
         navLogin.render();

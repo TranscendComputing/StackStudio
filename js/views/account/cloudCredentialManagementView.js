@@ -33,7 +33,7 @@ define([
         events: {
             //"click button#new_credential": "newCredential",
             "click button#save_credential": "saveCredential",
-            "click button#delete_credential": "deleteCredential",
+            "click button#delete_credential": "deleteCredential"
             //"change select#cloud_accounts_select": "selectCloudAccount"
         },
         /** Constructor method for current view */
@@ -103,7 +103,8 @@ define([
         },
         
         selectCloudAccount: function(event) {
-            var accountName = event.target.selectedOptions[0].value;
+            var accountName = $(event.target).val();
+            //var accountName = event.target.selectedOptions[0].value;
             if(accountName !== "All")
             {
                 $("button#new_credential").button("option", "disabled", false);

@@ -27,9 +27,11 @@ define([
 
         /** Default attributes for the project */
         defaults: {
+            id: '',
             name: '',
             description: '',
-            template: {}
+            template: {},
+            compatibleClouds: []
         },
 
 	    /**

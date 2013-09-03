@@ -1,0 +1,14 @@
+[
+	{
+		Name: "Stack 1",
+		StackId: "94fbb179-61c0-4467-bb92-d04eb60ab2dc"
+	},
+	{
+		Name: "Stack 2",
+		StackId: "a4fbb179-61c0-4467-bb92-d04eb60ab2dd"
+	},
+	{
+		Name: "Stack 3",
+		StackId: "b4fbb179-61c0-4467-bb92-d04eb60ab2de"
+	}
+]

@@ -15,12 +15,13 @@ define([
         'text!templates/account/managementCloudAccountTemplate.html',
         'collections/cloudAccounts',
         'collections/users',
+        'collections/configManagers',
         'views/account/cloudAccountCreateView',
         'views/account/cloudServiceCreateView',
         'models/cloudService',
         'jquery-plugins',
         'jquery-ui-plugins'
-], function( $, _, Backbone, Common, ich, URI, managementCloudAccountTemplate, CloudAccounts, Users, CloudAccountCreate, CloudServiceCreate, CloudService ) {
+], function( $, _, Backbone, Common, ich, URI, managementCloudAccountTemplate, CloudAccounts, Users, ConfigManagers, CloudAccountCreate, CloudServiceCreate, CloudService ) {
 
     var CloudAccountManagementView = Backbone.View.extend({
         /** @type {String} DOM element to attach view to */
@@ -39,11 +40,13 @@ define([
             "click button#delete_cloud_account": "deleteCloudAccount",
             "click button.delete-button": "deleteService",
             "click button#update_auth_url_button": "updateAuthUrl",
-            "change input#auth_url_input": "updateAuthModel"
+            "change input#auth_url_input": "updateAuthModel",
+            "click button.save-manager" : "saveManager"
         },
         /** Constructor method for current view */
         initialize: function() {
             this.users = new Users();
+            this.configManagers = new ConfigManagers();
             this.rootView = this.options.rootView;
             //this.rootView.treeCloudAccount = this.rootView.cloudAccounts
             //var whatisthis = this.rootView.cloudAccounts;
@@ -65,14 +68,21 @@ define([
              * 
              * http://backbonejs.org/#FAQ-this
              */
-            this.collection.fetch({ 
+            this.collection.fetch({
                 data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id}),
                 success: _.bind(this.renderAccountAttributes, this),
                 reset: true
             });
             //Render my own view
             this.render();
-            
+            $("select").prop("selectedIndex", -1);
+            var thisView = this;
+            this.configManagers.fetch({
+                data: $.param({org_id: sessionStorage.org_id}),
+                success:function(collection, response, options){
+                    thisView.populateConfigMenus(collection);
+                }
+            });
             var managementView = this;
             Common.vent.on("managementRefresh", function() {
                 managementView.refreshManagementView();
@@ -200,6 +210,10 @@ define([
             this.selectedCloudAccount.updateService(service);
             return false;
         },
+        saveManager: function(event){
+            var managerId = $(event.currentTarget.parentElement).find("select").val();
+            this.selectedCloudAccount.updateConfigManager(managerId);
+        },
         
         newCloudService: function(){
             var CloudServiceCreateView = this.CloudServiceCreateView;
@@ -233,7 +247,7 @@ define([
         },
         
         refreshManagementView: function(){
-            this.collection.fetch({ 
+            this.collection.fetch({
                 data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id}),
                 success: _.bind(this.renderAccountAttributes, this),
                 reset: true
@@ -242,7 +256,7 @@ define([
         },
         
         refreshServices: function(){
-            this.collection.fetch({ 
+            this.collection.fetch({
                 data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id}),
                 success: _.bind(this.renderAccountAttributes, this)
             });
@@ -250,6 +264,28 @@ define([
         
         deleteCloudAccount: function(){
             var cl_ac = this.selectedCloudAccount.destroy();
+        },
+        populateConfigMenus: function(collection){
+            var json = collection.toJSON();
+            for (var type in json) {
+                if (json.hasOwnProperty(type)) {
+                    var configs = json[type];
+                    var selector = $("#"+type+"_select");
+                    var hasConfig = false;
+                    for(var i =0; i < configs.length;i++){
+                        var option = "<option value=" + configs[i]._id;
+                        if(configs[i].cloud_account_ids.indexOf(this.selectedCloudAccount.id) !== -1){
+                            option += " selected";
+                            hasConfig = true;
+                        }
+                        option += ">" + configs[i].name+ "</option>";
+                        selector.append(option);
+                    }
+                    if(!hasConfig){
+                        selector.prop("selectedIndex", -1);
+                    }
+                }
+            }
         }
     });
 

@@ -1,0 +1,12 @@
+ {
+  "transcend_mysql::replication": "",
+  "transcend_mysql::server": "Installs packages required for mysql servers w/o manual intervention",
+  "transcend_mysql::backup": "",
+  "transcend_mysql::client": "Installs packages required for mysql clients using run_action magic",
+  "transcend_mysql::restore": "",
+  "transcend_mysql::server_ec2": "Performs EC2-specific mountpoint manipulation",
+  "transcend_mysql::restore_find_disk": "",
+  "transcend_mysql::reboot": "",
+  "transcend_mysql::percona_xtrabackup": "",
+  "transcend_mysql": "Includes the client recipe to configure a client"
+}

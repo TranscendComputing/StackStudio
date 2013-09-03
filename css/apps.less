@@ -1,0 +1,97 @@
+/*Filename: /css/apps.css*/
+
+.cfg-icon {background-image: url(/images/iconPNGs/icons_configMgmt_sprites.png);background-repeat:no-repeat; width:32px;height:32px;display:block;float:left;margin-right:8px;}
+.cfg-icon-chef {background-position: 0 0;}
+.cfg-icon-puppet {background-position: 0 -37px;}
+.config-name {display:block;float:left;background-color:#FFF;height:32px;width:160px;}
+.config-tool {display:block;float:right;background-color:#FFF;font-style:italic;height:32px;color: #999999;}
+#apps_view .twitter-typeahead .tt-dropdown-menu {
+    background-color:#FFF;
+    .tt-is-under-cursor { 
+        .packageItem {
+            border-color: #0097CF; 
+        }
+    }
+}
+.packageItem {
+    background-color:#FFF;height:32px;border: solid 1px #AAA; display:Block; padding:4px; 
+    width:250px;border-radius: 4px 4px 4px 4px;
+}
+
+.packageItem.removable {
+    width: 250px;
+    .config-tool {
+        padding-right:8px;
+    }
+    .config-name{
+        width: 130px;
+    }
+}
+
+#chefAccordionToggle {
+    display: inline-block;
+    min-width:80px;
+}
+
+#chef-selection {
+    max-height:300px; /* TODO:There should be a better way */
+    overflow-y:auto;
+}
+
+#collapseChef {
+    clear:both;
+}
+
+
+#chefEnvironmentSelect {
+    margin: 2px 2px;
+}
+
+#apps_view {
+    .recipeSelector, .stackSelector{
+        width:10%;
+        float:left;
+    }
+
+    .recipe, .stack {
+        font-weight: bold;
+        float:left;
+        width:90%;
+        text-overflow:ellipsis;
+        overflow:hidden;
+    }
+
+    .recipeDescription, .stackDescription{
+        color: #666666;
+        font-style: italic;
+        float:left;
+        width:90%;
+        margin-left:10%;
+        text-overflow:ellipsis;
+    }
+
+    ul.recipes, ul.stacks{
+        margin-left:0;
+        li {
+            clear:both;
+            height:20px;    
+        }
+    }
+
+    .accordion-heading{
+        input[type='checkbox']{
+            float:left;
+            margin-top:10px;
+            margin-right:4px;
+            margin-left:4px;
+        }
+    }
+
+    .icon-spinner {
+        background-image: url('/images/loader.gif');
+        background-position: 0 0;
+        background-repeat:none;
+        width:32px;
+        height:32px;
+    }
+}

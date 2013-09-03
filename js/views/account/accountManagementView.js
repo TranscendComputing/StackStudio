@@ -26,11 +26,11 @@ define([
         'views/account/homeView',
         'views/account/groupsManagementView',
         'views/account/groupsManagementListView',
+        'views/account/devOpsToolsManagementView',
         'jquery-plugins',
         'jquery-ui-plugins',
         'jquery.jstree'
-], function( $, _, Backbone, Common, managementTemplate, Groups, CloudCredentials, CloudAccounts, Policies, NewLoginView, CloudAccountManagementView, CloudCredentialManagementView, CloudCredentialManagementListView, CloudAccountManagementListView, UsersManagementView, PoliciesManagementView, PolicyManagementView, HomeView, GroupsManagementView, GroupsManagementListView ) {
-
+], function( $, _, Backbone, Common, managementTemplate, Groups, CloudCredentials, CloudAccounts, Policies, NewLoginView, CloudAccountManagementView, CloudCredentialManagementView, CloudCredentialManagementListView, CloudAccountManagementListView, UsersManagementView, PoliciesManagementView, PolicyManagementView, HomeView, GroupsManagementView, GroupsManagementListView, DevOpsToolsManagementView ) {
     var AccountManagementView = Backbone.View.extend({
         /** @type {String} DOM element to attach view to */
         el: "#main",
@@ -64,7 +64,7 @@ define([
             this.groups = new Groups();
             this.groups.on('reset', this.addAllGroups, this);
             
-            this.cloudCredentials = new CloudCredentials()
+            this.cloudCredentials = new CloudCredentials();
             this.cloudCredentials.on( 'reset', this.addAllCreds, this );
             
             this.cloudAccounts = new CloudAccounts();
@@ -84,7 +84,7 @@ define([
                 "plugins":[ "themeroller", "html_data", "ui", "crrm" ]
             }).on('loaded.jstree', function() {
                 //async
-                accMan.cloudAccounts.fetch({ 
+                accMan.cloudAccounts.fetch({
                     data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id}),
                     reset: true
                 });
@@ -111,15 +111,22 @@ define([
             }).on('loaded.jstree', function() {
                 $("#mUser_tree").jstree('open_all');
             });
+
             $("#mPolicy_tree").jstree({
                 "themeroller":{"item": "jstree_custom_item"},
                 "plugins":[ "themeroller", "html_data", "ui", "crrm" ]
             }).on('loaded.jstree', function() {
-                //async
-                accMan.policies.fetch({ 
-                    data: $.param({ org_id: sessionStorage.org_id}),
-                    reset: true
-                });
+            //async
+            accMan.policies.fetch({ 
+                data: $.param({ org_id: sessionStorage.org_id}),
+                reset: true
+            });
+
+            $("#mdevOps_tree").jstree({
+                "themeroller":{"item": "jstree_custom_item"},
+                "plugins":[ "themeroller", "html_data", "ui", "crrm" ]
+            }).on('loaded.jstree', function() {
+                $("#mdevOps_tree").jstree('open_all');
             });
             
         },
@@ -323,6 +330,16 @@ define([
                         accountManagementView.subApp.close();
                     }
                     accountManagementView.subApp = new CloudAccountManagementListView({rootView: accountManagementView});
+                }
+                break;
+            case "devops":
+                if(accountManagementView.subApp instanceof DevOpsToolsManagementView){
+
+                }else{
+                    if(accountManagementView.subApp !== undefined){
+                        accountManagementView.subApp.close();
+                    }
+                    accountManagementView.subApp = new DevOpsToolsManagementView({rootView: accountManagementView});
                 }
                 break;
             case "home":
