@@ -153,7 +153,12 @@ define([
                 'movecallback':function(item) {
                     if( $(item).attr("id") !== resourceNav.cloudProvider )
                     {
-                        $("#cloud_coverflow").coverscroll("next");
+                        if(resourceNav.cloudProvider === "aws"){
+                            $("#cloud_coverflow").coverscroll("prev");
+                        }else if(resourceNav.cloudProvider === "google"){
+                            $("#cloud_coverflow").coverscroll("next");
+                        }
+                        //$("#cloud_coverflow").coverscroll("prev");
                     }
                 } // callback function triggered after click on an item - parameter is the item's jQuery object
             });
@@ -335,7 +340,7 @@ define([
                     try {
                         this.selectedRegion = this.cloudDefinitions[this.cloudProvider].regions[0].zone;
                     }catch(error) {
-
+                        
                     }
                 }
                 if (!this.type) {

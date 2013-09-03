@@ -11,14 +11,14 @@ define([
         'backbone',
         'common',
         'text!templates/account/policyManagementTemplate.html',
-        'collections/rules',
+        'models/policy',
         'collections/users',
         'views/account/groupCreateView',
         'views/account/groupManageUsersView',
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator',
         'bootstrap'
-], function( $, _, Backbone, Common, groupsManagementTemplate, Groups, Users, CreateGroupView, ManageGroupUsers ) {
+], function( $, _, Backbone, Common, groupsManagementTemplate, Policy, Users, CreateGroupView, ManageGroupUsers ) {
 
     var GroupManagementView = Backbone.View.extend({
 
@@ -28,14 +28,15 @@ define([
         
         rootView: undefined,
 
-        //groups: undefined,
+        policy: undefined,
         
         users: undefined,
 
         selectedGroup: undefined,
 
         events: {
-            "click #manage_group_users_button" : "manageGroupUsers"
+            "click #manage_group_users_button" : "manageGroupUsers",
+            "click #save_button" : "savePolicy"
         },
 
         initialize: function() {
@@ -56,8 +57,9 @@ define([
             });
             this.users = new Users();
             this.selectedGroup = undefined;
-            //this.groups = new Groups();
-            //this.groups.on( 'reset', this.addAllGroupUsers, this );
+            
+            //this.policy = options.policy;
+            
             this.render();
         },
 
@@ -147,6 +149,11 @@ define([
         clearSelection: function() {
             this.selectedGroup = undefined;
             $(".group_item").removeClass("selected_item");
+        },
+        
+        savePolicy: function(){
+            
+            alert("save!");
         },
 
         close: function(){
