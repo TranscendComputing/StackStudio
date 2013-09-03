@@ -2,614 +2,605 @@
 	<div style="margin-left:5px;">
         
         <form class="form-horizontal">
-        <fieldset>
+            <fieldset>
 
-        <!-- Form Name -->
-        <legend style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;border-radius: 5px 5px 0px 0px;">&nbsp;AWS Governance Policy</legend>
-        <div class="well">
+                <!-- Form Name -->
+                <legend style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;border-radius: 5px 5px 0px 0px;">&nbsp;AWS Governance Policy</legend>
+                <div class="well">
         
-        <!-- Text input-->
-        <div class="control-group">
-          <label class="control-label">Policy Name:</label>
-          <div class="controls">
-            <input id="policy_name" name="policy_name" type="text" placeholder="Policy Name" class="input-xlarge">
+                    <!-- Text input-->
+                    <div class="control-group">
+                        <label class="control-label">Policy Name:</label>
+                        <div class="controls">
+                            <input id="policy_name" name="policy_name" type="text" placeholder="Policy Name" class="input-xlarge">
     
-          </div>
-        </div>
+                        </div>
+                    </div>
         
-        <!-- Multiple Checkboxes (inline) -->
-        <div class="control-group">
-          <label class="control-label">Require Admin to Add:</label>
-          <div class="controls">
-            <label class="checkbox inline">
-              <input type="checkbox" name="admin_add" value="Cloud">
-              Cloud
-            </label>
-            <label class="checkbox inline">
-              <input type="checkbox" name="admin_add" value="Region">
-              Region
-            </label>
-            <label class="checkbox inline">
-              <input type="checkbox" name="admin_add" value="Service">
-              Service
-            </label>
-          </div>
-        </div>
+                    <!-- Multiple Checkboxes (inline) -->
+                    <div class="control-group">
+                        <label class="control-label">Require Admin to Add:</label>
+                        <div class="controls">
+                            <label class="checkbox inline">
+                                <input type="checkbox" name="admin_add" value="Cloud">
+                                Cloud
+                            </label>
+                            <label class="checkbox inline">
+                                <input type="checkbox" name="admin_add" value="Region">
+                                Region
+                            </label>
+                            <label class="checkbox inline">
+                                <input type="checkbox" name="admin_add" value="Service">
+                                Service
+                            </label>
+                        </div>
+                    </div>
 
-        <!-- Multiple Checkboxes (inline) -->
-        <div class="control-group">
-          <label class="control-label">Usable Clouds:</label>
-          <div class="controls">
-            <label class="checkbox inline">
-              <input type="checkbox" name="usable_clouds" value="AWS">
-              AWS
-            </label>
-            <label class="checkbox inline">
-              <input type="checkbox" name="usable_clouds" value="OpenStack">
-              OpenStack
-            </label>
-            <label class="checkbox inline">
-              <input type="checkbox" name="usable_clouds" value="Google">
-              Google
-            </label>
-          </div>
-        </div>
+                    <!-- Multiple Checkboxes (inline) -->
+                    <div class="control-group">
+                        <label class="control-label">Usable Clouds:</label>
+                        <div class="controls">
+                            <label class="checkbox inline">
+                                <input type="checkbox" name="usable_clouds" value="AWS">
+                                AWS
+                            </label>
+                            <label class="checkbox inline">
+                                <input type="checkbox" name="usable_clouds" value="OpenStack">
+                                OpenStack
+                            </label>
+                            <label class="checkbox inline">
+                                <input type="checkbox" name="usable_clouds" value="Google">
+                                Google
+                            </label>
+                        </div>
+                    </div>
 
-        <!-- Multiple Checkboxes (inline) -->
-        <div class="control-group">
-          <label class="control-label">Usable Regions:</label>
-          <div class="controls">
-            <label class="checkbox inline">
-              <input type="checkbox" name="usable_regions" value="US East (Northern Virginia)">
-              US East (Northern Virginia)
-            </label>
-            <label class="checkbox inline">
-              <input type="checkbox" name="usable_regions" value="US West (Oregon)">
-              US West (Oregon)
-            </label>
-            <label class="checkbox inline">
-              <input type="checkbox" name="usable_regions" value="US West (Northern California)">
-              US West (Northern California)
-            </label>
-            <label class="checkbox inline">
-              <input type="checkbox" name="usable_regions" value="EU (Ireland)">
-              EU (Ireland)
-            </label>
-            <label class="checkbox inline">
-              <input type="checkbox" name="usable_regions" value="Asia Pacific (Singapore)">
-              Asia Pacific (Singapore)
-            </label>
-            <label class="checkbox inline">
-              <input type="checkbox" name="usable_regions" value="Asia Pacific (Sydney)">
-              Asia Pacific (Sydney)
-            </label>
-            <label class="checkbox inline">
-              <input type="checkbox" name="usable_regions" value="Asia Pacific (Tokyo)">
-              Asia Pacific (Tokyo)
-            </label>
-            <label class="checkbox inline">
-              <input type="checkbox" name="usable_regions" value="South America (Sao Paulo)">
-              South America (Sao Paulo)
-            </label>
-            <label class="checkbox inline">
-              <input type="checkbox" name="usable_regions" value="US Gov">
-              US Gov
-            </label>
-          </div>
-        </div>
+                    <!-- Multiple Checkboxes (inline) -->
+                    <div class="control-group">
+                        <label class="control-label">Usable Regions:</label>
+                        <div class="controls">
+                            <label class="checkbox inline">
+                                <input type="checkbox" name="usable_regions" value="US East (Northern Virginia)">
+                                US East (Northern Virginia)
+                            </label>
+                            <label class="checkbox inline">
+                                <input type="checkbox" name="usable_regions" value="US West (Oregon)">
+                                US West (Oregon)
+                            </label>
+                            <label class="checkbox inline">
+                                <input type="checkbox" name="usable_regions" value="US West (Northern California)">
+                                US West (Northern California)
+                            </label>
+                            <label class="checkbox inline">
+                                <input type="checkbox" name="usable_regions" value="EU (Ireland)">
+                                EU (Ireland)
+                            </label>
+                            <label class="checkbox inline">
+                                <input type="checkbox" name="usable_regions" value="Asia Pacific (Singapore)">
+                                Asia Pacific (Singapore)
+                            </label>
+                            <label class="checkbox inline">
+                                <input type="checkbox" name="usable_regions" value="Asia Pacific (Sydney)">
+                                Asia Pacific (Sydney)
+                            </label>
+                            <label class="checkbox inline">
+                                <input type="checkbox" name="usable_regions" value="Asia Pacific (Tokyo)">
+                                Asia Pacific (Tokyo)
+                            </label>
+                            <label class="checkbox inline">
+                                <input type="checkbox" name="usable_regions" value="South America (Sao Paulo)">
+                                South America (Sao Paulo)
+                            </label>
+                            <label class="checkbox inline">
+                                <input type="checkbox" name="usable_regions" value="US Gov">
+                                US Gov
+                            </label>
+                        </div>
+                    </div>
 
-        <!-- Select Basic -->
-        <div class="control-group">
-          <label class="control-label">Default Region</label>
-          <div class="controls">
-            <select id="default_region" name="default_region" class="input-xlarge">
-              <option>US East (Northern Virginia)</option>
-              <option>US West (Oregon)</option>
-              <option>US West (Northern California)   EU (Ireland)</option>
-              <option>Asia Pacific (Singapore)</option>
-              <option>Asia Pacific (Sydney)</option>
-              <option>Asia Pacific (Tokyo)</option>
-              <option>South America (Sao Paulo)</option>
-              <option>US Gov</option>
-            </select>
-          </div>
-        </div>
+                    <!-- Select Basic -->
+                    <div class="control-group">
+                        <label class="control-label">Default Region</label>
+                        <div class="controls">
+                            <select id="default_region" name="default_region" class="input-xlarge">
+                                <option>US East (Northern Virginia)</option>
+                                <option>US West (Oregon)</option>
+                                <option>US West (Northern California)   EU (Ireland)</option>
+                                <option>Asia Pacific (Singapore)</option>
+                                <option>Asia Pacific (Sydney)</option>
+                                <option>Asia Pacific (Tokyo)</option>
+                                <option>South America (Sao Paulo)</option>
+                                <option>US Gov</option>
+                            </select>
+                        </div>
+                    </div>
 
-        <!-- Select Basic -->
-        <div class="control-group">
-          <label class="control-label">Secondary Region</label>
-          <div class="controls">
-            <select id="secondary_region" name="secondary_region" class="input-xlarge">
-              <option>US East (Northern Virginia)</option>
-              <option>US West (Oregon)</option>
-              <option>US West (Northern California)   EU (Ireland)</option>
-              <option>Asia Pacific (Singapore)</option>
-              <option>Asia Pacific (Sydney)</option>
-              <option>Asia Pacific (Tokyo)</option>
-              <option>South America (Sao Paulo)</option>
-              <option>US Gov</option>
-            </select>
-          </div>
-        </div>
+                    <!-- Select Basic -->
+                    <div class="control-group">
+                        <label class="control-label">Secondary Region</label>
+                        <div class="controls">
+                            <select id="secondary_region" name="secondary_region" class="input-xlarge">
+                                <option>US East (Northern Virginia)</option>
+                                <option>US West (Oregon)</option>
+                                <option>US West (Northern California)   EU (Ireland)</option>
+                                <option>Asia Pacific (Singapore)</option>
+                                <option>Asia Pacific (Sydney)</option>
+                                <option>Asia Pacific (Tokyo)</option>
+                                <option>South America (Sao Paulo)</option>
+                                <option>US Gov</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Multiple Checkboxes (inline) -->
+                    <div class="control-group">
+                      <label class="control-label">Enabled Services:</label>
+                      <div class="controls">
+                        <label class="checkbox inline">
+                          <input type="checkbox" name="enabled_services" value="Auto Scale">
+                          Auto Scale
+                        </label>
+                        <label class="checkbox inline">
+                          <input type="checkbox" name="enabled_services" value="CloudWatch">
+                          CloudWatch
+                        </label>
+                        <label class="checkbox inline">
+                          <input type="checkbox" name="enabled_services" value="Elasticache">
+                          Elasticache
+                        </label>
+                        <label class="checkbox inline">
+                          <input type="checkbox" name="enabled_services" value="Elastic Beanstalk">
+                          Elastic Beanstalk
+                        </label>
+                        <label class="checkbox inline">
+                          <input type="checkbox" name="enabled_services" value="Elastic Compute Cloud">
+                          Elastic Compute Cloud
+                        </label>
+                        <label class="checkbox inline">
+                          <input type="checkbox" name="enabled_services" value="Elastic Load Balancer">
+                          Elastic Load Balancer
+                        </label>
+                        <label class="checkbox inline">
+                          <input type="checkbox" name="enabled_services" value="IAM">
+                          IAM
+                        </label>
+                        <label class="checkbox inline">
+                          <input type="checkbox" name="enabled_services" value="Relational Database">
+                          Relational Database
+                        </label>
+                        <label class="checkbox inline">
+                          <input type="checkbox" name="enabled_services" value="Route 53">
+                          Route 53
+                        </label>
+                        <label class="checkbox inline">
+                          <input type="checkbox" name="enabled_services" value="Simple DB">
+                          Simple DB
+                        </label>
+                        <label class="checkbox inline">
+                          <input type="checkbox" name="enabled_services" value="Simple Notification">
+                          Simple Notification
+                        </label>
+                        <label class="checkbox inline">
+                          <input type="checkbox" name="enabled_services" value="Simple Queue">
+                          Simple Queue
+                        </label>
+                        <label class="checkbox inline">
+                          <input type="checkbox" name="enabled_services" value="Simple Storage">
+                          Simple Storage
+                        </label>
+                        <label class="checkbox inline">
+                          <input type="checkbox" name="enabled_services" value="VPC">
+                          VPC
+                        </label>
+                      </div>
+                    </div>
 
-        <!-- Appended checkbox -->
-        <div class="control-group">
-          <label class="control-label">Password Length</label>
-          <div class="controls">
-            <div class="input-append">
-              <input id="password_rules" name="password_rules" class="span4" type="text" placeholder="# characters">
-              <span class="add-on">
-                <input type="checkbox">digits required</input>
-              </span>
-            </div>
+                    <!-- Appended checkbox -->
+                    <div class="control-group">
+                        <label class="control-label">Password Length</label>
+                        <div class="controls">
+                            <div class="input-append">
+                                <input id="password_rules" name="password_rules" class="span4" type="text" placeholder="# characters">
+                                <span class="add-on">
+                                    <input type="checkbox">digits required</input>
+                                </span>
+                            </div>
     
-          </div>
-        </div>
+                        </div>
+                    </div>
 
-        <!-- Appended Input-->
-        <div class="control-group">
-          <label class="control-label">Credential Rotation</label>
-          <div class="controls">
-            <div class="input-append">
-              <input id="credential_rotation" name="credential_rotation" class="span5" placeholder="# Periods" type="text">
-              <span class="add-on">periods</span>
-            </div>
+                    <!-- Appended Input-->
+                    <div class="control-group">
+                        <label class="control-label">Credential Rotation</label>
+                        <div class="controls">
+                            <div class="input-append">
+                                <input id="credential_rotation" name="credential_rotation" class="span5" placeholder="# Periods" type="text">
+                                <span class="add-on">periods</span>
+                            </div>
     
-          </div>
-        </div>
-        </div>
-        </fieldset>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
         </form>
         
         <form class="form-horizontal">
-        <fieldset class="well">
+            <fieldset>
 
-        <!-- Form Name -->
-        <legend>Enabled Services</legend>
-
-        <!-- Multiple Checkboxes (inline) -->
-        <div class="control-group">
-          <label class="control-label">Services:</label>
-          <div class="controls">
-            <label class="checkbox inline">
-              <input type="checkbox" name="enabled_services" value="Auto Scale">
-              Auto Scale
-            </label>
-            <label class="checkbox inline">
-              <input type="checkbox" name="enabled_services" value="CloudWatch">
-              CloudWatch
-            </label>
-            <label class="checkbox inline">
-              <input type="checkbox" name="enabled_services" value="Elasticache">
-              Elasticache
-            </label>
-            <label class="checkbox inline">
-              <input type="checkbox" name="enabled_services" value="Elastic Beanstalk">
-              Elastic Beanstalk
-            </label>
-            <label class="checkbox inline">
-              <input type="checkbox" name="enabled_services" value="Elastic Compute Cloud">
-              Elastic Compute Cloud
-            </label>
-            <label class="checkbox inline">
-              <input type="checkbox" name="enabled_services" value="Elastic Load Balancer">
-              Elastic Load Balancer
-            </label>
-            <label class="checkbox inline">
-              <input type="checkbox" name="enabled_services" value="IAM">
-              IAM
-            </label>
-            <label class="checkbox inline">
-              <input type="checkbox" name="enabled_services" value="Relational Database">
-              Relational Database
-            </label>
-            <label class="checkbox inline">
-              <input type="checkbox" name="enabled_services" value="Route 53">
-              Route 53
-            </label>
-            <label class="checkbox inline">
-              <input type="checkbox" name="enabled_services" value="Simple DB">
-              Simple DB
-            </label>
-            <label class="checkbox inline">
-              <input type="checkbox" name="enabled_services" value="Simple Notification">
-              Simple Notification
-            </label>
-            <label class="checkbox inline">
-              <input type="checkbox" name="enabled_services" value="Simple Queue">
-              Simple Queue
-            </label>
-            <label class="checkbox inline">
-              <input type="checkbox" name="enabled_services" value="Simple Storage">
-              Simple Storage
-            </label>
-            <label class="checkbox inline">
-              <input type="checkbox" name="enabled_services" value="VPC">
-              VPC
-            </label>
-          </div>
-        </div>
-
-        </fieldset>
+                <!-- Form Name -->
+                <legend style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;border-radius: 5px 5px 0px 0px;">&nbsp;Instance Policies</legend>
+                <div class="well">
+                    <!-- Multiple Checkboxes -->
+                    <div class="control-group">
+                        <label class="control-label">Images:</label>
+                        <div class="controls">
+                            <label class="checkbox">
+                                <div class="btn-group">
+                                    <button class="btn dropdown-toggle" data-toggle="dropdown">
+                                        Status
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a>Preferred</a></li>
+                                        <li><a>Special Case</a></li>
+                                        <li><a>To Be Retired</a></li>
+                                        <li><a>Retired</a></li>
+                                    </ul>
+                                </div>
+                                Amazon Linux AMI 64-bit
+                            </label>
+                            <label class="checkbox">
+                                <div class="btn-group">
+                                    <button class="btn dropdown-toggle" data-toggle="dropdown">
+                                        Status
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a>Preferred</a></li>
+                                        <li><a>Special Case</a></li>
+                                        <li><a>To Be Retired</a></li>
+                                        <li><a>Retired</a></li>
+                                    </ul>
+                                </div>
+                                Amazon Linux AMI 32-bit
+                            </label>
+                            <label class="checkbox">
+                                <div class="btn-group">
+                                    <button class="btn dropdown-toggle" data-toggle="dropdown">
+                                        Status
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a>Preferred</a></li>
+                                        <li><a>Special Case</a></li>
+                                        <li><a>To Be Retired</a></li>
+                                        <li><a>Retired</a></li>
+                                    </ul>
+                                </div>
+                                Red Hat Enterprise Linux 6.3 64-bit
+                            </label>
+                            <label class="checkbox">
+                                <div class="btn-group">
+                                    <button class="btn dropdown-toggle" data-toggle="dropdown">
+                                        Status
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a>Preferred</a></li>
+                                        <li><a>Special Case</a></li>
+                                        <li><a>To Be Retired</a></li>
+                                        <li><a>Retired</a></li>
+                                    </ul>
+                                </div>
+                                Red Hat Enterprise Linux 6.3 32-bit
+                            </label>
+                            <label class="checkbox">
+                                <div class="btn-group">
+                                    <button class="btn dropdown-toggle" data-toggle="dropdown">
+                                        Status
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a>Preferred</a></li>
+                                        <li><a>Special Case</a></li>
+                                        <li><a>To Be Retired</a></li>
+                                        <li><a>Retired</a></li>
+                                    </ul>
+                                </div>
+                                Ubuntu Server 12.04.1 LTS 64-bit
+                            </label>
+                            <label class="checkbox">
+                                <div class="btn-group">
+                                    <button class="btn dropdown-toggle" data-toggle="dropdown">
+                                        Status
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a>Preferred</a></li>
+                                        <li><a>Special Case</a></li>
+                                        <li><a>To Be Retired</a></li>
+                                        <li><a>Retired</a></li>
+                                    </ul>
+                                </div>
+                                Ubuntu Server 12.04.1 LTS 32-bit
+                            </label>
+                        </div>
+                    </div>
+        
+                    <!-- Appended checkbox -->
+                    <div class="control-group">
+                        <label class="control-label">Max On-Demand Instances:</label>
+                        <div class="controls">
+                            <div class="input-append">
+                                <input id="appendedcheckbox" name="appendedcheckbox" class="span5" type="text" placeholder="# Instances">
+                                <span class="add-on">
+                                    <input type="checkbox">Unlimited</input>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <!-- Appended checkbox -->
+                    <div class="control-group">
+                        <label class="control-label">Max Reserved Instances:</label>
+                        <div class="controls">
+                            <div class="input-append">
+                                <input id="appendedcheckbox" name="appendedcheckbox" class="span5" type="text" placeholder="# Instances">
+                                <span class="add-on">
+                                    <input type="checkbox">Unlimited</input>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <!-- Appended checkbox -->
+                    <div class="control-group">
+                        <label class="control-label">Max Dedicated Instances:</label>
+                        <div class="controls">
+                            <div class="input-append">
+                                <input id="appendedcheckbox" name="appendedcheckbox" class="span5" type="text" placeholder="# Instances">
+                                <span class="add-on">
+                                    <input type="checkbox">Unlimited</input>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <!-- Appended checkbox -->
+                    <div class="control-group">
+                        <label class="control-label">Max Spot Instances:</label>
+                        <div class="controls">
+                            <div class="input-append">
+                                <input id="appendedcheckbox" name="appendedcheckbox" class="span5" type="text" placeholder="# Instances">
+                                <span class="add-on">
+                                    <input type="checkbox">Unlimited</input>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <!-- Appended checkbox -->
+                    <div class="control-group">
+                        <label class="control-label">Max # in Auto Scale Group:</label>
+                        <div class="controls">
+                            <div class="input-append">
+                                <input id="max_in_autoscale" name="max_in_autoscale" class="span5" type="text" placeholder="# Instances">
+                                <span class="add-on">
+                                    <input type="checkbox">Unlimited</input>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <!-- Appended checkbox -->
+                    <div class="control-group">
+                        <label class="control-label">Max Cores:</label>
+                        <div class="controls">
+                            <div class="input-append">
+                                <input id="max_cores" name="max_cores" class="span5" type="text" placeholder="# Cores">
+                                <span class="add-on">
+                                    <input type="checkbox">Unlimited</input>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <!-- Multiple Checkboxes -->
+                    <div class="control-group">
+                        <label class="control-label">Instance Lifetime Rules</label>
+                        <div class="controls">
+                            <label class="checkbox">
+                                <input type="checkbox" name="instance_lifetime_rules" value="Admin can require an expected lifetime when an instance is launched">
+                                Admin can require an expected lifetime when an instance is launched
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="instance_lifetime_rules" value="When expected lifetime is up admin can choose to terminate instance">
+                                When expected lifetime is up admin can choose to terminate instance
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="instance_lifetime_rules" value="When expected lifetime is up admin can choose to notify user of expiration">
+                                When expected lifetime is up admin can choose to notify user of expiration
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="instance_lifetime_rules" value="When expected lifetime is up admin can leave disposition up to user">
+                                When expected lifetime is up admin can leave disposition up to user
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
         </form>
         
         <form class="form-horizontal">
-        <fieldset class="well">
+            <fieldset>
 
-        <!-- Form Name -->
-        <legend>Instance Policies</legend>
-
-        <!-- Multiple Checkboxes -->
-        <div class="control-group">
-          <label class="control-label">Images:</label>
-          <div class="controls">
-              <label class="checkbox">
-                  <div class="btn-group">
-                      <button class="btn dropdown-toggle" data-toggle="dropdown">
-                          Status
-                          <span class="caret"></span>
-                      </button>
-                      <ul class="dropdown-menu">
-                          <li><a>Preferred</a></li>
-                          <li><a>Special Case</a></li>
-                          <li><a>To Be Retired</a></li>
-                          <li><a>Retired</a></li>
-                      </ul>
-                  </div>
-                  Amazon Linux AMI 64-bit
-              </label>
-            <label class="checkbox">
-                <div class="btn-group">
-                    <button class="btn dropdown-toggle" data-toggle="dropdown">
-                        Status
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a>Preferred</a></li>
-                        <li><a>Special Case</a></li>
-                        <li><a>To Be Retired</a></li>
-                        <li><a>Retired</a></li>
-                    </ul>
+                <!-- Form Name -->
+                <legend style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;border-radius: 5px 5px 0px 0px;">&nbsp;Governance Rules</legend>
+                <div class="well">
+                    <!-- Multiple Checkboxes -->
+                    <div class="control-group">
+                        <label class="control-label">VPC:</label>
+                        <div class="controls">
+                            <label class="checkbox">
+                                <input type="checkbox" name="vpc_rules" value="Only Admin can create, update, delete Internet Gateways for VPC">
+                                Only Admin can create, update, delete Internet Gateways for VPC
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="vpc_rules" value="Only Admin can create, update, delete Virtual Private Gateways for VPC">
+                                Only Admin can create, update, delete Virtual Private Gateways for VPC
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="vpc_rules" value="Only Admin can create, update, delete Customer Gateways for VPC">
+                                Only Admin can create, update, delete Customer Gateways for VPC
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="vpc_rules" value="All users must create all resources in a VPC">
+                                All users must create all resources in a VPC
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="vpc_rules" value="Admin creates a VPC as the " default""="">
+                                Admin creates a VPC as the "Default"
+                            </label>
+                        </div>
+                    </div>
+        
+                    <!-- Multiple Checkboxes -->
+                    <div class="control-group">
+                        <label class="control-label">Configuration Management:</label>
+                        <div class="controls">
+                            <label class="checkbox">
+                                <input type="checkbox" name="config_management" value="Only Admin can add a configuration management endpoint (Puppet / Chef)">
+                                Only Admin can add a configuration management endpoint (Puppet / Chef)
+                            </label>
+                        </div>
+                    </div>
+        
+                    <!-- Multiple Checkboxes -->
+                    <div class="control-group">
+                        <label class="control-label">SNS Notifications:</label>
+                        <div class="controls">
+                            <label class="checkbox">
+                                <input type="checkbox" name="sns_notifications" value="All SS2 users are automatically setup as SNS users (e-mail)">
+                                All SS2 users are automatically setup as SNS users (e-mail)
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="sns_notifications" value="Users are email notified when an instance is started">
+                                Users are email notified when an instance is started
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="sns_notifications" value="Users are email notified when a CloudFormation has 'completed' or 'failed'">
+                                Users are email notified when a CloudFormation has 'completed' or 'failed'
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="sns_notifications" value="Predetermined SNS Topics are created: Informational, Warning, Exception">
+                                Predetermined SNS Topics are created: Informational, Warning, Exception
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="sns_notifications" value="Administrator can define a specific SNS delivery vehicle as the default">
+                                Administrator can define a specific SNS delivery vehicle as the default
+                            </label>
+                        </div>
+                    </div>
+        
+                    <!-- Multiple Checkboxes -->
+                    <div class="control-group">
+                        <label class="control-label">CloudWatch Alarms:</label>
+                        <div class="controls">
+                            <label class="checkbox">
+                                <input type="checkbox" name="cloudwatch_alarms" value="A list of CloudWatch Alarms for specific resources are Always used when the resources are provisioned">
+                                A list of CloudWatch Alarms for specific resources are Always used when the resources are provisioned
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="cloudwatch_alarms" value="Admin can choose to use alarm or not, or change tolerance">
+                                Admin can choose to use alarm or not, or change tolerance
+                            </label>
+                        </div>
+                    </div>
+        
+                    <!-- Multiple Checkboxes -->
+                    <div class="control-group">
+                        <label class="control-label">Auto-Tag:</label>
+                        <div class="controls">
+                            <label class="checkbox">
+                                <input type="checkbox" name="auto_tag" value="Auto-tag newly created assets using SS2 information.">
+                                Auto-tag newly created assets using SS2 information.
+                            </label>
+                        </div>
+                    </div>
+        
+                    <!-- Appended checkbox -->
+                    <div class="control-group">
+                        <label class="control-label">Max # of RDS Databases:</label>
+                        <div class="controls">
+                            <div class="input-append">
+                                <input id="max_rds" name="max_rds" class="span3" type="text" placeholder="# DB's">
+                                <span class="add-on">
+                                    <input type="checkbox">Unlimited</input>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <!-- Multiple Checkboxes -->
+                    <div class="control-group">
+                        <label class="control-label">AWS Console:</label>
+                        <div class="controls">
+                            <label class="checkbox">
+                                <input type="checkbox" name="disable_aws_console" value="Disable access to AWS Console">
+                                Disable access to AWS Console
+                            </label>
+                        </div>
+                    </div>
                 </div>
-              Amazon Linux AMI 32-bit
-            </label>
-            <label class="checkbox">
-                <div class="btn-group">
-                    <button class="btn dropdown-toggle" data-toggle="dropdown">
-                        Status
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a>Preferred</a></li>
-                        <li><a>Special Case</a></li>
-                        <li><a>To Be Retired</a></li>
-                        <li><a>Retired</a></li>
-                    </ul>
-                </div>
-              Red Hat Enterprise Linux 6.3 64-bit
-            </label>
-            <label class="checkbox">
-                <div class="btn-group">
-                    <button class="btn dropdown-toggle" data-toggle="dropdown">
-                        Status
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a>Preferred</a></li>
-                        <li><a>Special Case</a></li>
-                        <li><a>To Be Retired</a></li>
-                        <li><a>Retired</a></li>
-                    </ul>
-                </div>
-              Red Hat Enterprise Linux 6.3 32-bit
-            </label>
-            <label class="checkbox">
-                <div class="btn-group">
-                    <button class="btn dropdown-toggle" data-toggle="dropdown">
-                        Status
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a>Preferred</a></li>
-                        <li><a>Special Case</a></li>
-                        <li><a>To Be Retired</a></li>
-                        <li><a>Retired</a></li>
-                    </ul>
-                </div>
-              Ubuntu Server 12.04.1 LTS 64-bit
-            </label>
-            <label class="checkbox">
-                <div class="btn-group">
-                    <button class="btn dropdown-toggle" data-toggle="dropdown">
-                        Status
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a>Preferred</a></li>
-                        <li><a>Special Case</a></li>
-                        <li><a>To Be Retired</a></li>
-                        <li><a>Retired</a></li>
-                    </ul>
-                </div>
-              Ubuntu Server 12.04.1 LTS 32-bit
-            </label>
-          </div>
-        </div>
-        
-        <!-- Appended checkbox -->
-        <div class="control-group">
-          <label class="control-label">Max On-Demand Instances:</label>
-          <div class="controls">
-            <div class="input-append">
-              <input id="appendedcheckbox" name="appendedcheckbox" class="span5" type="text" placeholder="# Instances">
-              <span class="add-on">
-                <input type="checkbox">Unlimited</input>
-              </span>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Appended checkbox -->
-        <div class="control-group">
-          <label class="control-label">Max Reserved Instances:</label>
-          <div class="controls">
-            <div class="input-append">
-              <input id="appendedcheckbox" name="appendedcheckbox" class="span5" type="text" placeholder="# Instances">
-              <span class="add-on">
-                <input type="checkbox">Unlimited</input>
-              </span>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Appended checkbox -->
-        <div class="control-group">
-          <label class="control-label">Max Dedicated Instances:</label>
-          <div class="controls">
-            <div class="input-append">
-              <input id="appendedcheckbox" name="appendedcheckbox" class="span5" type="text" placeholder="# Instances">
-              <span class="add-on">
-                <input type="checkbox">Unlimited</input>
-              </span>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Appended checkbox -->
-        <div class="control-group">
-          <label class="control-label">Max Spot Instances:</label>
-          <div class="controls">
-            <div class="input-append">
-              <input id="appendedcheckbox" name="appendedcheckbox" class="span5" type="text" placeholder="# Instances">
-              <span class="add-on">
-                <input type="checkbox">Unlimited</input>
-              </span>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Appended checkbox -->
-        <div class="control-group">
-          <label class="control-label">Max # in Auto Scale Group:</label>
-          <div class="controls">
-            <div class="input-append">
-              <input id="max_in_autoscale" name="max_in_autoscale" class="span5" type="text" placeholder="# Instances">
-              <span class="add-on">
-                <input type="checkbox">Unlimited</input>
-              </span>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Appended checkbox -->
-        <div class="control-group">
-          <label class="control-label">Max Cores:</label>
-          <div class="controls">
-            <div class="input-append">
-              <input id="max_cores" name="max_cores" class="span5" type="text" placeholder="# Cores">
-              <span class="add-on">
-                <input type="checkbox">Unlimited</input>
-              </span>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Multiple Checkboxes -->
-        <div class="control-group">
-          <label class="control-label">Instance Lifetime Rules</label>
-          <div class="controls">
-            <label class="checkbox">
-              <input type="checkbox" name="instance_lifetime_rules" value="Admin can require an expected lifetime when an instance is launched">
-              Admin can require an expected lifetime when an instance is launched
-            </label>
-            <label class="checkbox">
-              <input type="checkbox" name="instance_lifetime_rules" value="When expected lifetime is up admin can choose to terminate instance">
-              When expected lifetime is up admin can choose to terminate instance
-            </label>
-            <label class="checkbox">
-              <input type="checkbox" name="instance_lifetime_rules" value="When expected lifetime is up admin can choose to notify user of expiration">
-              When expected lifetime is up admin can choose to notify user of expiration
-            </label>
-            <label class="checkbox">
-              <input type="checkbox" name="instance_lifetime_rules" value="When expected lifetime is up admin can leave disposition up to user">
-              When expected lifetime is up admin can leave disposition up to user
-            </label>
-          </div>
-        </div>
-
-        </fieldset>
+            </fieldset>
         </form>
         
         <form class="form-horizontal">
-        <fieldset class="well">
+            <fieldset>
 
-        <!-- Form Name -->
-        <legend>Governance Rules</legend>
-
-        <!-- Multiple Checkboxes -->
-        <div class="control-group">
-          <label class="control-label">VPC:</label>
-          <div class="controls">
-            <label class="checkbox">
-              <input type="checkbox" name="vpc_rules" value="Only Admin can create, update, delete Internet Gateways for VPC">
-              Only Admin can create, update, delete Internet Gateways for VPC
-            </label>
-            <label class="checkbox">
-              <input type="checkbox" name="vpc_rules" value="Only Admin can create, update, delete Virtual Private Gateways for VPC">
-              Only Admin can create, update, delete Virtual Private Gateways for VPC
-            </label>
-            <label class="checkbox">
-              <input type="checkbox" name="vpc_rules" value="Only Admin can create, update, delete Customer Gateways for VPC">
-              Only Admin can create, update, delete Customer Gateways for VPC
-            </label>
-            <label class="checkbox">
-              <input type="checkbox" name="vpc_rules" value="All users must create all resources in a VPC">
-              All users must create all resources in a VPC
-            </label>
-            <label class="checkbox">
-              <input type="checkbox" name="vpc_rules" value="Admin creates a VPC as the " default""="">
-              Admin creates a VPC as the "Default"
-            </label>
-          </div>
-        </div>
-        
-        <!-- Multiple Checkboxes -->
-        <div class="control-group">
-          <label class="control-label">Configuration Management:</label>
-          <div class="controls">
-            <label class="checkbox">
-              <input type="checkbox" name="config_management" value="Only Admin can add a configuration management endpoint (Puppet / Chef)">
-              Only Admin can add a configuration management endpoint (Puppet / Chef)
-            </label>
-          </div>
-        </div>
-        
-        <!-- Multiple Checkboxes -->
-        <div class="control-group">
-          <label class="control-label">SNS Notifications:</label>
-          <div class="controls">
-            <label class="checkbox">
-              <input type="checkbox" name="sns_notifications" value="All SS2 users are automatically setup as SNS users (e-mail)">
-              All SS2 users are automatically setup as SNS users (e-mail)
-            </label>
-            <label class="checkbox">
-              <input type="checkbox" name="sns_notifications" value="Users are email notified when an instance is started">
-              Users are email notified when an instance is started
-            </label>
-            <label class="checkbox">
-              <input type="checkbox" name="sns_notifications" value="Users are email notified when a CloudFormation has 'completed' or 'failed'">
-              Users are email notified when a CloudFormation has 'completed' or 'failed'
-            </label>
-            <label class="checkbox">
-              <input type="checkbox" name="sns_notifications" value="Predetermined SNS Topics are created: Informational, Warning, Exception">
-              Predetermined SNS Topics are created: Informational, Warning, Exception
-            </label>
-            <label class="checkbox">
-              <input type="checkbox" name="sns_notifications" value="Administrator can define a specific SNS delivery vehicle as the default">
-              Administrator can define a specific SNS delivery vehicle as the default
-            </label>
-          </div>
-        </div>
-        
-        <!-- Multiple Checkboxes -->
-        <div class="control-group">
-          <label class="control-label">CloudWatch Alarms:</label>
-          <div class="controls">
-            <label class="checkbox">
-              <input type="checkbox" name="cloudwatch_alarms" value="A list of CloudWatch Alarms for specific resources are Always used when the resources are provisioned">
-              A list of CloudWatch Alarms for specific resources are Always used when the resources are provisioned
-            </label>
-            <label class="checkbox">
-              <input type="checkbox" name="cloudwatch_alarms" value="Admin can choose to use alarm or not, or change tolerance">
-              Admin can choose to use alarm or not, or change tolerance
-            </label>
-          </div>
-        </div>
-        
-        <!-- Multiple Checkboxes -->
-        <div class="control-group">
-          <label class="control-label">Auto-Tag:</label>
-          <div class="controls">
-            <label class="checkbox">
-              <input type="checkbox" name="auto_tag" value="Auto-tag newly created assets using SS2 information.">
-              Auto-tag newly created assets using SS2 information.
-            </label>
-          </div>
-        </div>
-        
-        <!-- Appended checkbox -->
-        <div class="control-group">
-          <label class="control-label">Max # of RDS Databases:</label>
-          <div class="controls">
-            <div class="input-append">
-              <input id="max_rds" name="max_rds" class="span3" type="text" placeholder="# DB's">
-              <span class="add-on">
-                <input type="checkbox">Unlimited</input>
-              </span>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Multiple Checkboxes -->
-        <div class="control-group">
-          <label class="control-label">AWS Console:</label>
-          <div class="controls">
-            <label class="checkbox">
-              <input type="checkbox" name="disable_aws_console" value="Disable access to AWS Console">
-              Disable access to AWS Console
-            </label>
-          </div>
-        </div>
-
-        </fieldset>
-        </form>
-        
-        <form class="form-horizontal">
-        <fieldset class="well">
-
-        <!-- Form Name -->
-        <legend>Information</legend>
-
-        <!-- Text input-->
-        <div class="control-group">
-          <label class="control-label">Contact Name</label>
-          <div class="controls">
-            <input id="contact_name" name="contact_name" type="text" placeholder="Contact's Name" class="input-xlarge">
+                <!-- Form Name -->
+                <legend style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;border-radius: 5px 5px 0px 0px;">&nbsp;Information</legend>
+                <div class="well">
+                    <!-- Text input-->
+                    <div class="control-group">
+                        <label class="control-label">Contact Name</label>
+                        <div class="controls">
+                            <input id="contact_name" name="contact_name" type="text" placeholder="Contact's Name" class="input-xlarge">
     
-          </div>
-        </div>
+                        </div>
+                    </div>
 
-        <!-- Text input-->
-        <div class="control-group">
-          <label class="control-label">Contact Email</label>
-          <div class="controls">
-            <input id="contact_email" name="contact_email" type="text" placeholder="Contact's Email" class="input-xlarge">
+                    <!-- Text input-->
+                    <div class="control-group">
+                        <label class="control-label">Contact Email</label>
+                        <div class="controls">
+                            <input id="contact_email" name="contact_email" type="text" placeholder="Contact's Email" class="input-xlarge">
     
-          </div>
-        </div>
+                        </div>
+                    </div>
 
-        <!-- Text input-->
-        <div class="control-group">
-          <label class="control-label">Contact Phone #</label>
-          <div class="controls">
-            <input id="contact_phone" name="contact_phone" type="text" placeholder="Contact's Phone #" class="input-xlarge">
+                    <!-- Text input-->
+                    <div class="control-group">
+                        <label class="control-label">Contact Phone #</label>
+                        <div class="controls">
+                            <input id="contact_phone" name="contact_phone" type="text" placeholder="Contact's Phone #" class="input-xlarge">
     
-          </div>
-        </div>
+                        </div>
+                    </div>
 
-        <!-- Text input-->
-        <div class="control-group">
-          <label class="control-label">URL</label>
-          <div class="controls">
-            <input id="information_url" name="information_url" type="text" placeholder="URL" class="input-xlarge">
+                    <!-- Text input-->
+                    <div class="control-group">
+                        <label class="control-label">URL</label>
+                        <div class="controls">
+                            <input id="information_url" name="information_url" type="text" placeholder="URL" class="input-xlarge">
     
-          </div>
-        </div>
-
-        </fieldset>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
         </form>
         
         
-        <a href="#" class="btn btn-danger" style="float:right;margin-bottom:1cm;">Save Policy <i class="icon-file icon-white"></i></a>
+        <a href="#" class="btn" style="float:right;margin-bottom:1cm;background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;">Save Policy <i class="icon-file icon-white"></i></a>
 	<div>
 </div>
