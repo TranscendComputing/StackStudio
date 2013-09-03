@@ -472,9 +472,143 @@
             </label>
           </div>
         </div>
+        
+        <!-- Multiple Checkboxes -->
+        <div class="control-group">
+          <label class="control-label">Configuration Management:</label>
+          <div class="controls">
+            <label class="checkbox">
+              <input type="checkbox" name="config_management" value="Only Admin can add a configuration management endpoint (Puppet / Chef)">
+              Only Admin can add a configuration management endpoint (Puppet / Chef)
+            </label>
+          </div>
+        </div>
+        
+        <!-- Multiple Checkboxes -->
+        <div class="control-group">
+          <label class="control-label">SNS Notifications:</label>
+          <div class="controls">
+            <label class="checkbox">
+              <input type="checkbox" name="sns_notifications" value="All SS2 users are automatically setup as SNS users (e-mail)">
+              All SS2 users are automatically setup as SNS users (e-mail)
+            </label>
+            <label class="checkbox">
+              <input type="checkbox" name="sns_notifications" value="Users are email notified when an instance is started">
+              Users are email notified when an instance is started
+            </label>
+            <label class="checkbox">
+              <input type="checkbox" name="sns_notifications" value="Users are email notified when a CloudFormation has 'completed' or 'failed'">
+              Users are email notified when a CloudFormation has 'completed' or 'failed'
+            </label>
+            <label class="checkbox">
+              <input type="checkbox" name="sns_notifications" value="Predetermined SNS Topics are created: Informational, Warning, Exception">
+              Predetermined SNS Topics are created: Informational, Warning, Exception
+            </label>
+            <label class="checkbox">
+              <input type="checkbox" name="sns_notifications" value="Administrator can define a specific SNS delivery vehicle as the default">
+              Administrator can define a specific SNS delivery vehicle as the default
+            </label>
+          </div>
+        </div>
+        
+        <!-- Multiple Checkboxes -->
+        <div class="control-group">
+          <label class="control-label">CloudWatch Alarms:</label>
+          <div class="controls">
+            <label class="checkbox">
+              <input type="checkbox" name="cloudwatch_alarms" value="A list of CloudWatch Alarms for specific resources are Always used when the resources are provisioned">
+              A list of CloudWatch Alarms for specific resources are Always used when the resources are provisioned
+            </label>
+            <label class="checkbox">
+              <input type="checkbox" name="cloudwatch_alarms" value="Admin can choose to use alarm or not, or change tolerance">
+              Admin can choose to use alarm or not, or change tolerance
+            </label>
+          </div>
+        </div>
+        
+        <!-- Multiple Checkboxes -->
+        <div class="control-group">
+          <label class="control-label">Auto-Tag:</label>
+          <div class="controls">
+            <label class="checkbox">
+              <input type="checkbox" name="auto_tag" value="Auto-tag newly created assets using SS2 information.">
+              Auto-tag newly created assets using SS2 information.
+            </label>
+          </div>
+        </div>
+        
+        <!-- Appended checkbox -->
+        <div class="control-group">
+          <label class="control-label">Max # of RDS Databases:</label>
+          <div class="controls">
+            <div class="input-append">
+              <input id="max_rds" name="max_rds" class="span3" type="text" placeholder="# DB's">
+              <span class="add-on">
+                <input type="checkbox">Unlimited</input>
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Multiple Checkboxes -->
+        <div class="control-group">
+          <label class="control-label">AWS Console:</label>
+          <div class="controls">
+            <label class="checkbox">
+              <input type="checkbox" name="disable_aws_console" value="Disable access to AWS Console">
+              Disable access to AWS Console
+            </label>
+          </div>
+        </div>
 
         </fieldset>
         </form>
+        
+        <form class="form-horizontal">
+        <fieldset>
+
+        <!-- Form Name -->
+        <legend>Information</legend>
+
+        <!-- Text input-->
+        <div class="control-group">
+          <label class="control-label">Contact Name</label>
+          <div class="controls">
+            <input id="contact_name" name="contact_name" type="text" placeholder="Contact's Name" class="input-xlarge">
+    
+          </div>
+        </div>
+
+        <!-- Text input-->
+        <div class="control-group">
+          <label class="control-label">Contact Email</label>
+          <div class="controls">
+            <input id="contact_email" name="contact_email" type="text" placeholder="Contact's Email" class="input-xlarge">
+    
+          </div>
+        </div>
+
+        <!-- Text input-->
+        <div class="control-group">
+          <label class="control-label">Contact Phone #</label>
+          <div class="controls">
+            <input id="contact_phone" name="contact_phone" type="text" placeholder="Contact's Phone #" class="input-xlarge">
+    
+          </div>
+        </div>
+
+        <!-- Text input-->
+        <div class="control-group">
+          <label class="control-label">URL</label>
+          <div class="controls">
+            <input id="information_url" name="information_url" type="text" placeholder="URL" class="input-xlarge">
+    
+          </div>
+        </div>
+
+        </fieldset>
+        </form>
+        
         
         <a href="#" class="btn btn-danger" style="float:right;margin-bottom:1cm;">Save Policy <i class="icon-file icon-white"></i></a>
 	<div>
