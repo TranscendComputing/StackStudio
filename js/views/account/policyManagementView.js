@@ -16,7 +16,8 @@ define([
         'views/account/groupCreateView',
         'views/account/groupManageUsersView',
         'jquery.dataTables',
-        'jquery.dataTables.fnProcessingIndicator'
+        'jquery.dataTables.fnProcessingIndicator',
+        'bootstrap'
 ], function( $, _, Backbone, Common, groupsManagementTemplate, Groups, Users, CreateGroupView, ManageGroupUsers ) {
 
     var GroupManagementView = Backbone.View.extend({
@@ -41,7 +42,7 @@ define([
             this.$el.html(this.template);
             this.rootView = this.options.rootView;
             $("#submanagement_app").html(this.$el);
-            $("button").button();
+            //$("button").button();
             $("#group_users_table").dataTable({
                 "bJQueryUI": true,
                 "bProcessing": true
