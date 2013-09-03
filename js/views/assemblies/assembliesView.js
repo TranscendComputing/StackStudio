@@ -11,7 +11,7 @@ define([
         'bootstrap',
         'backbone',
         //'views/assemblies/assemblyDesignView',
-        'views/apps/appsAndPlatformsView',
+        'views/assemblies/assemblyRuntimeView',
         'common',
         //'models/assembly',
         'text!templates/assemblies/assembliesTemplate.html'
@@ -57,7 +57,7 @@ define([
 
     var assembliesView;
 
-    Common.router.on('route:apps', function () {
+    Common.router.on('route:assemblies', function () {
         if(sessionStorage.account_id) {
             if (this.previousView !== assembliesView) {
                 this.unloadPreviousState();

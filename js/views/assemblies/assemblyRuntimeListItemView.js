@@ -13,7 +13,7 @@ define([
         'icanhaz',
         'common',
         'typeahead', // Not an AMD component!
-        'text!templates/apps/appListItemTemplate.html',
+        'text!templates/assemblies/assemblyRuntimeListItemTemplate.html',
         'collections/apps',
         'models/app',
         'jquery-plugins',

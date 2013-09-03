@@ -41,7 +41,7 @@ define([
 			'resources/:cloud/:region/:type/:subtype' : 'resourcesRoute',
 			'resources/:cloud/:region/:type/:subtype/:id': 'resourcesRoute',
 			'images': 'imagesRoute',
-            'apps': 'appsRoute',
+            'assemblies': 'assembliesRoute',
             'stacks': 'stacksRoute',
             'offerings': 'offeringsRoute',
 			'projects': 'projects',
@@ -78,10 +78,10 @@ define([
             this.trigger("route:images");
         },
 
-		appsRoute: function(action) {
+		assembliesRoute: function(action) {
             $("#sidebar").empty();
             $("#sidebar").hide();
-            this.trigger("route:apps");
+            this.trigger("route:assemblies");
         },
 
         stacksRoute: function(action) {

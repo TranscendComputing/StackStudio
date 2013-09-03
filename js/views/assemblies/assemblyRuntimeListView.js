@@ -13,10 +13,10 @@ define([
         'icanhaz',
         'common',
         'typeahead', // Not an AMD component!
-        'text!templates/apps/appsListTemplate.html',
+        'text!templates/assemblies/assemblyRuntimeListTemplate.html',
         'collections/apps',
         'models/app',
-        'views/apps/appListItemView',
+        'views/assemblies/assemblyRuntimeListItemView',
         'jquery-plugins',
         'jquery-ui-plugins'
 ], function( $, _, bootstrap, Backbone, ich, Common, typeahead, appsListTemplate, Apps, App, AppListItemView ) {
