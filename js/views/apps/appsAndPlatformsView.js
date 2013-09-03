@@ -31,6 +31,7 @@ define([
         'collections/chefEnvironments',
         'views/apps/appsListView',
         'models/app',
+        'collections/images',
         'jquery-plugins',
         'jquery-ui-plugins',
         'jquery.dataTables',
@@ -85,9 +86,47 @@ define([
                   return compiled;
                };
             }
-            $("#main").html(this.el);
+            $("#assemblyRuntime").html(this.el);
             this.$el.html(this.template);
             this.bind("badge-refresh", this.updateDeployButtonState, this);
+            this.instanceTable = $('#deploy-inst table:first').dataTable({
+                "bJQueryUI": true,
+                "bProcessing": true,
+                "bDestroy": true,
+                bRetrieve: true,
+                "aoColumnDefs": [
+                    { 
+                        "sTitle": "", 
+                        aTargets: [0],
+                        mData: function(instance){
+                            return "<input type='checkbox' data-instance-id='" + instance.id + "'></input>";
+                        }
+                    },
+                    {
+                        "sTitle": "Instance Name",
+                        aTargets: [1],
+                        //mData: "tags.Name"
+                        mData: function(instance){
+                            if (!instance){
+                                return "";
+                            }
+                            if (instance.name){
+                                return instance.name;
+                            }
+                            return instance.tags ? (instance.tags.Name ? instance.tags.Name : "") : "";
+                        }
+                    },
+                    { 
+                        "sTitle": "Id",
+                        aTargets: [2],
+                        mData: "id"
+                        //mData: function(instance){
+                        //    return instance.id;
+                        //}
+                    }
+                ]
+            });
+            this.instanceTable.fnProcessingIndicator(true);
         },
 
         chefGroupChangeHandler: function(evt){
@@ -462,7 +501,6 @@ define([
             var $this = this;
             var providerName = credential.get("cloud_provider").toLowerCase();
             var appPath = "../" + providerName + "/collections/compute/" + providerName + "Instances";
-
             require([appPath], function (Instances) {
                 var instances = new Instances();
                 
@@ -508,49 +546,9 @@ define([
         },
 
         renderInstances: function(instances){
-            var instanceElement = $("#deploy-inst table:first");
-            
-            var instanceTable = instanceElement.dataTable({
-                "bJQueryUI": true,
-                "bProcessing": true,
-                "bDestroy": true,
-                bRetrieve: true,
-                "aoColumnDefs": [
-                    { 
-                        "sTitle": "", 
-                        aTargets: [0],
-                        mData: function(instance){
-                            return "<input type='checkbox' data-instance-id='" + instance.id + "'></input>";
-                        }
-                    },
-                    {
-                        "sTitle": "Instance Name",
-                        aTargets: [1],
-                        //mData: "tags.Name"
-                        mData: function(instance){
-                            if (!instance){
-                                return "";
-                            }
-                            if (instance.name){
-                                return instance.name;
-                            }
-                            return instance.tags ? (instance.tags.Name ? instance.tags.Name : "") : "";
-                        }
-                    },
-                    { 
-                        "sTitle": "Id",
-                        aTargets: [2],
-                        mData: "id"
-                        //mData: function(instance){
-                        //    return instance.id;
-                        //}
-                    }
-                ]
-            });
-            instanceTable.fnProcessingIndicator(true);
-            instanceTable.fnClearTable();
-            instanceTable.fnAddData(instances);
-            instanceTable.fnProcessingIndicator(false);
+            this.instanceTable.fnClearTable();
+            this.instanceTable.fnAddData(instances);
+            this.instanceTable.fnProcessingIndicator(false);
             this.updateDeployButtonState();
         },
 
@@ -739,19 +737,19 @@ define([
 
     var appsView;
 
-    Common.router.on('route:apps', function () {
-        if(sessionStorage.account_id) {
-            if (this.previousView !== appsView) {
-                this.unloadPreviousState();
-                appsView = new AppsView();
-                this.setPreviousState(appsView);
-            }
-            appsView.render();
-        }else {
-            Common.router.navigate("", {trigger: true});
-            Common.errorDialog("Login Error", "You must login.");
-        }
-    }, Common);
+    // Common.router.on('route:apps', function () {
+    //     if(sessionStorage.account_id) {
+    //         if (this.previousView !== appsView) {
+    //             this.unloadPreviousState();
+    //             appsView = new AppsView();
+    //             this.setPreviousState(appsView);
+    //         }
+    //         appsView.render();
+    //     }else {
+    //         Common.router.navigate("", {trigger: true});
+    //         Common.errorDialog("Login Error", "You must login.");
+    //     }
+    // }, Common);
 
 	return AppsView;
 });
