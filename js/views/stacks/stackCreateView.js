@@ -20,7 +20,7 @@ define([
 
         events: {
             "click #submit_button": "save",
-            "click #cancel_button": "close",
+            "click #cancel_button": "close"
         },
 
         initialize: function(options) {

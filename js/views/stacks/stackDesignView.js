@@ -29,7 +29,7 @@ define([
 
         events: {
             "click .jstree_custom_item": "treeFolderClick",
-            "click .new_item_link": "addResource",
+            "click .new_item_link": "addResource"
         },
 
         initialize: function() {

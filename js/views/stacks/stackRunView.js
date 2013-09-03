@@ -22,7 +22,7 @@ define([
         stackResourceTree: undefined,
 
         events: {
-            "click .jstree_custom_item": "treeFolderClick",
+            "click .jstree_custom_item": "treeFolderClick"
         },
 
         initialize: function() {
@@ -31,9 +31,9 @@ define([
         },
 
         render: function() {
-            this.stackResourceTree = $("#stack_resource_tree").jstree({ 
+            this.stackResourceTree = $("#stack_resource_tree").jstree({
                 // List of active plugins
-                "plugins" : [ 
+                "plugins" : [
                     "json_data", "crrm", "themeroller"
                 ],
                 
@@ -41,7 +41,7 @@ define([
                     "animation": 0
                  },
 
-                "json_data" : { 
+                "json_data" : {
                     "ajax": {
                         "url": "samples/stackRunResources.json",
                         "success": function(data) {

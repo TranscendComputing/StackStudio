@@ -116,7 +116,7 @@ define([
                 "plugins":[ "themeroller", "html_data", "ui", "crrm" ]
             }).on('loaded.jstree', function() {
                 //async
-                accMan.policies.fetch({ 
+                accMan.policies.fetch({
                     data: $.param({ org_id: sessionStorage.org_id}),
                     reset: true
                 });
@@ -174,7 +174,7 @@ define([
         selectManagement: function(event){
             if(event.target.attributes.href){
                 if($("#"+event.target.id).hasClass('policy_item')){
-                    this.treePolicy = event.target.id
+                    this.treePolicy = event.target.id;
                 }
                 location.href = event.target.attributes.href.nodeValue;
             }
@@ -189,7 +189,7 @@ define([
             this.treeCloudAccount = event.target.id;
             if(typeof(this.subApp.treeSelectCloudAccount) !== "undefined"){
                 this.subApp.treeSelectCloudAccount();
-            }  
+            }
         },
         selectCloudCred: function(event){
             this.treeCloudCred = event.target.id;
