@@ -1,7 +1,7 @@
 <div class="management_page" style="margin:10px;">
 	<div style="margin-left:5px;">
         
-        <form class="form-horizontal">
+        <form id="aws_gov_policy" class="form-horizontal">
             <fieldset>
 
                 <!-- Form Name -->
@@ -342,7 +342,7 @@
                         <label class="control-label">Max On-Demand Instances:</label>
                         <div class="controls">
                             <div class="input-append">
-                                <input id="appendedcheckbox" name="appendedcheckbox" class="span5" type="text" placeholder="# Instances">
+                                <input id="max_on_demand" name="max_on_demand" class="span5" type="text" placeholder="# Instances">
                                 <span class="add-on">
                                     <input type="checkbox">Unlimited</input>
                                 </span>
@@ -355,7 +355,7 @@
                         <label class="control-label">Max Reserved Instances:</label>
                         <div class="controls">
                             <div class="input-append">
-                                <input id="appendedcheckbox" name="appendedcheckbox" class="span5" type="text" placeholder="# Instances">
+                                <input id="max_reserved" name="max_reserved" class="span5" type="text" placeholder="# Instances">
                                 <span class="add-on">
                                     <input type="checkbox">Unlimited</input>
                                 </span>
@@ -368,7 +368,7 @@
                         <label class="control-label">Max Dedicated Instances:</label>
                         <div class="controls">
                             <div class="input-append">
-                                <input id="appendedcheckbox" name="appendedcheckbox" class="span5" type="text" placeholder="# Instances">
+                                <input id="max_dedicated" name="max_dedicated" class="span5" type="text" placeholder="# Instances">
                                 <span class="add-on">
                                     <input type="checkbox">Unlimited</input>
                                 </span>
@@ -381,7 +381,7 @@
                         <label class="control-label">Max Spot Instances:</label>
                         <div class="controls">
                             <div class="input-append">
-                                <input id="appendedcheckbox" name="appendedcheckbox" class="span5" type="text" placeholder="# Instances">
+                                <input id="max_spot" name="max_spot" class="span5" type="text" placeholder="# Instances">
                                 <span class="add-on">
                                     <input type="checkbox">Unlimited</input>
                                 </span>
@@ -615,6 +615,6 @@
         </form>
         
         
-        <a class="btn" style="float:right;margin-bottom:1cm;background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;">Save Policy <i class="icon-file icon-white"></i></a>
+        <a id="save_button" class="btn" style="float:right;margin-bottom:1cm;background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;">Save Policy <i class="icon-file icon-white"></i></a>
 	<div>
 </div>

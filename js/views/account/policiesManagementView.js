@@ -26,6 +26,8 @@ define([
         users: undefined,
 
         selectedUser: undefined,
+        
+        rootView: undefined,
 
         events: {
             "click #users_table tr": "selectUser",
@@ -35,6 +37,7 @@ define([
 
         initialize: function() {
             this.$el.html(this.template);
+            this.rootView = this.options.rootView;
             $("#submanagement_app").html(this.$el);
             $("button").button();
             $("#users_table").dataTable({
@@ -118,7 +121,9 @@ define([
         },*/
 
         createUser: function() {
-            new NewLoginView({org_id: sessionStorage.org_id});
+            this.rootView.treePolicy = undefined;
+            location.href = "#account/management/policy";
+            //new NewLoginView({org_id: sessionStorage.org_id});
         },
 
         deleteUser: function() {
