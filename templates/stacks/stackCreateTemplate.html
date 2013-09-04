@@ -6,15 +6,15 @@
   	<div class="modal-body">
     	<table>
     		<tr>
-    			<td><label class="top_align">Stack Name:</label></span></td><td><input type="text" class="large_width"/></td>
+    			<td><label class="top_align">Stack Name:</label></span></td><td><input id="stack_name_input" type="text" class="large_width"/></td>
     		</tr>
     		<tr>
-	    		<td><label class="top_align">Description:</label></span></td><td><textarea class="large_width"></textarea></td>
+	    		<td><label class="top_align">Description:</label></span></td><td><textarea id="stack_description_input" class="large_width"></textarea></td>
     		</tr>
     		<tr>
-    			<td><label class="top_align">Cloud Providers:</label></td>
+    			<td><label class="top_align">Compatible Clouds:</label></td>
     			<td>
-    				<select class="large_width" multiple>
+    				<select id="stack_compatible_clouds" class="large_width" multiple>
     					<option value="aws">Amazon Web Services</option>
     					<option value="openstack">OpenStack</option>
     					<option value="google">Google</option>

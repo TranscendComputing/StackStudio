@@ -23,34 +23,30 @@ define([
 
         editor: undefined,
 
+        stack: undefined,
+
         newTemplateResources: undefined,
 
         newResourceTree: undefined,
 
         events: {
             "click .jstree_custom_item": "treeFolderClick",
-            "click .new_item_link": "addResource"
+            "click .new_item_link": "addResource",
+            "click #save_template_button": "saveTemplate"
         },
 
         initialize: function() {
+            
+        },
+
+        render: function() {
             $("#design_time_content").html(this.el);
             this.$el.html(this.template);
             this.editor = ace.edit("design_editor");
             this.editor.setTheme("ace/theme/monokai");
             this.editor.getSession().setUseWorker(false);
             this.editor.getSession().setMode(new (require("ace/mode/json")).Mode);
-            this.editor.getSession().setValue('{' +
-                    '\n\t"AWSTemplateFormatVersion": "2010-09-09",' +
-                    '\n\t"Description": "New template created in StackStudio.",' +
-                    '\n\t"Parameters": {},' +
-                    '\n\t"Mappings": {},' +
-                    '\n\t"Resources": {},' +
-                    '\n\t"Outputs": {}' +
-                '\n}'
-            );
-        },
 
-        render: function() {
             this.newResourceTree = $("#new_resources").jstree({ 
                 // List of active plugins
                 "plugins" : [ 
@@ -105,6 +101,18 @@ define([
                     "item": "jstree_custom_item"
                 }
             });
+        },
+
+        setStackTemplate: function(stack) {
+            this.stack = stack;
+            this.editor.getSession().setValue(stack.attributes.template);
+        },
+
+        saveTemplate: function() {
+            if(this.stack) {
+                this.stack.attributes.template = this.editor.getValue();
+                this.stack.update(this.stack.attributes);
+            }
         },
 
         addResource: function(event) {

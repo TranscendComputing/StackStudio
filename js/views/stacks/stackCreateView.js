@@ -11,8 +11,9 @@ define([
         'backbone',
         'common',
         'text!templates/stacks/stackCreateTemplate.html',
+        'models/stack',
         'bootstrap'
-], function( $, _, Backbone, Common, stackCreateTemplate ) {
+], function( $, _, Backbone, Common, stackCreateTemplate, Stack ) {
 
     var StackCreateView = Backbone.View.extend({
         
@@ -33,7 +34,33 @@ define([
         },
 
         save: function() {
-            this.close();
+            var stack = new Stack();
+            var valid = true;
+            var options = {};
+            options["account_id"] = sessionStorage.account_id;
+            if($("#stack_name_input").val() !== "") {
+                options["name"] = $("#stack_name_input").val();
+            }else {
+                valid = false;
+            }
+            if($("#stack_description_input").val() !== "") {
+                options["description"] = $("#stack_description_input").val();
+            }
+            options["compatible_clouds"] = $("#stack_compatible_clouds").val();
+            options["template"] = "{" +
+                "\n\t\"AWSTemplateFormatVersion\": \"2010-09-09\"," +
+                "\n\t\"Description\": \"New template created in StackStudio.\"," +
+                "\n\t\"Parameters\": {}," +
+                "\n\t\"Mappings\": {}," +
+                "\n\t\"Resources\": {}," +
+                "\n\t\"Outputs\": {}" +
+            "\n}";
+            if(valid) {
+                stack.create(options);
+                this.close();
+            }else {
+                alert("Please provide a name for the stack.");
+            }
         },
 
         close: function() {

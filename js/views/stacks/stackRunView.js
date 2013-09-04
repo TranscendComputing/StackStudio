@@ -26,11 +26,12 @@ define([
         },
 
         initialize: function() {
-            $("#run_time_content").html(this.el);
-            this.$el.html(this.template);
+            
         },
 
         render: function() {
+            $("#run_time_content").html(this.el);
+            this.$el.html(this.template);
             this.stackResourceTree = $("#stack_resource_tree").jstree({
                 // List of active plugins
                 "plugins" : [
