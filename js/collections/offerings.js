@@ -13,14 +13,11 @@ define([
 ], function( $, Backbone, Offering, Common) {
 	'use strict';
 
-	// Offering Collection
-	// ---------------
-
 	var OfferingList = Backbone.Collection.extend({
 
-		// Reference to this collection's model.
 		model: Offering,
-        url: '../samples/offerings.json'
+
+        url: function(){return Common.apiUrl + '/stackstudio/v1/portfolios/account/' + sessionStorage.account_id;}
 	
 	});
 

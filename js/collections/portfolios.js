@@ -13,14 +13,11 @@ define([
 ], function( $, Backbone, Portfolio, Common) {
 	'use strict';
 
-	// Portfolio Collection
-	// ---------------
-
 	var PortfolioList = Backbone.Collection.extend({
 
-		// Reference to this collection's model.
 		model: Portfolio,
-        url: '../samples/portfolios.json'
+
+        url: function(options){return Common.apiUrl + '/stackstudio/v1/portfolios/group/' + options["group_id"];}
 	
 	});
 
