@@ -118,7 +118,8 @@ define([
         },*/
 
         createUser: function() {
-            new NewLoginView({org_id: sessionStorage.org_id});
+            location.href = "#account/management/policy"
+            //new NewLoginView({org_id: sessionStorage.org_id});
         },
 
         deleteUser: function() {
