@@ -25,6 +25,11 @@ define([
             this.sendAjaxAction(url, "POST", {"policy": options}, "policyAppRefresh");
         },
         
+        save: function(options,id, orgId) {
+            var url = Common.apiUrl + "/identity/v1/policies/"+id+"?&org_id=" + orgId;
+            this.sendAjaxAction(url, "POST", {"policy": options}, "policyAppRefresh");
+        },
+        
         delete: function(credentialId, region) {
             var url = Common.apiUrl + "/identity/v1/policies/" + this.attributes.name + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
             this.sendAjaxAction(url, "POST", undefined, "policyAppRefresh");

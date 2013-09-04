@@ -33,6 +33,8 @@ define([
         users: undefined,
 
         selectedGroup: undefined,
+        
+        model: undefined,
 
         events: {
             "click #manage_group_users_button" : "manageGroupUsers",
@@ -58,38 +60,21 @@ define([
             this.users = new Users();
             this.selectedGroup = undefined;
             
-            //this.policy = options.policy;
-            
             this.render();
         },
 
         render: function () {
+            this.policy = this.rootView.treePolicy;
+            this.model = this.rootView.policies.get(this.policy);
+            this.populateForm(this.model);
+            
             this.disableSelectionRequiredButtons(false);
-            /*$("#group_users_table").dataTable().fnClearTable();
-            
-            this.groups.fetch({
-                data: $.param({ group_policy_id: this.rootView.treePolicy }),
-                reset: true
-            });*/
-            
-            //var view = this;
-            //var policyName = view.rootView.policies.get(view.rootView.treePolicy).attributes.name;
-            //$("#selected_group_name").append(policyName);
         },
         
         treeSelect: function() {
             this.clearSelection();
             this.render();
         },
-        /*
-        addAllGroupUsers: function() {
-            
-            $("#group_users_table").dataTable().fnClearTable();
-            $.each(this.groups.models, function(index, value) {
-                var rowData = [value.attributes.name, value.attributes.who, value.attributes.what, value.attributes.action];
-                $("#group_users_table").dataTable().fnAddData(rowData);
-            });
-        },*/
 
         disableSelectionRequiredButtons: function(toggle) {
             
@@ -127,17 +112,7 @@ define([
                 }
             }});
         },
-        /*
-        createGroup: function() {
-            new CreateGroupView();
-        },
-
-        deleteGroup: function() {
-            if(this.selectedGroup) {
-                this.selectedGroup.destroy();
-            }
-        },
-        */
+        
         manageGroupUsers: function() {
             if(this.selectedGroup) {
                 new ManageGroupUsers({group_id: this.selectedGroup.attributes.id});
@@ -152,8 +127,37 @@ define([
         },
         
         savePolicy: function(){
+            var newPolicy = new Policy();
             
-            alert("save!");
+            var o = {};
+            var a = $("form").serializeArray();
+            $.each(a, function() {
+                if (o[this.name]) {
+                    if (!o[this.name].push) {
+                        o[this.name] = [o[this.name]];
+                    }
+                    o[this.name].push(this.value || '');
+                } else {
+                    o[this.name] = this.value || '';
+                }
+            });
+            
+            newPolicy.save(o,this.policy,sessionStorage.org_id);
+        },
+        
+        populateForm: function(model){
+            var p = model.attributes.aws_governance;
+            for (var key in p) {
+              if (p.hasOwnProperty(key)) {
+                //console.log($( "input[name='"+key+"']" ).prop("type")+","+key+","+p[key]);
+                var typ = $( "input[name='"+key+"']" ).prop("type");
+                if(typ === "checkbox"){
+                    
+                }else{
+                    $("#"+key).val(p[key]);
+                }
+              }
+            }
         },
 
         close: function(){
