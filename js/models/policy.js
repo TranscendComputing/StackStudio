@@ -26,7 +26,12 @@ define([
         },
         
         save: function(options,id, orgId) {
-            var url = Common.apiUrl + "/identity/v1/policies/"+id+"?&org_id=" + orgId;
+            var url = undefined;
+            if(id === undefined){
+                url = Common.apiUrl + "/identity/v1/policies?&org_id=" + orgId;
+            }else{
+                url = Common.apiUrl + "/identity/v1/policies/"+id+"?&org_id=" + orgId;
+            }
             this.sendAjaxAction(url, "POST", {"policy": options}, "policyAppRefresh");
         },
         
