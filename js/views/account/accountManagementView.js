@@ -42,6 +42,7 @@ define([
             "click .group_item": "selectGroup",
             "click .cloud_account_item": "selectCloudAccount",
             "click .credential_item": "selectCloudCred",
+            "click .policy_item": "selectPolicy",
             "click #treeAddUser": "addUser"
         },
         subApp: undefined,
@@ -199,7 +200,7 @@ define([
         },
         selectPolicy: function(event){
             this.treePolicy = event.target.id;
-            if(typeof(this.subApp.treeSelectCloudCred) !== "undefined"){
+            if(typeof(this.subApp.treeSelect) !== "undefined"){
                 this.subApp.treeSelect();
             }
         },
@@ -272,7 +273,7 @@ define([
                     if(accountManagementView.subApp !== undefined){
                         accountManagementView.subApp.close();
                     }
-                    accountManagementView.subApp = new PoliciesManagementView();
+                    accountManagementView.subApp = new PoliciesManagementView({rootView: accountManagementView});
                 }
                 break;
             case "policy":

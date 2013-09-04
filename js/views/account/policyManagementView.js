@@ -64,9 +64,11 @@ define([
         },
 
         render: function () {
-            this.policy = this.rootView.treePolicy;
-            this.model = this.rootView.policies.get(this.policy);
-            this.populateForm(this.model);
+            if(typeof this.rootView != 'undefined' && typeof this.rootView.treePolicy != 'undefined'){
+                this.policy = this.rootView.treePolicy;
+                this.model = this.rootView.policies.get(this.policy);
+                this.populateForm(this.model);
+            }
             
             this.disableSelectionRequiredButtons(false);
         },
@@ -147,7 +149,6 @@ define([
         
         populateForm: function(model){
             var p = model.attributes.aws_governance;
-            console.log(p);
             for (var key in p) {
               if (p.hasOwnProperty(key)) {
                 var typ = $( "input[name='"+key+"']" ).prop("type");
