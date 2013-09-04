@@ -6,41 +6,25 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'backbone'
-], function( $, Backbone ) {
+        'models/resource/resourceModel',
+        'common'
+], function( ResourceModel, Common ) {
     'use strict';
 
-    // App Model
-    // ----------
+    var Portfolio = ResourceModel.extend({
+        idAttribute: '_id',
 
-    /**
-     * Our basic **Offering** model has name, versions
-     *
-     * @name Offering
-     * @constructor
-     * @param {Object} initialization object.
-     * @returns {Object} Returns a Offering instance.
-     */
-    var Portfolio = Backbone.Model.extend({
-
-        /** Default attributes for the cookbook */
         defaults: {
+            _id: '',
             name: 'New Portfolio',
-            id: "",
-            description: "",
-            version: "",
-            offerings: [] //TODO: Do we want an Offerings collection?
+            group_id: '',
+            description: '',
+            version: '',
+            offerings: []
         },
 
-        validate: function(portfolio, opts){
-            var errors = [];
-            //TODO: Add validations
-            if (!portfolio.name){
-                errors.push({name: 'nameRequired', message: 'Name is required.'});
-            }
-
-            return errors.length > 0 ? errors : false;
+        parse: function(resp) {
+            return resp.portfolio;
         }
 
     });

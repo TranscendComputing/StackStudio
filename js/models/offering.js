@@ -6,51 +6,35 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'backbone'
-], function( $, Backbone ) {
+        'models/resource/resourceModel',
+        'common'
+], function( ResourceModel, Common ) {
     'use strict';
 
-    // App Model
-    // ----------
+    var Offering = ResourceModel.extend({
+        idAttribute: '_id',
 
-    /**
-     * Our basic **Offering** model has name, versions
-     *
-     * @name Offering
-     * @constructor
-     * @param {Object} initialization object.
-     * @returns {Object} Returns a Offering instance.
-     */
-    var Offering = Backbone.Model.extend({
-
-        /** Default attributes for the cookbook */
         defaults: {
+            _id: '',
             name: 'New Offering',
-            id: "",
-            version: "",
-            url: "",
-            sku: "",
-            icon: "",
-            illustration: "",
-            briefDescription: "",
-            longDescription: "",
-            stacks: [],
-            eulaName: "",
-            eulaCustom: "",
-            support: "",
-            pricing: "",
-            relatesTo: ""
+            account_id: '',
+            version: '',
+            url: '',
+            sku: '',
+            icon: '',
+            illustration: '',
+            brief_description: '',
+            detailed_description: '',
+            eula: '',
+            eula_custom: '',
+            support: '',
+            pricing: '',
+            category: '',
+            stacks: []
         },
 
-        validate: function(offering, opts){
-            var errors = [];
-            //TODO: Add validations
-            if (!offering.name){
-                errors.push({name: 'nameRequired', message: 'Name is required.'});
-            }
-
-            return errors.length > 0 ? errors : false;
+        parse: function(resp) {
+            return resp.offering;
         }
 
     });

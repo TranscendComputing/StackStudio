@@ -6,52 +6,45 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'backbone'
-], function( $, Backbone ) {
+        'models/resource/resourceModel',
+        'common'
+], function( ResourceModel, Common ) {
     'use strict';
 
-    // Project Model
-    // ----------
+    var Stack = ResourceModel.extend({
+        idAttribute: "_id",
 
-    /**
-     * Our basic **Stack** model has `name`, `description`, `template`
-     *
-     * @name Stack
-     * @constructor
-     * @category Projects
-     * @param {Object} initialization object.
-     * @returns {Object} Returns a Project instance.
-     */
-    var Project = Backbone.Model.extend({
-
-        /** Default attributes for the project */
         defaults: {
-            id: '',
+            _id: '',
+            account_id: '',
             name: '',
             description: '',
-            template: {},
-            compatibleClouds: []
+            compatible_clouds: [],
+            template: '',
+            create_at: '',
+            updated_at: ''
         },
 
-	    /**
-	     * Override the base Backbone set method, for debugging.
-	     *
-	     * @memberOf Project
-	     * @category Internal
-	     * @param {Object} hash of attribute values to set.
-	     * @param {Object} (optional) options to tweak (see Backbone docs).
-	     */
-		set: function(attributes, options) {
-		    Backbone.Model.prototype.set.apply(this, arguments);
-		    //console.log("Setting attributes on model:", attributes);
-		},
-		
-		template: function() {
-		  return this.get('template'); 
-		}
+        parse: function(resp) {
+            return resp.stack;
+        },
+
+        create: function(options) {
+            var url = Common.apiUrl + "/stackstudio/v1/stacks";
+            this.sendAjaxAction(url, "POST", options, "stackCreated");
+        },
+
+        update: function(options) {
+            var url = Common.apiUrl + "/stackstudio/v1/stacks/" + this.id +"?_method=PUT";
+            this.sendAjaxAction(url, "POST", options, "stackUpdated");
+        },
+
+        destroy:function() {
+            var url = Common.apiUrl + "/stackstudio/v1/stacks/" + this.id +"?_method=DELETE";
+            this.sendAjaxAction(url, "POST", undefined, "stackDeleted");
+        }
 
     });
 
-    return Project;
+    return Stack;
 });
