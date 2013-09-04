@@ -147,12 +147,18 @@ define([
         
         populateForm: function(model){
             var p = model.attributes.aws_governance;
+            console.log(p);
             for (var key in p) {
               if (p.hasOwnProperty(key)) {
-                //console.log($( "input[name='"+key+"']" ).prop("type")+","+key+","+p[key]);
                 var typ = $( "input[name='"+key+"']" ).prop("type");
                 if(typ === "checkbox"){
-                    
+                    if(typeof p[key] === 'string'){
+                        $( "input[name='"+key+"'][value='"+p[key]+"']" ).attr('checked','checked');
+                    }else{
+                        for (i in p[key]) {
+                          $( "input[name='"+key+"'][value='"+p[key][i]+"']" ).attr('checked','checked');
+                        }
+                    }
                 }else{
                     $("#"+key).val(p[key]);
                 }
