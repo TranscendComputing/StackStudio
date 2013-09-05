@@ -65,7 +65,7 @@ define([
         events: {
 			"click .resource_link" : "resourceClick",
 			"click #cloud_coverflow img" : "cloudChange",
-            "selectmenuchange #credential_select": "credentialChange"
+            "change #credential_select": "credentialChange"
 		},
 
 		initialize: function() {
@@ -229,13 +229,8 @@ define([
             this.refreshCloudSpecs();
 		},
 
-        /**
-         *    Change handler for cloud credentials list
-         *    @param  {selectmenuchange} event   [description]
-         *    @param  {Object} object  {index: <int>, option: <object: option element itself>, value: <string: value of option>}
-         */
-        credentialChange: function(event, object) {
-            this.selectedCredential = object.value;
+        credentialChange: function(event) {
+            this.selectedCredential = event.target.value;
             this.refreshCloudSpecs();
         },
 
@@ -262,7 +257,6 @@ define([
                     }
                 }
             });
-            $("#credential_select").selectmenu();
 
             if(!credentialFound) {
                 $("#credential_nav").html($("#credential_select option:first").text());
@@ -288,13 +282,11 @@ define([
                         $('#region_select').append($("<option value='" + region.zone + "'></option>").text(region.name));
                     }
                 });
-                $("#region_select").selectmenu({
-                    change: function() {
-                        resourceNav.selectedRegion = $("#region_select").val();
-                        resourceNav.refreshCloudSpecs();
-                        resourceNav.refreshPath();
-                        resourceNav.render();
-                    }
+                $("#region_select").change(function() {
+                    resourceNav.selectedRegion = $("#region_select").val();
+                    resourceNav.refreshCloudSpecs();
+                    resourceNav.refreshPath();
+                    resourceNav.render();
                 });
 
                 if(!regionFound) {

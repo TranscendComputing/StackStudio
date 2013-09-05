@@ -73,7 +73,6 @@ define([
                     $("#kernel_input").append("<option>"+value+"</option>");
                 }
             );
-            $("#kernel_input").selectmenu();
         },
 
         render: function() {

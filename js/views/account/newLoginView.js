@@ -56,7 +56,6 @@ define([
             this.countries = new Countries();
             this.countries.on( 'reset', this.addAllCountries, this );
             this.countries.fetch({reset: true});
-            $("#country_select").selectmenu();
             if(options && options.org_id) {
                 this.orgId = options.org_id;
                 $("#changeable_content").html("<td><b>Admin:</b></td><td><input id='admin_checkbox' type='checkbox'/></td>");
@@ -71,7 +70,6 @@ define([
             this.countries.each(function(country) {
                 $("#country_select").append("<option value='"+country.attributes.code+"'>"+country.attributes.name+"</option");
             });
-            $("#country_select").selectmenu();
         },
         
         register: function() {

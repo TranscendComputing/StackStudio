@@ -53,7 +53,6 @@ define([
                     }
                 }
             });
-            $("#eip_type_select, #address_pool_select").selectmenu();
 
             this.addressPools.on( 'reset', this.addAllAddressPools, this );
             this.addressPools.fetch({data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true});
@@ -64,7 +63,6 @@ define([
             this.addressPools.each(function(addressPool) {
                 $("#address_pool_select").append($("<option></option>").text(addressPool.attributes.name));
             });
-            $("#address_pool_select").selectmenu();
         },
         
         create: function() {

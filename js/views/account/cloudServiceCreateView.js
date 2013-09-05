@@ -47,8 +47,7 @@ define([
         },
 
         render: function() {
-            $("#org_select").selectmenu();
-            $("#cloud_select").selectmenu();
+
         },
 
         create: function() {

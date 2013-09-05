@@ -16,7 +16,6 @@ define([
         '/js/aws/collections/vpc/awsSubnets.js',
         '/js/aws/collections/compute/awsAvailabilityZones.js',
         'common',
-        'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter',
         'jquery.dataTables'
@@ -80,7 +79,6 @@ define([
                 "sDom": 't'
             });
             $("#listeners_table").dataTable().fnAddData(["HTTP", "80", "HTTP", "80"]);
-            $("select").selectmenu();
             $("button").button();
             this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region}), reset: true});
             //#TODO VPC LB Support
@@ -93,11 +91,9 @@ define([
             this.vpcs.each(function(vpc) {
                 $("#lb_create_inside_select").append("<option value=" + vpc.attributes.id + ">" + vpc.attributes.id + "</option>");
             });
-            $("#lb_create_inside_select").selectmenu({
-                change: function() {
-                    createView.selectedVpc = $("#lb_create_inside_select").val();
-                    createView.loadVpcSubnets();
-                }
+            $("#lb_create_inside_select").change(function() {
+                createView.selectedVpc = $("#lb_create_inside_select").val();
+                createView.loadVpcSubnets();
             });
         },
 
@@ -130,10 +126,8 @@ define([
 
         resetListenerInput: function() {
             $("#lb_protocol_select").val($("#lb_protocol_select option:first").val());
-            $("#lb_protocol_select").selectmenu();
             $("#lb_port_input").val("");
             $("#instance_protocol_select").val($("#instance_protocol_select option:first").val());
-            $("#instance_protocol_select").selectmenu();
             $("#instance_port_input").val("");
         },
 

@@ -66,8 +66,6 @@ define([
                     }
                 }
             });
-            $("#zone_select").selectmenu();
-            $("#image_select").selectmenu();
             
             this.zones.on( 'reset', this.addAllZones, this );
             this.zones.fetch({ data: $.param({ cred_id: this.credentialId }), reset: true });
@@ -81,7 +79,6 @@ define([
             this.zones.each(function(zone) {
                $("#zone_select").append("<option value='"+zone.attributes.name+"'>" + zone.attributes.name + "</option>");
             });
-            $("#zone_select").selectmenu();
         },
         
         zoneSelect: function(event){

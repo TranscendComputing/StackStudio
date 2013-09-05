@@ -18,7 +18,6 @@ define([
         '/js/openstack/collections/compute/openstackKeyPairs.js',
         '/js/openstack/collections/compute/openstackSecurityGroups.js',
         'common',
-        'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter'
 ], function( $, _, Backbone, DialogView, instanceCreateTemplate, Instance, Images, AvailabilityZones, Flavors, KeyPairs, SecurityGroups, Common ) {
@@ -74,8 +73,6 @@ define([
                     }
                 }
             });
-            $("#flavor_select").selectmenu();
-            $("#key_pair_select").selectmenu();
             $("#security_group_select").multiselect({
                 selectedList: 3,
                 noneSelectedText: "Select Security Group(s)"
@@ -145,7 +142,6 @@ define([
             this.flavors.each(function(flavor) {
                 $("#flavor_select").append($("<option></option>").text(flavor.attributes.name));
             });
-            $("#flavor_select").selectmenu();
         },
         
         addAllKeyPairs: function() {
@@ -153,7 +149,6 @@ define([
             this.keyPairs.each(function(keyPair) {
                 $("#key_pair_select").append($("<option></option>").text(keyPair.attributes.name));
             });
-            $("#key_pair_select").selectmenu();
         },
         
         addAllSecurityGroups: function() {

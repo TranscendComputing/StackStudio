@@ -65,7 +65,6 @@ define([
                     }
                 }
             });
-            $("#vpc_select").selectmenu();
             
             this.vpcs.on( 'reset', this.addAllVPCs, this );
             this.vpcs.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true });
@@ -79,7 +78,6 @@ define([
             this.vpcs.each(function(vpc) {
                $("#vpc_select").append("<option>" + vpc.id + "</option>");
             });
-            $("#vpc_select").selectmenu();
         },
 
         create: function() {

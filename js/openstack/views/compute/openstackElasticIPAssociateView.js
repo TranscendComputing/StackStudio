@@ -52,7 +52,6 @@ define([
                 }
             });
             $("#associate_message").text("Select the instance you wish to associate this IP address (" + this.elasticIp.attributes.ip + ").");
-            $("#instance_select").selectmenu();
             ich.grabTemplates();
             this.instances.on( 'reset', this.addAllInstances, this );
             this.instances.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true });
@@ -67,7 +66,6 @@ define([
             this.instances.each(function(instance) {
                 $("#instance_select").append(ich.eip_associate_template(instance.toJSON()));
             });
-            $("#instance_select").selectmenu();
         },
         
         associate: function() {

@@ -62,8 +62,6 @@ define([
                     }
                 }
             });
-            
-            $("#family_select").selectmenu();
         },
 
         render: function() {

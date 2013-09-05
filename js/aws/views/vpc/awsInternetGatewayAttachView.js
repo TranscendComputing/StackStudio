@@ -12,8 +12,7 @@ define([
         'views/dialogView',
         'text!templates/aws/vpc/awsInternetGatewayAttachTemplate.html',
         '/js/aws/collections/vpc/awsVpcs.js',
-        'common',
-        'jquery.ui.selectmenu'
+        'common'
         
 ], function( $, _, Backbone, DialogView, internetGatewayAttachTemplate, Vpcs, Common ) {
     
@@ -59,7 +58,6 @@ define([
                     }
                 }
             });
-            $("#vpc_select").selectmenu();
             this.vpcs.on('reset', this.addAllVpcs, this);
             this.vpcs.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true });
         },
@@ -69,7 +67,6 @@ define([
             this.vpcs.each(function(vpc) {
                 $("#vpc_select").append($("<option value=" + vpc.attributes.id + ">" + vpc.attributes.id + "</option>"));
             });
-            $("#vpc_select").selectmenu();
         },
         
         attach: function() {

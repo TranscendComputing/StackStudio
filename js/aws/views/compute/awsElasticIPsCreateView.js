@@ -51,7 +51,6 @@ define([
                     }
                 }
             });
-            $("#eip_type_select").selectmenu();
         },
 
         render: function() {

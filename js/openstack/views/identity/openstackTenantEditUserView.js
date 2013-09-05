@@ -14,7 +14,6 @@ define([
         'views/dialogView',
         'text!templates/openstack/identity/openstackTenantEditUserTemplate.html',
         '/js/openstack/collections/identity/openstackRoles.js',
-        'jquery.ui.selectmenu',
         'jquery.multiselect'
 ], function( $, _, Backbone, Common, ich, DialogView, tenantEditUserTemplate, Roles ) {
 

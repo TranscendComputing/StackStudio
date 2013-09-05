@@ -13,8 +13,7 @@ define([
         'views/dialogView',
         'text!templates/openstack/identity/openstackUserCreateTemplate.html',
         '/js/openstack/models/identity/openstackUser.js',
-        '/js/openstack/collections/identity/openstackTenants.js',
-        'jquery.ui.selectmenu'
+        '/js/openstack/collections/identity/openstackTenants.js'
 ], function( $, _, Backbone, Common, DialogView, userCreateTemplate, User, Tenants ) {
 
     var UserCreateView = DialogView.extend({
@@ -55,7 +54,6 @@ define([
                     }
                 }
             }); 
-            $("select").selectmenu();
             this.tenants = new Tenants();
             this.tenants.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region}), reset: true });
             this.tenants.on('reset', this.addAllTenants, this);
@@ -66,7 +64,6 @@ define([
             this.tenants.each(function(tenant) {
                 $("#tenant_select").append("<option value="+tenant.attributes.id+">"+tenant.attributes.name+"</option>");
             });
-            $("#tenant_select").selectmenu();
         },
 
         displayValid: function(valid, selector) {

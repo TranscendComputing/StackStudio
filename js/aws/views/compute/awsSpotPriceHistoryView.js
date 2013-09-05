@@ -16,7 +16,6 @@ define([
         '/js/aws/collections/compute/awsAvailabilityZones.js',
         'morris',
         'common',
-        'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
@@ -58,25 +57,17 @@ define([
                 }
             });
             this.spotPrices.on( 'reset', this.renderPriceHistory, this );
-            $("#product_select").selectmenu({
-                change: function() {
-                    createView.getPriceHistory();
-                }
+            $("#product_select").change(function() {
+                createView.getPriceHistory();
             });
-            $("#date_range_select").selectmenu({
-                change: function() {
-                    createView.getPriceHistory();
-                }
+            $("#date_range_select").change(function() {
+                createView.getPriceHistory();
             });
-            $("#az_select").selectmenu({
-                change: function() {
-                    createView.getPriceHistory();
-                }
+            $("#az_select").change(function() {
+                createView.getPriceHistory();
             });
-            $("#flavor_select").selectmenu({
-                change: function() {
-                    createView.getPriceHistory();
-                }
+            $("#flavor_select").change(function() {
+                createView.getPriceHistory();
             });
             this.flavors.on( 'reset', this.addAllFlavors, this );
             this.flavors.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true });
@@ -95,10 +86,8 @@ define([
             this.availabilityZones.each(function(az) {
                 $("#az_select").append($("<option></option>").text(az.attributes.zoneName));
             });
-            $("#az_select").selectmenu({
-                change: function() {
-                    createView.getPriceHistory();
-                }
+            $("#az_select").change(function() {
+                createView.getPriceHistory();
             });
             createView.getPriceHistory();
         },
@@ -109,10 +98,8 @@ define([
             this.flavors.each(function(flavor) {
                 $("#flavor_select").append($("<option></option>").text(flavor.attributes.name));
             });
-            $("#flavor_select").selectmenu({
-                change: function() {
-                    createView.getPriceHistory();
-                }
+            $("#flavor_select").change(function() {
+                createView.getPriceHistory();
             });
             createView.getPriceHistory();
         },

@@ -20,7 +20,6 @@ define([
         '/js/aws/collections/compute/awsSecurityGroups.js',
         'icanhaz',
         'common',
-        'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
@@ -97,18 +96,12 @@ define([
             this.setValidTime();
             $("#accordion").accordion();
             $("#radio").buttonset();  
-            $("#az_select").selectmenu({
-                change: function() {
-                    createView.getCurrentPrice();
-                }
+            $("#az_select").change(function() {
+                createView.getCurrentPrice();
             });
-            $("#flavor_select").selectmenu({
-                change: function() {
-                    createView.getCurrentPrice();
-                }
+            $("#flavor_select").change(function() {
+                createView.getCurrentPrice();
             });
-            $("#key_pair_select").selectmenu();
-            $("#shutdown_behavior_select").selectmenu();
             $("#security_group_select").multiselect({
                 selectedList: 3,
                 noneSelectedText: "Select Security Group(s)"
@@ -179,10 +172,8 @@ define([
                 $("#az_select").append($("<option></option>").text(az.attributes.zoneName));
             });
             var createView = this;
-            $("#az_select").selectmenu({
-                change: function() {
-                    createView.getCurrentPrice();
-                }
+            $("#az_select").change(function() {
+                createView.getCurrentPrice();
             });
             this.getCurrentPrice();
         },
@@ -193,10 +184,8 @@ define([
             this.flavors.each(function(flavor) {
                 $("#flavor_select").append($("<option></option>").text(flavor.attributes.name));
             });
-            $("#flavor_select").selectmenu({
-                change: function() {
-                    createView.getCurrentPrice();
-                }
+            $("#flavor_select").change(function() {
+                createView.getCurrentPrice();
             });
             this.getCurrentPrice();
         },
@@ -206,7 +195,6 @@ define([
             this.keyPairs.each(function(keyPair) {
                 $("#key_pair_select").append($("<option></option>").text(keyPair.attributes.name));
             });
-            $("#key_pair_select").selectmenu();
         },
         
         addAllSecurityGroups: function() {

@@ -143,7 +143,6 @@ define([
             this.cloudAccounts.each(function(cloud) {
                 $("#cloud_accounts_select").append("<option value="+cloud.attributes.id+">"+cloud.attributes.name+"</option>");
             });
-            $("#cloud_accounts_select").selectmenu();
         }
     });
     

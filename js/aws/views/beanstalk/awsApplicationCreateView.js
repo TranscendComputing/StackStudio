@@ -13,7 +13,6 @@ define([
         'text!templates/aws/beanstalk/awsApplicationCreateTemplate.html',
         '/js/aws/models/beanstalk/awsApplication.js',
         'common',
-        'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter',
         'jquery.form'
@@ -75,10 +74,6 @@ define([
             });
             $("#accordion").accordion({ heightStyle: "fill" });
             
-            $("#container_type_select").selectmenu();
-            $("#instance_select").selectmenu();
-            $("#profile_select").selectmenu();
-            
             this.environmentEnable();
             $("#object_upload_button").button();
         },
@@ -99,7 +94,6 @@ define([
                 $("#launch_new_options select").removeAttr("disabled");
                 $("#launch_new_options").removeClass("ui-state-disabled");
             }
-            $("#launch_new_options select").selectmenu();
         },
 
         create: function() {

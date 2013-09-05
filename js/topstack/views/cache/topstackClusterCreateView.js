@@ -15,7 +15,6 @@ define([
         '/js/topstack/collections/cache/topstackCacheParameterGroups.js',
         '/js/topstack/collections/cache/topstackCacheSecurityGroups.js',
         'common',
-        'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
@@ -74,10 +73,6 @@ define([
                 noneSelectedText: "Select Security Group(s)"
             }).multiselectfilter();
             
-            $("#parameter_group_select").selectmenu();
-            $("#node_type_select").selectmenu();
-            $("#engine_select").selectmenu();
-            
             this.cacheParameterGroups = new ParameterGroups();
             this.cacheParameterGroups.on('reset', this.addAllParameterGroups, this);
             this.cacheParameterGroups.fetch({ 
@@ -115,7 +110,6 @@ define([
                                           "<option value='cache.m2.2xlarge'>cache.m2.2xlarge</option>"+
                                           "<option value='cache.m2.4xlarge'>cache.m2.4xlarge</option>"+
                                           "<option value='cache.c1.xlarge'>cache.c1.xlarge</option>");
-            $("#node_type_select").selectmenu();
             
             $("#selected_cluster_engine_label").html($("#engine_select").val());
             
@@ -134,7 +128,6 @@ define([
             this.cacheParameterGroups.each(function(parameter_group) {
                 $("#parameter_group_select").append("<option value="+parameter_group.attributes.id+">"+parameter_group.attributes.id+"</option>");
             });
-            $("#parameter_group_select").selectmenu();
         },
 
         displayValid: function(valid, selector) {
@@ -153,7 +146,6 @@ define([
                 $("#maintenance_window_options select").removeAttr("disabled");
                 $("#maintenance_window_options").removeClass("ui-state-disabled");
             }
-            $("#maintenance_window_options select").selectmenu();
         },
 
         getDurationInMinutes: function(durationString) {
@@ -298,7 +290,6 @@ define([
             this.availabilityZones.each(function(az) {
                 $("#availability_zone_select").append("<option value="+az.attributes.name+">"+az.attributes.name+"</option>");
             });
-            $("#availability_zone_select").selectmenu();
         }
 
     });

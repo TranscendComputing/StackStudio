@@ -13,7 +13,6 @@ define([
         'text!templates/aws/beanstalk/awsVersionCreateTemplate.html',
         '/js/aws/models/beanstalk/awsApplication.js',
         'common',
-        'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter',
         'jquery.form'

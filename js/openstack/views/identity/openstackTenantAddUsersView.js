@@ -15,7 +15,6 @@ define([
         'text!templates/openstack/identity/openstackTenantAddUsersTemplate.html',
         '/js/openstack/collections/identity/openstackRoles.js',
         '/js/openstack/collections/identity/openstackUsers.js',
-        'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter',
         'dataTables.fnReloadAjax'

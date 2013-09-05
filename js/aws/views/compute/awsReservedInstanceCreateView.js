@@ -15,7 +15,6 @@ define([
         '/js/aws/collections/compute/awsReservedInstancesOfferings.js',
         'icanhaz',
         'common',
-        'jquery.ui.selectmenu',
         'jquery.dataTables',
         'dataTables.fnReloadAjax'
         
@@ -109,7 +108,6 @@ define([
                     }
                 }
             });
-            $("select").selectmenu();
 
             $("table.offerings_table").hide();
             this.$table = $('table.offerings_table').dataTable({
@@ -170,11 +168,11 @@ define([
         performSearch: function() {
             $("div#details").hide();
             var options = {};
-            if($('#zone_select').selectmenu("value") !== "Any")
+            if($('#zone_select').val() !== "Any")
             {
                 options["availability-zone"] = $("#zone_select").val();
             }
-            if($("#term_select").selectmenu("value") !== "Any")
+            if($("#term_select").val() !== "Any")
             {
                 options["term"] = $("#term_select").val();
             }

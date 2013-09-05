@@ -18,7 +18,6 @@ define([
         '/js/aws/collections/compute/awsKeyPairs.js',
         '/js/aws/collections/compute/awsSecurityGroups.js',
         'common',
-        'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
@@ -88,10 +87,6 @@ define([
             });
             $("#accordion").accordion();
             $("#radio").buttonset();  
-            $("#az_select").selectmenu();
-            $("#flavor_select").selectmenu();
-            $("#key_pair_select").selectmenu();
-            $("#shutdown_behavior_select").selectmenu();
             $("#security_group_select").multiselect({
                 selectedList: 3,
                 noneSelectedText: "Select Security Group(s)"
@@ -152,7 +147,6 @@ define([
             this.availabilityZones.each(function(az) {
                 $("#az_select").append($("<option></option>").text(az.attributes.zoneName));
             });
-            $("#az_select").selectmenu();
         },
         
         addAllFlavors: function() {
@@ -160,7 +154,6 @@ define([
             this.flavors.each(function(flavor) {
                 $("#flavor_select").append($("<option></option>").text(flavor.attributes.name));
             });
-            $("#flavor_select").selectmenu();
         },
         
         addAllKeyPairs: function() {
@@ -168,7 +161,6 @@ define([
             this.keyPairs.each(function(keyPair) {
                 $("#key_pair_select").append($("<option></option>").text(keyPair.attributes.name));
             });
-            $("#key_pair_select").selectmenu();
         },
         
         addAllSecurityGroups: function() {

@@ -12,8 +12,7 @@ define([
         'views/dialogView',
         'text!templates/aws/block_storage/awsVolumeAttachTemplate.html',
         '/js/aws/collections/compute/awsInstances.js',
-        'common',
-        'jquery.ui.selectmenu' 
+        'common'
 ], function( $, _, Backbone, DialogView, volumeAttachTemplate, Instances, Common ) {
     
     /**
@@ -70,7 +69,6 @@ define([
             }
             $("#volume_display").text(this.volume.attributes.id + volumeName + " in " + this.volume.attributes.availability_zone);
             $("#instance_zone_message").text("in " + this.volume.attributes.availability_zone);
-            $("#instance_select").selectmenu();
             this.instances.on( 'reset', this.addAllInstances, this );
             this.instances.fetch({ 
                 data: $.param({ cred_id: this.credentialId, region: this.region, filters: {"availability-zone": this.volume.attributes.availability_zone}}),
@@ -87,7 +85,6 @@ define([
             this.availabilityZones.each(function(az) {
                 $("#az_select").append($("<option></option>").text(az.attributes.zoneName));
             });
-            $("#az_select").selectmenu();
         },
         
         addAllInstances: function() {
@@ -99,7 +96,6 @@ define([
                 }
                 $("#instance_select").append($("<option value="+ instance.attributes.id +">"+ instance.attributes.id + instanceName +"</option>"));
             });
-            $("#instance_select").selectmenu();
         },
         
         attach: function() {

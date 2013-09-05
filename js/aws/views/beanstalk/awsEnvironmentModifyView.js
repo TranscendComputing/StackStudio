@@ -13,7 +13,6 @@ define([
         'text!templates/aws/beanstalk/awsEnvironmentCreateTemplate.html',
         '/js/aws/models/beanstalk/awsApplication.js',
         'common',
-        'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter',
         'jquery.form'
@@ -76,12 +75,6 @@ define([
                 }
             });
             $("#accordion").accordion({ heightStyle: "fill" });
-            $("#version_label_select").selectmenu();
-            $("#container_type_select").selectmenu();
-            
-            
-            $("#instance_select").selectmenu();
-            $("#profile_select").selectmenu();
             
             $("#env_name_input").prop('disabled', true);
             $("#env_name_input").addClass("ui-state-disabled");
@@ -181,10 +174,8 @@ define([
             $("#env_desc_input").val(data.description);
             if(data.version_label){
             $("#version_label_select").val(data.version_label);
-            $("#version_label_select").selectmenu();
             }
             $("#container_type_select").val(data.solution_stack_name);
-            $("#container_type_select").selectmenu();
         },
         
         addEnvConfigData: function(data){
@@ -213,7 +204,6 @@ define([
                 var versionData = value;
                 $("#version_label_select").append("<option value='"+versionData+"'>"+versionData+"</option>");
             });
-            $("#version_label_select").selectmenu();
         }
 
     });

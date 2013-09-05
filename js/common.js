@@ -90,10 +90,6 @@ requirejs.config({
             deps: ['jquery', 'jquery.cookie'],
             exports: 'jQuery.fn.jstree'
         },
-        'jquery-ui.selectmenu': {
-            deps: ['jquery', 'jquery-ui'],
-            exports: 'jQuery.fn.selectmenu'
-        },
         'morris': {
             deps: ['jquery', 'raphael'],
             exports: 'Morris'
@@ -274,7 +270,7 @@ define(
          'backbone.stickit'
          ], function ($, _, Backbone, CommandLineView, Router, ErrorDialog, backendTxt) {
 
-    // Added custom handler for selectmenu
+    // Added custom handler for select
     Backbone.Stickit.addHandler({
         selector: 'select',
         initialize: function($el, model, options) {
@@ -284,8 +280,6 @@ define(
                     selectedList: options.selectedList,
                     noneSelectedText: options.noneSelectedText
                 }).multiselectfilter();
-            }else{
-                $el.selectmenu();
             }
         }
     });

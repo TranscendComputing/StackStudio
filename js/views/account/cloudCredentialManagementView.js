@@ -99,7 +99,6 @@ define([
             $("select#cloud_accounts_select").empty();  
             $("select#cloud_accounts_select").append("<option value='All'>All</option>");          
             this.cloudAccounts.each(this.addCloudAccount, this);
-            $("select#cloud_accounts_select").selectmenu();
         },
         
         selectCloudAccount: function(event) {

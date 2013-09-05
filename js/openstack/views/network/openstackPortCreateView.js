@@ -15,7 +15,6 @@ define([
         'text!templates/openstack/network/openstackPortCreateTemplate.html',
         '/js/openstack/models/network/openstackPort.js',
         '/js/openstack/collections/network/openstackNetworks.js',
-        'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter',
         'backbone.stickit'
@@ -59,7 +58,6 @@ define([
                     }
                 }
             });
-            $("#network_select").selectmenu();
         },
 
         addAllNetworks: function() {
@@ -67,7 +65,6 @@ define([
             this.networks.each(function(network) {
                 $("#network_select").append($("<option value="+network.attributes.id+">"+network.attributes.name+"</option>"));
             });
-            $("#network_select").selectmenu();
         },
 
         create: function() {

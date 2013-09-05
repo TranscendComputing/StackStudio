@@ -14,8 +14,7 @@ define([
         '/js/aws/models/vpc/awsSubnet.js',
         '/js/aws/collections/vpc/awsVpcs.js',
         '/js/aws/collections/compute/awsAvailabilityZones.js',
-        'common',
-        'jquery.ui.selectmenu'
+        'common'
         
 ], function( $, _, Backbone, DialogView, subnetCreateTemplate, Subnet, Vpcs, AvailabilityZones, Common ) {
 	
@@ -62,8 +61,6 @@ define([
                     }
                 }
             });
-            $("#vpc_select").selectmenu();
-            $("#zone_select").selectmenu();
 
             this.vpcs.on( 'reset', this.addAllVpcs, this );
             this.vpcs.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true });
@@ -77,7 +74,6 @@ define([
             this.vpcs.each(function(vpc) {
                 $("#vpc_select").append($("<option value=" + vpc.attributes.id + ">" + vpc.attributes.id + "</option>"));
             });
-            $("#vpc_select").selectmenu();
         },
 
         addAllAvailabilityZones: function() {
@@ -85,7 +81,6 @@ define([
             this.availabilityZones.each(function(az) {
                 $("#zone_select").append($("<option value=" + az.attributes.zoneName + ">" + az.attributes.zoneName + "</option>"));
             });
-            $("#zone_select").selectmenu();
         },
 		
 		create: function() {

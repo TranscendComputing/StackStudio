@@ -13,7 +13,6 @@ define([
         'text!templates/aws/beanstalk/awsEnvironmentCreateTemplate.html',
         '/js/aws/models/beanstalk/awsApplication.js',
         'common',
-        'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter',
         'jquery.form'
@@ -65,13 +64,6 @@ define([
                 }
             });
             $("#accordion").accordion({ heightStyle: "fill" });
-            
-            $("#version_label_select").selectmenu();
-            $("#container_type_select").selectmenu();
-            
-            
-            $("#instance_select").selectmenu();
-            $("#profile_select").selectmenu();
             
             this.populateVersions();
             
@@ -158,7 +150,6 @@ define([
                 var versionData = value;
                 $("#version_label_select").append("<option value='"+versionData+"'>"+versionData+"</option>");
             });
-            $("#version_label_select").selectmenu();
         }
 
     });

@@ -14,7 +14,6 @@ define([
         '/js/aws/models/vpc/awsRouteTable.js',
         'icanhaz',
         'common',
-        'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
@@ -62,8 +61,6 @@ define([
                     }
                 }
             });
-            
-            $("#zone_select").selectmenu();
            
             return this;
 		},

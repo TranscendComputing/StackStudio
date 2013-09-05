@@ -12,8 +12,7 @@ define([
         'views/dialogView',
         'text!templates/topstack/dns/topstackRecordSetCreateTemplate.html',
         '/js/topstack/models/dns/topstackRecordSet.js',
-        'common',
-        'jquery.ui.selectmenu'
+        'common'
         
 ], function( $, _, Backbone, DialogView, recordSetCreateTemplate, RecordSet, Common ) {
     
@@ -73,10 +72,8 @@ define([
             }
             this.$el.dialog(dialogOptions);
 
-            $("#record_type_select").selectmenu({
-                change: function() {
-                    createView.updateExample();
-                }
+            $("#record_type_select").change(function() {
+                createView.updateExample();
             });
             $("#hosted_zone_domain").html(this.hostedZone.attributes.domain);
 
