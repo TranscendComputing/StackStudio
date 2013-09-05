@@ -36,12 +36,11 @@ define([
         },
 
         initialize: function() {
-            
+            $("#design_time_content").html(this.el);
+            this.$el.html(this.template);
         },
 
         render: function() {
-            $("#design_time_content").html(this.el);
-            this.$el.html(this.template);
             this.editor = ace.edit("design_editor");
             this.editor.setTheme("ace/theme/monokai");
             this.editor.getSession().setUseWorker(false);
@@ -110,6 +109,7 @@ define([
         setStack: function(stack) {
             this.stack = stack;
             this.editor.getSession().setValue(stack.attributes.template);
+            $("#stack_name").html(this.stack.attributes.name);
             $("#stack_description").html(this.stack.attributes.description);
             $("#stack_compatible_clouds").html(this.stack.attributes.compatible_clouds.join(", "));
         },
