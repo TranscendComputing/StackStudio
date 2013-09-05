@@ -71,22 +71,8 @@ define([
 
         render: function() {
             if(sessionStorage.stack_id) {
-                $("#manage_stack_content").html(
-                    '<ul class="nav nav-tabs">' +
-                        '<li id="design-tab" class="active"><a href="#tabs-design" data-toggle="tab">Design Time</a></li>' +
-                        '<li><a href="#tabs-run" data-toggle="tab">Run Time</a></li>' +
-                    '</ul>' +
-                    '<div class="tab-content">' +
-                        '<div id="tabs-design" class="tab-pane active">' +
-                            '<div id="design_time_content">' +
-                            '</div>' +
-                        '</div>' +
-                        '<div id="tabs-run" class="tab-pane">' +
-                            '<div id="run_time_content">' +
-                            '</div>' +
-                        '</div>' +
-                    '</div>'
-                );
+                $("#stack_not_opened").hide();
+                $("#stack_opened").show();
                 //Add event when tabs change
                 $('a[data-toggle="tab"]').off('shown');
                 var stacksView = this;
@@ -95,11 +81,8 @@ define([
                 });
                 this.changeTabs();
             } else {
-                $("#manage_stack_content").html(
-                    '<div class="hero-unit">' +
-                        '<h3>Select a stack above, or begin by creating a new stack!</h3>' +
-                    '</div>'
-                );
+                $("#stack_opened").hide();
+                $("#stack_not_opened").show();
             }
 
             this.stacks.fetch({reset: true});
