@@ -111,7 +111,11 @@ define([
             this.editor.getSession().setValue(stack.attributes.template);
             $("#stack_name").html(this.stack.attributes.name);
             $("#stack_description").html(this.stack.attributes.description);
-            $("#stack_compatible_clouds").html(this.stack.attributes.compatible_clouds.join(", "));
+            if(this.stack.attributes.compatible_clouds instanceof Array) {
+                $("#stack_compatible_clouds").html(this.stack.attributes.compatible_clouds.join(", "));
+            }else {
+                $("#stack_compatible_clouds").html("");
+            }
         },
 
         saveTemplate: function() {

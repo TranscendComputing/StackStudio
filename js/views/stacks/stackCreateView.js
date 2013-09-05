@@ -46,7 +46,7 @@ define([
             if($("#stack_description_input").val() !== "") {
                 options["description"] = $("#stack_description_input").val();
             }
-            options["compatible_clouds"] = $("#stack_compatible_clouds").val();
+            options["compatible_clouds"] = $("#stack_compatible_clouds_select").val();
             options["template"] = "{" +
                 "\n\t\"AWSTemplateFormatVersion\": \"2010-09-09\"," +
                 "\n\t\"Description\": \"New template created in StackStudio.\"," +
