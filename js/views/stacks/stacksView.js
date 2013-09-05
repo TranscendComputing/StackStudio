@@ -125,7 +125,7 @@ define([
                 $("#stacks_menu").append("<li><a id='"+stack.id+"' class='stack'>"+stack.attributes.name+"</a></li>");
             });
             if(sessionStorage.stack_id) {
-                this.stackDesignView.setStackTemplate(this.stacks.get(sessionStorage.stack_id));
+                this.stackDesignView.setStack(this.stacks.get(sessionStorage.stack_id));
             }
         },
 

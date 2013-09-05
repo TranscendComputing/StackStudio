@@ -101,11 +101,17 @@ define([
                     "item": "jstree_custom_item"
                 }
             });
+
+            if(this.stack) {
+                this.setStack(this.stack);
+            }
         },
 
-        setStackTemplate: function(stack) {
+        setStack: function(stack) {
             this.stack = stack;
             this.editor.getSession().setValue(stack.attributes.template);
+            $("#stack_description").html(this.stack.attributes.description);
+            $("#stack_compatible_clouds").html(this.stack.attributes.compatible_clouds.join(", "));
         },
 
         saveTemplate: function() {
