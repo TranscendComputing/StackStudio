@@ -114,6 +114,10 @@ define([
             }else {
                 if(!this.stackRunView) {
                     this.stackRunView = new StackRunView();
+                    if(sessionStorage.stack_id)
+                    {
+                        this.stackRunView.setStack(this.stacks.get(sessionStorage.stack_id));
+                    }
                 }
                 this.stackRunView.render();
             }

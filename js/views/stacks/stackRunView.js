@@ -21,18 +21,80 @@ define([
 
         stackResourceTree: undefined,
 
+        stack: undefined,
+
         events: {
             "click .jstree_custom_item": "treeFolderClick"
         },
 
         initialize: function() {
-            
+            $("#run_time_content").html(this.el);
+            this.$el.html(this.template);
         },
 
         render: function() {
-            $("#run_time_content").html(this.el);
-            this.$el.html(this.template);
-            this.stackResourceTree = $("#stack_resource_tree").jstree({
+            if(this.stack) {
+                this.setStack(this.stack);
+            }
+        },
+
+        setStack: function(stack) {
+            this.stack = stack;
+            $("#stack_run_name").html(this.stack.attributes.name);
+            $("#stack_run_description").html(this.stack.attributes.description);
+            $("#stack_run_compatible_clouds").html(this.stack.attributes.compatible_clouds.join(", "));
+            var jsonTemplate = JSON.parse(this.stack.attributes.template);
+            var treeData = [
+                {
+                    "data" : "Resources",
+                    "attr":{"rel":"directory"},
+                    "children" : []
+                }
+            ];
+            var services = {};
+            $.each(jsonTemplate.Resources, function(index, value) {
+                var typeSplit = value.Type.split("::");
+                var service = typeSplit[1];
+                var subService = typeSplit[2];
+                if(!services[service]) {
+                    services[service] = {};
+                }
+                if(!services[service][subService]) {
+                    services[service][subService] = [];
+                }
+                services[service][subService].push({
+                    "data": {
+                        "title": index,
+                        "attr": {
+                            "id": index,
+                            "class": "new_item_link resource_not_running"
+                        }
+                    },
+                    "attr": {"id": index + "_container"},
+                    "metadata": value.Properties
+                });
+            });
+            $.each(services, function(service, value) {
+                var serviceChildren = [];
+                $.each(value, function(subService, subServiceValue) {
+                    var subServiceChildren = [];
+                    $.each(subServiceValue, function(i, properties) {
+                        subServiceChildren.push(properties);
+                    })
+                    serviceChildren.push({
+                        data: subService,
+                        attr: {"rel":"directory"},
+                        children: subServiceChildren
+                    });
+                });
+                treeData[0].children.push({
+                    data: service,
+                    attr: {"rel":"directory"},
+                    children: serviceChildren
+                });
+            });
+
+            this.stackResourceTree = $("#stack_run_resource_tree").jstree({
                 // List of active plugins
                 "plugins" : [
                     "json_data", "crrm", "themeroller"
@@ -43,53 +105,14 @@ define([
                  },
 
                 "json_data" : {
-                    "ajax": {
-                        "url": "samples/stackRunResources.json",
-                        "success": function(data) {
-                            var services = {};
-                            var itemId;
-                            $.each(data, function(index, d) {
-                                 if (services[d.service] === undefined) {
-                                     services[d.service] = [];
-                                 }
-                                 //Add reference to parent tree
-                                 d.parent_tree = "#new_resources";
-                                 var resource_state_class = "resource_not_running";
-                                 if(d.state === "running") {
-                                    resource_state_class = "resource_running";
-                                 }else {
-                                    resource_state_class = "resource_not_running";
-                                 }
-                                 services[d.service].push({
-                                     "data": {
-                                         "title": d.label, 
-                                         "attr": {
-                                             "id": d.label, 
-                                             "class": "new_item_link " + resource_state_class
-                                         } 
-                                     },
-                                     "attr": {"id": itemId + "_container"},
-                                     "metadata": d
-                                 });
-                            });
-                            
-                            var treeData = [];
-                            $.each(services, function(s, v) {
-                                treeData.push({
-                                    data: s,
-                                    children: v,
-                                    "metadata": {"parent_tree": "#stack_resource_tree"} 
-                                });
-                            });
-                            return treeData;
-                        }
-                    },
-                    "correct_state": false
+                    "data": treeData
                 },
                 
                 "themeroller": {
                     "item": "jstree_custom_item"
                 }
+            }).on('loaded.jstree', function() {
+                $("#stack_run_resource_tree").jstree('open_all');
             });
         },
 
