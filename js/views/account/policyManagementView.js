@@ -51,11 +51,14 @@ define([
                 "bProcessing": true
             });
             var groupsView = this;
-            Common.vent.off("groupRefresh");
-            Common.vent.on("groupRefresh", function() {
-                groupsView.render();
+            Common.vent.off("policyAppRefresh");
+            Common.vent.on("policyAppRefresh", function() {
+                //groupsView.render();
                 //refetch tree groups
-                
+                groupsView.rootView.policies.fetch({
+                    data: $.param({ org_id: sessionStorage.org_id}),
+                    reset: true
+                });
             });
             this.users = new Users();
             this.selectedGroup = undefined;
