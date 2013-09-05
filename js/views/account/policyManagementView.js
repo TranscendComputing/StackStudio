@@ -53,7 +53,9 @@ define([
             var groupsView = this;
             Common.vent.off("policyAppRefresh");
             Common.vent.on("policyAppRefresh", function() {
-                //$("#save_alert").fadeIn("slow",$(this).fadeOut("slow"));
+                $("#save_alert").fadeIn("slow",function(){
+                    $(this).fadeOut("slow");
+                });
                 //refetch tree groups
                 groupsView.rootView.policies.fetch({
                     data: $.param({ org_id: sessionStorage.org_id}),
