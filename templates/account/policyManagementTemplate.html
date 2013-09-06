@@ -227,9 +227,19 @@
                         <div class="controls">
                             <div class="input-append">
                                 <input id="credential_rotation" name="credential_rotation" class="span5" placeholder="# Periods" type="text">
-                                <span class="add-on">periods</span>
+                                <div class="btn-group">
+                                    <button class="btn dropdown-toggle" data-toggle="dropdown">
+                                        Period
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a>Days</a></li>
+                                        <li><a>Weeks</a></li>
+                                        <li><a>Months</a></li>
+                                        <li><a>Years</a></li>
+                                    </ul>
+                                </div>
                             </div>
-    
                         </div>
                     </div>
                 </div>
@@ -470,14 +480,24 @@
                                 Only Admin can create, update, delete Customer Gateways for VPC
                             </label>
                             <label class="checkbox">
-                                <input type="checkbox" name="vpc_rules" value="All users must create all resources in a VPC">
-                                All users must create all resources in a VPC
-                            </label>
-                            <label class="checkbox">
-                                <input type="checkbox" name="vpc_rules" value="Admin creates a VPC as the " default""="">
-                                Admin creates a VPC as the "Default"
+                                <input type="checkbox" name="vpc_rules" value="Users must create all resources in a VPC">
+                                Users must create all resources in a VPC
                             </label>
                         </div>
+                    </div>
+                    
+                    <!-- Select Basic -->
+                    <div class="control-group">
+                      <label class="control-label">Default VPC:</label>
+                      <div class="controls">
+                        <select id="default_vpc" name="default_vpc" class="input-xlarge">
+                          <option>vpc-09av123d : This is my first VPC</option>
+                          <option>vpc-av45d234 : This is my second VPC</option>
+                          <option>vpc-12345678 : This is my third VPC</option>
+                          <option>vpc-12av5678 : This is my fourth VPC</option>
+                          <option>vpc-1234br78 : This is my fifth VPC</option>
+                        </select>
+                      </div>
                     </div>
         
                     <!-- Multiple Checkboxes -->
@@ -496,8 +516,8 @@
                         <label class="control-label">SNS Notifications:</label>
                         <div class="controls">
                             <label class="checkbox">
-                                <input type="checkbox" name="sns_notifications" value="All SS2 users are automatically setup as SNS users (e-mail)">
-                                All SS2 users are automatically setup as SNS users (e-mail)
+                                <input type="checkbox" name="sns_notifications" value="All users are automatically setup as SNS users (e-mail)">
+                                All users are automatically setup as SNS users (e-mail)
                             </label>
                             <label class="checkbox">
                                 <input type="checkbox" name="sns_notifications" value="Users are email notified when an instance is started">
@@ -507,15 +527,39 @@
                                 <input type="checkbox" name="sns_notifications" value="Users are email notified when a CloudFormation has 'completed' or 'failed'">
                                 Users are email notified when a CloudFormation has 'completed' or 'failed'
                             </label>
-                            <label class="checkbox">
-                                <input type="checkbox" name="sns_notifications" value="Predetermined SNS Topics are created: Informational, Warning, Exception">
-                                Predetermined SNS Topics are created: Informational, Warning, Exception
-                            </label>
-                            <label class="checkbox">
-                                <input type="checkbox" name="sns_notifications" value="Administrator can define a specific SNS delivery vehicle as the default">
-                                Administrator can define a specific SNS delivery vehicle as the default
-                            </label>
                         </div>
+                    </div>
+                    
+                    <!-- Select Basic -->
+                    <div class="control-group">
+                      <label class="control-label">Push Platform:</label>
+                      <div class="controls">
+                        <select id="sns_delivery" name="sns_delivery" class="input-xlarge">
+                          <option>Amazon Device Messaging (ADM)</option>
+                          <option>Apple Push Notification Service (APNS)</option>
+                          <option>Apple Push Notification Service Sandbox (APNS_SANDBOX)</option>
+                          <option>Google Cloud Messaging (GCM)</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <!-- Multiple Checkboxes (inline) -->
+                    <div class="control-group">
+                      <label class="control-label">SNS Topics:</label>
+                      <div class="controls">
+                        <label class="checkbox inline">
+                          <input type="checkbox" name="sns_topics" value="Informational">
+                          Informational
+                        </label>
+                        <label class="checkbox inline">
+                          <input type="checkbox" name="sns_topics" value="Warning">
+                          Warning
+                        </label>
+                        <label class="checkbox inline">
+                          <input type="checkbox" name="sns_topics" value="Exception">
+                          Exception
+                        </label>
+                      </div>
                     </div>
         
                     <!-- Multiple Checkboxes -->
@@ -553,8 +597,8 @@
                         <label class="control-label">Auto-Tag:</label>
                         <div class="controls">
                             <label class="checkbox">
-                                <input type="checkbox" name="auto_tag" value="Auto-tag newly created assets using SS2 information.">
-                                Auto-tag newly created assets using SS2 information.
+                                <input type="checkbox" name="auto_tag" value="Auto-tag newly created assets using account information.">
+                                Auto-tag newly created assets using account information.
                             </label>
                         </div>
                     </div>
@@ -568,6 +612,90 @@
                                 Disable access to AWS Console
                             </label>
                         </div>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+        
+        <form class="form-horizontal">
+            <fieldset>
+                <!-- Form Name -->
+                <legend style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;border-radius: 5px 5px 0px 0px;">&nbsp;CloudWatch Alarms</legend>
+                <div class="well">
+                    <!-- Button Drop Down -->
+                    <div class="control-group">
+                      <label class="control-label">EC2:</label>
+                      <div class="controls">
+                        <div class="input-prepend">
+                            <span class="add-on">CPUUtilization</span>
+                            <div class="btn-group">
+                              <button class="btn dropdown-toggle" data-toggle="dropdown">
+                                Condition
+                                <span class="caret"></span>
+                              </button>
+                              <ul class="dropdown-menu">
+                                <li><a href="#">&lt;=</a></li>
+                                <li><a href="#">&lt;</a></li>
+                                <li><a href="#">&gt;=</a></li>
+                                <li><a href="#">&gt;</a></li>
+                              </ul>
+                            </div>
+                          <input id="cpu_util_amount" name="cpu_util_amount" class="span2" placeholder="%" type="text">
+                          <span class="add-on">for</span>
+                          <input id="cpu_util_duration" name="cpu_util_duration" class="span2" placeholder="#" type="text">
+                          <span class="add-on">minutes</span>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Button Drop Down -->
+                    <div class="control-group">
+                      <label class="control-label"></label>
+                      <div class="controls">
+                        <div class="input-prepend">
+                            <span class="add-on">NetworkOut</span>
+                            <div class="btn-group">
+                              <button class="btn dropdown-toggle" data-toggle="dropdown">
+                                Condition
+                                <span class="caret"></span>
+                              </button>
+                              <ul class="dropdown-menu">
+                                <li><a href="#">&lt;=</a></li>
+                                <li><a href="#">&lt;</a></li>
+                                <li><a href="#">&gt;=</a></li>
+                                <li><a href="#">&gt;</a></li>
+                              </ul>
+                            </div>
+                          <input id="network_util_amount" name="network_util_amount" class="span2" placeholder="%" type="text">
+                          <span class="add-on">for</span>
+                          <input id="network_util_duration" name="network_util_duration" class="span2" placeholder="#" type="text">
+                          <span class="add-on">minutes</span>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Button Drop Down -->
+                    <div class="control-group">
+                      <label class="control-label"></label>
+                      <div class="controls">
+                        <div class="input-prepend">
+                            <span class="add-on">DiskReadBytes</span>
+                            <div class="btn-group">
+                              <button class="btn dropdown-toggle" data-toggle="dropdown">
+                                Condition
+                                <span class="caret"></span>
+                              </button>
+                              <ul class="dropdown-menu">
+                                <li><a href="#">&lt;=</a></li>
+                                <li><a href="#">&lt;</a></li>
+                                <li><a href="#">&gt;=</a></li>
+                                <li><a href="#">&gt;</a></li>
+                              </ul>
+                            </div>
+                          <input id="disk_util_amount" name="disk_util_amount" class="span2" placeholder="%" type="text">
+                          <span class="add-on">for</span>
+                          <input id="disk_util_duration" name="disk_util_duration" class="span2" placeholder="#" type="text">
+                          <span class="add-on">minutes</span>
+                        </div>
+                      </div>
                     </div>
                 </div>
             </fieldset>
@@ -617,7 +745,6 @@
                 </div>
             </fieldset>
         </form>
-        
         
         <a id="save_button" class="btn" style="float:right;margin-bottom:1cm;background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;">Save Policy <i class="icon-file icon-white"></i></a>
         <div id="save_alert" class="alert" style="width:90px;display:none;">
