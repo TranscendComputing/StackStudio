@@ -82,7 +82,7 @@ define([
             var accMan = this;
             $("#mCloudAccount_tree").jstree({
                 "themeroller":{"item": "jstree_custom_item"},
-                "plugins":[ "themeroller", "html_data", "ui", "crrm" ]
+                "plugins":[ "themeroller", "html_data", "crrm" ]
             }).on('loaded.jstree', function() {
                 //async
                 accMan.cloudAccounts.fetch({
@@ -92,14 +92,14 @@ define([
             });
             $("#mCloudCredential_tree").jstree({
                 "themeroller":{"item": "jstree_custom_item"},
-                "plugins":[ "themeroller", "html_data", "ui", "crrm" ]
+                "plugins":[ "themeroller", "html_data", "crrm" ]
             }).on('loaded.jstree', function() {
                 //async
                 accMan.cloudCredentials.fetch({reset: true});
             });
             $("#mGroup_tree").jstree({
                 "themeroller":{"item": "jstree_custom_item"},
-                "plugins":[ "themeroller", "html_data", "ui", "crrm" ]
+                "plugins":[ "themeroller", "html_data", "crrm" ]
             }).on('loaded.jstree', function() {
                 //Fetch Collections
                 accMan.groups.fetch({
@@ -108,13 +108,13 @@ define([
             });
             $("#mUser_tree").jstree({
                 "themeroller":{"item": "jstree_custom_item"},
-                "plugins":[ "themeroller", "html_data", "ui", "crrm" ]
+                "plugins":[ "themeroller", "html_data", "crrm" ]
             }).on('loaded.jstree', function() {
                 $("#mUser_tree").jstree('open_all');
             });
             $("#mPolicy_tree").jstree({
                 "themeroller":{"item": "jstree_custom_item"},
-                "plugins":[ "themeroller", "html_data", "ui", "crrm" ]
+                "plugins":[ "themeroller", "html_data", "crrm" ]
             }).on('loaded.jstree', function() {
                 //async
                 accMan.policies.fetch({
@@ -124,7 +124,7 @@ define([
             });
             $("#mdevOps_tree").jstree({
                 "themeroller":{"item": "jstree_custom_item"},
-                "plugins":[ "themeroller", "html_data", "ui", "crrm" ]
+                "plugins":[ "themeroller", "html_data", "crrm" ]
             }).on('loaded.jstree', function() {
                     $("#mdevOps_tree").jstree('open_all');
             });
