@@ -83,7 +83,7 @@ define([
                 selectedList: 3,
                 noneSelectedText: "Select AZ(s)"
             }).multiselectfilter();
-            $("#elasticity_radio_group").buttonset(); 
+            //$("#elasticity_radio_group").buttonset(); 
             $("#security_group_select").multiselect({
                 selectedList: 3,
                 noneSelectedText: "Select Security Group(s)"
