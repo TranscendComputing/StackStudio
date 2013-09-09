@@ -45,7 +45,7 @@ define([
                 "bProcessing": true
             });
             var usersView = this;
-            Common.vent.on("userRefresh", function() {
+            Common.vent.on("policyAppRefresh", function() {
                 usersView.render();
             });
             

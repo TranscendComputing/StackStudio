@@ -35,8 +35,14 @@ define([
             this.sendAjaxAction(url, "POST", {"policy": options}, "policyAppRefresh");
         },
         
-        delete: function(credentialId, region) {
-            var url = Common.apiUrl + "/identity/v1/policies/" + this.attributes.name + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+        addToGroup: function(options,orgId) {
+            //var url = Common.apiUrl + "/identity/v1/policies/groups?&org_id=" + orgId;
+            var url = Common.apiUrl + "/identity/v1/policies/groups"
+            this.sendAjaxAction(url, "POST", {"policy": options}, "groupRefresh");
+        },
+        
+        destroy: function() {
+            var url = Common.apiUrl + "/identity/v1/policies/" + this.id + "?_method=DELETE";
             this.sendAjaxAction(url, "POST", undefined, "policyAppRefresh");
         }
     });
