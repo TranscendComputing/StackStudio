@@ -33,7 +33,7 @@ define([
 
 		routes:{
             'account/cloudcredentials': 'cloudCredentials',
-            'account/management(/:action)': 'accountManagement',
+            'account/management(/:action)': 'accountManagementRoute',
 			'resources': 'resourcesRoute',
 			'resources/:cloud': 'resourcesRoute',
 			'resources/:cloud/:region': 'resourcesRoute',
@@ -105,6 +105,14 @@ define([
             this.trigger("route:offerings");
             $(".main_nav").removeClass("nav_selected");
 		    $("#offerings_nav").addClass("nav_selected");
+        },
+
+        accountManagementRoute: function(action) {
+        	$("#sidebar").empty();
+            $("#sidebar").hide();
+            this.trigger("route:accountManagement", action);
+            $(".main_nav").removeClass("nav_selected");
+		    $("#nav_account").addClass("nav_selected");
         }
 	});
 
