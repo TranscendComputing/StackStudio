@@ -62,57 +62,57 @@ define([
 		    } else {
                 $("#sidebar").empty();
                 $("#sidebar").hide();
-                this.trigger("route:dashboard");
                 $(".main_nav").removeClass("nav_selected");
+                this.trigger("route:dashboard");
 		    }
 		},
 
 		resourcesRoute: function(cloud, region, type, subtype, id, action) {
 		    $("#sidebar").empty();
 		    $("#sidebar").hide();
+            $(".main_nav").removeClass("nav_selected");
+            $("#resources_nav").addClass("nav_selected");
 		    this.trigger("route:resources", cloud, region, type, subtype, id);
-		    $(".main_nav").removeClass("nav_selected");
-		    $("#resources_nav").addClass("nav_selected");
 		},
 
 		imagesRoute: function(action) {
             $("#sidebar").empty();
             $("#sidebar").hide();
-            this.trigger("route:images");
             $(".main_nav").removeClass("nav_selected");
-		    $("#images_nav").addClass("nav_selected");
+            $("#images_nav").addClass("nav_selected");
+            this.trigger("route:images");
         },
 
 		assembliesRoute: function(action) {
             $("#sidebar").empty();
             $("#sidebar").hide();
-            this.trigger("route:assemblies");
             $(".main_nav").removeClass("nav_selected");
-		    $("#assemblies_nav").addClass("nav_selected");
+            $("#assemblies_nav").addClass("nav_selected");
+            this.trigger("route:assemblies");
         },
 
         stacksRoute: function(action) {
             $("#sidebar").empty();
             $("#sidebar").hide();
-            this.trigger("route:stacks");
             $(".main_nav").removeClass("nav_selected");
-		    $("#stacks_nav").addClass("nav_selected");
+            $("#stacks_nav").addClass("nav_selected");
+            this.trigger("route:stacks");
         },
 
         offeringsRoute: function(action) {
             $("#sidebar").empty();
             $("#sidebar").hide();
-            this.trigger("route:offerings");
             $(".main_nav").removeClass("nav_selected");
-		    $("#offerings_nav").addClass("nav_selected");
+            $("#offerings_nav").addClass("nav_selected");
+            this.trigger("route:offerings");
         },
 
         accountManagementRoute: function(action) {
         	$("#sidebar").empty();
             $("#sidebar").hide();
-            this.trigger("route:accountManagement", action);
             $(".main_nav").removeClass("nav_selected");
-		    $("#nav_account").addClass("nav_selected");
+            $("#nav_account").addClass("nav_selected");
+            this.trigger("route:accountManagement", action);
         }
 	});
 
