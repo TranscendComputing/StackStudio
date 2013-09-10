@@ -37,25 +37,6 @@
                             </label>
                         </div>
                     </div>
-
-                    <!-- Multiple Checkboxes (inline) -->
-                    <div class="control-group">
-                        <label class="control-label">Usable Clouds:</label>
-                        <div class="controls">
-                            <label class="checkbox inline">
-                                <input type="checkbox" name="usable_clouds" value="AWS">
-                                AWS
-                            </label>
-                            <label class="checkbox inline">
-                                <input type="checkbox" name="usable_clouds" value="OpenStack">
-                                OpenStack
-                            </label>
-                            <label class="checkbox inline">
-                                <input type="checkbox" name="usable_clouds" value="Google">
-                                Google
-                            </label>
-                        </div>
-                    </div>
                     
                     <hr>
                     
@@ -214,7 +195,7 @@
                             <div class="input-append">
                                 <input id="password_rules" name="password_rules" class="span4" type="text" placeholder="# characters">
                                 <span class="add-on">
-                                    <input type="checkbox">digits required</input>
+                                    <input type="checkbox"> digits required</input>
                                 </span>
                             </div>
     
@@ -358,7 +339,7 @@
                             <div class="input-append">
                                 <input id="max_on_demand" name="max_on_demand" class="span5" type="text" placeholder="# Instances">
                                 <span class="add-on">
-                                    <input type="checkbox">Unlimited</input>
+                                    <input type="checkbox"> Unlimited</input>
                                 </span>
                             </div>
                         </div>
@@ -371,7 +352,7 @@
                             <div class="input-append">
                                 <input id="max_reserved" name="max_reserved" class="span5" type="text" placeholder="# Instances">
                                 <span class="add-on">
-                                    <input type="checkbox">Unlimited</input>
+                                    <input type="checkbox"> Unlimited</input>
                                 </span>
                             </div>
                         </div>
@@ -384,7 +365,7 @@
                             <div class="input-append">
                                 <input id="max_dedicated" name="max_dedicated" class="span5" type="text" placeholder="# Instances">
                                 <span class="add-on">
-                                    <input type="checkbox">Unlimited</input>
+                                    <input type="checkbox"> Unlimited</input>
                                 </span>
                             </div>
                         </div>
@@ -397,7 +378,7 @@
                             <div class="input-append">
                                 <input id="max_spot" name="max_spot" class="span5" type="text" placeholder="# Instances">
                                 <span class="add-on">
-                                    <input type="checkbox">Unlimited</input>
+                                    <input type="checkbox"> Unlimited</input>
                                 </span>
                             </div>
                         </div>
@@ -410,7 +391,7 @@
                             <div class="input-append">
                                 <input id="max_in_autoscale" name="max_in_autoscale" class="span5" type="text" placeholder="# Instances">
                                 <span class="add-on">
-                                    <input type="checkbox">Unlimited</input>
+                                    <input type="checkbox"> Unlimited</input>
                                 </span>
                             </div>
                         </div>
@@ -423,7 +404,7 @@
                             <div class="input-append">
                                 <input id="max_cores" name="max_cores" class="span5" type="text" placeholder="# Cores">
                                 <span class="add-on">
-                                    <input type="checkbox">Unlimited</input>
+                                    <input type="checkbox"> Unlimited</input>
                                 </span>
                             </div>
                         </div>
@@ -433,25 +414,32 @@
         
                     <!-- Multiple Checkboxes -->
                     <div class="control-group">
-                        <label class="control-label">Instance Lifetime Rules:</label>
-                        <div class="controls">
-                            <label class="checkbox">
-                                <input type="checkbox" name="instance_lifetime_rules" value="Admin can require an expected lifetime when an instance is launched">
-                                Admin can require an expected lifetime when an instance is launched
-                            </label>
-                            <label class="checkbox">
-                                <input type="checkbox" name="instance_lifetime_rules" value="When expected lifetime is up admin can choose to terminate instance">
-                                When expected lifetime is up admin can choose to terminate instance
-                            </label>
-                            <label class="checkbox">
-                                <input type="checkbox" name="instance_lifetime_rules" value="When expected lifetime is up admin can choose to notify user of expiration">
-                                When expected lifetime is up admin can choose to notify user of expiration
-                            </label>
-                            <label class="checkbox">
-                                <input type="checkbox" name="instance_lifetime_rules" value="When expected lifetime is up admin can leave disposition up to user">
-                                When expected lifetime is up admin can leave disposition up to user
-                            </label>
-                        </div>
+                      <label class="control-label">Instance Lifetime:</label>
+                      <div class="controls">
+                        <label class="checkbox">
+                          <input type="checkbox" name="require_lifetime" value="Require an expected lifetime when an instance is launched">
+                          Require an expected lifetime when an instance is launched
+                        </label>
+                      </div>
+                    </div>
+
+                    <!-- Multiple Radios -->
+                    <div class="control-group">
+                      <label class="control-label">When lifetime is up:</label>
+                      <div class="controls">
+                        <label class="radio">
+                          <input type="radio" name="post_lifetime" value="Terminate Instance" checked="checked">
+                          Terminate Instance
+                        </label>
+                        <label class="radio">
+                          <input type="radio" name="post_lifetime" value="Notify user of expiration">
+                          Notify user of expiration
+                        </label>
+                        <label class="radio">
+                          <input type="radio" name="post_lifetime" value="Leave disposition up to user">
+                          Leave disposition up to user
+                        </label>
+                      </div>
                     </div>
                 </div>
             </fieldset>
@@ -516,8 +504,8 @@
                         <label class="control-label">SNS Notifications:</label>
                         <div class="controls">
                             <label class="checkbox">
-                                <input type="checkbox" name="sns_notifications" value="All users are automatically setup as SNS users (e-mail)">
-                                All users are automatically setup as SNS users (e-mail)
+                                <input type="checkbox" name="sns_notifications" value="All users are automatically setup as SNS users">
+                                All users are automatically setup as SNS users
                             </label>
                             <label class="checkbox">
                                 <input type="checkbox" name="sns_notifications" value="Users are email notified when an instance is started">
@@ -528,6 +516,25 @@
                                 Users are email notified when a CloudFormation has 'completed' or 'failed'
                             </label>
                         </div>
+                    </div>
+
+                    <!-- Multiple Checkboxes (inline) -->
+                    <div class="control-group">
+                      <label class="control-label">Default SNS Topics:</label>
+                      <div class="controls">
+                        <label class="checkbox inline">
+                          <input type="checkbox" name="sns_topics" value="Informational">
+                          Informational
+                        </label>
+                        <label class="checkbox inline">
+                          <input type="checkbox" name="sns_topics" value="Warning">
+                          Warning
+                        </label>
+                        <label class="checkbox inline">
+                          <input type="checkbox" name="sns_topics" value="Error">
+                          Error
+                        </label>
+                      </div>
                     </div>
                     
                     <!-- Select Basic -->
@@ -542,40 +549,6 @@
                         </select>
                       </div>
                     </div>
-
-                    <!-- Multiple Checkboxes (inline) -->
-                    <div class="control-group">
-                      <label class="control-label">SNS Topics:</label>
-                      <div class="controls">
-                        <label class="checkbox inline">
-                          <input type="checkbox" name="sns_topics" value="Informational">
-                          Informational
-                        </label>
-                        <label class="checkbox inline">
-                          <input type="checkbox" name="sns_topics" value="Warning">
-                          Warning
-                        </label>
-                        <label class="checkbox inline">
-                          <input type="checkbox" name="sns_topics" value="Exception">
-                          Exception
-                        </label>
-                      </div>
-                    </div>
-        
-                    <!-- Multiple Checkboxes -->
-                    <div class="control-group">
-                        <label class="control-label">CloudWatch Alarms:</label>
-                        <div class="controls">
-                            <label class="checkbox">
-                                <input type="checkbox" name="cloudwatch_alarms" value="A list of CloudWatch Alarms for specific resources are Always used when the resources are provisioned">
-                                A list of CloudWatch Alarms for specific resources are Always used when the resources are provisioned
-                            </label>
-                            <label class="checkbox">
-                                <input type="checkbox" name="cloudwatch_alarms" value="Admin can choose to use alarm or not, or change tolerance">
-                                Admin can choose to use alarm or not, or change tolerance
-                            </label>
-                        </div>
-                    </div>
         
                     <!-- Appended checkbox -->
                     <div class="control-group">
@@ -584,7 +557,7 @@
                             <div class="input-append">
                                 <input id="max_rds" name="max_rds" class="span3" type="text" placeholder="# DB's">
                                 <span class="add-on">
-                                    <input type="checkbox">Unlimited</input>
+                                    <input type="checkbox"> Unlimited</input>
                                 </span>
                             </div>
                         </div>
@@ -697,49 +670,36 @@
                         </div>
                       </div>
                     </div>
-                </div>
-            </fieldset>
-        </form>
-        
-        <form class="form-horizontal">
-            <fieldset>
-
-                <!-- Form Name -->
-                <legend style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;border-radius: 5px 5px 0px 0px;">&nbsp;Information</legend>
-                <div class="well">
                     <!-- Text input-->
-                    <div class="control-group">
-                        <label class="control-label">Contact Name:</label>
+                    <div class="control-group well">
+                        <legend>Elastic Loadbalancer</legend>
+                        <label class="control-label">Latency</label>
                         <div class="controls">
-                            <input id="contact_name" name="contact_name" type="text" placeholder="Contact's Name" class="input-xlarge">
-    
+                            <span>></span>
+                            <input id="latency_value" name="latency_value" type="text" placeholder="#" class="input-mini">
+                            <span>for</span>
+                            <input id="latency_duration" name="latency_duration" type="text" placeholder="#" class="input-mini">
+                            <span>minutes</span>
+                            <label class="checkbox inline">
+                              <input type="checkbox" name="latency_topic" value="informational">
+                              Informational
+                            </label>
                         </div>
-                    </div>
-
-                    <!-- Text input-->
-                    <div class="control-group">
-                        <label class="control-label">Contact Email:</label>
+                        <label class="control-label">UnhealthyHostCount</label>
                         <div class="controls">
-                            <input id="contact_email" name="contact_email" type="text" placeholder="Contact's Email" class="input-xlarge">
-    
+                            <span>></span>
+                            <input id="unhealthy_host_value" name="unhealthy_host_value" type="text" placeholder="#" class="input-mini">
+                            <span>for</span>
+                            <input id="unhealthy_host_duration" name="unhealthy_host_duration" type="text" placeholder="#" class="input-mini">
+                            <span>minutes</span>
                         </div>
-                    </div>
-
-                    <!-- Text input-->
-                    <div class="control-group">
-                        <label class="control-label">Contact Phone #:</label>
+                        <label class="control-label">FailedHealthChecks</label>
                         <div class="controls">
-                            <input id="contact_phone" name="contact_phone" type="text" placeholder="Contact's Phone #" class="input-xlarge">
-    
-                        </div>
-                    </div>
-
-                    <!-- Text input-->
-                    <div class="control-group">
-                        <label class="control-label">URL:</label>
-                        <div class="controls">
-                            <input id="information_url" name="information_url" type="text" placeholder="URL" class="input-xlarge">
-    
+                            <span>></span>
+                            <input id="failed_healthcheck_value" name="failed_healthcheck_value" type="text" placeholder="#" class="input-mini">
+                            <span>for</span>
+                            <input id="failed_healthcheck_duration" name="failed_healthcheck_duration" type="text" placeholder="#" class="input-mini">
+                            <span>minutes</span>
                         </div>
                     </div>
                 </div>
