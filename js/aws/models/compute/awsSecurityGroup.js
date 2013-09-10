@@ -31,7 +31,7 @@ define([
         
         destroy: function(credentialId, region) {
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/security_groups/" + this.attributes.group_id + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
-            this.sendAjaxAction(url, "POST", undefined, "topicAppRefresh");
+            this.sendAjaxAction(url, "POST", undefined, "securityGroupAppRefresh");
         }
         
     });
