@@ -1,22 +1,74 @@
 <div class="row">
-    <h2>Images</h2>
     <div class="button_bar">
         <a class="btn btn-primary">Create</a>
         <a class="btn btn-danger">Delete</a>
-        <a class="btn" style="align:right;">Run</a>
+        <a class="btn" style="align:right;">Pack</a>
     </div>
 </div>
 <div class="row">
   <div class="span3 well">
       <ul>
-          <li><a href="#">debian_64_momentum_1</a></li>
-          <li><a href="#">debian_32_momentum_2</a></li>
-          <li><a href="#">centos_64_momentum_3</a></li>
-          <li><a href="#">centos_32_momentum_4</a></li>
+          <li><a href="#">packer_template_1</a></li>
+          <li><a href="#">packer_template_2</a></li>
+          <li><a href="#">packer_template_3</a></li>
+          <li><a href="#">packer_template_4</a></li>
       </ul>
   </div>
   <div class="span9 well">
       <h2>Packer Template</h2>
+      <form class="form-horizontal">
+          <fieldset>
+              <legend style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;border-radius: 5px 5px 0px 0px;">&nbsp;Definition</legend>
+              <div class="well">
+                  <!-- Select Basic -->
+                  <div class="control-group">
+                    <label class="control-label">Type</label>
+                    <div class="controls">
+                      <select id="packer_type" name="packer_type" class="input-xlarge">
+                        <option>qemu</option>
+                        <option>ami</option>
+                        <option>ec2</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- Text input-->
+                  <div class="control-group">
+                    <label class="control-label">VM Name</label>
+                    <div class="controls">
+                      <input id="vm_name" name="vm_name" type="text" placeholder="tdhtest" class="input-xlarge">
+                    </div>
+                  </div>
+                  
+                  <!-- Text input-->
+                  <div class="control-group">
+                    <label class="control-label">Accelerator</label>
+                    <div class="controls">
+                      <input id="accelerator" name="accelerator" type="text" placeholder="kvm" class="input-xlarge">
+    
+                    </div>
+                  </div>
+
+                  <!-- Text input-->
+                  <div class="control-group">
+                    <label class="control-label">Boot Command</label>
+                    <div class="controls">
+                      <input id="boot_command" name="boot_command" type="text" placeholder="\u003ctab\u003e\u003cwait\u003e" class="input-xlarge">
+    
+                    </div>
+                  </div>
+
+                  <!-- Text input-->
+                  <div class="control-group">
+                    <label class="control-label"></label>
+                    <div class="controls">
+                      <input id="boot_command" name="boot_command" type="text" placeholder="ks=http://10.0.2.2:{{ .HTTPPort }}/centos6-ks.cfg\u003center\u003e" class="input-xlarge">
+    
+                    </div>
+                  </div>
+              </div>
+          </fieldset>
+      </form>
       <form class="form-horizontal">
           <fieldset>
               <legend style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;border-radius: 5px 5px 0px 0px;">&nbsp;Builders</legend>
@@ -194,24 +246,6 @@
                     <label class="control-label">SSH Wait Timeout</label>
                     <div class="controls">
                       <input id="ssh_wait_timeout" name="ssh_wait_timeout" type="text" placeholder="90m" class="input-xlarge">
-    
-                    </div>
-                  </div>
-
-                  <!-- Text input-->
-                  <div class="control-group">
-                    <label class="control-label">Type</label>
-                    <div class="controls">
-                      <input id="type" name="type" type="text" placeholder="qemu" class="input-xlarge">
-    
-                    </div>
-                  </div>
-
-                  <!-- Text input-->
-                  <div class="control-group">
-                    <label class="control-label">VM Name</label>
-                    <div class="controls">
-                      <input id="vm_name" name="vm_name" type="text" placeholder="tdhtest" class="input-xlarge">
     
                     </div>
                   </div>
