@@ -451,45 +451,50 @@
                 <!-- Form Name -->
                 <legend style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;border-radius: 5px 5px 0px 0px;">&nbsp;Service Policies</legend>
                 <div class="well">
-                    <!-- Multiple Checkboxes -->
-                    <div class="control-group">
-                        <label class="control-label">VPC:</label>
-                        <div class="controls">
-                            <label class="checkbox">
-                                <input type="checkbox" name="vpc_rules" value="Only Admin can create, update, delete Internet Gateways for VPC">
-                                Only Admin can create, update, delete Internet Gateways for VPC
-                            </label>
-                            <label class="checkbox">
-                                <input type="checkbox" name="vpc_rules" value="Only Admin can create, update, delete Virtual Private Gateways for VPC">
-                                Only Admin can create, update, delete Virtual Private Gateways for VPC
-                            </label>
-                            <label class="checkbox">
-                                <input type="checkbox" name="vpc_rules" value="Only Admin can create, update, delete Customer Gateways for VPC">
-                                Only Admin can create, update, delete Customer Gateways for VPC
-                            </label>
-                            <label class="checkbox">
-                                <input type="checkbox" name="vpc_rules" value="Users must create all resources in a VPC">
-                                Users must create all resources in a VPC
-                            </label>
+                    <div class="well" style="margin-top:40px;">
+                        <legend>VPC</legend>
+                        <!-- Multiple Checkboxes -->
+                        <div class="control-group">
+                            <label class="control-label">VPC:</label>
+                            <div class="controls">
+                                <label class="checkbox">
+                                    <input type="checkbox" name="vpc_rules" value="Only Admin can create, update, delete Internet Gateways for VPC">
+                                    Only Admin can create, update, delete Internet Gateways for VPC
+                                </label>
+                                <label class="checkbox">
+                                    <input type="checkbox" name="vpc_rules" value="Only Admin can create, update, delete Virtual Private Gateways for VPC">
+                                    Only Admin can create, update, delete Virtual Private Gateways for VPC
+                                </label>
+                                <label class="checkbox">
+                                    <input type="checkbox" name="vpc_rules" value="Only Admin can create, update, delete Customer Gateways for VPC">
+                                    Only Admin can create, update, delete Customer Gateways for VPC
+                                </label>
+                                <label class="checkbox">
+                                    <input type="checkbox" name="vpc_rules" value="Users must create all resources in a VPC">
+                                    Users must create all resources in a VPC
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <!-- Select Basic -->
+                        <div class="control-group">
+                          <label class="control-label">Default VPC:</label>
+                          <div class="controls">
+                            <select id="default_vpc" name="default_vpc" class="input-xlarge">
+                              <option>vpc-09av123d : This is my first VPC</option>
+                              <option>vpc-av45d234 : This is my second VPC</option>
+                              <option>vpc-12345678 : This is my third VPC</option>
+                              <option>vpc-12av5678 : This is my fourth VPC</option>
+                              <option>vpc-1234br78 : This is my fifth VPC</option>
+                            </select>
+                          </div>
                         </div>
                     </div>
-                    
-                    <!-- Select Basic -->
-                    <div class="control-group">
-                      <label class="control-label">Default VPC:</label>
-                      <div class="controls">
-                        <select id="default_vpc" name="default_vpc" class="input-xlarge">
-                          <option>vpc-09av123d : This is my first VPC</option>
-                          <option>vpc-av45d234 : This is my second VPC</option>
-                          <option>vpc-12345678 : This is my third VPC</option>
-                          <option>vpc-12av5678 : This is my fourth VPC</option>
-                          <option>vpc-1234br78 : This is my fifth VPC</option>
-                        </select>
-                      </div>
-                    </div>
         
-                    <!-- Multiple Checkboxes -->
-                    <div class="control-group">
+                    <div class="well">
+                        <legend>Configuration Management</legend>
+                        <!-- Multiple Checkboxes -->
+                        <div class="control-group">
                         <label class="control-label">Configuration Management:</label>
                         <div class="controls">
                             <label class="checkbox">
@@ -498,9 +503,12 @@
                             </label>
                         </div>
                     </div>
+                    </div>
         
-                    <!-- Multiple Checkboxes -->
-                    <div class="control-group">
+                    <div class="well">
+                        <legend>SNS Notifications</legend>
+                        <!-- Multiple Checkboxes -->
+                        <div class="control-group">
                         <label class="control-label">SNS Notifications:</label>
                         <div class="controls">
                             <label class="checkbox">
@@ -518,8 +526,8 @@
                         </div>
                     </div>
 
-                    <!-- Multiple Checkboxes (inline) -->
-                    <div class="control-group">
+                        <!-- Multiple Checkboxes (inline) -->
+                        <div class="control-group">
                       <label class="control-label">Default SNS Topics:</label>
                       <div class="controls">
                         <label class="checkbox inline">
@@ -537,8 +545,8 @@
                       </div>
                     </div>
                     
-                    <!-- Select Basic -->
-                    <div class="control-group">
+                        <!-- Select Basic -->
+                        <div class="control-group">
                       <label class="control-label">Push Platform:</label>
                       <div class="controls">
                         <select id="sns_delivery" name="sns_delivery" class="input-xlarge">
@@ -549,9 +557,12 @@
                         </select>
                       </div>
                     </div>
-        
-                    <!-- Appended checkbox -->
-                    <div class="control-group">
+                    </div>
+                    
+                    <div class="well">
+                        <legend>RDS</legend>
+                        <!-- Appended checkbox -->
+                        <div class="control-group">
                         <label class="control-label">Max # of RDS Databases:</label>
                         <div class="controls">
                             <div class="input-append">
@@ -562,11 +573,12 @@
                             </div>
                         </div>
                     </div>
+                    </div>
                     
-                    <hr>
-                    
-                    <!-- Multiple Checkboxes -->
-                    <div class="control-group">
+                    <div class="well">
+                        <legend>Miscellaneous</legend>
+                        <!-- Multiple Checkboxes -->
+                        <div class="control-group">
                         <label class="control-label">Auto-Tag:</label>
                         <div class="controls">
                             <label class="checkbox">
@@ -575,9 +587,8 @@
                             </label>
                         </div>
                     </div>
-        
-                    <!-- Multiple Checkboxes -->
-                    <div class="control-group">
+                        <!-- Multiple Checkboxes -->
+                        <div class="control-group">
                         <label class="control-label">AWS Console:</label>
                         <div class="controls">
                             <label class="checkbox">
@@ -585,6 +596,7 @@
                                 Disable access to AWS Console
                             </label>
                         </div>
+                    </div>
                     </div>
                 </div>
             </fieldset>
@@ -606,16 +618,16 @@
                             <input id="cpu_util_duration" name="cpu_util_duration" type="text" placeholder="#" class="input-mini">
                             <span>minutes</span>
                             &nbsp;
-                            <label class="checkbox inline">
-                              <input type="checkbox" name="cpu_util_topic" value="informational">
+                            <label class="radio inline">
+                              <input type="radio" name="cpu_util_topic" value="informational">
                               Informational
                             </label>
-                            <label class="checkbox inline">
-                              <input type="checkbox" name="cpu_util_topic" value="warning">
+                            <label class="radio inline">
+                              <input type="radio" name="cpu_util_topic" value="warning">
                               Warning
                             </label>
-                            <label class="checkbox inline">
-                              <input type="checkbox" name="cpu_util_topic" value="error">
+                            <label class="radio inline">
+                              <input type="radio" name="cpu_util_topic" value="error">
                               Error
                             </label>
                         </div>
@@ -627,16 +639,16 @@
                             <input id="status_failed_duration" name="status_failed_duration" type="text" placeholder="#" class="input-mini">
                             <span>minutes</span>
                             &nbsp;
-                            <label class="checkbox inline">
-                              <input type="checkbox" name="status_failed_topic" value="informational">
+                            <label class="radio inline">
+                              <input type="radio" name="status_failed_topic" value="informational">
                               Informational
                             </label>
-                            <label class="checkbox inline">
-                              <input type="checkbox" name="status_failed_topic" value="warning">
+                            <label class="radio inline">
+                              <input type="radio" name="status_failed_topic" value="warning">
                               Warning
                             </label>
-                            <label class="checkbox inline">
-                              <input type="checkbox" name="status_failed_topic" value="error">
+                            <label class="radio inline">
+                              <input type="radio" name="status_failed_topic" value="error">
                               Error
                             </label>
                         </div>
@@ -653,16 +665,16 @@
                             <input id="latency_duration" name="latency_duration" type="text" placeholder="#" class="input-mini">
                             <span>minutes</span>
                             &nbsp;
-                            <label class="checkbox inline">
-                              <input type="checkbox" name="latency_topic" value="informational">
+                            <label class="radio inline">
+                              <input type="radio" name="latency_topic" value="informational">
                               Informational
                             </label>
-                            <label class="checkbox inline">
-                              <input type="checkbox" name="latency_topic" value="warning">
+                            <label class="radio inline">
+                              <input type="radio" name="latency_topic" value="warning">
                               Warning
                             </label>
-                            <label class="checkbox inline">
-                              <input type="checkbox" name="latency_topic" value="error">
+                            <label class="radio inline">
+                              <input type="radio" name="latency_topic" value="error">
                               Error
                             </label>
                         </div>
@@ -674,16 +686,16 @@
                             <input id="unhealthy_host_duration" name="unhealthy_host_duration" type="text" placeholder="#" class="input-mini">
                             <span>minutes</span>
                             &nbsp;
-                            <label class="checkbox inline">
-                              <input type="checkbox" name="unhealthy_host_topic" value="informational">
+                            <label class="radio inline">
+                              <input type="radio" name="unhealthy_host_topic" value="informational">
                               Informational
                             </label>
-                            <label class="checkbox inline">
-                              <input type="checkbox" name="unhealthy_host_topic" value="warning">
+                            <label class="radio inline">
+                              <input type="radio" name="unhealthy_host_topic" value="warning">
                               Warning
                             </label>
-                            <label class="checkbox inline">
-                              <input type="checkbox" name="unhealthy_host_topic" value="error">
+                            <label class="radio inline">
+                              <input type="radio" name="unhealthy_host_topic" value="error">
                               Error
                             </label>
                         </div>
@@ -695,16 +707,16 @@
                             <input id="failed_healthcheck_duration" name="failed_healthcheck_duration" type="text" placeholder="#" class="input-mini">
                             <span>minutes</span>
                             &nbsp;
-                            <label class="checkbox inline">
-                              <input type="checkbox" name="failed_healthcheck_topic" value="informational">
+                            <label class="radio inline">
+                              <input type="radio" name="failed_healthcheck_topic" value="informational">
                               Informational
                             </label>
-                            <label class="checkbox inline">
-                              <input type="checkbox" name="failed_healthcheck_topic" value="warning">
+                            <label class="radio inline">
+                              <input type="radio" name="failed_healthcheck_topic" value="warning">
                               Warning
                             </label>
-                            <label class="checkbox inline">
-                              <input type="checkbox" name="failed_healthcheck_topic" value="error">
+                            <label class="radio inline">
+                              <input type="radio" name="failed_healthcheck_topic" value="error">
                               Error
                             </label>
                         </div>
