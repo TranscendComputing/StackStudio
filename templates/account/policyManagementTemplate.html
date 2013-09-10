@@ -595,81 +595,53 @@
                 <!-- Form Name -->
                 <legend style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;border-radius: 5px 5px 0px 0px;">&nbsp;CloudWatch Alarms</legend>
                 <div class="well">
-                    <!-- Button Drop Down -->
-                    <div class="control-group">
-                      <label class="control-label">EC2:</label>
-                      <div class="controls">
-                        <div class="input-prepend">
-                            <span class="add-on">CPUUtilization</span>
-                            <div class="btn-group">
-                              <button class="btn dropdown-toggle" data-toggle="dropdown">
-                                Condition
-                                <span class="caret"></span>
-                              </button>
-                              <ul class="dropdown-menu">
-                                <li><a href="#">&lt;=</a></li>
-                                <li><a href="#">&lt;</a></li>
-                                <li><a href="#">&gt;=</a></li>
-                                <li><a href="#">&gt;</a></li>
-                              </ul>
-                            </div>
-                          <input id="cpu_util_amount" name="cpu_util_amount" class="span2" placeholder="%" type="text">
-                          <span class="add-on">for</span>
-                          <input id="cpu_util_duration" name="cpu_util_duration" class="span2" placeholder="#" type="text">
-                          <span class="add-on">minutes</span>
+                    <!-- Text input-->
+                    <div class="control-group well" style="margin-top: 40px;">
+                        <legend>Elastic Compute Cloud</legend>
+                        <label class="control-label">CPUUtilization</label>
+                        <div class="controls">
+                            <span>></span>
+                            <input id="cpu_util_value" name="cpu_util_value" type="text" placeholder="#" class="input-mini">
+                            <span>for</span>
+                            <input id="cpu_util_duration" name="cpu_util_duration" type="text" placeholder="#" class="input-mini">
+                            <span>minutes</span>
+                            &nbsp;
+                            <label class="checkbox inline">
+                              <input type="checkbox" name="cpu_util_topic" value="informational">
+                              Informational
+                            </label>
+                            <label class="checkbox inline">
+                              <input type="checkbox" name="cpu_util_topic" value="warning">
+                              Warning
+                            </label>
+                            <label class="checkbox inline">
+                              <input type="checkbox" name="cpu_util_topic" value="error">
+                              Error
+                            </label>
                         </div>
-                      </div>
-                    </div>
-                    <!-- Button Drop Down -->
-                    <div class="control-group">
-                      <label class="control-label"></label>
-                      <div class="controls">
-                        <div class="input-prepend">
-                            <span class="add-on">NetworkOut&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                            <div class="btn-group">
-                              <button class="btn dropdown-toggle" data-toggle="dropdown">
-                                Condition
-                                <span class="caret"></span>
-                              </button>
-                              <ul class="dropdown-menu">
-                                <li><a href="#">&lt;=</a></li>
-                                <li><a href="#">&lt;</a></li>
-                                <li><a href="#">&gt;=</a></li>
-                                <li><a href="#">&gt;</a></li>
-                              </ul>
-                            </div>
-                          <input id="network_util_amount" name="network_util_amount" class="span2" placeholder="%" type="text">
-                          <span class="add-on">for</span>
-                          <input id="network_util_duration" name="network_util_duration" class="span2" placeholder="#" type="text">
-                          <span class="add-on">minutes</span>
+                        <label class="control-label">StatusCheckFailed</label>
+                        <div class="controls">
+                            <span>></span>
+                            <input id="status_failed_value" name="status_failed_value" type="text" placeholder="#" class="input-mini">
+                            <span>for</span>
+                            <input id="status_failed_duration" name="status_failed_duration" type="text" placeholder="#" class="input-mini">
+                            <span>minutes</span>
+                            &nbsp;
+                            <label class="checkbox inline">
+                              <input type="checkbox" name="status_failed_topic" value="informational">
+                              Informational
+                            </label>
+                            <label class="checkbox inline">
+                              <input type="checkbox" name="status_failed_topic" value="warning">
+                              Warning
+                            </label>
+                            <label class="checkbox inline">
+                              <input type="checkbox" name="status_failed_topic" value="error">
+                              Error
+                            </label>
                         </div>
-                      </div>
                     </div>
-                    <!-- Button Drop Down -->
-                    <div class="control-group">
-                      <label class="control-label"></label>
-                      <div class="controls">
-                        <div class="input-prepend">
-                            <span class="add-on">DiskReadBytes</span>
-                            <div class="btn-group">
-                              <button class="btn dropdown-toggle" data-toggle="dropdown">
-                                Condition
-                                <span class="caret"></span>
-                              </button>
-                              <ul class="dropdown-menu">
-                                <li><a href="#">&lt;=</a></li>
-                                <li><a href="#">&lt;</a></li>
-                                <li><a href="#">&gt;=</a></li>
-                                <li><a href="#">&gt;</a></li>
-                              </ul>
-                            </div>
-                          <input id="disk_util_amount" name="disk_util_amount" class="span2" placeholder="%" type="text">
-                          <span class="add-on">for</span>
-                          <input id="disk_util_duration" name="disk_util_duration" class="span2" placeholder="#" type="text">
-                          <span class="add-on">minutes</span>
-                        </div>
-                      </div>
-                    </div>
+                    
                     <!-- Text input-->
                     <div class="control-group well">
                         <legend>Elastic Loadbalancer</legend>
@@ -701,6 +673,19 @@
                             <span>for</span>
                             <input id="unhealthy_host_duration" name="unhealthy_host_duration" type="text" placeholder="#" class="input-mini">
                             <span>minutes</span>
+                            &nbsp;
+                            <label class="checkbox inline">
+                              <input type="checkbox" name="unhealthy_host_topic" value="informational">
+                              Informational
+                            </label>
+                            <label class="checkbox inline">
+                              <input type="checkbox" name="unhealthy_host_topic" value="warning">
+                              Warning
+                            </label>
+                            <label class="checkbox inline">
+                              <input type="checkbox" name="unhealthy_host_topic" value="error">
+                              Error
+                            </label>
                         </div>
                         <label class="control-label">FailedHealthChecks</label>
                         <div class="controls">
@@ -709,6 +694,19 @@
                             <span>for</span>
                             <input id="failed_healthcheck_duration" name="failed_healthcheck_duration" type="text" placeholder="#" class="input-mini">
                             <span>minutes</span>
+                            &nbsp;
+                            <label class="checkbox inline">
+                              <input type="checkbox" name="failed_healthcheck_topic" value="informational">
+                              Informational
+                            </label>
+                            <label class="checkbox inline">
+                              <input type="checkbox" name="failed_healthcheck_topic" value="warning">
+                              Warning
+                            </label>
+                            <label class="checkbox inline">
+                              <input type="checkbox" name="failed_healthcheck_topic" value="error">
+                              Error
+                            </label>
                         </div>
                     </div>
                 </div>
