@@ -285,7 +285,19 @@ define([
             if(resourceNav.cloudDefinitions[this.cloudProvider].regions.length) {
                 $("#cloud_specs").append('<span id="regions">Region: <select id="region_select" class="cloud_spec_select"></select></span>');
                 $.each(resourceNav.cloudDefinitions[this.cloudProvider].regions, function(index, region) {
-                    if(resourceNav.selectedRegion === region.zone) {
+                    //regions check
+                    var addRegion = false;
+                    $.each(JSON.parse(sessionStorage.group_policies), function(index,value){
+                        var usable_regions = value.group_policy.aws_governance.usable_regions;
+                        if($.inArray(region.name, usable_regions) !== -1){
+                            addRegion = true;
+        		        }
+                    });
+                    
+                    if(!addRegion){
+                        
+                    }
+                    else if(resourceNav.selectedRegion === region.zone) {
                         $('#region_select').append($("<option value='" + region.zone + "' selected></option>").text(region.name));
                         $("#region_nav").html(resourceNav.crumbTemplate(
                                 {pathElt: region.name}));
