@@ -188,12 +188,16 @@ define([
                 
                 //Check Enabled Services
                 var addService = false;
-                $.each(JSON.parse(sessionStorage.group_policies), function(index,value){
-                    var enabled_services = value.group_policy.aws_governance.enabled_services;
-                    if($.inArray(service.name, enabled_services) !== -1){
-                        addService = true;
-    		        }
-                });
+                if(JSON.parse(sessionStorage.group_policies)[0] == null){
+                    addService = true;
+                }else{
+                    $.each(JSON.parse(sessionStorage.group_policies), function(index,value){
+                        var enabled_services = value.group_policy.aws_governance.enabled_services;
+                        if($.inArray(service.name, enabled_services) !== -1){
+                            addService = true;
+        		        }
+                    });
+                }
                 //hack
                 var cname = location.href.split("#resources/")[1].split("/")[0]
                 if(addService || cname !== 'aws'){
@@ -289,12 +293,16 @@ define([
                 $.each(resourceNav.cloudDefinitions[this.cloudProvider].regions, function(index, region) {
                     //regions check
                     var addRegion = false;
-                    $.each(JSON.parse(sessionStorage.group_policies), function(index,value){
-                        var usable_regions = value.group_policy.aws_governance.usable_regions;
-                        if($.inArray(region.name, usable_regions) !== -1){
-                            addRegion = true;
-        		        }
-                    });
+                    if(JSON.parse(sessionStorage.group_policies)[0] == null){
+                        addRegion = true;
+                    }else{
+                        $.each(JSON.parse(sessionStorage.group_policies), function(index,value){
+                            var usable_regions = value.group_policy.aws_governance.usable_regions;
+                            if($.inArray(region.name, usable_regions) !== -1){
+                                addRegion = true;
+            		        }
+                        });
+                    }
                     var cname = location.href.split("#resources/")[1].split("/")[0]
                     if(!addRegion && cname === "aws"){
                         
