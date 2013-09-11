@@ -67,7 +67,6 @@ define([
         render: function () {
             $("#assemblyLeftNav").html(this.el);
             this.$el.html(this.template);
-            //$("#assemblyDesignCloudCreds").trigger("change");
             // $(function(){
             //    $this.setupTypeAhead();
             // });
@@ -79,11 +78,6 @@ define([
 
             //$("#selectAccordion").on("shown", this.toggleInstInfra);
             
-            //SEPARATE OUT CLOUD CREDENTIALS FROM TREE VIEW, MAYBE IN ASSEMBLIESVIEW, FETCH CLOUD CREDS AND LOAD THIS PAGE ON SUCCESS
-            // this.fetchCloudCredentials().done($.proxy(function(result){
-            //     this.cloudDefinitions = result;
-            //     this.loadCredentials();
-            // }, this));
         },
         environmentSelectHandler: function(evt){
             var $this = this;
@@ -234,14 +228,15 @@ define([
             destination.empty()
                 .data("isLoaded", true);
             var ul = $("<ul class='recipes'></ul>");
-           
+            
             $.each(sorted, function( index, item ) {
+                var desc = item.description  ? item.description:"";
                 $("<li></li>")
                     .data("recipe", item)
                     .data("cookbook", book)
                     .data("isRecipe", true)
                     .append("<input type='checkbox' " + checkedState + " class='recipeSelector'" + enabledState + " />")
-                    .append("<span class='recipe'>" + item.name + "</span>" + "<span class='recipeDescription'>" + item.description + "</span>")
+                    .append("<span class='recipe'>" + item.name + "</span>" + "<span class='recipeDescription'>" + desc + "</span>")
                     .appendTo(ul);
                 checkedState = "";
             });

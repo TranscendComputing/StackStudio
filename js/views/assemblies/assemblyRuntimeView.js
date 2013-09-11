@@ -50,7 +50,7 @@ define([
      * @returns {Object} Returns a AssemblyRunTimeView project.
      */
     var AssemblyRuntimeView = Backbone.View.extend({
-        id: 'apps_view',
+        id: 'assembly_runtime_view',
 
         //className: [''],
 
