@@ -185,7 +185,7 @@ define([
 		    var row = 1;
 		    $("#resource_table").empty();
 		    $.each(resourceNav.cloudDefinitions[this.cloudProvider].native_services, function(index, service) {
-                console.log(service.name)
+                
                 //Check Enabled Services
                 var addService = false;
                 $.each(JSON.parse(sessionStorage.group_policies), function(index,value){
@@ -194,8 +194,9 @@ define([
                         addService = true;
     		        }
                 });
-                
-                if(addService){
+                //hack
+                var cname = location.href.split("#resources/")[1].split("/")[0]
+                if(addService || cname !== 'aws'){
                     $("#native_row"+row).append($("<td></td>").attr({
                         "id": service.type,
                         "class": "resources selectable_item"
@@ -210,6 +211,7 @@ define([
     		            row = 1;
     		        }
                 }
+                
 		    });
             row = 1;
             if(resourceNav.cloudDefinitions[this.cloudProvider].topstack_services !== undefined && resourceNav.cloudDefinitions[this.cloudProvider].topstack_services.length > 0) {
@@ -293,8 +295,8 @@ define([
                             addRegion = true;
         		        }
                     });
-                    
-                    if(!addRegion){
+                    var cname = location.href.split("#resources/")[1].split("/")[0]
+                    if(!addRegion && cname === "aws"){
                         
                     }
                     else if(resourceNav.selectedRegion === region.zone) {
