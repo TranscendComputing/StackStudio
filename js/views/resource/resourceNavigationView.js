@@ -185,19 +185,31 @@ define([
 		    var row = 1;
 		    $("#resource_table").empty();
 		    $.each(resourceNav.cloudDefinitions[this.cloudProvider].native_services, function(index, service) {
-		        $("#native_row"+row).append($("<td></td>").attr({
-                    "id": service.type,
-                    "class": "resources selectable_item"
-                }));
-                $("#"+service.type).append($("<a></a>").attr({
-                    "id": service.type+"Link",
-                    "class": "resource_link"
-                }).text(service.name));
-                row++;
-                //reset row if greater than 3
-		        if(row > 3) {
-		            row = 1;
-		        }
+                console.log(service.name)
+                //Check Enabled Services
+                var addService = false;
+                $.each(JSON.parse(sessionStorage.group_policies), function(index,value){
+                    var enabled_services = value.group_policy.aws_governance.enabled_services;
+                    if($.inArray(service.name, enabled_services) !== -1){
+                        addService = true;
+    		        }
+                });
+                
+                if(addService){
+                    $("#native_row"+row).append($("<td></td>").attr({
+                        "id": service.type,
+                        "class": "resources selectable_item"
+                    }));
+                    $("#"+service.type).append($("<a></a>").attr({
+                        "id": service.type+"Link",
+                        "class": "resource_link"
+                    }).text(service.name));
+                    row++;
+                    //reset row if greater than 3
+    		        if(row > 3) {
+    		            row = 1;
+    		        }
+                }
 		    });
             row = 1;
             if(resourceNav.cloudDefinitions[this.cloudProvider].topstack_services !== undefined && resourceNav.cloudDefinitions[this.cloudProvider].topstack_services.length > 0) {
