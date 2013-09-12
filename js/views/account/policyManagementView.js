@@ -164,6 +164,8 @@ define([
                           $( "input[name='"+key+"'][value='"+p[key][i]+"']" ).attr('checked','checked');
                         }
                     }
+                }else if(typ === "radio"){
+                    $( "input[name='"+key+"'][value='"+p[key]+"']" ).attr('checked','checked');
                 }else{
                     $("#"+key).val(p[key]);
                 }

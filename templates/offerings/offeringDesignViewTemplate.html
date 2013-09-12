@@ -1,212 +1,246 @@
-<div class="row-fluid">
-
-	<div class="span8">
-		<h2>Edit Offering</h2>
-		<form id="offering0Form" class="form-horizontal">
-
-			<div class="control-group">
-				<div class="controls">
-				 	<button type="button" data-action="save" class="btn btn-primary">Save</button>
-				 	<button type="button" data-action="cancel" class="btn">Cancel</button>
-				 	<button type="button" data-action="delete" class="btn btn-danger">Delete</button>
+<div>
+	<div class="control-group">
+		<div class="controls">
+			<div class="btn-group">
+				<button type="button" class="btn dropdown-toggle btn-success" data-toggle="dropdown">
+	    			Select Offering&nbsp;<span class="caret"></span>
+	  			</button>
+	  			<ul id="offerings_menu" class="dropdown-menu" role="menu"></ul>
+			</div>
+			<a id="new_offering_button" class="btn btn-primary">New Offering</a>
+			<div class="btn-group">
+				<button type="button" class="btn dropdown-toggle btn-danger" data-toggle="dropdown">
+	    			Delete Offering&nbsp;<span class="caret"></span>
+	  			</button>
+	  			<ul id="offerings_delete_menu" class="dropdown-menu" role="menu"></ul>
+			</div>
+		</div>
+	</div>
+	<div id="offering_opened" hidden>
+		<form id="offering_form" class="form-horizontal">
+			<div class="container-fluid span6">
+				<div class="row-fluid">
+					<div class="span12">
+						<div class="control-group">
+							<label class="control-label" for="offering_name_input">Name</label>
+							<div class="controls">
+							  	<input type="text" id="offering_name_input" placeholder="Offering Name">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row-fluid">
+					<div class="span12">
+						<div class="control-group">
+							<label class="control-label" for="offering_version_input">Version</label>
+							<div class="controls">
+							  	<input type="text" id="offering_version_input" placeholder="Offering Version">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row-fluid">
+					<div class="span12">
+						<div class="control-group">
+							<label class="control-label" for="offering_url_input">Url</label>
+							<div class="controls">
+						  		<input type="url" id="offering_url_input" placeholder="Url for more information">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row-fluid">
+					<div class="span12">
+						<div class="control-group">
+							<label class="control-label" for="offering_sku_input">SKU</label>
+							<div class="controls">
+						  		<input type="text" id="offering_sku_input" placeholder="Billing SKU">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row-fluid">
+					<div class="span12">
+						<div class="control-group">
+							<label class="control-label" for="offering_brief_description_input">Brief Description</label>
+							<div class="controls">
+						 		<textarea id="offering_brief_description_input" class="span12" rows="2" placeholder="Brief Description"></textarea>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row-fluid">
+					<div class="span12">
+						<div class="control-group">
+							<label class="control-label" for="offering_detailed_description_input">Detailed Description</label>
+							<div class="controls">
+							 	<textarea id="offering_detailed_description_input" class="span12" rows="4" placeholder="Detailed Description"></textarea>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row-fluid">
+					<div class="span12">
+						<div class="control-group">
+							<label class="control-label" for="offering_eula_select">EULA</label>
+							<div class="controls">
+								<select id="offering_eula_select" class="span12">
+									<optgroup label="GPL 2-compatible">
+							 			<option>Artistic License 2.0</option>
+										<option>Berkeley Database License (aka the Sleepycat License or Sleepycat Software Product License)</option>
+										<option>Boost Software License</option>
+										<option>BSD license (modified version)</option>
+										<option>BDL / BSD Documentation License</option>
+										<option>CeCILL (CEA CNRS INRIA Logiciel Libre)</option>
+										<option>Cryptix General License</option>
+										<option>Eclipse Distribution License</option>
+										<option>EUPL - European Union Public License</option>
+										<option>GPL / GNU General Public License</option>
+										<option>Intel Open Source License</option>
+										<option>ISC license [2]</option>
+										<option>LGPL / GNU Lesser General Public License</option>
+										<option>License of Python</option>
+										<option>MIT license</option>
+										<option>Mozilla Public License (MPL) version 2.0 [3]</option>
+										<option>Public Domain</option>
+										<option>W3C Software Notice and License</option>
+										<option>WTFPL</option>
+										<option>X11 license</option>
+										<option>zlib/libpng license</option>
+										<option>Zope Public License</option>
+									</optgroup>
+									<optgroup label="GPL 2-incompatible">
+										<option>Academic Free License (AFL)</option>
+										<option>Affero General Public License (version 1)</option>
+										<option>Apache License</option>
+										<option>Apple Public Source License (APSL)</option>
+										<option>BSD license (original version)</option>
+										<option>Common Public License</option>
+										<option>Common Development and Distribution License (CDDL)</option>
+										<option>Eclipse Public License (EPL)</option>
+										<option>IBM Public License</option>
+										<option>LaTeX Project Public License (LPPL)</option>
+										<option>Microsoft Public License</option>
+										<option>Microsoft Reciprocal License</option>
+										<option>Mozilla Public License (MPL) Version 1.1 [4]</option>
+										<option>Netscape Public License (NPL)</option>
+										<option>Open Software License</option>
+										<option>OpenSSL license</option>
+										<option>PHP License</option>
+										<option>Q Public License (QPL)</option>
+										<option>Sun Industry Standards Source License (SISSL)</option>
+										<option>Sun Public License</option>
+										<option>XFree86 1.1 License</option>
+									</optgroup>
+									<optgroup label="Non Free">
+										<option>Microsoft Reference License</option>
+									</optgroup>
+									<optgroup label="Free Licensed Closed-Source">
+										<option>Free Solaris Binary License</option>
+										<option>Free For non commercial Use</option>
+									</optgroup>
+									<optgroup label="Pay Licensed Viewable-Source">
+										<option>Microsoft's Shared Source</option>
+									</optgroup>
+									<optgroup label="Pay Licensed Closed-Source">
+										<option>Microsoft Windows' EULA</option>
+									</optgroup>
+									<optgroup label="Custom">
+										<option>Custom</option>
+									</optgroup>
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row-fluid">
+					<div class="span12">
+						<div class="control-group">
+							<label class="control-label" for="offering_custom_eula_input">Custom EULA</label>
+							<div class="controls">
+							 	<textarea id="offering_custom_eula_input" class="span12" rows="4" placeholder="Custom EULA"></textarea>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row-fluid">
+					<div class="span12">
+						<div class="control-group">
+							<label class="control-label" for="offering_support_input">Support</label>
+							<div class="controls">
+							 	<textarea id="offering_support_input" class="span12" rows="4" placeholder="Support"></textarea>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row-fluid">
+					<div class="span12">
+						<div class="control-group">
+							<label class="control-label" for="offering_pricing_input">Pricing</label>
+							<div class="controls">
+							 	<textarea id="offering_pricing_input" class="span12" rows="4" placeholder="Pricing"></textarea>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row-fluid">
+					<div class="span12">
+						<div class="control-group">
+							<label class="control-label" for="offering_category_input">Category</label>
+							<div class="controls">
+							 	<textarea id="offering_category_input" class="span12" rows="4" placeholder="List of related topics"></textarea>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
-
-		  <div class="control-group">
-			<label class="control-label" for="inputName0">Name</label>
-			<div class="controls">
-			  <input type="text" id="inputName0" placeholder="Offering Name" value="<%=model.get('name') %>">
-			</div>
-		  </div>
-		  <div class="control-group">
-			<label class="control-label" for="inputVersion0">Version</label>
-			<div class="controls">
-			  <input type="text" id="inputVersion0" placeholder="Offering Version" value="<%=model.get('version') %>">
-			</div>
-		  </div>
-		  <div class="control-group">
-			<label class="control-label" for="inputUrl0">Url</label>
-			<div class="controls">
-			  <input type="url" id="inputUrl0" placeholder="Url for more information">
-			</div>
-		  </div>
-		  <div class="control-group">
-			<label class="control-label" for="sku0">SKU</label>
-			<div class="controls">
-			  <input type="url" id="sku0" placeholder="Billing SKU">
-			</div>
-		  </div>
-		  <div class="control-group">
-			<label class="control-label" >Icon</label>
-			<div class="controls" style="min-height:64px;">
-		  		<div style="background-image:url('/images/no-image-blog-one-64.png');width:64px;height:64px;background-repeat:none;float:left;border: solid 1px #0088CC;border-radius:4px;">
-		  			<!--<div class='editIcon' style='position:relative; text-align:center; line-height:16px; width:100%;height:16px;background-color:#FFF;opacity:0.9;top:48px;color:#0088CC;border-radius:0 0 4px 4px;'>edit</div>-->
-		  			<button class="btn btn-mini btn-block" style="position:relative; top:42px;border-radius:4px;opacity:0.7" type="button">edit</button>
-		  		</div>
-		  	</div>
-		  </div>
-		  <div class="control-group">
-		  	<label class="control-label" >Screenshot/Diagram/Illustration</label>
-			<div class="controls" style="min-height:64px;">
-				<div style="background-image:url('/images/no-image-blog-one.png');width:300px;height:300px;background-repeat:none;float:left;border: solid 1px #0088CC;border-radius:4px">
-					<button class="btn btn-large btn-block" style="position:relative; top:256px;border-radius:4px;opacity:0.7" type="button">edit</button>
-			  		<!--<div class='editIcon' style='position:relative; text-align:center; line-height:16px; width:100%;height:16px;background-color:#FFF;opacity:0.9;top:284px;color:#0088CC;border-radius:0 0 4px 4px'>edit</div>-->
-			  </div>
-			</div>
-		  </div>
-		  <div class="control-group">
-				<label class="control-label" for="description0">Brief Description</label>
-				<div class="controls">
-				 	<textarea id="description0" rows="2" placeholder="description"></textarea>
+			<div class="container-fluid span6">
+				<div class="row-fluid">
+					<div class="span12">
+						<div class="control-group">
+							<label class="control-label" >Icon</label>
+							<div class="controls" style="min-height:64px;">
+						  		<div style="background-image:url('/images/no-image-blog-one-64.png');width:64px;height:74px;background-repeat:none;float:left;border: solid 1px #0088CC;border-radius:4px;">
+						  			<button class="btn btn-mini btn-block" style="position:relative; top:53px;border-radius:4px;opacity:0.7" type="button">edit</button>
+						  		</div>
+						  	</div>
+						</div>
+					</div>
 				</div>
-		  </div>
-		   <div class="control-group">
-				<label class="control-label" for="description0">Long Description</label>
-				<div class="controls">
-				 	<textarea id="description0" rows="5" placeholder="description"></textarea>
+				<div class="row-fluid">
+					<div class="span12">
+						<div class="control-group">
+							<label class="control-label" >Illustration</label>
+							<div class="controls" style="min-height:74px;">
+								<div style="background-image:url('/images/no-image-blog-one.png');width:300px;height:300px;background-repeat:none;float:left;border: solid 1px #0088CC;border-radius:4px">
+									<button class="btn btn-large btn-block" style="position:relative; top:256px;border-radius:4px;opacity:0.7" type="button">edit</button>
+						  		</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row-fluid">
+					<div class="span12">
+						<div class="control-group">
+							<label class="control-label" for="offering_stacks_list">Stacks to Include</label>
+							<div class="controls" style="overflow-y:auto;">
+								<ul id="offering_stacks_list"></ul>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
-			<!--TODO: Nice to have a filter here so users can select from a particular cloud provider or set of them.
-			<div class="control-group">
-				<label class="control-label" for="supported0">Clouds</label>
-				<div class="controls">
-				 	<select id="supported0" >
-				 		<option>AWS</option>
-				 		<option>OpenStack</option>
-				 		<option>Google Compute</option>
-				 	</select>
-				</div>
-		  </div>-->
-		  <div class="control-group">
-				<label class="control-label" for="supported0">Stacks to Include</label>
-				<div class="controls" style="max-height:200px;overflow-y:auto;">
-					<ul id="stacksList">
-						<li><label class="checkbox"><input type="checkbox" style="margin-top:1px"> Stack 1</label></li>
-						<li><label class="checkbox"><input type="checkbox" style="margin-top:1px"> Stack 2</label></li>
-						<li><label class="checkbox"><input type="checkbox" style="margin-top:1px"> Stack 3</label></li>
-						<li><label class="checkbox"><input type="checkbox" style="margin-top:1px"> Stack 4</label></li>
-						<li><label class="checkbox"><input type="checkbox" style="margin-top:1px"> Stack 5</label></li>
-						<li><label class="checkbox"><input type="checkbox" style="margin-top:1px"> Stack 6</label></li>
-						<li><label class="checkbox"><input type="checkbox" style="margin-top:1px"> Stack 7</label></li>
-						<li><label class="checkbox"><input type="checkbox" style="margin-top:1px"> Stack 8</label></li>
-						<li><label class="checkbox"><input type="checkbox" style="margin-top:1px"> Stack 9</label></li>
-						<li><label class="checkbox"><input type="checkbox" style="margin-top:1px"> Stack 10</label></li>
-						<li><label class="checkbox"><input type="checkbox" style="margin-top:1px"> Stack 11</label></li>
-						<li><label class="checkbox"><input type="checkbox" style="margin-top:1px"> Stack 12</label></li>
-						<li><label class="checkbox"><input type="checkbox" style="margin-top:1px"> Stack 13</label></li>
-						<li><label class="checkbox"><input type="checkbox" style="margin-top:1px"> Stack 14</label></li>
-						<li><label class="checkbox"><input type="checkbox" style="margin-top:1px"> Stack 15</label></li>
-						<li><label class="checkbox"><input type="checkbox" style="margin-top:1px"> Stack 16</label></li>
-					</ul>
-				</div>
-			</div>
-			<div class="control-group">
-				<label class="control-label" for="supported0">EULA</label>
-				<div class="controls">
-					<select id="supported0" >
-						<optgroup label="GPL 2-compatible">
-				 			<option>Artistic License 2.0</option>
-							<option>Berkeley Database License (aka the Sleepycat License or Sleepycat Software Product License)</option>
-							<option>Boost Software License</option>
-							<option>BSD license (modified version)</option>
-							<option>BDL / BSD Documentation License</option>
-							<option>CeCILL (CEA CNRS INRIA Logiciel Libre)</option>
-							<option>Cryptix General License</option>
-							<option>Eclipse Distribution License</option>
-							<option>EUPL - European Union Public License</option>
-							<option>GPL / GNU General Public License</option>
-							<option>Intel Open Source License</option>
-							<option>ISC license [2]</option>
-							<option>LGPL / GNU Lesser General Public License</option>
-							<option>License of Python</option>
-							<option>MIT license</option>
-							<option>Mozilla Public License (MPL) version 2.0 [3]</option>
-							<option>Public Domain</option>
-							<option>W3C Software Notice and License</option>
-							<option>WTFPL</option>
-							<option>X11 license</option>
-							<option>zlib/libpng license</option>
-							<option>Zope Public License</option>
-						</optgroup>
-						<optgroup label="GPL 2-incompatible">
-							<option>Academic Free License (AFL)</option>
-							<option>Affero General Public License (version 1)</option>
-							<option>Apache License</option>
-							<option>Apple Public Source License (APSL)</option>
-							<option>BSD license (original version)</option>
-							<option>Common Public License</option>
-							<option>Common Development and Distribution License (CDDL)</option>
-							<option>Eclipse Public License (EPL)</option>
-							<option>IBM Public License</option>
-							<option>LaTeX Project Public License (LPPL)</option>
-							<option>Microsoft Public License</option>
-							<option>Microsoft Reciprocal License</option>
-							<option>Mozilla Public License (MPL) Version 1.1 [4]</option>
-							<option>Netscape Public License (NPL)</option>
-							<option>Open Software License</option>
-							<option>OpenSSL license</option>
-							<option>PHP License</option>
-							<option>Q Public License (QPL)</option>
-							<option>Sun Industry Standards Source License (SISSL)</option>
-							<option>Sun Public License</option>
-							<option>XFree86 1.1 License</option>
-						</optgroup>
-						<optgroup label="Non Free">
-							<option>Microsoft Reference License</option>
-						</optgroup>
-						<optgroup label="Free Licensed Closed-Source">
-							<option>Free Solaris Binary License</option>
-							<option>Free For non commercial Use</option>
-						</optgroup>
-						<optgroup label="Pay Licensed Viewable-Source">
-							<option>Microsoft's Shared Source</option>
-						</optgroup>
-						<optgroup label="Pay Licensed Closed-Source">
-							<option>Microsoft Windows' EULA</option>
-						</optgroup>
-						<optgroup label="Custom">
-							<option>Custom</custom>
-						</optgroup>
-
-					</select>
-				</div>
-		  	</div>
-			<div class="control-group">
-				<label class="control-label" for="customEula0">Custom EULA</label>
-				<div class="controls">
-				 	<textarea id="customEula0" rows="5" placeholder="Custom EULA"></textarea>
-				</div>
-		  	</div>
-
-		  	<div class="control-group">
-				<label class="control-label" for="support0">Support</label>
-				<div class="controls">
-				 	<textarea id="support0" rows="5" placeholder="Support"></textarea>
-				</div>
-		  	</div>
-
-		  	<div class="control-group">
-				<label class="control-label" for="pricing0">Pricing</label>
-				<div class="controls">
-				 	<textarea id="pricing0" rows="5" placeholder="Pricing"></textarea>
-				</div>
-		  	</div>
-
-		  	<div class="control-group">
-				<label class="control-label" for="relatesTo0">Relates To</label>
-				<div class="controls">
-				 	<textarea id="relatesTo0" rows="5" placeholder="List of related topics"></textarea>
-				</div>
-		  	</div>
-
-		  	<div class="control-group">
-				<div class="controls">
-				 	<button type="button" data-action="save" class="btn btn-primary">Save</button>
-				 	<button type="button" data-action="cancel" class="btn">Cancel</button>
-				 	<button type="button" data-action="delete" class="btn btn-danger">Delete</button>
-				</div>
-			</div>
-
 		</form>
-	</div>	
+		<div class="control-group span10">
+			<div class="controls">
+				<a id="offering_save_button" class="btn btn-primary">Save Offering</a>
+				<a id="offering_close_button" class="btn btn-default">Close</a>
+			</div>
+		</div>
+	</div>
+	<div id="offering_not_opened" hidden>
+		<div class="hero-unit"> 
+		    <h3>Select an offering above, or begin by creating a new offering!</h3>
+		</div>
+	</div>
 </div>

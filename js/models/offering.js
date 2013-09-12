@@ -35,6 +35,21 @@ define([
 
         parse: function(resp) {
             return resp.offering;
+        },
+
+        create: function(options) {
+            var url = Common.apiUrl + "/stackstudio/v1/offerings";
+            this.sendAjaxAction(url, "POST", options, "offeringCreated");
+        },
+
+        update: function(options) {
+            var url = Common.apiUrl + "/stackstudio/v1/offerings/" + this.id +"?_method=PUT";
+            this.sendAjaxAction(url, "POST", options, "offeringUpdated");
+        },
+
+        destroy:function() {
+            var url = Common.apiUrl + "/stackstudio/v1/offerings/" + this.id +"?_method=DELETE";
+            this.sendAjaxAction(url, "POST", undefined, "offeringDeleted");
         }
 
     });
