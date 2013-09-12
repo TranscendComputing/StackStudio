@@ -10,31 +10,25 @@ define([
         'underscore',
         'bootstrap',
         'backbone',
+        'text!templates/offerings/offeringsTemplate.html',
         'views/offerings/offeringDesignView',
         'views/offerings/portfoliosView',
-        'common',
         'models/offering',
-        'text!templates/offerings/offeringsTemplate.html'
-], function( $, _, bootstrap, Backbone, OfferingDesignView, PortfoliosView, Common, Offering, offeringsTemplate ) {
+        'common'
+], function( $, _, bootstrap, Backbone, offeringsTemplate, OfferingDesignView, PortfoliosView, Offering, Common ) {
 
     var OfferingsView = Backbone.View.extend({
 
         tagName: 'div',
 
         template: _.template(offeringsTemplate),
-        _offeringDesignView: null,
-        currentOffering: {},
+
+        offeringDesignView: undefined,
+
+        portfoliosView: undefined,
 
         events: {
-            "click #newOfferingButton": "newOfferingButtonClickHandler"
-        },
-
-        newOfferingButtonClickHandler: function(evt){
-            this.currentOffering = new Offering();
-            this._offeringDesignView = new OfferingDesignView({el: $("#editOfferingContainer"), model:this.currentOffering});
             
-            this._offeringDesignView.render();
-            this._offeringDesignView.on("offeringEditCancelled", $.proxy(this.cancelOfferingEditHandler, this));
         },
 
         initialize: function() {
@@ -42,28 +36,18 @@ define([
             this.$el.html(this.template);
         },
 
-        configureTabs: function(){
-            var $this = this;
-            $("#offeringsTabs a:first").tab("show");
-
-            $("#offeringsTabs a").click(function(e){
-                e.preventDefault();
-                $(this).tab('show');
-                var targetID = $(this).attr("href");
-                if (targetID === "#portfolios"){
-                    var portfoliosView = new PortfoliosView({el: targetID, model: {}});
-                    portfoliosView.render();
-                }
-            });
-        },
-
         render: function(){
-            this.configureTabs();
-        },
-
-        cancelOfferingEditHandler: function(){
-            $("#editOfferingContainer").empty();
-            this.currentOffering = null;
+            if($("#design_offerings_tab").hasClass("active")) {
+                if(!this.offeringDesignView) {
+                    this.offeringDesignView = new OfferingDesignView();
+                }
+                this.offeringDesignView.render();
+            }else {
+                if(!this.portfoliosView) {
+                    this.portfoliosView = new PortfoliosView();
+                }
+                this.portfoliosView.render();
+            }
         },
 
         close: function(){

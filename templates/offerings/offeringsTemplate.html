@@ -1,39 +1,14 @@
-<div class="row-fluid">
-
-	<div class="span8">
-		<h2>Offerings</h2>
-
-		<ul class="nav nav-tabs" id="offeringsTabs" role="tablist">
-			<li class='active'><a href="#designOfferings" role="tab">Design</a></li>
-			<li><a href="#portfolios" role="tab">Portfolios</a></li>
-			<li><a href="#owned" role="tab">Owned</a></li>
-		</ul>
-	
-		<div class="tab-content">
-
-			<div class="tab-pane active" id="designOfferings">
-				<div class="control-group">
-					<div class="controls">
-						<button id="newOfferingButton" type="button" class="btn"><i class="icon-plus"></i> New</button>
-
-						<div class="input-append" style="vertical-align:top;padding-left:8px;">
-							<input id="offeringTypeAhead" c id="inputIcon" type="text" placeholder="Find Offering" autocomplete="off" spellcheck="false" dir="auto">
-							<span class="add-on"><i class="icon-search"></i></span><!--TODO: Implement typeahead or list-->
-						</div>
-					</div>
-				</div>
-				<div id="editOfferingContainer" >
-				</div>
-			</div>
-
-			<div class="tab-pane" id="portfolios">
-				Portfolios
-			</div>
-
-			<div class="tab-pane" id="owned">
-				Owned
-			</div>
-
+<div>
+	<ul class="nav nav-tabs">
+		<li class='active'><a href="#design_offerings_tab" data-toggle="tab">Offering Design</a></li>
+		<li><a href="#portfolios_tab" data-toggle="tab">Portfolios</a></li>
+	</ul>
+	<div class="tab-content">
+		<div class="tab-pane active" id="design_offerings_tab">
+			<div id="offering_design_container"></div>
 		</div>
-	</div>	
+		<div class="tab-pane" id="portfolios_tab">
+			<div id="portfolios_container"></div>
+		</div>
+	</div>
 </div>

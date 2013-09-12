@@ -34,7 +34,8 @@ define([
 		},
 
 		initialize: function() {
-			
+			$("#portfolios_container").html(this.el);
+            this.$el.html(this.template);
 		},
 
 		accordionShown: function(evt){
@@ -51,12 +52,14 @@ define([
 		},
 
 		render: function(){
+			/*
 			var s = this.template({
 				model: this.model 
 			});
 			this.$el.html(s);
 			this.fetchPortfolios()//TODO: Add params?
 				.done($.proxy(this.renderPortfolios, this));
+			*/
 		},
 
 		accordionGroupTemplate: ['<div class="accordion-group">',
