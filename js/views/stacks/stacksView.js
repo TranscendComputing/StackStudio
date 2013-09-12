@@ -32,7 +32,7 @@ define([
 
         events: {
             "click #create_stack_button": "createStack",
-            "click #delete_stack_button": "deleteStack",
+            "click .stack_delete": "deleteStack",
             "click .stack": "openStack"
         },
 
@@ -62,10 +62,7 @@ define([
             });
             Common.vent.off("stackDeleted");
             Common.vent.on("stackDeleted", function() {
-                sessionStorage.removeItem("stack_id");
-                sessionStorage.removeItem("stack_name");
                 stackApp.stacks.fetch({reset: true});
-                stackApp.render();
             });
         },
 
@@ -108,8 +105,10 @@ define([
 
         addAllStacks: function() {
             $("#stacks_menu").empty();
+            $("#stacks_delete_menu").empty();
             this.stacks.each(function(stack) {
                 $("#stacks_menu").append("<li><a id='"+stack.id+"' class='stack'>"+stack.attributes.name+"</a></li>");
+                $("#stacks_delete_menu").append("<li><a id='"+stack.id+"' class='stack_delete'>"+stack.attributes.name+"</a></li>");
             });
             if(sessionStorage.stack_id) {
                 this.stackDesignView.setStack(this.stacks.get(sessionStorage.stack_id));
@@ -127,13 +126,16 @@ define([
             new StackCreateView();
         },
 
-        deleteStack: function() {
-            var stack = this.stacks.get(sessionStorage.stack_id);
-            if(stack) {
-                var confirmation = confirm("Are you sure you want to delete " + sessionStorage.stack_name + "?");
-                if(confirmation == true) {
-                    stack.destroy();
+        deleteStack: function(event) {
+            var confirmation = confirm("Are you sure you want to delete " + event.target.innerText + "?");
+            if(confirmation == true) {
+                var stack = this.stacks.get(event.target.id);
+                if(sessionStorage.stack_id && stack.id == sessionStorage.stack_id) {
+                    sessionStorage.removeItem("stack_id");
+                    sessionStorage.removeItem("stack_name");
+                    this.render();
                 }
+                stack.destroy();
             }
         },
 
