@@ -13,10 +13,10 @@ define([
         'icanhaz',
         'common',
         'typeahead', // Not an AMD component!
-        'text!templates/assemblies/assemblyRuntimeListTemplate.html',
+        'text!templates/assemblies/appListTemplate.html',
         'collections/apps',
         'models/app',
-        'views/assemblies/assemblyRuntimeListItemView',
+        'views/assemblies/appListItemView',
         'jquery-plugins',
         'jquery-ui-plugins'
 ], function( $, _, bootstrap, Backbone, ich, Common, typeahead, appsListTemplate, Apps, App, AppListItemView ) {
@@ -50,7 +50,7 @@ define([
                 _.each(this.collection.models, function(elem,idx,list){
                         var itemView = new AppListItemView({model: elem});
                         itemView.render();
-                        $("#selected-apps").append(itemView.$el);
+                        $("#selected-apps-list").append(itemView.$el);
                         itemView.on("appRemoved", $this.removeApp, $this);
 
                 });

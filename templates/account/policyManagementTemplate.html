@@ -37,25 +37,6 @@
                             </label>
                         </div>
                     </div>
-
-                    <!-- Multiple Checkboxes (inline) -->
-                    <div class="control-group">
-                        <label class="control-label">Usable Clouds:</label>
-                        <div class="controls">
-                            <label class="checkbox inline">
-                                <input type="checkbox" name="usable_clouds" value="AWS">
-                                AWS
-                            </label>
-                            <label class="checkbox inline">
-                                <input type="checkbox" name="usable_clouds" value="OpenStack">
-                                OpenStack
-                            </label>
-                            <label class="checkbox inline">
-                                <input type="checkbox" name="usable_clouds" value="Google">
-                                Google
-                            </label>
-                        </div>
-                    </div>
                     
                     <hr>
                     
@@ -214,7 +195,7 @@
                             <div class="input-append">
                                 <input id="password_rules" name="password_rules" class="span4" type="text" placeholder="# characters">
                                 <span class="add-on">
-                                    <input type="checkbox">digits required</input>
+                                    <input type="checkbox"> digits required</input>
                                 </span>
                             </div>
     
@@ -358,7 +339,7 @@
                             <div class="input-append">
                                 <input id="max_on_demand" name="max_on_demand" class="span5" type="text" placeholder="# Instances">
                                 <span class="add-on">
-                                    <input type="checkbox">Unlimited</input>
+                                    <input type="checkbox"> Unlimited</input>
                                 </span>
                             </div>
                         </div>
@@ -371,7 +352,7 @@
                             <div class="input-append">
                                 <input id="max_reserved" name="max_reserved" class="span5" type="text" placeholder="# Instances">
                                 <span class="add-on">
-                                    <input type="checkbox">Unlimited</input>
+                                    <input type="checkbox"> Unlimited</input>
                                 </span>
                             </div>
                         </div>
@@ -384,7 +365,7 @@
                             <div class="input-append">
                                 <input id="max_dedicated" name="max_dedicated" class="span5" type="text" placeholder="# Instances">
                                 <span class="add-on">
-                                    <input type="checkbox">Unlimited</input>
+                                    <input type="checkbox"> Unlimited</input>
                                 </span>
                             </div>
                         </div>
@@ -397,7 +378,7 @@
                             <div class="input-append">
                                 <input id="max_spot" name="max_spot" class="span5" type="text" placeholder="# Instances">
                                 <span class="add-on">
-                                    <input type="checkbox">Unlimited</input>
+                                    <input type="checkbox"> Unlimited</input>
                                 </span>
                             </div>
                         </div>
@@ -410,7 +391,7 @@
                             <div class="input-append">
                                 <input id="max_in_autoscale" name="max_in_autoscale" class="span5" type="text" placeholder="# Instances">
                                 <span class="add-on">
-                                    <input type="checkbox">Unlimited</input>
+                                    <input type="checkbox"> Unlimited</input>
                                 </span>
                             </div>
                         </div>
@@ -423,7 +404,7 @@
                             <div class="input-append">
                                 <input id="max_cores" name="max_cores" class="span5" type="text" placeholder="# Cores">
                                 <span class="add-on">
-                                    <input type="checkbox">Unlimited</input>
+                                    <input type="checkbox"> Unlimited</input>
                                 </span>
                             </div>
                         </div>
@@ -433,25 +414,32 @@
         
                     <!-- Multiple Checkboxes -->
                     <div class="control-group">
-                        <label class="control-label">Instance Lifetime Rules:</label>
-                        <div class="controls">
-                            <label class="checkbox">
-                                <input type="checkbox" name="instance_lifetime_rules" value="Admin can require an expected lifetime when an instance is launched">
-                                Admin can require an expected lifetime when an instance is launched
-                            </label>
-                            <label class="checkbox">
-                                <input type="checkbox" name="instance_lifetime_rules" value="When expected lifetime is up admin can choose to terminate instance">
-                                When expected lifetime is up admin can choose to terminate instance
-                            </label>
-                            <label class="checkbox">
-                                <input type="checkbox" name="instance_lifetime_rules" value="When expected lifetime is up admin can choose to notify user of expiration">
-                                When expected lifetime is up admin can choose to notify user of expiration
-                            </label>
-                            <label class="checkbox">
-                                <input type="checkbox" name="instance_lifetime_rules" value="When expected lifetime is up admin can leave disposition up to user">
-                                When expected lifetime is up admin can leave disposition up to user
-                            </label>
-                        </div>
+                      <label class="control-label">Instance Lifetime:</label>
+                      <div class="controls">
+                        <label class="checkbox">
+                          <input type="checkbox" name="require_lifetime" value="Require an expected lifetime when an instance is launched">
+                          Require an expected lifetime when an instance is launched
+                        </label>
+                      </div>
+                    </div>
+
+                    <!-- Multiple Radios -->
+                    <div class="control-group">
+                      <label class="control-label">When lifetime is up:</label>
+                      <div class="controls">
+                        <label class="radio">
+                          <input type="radio" name="post_lifetime" value="Terminate Instance" checked="checked">
+                          Terminate Instance
+                        </label>
+                        <label class="radio">
+                          <input type="radio" name="post_lifetime" value="Notify user of expiration">
+                          Notify user of expiration
+                        </label>
+                        <label class="radio">
+                          <input type="radio" name="post_lifetime" value="Leave disposition up to user">
+                          Leave disposition up to user
+                        </label>
+                      </div>
                     </div>
                 </div>
             </fieldset>
@@ -463,45 +451,50 @@
                 <!-- Form Name -->
                 <legend style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;border-radius: 5px 5px 0px 0px;">&nbsp;Service Policies</legend>
                 <div class="well">
-                    <!-- Multiple Checkboxes -->
-                    <div class="control-group">
-                        <label class="control-label">VPC:</label>
-                        <div class="controls">
-                            <label class="checkbox">
-                                <input type="checkbox" name="vpc_rules" value="Only Admin can create, update, delete Internet Gateways for VPC">
-                                Only Admin can create, update, delete Internet Gateways for VPC
-                            </label>
-                            <label class="checkbox">
-                                <input type="checkbox" name="vpc_rules" value="Only Admin can create, update, delete Virtual Private Gateways for VPC">
-                                Only Admin can create, update, delete Virtual Private Gateways for VPC
-                            </label>
-                            <label class="checkbox">
-                                <input type="checkbox" name="vpc_rules" value="Only Admin can create, update, delete Customer Gateways for VPC">
-                                Only Admin can create, update, delete Customer Gateways for VPC
-                            </label>
-                            <label class="checkbox">
-                                <input type="checkbox" name="vpc_rules" value="Users must create all resources in a VPC">
-                                Users must create all resources in a VPC
-                            </label>
+                    <div class="well" style="margin-top:40px;">
+                        <legend>VPC</legend>
+                        <!-- Multiple Checkboxes -->
+                        <div class="control-group">
+                            <label class="control-label">VPC:</label>
+                            <div class="controls">
+                                <label class="checkbox">
+                                    <input type="checkbox" name="vpc_rules" value="Only Admin can create, update, delete Internet Gateways for VPC">
+                                    Only Admin can create, update, delete Internet Gateways for VPC
+                                </label>
+                                <label class="checkbox">
+                                    <input type="checkbox" name="vpc_rules" value="Only Admin can create, update, delete Virtual Private Gateways for VPC">
+                                    Only Admin can create, update, delete Virtual Private Gateways for VPC
+                                </label>
+                                <label class="checkbox">
+                                    <input type="checkbox" name="vpc_rules" value="Only Admin can create, update, delete Customer Gateways for VPC">
+                                    Only Admin can create, update, delete Customer Gateways for VPC
+                                </label>
+                                <label class="checkbox">
+                                    <input type="checkbox" name="vpc_rules" value="Users must create all resources in a VPC">
+                                    Users must create all resources in a VPC
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <!-- Select Basic -->
+                        <div class="control-group">
+                          <label class="control-label">Default VPC:</label>
+                          <div class="controls">
+                            <select id="default_vpc" name="default_vpc" class="input-xlarge">
+                              <option>vpc-09av123d : This is my first VPC</option>
+                              <option>vpc-av45d234 : This is my second VPC</option>
+                              <option>vpc-12345678 : This is my third VPC</option>
+                              <option>vpc-12av5678 : This is my fourth VPC</option>
+                              <option>vpc-1234br78 : This is my fifth VPC</option>
+                            </select>
+                          </div>
                         </div>
                     </div>
-                    
-                    <!-- Select Basic -->
-                    <div class="control-group">
-                      <label class="control-label">Default VPC:</label>
-                      <div class="controls">
-                        <select id="default_vpc" name="default_vpc" class="input-xlarge">
-                          <option>vpc-09av123d : This is my first VPC</option>
-                          <option>vpc-av45d234 : This is my second VPC</option>
-                          <option>vpc-12345678 : This is my third VPC</option>
-                          <option>vpc-12av5678 : This is my fourth VPC</option>
-                          <option>vpc-1234br78 : This is my fifth VPC</option>
-                        </select>
-                      </div>
-                    </div>
         
-                    <!-- Multiple Checkboxes -->
-                    <div class="control-group">
+                    <div class="well">
+                        <legend>Configuration Management</legend>
+                        <!-- Multiple Checkboxes -->
+                        <div class="control-group">
                         <label class="control-label">Configuration Management:</label>
                         <div class="controls">
                             <label class="checkbox">
@@ -510,14 +503,17 @@
                             </label>
                         </div>
                     </div>
+                    </div>
         
-                    <!-- Multiple Checkboxes -->
-                    <div class="control-group">
+                    <div class="well">
+                        <legend>SNS Notifications</legend>
+                        <!-- Multiple Checkboxes -->
+                        <div class="control-group">
                         <label class="control-label">SNS Notifications:</label>
                         <div class="controls">
                             <label class="checkbox">
-                                <input type="checkbox" name="sns_notifications" value="All users are automatically setup as SNS users (e-mail)">
-                                All users are automatically setup as SNS users (e-mail)
+                                <input type="checkbox" name="sns_notifications" value="All users are automatically setup as SNS users">
+                                All users are automatically setup as SNS users
                             </label>
                             <label class="checkbox">
                                 <input type="checkbox" name="sns_notifications" value="Users are email notified when an instance is started">
@@ -529,23 +525,10 @@
                             </label>
                         </div>
                     </div>
-                    
-                    <!-- Select Basic -->
-                    <div class="control-group">
-                      <label class="control-label">Push Platform:</label>
-                      <div class="controls">
-                        <select id="sns_delivery" name="sns_delivery" class="input-xlarge">
-                          <option>Amazon Device Messaging (ADM)</option>
-                          <option>Apple Push Notification Service (APNS)</option>
-                          <option>Apple Push Notification Service Sandbox (APNS_SANDBOX)</option>
-                          <option>Google Cloud Messaging (GCM)</option>
-                        </select>
-                      </div>
-                    </div>
 
-                    <!-- Multiple Checkboxes (inline) -->
-                    <div class="control-group">
-                      <label class="control-label">SNS Topics:</label>
+                        <!-- Multiple Checkboxes (inline) -->
+                        <div class="control-group">
+                      <label class="control-label">Default SNS Topics:</label>
                       <div class="controls">
                         <label class="checkbox inline">
                           <input type="checkbox" name="sns_topics" value="Informational">
@@ -556,44 +539,46 @@
                           Warning
                         </label>
                         <label class="checkbox inline">
-                          <input type="checkbox" name="sns_topics" value="Exception">
-                          Exception
+                          <input type="checkbox" name="sns_topics" value="Error">
+                          Error
                         </label>
                       </div>
                     </div>
-        
-                    <!-- Multiple Checkboxes -->
-                    <div class="control-group">
-                        <label class="control-label">CloudWatch Alarms:</label>
-                        <div class="controls">
-                            <label class="checkbox">
-                                <input type="checkbox" name="cloudwatch_alarms" value="A list of CloudWatch Alarms for specific resources are Always used when the resources are provisioned">
-                                A list of CloudWatch Alarms for specific resources are Always used when the resources are provisioned
-                            </label>
-                            <label class="checkbox">
-                                <input type="checkbox" name="cloudwatch_alarms" value="Admin can choose to use alarm or not, or change tolerance">
-                                Admin can choose to use alarm or not, or change tolerance
-                            </label>
-                        </div>
+                    
+                        <!-- Select Basic -->
+                        <div class="control-group">
+                      <label class="control-label">Push Platform:</label>
+                      <div class="controls">
+                        <select id="sns_delivery" name="sns_delivery" class="input-xlarge">
+                          <option>Amazon Device Messaging (ADM)</option>
+                          <option>Apple Push Notification Service (APNS)</option>
+                          <option>Apple Push Notification Service Sandbox (APNS_SANDBOX)</option>
+                          <option>Google Cloud Messaging (GCM)</option>
+                        </select>
+                      </div>
                     </div>
-        
-                    <!-- Appended checkbox -->
-                    <div class="control-group">
+                    </div>
+                    
+                    <div class="well">
+                        <legend>RDS</legend>
+                        <!-- Appended checkbox -->
+                        <div class="control-group">
                         <label class="control-label">Max # of RDS Databases:</label>
                         <div class="controls">
                             <div class="input-append">
                                 <input id="max_rds" name="max_rds" class="span3" type="text" placeholder="# DB's">
                                 <span class="add-on">
-                                    <input type="checkbox">Unlimited</input>
+                                    <input type="checkbox"> Unlimited</input>
                                 </span>
                             </div>
                         </div>
                     </div>
+                    </div>
                     
-                    <hr>
-                    
-                    <!-- Multiple Checkboxes -->
-                    <div class="control-group">
+                    <div class="well">
+                        <legend>Miscellaneous</legend>
+                        <!-- Multiple Checkboxes -->
+                        <div class="control-group">
                         <label class="control-label">Auto-Tag:</label>
                         <div class="controls">
                             <label class="checkbox">
@@ -602,9 +587,8 @@
                             </label>
                         </div>
                     </div>
-        
-                    <!-- Multiple Checkboxes -->
-                    <div class="control-group">
+                        <!-- Multiple Checkboxes -->
+                        <div class="control-group">
                         <label class="control-label">AWS Console:</label>
                         <div class="controls">
                             <label class="checkbox">
@@ -612,6 +596,7 @@
                                 Disable access to AWS Console
                             </label>
                         </div>
+                    </div>
                     </div>
                 </div>
             </fieldset>
@@ -622,124 +607,118 @@
                 <!-- Form Name -->
                 <legend style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;border-radius: 5px 5px 0px 0px;">&nbsp;CloudWatch Alarms</legend>
                 <div class="well">
-                    <!-- Button Drop Down -->
-                    <div class="control-group">
-                      <label class="control-label">EC2:</label>
-                      <div class="controls">
-                        <div class="input-prepend">
-                            <span class="add-on">CPUUtilization</span>
-                            <div class="btn-group">
-                              <button class="btn dropdown-toggle" data-toggle="dropdown">
-                                Condition
-                                <span class="caret"></span>
-                              </button>
-                              <ul class="dropdown-menu">
-                                <li><a href="#">&lt;=</a></li>
-                                <li><a href="#">&lt;</a></li>
-                                <li><a href="#">&gt;=</a></li>
-                                <li><a href="#">&gt;</a></li>
-                              </ul>
-                            </div>
-                          <input id="cpu_util_amount" name="cpu_util_amount" class="span2" placeholder="%" type="text">
-                          <span class="add-on">for</span>
-                          <input id="cpu_util_duration" name="cpu_util_duration" class="span2" placeholder="#" type="text">
-                          <span class="add-on">minutes</span>
-                        </div>
-                      </div>
-                    </div>
-                    <!-- Button Drop Down -->
-                    <div class="control-group">
-                      <label class="control-label"></label>
-                      <div class="controls">
-                        <div class="input-prepend">
-                            <span class="add-on">NetworkOut</span>
-                            <div class="btn-group">
-                              <button class="btn dropdown-toggle" data-toggle="dropdown">
-                                Condition
-                                <span class="caret"></span>
-                              </button>
-                              <ul class="dropdown-menu">
-                                <li><a href="#">&lt;=</a></li>
-                                <li><a href="#">&lt;</a></li>
-                                <li><a href="#">&gt;=</a></li>
-                                <li><a href="#">&gt;</a></li>
-                              </ul>
-                            </div>
-                          <input id="network_util_amount" name="network_util_amount" class="span2" placeholder="%" type="text">
-                          <span class="add-on">for</span>
-                          <input id="network_util_duration" name="network_util_duration" class="span2" placeholder="#" type="text">
-                          <span class="add-on">minutes</span>
-                        </div>
-                      </div>
-                    </div>
-                    <!-- Button Drop Down -->
-                    <div class="control-group">
-                      <label class="control-label"></label>
-                      <div class="controls">
-                        <div class="input-prepend">
-                            <span class="add-on">DiskReadBytes</span>
-                            <div class="btn-group">
-                              <button class="btn dropdown-toggle" data-toggle="dropdown">
-                                Condition
-                                <span class="caret"></span>
-                              </button>
-                              <ul class="dropdown-menu">
-                                <li><a href="#">&lt;=</a></li>
-                                <li><a href="#">&lt;</a></li>
-                                <li><a href="#">&gt;=</a></li>
-                                <li><a href="#">&gt;</a></li>
-                              </ul>
-                            </div>
-                          <input id="disk_util_amount" name="disk_util_amount" class="span2" placeholder="%" type="text">
-                          <span class="add-on">for</span>
-                          <input id="disk_util_duration" name="disk_util_duration" class="span2" placeholder="#" type="text">
-                          <span class="add-on">minutes</span>
-                        </div>
-                      </div>
-                    </div>
-                </div>
-            </fieldset>
-        </form>
-        
-        <form class="form-horizontal">
-            <fieldset>
-
-                <!-- Form Name -->
-                <legend style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;border-radius: 5px 5px 0px 0px;">&nbsp;Information</legend>
-                <div class="well">
                     <!-- Text input-->
-                    <div class="control-group">
-                        <label class="control-label">Contact Name:</label>
+                    <div class="control-group well" style="margin-top: 40px;">
+                        <legend>Elastic Compute Cloud</legend>
+                        <label class="control-label">CPUUtilization</label>
                         <div class="controls">
-                            <input id="contact_name" name="contact_name" type="text" placeholder="Contact's Name" class="input-xlarge">
-    
+                            <span>></span>
+                            <input id="cpu_util_value" name="cpu_util_value" type="text" placeholder="#" class="input-mini">
+                            <span>for</span>
+                            <input id="cpu_util_duration" name="cpu_util_duration" type="text" placeholder="#" class="input-mini">
+                            <span>minutes</span>
+                            &nbsp;
+                            <label class="radio inline">
+                              <input type="radio" name="cpu_util_topic" value="informational">
+                              Informational
+                            </label>
+                            <label class="radio inline">
+                              <input type="radio" name="cpu_util_topic" value="warning">
+                              Warning
+                            </label>
+                            <label class="radio inline">
+                              <input type="radio" name="cpu_util_topic" value="error">
+                              Error
+                            </label>
+                        </div>
+                        <label class="control-label">StatusCheckFailed</label>
+                        <div class="controls">
+                            <span>></span>
+                            <input id="status_failed_value" name="status_failed_value" type="text" placeholder="#" class="input-mini">
+                            <span>for</span>
+                            <input id="status_failed_duration" name="status_failed_duration" type="text" placeholder="#" class="input-mini">
+                            <span>minutes</span>
+                            &nbsp;
+                            <label class="radio inline">
+                              <input type="radio" name="status_failed_topic" value="informational">
+                              Informational
+                            </label>
+                            <label class="radio inline">
+                              <input type="radio" name="status_failed_topic" value="warning">
+                              Warning
+                            </label>
+                            <label class="radio inline">
+                              <input type="radio" name="status_failed_topic" value="error">
+                              Error
+                            </label>
                         </div>
                     </div>
-
+                    
                     <!-- Text input-->
-                    <div class="control-group">
-                        <label class="control-label">Contact Email:</label>
+                    <div class="control-group well">
+                        <legend>Elastic Loadbalancer</legend>
+                        <label class="control-label">Latency</label>
                         <div class="controls">
-                            <input id="contact_email" name="contact_email" type="text" placeholder="Contact's Email" class="input-xlarge">
-    
+                            <span>></span>
+                            <input id="latency_value" name="latency_value" type="text" placeholder="#" class="input-mini">
+                            <span>for</span>
+                            <input id="latency_duration" name="latency_duration" type="text" placeholder="#" class="input-mini">
+                            <span>minutes</span>
+                            &nbsp;
+                            <label class="radio inline">
+                              <input type="radio" name="latency_topic" value="informational">
+                              Informational
+                            </label>
+                            <label class="radio inline">
+                              <input type="radio" name="latency_topic" value="warning">
+                              Warning
+                            </label>
+                            <label class="radio inline">
+                              <input type="radio" name="latency_topic" value="error">
+                              Error
+                            </label>
                         </div>
-                    </div>
-
-                    <!-- Text input-->
-                    <div class="control-group">
-                        <label class="control-label">Contact Phone #:</label>
+                        <label class="control-label">UnhealthyHostCount</label>
                         <div class="controls">
-                            <input id="contact_phone" name="contact_phone" type="text" placeholder="Contact's Phone #" class="input-xlarge">
-    
+                            <span>></span>
+                            <input id="unhealthy_host_value" name="unhealthy_host_value" type="text" placeholder="#" class="input-mini">
+                            <span>for</span>
+                            <input id="unhealthy_host_duration" name="unhealthy_host_duration" type="text" placeholder="#" class="input-mini">
+                            <span>minutes</span>
+                            &nbsp;
+                            <label class="radio inline">
+                              <input type="radio" name="unhealthy_host_topic" value="informational">
+                              Informational
+                            </label>
+                            <label class="radio inline">
+                              <input type="radio" name="unhealthy_host_topic" value="warning">
+                              Warning
+                            </label>
+                            <label class="radio inline">
+                              <input type="radio" name="unhealthy_host_topic" value="error">
+                              Error
+                            </label>
                         </div>
-                    </div>
-
-                    <!-- Text input-->
-                    <div class="control-group">
-                        <label class="control-label">URL:</label>
+                        <label class="control-label">FailedHealthChecks</label>
                         <div class="controls">
-                            <input id="information_url" name="information_url" type="text" placeholder="URL" class="input-xlarge">
-    
+                            <span>></span>
+                            <input id="failed_healthcheck_value" name="failed_healthcheck_value" type="text" placeholder="#" class="input-mini">
+                            <span>for</span>
+                            <input id="failed_healthcheck_duration" name="failed_healthcheck_duration" type="text" placeholder="#" class="input-mini">
+                            <span>minutes</span>
+                            &nbsp;
+                            <label class="radio inline">
+                              <input type="radio" name="failed_healthcheck_topic" value="informational">
+                              Informational
+                            </label>
+                            <label class="radio inline">
+                              <input type="radio" name="failed_healthcheck_topic" value="warning">
+                              Warning
+                            </label>
+                            <label class="radio inline">
+                              <input type="radio" name="failed_healthcheck_topic" value="error">
+                              Error
+                            </label>
                         </div>
                     </div>
                 </div>

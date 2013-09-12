@@ -10,12 +10,14 @@ define([
         'underscore',
         'bootstrap',
         'backbone',
-        //'views/assemblies/assemblyDesignView',
+        'views/assemblies/assemblyDesignView',
         'views/assemblies/assemblyRuntimeView',
         'common',
-        //'models/assembly',
-        'text!templates/assemblies/assembliesTemplate.html'
-], function( $, _, bootstrap, Backbone, RuntimeView, Common,  assembliesTemplate ) {
+        'text!templates/assemblies/assembliesTemplate.html',
+        'collections/cookbooks',
+        'collections/chefEnvironments',
+        'views/assemblies/configListView'
+], function( $, _, bootstrap, Backbone,DesignView, RuntimeView, Common,  assembliesTemplate,  Cookbooks, ChefEnvironments, ConfigListView) {
 
     var AssembliesView = Backbone.View.extend({
 
@@ -31,20 +33,32 @@ define([
         configureTabs: function(){
             var $this = this;
             $("#assembliesTabs a:first").tab("show");
-
+            this.listView = new ConfigListView();
+            this.tabView = new DesignView({listView:this.listView});
+            //this.listView.render();
             $("#assembliesTabs a").click(function(e){
                 e.preventDefault();
                 $(this).tab('show');
+
+                $this.listView.close();
+                $this.tabView.close();
+                $this.listView = new ConfigListView();
                 var targetID = $(this).attr("href");
                 if (targetID === "#assemblyRuntime"){
-                    var appsView = new RuntimeView({el: targetID, model: {}});
-                    appsView.render();
+                    $this.tabView = new RuntimeView({el: targetID, model: {}, listView:$this.listView});
+                    //$this.listView.render();
+                }else if(targetID ==="#assemblyDesign"){
+                    $this.tabView = new DesignView({el: targetID, model:{}, listView:$this.listView});
+                    //$this.listView.render();
                 }
+                //$this.tabView.render();
             });
         },
 
         render: function(){
+            var $this = this;
             this.configureTabs();
+
         },
 
         close: function(){
@@ -52,7 +66,8 @@ define([
             this.undelegateEvents();
             this.stopListening();
             this.unbind();
-        }
+        },
+
     });
 
     var assembliesView;

@@ -1,0 +1,56 @@
+<div id="assemblyLeftNav" class="span5">
+</div>
+
+<div id="assemblyRightNav" class="span7">
+  <h2>Assembly Details</h2>
+  <form class="form-horizontal" id="designForm">
+    <div class="control-group">
+      <label class="control-label" for="assemblyDesignName">Name</label>
+      <div class="controls">
+        <input type="text" name="name" id="assemblyDesignName" placeholder="Assembly">
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="inputAssembly">Cloud</label>
+      <div class="controls">
+        <select id="assemblyDesignCloud" name="cloud" placeholder="Cloud">
+          <option>OpenStack</option>
+          <option>AWS</option>
+        </select>
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="inputAssembly">Configuration Tool</label>
+      <div class="controls">
+        <select id="assemblyDesignTool" name="tool" placeholder="Cloud">
+          <option>Chef</option>
+          <option>Puppet</option>
+        </select>
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="assemblyDesignCloudCreds">Cloud Credential</label>
+      <div class="controls">
+        <select id="assemblyDesignCloudCreds" placeholder="Cloud Credential">
+        </select>
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="assemblyDesignImagesTable">Image</label>
+      <div class="controls">
+        <div id="assemblyDesignImagesTable" class="row-fluid">
+        <table class="table table-striped table-bordered">
+          <thead>
+            <tr>
+              <th>Image Name</th>
+            </tr>
+          </thead>
+          <tbody id="instance-container">
+           
+          </tbody>
+        </table>
+      </div>
+      </div>
+    </div>
+  </form>
+</div>

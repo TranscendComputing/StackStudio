@@ -30,27 +30,14 @@ define([
          */
         fetch: function(options) {
             var cloudCreds = [];
-            var d = $.Deferred();
-            if (options){
-                d.done = options.success;
-                d.fail = options.error;
+            if(sessionStorage.cloud_credentials) {
+                var cloudCredentials = JSON.parse(sessionStorage.cloud_credentials);
+                $.each(cloudCredentials, function(index, value) {
+                    var cloudCred = new CloudCredential(value.cloud_credential);
+                    cloudCreds.push(cloudCred);
+                });
             }
-            try{
-                if(sessionStorage.cloud_credentials) {
-                    var cloudCredentials = JSON.parse(sessionStorage.cloud_credentials);
-                    $.each(cloudCredentials, function(index, value) {
-                        var cloudCred = new CloudCredential(value.cloud_credential);
-                        cloudCreds.push(cloudCred);
-                    });
-                }
-                this.reset(cloudCreds);
-                d.resolve();
-            }
-            catch(ex){
-                console.error(ex);
-                d.reject();
-            }
-            return d.promise();
+            this.reset(cloudCreds);
 
 		},
 		/**

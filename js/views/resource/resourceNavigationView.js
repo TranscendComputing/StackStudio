@@ -186,19 +186,37 @@ define([
 		    var row = 1;
 		    $("#resource_table").empty();
 		    $.each(resourceNav.cloudDefinitions[this.cloudProvider].native_services, function(index, service) {
-		        $("#native_row"+row).append($("<td></td>").attr({
-                    "id": service.type,
-                    "class": "resources selectable_item"
-                }));
-                $("#"+service.type).append($("<a></a>").attr({
-                    "id": service.type+"Link",
-                    "class": "resource_link"
-                }).text(service.name));
-                row++;
-                //reset row if greater than 3
-		        if(row > 3) {
-		            row = 1;
-		        }
+                
+                //Check Enabled Services
+                var addService = false;
+                if(JSON.parse(sessionStorage.group_policies)[0] == null){
+                    addService = true;
+                }else{
+                    $.each(JSON.parse(sessionStorage.group_policies), function(index,value){
+                        var enabled_services = value.group_policy.aws_governance.enabled_services;
+                        if($.inArray(service.name, enabled_services) !== -1){
+                            addService = true;
+        		        }
+                    });
+                }
+                //hack
+                var cname = location.href.split("#resources/")[1].split("/")[0]
+                if(addService || cname !== 'aws'){
+                    $("#native_row"+row).append($("<td></td>").attr({
+                        "id": service.type,
+                        "class": "resources selectable_item"
+                    }));
+                    $("#"+service.type).append($("<a></a>").attr({
+                        "id": service.type+"Link",
+                        "class": "resource_link"
+                    }).text(service.name));
+                    row++;
+                    //reset row if greater than 3
+    		        if(row > 3) {
+    		            row = 1;
+    		        }
+                }
+                
 		    });
             row = 1;
             if(resourceNav.cloudDefinitions[this.cloudProvider].topstack_services !== undefined && resourceNav.cloudDefinitions[this.cloudProvider].topstack_services.length > 0) {
@@ -274,7 +292,23 @@ define([
             if(resourceNav.cloudDefinitions[this.cloudProvider].regions.length) {
                 $("#cloud_specs").append('<span id="regions">Region: <select id="region_select" class="cloud_spec_select"></select></span>');
                 $.each(resourceNav.cloudDefinitions[this.cloudProvider].regions, function(index, region) {
-                    if(resourceNav.selectedRegion === region.zone) {
+                    //regions check
+                    var addRegion = false;
+                    if(JSON.parse(sessionStorage.group_policies)[0] == null){
+                        addRegion = true;
+                    }else{
+                        $.each(JSON.parse(sessionStorage.group_policies), function(index,value){
+                            var usable_regions = value.group_policy.aws_governance.usable_regions;
+                            if($.inArray(region.name, usable_regions) !== -1){
+                                addRegion = true;
+            		        }
+                        });
+                    }
+                    var cname = location.href.split("#resources/")[1].split("/")[0]
+                    if(!addRegion && cname === "aws"){
+                        
+                    }
+                    else if(resourceNav.selectedRegion === region.zone) {
                         $('#region_select').append($("<option value='" + region.zone + "' selected></option>").text(region.name));
                         $("#region_nav").html(resourceNav.crumbTemplate(
                                 {pathElt: region.name}));

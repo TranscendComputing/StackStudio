@@ -1,0 +1,54 @@
+
+<h2>Select Configurations</h2>
+<div id="selectAccordion">
+    <div class="accordion-group">
+      <div class="accordion-heading">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#selectAccordion" href="#collapseConfig">Configuration Management</a>
+      </div>
+      <div id="collapseConfig" class="accordion-body collapse in">
+        <div class="accordion-inner">
+          
+          <div id="appAccordion">
+
+            <div class="accordion-group">
+              <div class="accordion-heading">
+                <a class="accordion-toggle chefAccordionToggle" data-toggle="collapse" data-parent="#appAccordion" href="#collapseChef" id="chefAccordionToggle">
+                  <span>Chef</span>
+                  <span class="badge badge-info pull-right"></span>
+                </a>
+                <select id="chefEnvironmentSelect" class="pull-right" ></select>
+              </div>
+              <div id="collapseChef" class="accordion-body collapse">
+                <div class="accordion-inner">
+                  <form id="chefForm">
+                    <div id="chef-selection">
+                      <div class="alert alert-info">Please select an environment first</div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            <div class="accordion-group">
+              <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#appAccordion" href="#collapsePuppet">
+                  <span>Puppet</span>
+                  <span id="puppet-badge" class="badge badge-info pull-right"></span>
+                </a>
+              </div>
+              <div id="collapsePuppet" class="accordion-body collapse">
+                <div class="accordion-inner">
+                  <input id="configuration-management-library-source" type="text" placeholder="Puppet Module" autocomplete="off" spellcheck="false" dir="auto"></input>
+                  <div class="row-fluid">
+                    <h3>Selected for deployment: </h3>
+                    <div id="selected-apps"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

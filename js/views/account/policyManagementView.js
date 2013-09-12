@@ -59,6 +59,7 @@ define([
                     data: $.param({ org_id: sessionStorage.org_id}),
                     reset: true
                 });
+                groupsView.refreshSession();
             });
             this.users = new Users();
             this.selectedGroup = undefined;
@@ -168,6 +169,22 @@ define([
                 }
               }
             }
+        },
+        
+        refreshSession: function(){
+            var url = Common.apiUrl + "/identity/v1/accounts/auth/" + sessionStorage.account_id;
+            
+            $.ajax({
+                url: url,
+                type: 'GET',
+                contentType: 'application/x-www-form-urlencoded',
+                success: function(data) {
+                    sessionStorage.group_policies = JSON.stringify(data.account.group_policies);
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            });
         },
 
         close: function(){

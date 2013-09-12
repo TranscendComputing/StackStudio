@@ -1,130 +1,22 @@
 <div class="row-fluid">
 
-    <h2>Assemblies</h2>
     <div class="button_bar">
-        <a id="create_assembly_button" class="btn btn-primary">Create</a>
-        <a id="open_assembly_button" class="btn btn-primary">Open</a>
-        <a id="delete_assembly_button" class="btn btn-danger">Delete</a>
+      <div class="btn-group">
+        <button type="button" class="btn dropdown-toggle btn-success" data-toggle="dropdown">
+          Select Assembly&nbsp;<span class="caret"></span>
+        </button>
+        <ul id="assemblies_menu" class="dropdown-menu" role="menu"></ul>
+      </div>
+        <a id="create_assembly_button" class="btn btn-primary">Create Assembly</a>
+        <a id="delete_assembly_button" class="btn btn-danger">Delete Assembly</a>
     </div>
     <ul class="nav nav-tabs" id="assembliesTabs" role="tablist">
       <li><a href="#assemblyDesign" role="tab">Design</a></li>
       <li><a href="#assemblyRuntime" role="tab">Runtime</a></li>
-       
     </ul>
     <div class="tab-content">
 <!-- DESIGN TAB -->
       <div class="tab-pane" id="assemblyDesign" active>
-
-    <!-- SIDE BAR -->
-          <div class="span5">
-            <form class="form-horizontal">
-              <div class="control-group">
-                <label class="control-label" for="assemblyName">Name</label>
-                <div class="controls">
-                  <input type="text" id="assemblyName" placeholder="Assembly">
-                </div>
-              </div>
-              <div class="control-group">
-                <label class="control-label" for="inputAssembly">Cloud</label>
-                <div class="controls">
-                  <select id="inputCloud" placeholder="Cloud">
-                    <option>OpenStack</option>
-                    <option>AWS</option>
-                  </select>
-                </div>
-              </div>
-              <div class="control-group">
-                <label class="control-label" for="assemblyChefSelect">Chef</label>
-                <div class="controls">
-                  <select id="assemblyChefSelect" placeholder="">
-                    <option>Chef1</option>
-                    <option>Chef2</option>
-                  </select>
-                </div>
-                  <label class="control-label" for="assemblyPuppetSelect">Puppet</label>
-                <div class="controls">
-                  <select id="assemblyPuppetSelect" placeholder="">
-                      <option>Puppet1</option>
-                      <option>Puppet2</option>
-                    </select>
-                </div>
-              </div>
-              <div class="control-group">
-                <label class="control-label" for="inputImage">Image</label>
-                <div class="controls">
-                  <div id="imagesTable" class="row-fluid">
-                  <table class="table table-striped table-bordered">
-                    <thead>
-                      <tr>
-                        <th>Image Name</th>
-                      </tr>
-                    </thead>
-                    <tbody id="instance-container">
-                     
-                    </tbody>
-                  </table>
-                </div>
-                </div>
-              </div>
-            </form>
-          </div>
-
-
-          <div class="span7">
-            <h2>Configurations</h2>
-            <div id="selectAccordion">
-              <div class="accordion-group">
-                <div class="accordion-heading">
-                  <a class="accordion-toggle" data-toggle="collapse" data-parent="#selectAccordion" href="#collapseConfig">Configuration Management</a>
-                </div>
-                <div id="collapseConfig" class="accordion-body collapse in">
-                  <div class="accordion-inner">
-                    
-                    <div id="appAccordion">
-
-                      <div class="accordion-group">
-                        <div class="accordion-heading">
-                          <a class="accordion-toggle" data-toggle="collapse" data-parent="#appAccordion" href="#collapseChef" id="chefAccordionToggle">
-                            <span>Chef</span>
-                            <span class="badge badge-info pull-right"></span>
-                          </a>
-                          <select id="chefEnvironmentSelect" class="pull-right" ></select>
-                        </div>
-                        <div id="collapseChef" class="accordion-body collapse">
-                          <div class="accordion-inner">
-                            <form id="chefForm">
-                              <div id="chef-selection">
-                                <div class="alert alert-info">Please select an environment first</div>
-                              </div>
-                            </form>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="accordion-group">
-                        <div class="accordion-heading">
-                          <a class="accordion-toggle" data-toggle="collapse" data-parent="#appAccordion" href="#collapsePuppet">
-                            <span>Puppet</span>
-                            <span id="puppet-badge" class="badge badge-info pull-right"></span>
-                          </a>
-                        </div>
-                        <div id="collapsePuppet" class="accordion-body collapse">
-                          <div class="accordion-inner">
-                            <input id="configuration-management-library-source" type="text" placeholder="Puppet Module" autocomplete="off" spellcheck="false" dir="auto"></input>
-                            <div class="row-fluid">
-                              <h3>Selected for deployment: </h3>
-                              <div id="selected-apps-list"></div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
       </div> 
 
 <!-- RUNTIME TAB -->
