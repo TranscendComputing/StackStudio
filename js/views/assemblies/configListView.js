@@ -63,6 +63,7 @@ define([
         },
 
         render: function () {
+            $("#assemblyLeftNav").empty();
             $("#assemblyLeftNav").html(this.el);
             this.$el.html(this.template);
             // $(function(){

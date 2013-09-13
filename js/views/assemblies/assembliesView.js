@@ -175,6 +175,9 @@ define([
             $("#designForm :input").each(function(){
                 this.value = "";
             });
+            this.tabView.listView.close();
+            this.tabView.listView = new ConfigListView();
+            this.tabView.listView.render();
         },
         deleteAssembly: function(evt){
             var assembly = this.assemblies.get(evt.currentTarget.id);
