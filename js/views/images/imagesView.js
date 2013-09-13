@@ -20,13 +20,50 @@ define([
 
         template: _.template(imagesTemplate),
 
-        events: {
+        currentImageTemplate: undefined,
 
+        events: {
+            "click #new_image_template_button": "newImageTemplate",
+            "click #close_image_template_button": "closeImageTemplate"
         },
 
         initialize: function() {
             $("#main").html(this.el);
             this.$el.html(this.template);
+        },
+
+        render: function() {
+            //Fetch image templates
+            if(this.currentImageTemplate) {
+                if(this.currentImageTemplate.id === "") {
+                    // Set image template fields to defaults
+                }else {
+                    // Fill in the image template fields to match the selected image template
+                }
+                $("#image_template_not_opened").hide();
+                $("#image_template_open").show();
+            }else {
+                $("#image_template_open").hide();
+                $("#image_template_not_opened").show();
+            }
+        },
+
+        newImageTemplate: function() {
+            if(this.currentImageTemplate) {
+                var confirmation = confirm("Are you sure you want to open a new image template? Any unsaved changes to the current template will be lose.");
+                if(confirmation === true) {
+                    this.currentImageTemplate = "test";
+                    this.render();
+                }
+            }else {
+                this.currentImageTemplate = "test";
+                this.render();
+            }
+        },
+
+        closeImageTemplate: function() {
+            this.currentImageTemplate = undefined;
+            this.render();
         },
 
         close: function(){
