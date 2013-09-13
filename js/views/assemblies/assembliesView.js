@@ -64,9 +64,22 @@ define([
             var $this = this;
             this.configureTabs();
 
-            Common.vent.on("assembliesViewRefresh", this.populateAssemblySelect, this);
+            Common.vent.on("assembliesViewRefresh", this.fetchAssemblies, this);
 
             this.assemblies = new Assemblies();
+            this.fetchAssemblies();
+            
+        },
+
+        close: function(){
+            this.$el.empty();
+            this.undelegateEvents();
+            this.stopListening();
+            this.unbind();
+        },
+        fetchAssemblies: function(){
+            var $this = this
+            debugger;
             this.assemblies.fetch({
                 reset: true,
                 success:function(collection, response, options){
@@ -79,14 +92,6 @@ define([
                 }
             });
         },
-
-        close: function(){
-            this.$el.empty();
-            this.undelegateEvents();
-            this.stopListening();
-            this.unbind();
-        },
-
         populateAssemblySelect: function(){
             var assemblies = this.assemblies;
             $("#assemblies_menu, #assemblies_delete_menu").empty();

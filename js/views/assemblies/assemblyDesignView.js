@@ -52,6 +52,10 @@ define([
             //Cloud Credentials fetch is asyncronous due to custom fetch behavior.
             this.cloudCredentials.fetch();
 
+            // $("#assemblyDesignImagesTable").dataTable({
+            //     bjQueryUI:true
+            // });
+
 
 
         },
@@ -98,9 +102,16 @@ define([
             if(!this.currentAssembly.id){
                 this.assemblies.createAssembly(this.currentAssembly, {});
             }
-            else
-                this.currentAssembly.save();
-
+            else{
+                this.currentAssembly.save({},{
+                    success:function(){
+                        Common.vent.trigger("assembliesViewRefresh");
+                    },
+                    error:function(){
+                        Common.errorDialog("Server Error", "Could not save assembly.");
+                    }
+                });
+            }
         },
         formChanged: function(evt) {
             var changed = evt.currentTarget;

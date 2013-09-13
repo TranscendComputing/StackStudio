@@ -297,6 +297,7 @@ define([
         enableDeployLaunch: function(){
             $("#deploy-launch").removeClass("disabled");
         },
+        
         close: function(){
             this.$el.empty();
             this.undelegateEvents();
