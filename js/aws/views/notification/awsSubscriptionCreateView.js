@@ -84,7 +84,7 @@ define([
                         $("#endpoint_message").html("e.g. arn:aws:sqs:us-east-1:555555555555:my-queue");
                         break;
                 }
-            }
+            });
         },
 
         displayValid: function(valid, selector) {

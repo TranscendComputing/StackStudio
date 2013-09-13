@@ -51,9 +51,9 @@ define([
                     sessionStorage.stack_name = newStack.stack.name;
                     stackApp.render();
                 }else {
-                    var confirmation = confirm("Are you sure you want to open " + newStack.stack.name + "? Any unsaved changes to " + 
+                    var confirmation = confirm("Are you sure you want to open " + newStack.stack.name + "? Any unsaved changes to " +
                         sessionStorage.stack_name + " will be lost.");
-                    if(confirmation == true) {
+                    if(confirmation === true) {
                         sessionStorage.stack_id = newStack.stack._id;
                         sessionStorage.stack_name = newStack.stack.name;
                     }
@@ -128,9 +128,9 @@ define([
 
         deleteStack: function(event) {
             var confirmation = confirm("Are you sure you want to delete " + event.target.innerText + "?");
-            if(confirmation == true) {
+            if(confirmation === true) {
                 var stack = this.stacks.get(event.target.id);
-                if(sessionStorage.stack_id && stack.id == sessionStorage.stack_id) {
+                if(sessionStorage.stack_id && stack.id === sessionStorage.stack_id) {
                     sessionStorage.removeItem("stack_id");
                     sessionStorage.removeItem("stack_name");
                     this.render();

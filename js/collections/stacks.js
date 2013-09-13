@@ -17,7 +17,7 @@ define([
 
 		model: Stack,
 
-		url: function(){return Common.apiUrl + '/stackstudio/v1/stacks/account/' + sessionStorage.account_id;},
+		url: function(){return Common.apiUrl + '/stackstudio/v1/stacks/account/' + sessionStorage.account_id;}
 		
 	});
 

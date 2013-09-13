@@ -10,25 +10,27 @@ define([
         'underscore',
         'bootstrap',
         'backbone',
-        'views/assemblies/assemblyRuntimeView',
         'common',
         'text!templates/assemblies/assemblyDesignTemplate.html',
-        'collections/cloudCredentials',
-        'collections/cookbooks',
         'collections/chefEnvironments',
+        'collections/cloudCredentials',
+        'models/assembly',
         'collections/assemblies',
         'views/assemblies/configListView'
-], function( $, _, bootstrap, Backbone, RuntimeView, Common,  assembliesTemplate, CloudCredentials, Cookbooks, ChefEnvironments, Assemblies, ConfigListView) {
+], function( $, _, bootstrap, Backbone, Common,  assemblyDesignTemplate, ChefEnvironments, CloudCredentials,  Assembly, Assemblies, ConfigListView) {
 
     var AssemblyDesignView = Backbone.View.extend({
 
         tagName: 'div',
+        id: 'assembly_design_view',
+        currentAssembly: undefined,
 
-        template: _.template(assembliesTemplate),
+        template: _.template(assemblyDesignTemplate),
         events: {
-            "click .assembly" : "openAssembly",
-            "change #assemblyDesignCloudCreds" : "credentialChangeHandler",
+            //"change #assemblyDesignCloudCreds" : "credentialChangeHandler",
             "change #chefEnvironmentSelect" : "environmentSelectHandler",
+            "click #save-assembly" : "saveAssemblyHandler",
+            "change input,textarea,select" : "formChanged"
             //"shown" : "accordionShown"
         },
 
@@ -40,12 +42,19 @@ define([
             $("#assemblyDesign").html(this.el);
             this.$el.html(this.template);
             this.listView = options.listView;
+            this.assemblies = options.assemblies;
+            this.currentAssembly = new Assembly();
+
             this.listView.render();
             this.cloudCredentials = new CloudCredentials();
             this.cloudCredentials.on('reset', this.populateCredentials, this);
 
             //Cloud Credentials fetch is asyncronous due to custom fetch behavior.
             this.cloudCredentials.fetch();
+
+            // $("#assemblyDesignImagesTable").dataTable({
+            //     bjQueryUI:true
+            // });
 
 
 
@@ -58,13 +67,6 @@ define([
             this.unbind();
         },
 
-        populateAssemblySelect: function(assemblies){
-            var selector = $("#assembly_menu");
-            selector.empty();
-            assemblies.each(function(assembly) {
-                $("#assemblies_menu").append("<li><a id='"+assembly.id+"' class='assembly'>"+assembly.get("name")+"</a></li>");
-            });
-        },
         populateCredentials: function(){
             var list = this.cloudCredentials;
             var select = $("#assemblyDesignCloudCreds")
@@ -78,18 +80,6 @@ define([
             });
             select.trigger("change");
         },
-
-        openAssembly: function(evt){
-            var $this = this;
-            var id = evt.currentTarget.id;
-            $("#designForm :input:reset");
-            $("#designForm :input").each(function(){
-                if(this.name){
-                    var value = $this.assemblies.get(id).get(this.name);
-                    this.value = value;
-                }
-            });
-        },
         credentialChangeHandler: function(evt){
             var $this = this;
             var optionSelected = $("option:selected", evt.target);
@@ -100,11 +90,52 @@ define([
             }
 
             this.listView.credential = credential;
-
             this.listView.fetchChefEnvironments().done(function(model){
                 $this.listView.populateChefEnvironments(new ChefEnvironments(model));
             });
-        }
+        },
+        saveAssemblyHandler: function(e){
+            e.preventDefault();
+            var configs = this.getConfigs();
+            this.currentAssembly.set(configs);
+            //If no id, then it's a new assembly.  Otherwise, update existing assembly.
+            if(!this.currentAssembly.id){
+                this.assemblies.createAssembly(this.currentAssembly, {});
+            }
+            else{
+                this.currentAssembly.save({},{
+                    success:function(){
+                        Common.vent.trigger("assembliesViewRefresh");
+                    },
+                    error:function(){
+                        Common.errorDialog("Server Error", "Could not save assembly.");
+                    }
+                });
+            }
+        },
+        formChanged: function(evt) {
+            var changed = evt.currentTarget;
+            var value = $(evt.currentTarget).val();
+            var obj = {};
+            var attrs = _.clone(this.currentAssembly.attributes);
+            attrs[changed.name] = value;
+            this.currentAssembly.set(attrs);
+        },
+        getConfigs: function() {
+            var configurations = {};
+            var chef = {};
+            chef["env"] = $("#chefEnvironmentSelect :selected").val();
+            chef["run_list"] = this.getRunlist();
+            configurations["chef"] = chef;
+            return {"configurations": configurations};
+        },
+        getRunlist: function(){
+            var runlist = [];
+            $("input:checkbox[class=recipeSelector]:checked").each(function(index, object){
+                runlist.push("recipe[" + $(object.parentElement).find(".recipe").text() + "]");
+            });
+            return runlist;
+        },
     });
 
     return AssemblyDesignView;

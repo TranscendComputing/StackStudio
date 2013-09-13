@@ -67,7 +67,8 @@ module.exports = function(grunt) {
         eqnull: true,
         browser: true,
         smarttabs: true,
-        globals: {
+        devel:true,
+				globals: {
             jQuery: true,
             console: true,
             require: true,

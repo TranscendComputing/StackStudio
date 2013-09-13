@@ -26,7 +26,8 @@ define([
         /** Default attributes for the project */
         idAttribute: "_id",
         defaults: {
-            name: ''
+            name: '',
+            configurations: {chef:{run_list:[], puppet:{}}}
         }
 
     });

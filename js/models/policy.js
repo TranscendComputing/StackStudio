@@ -26,7 +26,7 @@ define([
         },
         
         save: function(options,id, orgId) {
-            var url = undefined;
+            var url;
             if(id === undefined){
                 url = Common.apiUrl + "/identity/v1/policies?&org_id=" + orgId;
             }else{
@@ -37,7 +37,7 @@ define([
         
         addToGroup: function(options,orgId) {
             //var url = Common.apiUrl + "/identity/v1/policies/groups?&org_id=" + orgId;
-            var url = Common.apiUrl + "/identity/v1/policies/groups"
+            var url = Common.apiUrl + "/identity/v1/policies/groups";
             this.sendAjaxAction(url, "POST", {"policy": options}, "groupRefresh");
         },
         

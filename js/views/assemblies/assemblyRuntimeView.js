@@ -50,7 +50,7 @@ define([
      * @returns {Object} Returns a AssemblyRunTimeView project.
      */
     var AssemblyRuntimeView = Backbone.View.extend({
-        id: 'apps_view',
+        id: 'assembly_runtime_view',
 
         //className: [''],
 
@@ -297,6 +297,7 @@ define([
         enableDeployLaunch: function(){
             $("#deploy-launch").removeClass("disabled");
         },
+        
         close: function(){
             this.$el.empty();
             this.undelegateEvents();
