@@ -15,10 +15,11 @@ define([
         'collections/users',
         'views/account/groupCreateView',
         'views/account/groupManageUsersView',
+        '/js/aws/views/cloud_watch/awsDefaultAlarmCreateView.js',
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator',
         'bootstrap'
-], function( $, _, Backbone, Common, groupsManagementTemplate, Policy, Users, CreateGroupView, ManageGroupUsers ) {
+], function( $, _, Backbone, Common, groupsManagementTemplate, Policy, Users, CreateGroupView, ManageGroupUsers, CreateAlarmView ) {
 
     var GroupManagementView = Backbone.View.extend({
 
@@ -35,10 +36,13 @@ define([
         selectedGroup: undefined,
         
         model: undefined,
+        
+        alarms: [],
 
         events: {
             "click #manage_group_users_button" : "manageGroupUsers",
-            "click #save_button" : "savePolicy"
+            "click #save_button" : "savePolicy",
+            "click #create_alarm_btn" : "createAlarm"
         },
 
         initialize: function() {
@@ -68,6 +72,7 @@ define([
         },
 
         render: function () {
+            this.addCreds();
             if(typeof this.rootView != 'undefined' && typeof this.rootView.treePolicy != 'undefined'){
                 this.policy = this.rootView.treePolicy;
                 this.model = this.rootView.policies.get(this.policy);
@@ -147,7 +152,7 @@ define([
                     o[this.name] = this.value || '';
                 }
             });
-            
+            o["default_alarms"] = this.alarms;
             newPolicy.save(o,this.policy,sessionStorage.org_id);
         },
         
@@ -171,6 +176,9 @@ define([
                 }
               }
             }
+            // for (var i in creds){
+//                 
+//             }
         },
         
         refreshSession: function(){
@@ -187,6 +195,26 @@ define([
                     Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
                 }
             });
+        },
+        
+        createAlarm: function(){
+            var pView = this;
+            var newAlarmDialog = new CreateAlarmView({cred_id: $("#default_credentials").val(), region: $("#default_region").val(), policy_view: pView});
+            newAlarmDialog.render();
+        },
+        
+        addCreds: function(){
+            var creds = JSON.parse(sessionStorage.cloud_credentials);
+            $("#default_credentials").empty();
+            for (var i in creds) {
+                $("#default_credentials").append("<option value='"+creds[i].cloud_credential.id+"'>"+creds[i].cloud_credential.name+"</option>");
+            }
+        },
+        
+        addAlarm: function(options){
+            //debugger
+            this.alarms.push(options);
+            $("#alarm_table").append("<tr><td>"+options.namespace+"</td><td>"+options.metric_name+"</td><td>"+options.threshold+"</td><td>"+options.period+"</td><td><a class='btn btn-mini btn-danger'><i class='icon-minus-sign icon-white'></i></a></td></tr>");
         },
 
         close: function(){
