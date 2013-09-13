@@ -27,7 +27,7 @@ define([
 
         template: _.template(assemblyDesignTemplate),
         events: {
-            "change #assemblyDesignCloudCreds" : "credentialChangeHandler",
+            //"change #assemblyDesignCloudCreds" : "credentialChangeHandler",
             "change #chefEnvironmentSelect" : "environmentSelectHandler",
             "click #save-assembly" : "saveAssemblyHandler",
             "change input,textarea,select" : "formChanged"
@@ -86,28 +86,45 @@ define([
             }
 
             this.listView.credential = credential;
-
             this.listView.fetchChefEnvironments().done(function(model){
                 $this.listView.populateChefEnvironments(new ChefEnvironments(model));
             });
         },
         saveAssemblyHandler: function(e){
             e.preventDefault();
+            var configs = this.getConfigs();
+            this.currentAssembly.set(configs);
             //If no id, then it's a new assembly.  Otherwise, update existing assembly.
             if(!this.currentAssembly.id){
                 this.assemblies.createAssembly(this.currentAssembly, {});
             }
             else
                 this.currentAssembly.save();
+
         },
-        formChanged:function(evt) {
+        formChanged: function(evt) {
             var changed = evt.currentTarget;
             var value = $(evt.currentTarget).val();
             var obj = {};
             var attrs = _.clone(this.currentAssembly.attributes);
             attrs[changed.name] = value;
             this.currentAssembly.set(attrs);
-        }
+        },
+        getConfigs: function() {
+            var configurations = {};
+            var chef = {};
+            chef["env"] = $("#chefEnvironmentSelect :selected").val();
+            chef["run_list"] = this.getRunlist();
+            configurations["chef"] = chef;
+            return {"configurations": configurations};
+        },
+        getRunlist: function(){
+            var runlist = [];
+            $("input:checkbox[class=recipeSelector]:checked").each(function(index, object){
+                runlist.push("recipe[" + $(object.parentElement).find(".recipe").text() + "]");
+            });
+            return runlist;
+        },
     });
 
     return AssemblyDesignView;

@@ -62,8 +62,6 @@ define([
         initialize: function(){
         },
 
-        
-
         render: function () {
             $("#assemblyLeftNav").html(this.el);
             this.$el.html(this.template);
@@ -85,20 +83,6 @@ define([
                 $this.recalculateChefBadges();
             });
         },
-
-        credentialChangeHandler: function(evt){
-            var $this = this;
-            var optionSelected = $("option:selected", evt.target);
-            var credential = this.credential = optionSelected.data("cloudCredentials");
-            if (!credential){
-                this.flashError("We're sorry.  Cloud credentials could not be retrieved.");
-                return;
-            }
-
-            this.fetchChefEnvironments().done(function(model){
-                $this.populateChefEnvironments(new ChefEnvironments(model));
-            });
-        },
         chefGroupChangeHandler: function(evt){
             this.chefGroupQueue++;
             var ver = null;
@@ -116,8 +100,9 @@ define([
                             ver.find("input[type='checkbox']:gt(0)").prop("checked", false).prop("disabled", true);
                             ver.find("input[type='checkbox']:eq(0)").prop("checked", true).prop("disabled", true);
                         } else {
-                            var book = {}; //TODO: retrieve
-                            var item = {name: "::default", description: "Loading..."}; //TODO: retrieve
+                            var book = checkbox.closest(".accordion-group").data("cookbook");
+                            var name = book.get("name");
+                            var item = {name: name, description: "Loading..."}; //TODO: retrieve
                             var ul = $("<ul class='recipes'></ul>");
                             $("<li></li>")
                                 .data("recipe", item)
@@ -175,6 +160,7 @@ define([
             list.forEach(function(element, index, list){
                 $("<option value='" + element.get("name") + "'>" + element.get("name") + "</option></select>").appendTo(select);
             });
+            Common.vent.trigger("chefEnvironmentsPopulated");
         },
         populateCookbooks: function(credential){
             var cookbooks= new Cookbooks();
@@ -191,14 +177,15 @@ define([
             var cb = $("#chef-selection");
             cb.empty();
             cookbooks.each(function(item){
-                var elem = $($this.renderAccordionGroup("chef-selection", item.get("name") + " [" + item.get("latest_version") + "]"))
+                var elem = $($this.renderAccordionGroup("chef-selection", item.get("name"), item.get("latest_version")))
                     .data("cookbook", item);
                 elem.find(".accordion-heading")
                     .prepend(
-                        $("<input type='checkbox'>").data("level", "cookbook")
+                        $("<input type='checkbox' class='cookbookSelector'>").data("level", "cookbook")
                     );
                 elem.appendTo(cb); //TODO: if this doesn't perform well, try appending to a list first, then adding to doc. 
             });
+            Common.vent.trigger("cookbooksLoaded");
         },
         sortRecipes: function(recipes){
             var sorted = [];
@@ -219,28 +206,31 @@ define([
 
         populateRecipes: function(destination, book, recipes){
             var sorted = this.sortRecipes(recipes);
-            var enabledState = "";
-            var checkedState = "";
-            if (destination.has("input[type='checkbox']:checked").length){
-                enabledState = " disabled='true' ";
-                checkedState = " checked='true' ";
-            }
-            destination.empty()
+            var selected = [];
+
+            $(destination).find("input[type=checkbox]").each(function(index, checkbox){
+                if(checkbox.checked)
+                    selected.push($(checkbox).parent().find(".recipe").text());
+            });            destination.empty()
                 .data("isLoaded", true);
+            var ul = this.renderRecipes(sorted, book, selected);
+            ul.appendTo(destination);
+        },
+
+        renderRecipes: function(recipes, book, selected ){
             var ul = $("<ul class='recipes'></ul>");
-            
-            $.each(sorted, function( index, item ) {
+            $.each(recipes, function( index, item ) {
+                var checkedState = (selected.indexOf(item.name) !== -1) ? "checked='true'": "";
                 var desc = item.description  ? item.description:"";
                 $("<li></li>")
                     .data("recipe", item)
                     .data("cookbook", book)
                     .data("isRecipe", true)
-                    .append("<input type='checkbox' " + checkedState + " class='recipeSelector'" + enabledState + " />")
+                    .append("<input type='checkbox' " + checkedState + " class='recipeSelector'" + " />")
                     .append("<span class='recipe'>" + item.name + "</span>" + "<span class='recipeDescription'>" + desc + "</span>")
                     .appendTo(ul);
-                checkedState = "";
             });
-            ul.appendTo(destination);
+            return ul;
         },
 
         accordionShown: function(evt){
@@ -376,10 +366,11 @@ define([
             '</div>']
             .join(''),
 
-        renderAccordionGroup: function(accordionId, title){ //TODO: make this a common function
+        renderAccordionGroup: function(accordionId, name, version){ //TODO: make this a common function
+            var title= name + " [" + version + "]";
             var elem = this.accordionGroupTemplate
                 .split("{{name}}").join(title)
-                .split("{{collapseId}}").join(_.uniqueId("book"))
+                .split("{{collapseId}}").join(name + "-cookbook")
                 .split("{{accordionId}}").join(accordionId);
             return elem;
         },

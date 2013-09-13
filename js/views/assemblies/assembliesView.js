@@ -29,8 +29,7 @@ define([
         events: {
             "click .assembly" : "openAssembly",
             "click .assembly-delete" : "deleteAssembly",
-            "click #create_assembly_button" : "newAssemblyForm",
-            //"click #delete_assembly_button" : "deleteAssembly"
+            "click #create_assembly_button" : "newAssemblyForm"
         },
 
         initialize: function() {
@@ -98,18 +97,74 @@ define([
         },
 
         openAssembly: function(evt){
-            $("#assembliesTabs a:first").trigger("click");
             var $this = this;
             var id = evt.currentTarget.id;
+            $("#assembliesTabs a:first").trigger("click");
+            $("#designForm :input:reset");
             this.currentAssembly = this.assemblies.get(id);
             this.tabView.currentAssembly = this.currentAssembly;
-            $("#designForm :input:reset");
+
             $("#designForm :input").each(function(){
                 if(this.name){
                     var value = $this.currentAssembly.get(this.name);
                     this.value = value;
                 }
             });
+
+            if(this.currentAssembly.get("tool") === "Chef"){
+                var chefConfig = this.currentAssembly.get("configurations")["chef"];
+                Common.vent.once("chefEnvironmentsPopulated", function(){
+                    $("#chefEnvironmentSelect").val(chefConfig["env"]);
+                    $("#chefEnvironmentSelect").change();
+                });
+                Common.vent.once("cookbooksLoaded", function(){
+                    var recipeList = $this.sortByCookbook(chefConfig["run_list"]);
+                    $this.selectRecipes(recipeList);
+                });
+            }
+        },
+        sortByCookbook: function(runlist){
+            var cookbooks = {};
+            for(var i = 0; i < runlist.length; i++){
+                var recipeName = runlist[i].match(/recipe\[(.*)\]/)[1];
+                var cookbook = recipeName.split("::")[0];
+                if(!cookbooks[cookbook])
+                    cookbooks[cookbook] = [];
+                cookbooks[cookbook].push(recipeName);
+            }
+            return cookbooks;
+        },
+        selectRecipes: function(cookbooks) {
+            var $this = this;
+            for (var name in cookbooks) {
+                if (cookbooks.hasOwnProperty(name)) {
+                    $this.lazyLoadRecipes(cookbooks[name], "#" + name + "-cookbook");
+                }
+            }
+        },
+        lazyLoadRecipes: function(recipes, destination) {
+            var checkbox = $(destination).parent().find("input[type=checkbox]");
+            var ul = $("<ul class='recipes'></ul>");
+            var ver = checkbox.closest(".accordion-group")
+                .find(".accordion-inner:first");
+            ver.empty();
+            var book = checkbox.closest(".accordion-group").data("cookbook");
+            for (var i = 0; i < recipes.length; i++) {
+                var item = {
+                    name: recipes[i],
+                }; //TODO: retrieve
+                $("<li></li>")
+                    .data("recipe", item)
+                    .data("cookbook", book)
+                    .data("isRecipe", true)
+                    .append("<input type='checkbox' class='recipeSelector' checked='true' />")
+                    .append("<span class='recipe'>" + item.name + "</span>" + "<span class='recipeDescription'>" + "" + "</span>")
+                    .appendTo(ul);
+                ver.append(ul);
+            }
+            
+            
+            
         },
         newAssemblyForm: function(evt, justDeleted){
             if(!justDeleted && !this.confirmPageSwitch())
