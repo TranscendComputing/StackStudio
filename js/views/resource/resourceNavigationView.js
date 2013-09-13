@@ -189,7 +189,7 @@ define([
                 
                 //Check Enabled Services
                 var addService = false;
-                if(JSON.parse(sessionStorage.group_policies)[0] === null){
+                if(JSON.parse(sessionStorage.group_policies)[0] == null){
                     addService = true;
                 }else{
                     $.each(JSON.parse(sessionStorage.group_policies), function(index,value){
@@ -294,7 +294,7 @@ define([
                 $.each(resourceNav.cloudDefinitions[this.cloudProvider].regions, function(index, region) {
                     //regions check
                     var addRegion = false;
-                    if(JSON.parse(sessionStorage.group_policies)[0] === null){
+                    if(JSON.parse(sessionStorage.group_policies)[0] == null){
                         addRegion = true;
                     }else{
                         $.each(JSON.parse(sessionStorage.group_policies), function(index,value){
