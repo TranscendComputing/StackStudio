@@ -20,8 +20,8 @@ define([
         'jquery-ui-plugins'
 ], function( $, _, Backbone, ich, Common, resourcesTemplate, breadcrumbTemplate,
         cloudCredential, CloudCredentials, SubServiceMenuView ) {
-	// The Resources Navigation View
-	// ------------------------------
+    // The Resources Navigation View
+    // ------------------------------
 
     /**
      * ResourcesView is UI view of resource services.
@@ -32,23 +32,23 @@ define([
      * @param {Object} initialization object.
      * @returns {Object} Returns a ResourcesView project.
      */
-	var ResourcesView = Backbone.View.extend({
+    var ResourcesView = Backbone.View.extend({
 
-		id: 'resource_navigation_view',
+        id: 'resource_navigation_view',
 
-		className: ['twelvecol', 'last'],
+        className: ['twelvecol', 'last'],
 
-		template: _.template(resourcesTemplate),
+        template: _.template(resourcesTemplate),
 
-		crumbTemplate: _.template(breadcrumbTemplate),
+        crumbTemplate: _.template(breadcrumbTemplate),
 
         cloudProvider: undefined,
 
-		type: undefined,
+        type: undefined,
 
-		subtype:undefined,
+        subtype:undefined,
 
-		resourceId: undefined,
+        resourceId: undefined,
 
         cloudDefinitions: undefined,
 
@@ -63,12 +63,12 @@ define([
         resourceApp: undefined,
 
         events: {
-			"click .resource_link" : "resourceClick",
-			"click #cloud_coverflow img" : "cloudChange",
+            "click .resource_link" : "resourceClick",
+            "click #cloud_coverflow img" : "cloudChange",
             "change #credential_select": "credentialChange"
-		},
+        },
 
-		initialize: function() {
+        initialize: function() {
             this.subViews = [];
             $("#main").html(this.el);
             this.$el.html(this.template);
@@ -111,32 +111,32 @@ define([
                     this.cloudSelection(firstCloudProvider);
                 }
             }
-		    this.loadResourceApp();
-		},
+            this.loadResourceApp();
+        },
 
-		addCloud: function( cloudCredential ) {
-		    var cloudProvider = cloudCredential.get("cloud_provider");
-		    var resourceNav = this;
-			if(cloudProvider) {
-			    cloudProvider = cloudProvider.toLowerCase();
-			    var found = false;
-				$.each($("#cloud_coverflow").children(), function (index, coverFlowCloud) {
-				    if(coverFlowCloud.id === cloudProvider) {
-				        found = true;
-				    }
-				});
-				if(!found) {
-				    $('#cloud_coverflow').append($("<img></img>")
-				        .attr({
+        addCloud: function( cloudCredential ) {
+            var cloudProvider = cloudCredential.get("cloud_provider");
+            var resourceNav = this;
+            if(cloudProvider) {
+                cloudProvider = cloudProvider.toLowerCase();
+                var found = false;
+                $.each($("#cloud_coverflow").children(), function (index, coverFlowCloud) {
+                    if(coverFlowCloud.id === cloudProvider) {
+                        found = true;
+                    }
+                });
+                if(!found) {
+                    $('#cloud_coverflow').append($("<img></img>")
+                        .attr({
                             "id": cloudProvider,
                             "class" : "cover_flow_cloud",
                             "src": resourceNav.cloudDefinitions[cloudProvider].logo
                     }));
-			    }
-			}
+                }
+            }
 
-			//Setup coverflow after logos have been added
-			$("#cloud_coverflow").coverscroll({
+            //Setup coverflow after logos have been added
+            $("#cloud_coverflow").coverscroll({
                 'minfactor':18, // how much is the next item smaller than previous in pixels
                 'distribution':1, // how apart are the items (items become separated when this value is below 1)
                 'scalethreshold':0, // after how many items to start scaling
@@ -162,45 +162,45 @@ define([
                     }
                 } // callback function triggered after click on an item - parameter is the item's jQuery object
             });
-		},
+        },
 
-		addAllClouds: function() {
-		    this.cloudCredentials.each(this.addCloud, this);
-		},
+        addAllClouds: function() {
+            this.cloudCredentials.each(this.addCloud, this);
+        },
         
         cloudChange: function(event) {
             if(!event.isTrigger) {
                 $(".resources").remove();
-                Common.router.navigate("#resources/"+event.target.id, {trigger: false}); 
+                Common.router.navigate("#resources/"+event.target.id, {trigger: false});
                 this.cloudSelection(event.target.id);
-                $("#service_menu").hide(); 
+                $("#service_menu").hide();
                 $("#resource_app").hide();
                 $("#resource_not_opened").show();
-            } 
+            }
         },
         
-		cloudSelection: function (cloudProvider) {
+        cloudSelection: function (cloudProvider) {
             this.cloudProvider = cloudProvider;
-		    var resourceNav = this;
-		    //Add the services of the cloud to the resource table
-		    var row = 1;
-		    $("#resource_table").empty();
-		    $.each(resourceNav.cloudDefinitions[this.cloudProvider].native_services, function(index, service) {
+            var resourceNav = this;
+            //Add the services of the cloud to the resource table
+            var row = 1;
+            $("#resource_table").empty();
+            $.each(resourceNav.cloudDefinitions[this.cloudProvider].native_services, function(index, service) {
                 
                 //Check Enabled Services
                 var addService = false;
-                if(JSON.parse(sessionStorage.group_policies)[0] == null){
+                if(JSON.parse(sessionStorage.group_policies)[0] === null){
                     addService = true;
                 }else{
                     $.each(JSON.parse(sessionStorage.group_policies), function(index,value){
                         var enabled_services = value.group_policy.aws_governance.enabled_services;
                         if($.inArray(service.name, enabled_services) !== -1){
                             addService = true;
-        		        }
+                        }
                     });
                 }
                 //hack
-                var cname = location.href.split("#resources/")[1].split("/")[0]
+                var cname = location.href.split("#resources/")[1].split("/")[0];
                 if(addService || cname !== 'aws'){
                     $("#native_row"+row).append($("<td></td>").attr({
                         "id": service.type,
@@ -212,12 +212,12 @@ define([
                     }).text(service.name));
                     row++;
                     //reset row if greater than 3
-    		        if(row > 3) {
-    		            row = 1;
-    		        }
+                    if(row > 3) {
+                        row = 1;
+                    }
                 }
                 
-		    });
+            });
             row = 1;
             if(resourceNav.cloudDefinitions[this.cloudProvider].topstack_services !== undefined && resourceNav.cloudDefinitions[this.cloudProvider].topstack_services.length > 0) {
                 $("#topstack_services_table, #topstack_service_label").show();
@@ -243,10 +243,10 @@ define([
                 $("#native_services_table").css("width", "73%");
             }
             
-		    $("#cloud_nav").html(this.crumbTemplate({pathElt: this.cloudDefinitions[this.cloudProvider].name}));
+            $("#cloud_nav").html(this.crumbTemplate({pathElt: this.cloudDefinitions[this.cloudProvider].name}));
 
             this.refreshCloudSpecs();
-		},
+        },
 
         credentialChange: function(event) {
             this.selectedCredential = event.target.value;
@@ -294,17 +294,17 @@ define([
                 $.each(resourceNav.cloudDefinitions[this.cloudProvider].regions, function(index, region) {
                     //regions check
                     var addRegion = false;
-                    if(JSON.parse(sessionStorage.group_policies)[0] == null){
+                    if(JSON.parse(sessionStorage.group_policies)[0] === null){
                         addRegion = true;
                     }else{
                         $.each(JSON.parse(sessionStorage.group_policies), function(index,value){
                             var usable_regions = value.group_policy.aws_governance.usable_regions;
                             if($.inArray(region.name, usable_regions) !== -1){
                                 addRegion = true;
-            		        }
+                            }
                         });
                     }
-                    var cname = location.href.split("#resources/")[1].split("/")[0]
+                    var cname = location.href.split("#resources/")[1].split("/")[0];
                     if(!addRegion && cname === "aws"){
                         
                     }
@@ -336,33 +336,33 @@ define([
             }
         },
 
-		resourceClick: function(id) {
+        resourceClick: function(id) {
             $("#resource_not_opened").hide();
             $("#resource_app").show();
-			var selectionId = id.target.id.split("Link")[0];
-			this.type = selectionId;
+            var selectionId = id.target.id.split("Link")[0];
+            this.type = selectionId;
             this.subtype = undefined;
-			this.resourceSelect(selectionId);
+            this.resourceSelect(selectionId);
             this.render();
-		},
+        },
 
-		resourceSelect: function(selectionId) {
-		    var view = this;
-			$('.resources').each(function() {
-			    var selection = selectionId + "Link";
-				if(selection === $(this).find(":first").attr("id")) {
-					$(this).addClass("selected_item");
-					$("#service_nav").html(view.crumbTemplate(
-					        {pathElt: $(this).text()}));
-				}else {
-					$(this).removeClass("selected_item");
-				}
-	        });
-		},
+        resourceSelect: function(selectionId) {
+            var view = this;
+            $('.resources').each(function() {
+                var selection = selectionId + "Link";
+                if(selection === $(this).find(":first").attr("id")) {
+                    $(this).addClass("selected_item");
+                    $("#service_nav").html(view.crumbTemplate(
+                            {pathElt: $(this).text()}));
+                }else {
+                    $(this).removeClass("selected_item");
+                }
+            });
+        },
 
-		loadResourceApp: function() {
-		    var resourceNav = this;
-		    var serviceObject;
+        loadResourceApp: function() {
+            var resourceNav = this;
+            var serviceObject;
             if(this.cloudProvider) {
                 if (!this.selectedRegion) {
                     try {
@@ -457,9 +457,9 @@ define([
               }
             });
         }
-	});
+    });
 
-	var resourcesView;
+    var resourcesView;
 
     Common.router.on('route:resources', function (cloud, region, type, subtype, id) {
         if(sessionStorage.account_id) {
@@ -484,5 +484,5 @@ define([
         }
     }, Common);
 
-	return ResourcesView;
+    return ResourcesView;
 });

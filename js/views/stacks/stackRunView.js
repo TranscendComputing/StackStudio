@@ -80,7 +80,7 @@ define([
                     var subServiceChildren = [];
                     $.each(subServiceValue, function(i, properties) {
                         subServiceChildren.push(properties);
-                    })
+                    });
                     serviceChildren.push({
                         data: subService,
                         attr: {"rel":"directory"},

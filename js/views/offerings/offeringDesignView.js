@@ -129,7 +129,7 @@ define([
         newOffering: function() {
             if(this.currentOffering) {
                 var confirmation = confirm("Are you sure you want to open a new offering? Any unsaved changes to the current offering will be lost.");
-                if(confirmation == true) {
+                if(confirmation === true) {
                     this.currentOffering = new Offering();
                     this.render();
                 }
@@ -142,7 +142,7 @@ define([
         openOffering: function(event) {
             if(this.currentOffering) {
                 var confirmation = confirm("Are you sure you want to open " + event.target.innerText + "? Any unsaved changes to the current offering will be lost.");
-                if(confirmation == true) {
+                if(confirmation === true) {
                     this.currentOffering = this.offerings.get(event.target.id);
                     this.render();
                 }
@@ -154,9 +154,9 @@ define([
 
         deleteOffering: function(event) {
             var confirmation = confirm("Are you sure you want to delete " + event.target.innerText + "?");
-            if(confirmation == true) {
+            if(confirmation === true) {
                 var offering = this.offerings.get(event.target.id);
-                if(this.currentOffering && offering.id == this.currentOffering.id) {
+                if(this.currentOffering && offering.id === this.currentOffering.id) {
                     this.closeOffering();
                 }
                 offering.destroy();
@@ -171,7 +171,7 @@ define([
                     stackIds.push(value.value);
                 });
                 // Build Offering Object from form
-                options = {
+                var options = {
                     "name": $("#offering_name_input").val(),
                     "account_id": sessionStorage.account_id,
                     "version": $("#offering_version_input").val(),
