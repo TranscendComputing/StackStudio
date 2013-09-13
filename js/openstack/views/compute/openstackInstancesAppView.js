@@ -43,7 +43,7 @@ define([
         
         columns: ["name", "id", "key_name", "state"],
         
-        idColumnNumber: 2,
+        idColumnNumber: 1,
         
         model: Instance,
         
