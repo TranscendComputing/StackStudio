@@ -64,9 +64,21 @@ define([
             var $this = this;
             this.configureTabs();
 
-            Common.vent.on("assembliesViewRefresh", this.populateAssemblySelect, this);
+            Common.vent.on("assembliesViewRefresh", this.fetchAssemblies, this);
 
             this.assemblies = new Assemblies();
+            this.fetchAssemblies();
+            
+        },
+
+        close: function(){
+            this.$el.empty();
+            this.undelegateEvents();
+            this.stopListening();
+            this.unbind();
+        },
+        fetchAssemblies: function(){
+            var $this = this;
             this.assemblies.fetch({
                 reset: true,
                 success:function(collection, response, options){
@@ -79,14 +91,6 @@ define([
                 }
             });
         },
-
-        close: function(){
-            this.$el.empty();
-            this.undelegateEvents();
-            this.stopListening();
-            this.unbind();
-        },
-
         populateAssemblySelect: function(){
             var assemblies = this.assemblies;
             $("#assemblies_menu, #assemblies_delete_menu").empty();
@@ -128,8 +132,9 @@ define([
             for(var i = 0; i < runlist.length; i++){
                 var recipeName = runlist[i].match(/recipe\[(.*)\]/)[1];
                 var cookbook = recipeName.split("::")[0];
-                if(!cookbooks[cookbook])
+                if(!cookbooks[cookbook]){
                     cookbooks[cookbook] = [];
+                }
                 cookbooks[cookbook].push(recipeName);
             }
             return cookbooks;
@@ -151,7 +156,7 @@ define([
             var book = checkbox.closest(".accordion-group").data("cookbook");
             for (var i = 0; i < recipes.length; i++) {
                 var item = {
-                    name: recipes[i],
+                    name: recipes[i]
                 }; //TODO: retrieve
                 $("<li></li>")
                     .data("recipe", item)
@@ -167,8 +172,9 @@ define([
             
         },
         newAssemblyForm: function(evt, justDeleted){
-            if(!justDeleted && !this.confirmPageSwitch())
+            if(!justDeleted && !this.confirmPageSwitch()){
                 return;
+            }
             $("#designForm :input:reset");
             this.currentAssembly = new Assembly();
             this.tabView.currentAssembly = this.currentAssembly;
@@ -182,15 +188,17 @@ define([
         deleteAssembly: function(evt){
             var assembly = this.assemblies.get(evt.currentTarget.id);
             var confirmation = confirm("Are you sure you want to delete " + assembly.get("name") + "?");
-            if(confirmation)
+            if(confirmation){
                 this.assemblies.deleteAssembly(assembly);
+            }
         },
         confirmPageSwitch: function(){
             var confirmation;
             if(this.currentAssembly.id){
                 confirmation = confirm("Any unsaved changes to " + this.currentAssembly.get("name") + " will be lost.");
-            }else
+            }else{
                 confirmation = confirm("Any unsaved changes will be lost");
+            }
             return confirmation;
         }
 

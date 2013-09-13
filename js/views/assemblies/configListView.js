@@ -205,14 +205,16 @@ define([
             return sorted;
         },
 
-        populateRecipes: function(destination, book, recipes){
+        populateRecipes: function(destination, book, recipes) {
             var sorted = this.sortRecipes(recipes);
             var selected = [];
 
-            $(destination).find("input[type=checkbox]").each(function(index, checkbox){
-                if(checkbox.checked)
+            $(destination).find("input[type=checkbox]").each(function(index, checkbox) {
+                if (checkbox.checked) {
                     selected.push($(checkbox).parent().find(".recipe").text());
-            });            destination.empty()
+                }
+            });
+            destination.empty()
                 .data("isLoaded", true);
             var ul = this.renderRecipes(sorted, book, selected);
             ul.appendTo(destination);
@@ -380,7 +382,7 @@ define([
             this.undelegateEvents();
             this.stopListening();
             this.unbind();
-        },
+        }
     });
     return ConfigListView;
 });
