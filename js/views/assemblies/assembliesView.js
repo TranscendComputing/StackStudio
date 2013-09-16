@@ -103,25 +103,26 @@ define([
         openAssembly: function(evt){
             var $this = this;
             var id = evt.currentTarget.id;
-            $("#assembliesTabs a:first").trigger("click");
+            if(!(this.tabView instanceof DesignView)){
+                $("#assembliesTabs a:first").trigger("click");
+            }
             $("#designForm :input:reset");
             this.currentAssembly = this.assemblies.get(id);
             this.tabView.currentAssembly = this.currentAssembly;
 
-            $("#designForm :input").each(function(){
+            $("#designForm :input[type!='hidden']").each(function(){
                 if(this.name){
                     var value = $this.currentAssembly.get(this.name);
                     this.value = value;
                 }
             });
-            
             Common.vent.once("imagesLoaded", function(){
                 var imageData = $this.currentAssembly.get("image");
                 if(imageData){
                     $this.findImage(imageData);
                 }
             });
-
+            $("#assemblyDesignCloudCreds").change();
             if(this.currentAssembly.get("tool") === "Chef"){
                 var chefConfig = this.currentAssembly.get("configurations")["chef"];
                 Common.vent.once("chefEnvironmentsPopulated", function(){
