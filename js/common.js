@@ -106,9 +106,6 @@ requirejs.config({
         },
         'URIjs': {
 
-        },
-        'coverscroll': {
-            deps: ['jquery']
         }
 	},
 	packages: [
@@ -164,75 +161,80 @@ requirejs.config({
  * a local copy if not available (e.g. working disconnected).
  */
 require(
-        ['jquery',
-         'underscore',
-         'backbone',
-         'icanhaz',
-         'jquery-ui'
-         ], function ($, _, Backbone, ich) {
-}, function (err) {
-    //The errback, error callback
-    //The error has a list of modules that failed
-    for (var i = 0; err.requireModules && i < err.requireModules.length; i++) {
-        var failedId = err.requireModules[i];
-        if (failedId === 'jquery') {
-            // undef is function only on the global requirejs object.
-            // Use it to clear internal knowledge of jQuery. Any modules
-            // that were dependent on jQuery and in the middle of loading
-            // will not be loaded yet, they will wait until a valid jQuery
-            // does load.
-            requirejs.undef(failedId);
+    [
+        'jquery',
+        'underscore',
+        'backbone',
+        'icanhaz',
+        'jquery-ui'
+    ],
+    function ($, _, Backbone, ich) {
 
-            // Set the path to jQuery to local path
-            console.log("Redirecting to local path.");
-            requirejs.config({
-                paths: {
-                    jquery: '../vendor/jquery-1.8.3.min'
-                }
-            });
+    },
+    function (err) {
+        //The errback, error callback
+        //The error has a list of modules that failed
+        for (var i = 0; err.requireModules && i < err.requireModules.length; i++) {
+            var failedId = err.requireModules[i];
+            if (failedId === 'jquery') {
+                // undef is function only on the global requirejs object.
+                // Use it to clear internal knowledge of jQuery. Any modules
+                // that were dependent on jQuery and in the middle of loading
+                // will not be loaded yet, they will wait until a valid jQuery
+                // does load.
+                requirejs.undef(failedId);
 
-            // Try again. Note that the above require callback
-            // with the "Do something with $ here" comment will
-            // be called if this new attempt to load jQuery succeeds.
-            require(['jquery'], function () {});
-        } else if (failedId === 'jquery-ui') {
-            requirejs.undef(failedId);
-            console.log("Redirecting to local path:" + failedId);
-            requirejs.config({
-                paths: {
-                    'jquery-ui': '../vendor/jquery-ui-1.9.2.min'
-                }
-            });
-            require(['jquery-ui'], function () {console.log("Got it now.")});
-        } else if (failedId === 'underscore') {
-            requirejs.undef(failedId);
-            requirejs.config({
-                paths: {
-                    'underscore': 'lodash-1.1.1.min'
-                }
-            });
-            require(['underscore'], function () {});
-        } else if (failedId === 'icanhaz') {
-            //requirejs.undef(failedId);
-            requirejs.config({
-                paths: {
-                    'icanhaz': 'ICanHaz'
-                }
-            });
-            require(['icanhaz'], function () {});
-        } else if (failedId === 'backbone') {
-            requirejs.undef(failedId);
-            requirejs.config({
-                paths: {
-                    'backbone': 'backbone-1.0.min'
-                }
-            });
-            require(['backbone'], function () {});
-        } else {
-            console.log("Unhandled require failure:" +failedId);
+                // Set the path to jQuery to local path
+                console.log("Redirecting to local path.");
+                requirejs.config({
+                    paths: {
+                        jquery: '../vendor/jquery-1.8.3.min'
+                    }
+                });
+
+                // Try again. Note that the above require callback
+                // with the "Do something with $ here" comment will
+                // be called if this new attempt to load jQuery succeeds.
+                require(['jquery'], function () {});
+            } else if (failedId === 'jquery-ui') {
+                requirejs.undef(failedId);
+                console.log("Redirecting to local path:" + failedId);
+                requirejs.config({
+                    paths: {
+                        'jquery-ui': '../vendor/jquery-ui-1.9.2.min'
+                    }
+                });
+                require(['jquery-ui'], function () {console.log("Got it now.")});
+            } else if (failedId === 'underscore') {
+                requirejs.undef(failedId);
+                requirejs.config({
+                    paths: {
+                        'underscore': 'lodash-1.1.1.min'
+                    }
+                });
+                require(['underscore'], function () {});
+            } else if (failedId === 'icanhaz') {
+                //requirejs.undef(failedId);
+                requirejs.config({
+                    paths: {
+                        'icanhaz': 'ICanHaz'
+                    }
+                });
+                require(['icanhaz'], function () {});
+            } else if (failedId === 'backbone') {
+                requirejs.undef(failedId);
+                requirejs.config({
+                    paths: {
+                        'backbone': 'backbone-1.0.min'
+                    }
+                });
+                require(['backbone'], function () {});
+            } else {
+                console.log("Unhandled require failure:" +failedId);
+            }
         }
     }
-});
+);
 
 
 /**
