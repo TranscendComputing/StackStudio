@@ -8,7 +8,8 @@
 define(
     'jquery-plugins'
     , [
-        'jquery'
+        'jquery',
+        '//code.jquery.com/jquery-migrate-1.1.0.js'
     ]
     , function(jQuery){
         require([

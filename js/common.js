@@ -107,20 +107,8 @@ requirejs.config({
         'URIjs': {
 
         },
-        'wijutil': {
-            deps: ['jquery-ui', 'jquery.mousewheel']
-        },
-        'wijsuperpanel': {
-            deps: ['wijutil']
-        },
-        'wijlist': {
-            deps: ['wijutil', 'wijsuperpanel']
-        },
-        'wijsplitter': {
-            deps: ['wijutil']
-        },
-        'wijmo': {
-            deps: ['jquery-ui', 'jquery.mousewheel']
+        'coverscroll': {
+            deps: ['jquery']
         }
 	},
 	packages: [
@@ -159,12 +147,6 @@ requirejs.config({
         'raphael': 'raphael-min',
         'spinner': 'spin.min',
          URIjs: 'uri/src',
-        'wijlist': 'jquery.wijmo.wijlist',
-        'wijutil': 'jquery.wijmo.wijutil',
-        'wijsuperpanel': 'jquery.wijmo.wijsuperpanel',
-        'wijsplitter': 'jquery.wijmo.wijsplitter',
-        'wijmo': 'wijmo-require',
-        'wijmo-actual': '//cdn.wijmo.com/jquery.wijmo-open.all.3.20132.8.min', //'jquery.wijmo-open.all.2.3.2.min',
         'bootstrap': '//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min',
         'typeahead': '../vendor/twitter/typeahead.min',
         'ace-cdn': '//d1n0x3qji82z53.cloudfront.net/src-min-noconflict/ace'

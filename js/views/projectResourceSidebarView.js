@@ -17,8 +17,7 @@ define([
         'views/projectCurrentResourcesListView',
         'views/templatesListView',
         'icanhaz',
-        'common',
-        'wijmo'
+        'common'
 ], function( $, _, Backbone, sidebarTemplate, projects, resources, Account, ProjectNewResourcesListView, ProjectCurrentResourcesListView, TemplatesListView, ich, Common ) {
     
     var SidebarView = Backbone.View.extend({
@@ -34,7 +33,7 @@ define([
             'click .tree_a': 'clickTemplate',
             'click .new_item_link': 'addResource',
             'dblclick .current_item_link': 'renameResource',
-            'click .jstree_custom_item': 'handleClick' 
+            'click .jstree_custom_item': 'handleClick'
         },
         
         template: _.template(sidebarTemplate),
@@ -90,8 +89,8 @@ define([
                     },
                    "error": function( err ) {
                        console.log("ERROR", err);
-                   } 
-                });                
+                   }
+                });
             }
         },
         

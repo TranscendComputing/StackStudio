@@ -11,8 +11,7 @@ define([
         'backbone',
         'models/stack',
         'icanhaz',
-        'common',
-        'wijmo'
+        'common'
 ], function( $, _, Backbone, Stack, ich, Common ) {
     
     var ProjectNewTemplateView = Backbone.View.extend({
@@ -27,7 +26,7 @@ define([
           
           this.$el.append( ich.sample_project( this.model.attributes ) );
           
-          return this;  
+          return this;
         },
         
         create: function() {

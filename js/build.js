@@ -8,7 +8,7 @@
         },
         {
             name: "collections"
-        }   
+        }
     ],
     paths: {
         collections: '../collections',
@@ -23,11 +23,6 @@
         'backbone': 'backbone-1.0.0',
         'icanhaz': 'ICanHaz',
         'jquery.terminal': 'jquery.terminal-0.7.3',
-        'jquery.mousewheel': 'jquery.mousewheel-min',
-        'wijlist': 'jquery.wijmo.wijlist',
-        'wijutil': 'jquery.wijmo.wijutil',
-        'wijsuperpanel': 'jquery.wijmo.wijsuperpanel',
-        'wijsplitter': 'jquery.wijmo.wijsplitter',
-        'wijmo': 'jquery.wijmo-open.all.2.3.2.min'
+        'jquery.mousewheel': 'jquery.mousewheel-min'
     }
-})
+});

@@ -17,7 +17,6 @@ define([
         'views/projectCreateView',
         'icanhaz',
         'common',
-        'wijmo',
         'jquery-ui'
 ], function( $, _, Backbone, projectsTemplate, Project, projects, ProjectDetailsView, ProjectEditView, ProjectCreateView, ich, Common ) {
     'use strict';
@@ -87,7 +86,7 @@ define([
             var id = project.get('id');
             if (id && this.selectedId === id) {
                 return;
-            }          
+            }
 
             this.selectedId = id;
             this.selectedProject = project;
@@ -101,7 +100,7 @@ define([
             projects.each( function (project) {
                 if (project.get('id') === id) {
                     this.selectOne(project);
-                } 
+                }
             }, this);
         },
         
