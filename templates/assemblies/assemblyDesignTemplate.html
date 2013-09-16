@@ -38,20 +38,27 @@
     <div class="control-group">
       <label class="control-label" for="assemblyDesignImagesTable">Image</label>
       <div class="controls">
-        <div id="assemblyDesignImagesTable" class="row-fluid">
-        <table class="table table-striped table-bordered">
+        <div class="row-fluid">
+        <table id="assemblyDesignImagesTable" class="table table-striped table-bordered">
           <thead>
             <tr>
+              <th>Id</th>
               <th>Image Name</th>
+              <th>Description</th>
             </tr>
           </thead>
-          <tbody id="instance-container">
+          <tbody id="image-container">
            
           </tbody>
         </table>
-        <button type="submit" id="save-assembly" class="btn btn-primary">Save</button>
       </div>
       </div>
     </div>
+    <div class="control-group">
+      <div class="controls">
+        <button type="submit" id="save-assembly" class="btn btn-primary">Save</button>
+      </div>
+    </div>
+    <input type="hidden" name="image" id="assemblyDesignImage"/>
   </form>
 </div>

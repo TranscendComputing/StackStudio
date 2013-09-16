@@ -114,6 +114,13 @@ define([
                     this.value = value;
                 }
             });
+            
+            Common.vent.once("imagesLoaded", function(){
+                var imageData = $this.currentAssembly.get("image");
+                if(imageData){
+                    $this.findImage(imageData);
+                }
+            });
 
             if(this.currentAssembly.get("tool") === "Chef"){
                 var chefConfig = this.currentAssembly.get("configurations")["chef"];
@@ -126,6 +133,17 @@ define([
                     $this.selectRecipes(recipeList);
                 });
             }
+        },
+        findImage: function(imageData){
+            var table = this.tabView.imageTable;
+            var tableData = table.fnGetData();
+            for(var i = 0; i < tableData.length; i++){
+                if(tableData[i].label === imageData.label && tableData[i].description === imageData.description){
+                    $(table.fnGetNodes(i)).addClass("row_selected");
+                    return;
+                }
+            }
+            Common.errorDialog("Not found", "Could not find image saved with this assembly.");
         },
         sortByCookbook: function(runlist){
             var cookbooks = {};
@@ -184,6 +202,7 @@ define([
             this.tabView.listView.close();
             this.tabView.listView = new ConfigListView();
             this.tabView.listView.render();
+            this.tabView.imageTable.fnClearTable();
         },
         deleteAssembly: function(evt){
             var assembly = this.assemblies.get(evt.currentTarget.id);

@@ -6,18 +6,23 @@
 /*jshint smarttabs:true */
 /*global define:true console:true requirejs:true require:true alert:true*/
 define([
-        'jquery',
-        'underscore',
-        'bootstrap',
-        'backbone',
-        'common',
-        'text!templates/assemblies/assemblyDesignTemplate.html',
-        'collections/chefEnvironments',
-        'collections/cloudCredentials',
-        'models/assembly',
-        'collections/assemblies',
-        'views/assemblies/configListView'
-], function( $, _, bootstrap, Backbone, Common,  assemblyDesignTemplate, ChefEnvironments, CloudCredentials,  Assembly, Assemblies, ConfigListView) {
+    'jquery',
+    'underscore',
+    'bootstrap',
+    'backbone',
+    'common',
+    'text!templates/assemblies/assemblyDesignTemplate.html',
+    'collections/chefEnvironments',
+    'collections/cloudCredentials',
+    'models/assembly',
+    'collections/assemblies',
+    'views/assemblies/configListView',
+    'jquery-plugins',
+    'jquery-ui-plugins',
+    'jquery.dataTables',
+    'jquery.dataTables.fnProcessingIndicator',
+    'jquery.sortable'
+], function($, _, bootstrap, Backbone, Common, assemblyDesignTemplate, ChefEnvironments, CloudCredentials, Assembly, Assemblies, ConfigListView) {
 
     var AssemblyDesignView = Backbone.View.extend({
 
@@ -28,13 +33,14 @@ define([
         template: _.template(assemblyDesignTemplate),
         events: {
             //"change #assemblyDesignCloudCreds" : "credentialChangeHandler",
-            "change #chefEnvironmentSelect" : "environmentSelectHandler",
-            "click #save-assembly" : "saveAssemblyHandler",
-            "change input,textarea,select" : "formChanged"
+            "change #chefEnvironmentSelect": "environmentSelectHandler",
+            "click #save-assembly": "saveAssemblyHandler",
+            "change input,textarea,select": "formChanged",
+            "click .selectable_item": "clickImageHandler"
             //"shown" : "accordionShown"
         },
 
-        environmentSelectHandler: function(evt){
+        environmentSelectHandler: function(evt) {
             this.listView.environmentSelectHandler(evt);
         },
         initialize: function(options) {
@@ -51,28 +57,49 @@ define([
 
             //Cloud Credentials fetch is asyncronous due to custom fetch behavior.
             this.cloudCredentials.fetch();
-
-            // $("#assemblyDesignImagesTable").dataTable({
-            //     bjQueryUI:true
-            // });
-
-
-
+            var $this = this;
+            this.imageTable = $("#assemblyDesignImagesTable").dataTable({
+                "bJQueryUI": true,
+                "bProcessing": true,
+                "bDestroy": true,
+                bRetrieve: true,
+                "fnCreatedRow": function(nRow, aData, iDataIndex) {
+                    $(nRow).addClass("selectable_item");
+                },
+                "aoColumnDefs": [{
+                    "bVisible": false,
+                    aTargets: [0],
+                    mData: "cid"
+                }, {
+                    "sTitle": "Name",
+                    aTargets: [1],
+                    mData: function(data){
+                        return data.label || data.name;
+                    }
+                }, {
+                    "sTitle": "Description",
+                    aTargets: [2],
+                    mData: function(data){
+                        return data.description || "";
+                    }
+                }]
+            });
+            this.imageTable.fnProcessingIndicator(true);
         },
 
-        close: function(){
+        close: function() {
             this.$el.empty();
             this.undelegateEvents();
             this.stopListening();
             this.unbind();
         },
 
-        populateCredentials: function(){
+        populateCredentials: function() {
             var list = this.cloudCredentials;
             var select = $("#assemblyDesignCloudCreds")
                 .empty()
                 .on("change", $.proxy(this.credentialChangeHandler, this));
-            list.forEach(function(element, index, list){
+            list.forEach(function(element, index, list) {
                 $('<option>')
                     .text(element.get("cloud_name") + ":" + element.get("name"))
                     .data("cloudCredentials", element)
@@ -80,21 +107,22 @@ define([
             });
             select.trigger("change");
         },
-        credentialChangeHandler: function(evt){
+        credentialChangeHandler: function(evt) {
             var $this = this;
             var optionSelected = $("option:selected", evt.target);
             var credential = this.credential = optionSelected.data("cloudCredentials");
-            if (!credential){
+            if (!credential) {
                 this.flashError("We're sorry.  Cloud credentials could not be retrieved.");
                 return;
             }
 
             this.listView.credential = credential;
-            this.listView.fetchChefEnvironments().done(function(model){
+            this.listView.fetchChefEnvironments().done(function(model) {
                 $this.listView.populateChefEnvironments(new ChefEnvironments(model));
             });
+            this.populateImages(credential.get("cloud_provider").toLowerCase(), credential);
         },
-        saveAssemblyHandler: function(e){
+        saveAssemblyHandler: function(e) {
             e.preventDefault();
             var configs = this.getConfigs();
             this.currentAssembly.set(configs);
@@ -118,7 +146,11 @@ define([
             var value = $(evt.currentTarget).val();
             var obj = {};
             var attrs = _.clone(this.currentAssembly.attributes);
-            attrs[changed.name] = value;
+            if(changed.name === "image"){
+                attrs[changed.name] = this.images.get(value).toJSON();
+            }else{
+                attrs[changed.name] = value;
+            }
             this.currentAssembly.set(attrs);
         },
         getConfigs: function() {
@@ -127,15 +159,48 @@ define([
             chef["env"] = $("#chefEnvironmentSelect :selected").val();
             chef["run_list"] = this.getRunlist();
             configurations["chef"] = chef;
-            return {"configurations": configurations};
+            return {
+                "configurations": configurations
+            };
         },
-        getRunlist: function(){
+        getRunlist: function() {
             var runlist = [];
-            $("input:checkbox[class=recipeSelector]:checked").each(function(index, object){
+            $("input:checkbox[class=recipeSelector]:checked").each(function(index, object) {
                 runlist.push("recipe[" + $(object.parentElement).find(".recipe").text() + "]");
             });
             return runlist;
         },
+        populateImages: function(cloud, credential) {
+            var $this = this;
+
+            var imagesPath = "../" + cloud + "/collections/compute/" + cloud + "Images";
+            require([imagesPath], function(Images) {
+                var images = new Images();
+                images.fetch({
+                    data: $.param({ cred_id: credential.id, region: this.region }), 
+                    reset: true,
+                    success: function(collection) {
+                        $this.imageTable.fnClearTable();
+                        $this.images = collection;
+                        collection.each(function(model, index, stuff) {
+                            var attrs = model.toJSON();
+                            attrs["cid"] = model.cid;
+                            $this.imageTable.fnAddData(attrs);
+                        });
+                        $this.imageTable.fnProcessingIndicator(false);
+                        Common.vent.trigger("imagesLoaded");
+                    }
+                });
+            });
+        },
+        clickImageHandler: function(evt) {
+            $(".row_selected").removeClass("row_selected");
+            $(evt.currentTarget).addClass("row_selected");
+            var imageData = this.imageTable.fnGetData(evt.currentTarget);
+            $("#assemblyDesignImage")
+                .val(imageData.cid)
+                .change();
+        }
     });
 
     return AssemblyDesignView;
