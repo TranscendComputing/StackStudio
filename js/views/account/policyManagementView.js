@@ -14,13 +14,14 @@ define([
         'models/policy',
         'collections/users',
         '/js/aws/collections/notification/awsTopics.js',
+        '/js/aws/collections/compute/awsDefaultImages.js',
         'views/account/groupCreateView',
         'views/account/groupManageUsersView',
         '/js/aws/views/cloud_watch/awsDefaultAlarmCreateView.js',
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator',
         'bootstrap'
-], function( $, _, Backbone, Common, groupsManagementTemplate, Policy, Users, Topics, CreateGroupView, ManageGroupUsers, CreateAlarmView ) {
+], function( $, _, Backbone, Common, groupsManagementTemplate, Policy, Users, Topics, Images, CreateGroupView, ManageGroupUsers, CreateAlarmView ) {
 
     var GroupManagementView = Backbone.View.extend({
 
@@ -35,6 +36,8 @@ define([
         users: undefined,
         
         topics: undefined,
+        
+        images: undefined,
 
         selectedGroup: undefined,
         
@@ -46,7 +49,8 @@ define([
             "click #manage_group_users_button" : "manageGroupUsers",
             "click #save_button" : "savePolicy",
             "click #create_alarm_btn" : "createAlarm",
-            "click .remove_alarm" : "removeAlarm"
+            "click .remove_alarm" : "removeAlarm",
+            'click #images_table tr': 'selectImage'
         },
 
         initialize: function() {
@@ -54,10 +58,9 @@ define([
             this.rootView = this.options.rootView;
             $("#submanagement_app").html(this.$el);
             //$("button").button();
-            $("#group_users_table").dataTable({
-                "bJQueryUI": true,
-                "bProcessing": true
-            });
+            
+            $("#images_table").dataTable();
+            
             var groupsView = this;
             Common.vent.off("policyAppRefresh");
             Common.vent.on("policyAppRefresh", function() {
@@ -73,6 +76,9 @@ define([
             
             this.topics = new Topics();
             this.topics.on( 'reset', this.addAllTopics, this );
+            
+            this.images = new Images();
+            this.images.on('reset', this.addAllImages, this);
             
             this.selectedGroup = undefined;
             this.render();
@@ -218,6 +224,7 @@ define([
                 $("#default_credentials").append("<option value='"+creds[i].cloud_credential.id+"'>"+creds[i].cloud_credential.name+"</option>");
             }
             this.topics.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
+            this.images.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
         },
         
         addAlarm: function(options){
@@ -252,6 +259,19 @@ define([
                 $("#default_warning").val(p.default_warning);
                 $("#default_error").val(p.default_error);
             }
+        },
+        
+        addAllImages: function(collection){
+            $("#images_table").dataTable().fnClearTable();
+            collection.each(function(model) {
+                var rowData = [model.attributes.label];
+                $("#images_table").dataTable().fnAddData(rowData);
+            });
+        },
+        
+        selectImage: function(event){
+            $(".row_selected").removeClass('row_selected');
+            $(event.currentTarget).addClass('row_selected');
         },
 
         close: function(){
