@@ -536,37 +536,48 @@
                             </label>
                         </div>
                     </div>
-
-                        <!-- Multiple Checkboxes (inline) -->
-                        <div class="control-group">
-                      <label class="control-label">Default SNS Topics:</label>
-                      <div class="controls">
-                        <label class="checkbox inline">
-                          <input type="checkbox" name="sns_topics" value="Informational">
-                          Informational
-                        </label>
-                        <label class="checkbox inline">
-                          <input type="checkbox" name="sns_topics" value="Warning">
-                          Warning
-                        </label>
-                        <label class="checkbox inline">
-                          <input type="checkbox" name="sns_topics" value="Error">
-                          Error
-                        </label>
-                      </div>
+                    
+                    <!-- Select Basic -->
+                    <div class="control-group">
+                        <label class="control-label">Default Informational:</label>
+                        <div class="controls">
+                            <select id="default_informational" style="width:365px;" name="default_informational" class="input-xlarge">
+                                <option>Select Default Informational</option>
+                            </select>
+                        </div>
                     </div>
                     
-                        <!-- Select Basic -->
-                        <div class="control-group">
-                      <label class="control-label">Push Platform:</label>
-                      <div class="controls">
-                        <select id="sns_delivery" name="sns_delivery" class="input-xlarge">
-                          <option>Amazon Device Messaging (ADM)</option>
-                          <option>Apple Push Notification Service (APNS)</option>
-                          <option>Apple Push Notification Service Sandbox (APNS_SANDBOX)</option>
-                          <option>Google Cloud Messaging (GCM)</option>
-                        </select>
-                      </div>
+                    <!-- Select Basic -->
+                    <div class="control-group">
+                        <label class="control-label">Default Warning:</label>
+                        <div class="controls">
+                            <select id="default_warning" style="width:365px;" name="default_warning" class="input-xlarge">
+                                <option>Select Default Warning</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Select Basic -->
+                    <div class="control-group">
+                        <label class="control-label">Default Error:</label>
+                        <div class="controls">
+                            <select id="default_error" style="width:365px;" name="default_error" class="input-xlarge">
+                                <option>Select Default Error</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Select Basic -->
+                    <div class="control-group">
+                        <label class="control-label">Push Platform:</label>
+                        <div class="controls">
+                            <select id="sns_delivery" name="sns_delivery" class="input-xlarge">
+                                <option>Amazon Device Messaging (ADM)</option>
+                                <option>Apple Push Notification Service (APNS)</option>
+                                <option>Apple Push Notification Service Sandbox (APNS_SANDBOX)</option>
+                                <option>Google Cloud Messaging (GCM)</option>
+                            </select>
+                        </div>
                     </div>
                     </div>
                     

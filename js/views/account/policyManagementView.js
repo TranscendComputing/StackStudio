@@ -13,13 +13,14 @@ define([
         'text!templates/account/policyManagementTemplate.html',
         'models/policy',
         'collections/users',
+        '/js/aws/collections/notification/awsTopics.js',
         'views/account/groupCreateView',
         'views/account/groupManageUsersView',
         '/js/aws/views/cloud_watch/awsDefaultAlarmCreateView.js',
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator',
         'bootstrap'
-], function( $, _, Backbone, Common, groupsManagementTemplate, Policy, Users, CreateGroupView, ManageGroupUsers, CreateAlarmView ) {
+], function( $, _, Backbone, Common, groupsManagementTemplate, Policy, Users, Topics, CreateGroupView, ManageGroupUsers, CreateAlarmView ) {
 
     var GroupManagementView = Backbone.View.extend({
 
@@ -32,6 +33,8 @@ define([
         policy: undefined,
         
         users: undefined,
+        
+        topics: undefined,
 
         selectedGroup: undefined,
         
@@ -67,8 +70,11 @@ define([
                 groupsView.refreshSession();
             });
             this.users = new Users();
-            this.selectedGroup = undefined;
             
+            this.topics = new Topics();
+            this.topics.on( 'reset', this.addAllTopics, this );
+            
+            this.selectedGroup = undefined;
             this.render();
         },
 
@@ -79,7 +85,6 @@ define([
                 this.model = this.rootView.policies.get(this.policy);
                 this.populateForm(this.model);
             }
-            
             this.disableSelectionRequiredButtons(false);
         },
         
@@ -201,7 +206,8 @@ define([
         
         createAlarm: function(){
             var pView = this;
-            var newAlarmDialog = new CreateAlarmView({cred_id: $("#default_credentials").val(), region: $("#default_region").val(), policy_view: pView});
+            var topicsList = [$("#default_informational").val(),$("#default_warning").val(),$("#default_error").val()];
+            var newAlarmDialog = new CreateAlarmView({cred_id: $("#default_credentials").val(), region: $("#default_region").val(), policy_view: pView,tList: topicsList});
             newAlarmDialog.render();
         },
         
@@ -211,6 +217,7 @@ define([
             for (var i in creds) {
                 $("#default_credentials").append("<option value='"+creds[i].cloud_credential.id+"'>"+creds[i].cloud_credential.name+"</option>");
             }
+            this.topics.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
         },
         
         addAlarm: function(options){
@@ -228,6 +235,23 @@ define([
             var trIndex = tr.prevAll().length;
             this.alarms.splice(trIndex,1);
             return false;
+        },
+        
+        addAllTopics: function(collection){
+            $("#default_informational").empty();
+            $("#default_warning").empty();
+            $("#default_error").empty();
+            collection.each(function(model){
+                $("#default_informational").append("<option>"+model.attributes.id+"</option>");
+                $("#default_warning").append("<option>"+model.attributes.id+"</option>");
+                $("#default_error").append("<option>"+model.attributes.id+"</option>");
+            });
+            if(typeof this.rootView != 'undefined' && typeof this.rootView.treePolicy != 'undefined'){
+                var p = this.model.attributes.aws_governance;
+                $("#default_informational").val(p.default_informational);
+                $("#default_warning").val(p.default_warning);
+                $("#default_error").val(p.default_error);
+            }
         },
 
         close: function(){
