@@ -25,6 +25,21 @@ define([
 
         parse: function(resp) {
             return resp.portfolio;
+        },
+
+        create: function(options) {
+            var url = Common.apiUrl + "/stackstudio/v1/portfolios";
+            this.sendAjaxAction(url, "POST", options, "portfolioCreated");
+        },
+
+        update: function(options) {
+            var url = Common.apiUrl + "/stackstudio/v1/portfolios/" + this.id +"?_method=PUT";
+            this.sendAjaxAction(url, "POST", options, "portfolioUpdated");
+        },
+
+        destroy:function() {
+            var url = Common.apiUrl + "/stackstudio/v1/portfolios/" + this.id +"?_method=DELETE";
+            this.sendAjaxAction(url, "POST", undefined, "portfolioDeleted");
         }
 
     });

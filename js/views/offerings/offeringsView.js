@@ -34,9 +34,19 @@ define([
         initialize: function() {
             $("#main").html(this.el);
             this.$el.html(this.template);
+            //Add event when tabs change
+            $('a[data-toggle="tab"]').off('shown');
+            var offeringsView = this;
+            $('a[data-toggle="tab"]').on('shown', function (e) {
+                offeringsView.changeTabs();
+            });
         },
 
         render: function(){
+            this.changeTabs();
+        },
+
+        changeTabs: function() {
             if($("#design_offerings_tab").hasClass("active")) {
                 if(!this.offeringDesignView) {
                     this.offeringDesignView = new OfferingDesignView();
