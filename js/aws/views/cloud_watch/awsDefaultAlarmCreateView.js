@@ -38,6 +38,8 @@ define([
         
         topics: new Topics(),
         
+        tList: undefined,
+        
         alarm: new Alarm(),
         
         selectedAction: undefined,
@@ -56,6 +58,7 @@ define([
             this.credentialId = options.cred_id;
             this.region = options.region;
             this.policy_view = options.policy_view;
+            this.tList = options.tList;
             var createView = this;
             var compiledTemplate = _.template(alarmCreateTemplate);
             this.$el.html(compiledTemplate);
@@ -142,8 +145,11 @@ define([
         
         addAllTopics: function() {
             $("#sns_topic_select").empty();
+            var list = this.tList;
             this.topics.each(function(topic) {
-                $("#sns_topic_select").append("<option>" + topic.attributes.id + "</option>");
+                if($.inArray(topic.attributes.id, list) !== -1){
+                    $("#sns_topic_select").append("<option>" + topic.attributes.id + "</option>");
+                }
             });
         },
         
