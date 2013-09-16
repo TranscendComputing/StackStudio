@@ -42,7 +42,8 @@ define([
         events: {
             "click #manage_group_users_button" : "manageGroupUsers",
             "click #save_button" : "savePolicy",
-            "click #create_alarm_btn" : "createAlarm"
+            "click #create_alarm_btn" : "createAlarm",
+            "click .remove_alarm" : "removeAlarm"
         },
 
         initialize: function() {
@@ -176,9 +177,10 @@ define([
                 }
               }
             }
-            // for (var i in creds){
-//                 
-//             }
+            this.alarms = p.default_alarms;
+            for (var i in this.alarms){
+                $("#alarm_table").append("<tr><td>"+this.alarms[i].namespace+"</td><td>"+this.alarms[i].metric_name+"</td><td>"+this.alarms[i].threshold+"</td><td>"+this.alarms[i].period+"</td><td><a class='btn btn-mini btn-danger remove_alarm'><i class='icon-minus-sign icon-white'></i></a></td></tr>");
+            }
         },
         
         refreshSession: function(){
@@ -214,7 +216,18 @@ define([
         addAlarm: function(options){
             //debugger
             this.alarms.push(options);
-            $("#alarm_table").append("<tr><td>"+options.namespace+"</td><td>"+options.metric_name+"</td><td>"+options.threshold+"</td><td>"+options.period+"</td><td><a class='btn btn-mini btn-danger'><i class='icon-minus-sign icon-white'></i></a></td></tr>");
+            $("#alarm_table").append("<tr><td>"+options.namespace+"</td><td>"+options.metric_name+"</td><td>"+options.threshold+"</td><td>"+options.period+"</td><td><a class='btn btn-mini btn-danger remove_alarm'><i class='icon-minus-sign icon-white'></i></a></td></tr>");
+        },
+        
+        removeAlarm: function(event){
+            var tr = $(event.target).closest('tr');
+            tr.css("background-color","#FF3700");
+            tr.fadeOut(400, function(){
+                tr.remove();
+            });
+            var trIndex = tr.prevAll().length;
+            this.alarms.splice(trIndex,1);
+            return false;
         },
 
         close: function(){
