@@ -60,18 +60,16 @@ define([
 
         appsApp: undefined,
 
+        chefIcon: "<img src='/images/CompanyLogos/chefLogo.jpg' class='chef_icon'/>",
+        puppetIcon: "<img src='/images/CompanyLogos/puppet.png' class='puppet_icon'/>",
+
         subViews: [],
 
         events: {
-            //"typeahead:selected": "packageClick",
-            //"shown": "accordionShown",
-            //"change .recipes input": "recipeChangeHandler",
-            //"change #chef-selection .accordion-heading": "chefGroupChangeHandler",
             "change #chefEnvironmentSelect" : "environmentSelectHandler",
             "change #deploy-inst table:first" : "updateDeployButtonState"
         },
 
-        chefGroupQueue: 0,
         initialize: function(options) {
             console.log("Initialize assembly runtime view.");
             if (!_.compile){ // Allows using underscore templating with tyepahead
@@ -100,8 +98,15 @@ define([
                         }
                     },
                     {
-                        "sTitle": "Instance Name",
+                        "sTitle": "",
                         aTargets: [1],
+                        mData: function(instance){
+                            return "";
+                        }
+                    },
+                    {
+                        "sTitle": "Instance Name",
+                        aTargets: [2],
                         //mData: "tags.Name"
                         mData: function(instance){
                             if (!instance){
@@ -115,7 +120,7 @@ define([
                     },
                     {
                         "sTitle": "Id",
-                        aTargets: [2],
+                        aTargets: [3],
                         mData: "id"
                         //mData: function(instance){
                         //    return instance.id;
@@ -143,7 +148,7 @@ define([
 
             // $("#selectAccordion").on("shown", this.toggleInstInfra);
             var $this = this;
-            this.fetchCloudCredentials().done($.proxy(function(result){
+            this.fetchCloudDefinitions().done($.proxy(function(result){
                 $this.cloudDefinitions = result;
                 //this.loadAppsApp();
                 $this.loadCredentials();
@@ -154,7 +159,7 @@ define([
             this.listView.environmentSelectHandler(evt);
         },
 
-        fetchCloudCredentials: function(){
+        fetchCloudDefinitions: function(){
             var d = $.Deferred();
             var $this = this;
             $.ajax({
@@ -228,23 +233,51 @@ define([
             this.populateInstances(region, credential);
         },
 
-        populateInstances: function(region, credential){
+        populateInstances: function(region, credential) {
             var $this = this;
             var providerName = credential.get("cloud_provider").toLowerCase();
             var appPath = "../" + providerName + "/collections/compute/" + providerName + "Instances";
-            require([appPath], function (Instances) {
+            require([appPath], function(Instances) {
                 var instances = new Instances();
-                
+
                 instances
                     .fetch({
                         data: {
                             cred_id: credential.get("id"),
                             region: region.zone
+                        },
+                        success: function(collection, response, options) {
+                            $this.renderInstances(collection.toJSON());
+                            $this.labelInstances(collection.toJSON());
                         }
-                    })
-                    .done(function(model, response, options){
-                        $this.renderInstances(model);
-                });
+                    });
+            });
+        },
+        labelInstances: function(instances) {
+            var instanceNames = [];
+            var accountId = this.credential.get("cloud_account_id");
+            var url = Common.apiUrl + "/stackstudio/v1/orchestration/chef/nodes/find?account_id=" + accountId;
+
+            for (var i = 0; i < instances.length; i++) {
+                var name = instances[i]["name"] || instances[i]["dns_name"];
+                instanceNames.push(name);
+            }
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: JSON.stringify(instanceNames),
+                success: function(response) {
+                    console.log(JSON.stringify(response));
+                    for(var i = 0; i < response.length; i++){
+                        var data = response[i];
+                        if(!$.isEmptyObject(data)){
+                            var instanceRow = this.instanceTable.$("tr:eq("+i+")").first();
+                            instanceRow.data("node", data);
+                            instanceRow.find("td:eq(1)").html(this.chefIcon);
+                        }
+                    }
+                },
+                context: this
             });
         },
 
