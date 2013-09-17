@@ -238,7 +238,7 @@ define([
                 $("#default_credentials").append("<option value='"+creds[i].cloud_credential.id+"'>"+creds[i].cloud_credential.name+"</option>");
             }
             this.topics.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
-            this.images.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val(), owner: $("#filter_owner").val(), architecture: $("#filter_architecture").val()}), reset: true });
+            this.images.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val(), owner: $("#filter_owner").val(), architecture: $("#filter_architecture").val(), platform: $("#filter_platform").val()}), reset: true });
         },
         
         addAlarm: function(options){
@@ -288,13 +288,20 @@ define([
             $(event.currentTarget).addClass('row_selected');
             
             var rowData = $("#images_table").dataTable().fnGetData(event.currentTarget);
+            
+            $("#add_image").hide();
+            $("#add_image_source").hide();
+            
             $("#add_image").html(rowData[0]);
             $("#add_image_source").html(rowData[1]);
+            
+            $("#add_image").show(1000);
+            $("#add_image_source").show(1000);
         },
         
         imageFilterSelect: function(event){
             $("#images_table").dataTable().fnClearTable();
-            this.images.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val(), owner: $("#filter_owner").val(), architecture: $("#filter_architecture").val()}), reset: true });
+            this.images.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val(), owner: $("#filter_owner").val(), architecture: $("#filter_architecture").val(), platform: $("#filter_platform").val()}), reset: true });
         },
         
         addImage: function(){
