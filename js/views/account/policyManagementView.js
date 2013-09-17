@@ -49,8 +49,10 @@ define([
             "click #manage_group_users_button" : "manageGroupUsers",
             "click #save_button" : "savePolicy",
             "click #create_alarm_btn" : "createAlarm",
+            "click #add_image_btn" : "addImage",
             "click .remove_alarm" : "removeAlarm",
-            'click #images_table tr': 'selectImage'
+            'click #images_table tr': 'selectImage',
+            "change .image_filter":"imageFilterSelect"
         },
 
         initialize: function() {
@@ -59,7 +61,19 @@ define([
             $("#submanagement_app").html(this.$el);
             //$("button").button();
             
-            $("#images_table").dataTable();
+            $("#images_table").dataTable({
+                "aoColumns": [
+                        { "sWidth": "25%" },
+                        { "sWidth": "70%" }
+                    ]
+            });
+            $("#default_images_table").dataTable({
+                "sDom": 't',
+                "aoColumns": [
+                        { "sWidth": "25%" },
+                        { "sWidth": "70%" }
+                    ]
+            });
             
             var groupsView = this;
             Common.vent.off("policyAppRefresh");
@@ -224,7 +238,7 @@ define([
                 $("#default_credentials").append("<option value='"+creds[i].cloud_credential.id+"'>"+creds[i].cloud_credential.name+"</option>");
             }
             this.topics.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
-            this.images.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
+            this.images.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val(), owner: $("#filter_owner").val(), architecture: $("#filter_architecture").val()}), reset: true });
         },
         
         addAlarm: function(options){
@@ -264,7 +278,7 @@ define([
         addAllImages: function(collection){
             $("#images_table").dataTable().fnClearTable();
             collection.each(function(model) {
-                var rowData = [model.attributes.label];
+                var rowData = [model.attributes.imageId,model.attributes.imageLocation];
                 $("#images_table").dataTable().fnAddData(rowData);
             });
         },
@@ -272,6 +286,19 @@ define([
         selectImage: function(event){
             $(".row_selected").removeClass('row_selected');
             $(event.currentTarget).addClass('row_selected');
+            
+            var rowData = $("#images_table").dataTable().fnGetData(event.currentTarget);
+            $("#add_image").html(rowData[0]);
+            $("#add_image_source").html(rowData[1]);
+        },
+        
+        imageFilterSelect: function(event){
+            $("#images_table").dataTable().fnClearTable();
+            this.images.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val(), owner: $("#filter_owner").val(), architecture: $("#filter_architecture").val()}), reset: true });
+        },
+        
+        addImage: function(){
+            $("#default_images_table").dataTable().fnAddData([$("#add_image").html(),$("#add_image_source").html()]);
         },
 
         close: function(){

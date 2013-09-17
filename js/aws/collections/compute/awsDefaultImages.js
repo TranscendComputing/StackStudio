@@ -17,7 +17,7 @@ define([
 
         model: Image,
 
-        url: 'samples/awsImages.json'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/images'
     });
     
     return ImageList;

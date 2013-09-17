@@ -341,14 +341,53 @@
                         </div>
                     </div> -->
                     <div class="well" style="margin-top:40px;">
-                        <table id="images_table" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Label</th>
-                                </tr>
-                            </thead>
-                        </table>
+                        <div class="row" style="margin-bottom: 5px;">
+                            <div class="span4">
+                                <b>Owner:</b>
+                                <select class="input-medium image_filter" id="filter_owner">
+                                    <option>amazon</option>
+                                    <option>aws-marketplace</option>
+                                    <option>self</option>
+                                </select>
+                            </div>
+                            <div class="span4">
+                                <b>Architecture:</b>
+                                <select class="input-small image_filter" id="filter_architecture">
+                                    <option>i386</option>
+                                    <option>x86_64</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="span12">
+                                <table id="images_table" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Image ID</th>
+                                            <th>Source</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
                         <hr>
+                        <div class="row">
+                            <div class="span3"><b>Selected Image:</b><div id="add_image"></div></div>
+                            <div class="span6"><b>Source:</b><div id="add_image_source"></div></div>
+                            <div class="span3"><a id="add_image_btn" class="btn btn-primary" style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;margin-bottom:8px;"><i class="icon-plus-sign icon-white"></i>&nbsp;Add</a>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <table id="default_images_table" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Image ID</th>
+                                        <th>Source</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
                     </div>
                     
                     <!-- Appended checkbox -->
