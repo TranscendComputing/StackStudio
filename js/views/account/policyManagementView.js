@@ -18,10 +18,11 @@ define([
         'views/account/groupCreateView',
         'views/account/groupManageUsersView',
         '/js/aws/views/cloud_watch/awsDefaultAlarmCreateView.js',
+        '/js/aws/views/notification/awsTopicsCreateView.js',
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator',
         'bootstrap'
-], function( $, _, Backbone, Common, groupsManagementTemplate, Policy, Users, Topics, Images, CreateGroupView, ManageGroupUsers, CreateAlarmView ) {
+], function( $, _, Backbone, Common, groupsManagementTemplate, Policy, Users, Topics, Images, CreateGroupView, ManageGroupUsers, CreateAlarmView, CreateTopicsView ) {
 
     var GroupManagementView = Backbone.View.extend({
 
@@ -55,7 +56,8 @@ define([
             "click .remove_alarm" : "removeAlarm",
             "click .remove_image" : "removeImage",
             'click #images_table tr': 'selectImage',
-            "change .image_filter":"imageFilterSelect"
+            "change .image_filter":"imageFilterSelect",
+            "click .create_topic_btn":"topicCreate"
         },
 
         initialize: function() {
@@ -91,6 +93,12 @@ define([
                 });
                 groupsView.refreshSession();
             });
+            
+            Common.vent.off("topicAppRefresh");
+            Common.vent.on("topicAppRefresh", function() {
+                groupsView.topics.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
+            });
+            
             this.users = new Users();
             
             this.topics = new Topics();
@@ -236,7 +244,12 @@ define([
         
         createAlarm: function(){
             var pView = this;
-            var topicsList = [$("#default_informational").val(),$("#default_warning").val(),$("#default_error").val()];
+            
+            var topicsList = []
+            if($("#default_informational").val() !== "None"){topicsList.push($("#default_informational").val());}
+            if($("#default_warning").val() !== "None"){topicsList.push($("#default_warning").val());}
+            if($("#default_error").val() !== "None"){topicsList.push($("#default_error").val());}
+            
             var newAlarmDialog = new CreateAlarmView({cred_id: $("#default_credentials").val(), region: $("#default_region").val(), policy_view: pView,tList: topicsList});
             newAlarmDialog.render();
         },
@@ -288,6 +301,11 @@ define([
                 $("#default_warning").append("<option>"+model.attributes.id+"</option>");
                 $("#default_error").append("<option>"+model.attributes.id+"</option>");
             });
+            
+            $("#default_informational").append("<option>None</option>")
+            $("#default_warning").append("<option>None</option>")
+            $("#default_error").append("<option>None</option>")
+            
             if(typeof this.rootView != 'undefined' && typeof this.rootView.treePolicy != 'undefined'){
                 var p = this.model.attributes.aws_governance;
                 $("#default_informational").val(p.default_informational);
@@ -323,6 +341,11 @@ define([
         imageFilterSelect: function(event){
             $("#images_table").dataTable().fnClearTable();
             this.images.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val(), platform: $("#filter_platform").val()}), reset: true });
+        },
+        
+        topicCreate: function(event){
+            var createTopicsDialog = new CreateTopicsView({cred_id: $("#default_credentials").val(), region: $("#default_region").val()});
+            createTopicsDialog.render();
         },
         
         addImage: function(){
