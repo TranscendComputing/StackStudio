@@ -149,7 +149,7 @@ define([
         sortByCookbook: function(runlist){
             var cookbooks = {};
             for(var i = 0; i < runlist.length; i++){
-                var recipeName = runlist[i].match(/recipe\[(.*)\]/)[1];
+                var recipeName = runlist[i]["name"];
                 var cookbook = recipeName.split("::")[0];
                 if(!cookbooks[cookbook]){
                     cookbooks[cookbook] = [];

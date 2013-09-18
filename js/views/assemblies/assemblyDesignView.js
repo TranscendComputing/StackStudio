@@ -124,7 +124,7 @@ define([
         },
         saveAssemblyHandler: function(e) {
             e.preventDefault();
-            var configs = this.getConfigs();
+            var configs = this.listView.getConfigs();
             this.currentAssembly.set(configs);
             //If no id, then it's a new assembly.  Otherwise, update existing assembly.
             if(!this.currentAssembly.id){
@@ -153,23 +153,6 @@ define([
             }
             this.currentAssembly.set(attrs);
         },
-        getConfigs: function() {
-            var configurations = {};
-            var chef = {};
-            chef["env"] = $("#chefEnvironmentSelect :selected").val();
-            chef["run_list"] = this.getRunlist();
-            configurations["chef"] = chef;
-            return {
-                "configurations": configurations
-            };
-        },
-        getRunlist: function() {
-            var runlist = [];
-            $("input:checkbox[class=recipeSelector]:checked").each(function(index, object) {
-                runlist.push("recipe[" + $(object.parentElement).find(".recipe").text() + "]");
-            });
-            return runlist;
-        },
         populateImages: function(cloud, credential) {
             var $this = this;
 
@@ -177,7 +160,7 @@ define([
             require([imagesPath], function(Images) {
                 var images = new Images();
                 images.fetch({
-                    data: $.param({ cred_id: credential.id, region: this.region }), 
+                    data: $.param({ cred_id: credential.id, region: this.region }),
                     reset: true,
                     success: function(collection) {
                         $this.imageTable.fnClearTable();

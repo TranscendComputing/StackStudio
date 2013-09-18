@@ -67,8 +67,10 @@ define([
 
         events: {
             "change #chefEnvironmentSelect" : "environmentSelectHandler",
-            "change #deploy-inst table:first" : "updateDeployButtonState"
+            "change #deploy-inst table:first" : "updateDeployButtonState",
+            "click #deploy-to" : "queueToInstance"
         },
+
 
         initialize: function(options) {
             console.log("Initialize assembly runtime view.");
@@ -84,6 +86,9 @@ define([
             $("#assemblyRuntime").html(this.el);
             this.$el.html(this.template);
             this.bind("badge-refresh", this.updateDeployButtonState, this);
+
+            Common.vent.on("chefSelectionChanged", this.updateDeployButtonState, this);
+
             this.instanceTable = $('#deploy-inst table:first').dataTable({
                 "bJQueryUI": true,
                 "bProcessing": true,
@@ -267,7 +272,6 @@ define([
                 type: "POST",
                 data: JSON.stringify(instanceNames),
                 success: function(response) {
-                    console.log(JSON.stringify(response));
                     for(var i = 0; i < response.length; i++){
                         var data = response[i];
                         if(!$.isEmptyObject(data)){
@@ -286,7 +290,8 @@ define([
             var chefChecked = $("#chef-selection").find("input[type='checkbox']:checked").length;
             var infraChecked = $("#cloud-formation-badge input[type='checkbox']:checked").length;
 
-            var enabled = instanceChecked && (chefChecked || this.listView.collection.length);
+            var configsList = this.listView.getConfigs()["configurations"];
+            var enabled = instanceChecked && (chefChecked || configsList["chef"]["run_list"].length);
             if (enabled){
                 $("#deploy-to")
                     .removeClass("disabled")
@@ -330,7 +335,40 @@ define([
         enableDeployLaunch: function(){
             $("#deploy-launch").removeClass("disabled");
         },
-        
+
+        queueToInstance: function(evt){
+            var $this = this;
+
+            var configSelection = this.listView.getConfigs()["configurations"];
+            var runlist = configSelection["chef"]["run_list"];
+            var chefEnv = configSelection["chef"]["env"];
+            var checked = this.instanceTable.$("input[type=checkbox]:checked");
+            checked.each(function(index, checkbox){
+                var row = $(checkbox).parents()[1];
+                var nodeData = $(row).data()["node"];
+                if(nodeData){
+                    $this.addToRunlist(nodeData["name"], runlist);
+                }
+            });
+
+        },
+
+        addToRunlist: function(nodeName, runList){
+            var accountId = this.credential.get("cloud_account_id");
+            var url = Common.apiUrl + "/stackstudio/v1/orchestration/chef/nodes/"+ nodeName +"?account_id=" + accountId + "&_method=PUT";
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: JSON.stringify(runList),
+                success: function(response) {
+                    debugger;
+                },
+                error: function(response){
+                    debugger;
+                }
+            });
+        },
+
         close: function(){
             this.$el.empty();
             this.undelegateEvents();

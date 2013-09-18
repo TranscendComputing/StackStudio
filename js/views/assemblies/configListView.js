@@ -55,7 +55,6 @@ define([
             "typeahead:selected": "packageClick",
             "shown": "accordionShown",
             "change .recipes input": "recipeChangeHandler",
-  //          "change #chefEnvironmentSelect" : "environmentSelectHandler",
             "change #chef-selection .accordion-heading": "chefGroupChangeHandler"
         },
         chefGroupQueue: 0,
@@ -304,6 +303,7 @@ define([
                 book.find(".accordion-toggle:first span.badge:first").text(allChecked.length ? allChecked.length : '');
             });
             this.trigger("badge-refresh", {badgeCount: badgeCount});
+            Common.vent.trigger("chefSelectionChanged");
         },
         recalculatePuppetBadge: function(){
             var badgeCount = this.listView.collection.length;
@@ -377,6 +377,30 @@ define([
                 .split("{{accordionId}}").join(accordionId);
             return elem;
         },
+        getConfigs: function() {
+            var configurations = {};
+            var chef = {};
+            chef["env"] = $("#chefEnvironmentSelect :selected").val();
+            chef["run_list"] = this.getRunlist();
+            configurations["chef"] = chef;
+            return {
+                "configurations": configurations
+            };
+        },
+
+        getRunlist: function() {
+            var runlist = [];
+            $("input:checkbox[class=recipeSelector]:checked").each(function(index, object) {
+                var recipeData = $(object.parentElement).data();
+                runlist.push({
+                    "type": "recipe",
+                    "version": recipeData["cookbook"].get("latest_version"),
+                    "name": recipeData["recipe"]["name"]
+                });
+            });
+            return runlist;
+        },
+
         close: function(){
             this.$el.empty();
             this.undelegateEvents();
