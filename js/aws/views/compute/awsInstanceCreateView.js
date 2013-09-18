@@ -92,8 +92,12 @@ define([
                 noneSelectedText: "Select Security Group(s)"
             }).multiselectfilter();
             
+            if(JSON.parse(sessionStorage.group_policies).length > 0){
+                this.addPolicyImages(JSON.parse(sessionStorage.group_policies));
+            }
             this.images.on( 'reset', this.addAllImages, this );
             this.images.fetch({reset: true});
+            
             
             this.flavors.on( 'reset', this.addAllFlavors, this );
             this.flavors.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset:true });
@@ -213,6 +217,15 @@ define([
             }
         },
         
+        addPolicyImages: function(gps){
+            for(i in gps){
+                var imgz = gps[i].group_policy.aws_governance.default_images;
+                for(j in imgz){
+                    $("#image_select_default").append("<option value='"+imgz[j].image_id+"'>"+imgz[j].source+"</option>");
+                }
+            }
+        },
+        
         create: function() {
             var createView = this;
             var newInstance = this.instance;
@@ -228,6 +241,10 @@ define([
                     options.image_id = image.region[createView.region];
                 }
             });
+            
+            if($("#image_select").val() === ""){
+                options.image_id = $("#image_select_default").val();
+            }
             
             this.flavors.each(function(flavor) {
                 if(flavor.attributes.name === $("#flavor_select").val()) {

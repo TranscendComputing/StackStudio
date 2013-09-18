@@ -343,25 +343,13 @@
                     <div class="well" style="margin-top:40px;">
                         <div class="row" style="margin-bottom: 5px;">
                             <div class="span4">
-                                <b>Owner:</b>
-                                <select class="input-medium image_filter" id="filter_owner">
-                                    <option>aws-marketplace</option>
-                                    <option>amazon</option>
-                                    <option>self</option>
-                                </select>
-                            </div>
-                            <div class="span4">
-                                <b>Architecture:</b>
-                                <select class="input-small image_filter" id="filter_architecture">
-                                    <option>i386</option>
-                                    <option>x86_64</option>
-                                </select>
-                            </div>
-                            <div class="span4">
                                 <b>Platform:</b>
                                 <select class="input-medium image_filter" id="filter_platform">
+                                    <option>internal</option>
+                                    <option>amazon</option>
                                     <option>debian</option>
-                                    <option>redhat</option>
+                                    <option>rhel</option>
+                                    <option>ubuntu</option>
                                 </select>
                             </div>
                         </div>
@@ -372,6 +360,7 @@
                                         <tr>
                                             <th>Image ID</th>
                                             <th>Source</th>
+                                            <th>Architecture</th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -391,6 +380,7 @@
                                     <tr>
                                         <th>Image ID</th>
                                         <th>Source</th>
+                                        <th></th>
                                     </tr>
                                 </thead>
                             </table>

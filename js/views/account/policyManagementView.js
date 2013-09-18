@@ -44,6 +44,8 @@ define([
         model: undefined,
         
         alarms: [],
+        
+        default_images: [],
 
         events: {
             "click #manage_group_users_button" : "manageGroupUsers",
@@ -51,6 +53,7 @@ define([
             "click #create_alarm_btn" : "createAlarm",
             "click #add_image_btn" : "addImage",
             "click .remove_alarm" : "removeAlarm",
+            "click .remove_image" : "removeImage",
             'click #images_table tr': 'selectImage',
             "change .image_filter":"imageFilterSelect"
         },
@@ -64,14 +67,16 @@ define([
             $("#images_table").dataTable({
                 "aoColumns": [
                         { "sWidth": "25%" },
-                        { "sWidth": "70%" }
+                        { "sWidth": "50%" },
+                        { "sWidth": "25%" }
                     ]
             });
             $("#default_images_table").dataTable({
                 "sDom": 't',
                 "aoColumns": [
-                        { "sWidth": "25%" },
-                        { "sWidth": "70%" }
+                        { "sWidth": "20%" },
+                        { "sWidth": "75%" },
+                        { "sWidth": "5%" }
                     ]
             });
             
@@ -179,6 +184,7 @@ define([
                 }
             });
             o["default_alarms"] = this.alarms;
+            o["default_images"] = this.default_images;
             newPolicy.save(o,this.policy,sessionStorage.org_id);
         },
         
@@ -205,6 +211,10 @@ define([
             this.alarms = p.default_alarms;
             for (var i in this.alarms){
                 $("#alarm_table").append("<tr><td>"+this.alarms[i].namespace+"</td><td>"+this.alarms[i].metric_name+"</td><td>"+this.alarms[i].threshold+"</td><td>"+this.alarms[i].period+"</td><td><a class='btn btn-mini btn-danger remove_alarm'><i class='icon-minus-sign icon-white'></i></a></td></tr>");
+            }
+            this.default_images = this.model.attributes.aws_governance.default_images;
+            for(var i in this.default_images){
+                $("#default_images_table").dataTable().fnAddData([this.default_images[i]["image_id"],this.default_images[i]["source"],"<a class='btn btn-mini btn-danger remove_image'><i class='icon-minus-sign icon-white'></i></a>"]);
             }
         },
         
@@ -238,7 +248,7 @@ define([
                 $("#default_credentials").append("<option value='"+creds[i].cloud_credential.id+"'>"+creds[i].cloud_credential.name+"</option>");
             }
             this.topics.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
-            this.images.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val(), owner: $("#filter_owner").val(), architecture: $("#filter_architecture").val(), platform: $("#filter_platform").val()}), reset: true });
+            this.images.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val(), platform: $("#filter_platform").val()}), reset: true });
         },
         
         addAlarm: function(options){
@@ -255,6 +265,17 @@ define([
             });
             var trIndex = tr.prevAll().length;
             this.alarms.splice(trIndex,1);
+            return false;
+        },
+        
+        removeImage: function(event){
+            var tr = $(event.target).closest('tr');
+            tr.css("background-color","#FF3700");
+            tr.fadeOut(400, function(){
+                tr.remove();
+            });
+            var trIndex = tr.prevAll().length;
+            this.default_images.splice(trIndex,1);
             return false;
         },
         
@@ -278,7 +299,7 @@ define([
         addAllImages: function(collection){
             $("#images_table").dataTable().fnClearTable();
             collection.each(function(model) {
-                var rowData = [model.attributes.imageId,model.attributes.imageLocation];
+                var rowData = [model.attributes.imageId,model.attributes.imageLocation,model.attributes.architecture];
                 $("#images_table").dataTable().fnAddData(rowData);
             });
         },
@@ -301,11 +322,24 @@ define([
         
         imageFilterSelect: function(event){
             $("#images_table").dataTable().fnClearTable();
-            this.images.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val(), owner: $("#filter_owner").val(), architecture: $("#filter_architecture").val(), platform: $("#filter_platform").val()}), reset: true });
+            this.images.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val(), platform: $("#filter_platform").val()}), reset: true });
         },
         
         addImage: function(){
-            $("#default_images_table").dataTable().fnAddData([$("#add_image").html(),$("#add_image_source").html()]);
+            this.default_images.push({"image_id" : $("#add_image").html(),"source": $("#add_image_source").html()});
+            $("#default_images_table").dataTable().fnAddData([$("#add_image").html(),$("#add_image_source").html(),"<a class='btn btn-mini btn-danger remove_image'><i class='icon-minus-sign icon-white'></i></a>"]);
+        },
+        
+        saveImages: function(){
+            var cells = [];
+            var rows = $("#default_images_table").dataTable().fnGetNodes();
+            for(var i=0;i<rows.length;i++)
+            {
+                var row = {"image_id" : $(rows[i]).find("td:eq(0)").html(), "source" : $(rows[i]).find("td:eq(1)").html()};
+                // Get HTML of 3rd column (for example)
+                cells.push(row); 
+            }
+            return cells;
         },
 
         close: function(){
