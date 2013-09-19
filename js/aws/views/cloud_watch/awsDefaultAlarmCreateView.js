@@ -135,7 +135,7 @@ define([
             if(this.metrics.length > 0) {
                 this.metrics.each(function (metric) {
                     if(metric.attributes.dimensions.length > 0) {
-                        $("#metric_select").append("<option value='" + JSON.stringify(metric.attributes) + "'>" + metric.attributes.dimensions[0].Value + " - " + metric.attributes.name + "</option>"); 
+                        $("#metric_select").append("<option value='" + JSON.stringify(metric.attributes) + "'>" + metric.attributes.name + "</option>"); 
                     }
                 });
             }else {
@@ -148,7 +148,7 @@ define([
             var list = this.tList;
             this.topics.each(function(topic) {
                 if($.inArray(topic.attributes.id, list) !== -1){
-                    $("#sns_topic_select").append("<option>" + topic.attributes.id + "</option>");
+                    $("#sns_topic_select").append("<option value='" + topic.attributes.id + "'>" + topic.attributes.Name + "</option>");
                 }
             });
         },
