@@ -89,15 +89,19 @@ define([
             $("#otherAuthProp").html("");
             var data = {};
             if($("#manager_type_input").val().toLowerCase() === "puppet"){
-                data = {"authPropName":"Certificate", inputType:"textarea", authProp:"certificate"};
+
+                data = {"authPropName":"Foreman User", inputType:"input", authProp:"foreman_user"};
                 $("#authProp").html(ich["auth_prop_template"](data));
 
-                data = {"authPropName":"CA Certificate", inputType:"textarea", authProp:"cacert"};
+                data = {"authPropName":"Foreman Password", inputType:"input", authProp:"foreman_pass"};
                 $("#otherAuthProp").html(ich["auth_prop_template"](data));
 
             }else if ($("#manager_type_input").val().toLowerCase() === "chef"){
                 data = {"authPropName":"Client Name", inputType:"input", authProp:"client_name"};
                 $("#authProp").html(ich["auth_prop_template"](data));
+
+                data = {"authPropName":"Key", inputType:"textarea", authProp:"key"};
+                $("#otherAuthProp").html(ich["auth_prop_template"](data));
             }
         },
         changed:function(evt) {

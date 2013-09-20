@@ -333,10 +333,11 @@ define([
         populatePuppetClasses:function (){
             var $this = this;
             destination = $("#collapsePuppet").find(".accordion-inner");
+            var accountId = this.credential.get("cloud_account_id");
             $this.puppetClasses = new PuppetClasses();
             $this.puppetClasses.fetch({
                 data: $.param({
-                    account_id: "521cfffd1d41c803ce000009"
+                    account_id: accountId
                 }),
                 success: function(collection, response, data) {
                     $this.renderModules(collection);
