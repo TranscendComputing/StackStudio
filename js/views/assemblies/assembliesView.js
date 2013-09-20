@@ -35,7 +35,7 @@ define([
         initialize: function() {
             $("#main").html(this.el);
             this.$el.html(this.template);
-            this.currentAssembly = new Assembly();
+            //this.currentAssembly = new Assembly();
         },
 
         configureTabs: function(){
@@ -56,6 +56,7 @@ define([
                     $this.tabView = new RuntimeView({el: targetID, listView:$this.listView});
                 }else if(targetID ==="#assemblyDesign"){
                     $this.tabView = new DesignView({el: targetID, assemblies:$this.assemblies, listView:$this.listView});
+                    $this.newAssemblyForm();
                 }
             });
         },
@@ -68,6 +69,7 @@ define([
 
             this.assemblies = new Assemblies();
             this.fetchAssemblies();
+            this.newAssemblyForm();
             
         },
 
@@ -109,6 +111,8 @@ define([
             $("#designForm :input:reset");
             this.currentAssembly = this.assemblies.get(id);
             this.tabView.currentAssembly = this.currentAssembly;
+            this.tabView.listView = new ConfigListView();
+            this.tabView.listView.render();
 
             $("#designForm :input[type!='hidden']").each(function(){
                 if(this.name){
@@ -123,6 +127,7 @@ define([
                 }
             });
             $("#assemblyDesignCloudCreds").change();
+            $("#assemblyDesignTool").change();
             if(this.currentAssembly.get("tool") === "Chef"){
                 var chefConfig = this.currentAssembly.get("configurations")["chef"];
                 Common.vent.once("chefEnvironmentsPopulated", function(){
@@ -130,9 +135,16 @@ define([
                     $("#chefEnvironmentSelect").change();
                 });
                 Common.vent.once("cookbooksLoaded", function(){
-                    var recipeList = $this.sortByCookbook(chefConfig["run_list"]);
+                    var recipeList = $this.sortListByContainer(chefConfig["run_list"]);
                     $this.selectRecipes(recipeList);
                 });
+            }else if(this.currentAssembly.get("tool") === "Puppet"){
+                var puppetConfig = this.currentAssembly.get("configurations")["puppet"];
+                Common.vent.once("modulesLoaded", function(){
+                    var classList = $this.sortListByContainer(puppetConfig["node_config"]);
+                    $this.selectClasses(classList);
+                });
+                //$this.listView.populatePuppetClasses();
             }
         },
         findImage: function(imageData){
@@ -146,23 +158,37 @@ define([
             }
             Common.errorDialog("Not found", "Could not find image saved with this assembly.");
         },
-        sortByCookbook: function(runlist){
-            var cookbooks = {};
-            for(var i = 0; i < runlist.length; i++){
-                var recipeName = runlist[i]["name"];
-                var cookbook = recipeName.split("::")[0];
-                if(!cookbooks[cookbook]){
-                    cookbooks[cookbook] = [];
+        sortListByContainer: function(list){
+            var containers = {};
+            for(var i = 0; i < list.length; i++){
+                var name = list[i]["name"];
+                var container = name.split("::")[0];
+                if(!containers[container]){
+                    containers[container] = [];
                 }
-                cookbooks[cookbook].push(recipeName);
+                containers[container].push(name);
             }
-            return cookbooks;
+            return containers;
         },
         selectRecipes: function(cookbooks) {
             var $this = this;
             for (var name in cookbooks) {
                 if (cookbooks.hasOwnProperty(name)) {
                     $this.lazyLoadRecipes(cookbooks[name], "#" + name + "-cookbook");
+                }
+            }
+        },
+        selectClasses: function(classes){
+            for(var name in classes){
+                if(classes.hasOwnProperty(name)){
+                    var classNodeList = $("#"+name+"-module").parent().find("li");
+                    for(var i = 0; i < classNodeList.length; i++){
+                        var classNode = classNodeList.get(i);
+                        var nodeName = $(classNode).data("class").name;
+                        if(classes[name].indexOf(nodeName) !== -1){
+                            $(classNode).find("input[type=checkbox]").click();
+                        }
+                    }
                 }
             }
         },
@@ -213,11 +239,11 @@ define([
             }
         },
         confirmPageSwitch: function(){
-            var confirmation;
-            if(this.currentAssembly.id){
-                confirmation = confirm("Any unsaved changes to " + this.currentAssembly.get("name") + " will be lost.");
-            }else{
-                confirmation = confirm("Any unsaved changes will be lost");
+            var confirmation = true;
+            if(this.currentAssembly){
+                if( this.currentAssembly.id){
+                    confirmation = confirm("Any unsaved changes to " + this.currentAssembly.get("name") + " will be lost.");
+                }
             }
             return confirmation;
         }

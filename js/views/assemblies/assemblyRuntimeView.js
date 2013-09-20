@@ -68,7 +68,8 @@ define([
         events: {
             "change #chefEnvironmentSelect" : "environmentSelectHandler",
             "change #deploy-inst table:first" : "updateDeployButtonState",
-            "click #deploy-to" : "queueToInstance"
+            "click #deploy-to" : "queueToInstance",
+            "change #assemblyRuntimeTool": "toolChangeHandler"
         },
 
 
@@ -86,6 +87,8 @@ define([
             $("#assemblyRuntime").html(this.el);
             this.$el.html(this.template);
             this.bind("badge-refresh", this.updateDeployButtonState, this);
+
+            this.populateToolMenu();
 
             Common.vent.on("chefSelectionChanged", this.updateDeployButtonState, this);
 
@@ -127,9 +130,6 @@ define([
                         "sTitle": "Id",
                         aTargets: [3],
                         mData: "id"
-                        //mData: function(instance){
-                        //    return instance.id;
-                        //}
                     }
                 ]
             });
@@ -139,25 +139,30 @@ define([
             this.render();
         },
         render: function () {
-            // $(function(){
-            //    $this.setupTypeAhead();
-            // });
-
-            // this.listView = new AssemblyRuntimeListView({el: $("#selected-apps-runtime") });
-            // this.listView.render();
-            // this.listView.on("appRemoved", this.recalculatePuppetBadge, this);
-            // this.listView.on("appAdded", this.recalculatePuppetBadge, this);
 
             this.cloudCredentials = new CloudCredentials();
             this.cloudCredentials.on('reset', this.populateCredentials, this);
 
-            // $("#selectAccordion").on("shown", this.toggleInstInfra);
             var $this = this;
             this.fetchCloudDefinitions().done($.proxy(function(result){
                 $this.cloudDefinitions = result;
-                //this.loadAppsApp();
                 $this.loadCredentials();
             }, this));
+        },
+
+        toolChangeHandler: function(evt){
+            $(".main-group").hide();
+            $("#no_tool_selected").hide();
+            $("#tool_selected").show();
+            var currentTool = $(evt.currentTarget).val().toLowerCase();
+            var accordion = $("#" + currentTool + "Accordion");
+            accordion.show();
+        },
+        populateToolMenu: function(){
+            var menu = $("#assemblyRuntimeTool");
+            menu.empty();
+            menu.append('<option value="Chef">Chef</option>');
+            menu.append('<option value="Puppet">Puppet</option>');
         },
 
         environmentSelectHandler: function(evt){
@@ -361,10 +366,10 @@ define([
                 type: "POST",
                 data: JSON.stringify(runList),
                 success: function(response) {
-                    debugger;
+                    Common.vent.trigger("runListUpdated");
                 },
                 error: function(response){
-                    debugger;
+                    Common.errorDialog("Server Error", "Could not update run list.");
                 }
             });
         },

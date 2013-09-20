@@ -29,6 +29,7 @@ define([
         'collections/cloudCredentials',
         'collections/cookbooks',
         'collections/chefEnvironments',
+        'collections/puppetClasses',
         'views/assemblies/appListView',
         'models/app',
         'jquery-plugins',
@@ -36,7 +37,7 @@ define([
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator',
         'jquery.sortable'
-],function( $, _, bootstrap, Backbone, ich, Common, typeahead, appsTemplate, Apps, CloudCredentials, Cookbooks, ChefEnvironments, AppListView, App ) {
+],function( $, _, bootstrap, Backbone, ich, Common, typeahead, appsTemplate, Apps, CloudCredentials, Cookbooks, ChefEnvironments, PuppetClasses, AppListView, App ) {
 
     var ConfigListView = Backbone.View.extend({
         id: 'config_list',
@@ -55,9 +56,10 @@ define([
             "typeahead:selected": "packageClick",
             "shown": "accordionShown",
             "change .recipes input": "recipeChangeHandler",
-            "change #chef-selection .accordion-heading": "chefGroupChangeHandler"
+            "change .puppetClasses input": "classChangeHandler",
+            "change #chef-selection .accordion-heading": "chefGroupChangeHandler",
+            "change #puppet-selection .accordion-heading" : "puppetGroupChangeHandler"
         },
-        chefGroupQueue: 0,
         initialize: function(){
         },
 
@@ -65,16 +67,7 @@ define([
             $("#assemblyLeftNav").empty();
             $("#assemblyLeftNav").html(this.el);
             this.$el.html(this.template);
-            // $(function(){
-            //    $this.setupTypeAhead();
-            // });
 
-            // this.listView = new AppListView({el: $("#selected-apps") });
-            // this.listView.render();
-            // this.listView.on("appRemoved", this.recalculatePuppetBadge, this);
-            // this.listView.on("appAdded", this.recalculatePuppetBadge, this);
-
-            //$("#selectAccordion").on("shown", this.toggleInstInfra);
             
         },
         environmentSelectHandler: function(evt){
@@ -145,6 +138,13 @@ define([
                this.recalculateChefBadges();
             }
         },
+
+        puppetGroupChangeHandler: function(evt) {
+            var checkbox = $(evt.target);
+            var ver = checkbox.closest(".accordion-group")
+                .find(".accordion-inner:first");
+            ver.find(".classSelector").first().click();
+        },
         fetchChefEnvironments: function(){
             var chefEnvironments = new ChefEnvironments();
 
@@ -177,7 +177,7 @@ define([
             var cb = $("#chef-selection");
             cb.empty();
             cookbooks.each(function(item){
-                var elem = $($this.renderAccordionGroup("chef-selection", item.get("name"), item.get("latest_version")))
+                var elem = $($this.renderChefGroup("chef-selection", item.get("name"), item.get("latest_version")))
                     .data("cookbook", item);
                 elem.find(".accordion-heading")
                     .prepend(
@@ -186,6 +186,28 @@ define([
                 elem.appendTo(cb); //TODO: if this doesn't perform well, try appending to a list first, then adding to doc. 
             });
             Common.vent.trigger("cookbooksLoaded");
+        },
+
+        renderModules: function(classes) {
+            var modules = classes.toJSON();
+            var $this = this;
+            var moduleList = $("#puppet-selection");
+            moduleList.empty();
+            for (var module in modules) {
+                if (modules.hasOwnProperty(module)) {
+                    var elem = $($this.renderPuppetGroup("puppet-selection", module))
+                        .data("module", classes.get(module).toJSON());
+                    elem.find(".accordion-heading")
+                        .prepend(
+                            $("<input type='checkbox' class='moduleSelector'>").data("level", "module")
+                    );
+                    elem.appendTo(moduleList);
+                    var recipeList = this.renderPuppetClasses(modules[module], []);
+                    $("#" + module +"-module").find(".accordion-inner").empty().append(recipeList);
+                }
+            }
+            this.recalculatePuppetBadges();
+            Common.vent.trigger("modulesLoaded");
         },
         sortRecipes: function(recipes){
             var sorted = [];
@@ -234,28 +256,98 @@ define([
             });
             return ul;
         },
+        renderPuppetClasses: function(classes, selected ){
+            var ul = $("<ul class='puppetClasses'></ul>");
+            $.each(classes, function( index, item ) {
+                var checkedState = (selected.indexOf(item) !== -1) ? "checked='true'": "";
+                $("<li></li>")
+                    .data("class", item)
+                    .data("isClass", true)
+                    .append("<input type='checkbox' " + checkedState + " class='classSelector'" + " />")
+                    .append("<span class='puppetClass'>" + item.name + "</span>")
+                    .appendTo(ul);
+            });
+            return ul;
+        },
+        accordionGroupTemplate: ['<div class="accordion-group">',
+                '<div class="accordion-heading">',
+                  '<a class="accordion-toggle" data-toggle="collapse" data-parent="#{{accordionId}}" href="#{{collapseId}}">{{name}}<span class="badge badge-info pull-right"></span></a>',
+                '</div>',
+                '<div id="{{collapseId}}" class="accordion-body collapse">',
+                  '<div class="accordion-inner">',
+                  '</div>',
+                '</div>',
+            '</div>']
+            .join(''),
 
-        accordionShown: function(evt){
+        renderChefGroup: function(accordionId, name, version){ //TODO: make this a common function
+            var title= name + " [" + version + "]";
+            var elem = this.accordionGroupTemplate
+                .split("{{name}}").join(title)
+                .split("{{collapseId}}").join(name + "-cookbook")
+                .split("{{accordionId}}").join(accordionId);
+            return elem;
+        },
+        renderPuppetGroup: function(id, name){
+            var elem = this.accordionGroupTemplate
+                .split("{{name}}").join(name)
+                .split("{{collapseId}}").join(name + "-module")
+                .split("{{accordionId}}").join(id);
+            return elem;
+        },
+
+        accordionShown: function(evt) {
             var $this = this;
             var data = $(evt.target).closest(".accordion-group").data();
             var $destination = $(evt.target).find(".accordion-inner").first();
             var isLoaded = $destination.data("isLoaded");
-            if (isLoaded){
-                return;
-            }
-            var $book = data.cookbook;
-            if (!$book){
-                return;
-            }
-            var version = $book.get("latest_version");
-            $("<i class='icon-spinner'></i>").appendTo($destination);
-            $this.fetchRecipes($book, version)
-                .done(function(recipes){
-                    $this.populateRecipes.call($this, $destination, $book, recipes);
-                });
-            
-        },
 
+            var id = $(evt.target).get(0).id;
+            if (isLoaded && id !== "collapsePuppet") {
+                return;
+            }
+            if (data.hasOwnProperty("cookbook")) {
+                var $book = data.cookbook;
+                if (!$book) {
+                    return;
+                }
+                var version = $book.get("latest_version");
+                $("<i class='icon-spinner'></i>").appendTo($destination);
+                $this.fetchRecipes($book, version)
+                    .done(function(recipes) {
+                        $this.populateRecipes.call($this, $destination, $book, recipes);
+                    });
+            } else if (id === "collapseChef") {
+                $("#puppet-selection").closest(".accordion-group").find(".accordion-toggle:first span.badge:first").text('');
+                $this.recalculateChefBadges();
+            } else if (id === "collapsePuppet") {
+                if(!$destination.data("isLoaded")){
+                    $this.populatePuppetClasses();
+                }else{
+                    $this.recalculatePuppetBadges();
+                }
+                $("#chef-selection").closest(".accordion-group").find(".accordion-toggle:first span.badge:first").text('');
+                //TODO: Clear Chef
+            } //else: CLEAR PUPPET when cliick on chef
+        },
+        populatePuppetClasses:function (){
+            var $this = this;
+            destination = $("#collapsePuppet").find(".accordion-inner");
+            $this.puppetClasses = new PuppetClasses();
+            $this.puppetClasses.fetch({
+                data: $.param({
+                    account_id: "521cfffd1d41c803ce000009"
+                }),
+                success: function(collection, response, data) {
+                    $this.renderModules(collection);
+                    $this.recalculatePuppetBadges();
+                    destination.data("isLoaded","true");
+                },
+                error: function(collection, response, data) {
+                    Common.errorDialog("Server error", "Could not fetch Puppet classes/modules");
+                }
+            });
+        },
         fetchRecipes: function(cookbook, version){
             var d = $.Deferred();
             var $this = this;
@@ -279,6 +371,9 @@ define([
         
         recipeChangeHandler: function(evt){
             this.recalculateChefBadges();
+        },
+        classChangeHandler: function(evt){
+            this.recalculatePuppetBadges();
         },
 
         recalculateChefBadges: function(){
@@ -305,10 +400,31 @@ define([
             this.trigger("badge-refresh", {badgeCount: badgeCount});
             Common.vent.trigger("chefSelectionChanged");
         },
-        recalculatePuppetBadge: function(){
-            var badgeCount = this.listView.collection.length;
-            $("#puppet-badge").text(badgeCount ? badgeCount : "");
+        recalculatePuppetBadges: function(){
+            var badgeCount = 0;
+            var puppetContainer = $("#puppet-selection");
+            var allChecked = puppetContainer.find("input[type='checkbox']:checked")
+                .filter(function(){
+                    return !$(this).parent().hasClass("accordion-heading");
+                });
+            puppetContainer.closest(".accordion-group").find(".accordion-toggle:first span.badge:first").text(allChecked.length ? allChecked.length : '');
+
+            var modules = $("#puppet-selection>.accordion-group");
+            modules.each(function(){
+                var puppetClass = $(this);
+                var badge = puppetClass.find(".accordion-toggle:first span.badge:first");
+                allChecked = puppetClass.find("input[type='checkbox']:checked")
+                    .filter(function(){
+                        return !$(this).parent().hasClass("accordion-heading");
+                    });
+                puppetClass.find(".accordion-toggle:first span.badge:first").text(allChecked.length ? allChecked.length : '');
+            });
+
             this.trigger("badge-refresh", {badgeCount: badgeCount});
+
+            badgeCount = allChecked.length;
+
+
         },
 
         setupTypeAhead: function(){
@@ -358,37 +474,27 @@ define([
                     $(".alert").removeClass("alert-danger");
                 });
         },
-        accordionGroupTemplate: ['<div class="accordion-group">',
-                '<div class="accordion-heading">',
-                  '<a class="accordion-toggle" data-toggle="collapse" data-parent="#{{accordionId}}" href="#{{collapseId}}">{{name}}<span class="badge badge-info pull-right"></span></a>',
-                '</div>',
-                '<div id="{{collapseId}}" class="accordion-body collapse">',
-                  '<div class="accordion-inner">',
-                  '</div>',
-                '</div>',
-            '</div>']
-            .join(''),
-
-        renderAccordionGroup: function(accordionId, name, version){ //TODO: make this a common function
-            var title= name + " [" + version + "]";
-            var elem = this.accordionGroupTemplate
-                .split("{{name}}").join(title)
-                .split("{{collapseId}}").join(name + "-cookbook")
-                .split("{{accordionId}}").join(accordionId);
-            return elem;
-        },
         getConfigs: function() {
             var configurations = {};
-            var chef = {};
-            chef["env"] = $("#chefEnvironmentSelect :selected").val();
-            chef["run_list"] = this.getRunlist();
-            configurations["chef"] = chef;
+
+            var tool = $("#assemblyDesignTool").val();
+            if(tool === "Puppet"){
+                var puppet = {};
+                puppet["node_config"] = this.getPuppetConfig();
+                configurations["puppet"] = puppet;
+            }
+            else if(tool === "Chef"){
+                var chef = {};
+                chef["env"] = $("#chefEnvironmentSelect :selected").val();
+                chef["run_list"] = this.getChefConfig();
+                configurations["chef"] = chef;
+            }
             return {
                 "configurations": configurations
             };
         },
 
-        getRunlist: function() {
+        getChefConfig: function() {
             var runlist = [];
             $("input:checkbox[class=recipeSelector]:checked").each(function(index, object) {
                 var recipeData = $(object.parentElement).data();
@@ -399,6 +505,18 @@ define([
                 });
             });
             return runlist;
+        },
+        getPuppetConfig: function() {
+            var nodeConfig = [];
+            $("input:checkbox[class=classSelector]:checked").each(function(index, object) {
+                var classData = $(object.parentElement).data();
+                nodeConfig.push({
+                    "type": "class",
+                    "id" : classData["class"]["id"],
+                    "name": classData["class"]["name"]
+                });
+            });
+            return nodeConfig;
         },
 
         close: function(){

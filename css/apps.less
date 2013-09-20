@@ -28,17 +28,17 @@
     }
 }
 
-#chefAccordionToggle {
+#chefAccordionToggle, #puppetAccordionToggle {
     display: inline-block;
     min-width:80px;
 }
 
-#chef-selection {
+#chef-selection,#puppet-selection {
     max-height:300px; /* TODO:There should be a better way */
     overflow-y:auto;
 }
 
-#collapseChef {
+#collapseChef,#collapsePuppet {
     clear:both;
 }
 
@@ -48,12 +48,12 @@
 }
 
 #assemblies_view {
-    .recipeSelector, .stackSelector{
+    .recipeSelector, .stackSelector, .classSelector{
         width:10%;
         float:left;
     }
 
-    .recipe, .stack {
+    .recipe, .stack, .puppetClass {
         font-weight: bold;
         float:left;
         width:90%;
@@ -70,7 +70,7 @@
         text-overflow:ellipsis;
     }
 
-    ul.recipes, ul.stacks{
+    ul.recipes, ul.stacks, ul.puppetClasses{
         margin-left:0;
         li {
             clear:both;

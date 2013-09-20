@@ -36,7 +36,8 @@ define([
             "change #chefEnvironmentSelect": "environmentSelectHandler",
             "click #save-assembly": "saveAssemblyHandler",
             "change input,textarea,select": "formChanged",
-            "click .selectable_item": "clickImageHandler"
+            "click .selectable_item": "clickImageHandler",
+            "change #assemblyDesignTool" : "toolChangeHandler"
             //"shown" : "accordionShown"
         },
 
@@ -84,7 +85,6 @@ define([
                     }
                 }]
             });
-            this.imageTable.fnProcessingIndicator(true);
         },
 
         close: function() {
@@ -105,7 +105,7 @@ define([
                     .data("cloudCredentials", element)
                     .appendTo(select);
             });
-            select.trigger("change");
+            //select.trigger("change");
         },
         credentialChangeHandler: function(evt) {
             var $this = this;
@@ -120,6 +120,7 @@ define([
             this.listView.fetchChefEnvironments().done(function(model) {
                 $this.listView.populateChefEnvironments(new ChefEnvironments(model));
             });
+            this.listView.populatePuppetClasses();
             this.populateImages(credential.get("cloud_provider").toLowerCase(), credential);
         },
         saveAssemblyHandler: function(e) {
@@ -157,6 +158,7 @@ define([
             var $this = this;
 
             var imagesPath = "../" + cloud + "/collections/compute/" + cloud + "Images";
+            this.imageTable.fnProcessingIndicator(true);
             require([imagesPath], function(Images) {
                 var images = new Images();
                 images.fetch({
@@ -183,6 +185,15 @@ define([
             $("#assemblyDesignImage")
                 .val(imageData.cid)
                 .change();
+        },
+        toolChangeHandler: function(evt){
+            $(".main-group").hide();
+            $("#no_tool_selected").hide();
+            $("#tool_selected").show();
+            var currentTool = $(evt.currentTarget).val().toLowerCase();
+            var accordion = $("#" + currentTool + "Accordion");
+            accordion.show();
+            //accordion.find("a").first().click();
         }
     });
 
