@@ -15,14 +15,18 @@ define([
         'collections/users',
         '/js/aws/collections/notification/awsTopics.js',
         '/js/aws/collections/compute/awsDefaultImages.js',
+        '/js/aws/collections/vpc/awsVpcs.js',
+        '/js/aws/collections/vpc/awsSubnets.js',
         'views/account/groupCreateView',
         'views/account/groupManageUsersView',
         '/js/aws/views/cloud_watch/awsDefaultAlarmCreateView.js',
         '/js/aws/views/notification/awsTopicsCreateView.js',
+        '/js/aws/views/vpc/awsVpcCreateView.js',
+        '/js/aws/views/vpc/awsSubnetCreateView.js',
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator',
         'bootstrap'
-], function( $, _, Backbone, Common, groupsManagementTemplate, Policy, Users, Topics, Images, CreateGroupView, ManageGroupUsers, CreateAlarmView, CreateTopicsView ) {
+], function( $, _, Backbone, Common, groupsManagementTemplate, Policy, Users, Topics, Images, Vpcs, Subnets, CreateGroupView, ManageGroupUsers, CreateAlarmView, CreateTopicsView, CreateVpcsView, CreateSubnetView ) {
 
     var GroupManagementView = Backbone.View.extend({
 
@@ -39,6 +43,10 @@ define([
         topics: undefined,
         
         images: undefined,
+        
+        vpcs: undefined,
+        
+        subnets: undefined,
 
         selectedGroup: undefined,
         
@@ -57,7 +65,9 @@ define([
             "click .remove_image" : "removeImage",
             'click #images_table tr': 'selectImage',
             "change .image_filter":"imageFilterSelect",
-            "click .create_topic_btn":"topicCreate"
+            "click .create_topic_btn":"topicCreate",
+            "click .create_vpc_btn":"vpcCreate",
+            "click .create_subnet_btn":"subnetCreate"
         },
 
         initialize: function() {
@@ -98,6 +108,14 @@ define([
             Common.vent.on("topicAppRefresh", function() {
                 groupsView.topics.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
             });
+            Common.vent.off("vpcAppRefresh");
+            Common.vent.on("vpcAppRefresh", function() {
+                groupsView.vpcs.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
+            });
+            Common.vent.off("subnetAppRefresh");
+            Common.vent.on("subnetAppRefresh", function() {
+                groupsView.subnets.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
+            });
             
             this.users = new Users();
             
@@ -106,6 +124,12 @@ define([
             
             this.images = new Images();
             this.images.on('reset', this.addAllImages, this);
+            
+            this.vpcs = new Vpcs();
+            this.vpcs.on('reset', this.addAllVpcs, this);
+            
+            this.subnets = new Subnets();
+            this.subnets.on('reset', this.addAllSubnets, this);
             
             this.selectedGroup = undefined;
             this.render();
@@ -262,6 +286,8 @@ define([
             }
             this.topics.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
             this.images.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val(), platform: $("#filter_platform").val()}), reset: true });
+            this.vpcs.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
+            this.subnets.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
         },
         
         addAlarm: function(options){
@@ -322,6 +348,28 @@ define([
             });
         },
         
+        addAllVpcs: function(collection){
+            $("#default_vpc").empty();
+            collection.each(function(model) {
+                $("#default_vpc").append("<option>"+model.attributes.id+"</option>");
+            });
+            if(typeof this.rootView != 'undefined' && typeof this.rootView.treePolicy != 'undefined'){
+                var p = this.model.attributes.aws_governance;
+                $("#default_vpc").val(p.default_vpc);
+            }
+        },
+        
+        addAllSubnets: function(collection){
+            $("#default_subnet").empty();
+            collection.each(function(model) {
+                $("#default_subnet").append("<option>"+model.attributes.subnet_id+"</option>");
+            });
+            if(typeof this.rootView != 'undefined' && typeof this.rootView.treePolicy != 'undefined'){
+                var p = this.model.attributes.aws_governance;
+                $("#default_subnet").val(p.default_subnet);
+            }
+        },
+        
         selectImage: function(event){
             $(".row_selected").removeClass('row_selected');
             $(event.currentTarget).addClass('row_selected');
@@ -346,6 +394,16 @@ define([
         topicCreate: function(event){
             var createTopicsDialog = new CreateTopicsView({cred_id: $("#default_credentials").val(), region: $("#default_region").val()});
             createTopicsDialog.render();
+        },
+        
+        vpcCreate: function(event){
+            var createVPCsDialog = new CreateVpcsView({cred_id: $("#default_credentials").val(), region: $("#default_region").val()});
+            createVPCsDialog.render();
+        },
+        
+        subnetCreate: function(event){
+            var createSubnetDialog = new CreateSubnetView({cred_id: $("#default_credentials").val(), region: $("#default_region").val()});
+            createSubnetDialog.render();
         },
         
         addImage: function(){
