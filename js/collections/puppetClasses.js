@@ -7,10 +7,11 @@
 /*global define:true console:true alert:true*/
 define([
         'jquery',
+        'underscore',
         'backbone',
         'models/puppetClass',
         'common'
-], function( $, Backbone, Class, Common) {
+], function( $, _, Backbone, Class, Common) {
     'use strict';
 
     // Cookbook Collection

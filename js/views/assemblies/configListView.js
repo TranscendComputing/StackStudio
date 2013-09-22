@@ -332,7 +332,7 @@ define([
         },
         populatePuppetClasses:function (){
             var $this = this;
-            destination = $("#collapsePuppet").find(".accordion-inner");
+            var destination = $("#collapsePuppet").find(".accordion-inner");
             var accountId = this.credential.get("cloud_account_id");
             $this.puppetClasses = new PuppetClasses();
             $this.puppetClasses.fetch({
@@ -422,8 +422,7 @@ define([
             });
 
             this.trigger("badge-refresh", {badgeCount: badgeCount});
-
-            badgeCount = allChecked.length;
+            Common.vent.trigger("puppetSelectionChanged");
 
 
         },
@@ -475,10 +474,10 @@ define([
                     $(".alert").removeClass("alert-danger");
                 });
         },
-        getConfigs: function() {
+        getConfigs: function(toolId) {
             var configurations = {};
 
-            var tool = $("#assemblyDesignTool").val();
+            var tool = $(toolId).val();
             if(tool === "Puppet"){
                 var puppet = {};
                 puppet["node_config"] = this.getPuppetConfig();

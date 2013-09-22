@@ -125,7 +125,7 @@ define([
         },
         saveAssemblyHandler: function(e) {
             e.preventDefault();
-            var configs = this.listView.getConfigs();
+            var configs = this.listView.getConfigs("#assemblyDesignTool");
             this.currentAssembly.set(configs);
             //If no id, then it's a new assembly.  Otherwise, update existing assembly.
             if(!this.currentAssembly.id){

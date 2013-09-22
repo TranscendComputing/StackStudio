@@ -144,7 +144,6 @@ define([
                     var classList = $this.sortListByContainer(puppetConfig["node_config"]);
                     $this.selectClasses(classList);
                 });
-                //$this.listView.populatePuppetClasses();
             }
         },
         findImage: function(imageData){

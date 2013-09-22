@@ -91,6 +91,7 @@ define([
             this.populateToolMenu();
 
             Common.vent.on("chefSelectionChanged", this.updateDeployButtonState, this);
+            Common.vent.on("puppetSelectionChanged", this.updateDeployButtonState, this);
 
             this.instanceTable = $('#deploy-inst table:first').dataTable({
                 "bJQueryUI": true,
@@ -163,6 +164,7 @@ define([
             menu.empty();
             menu.append('<option value="Chef">Chef</option>');
             menu.append('<option value="Puppet">Puppet</option>');
+            menu.get(0).value = "";
         },
 
         environmentSelectHandler: function(evt){
@@ -213,6 +215,7 @@ define([
             this.listView.fetchChefEnvironments().done(function(model){
                 $this.populateChefEnvironments(new ChefEnvironments(model));
             });
+            this.listView.populatePuppetClasses();
         },
 
         populateChefEnvironments: function(list){
@@ -264,25 +267,46 @@ define([
             });
         },
         labelInstances: function(instances) {
-            var instanceNames = [];
+            var instanceInfo = [];
+            var cloud = this.credential.get("cloud_provider").toLowerCase();
             var accountId = this.credential.get("cloud_account_id");
-            var url = Common.apiUrl + "/stackstudio/v1/orchestration/chef/nodes/find?account_id=" + accountId;
+            var chefApiUrl = Common.apiUrl + "/stackstudio/v1/orchestration/chef/nodes/find?account_id=" + accountId;
+            var puppetApiUrl = Common.apiUrl + "/stackstudio/v1/orchestration/puppet/agents/find?account_id=" + accountId;
 
             for (var i = 0; i < instances.length; i++) {
                 var name = instances[i]["name"] || instances[i]["dns_name"];
-                instanceNames.push(name);
+                var ipAddrs = [];
+                if(cloud === "aws"){
+                    ipAddrs.push(instances[i]["private_ip_address"]);
+                    ipAddrs.push(instances[i]["private_ip_address"]);
+                }else if(cloud === "openstack"){
+                    //TODO: Add compatibility to non-Grizzly openstack
+                    var addresses = instances[i]["addresses"];
+                    for(var network in addresses){
+                        if(addresses.hasOwnProperty(network)){
+                            for(var j = 0; j < addresses[network].length; j++){
+                                ipAddrs.push(addresses[network][j]["addr"]);
+                            }
+                        }
+                    }
+                }
+                instanceInfo.push({"name": name, "ip_addresses": ipAddrs});
             }
+            this.matchInstancesAjax(instanceInfo, this.chefIcon, chefApiUrl, "node");
+            this.matchInstancesAjax(instanceInfo, this.puppetIcon, puppetApiUrl, "agent");
+        },
+        matchInstancesAjax: function(instances, icon, url, type){
             $.ajax({
                 url: url,
                 type: "POST",
-                data: JSON.stringify(instanceNames),
+                data: JSON.stringify(instances),
                 success: function(response) {
                     for(var i = 0; i < response.length; i++){
                         var data = response[i];
                         if(!$.isEmptyObject(data)){
                             var instanceRow = this.instanceTable.$("tr:eq("+i+")").first();
-                            instanceRow.data("node", data);
-                            instanceRow.find("td:eq(1)").html(this.chefIcon);
+                            instanceRow.data(type, data);
+                            instanceRow.find("td:eq(1)").html(icon);
                         }
                     }
                 },
@@ -292,11 +316,27 @@ define([
 
         updateDeployButtonState: function(data){
             var instanceChecked = $("#deploy-inst table:first input[type='checkbox']:checked").length;
-            var chefChecked = $("#chef-selection").find("input[type='checkbox']:checked").length;
             var infraChecked = $("#cloud-formation-badge input[type='checkbox']:checked").length;
 
-            var configsList = this.listView.getConfigs()["configurations"];
-            var enabled = instanceChecked && (chefChecked || configsList["chef"]["run_list"].length);
+            var configsList = this.listView.getConfigs("#assemblyRuntimeTool")["configurations"];
+            var tool = $("#assemblyRuntimeTool").val();
+
+
+            var enabled;
+            var selectedLength;
+            if(instanceChecked){
+                switch(tool)
+                {
+                    case "Chef":
+                        selectedLength = $("#chef-selection").find("input[type='checkbox']:checked").length;
+                        enabled = selectedLength !==0 || configsList["chef"]["run_list"].length !==0;
+                        break;
+                    case "Puppet":
+                        selectedLength = $("#puppet-selection").find("input[type='checkbox']:checked").length;
+                        enabled = (selectedLength !==0|| configsList["puppet"]["node_config"].length !==0 );
+                        break;
+                }
+            }
             if (enabled){
                 $("#deploy-to")
                     .removeClass("disabled")
@@ -341,35 +381,72 @@ define([
             $("#deploy-launch").removeClass("disabled");
         },
 
-        queueToInstance: function(evt){
+        // queueToInstance: function(evt){
+        //     var $this = this;
+
+        //     var configSelection = this.listView.getConfigs()["configurations"];
+        //     var runlist = configSelection["chef"]["run_list"];
+        //     var chefEnv = configSelection["chef"]["env"];
+
+        //     var nodeConfig = configSelection["puppet"];
+        //     var checked = this.instanceTable.$("input[type=checkbox]:checked");
+        //     checked.each(function(index, checkbox){
+        //         var row = $(checkbox).parents()[1];
+        //         var nodeData = $(row).data()["node"];
+        //         if(nodeData){
+        //             $this.addToRunlist(nodeData["name"], runlist);
+        //         }
+        //     });
+
+        // },
+        queueToInstance: function(evt) {
             var $this = this;
+            var accountId = this.credential.get("cloud_account_id");
+            
+            var selected = this.instanceTable.$("input[type=checkbox]:checked");
+            var tool = $("#assemblyRuntimeTool").val();
+            var configSelection = this.listView.getConfigs("#assemblyRuntimeTool")["configurations"][tool.toLowerCase()];
 
-            var configSelection = this.listView.getConfigs()["configurations"];
-            var runlist = configSelection["chef"]["run_list"];
-            var chefEnv = configSelection["chef"]["env"];
-            var checked = this.instanceTable.$("input[type=checkbox]:checked");
-            checked.each(function(index, checkbox){
-                var row = $(checkbox).parents()[1];
-                var nodeData = $(row).data()["node"];
-                if(nodeData){
-                    $this.addToRunlist(nodeData["name"], runlist);
+            for(var i = 0; i < selected.length; i++){
+                var row = $(selected[i]).parents()[1];
+                var rowData = $(row).data();
+                switch (tool) {
+                    case "Puppet":
+                        if(rowData["agent"]){
+                            var id = rowData["agent"]["foreman_id"];
+                            var nodeConfig = configSelection["node_config"];
+                            var postData = {"puppetclass_ids":[]};
+                            for(var j =0; j < nodeConfig.length; j++){
+                                postData["puppetclass_ids"].push(nodeConfig[j].id);
+                            }
+                            this.updateInstanceConfig("puppet/agents", id, postData, "nodeConfigUpdated");
+
+                        }
+                        break;
+                    case "Chef":
+                        var runlist = configSelection["run_list"];
+                        var env = configSelection["env"];
+                        var nodeData = $(row).data()["node"];
+                        if(nodeData){
+                            this.updateInstanceConfig("chef/nodes", nodeData["name"], runlist, "runListUpdated");
+                        }
+                        break;
                 }
-            });
-
+            }
         },
 
-        addToRunlist: function(nodeName, runList){
+        updateInstanceConfig: function(subUrl, id, data, eventName){
             var accountId = this.credential.get("cloud_account_id");
-            var url = Common.apiUrl + "/stackstudio/v1/orchestration/chef/nodes/"+ nodeName +"?account_id=" + accountId + "&_method=PUT";
+            var url = Common.apiUrl + "/stackstudio/v1/orchestration/" + subUrl + "/"+ id  +"?account_id=" + accountId + "&_method=PUT";
             $.ajax({
                 url: url,
                 type: "POST",
-                data: JSON.stringify(runList),
+                data: JSON.stringify(data),
                 success: function(response) {
-                    Common.vent.trigger("runListUpdated");
+                    Common.vent.trigger(eventName);
                 },
                 error: function(response){
-                    Common.errorDialog("Server Error", "Could not update run list.");
+                    Common.errorDialog("Server Error", "Could not update instance configuration.");
                 }
             });
         },
