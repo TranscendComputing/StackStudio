@@ -468,7 +468,7 @@
                     <hr>
         
                     <!-- Multiple Checkboxes -->
-                    <div class="control-group">
+                    <div class="control-group" style="visibility:hidden;">
                       <label class="control-label">Instance Lifetime:</label>
                       <div class="controls">
                         <label class="checkbox">
@@ -479,7 +479,7 @@
                     </div>
 
                     <!-- Multiple Radios -->
-                    <div class="control-group">
+                    <div class="control-group" style="visibility:hidden;">
                       <label class="control-label">When lifetime is up:</label>
                       <div class="controls">
                         <label class="radio">
@@ -512,15 +512,15 @@
                         <div class="control-group">
                             <label class="control-label">VPC:</label>
                             <div class="controls">
-                                <label class="checkbox">
-                                    <input type="checkbox" name="vpc_rules" value="Only Admin can create, update, delete Internet Gateways for VPC">
+                                <label class="checkbox" value="Only Admin can create, update, delete Internet Gateways for VPC" style="visibility:hidden;">
+                                    <input type="checkbox" name="vpc_rules">
                                     Only Admin can create, update, delete Internet Gateways for VPC
                                 </label>
-                                <label class="checkbox">
+                                <label class="checkbox" style="visibility:hidden;">
                                     <input type="checkbox" name="vpc_rules" value="Only Admin can create, update, delete Virtual Private Gateways for VPC">
                                     Only Admin can create, update, delete Virtual Private Gateways for VPC
                                 </label>
-                                <label class="checkbox">
+                                <label class="checkbox" style="visibility:hidden;">
                                     <input type="checkbox" name="vpc_rules" value="Only Admin can create, update, delete Customer Gateways for VPC">
                                     Only Admin can create, update, delete Customer Gateways for VPC
                                 </label>
@@ -571,7 +571,7 @@
                     <div class="well">
                         <legend>SNS Notifications</legend>
                         <!-- Multiple Checkboxes -->
-                        <div class="control-group">
+                        <div class="control-group" style="visibility:hidden;">
                         <label class="control-label">SNS Notifications:</label>
                         <div class="controls">
                             <label class="checkbox">
