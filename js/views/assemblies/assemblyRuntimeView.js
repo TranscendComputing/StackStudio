@@ -102,6 +102,7 @@ define([
                     {
                         "sTitle": "",
                         aTargets: [0],
+                        sWidth: "7em",
                         mData: function(instance){
                             return "<input type='checkbox' data-instance-id='" + instance.id + "'></input>";
                         }
@@ -255,6 +256,7 @@ define([
                         success: function(collection, response, options) {
                             $this.renderInstances(collection.toJSON());
                             $this.labelInstances(collection.toJSON());
+                            $this.instanceTable.fnAdjustColumnSizing();
                         }
                     });
             });
