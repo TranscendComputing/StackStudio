@@ -1,6 +1,17 @@
 <div class="management_page" style="margin:10px;">
 	<div style="margin-left:5px;">
         
+        <!-- Select Basic -->
+        <div class="control-group">
+            <label class="control-label">Default Credentials:</label>
+            <div class="controls">
+                <select id="default_credentials" name="default_credentials" class="input-xlarge default_credentials">
+                    <option>Select Credentials</option>
+                </select>
+                <div id="cred_message">Create an AWS credential before creating a policy.</div>
+            </div>
+        </div>
+        <div id="whole_form">
         <form id="aws_gov_policy" class="form-horizontal">
             <fieldset>
 
@@ -119,14 +130,14 @@
                     </div>
                     
                     <!-- Select Basic -->
-                    <div class="control-group">
+                    <!-- <div class="control-group">
                         <label class="control-label">Default Credentials:</label>
                         <div class="controls">
                             <select id="default_credentials" name="default_credentials" class="input-xlarge default_credentials">
                                 <option>Select Credentials</option>
                             </select>
                         </div>
-                    </div>
+                    </div> -->
                     
                     <hr>
                     
@@ -824,6 +835,7 @@
         <a id="save_button" class="btn" style="float:right;margin-bottom:1cm;background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;">Save Policy <i class="icon-file icon-white"></i></a>
         <div id="save_alert" class="alert" style="width:90px;display:none;">
           Policy <strong>Saved...</strong>
+        </div>
         </div>
 	<div>
 </div>
