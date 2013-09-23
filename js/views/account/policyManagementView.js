@@ -450,9 +450,12 @@ define([
         
         disableInput: function(target,toggle){
             if(toggle === true){
-                //target.attr("disabled", true);
-                //target.addClass("ui-state-disabled");
+                target.attr("disabled", true);
+                target.addClass("ui-state-disabled");
                 target.val("");
+            }else{
+                target.removeAttr("disabled");
+                target.removeClass("ui-state-disabled");
             }
         },
 
