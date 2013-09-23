@@ -20,7 +20,7 @@
                     <hr>
                     
                     <!-- Multiple Checkboxes (inline) -->
-                    <div class="control-group">
+                    <div class="control-group" style="display: none;">
                         <label class="control-label">Require Admin to Add:</label>
                         <div class="controls">
                             <label class="checkbox inline">
@@ -102,7 +102,7 @@
                     </div>
 
                     <!-- Select Basic -->
-                    <div class="control-group">
+                    <div class="control-group"  style="display: none;">
                         <label class="control-label">Secondary Region:</label>
                         <div class="controls">
                             <select id="secondary_region" name="secondary_region" class="input-xlarge">
@@ -200,7 +200,7 @@
                     <hr>
                     
                     <!-- Appended checkbox -->
-                    <div class="control-group">
+                    <div class="control-group" style="display: none;">
                         <label class="control-label">Password Length:</label>
                         <div class="controls">
                             <div class="input-append">
@@ -214,7 +214,7 @@
                     </div>
 
                     <!-- Appended Input-->
-                    <div class="control-group">
+                    <div class="control-group" style="display: none;">
                         <label class="control-label">Credential Rotation:</label>
                         <div class="controls">
                             <div class="input-append">
@@ -394,7 +394,7 @@
                             <div class="input-append">
                                 <input id="max_on_demand" name="max_on_demand" class="span5" type="text" placeholder="# Instances">
                                 <span class="add-on">
-                                    <input type="checkbox"> Unlimited</input>
+                                    <input type="checkbox" id="check_max_on_demand"> Unlimited</input>
                                 </span>
                             </div>
                         </div>
@@ -407,7 +407,7 @@
                             <div class="input-append">
                                 <input id="max_reserved" name="max_reserved" class="span5" type="text" placeholder="# Instances">
                                 <span class="add-on">
-                                    <input type="checkbox"> Unlimited</input>
+                                    <input type="checkbox" id="check_max_reserved"> Unlimited</input>
                                 </span>
                             </div>
                         </div>
@@ -420,7 +420,7 @@
                             <div class="input-append">
                                 <input id="max_dedicated" name="max_dedicated" class="span5" type="text" placeholder="# Instances">
                                 <span class="add-on">
-                                    <input type="checkbox"> Unlimited</input>
+                                    <input type="checkbox" id="check_max_dedicated"> Unlimited</input>
                                 </span>
                             </div>
                         </div>
@@ -433,7 +433,7 @@
                             <div class="input-append">
                                 <input id="max_spot" name="max_spot" class="span5" type="text" placeholder="# Instances">
                                 <span class="add-on">
-                                    <input type="checkbox"> Unlimited</input>
+                                    <input type="checkbox" id="check_max_spot"> Unlimited</input>
                                 </span>
                             </div>
                         </div>
@@ -446,14 +446,14 @@
                             <div class="input-append">
                                 <input id="max_in_autoscale" name="max_in_autoscale" class="span5" type="text" placeholder="# Instances">
                                 <span class="add-on">
-                                    <input type="checkbox"> Unlimited</input>
+                                    <input type="checkbox" id="check_max_in_autoscale"> Unlimited</input>
                                 </span>
                             </div>
                         </div>
                     </div>
         
                     <!-- Appended checkbox -->
-                    <div class="control-group">
+                    <div class="control-group" style="display: none;">
                         <label class="control-label">Max Cores:</label>
                         <div class="controls">
                             <div class="input-append">
@@ -554,7 +554,7 @@
                         </div>
                     </div>
         
-                    <div class="well">
+                    <div class="well" style="display: none;">
                         <legend>Configuration Management</legend>
                         <!-- Multiple Checkboxes -->
                         <div class="control-group">
@@ -632,7 +632,7 @@
                             <div class="input-append">
                                 <input id="max_rds" name="max_rds" class="span3" type="text" placeholder="# DB's">
                                 <span class="add-on">
-                                    <input type="checkbox"> Unlimited</input>
+                                    <input type="checkbox" id="check_rds"> Unlimited</input>
                                 </span>
                             </div>
                         </div>
@@ -667,7 +667,7 @@
                         </div>
                         
                         <!-- Multiple Checkboxes -->
-                        <div class="control-group">
+                        <div class="control-group" style="display: none;">
                         <label class="control-label">AWS Console:</label>
                         <div class="controls">
                             <label class="checkbox">
@@ -687,7 +687,7 @@
                 <legend style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;border-radius: 5px 5px 0px 0px;">&nbsp;CloudWatch Alarms</legend>
                 <div class="well">
                     <!-- Text input-->
-                    <div class="control-group well" style="margin-top: 40px;">
+                    <div class="control-group well" style="margin-top: 40px;display: none;">
                         <legend>Elastic Compute Cloud</legend>
                         <label class="control-label">CPUUtilization</label>
                         <div class="controls">
@@ -734,7 +734,7 @@
                     </div>
                     
                     <!-- Text input-->
-                    <div class="control-group well">
+                    <div class="control-group well" style="display: none;">
                         <legend>Elastic Loadbalancer</legend>
                         <label class="control-label">Latency</label>
                         <div class="controls">
@@ -800,7 +800,7 @@
                             </label>
                         </div>
                     </div>
-                    <div class="control-group well">
+                    <div class="control-group well" style="margin-top: 40px;">
                         <legend>Add Default Alarms</legend>
                         <a id="create_alarm_btn" class="btn btn-primary" style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;margin-bottom:8px;"><i class="icon-plus-sign icon-white"></i>&nbsp;Add</a>
                         <table class="table">  

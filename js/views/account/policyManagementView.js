@@ -67,7 +67,8 @@ define([
             "change .image_filter":"imageFilterSelect",
             "click .create_topic_btn":"topicCreate",
             "click .create_vpc_btn":"vpcCreate",
-            "click .create_subnet_btn":"subnetCreate"
+            "click .create_subnet_btn":"subnetCreate",
+            'change input[type=checkbox]': 'checkboxChanged'
         },
 
         initialize: function() {
@@ -421,6 +422,38 @@ define([
                 cells.push(row); 
             }
             return cells;
+        },
+        
+        checkboxChanged: function(lambda){
+            switch(lambda.target.id)
+            {
+            case "check_rds":
+                this.disableInput($("#max_rds"),$("#"+lambda.target.id).is(':checked'));
+                break;
+            case "check_max_on_demand":
+                this.disableInput($("#max_on_demand"),$("#"+lambda.target.id).is(':checked'));
+                break;
+            case "check_max_reserved":
+                this.disableInput($("#max_reserved"),$("#"+lambda.target.id).is(':checked'));
+                break;
+            case "check_max_dedicated":
+                this.disableInput($("#max_dedicated"),$("#"+lambda.target.id).is(':checked'));
+                break;
+            case "check_max_spot":
+                this.disableInput($("#max_spot"),$("#"+lambda.target.id).is(':checked'));
+                break;
+            case "check_max_in_autoscale":
+                this.disableInput($("#max_in_autoscale"),$("#"+lambda.target.id).is(':checked'));
+                break;
+            }
+        },
+        
+        disableInput: function(target,toggle){
+            if(toggle === true){
+                //target.attr("disabled", true);
+                //target.addClass("ui-state-disabled");
+                target.val("");
+            }
         },
 
         close: function(){
