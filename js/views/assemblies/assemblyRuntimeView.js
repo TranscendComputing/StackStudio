@@ -104,7 +104,7 @@ define([
                         aTargets: [0],
                         sWidth: "7em",
                         mData: function(instance){
-                            return "<input type='checkbox' data-instance-id='" + instance.id + "'></input>";
+                            return "<input type='checkbox' data-instance-id='" + instance.id + "'></input><span class='chef_icon' /><span class='puppet_icon' />";
                         }
                     },
                     {
@@ -301,7 +301,7 @@ define([
                         if(!$.isEmptyObject(data)){
                             var instanceRow = this.instanceTable.$("tr:eq("+i+")").first();
                             instanceRow.data(type, data);
-                            instanceRow.find("td:eq(0)").append(icon);
+                            instanceRow.find("td:eq(0)").find(".chef_icon").append(icon);
                         }
                     }
                 },
