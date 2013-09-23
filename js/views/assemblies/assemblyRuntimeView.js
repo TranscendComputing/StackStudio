@@ -107,15 +107,8 @@ define([
                         }
                     },
                     {
-                        "sTitle": "",
-                        aTargets: [1],
-                        mData: function(instance){
-                            return "";
-                        }
-                    },
-                    {
                         "sTitle": "Instance Name",
-                        aTargets: [2],
+                        aTargets: [1],
                         //mData: "tags.Name"
                         mData: function(instance){
                             if (!instance){
@@ -129,7 +122,7 @@ define([
                     },
                     {
                         "sTitle": "Id",
-                        aTargets: [3],
+                        aTargets: [2],
                         mData: "id"
                     }
                 ]
@@ -306,7 +299,7 @@ define([
                         if(!$.isEmptyObject(data)){
                             var instanceRow = this.instanceTable.$("tr:eq("+i+")").first();
                             instanceRow.data(type, data);
-                            instanceRow.find("td:eq(1)").html(icon);
+                            instanceRow.find("td:eq(0)").append(icon);
                         }
                     }
                 },
