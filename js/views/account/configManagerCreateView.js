@@ -15,9 +15,9 @@ define([
         'text!templates/account/configManagerCreateTemplate.html',
         'common'
         
-], function( $, _, Backbone, ich, DialogView, ConfigManager, groupCreateTemplate, Common ) {
+], function( $, _, Backbone, ich, DialogView, ConfigManager, managerCreateTemplate, Common ) {
     
-    var CloudServiceCreateView = DialogView.extend({
+    var ConfigManagerCreateView = DialogView.extend({
         model: undefined,
         
         events: {
@@ -30,7 +30,7 @@ define([
             this.configManagers = options.configManagers;
             this.model = new ConfigManager();
             var createView = this;
-            var compiledTemplate = _.template(groupCreateTemplate);
+            var compiledTemplate = _.template(managerCreateTemplate);
 
             this.$el.html(compiledTemplate);
             this.$el.dialog({
@@ -90,17 +90,17 @@ define([
             var data = {};
             if($("#manager_type_input").val().toLowerCase() === "puppet"){
 
-                data = {"authPropName":"Foreman User", inputType:"input", authProp:"foreman_user"};
+                data = {"authPropName":"Foreman User", tag:"input", inputType:"text", authProp:"foreman_user"};
                 $("#authProp").html(ich["auth_prop_template"](data));
 
-                data = {"authPropName":"Foreman Password", inputType:"input", authProp:"foreman_pass"};
+                data = {"authPropName":"Foreman Password", tag:"input", inputType:"password",authProp:"foreman_pass"};
                 $("#otherAuthProp").html(ich["auth_prop_template"](data));
 
             }else if ($("#manager_type_input").val().toLowerCase() === "chef"){
-                data = {"authPropName":"Client Name", inputType:"input", authProp:"client_name"};
+                data = {"authPropName":"Client Name", tag:"input", inputType:"text",authProp:"client_name"};
                 $("#authProp").html(ich["auth_prop_template"](data));
 
-                data = {"authPropName":"Key", inputType:"textarea", authProp:"key"};
+                data = {"authPropName":"Key", tag:"textarea", inputType:"text",authProp:"key"};
                 $("#otherAuthProp").html(ich["auth_prop_template"](data));
             }
         },
@@ -118,5 +118,5 @@ define([
         }
     });
     
-    return CloudServiceCreateView;
+    return ConfigManagerCreateView;
 });

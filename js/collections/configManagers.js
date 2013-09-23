@@ -52,7 +52,6 @@ define([
             options.emulateHTTP = true;
             options.wait = true;
             options.success= function(model){
-                accounts.remove(model);
                 Common.vent.trigger("devOpsViewRefresh");
             };
             options.error = function(model, xhr) {
@@ -61,6 +60,6 @@ define([
             manager.destroy(options);
         }
     });
-    
+    Backbone.emulateHTTP=true;
     return ConfigManagers;
 });

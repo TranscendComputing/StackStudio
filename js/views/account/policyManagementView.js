@@ -65,6 +65,7 @@ define([
             "click .remove_image" : "removeImage",
             'click #images_table tr': 'selectImage',
             "change .image_filter":"imageFilterSelect",
+            "change .default_credentials":"changeCreds",
             "click .create_topic_btn":"topicCreate",
             "click .create_vpc_btn":"vpcCreate",
             "click .create_subnet_btn":"subnetCreate",
@@ -270,7 +271,7 @@ define([
         createAlarm: function(){
             var pView = this;
             
-            var topicsList = []
+            var topicsList = [];
             if($("#default_informational").val() !== "None"){topicsList.push($("#default_informational").val());}
             if($("#default_warning").val() !== "None"){topicsList.push($("#default_warning").val());}
             if($("#default_error").val() !== "None"){topicsList.push($("#default_error").val());}
@@ -285,11 +286,31 @@ define([
             for (var i in creds) {
                 $("#default_credentials").append("<option value='"+creds[i].cloud_credential.id+"'>"+creds[i].cloud_credential.name+"</option>");
             }
+<<<<<<< HEAD
             
             // if(typeof this.rootView != 'undefined' && typeof this.rootView.treePolicy != 'undefined'){
 //                 
 //             }
             
+=======
+            if(typeof this.rootView != 'undefined' && typeof this.rootView.treePolicy != 'undefined'){
+                var tp = this.rootView.policies.get(this.rootView.treePolicy);
+                $("#default_credentials").val(tp.attributes.aws_governance.default_credentials);
+            }
+            
+            this.topics.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
+            this.images.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val(), platform: $("#filter_platform").val()}), reset: true });
+            this.vpcs.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
+            this.subnets.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
+        },
+
+        changeCreds: function(event){
+            this.addCredDependent();
+        },
+
+        addCredDependent: function(){
+            //debugger
+>>>>>>> 60c362c212ac74d453e7bddf44ec1c2494d91185
             this.topics.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
             this.images.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val(), platform: $("#filter_platform").val()}), reset: true });
             this.vpcs.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
@@ -334,9 +355,9 @@ define([
                 $("#default_error").append("<option>"+model.attributes.id+"</option>");
             });
             
-            $("#default_informational").append("<option>None</option>")
-            $("#default_warning").append("<option>None</option>")
-            $("#default_error").append("<option>None</option>")
+            $("#default_informational").append("<option>None</option>");
+            $("#default_warning").append("<option>None</option>");
+            $("#default_error").append("<option>None</option>");
             
             if(typeof this.rootView != 'undefined' && typeof this.rootView.treePolicy != 'undefined'){
                 var p = this.model.attributes.aws_governance;

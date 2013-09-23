@@ -15,10 +15,11 @@ define([
         'collections/users',
         'collections/configManagers',
         'views/account/configManagerCreateView',
+        'views/account/configManagerUpdateView',
         'text!templates/account/managementDevOpsToolsTemplate.html',
         'jquery-plugins',
         'jquery-ui-plugins'
-], function( $, _, Backbone, Common, ich, URI, Users, ConfigManagers, ConfigManagerCreateView,managementDevOpsToolsTemplate) {
+], function( $, _, Backbone, Common, ich, URI, Users, ConfigManagers, ConfigManagerCreateView,ConfigManagerUpdateView, managementDevOpsToolsTemplate) {
 
     var DevOpsToolsManagementView = Backbone.View.extend({
         /** @type {String} DOM element to attach view to */
@@ -31,6 +32,7 @@ define([
         events: {
             "click button.save-manager-button": "saveManager",
             "click button.delete-manager-button": "deleteManager",
+            "click button.edit-manager-button" : "editManager",
             "click #new_config_manager": "newConfigManager"
         },
         /** Constructor method for current view */
@@ -84,6 +86,8 @@ define([
             var puppetEndpoints = ich['config_managers_template']({"managers":this.configManagers.toJSON().puppet, "managerType": "Puppet"});
             $('#config_managers_page').html(chefEndpoints);
             $('#config_managers_page').append(puppetEndpoints);
+
+            $('input').prop('disabled', true);
             
             $('button').button();
             
@@ -113,6 +117,12 @@ define([
             this.newResourceDialog = new ConfigManagerCreateView({ configManagers: this.configManagers});
             this.newResourceDialog.render();
             
+        },
+
+        editManager: function(evt){
+            var managerId = $(evt.currentTarget).parent().find("input").data("id");
+            var editView = new ConfigManagerUpdateView({configManager: this.configManagers.get(managerId)});
+            editView.render();
         },
 
         deleteManager: function(event) {
