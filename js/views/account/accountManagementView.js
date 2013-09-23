@@ -14,20 +14,23 @@ define([
         'collections/groups',
         'collections/cloudCredentials',
         'collections/cloudAccounts',
+        'collections/policies',
         'views/account/newLoginView',
         'views/account/cloudAccountManagementView',
         'views/account/cloudCredentialManagementView',
         'views/account/cloudCredentialManagementListView',
         'views/account/cloudAccountManagementListView',
         'views/account/usersManagementView',
+        'views/account/policiesManagementView',
+        'views/account/policyManagementView',
         'views/account/homeView',
         'views/account/groupsManagementView',
         'views/account/groupsManagementListView',
+        'views/account/devOpsToolsManagementView',
         'jquery-plugins',
         'jquery-ui-plugins',
         'jquery.jstree'
-], function( $, _, Backbone, Common, managementTemplate, Groups, CloudCredentials, CloudAccounts, NewLoginView, CloudAccountManagementView, CloudCredentialManagementView, CloudCredentialManagementListView, CloudAccountManagementListView, UsersManagementView, HomeView, GroupsManagementView, GroupsManagementListView ) {
-
+], function( $, _, Backbone, Common, managementTemplate, Groups, CloudCredentials, CloudAccounts, Policies, NewLoginView, CloudAccountManagementView, CloudCredentialManagementView, CloudCredentialManagementListView, CloudAccountManagementListView, UsersManagementView, PoliciesManagementView, PolicyManagementView, HomeView, GroupsManagementView, GroupsManagementListView, DevOpsToolsManagementView ) {
     var AccountManagementView = Backbone.View.extend({
         /** @type {String} DOM element to attach view to */
         el: "#main",
@@ -39,6 +42,7 @@ define([
             "click .group_item": "selectGroup",
             "click .cloud_account_item": "selectCloudAccount",
             "click .credential_item": "selectCloudCred",
+            "click .policy_item": "selectPolicy",
             "click #treeAddUser": "addUser"
         },
         subApp: undefined,
@@ -46,9 +50,11 @@ define([
         groups: undefined,
         cloudCredentials: undefined,
         cloudAccounts: undefined,
+        policies: undefined,
         treeGroup: undefined,
         treeCloudAccount: undefined,
         treeCloudCred: undefined,
+        treePolicy: undefined,
         /** Constructor method for current view */
         initialize: function() {
             
@@ -59,11 +65,14 @@ define([
             this.groups = new Groups();
             this.groups.on('reset', this.addAllGroups, this);
             
-            this.cloudCredentials = new CloudCredentials()
+            this.cloudCredentials = new CloudCredentials();
             this.cloudCredentials.on( 'reset', this.addAllCreds, this );
             
             this.cloudAccounts = new CloudAccounts();
             this.cloudAccounts.on( 'reset', this.addAllCloudAccounts, this );
+            
+            this.policies = new Policies();
+            this.policies.on( 'reset', this.addAllPolicies, this );
             
             //Render my own view
             this.render();
@@ -73,24 +82,24 @@ define([
             var accMan = this;
             $("#mCloudAccount_tree").jstree({
                 "themeroller":{"item": "jstree_custom_item"},
-                "plugins":[ "themeroller", "html_data", "ui", "crrm" ]
+                "plugins":[ "themeroller", "html_data", "crrm" ]
             }).on('loaded.jstree', function() {
                 //async
-                accMan.cloudAccounts.fetch({ 
+                accMan.cloudAccounts.fetch({
                     data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id}),
                     reset: true
                 });
             });
             $("#mCloudCredential_tree").jstree({
                 "themeroller":{"item": "jstree_custom_item"},
-                "plugins":[ "themeroller", "html_data", "ui", "crrm" ]
+                "plugins":[ "themeroller", "html_data", "crrm" ]
             }).on('loaded.jstree', function() {
                 //async
                 accMan.cloudCredentials.fetch({reset: true});
             });
             $("#mGroup_tree").jstree({
                 "themeroller":{"item": "jstree_custom_item"},
-                "plugins":[ "themeroller", "html_data", "ui", "crrm" ]
+                "plugins":[ "themeroller", "html_data", "crrm" ]
             }).on('loaded.jstree', function() {
                 //Fetch Collections
                 accMan.groups.fetch({
@@ -99,11 +108,26 @@ define([
             });
             $("#mUser_tree").jstree({
                 "themeroller":{"item": "jstree_custom_item"},
-                "plugins":[ "themeroller", "html_data", "ui", "crrm" ]
+                "plugins":[ "themeroller", "html_data", "crrm" ]
             }).on('loaded.jstree', function() {
                 $("#mUser_tree").jstree('open_all');
             });
-            
+            $("#mPolicy_tree").jstree({
+                "themeroller":{"item": "jstree_custom_item"},
+                "plugins":[ "themeroller", "html_data", "crrm" ]
+            }).on('loaded.jstree', function() {
+                //async
+                accMan.policies.fetch({
+                    data: $.param({ org_id: sessionStorage.org_id}),
+                    reset: true
+                });
+            });
+            $("#mdevOps_tree").jstree({
+                "themeroller":{"item": "jstree_custom_item"},
+                "plugins":[ "themeroller", "html_data", "crrm" ]
+            }).on('loaded.jstree', function() {
+                    $("#mdevOps_tree").jstree('open_all');
+            });
         },
         addAllGroups: function() {
             $('.group_item.tree_item').remove();
@@ -123,7 +147,12 @@ define([
                 $("#mCloudCredential_tree").jstree("create","#cred_list","first",{ attr : {class : "credential_item tree_item"} , data : { title: cred.attributes.name, attr : { id : cred.attributes.id, href : "#account/management/cloud-credentials", class : "credential_item tree_item" }} },false, true);
             });
         },
-        
+        addAllPolicies: function(){
+            $('.policy_item.tree_item').remove();
+            this.policies.each(function(policy) {
+                $("#mPolicy_tree").jstree("create","#policy_list","first",{ attr : {class : "policy_item tree_item"} , data : { title: policy.attributes.name, attr : { id : policy.attributes._id, href : "#account/management/policy", class : "policy_item tree_item" }} },false, true);
+            });
+        },
         addAllCloudAccounts: function(){
             $('.cloud_account_item.tree_item').remove();
             
@@ -145,6 +174,9 @@ define([
         
         selectManagement: function(event){
             if(event.target.attributes.href){
+                if($("#"+event.target.id).hasClass('policy_item')){
+                    this.treePolicy = event.target.id;
+                }
                 location.href = event.target.attributes.href.nodeValue;
             }
         },
@@ -158,12 +190,18 @@ define([
             this.treeCloudAccount = event.target.id;
             if(typeof(this.subApp.treeSelectCloudAccount) !== "undefined"){
                 this.subApp.treeSelectCloudAccount();
-            }  
+            }
         },
         selectCloudCred: function(event){
             this.treeCloudCred = event.target.id;
             if(typeof(this.subApp.treeSelectCloudCred) !== "undefined"){
                 this.subApp.treeSelectCloudCred();
+            }
+        },
+        selectPolicy: function(event){
+            this.treePolicy = event.target.id;
+            if(typeof(this.subApp.treeSelect) !== "undefined"){
+                this.subApp.treeSelect();
             }
         },
         addUser: function(event){
@@ -227,6 +265,28 @@ define([
                     accountManagementView.subApp = new UsersManagementView();
                 }
                 break;
+            case "policies":
+                if(accountManagementView.subApp instanceof PoliciesManagementView)
+                {
+                    //do nothing
+                }else{
+                    if(accountManagementView.subApp !== undefined){
+                        accountManagementView.subApp.close();
+                    }
+                    accountManagementView.subApp = new PoliciesManagementView({rootView: accountManagementView});
+                }
+                break;
+            case "policy":
+                if(accountManagementView.subApp instanceof PolicyManagementView)
+                {
+                    //do nothing
+                }else{
+                    if(accountManagementView.subApp !== undefined){
+                        accountManagementView.subApp.close();
+                    }
+                    accountManagementView.subApp = new PolicyManagementView({rootView: accountManagementView});
+                }
+                break;
             case "groups":
                 if(accountManagementView.subApp instanceof GroupsManagementView)
                 {
@@ -269,6 +329,16 @@ define([
                         accountManagementView.subApp.close();
                     }
                     accountManagementView.subApp = new CloudAccountManagementListView({rootView: accountManagementView});
+                }
+                break;
+            case "devops":
+                if(accountManagementView.subApp instanceof DevOpsToolsManagementView){
+
+                }else{
+                    if(accountManagementView.subApp !== undefined){
+                        accountManagementView.subApp.close();
+                    }
+                    accountManagementView.subApp = new DevOpsToolsManagementView({rootView: accountManagementView});
                 }
                 break;
             case "home":

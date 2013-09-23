@@ -7,12 +7,12 @@
 /*global define:true console:true */
 define([
         'jquery',
-        'backbone',
+        'models/resource/resourceModel',
         'common'
-], function( $, Backbone, Common ) {
+], function( $, ResourceModel, Common ) {
     'use strict';
 
-    var InternetGateway = Backbone.Model.extend({
+    var InternetGateway = ResourceModel.extend({
         
         defaults: {
             "id": '',

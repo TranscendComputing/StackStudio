@@ -9,6 +9,7 @@ tmp/pids/*
 tmp/sessions/*
 tmp/sockets/*
 log
+npm-debug.log
 vendor/bundle
 .bundle
 .actionScriptProperties
@@ -31,3 +32,5 @@ js/*-all*js*
 .tags*
 *.sublime*
 .DS_Store
+backend.json
+

@@ -172,13 +172,10 @@ define([
         refreshMonitors: function() {
             $(".monitor_graph").empty();
             var cacheApp = this;
-            $("#monitor_time_range").selectmenu({
-                change: function() {
-                    cacheApp.refreshMonitors();
-                }
+            $("#monitor_time_range").change(function() {
+                cacheApp.refreshMonitors();
             });
             $("#refresh_monitors_button").button();
-            $("#node_select").selectmenu();
 
             var spinnerOptions = {
                 lines: 13, // The number of lines to draw

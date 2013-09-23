@@ -47,8 +47,7 @@ define([
         },
 
         render: function() {
-            $("#org_select").selectmenu();
-            $("#cloud_select").selectmenu();
+
         },
 
         create: function() {
@@ -62,8 +61,9 @@ define([
                     $(this).css("border-color", "red");
                     issue = true;
                 }
-                else
+                else {
                     $(this).css("border-color", "");
+                }
             });
             var array = $("#create_service_form").serializeArray();
             for(var i = 0; i < array.length; i++){

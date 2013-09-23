@@ -11,8 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/vpc/awsInternetGatewayDetachTemplate.html',
-        'common',
-        'jquery.ui.selectmenu'
+        'common'
         
 ], function( $, _, Backbone, DialogView, internetGatewayDetachTemplate, Common ) {
     

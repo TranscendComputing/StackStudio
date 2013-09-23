@@ -13,8 +13,7 @@ define([
         'text!templates/aws/vpc/awsAssociateDhcpOptionsTemplate.html',
         '/js/aws/models/vpc/awsVpc.js',
         '/js/aws/collections/vpc/awsDhcpOptionsSets.js',
-        'common',
-        'jquery.ui.selectmenu'
+        'common'
         
 ], function( $, _, Backbone, DialogView, associateDhcpOptionTemplate, Vpc, DhcpOptions, Common ) {
     
@@ -58,8 +57,6 @@ define([
                 }
             });
 
-            $("#dhcp_options_select").selectmenu();
-
             this.dhcps.on( 'reset', this.addAllDhcpOptions, this );
             this.dhcps.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true });
         },
@@ -75,7 +72,6 @@ define([
                 $("#dhcp_options_select").append($("<option value=" + dhcp.attributes.id + ">" + dhcp.attributes.id + "</option>"));
             });
             $("#dhcp_options_select option[value=" + this.vpc.attributes.dhcp_options_id + "]").attr("selected", "selected");
-            $("#dhcp_options_select").selectmenu();
         },
         
         associate: function() {

@@ -15,7 +15,6 @@ define([
         'text!templates/openstack/identity/openstackRoleCreateTemplate.html',
         '/js/openstack/models/identity/openstackRole.js',
         '/js/openstack/collections/identity/openstackRoles.js',
-        'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter'
 ], function( $, _, Backbone, Common, ich, DialogView, roleCreateTemplate, Role, Roles ) {
@@ -61,7 +60,6 @@ define([
                     }
                 }
             }); 
-            $("select").selectmenu();
 
             // This line adds required asterisk to all fields with class 'required'
             this.$(".required").after("<span class='required'/>");

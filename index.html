@@ -31,21 +31,24 @@
 
 <body class="">
     <!--  Header content -->
-    <div class="">
+    <div class="" style="width: 100%; z-index: 1000;">
         <div>
             <nav>
                 <a id="home_link" href="/"><img src="/images/TranscendLogos/StackStudioLogo_SML.png" height="40" width="160" alt="StackStudio"/></a>
                 <ul class="main">
-                    <li><a href="/#resources">Cloud Management</a></li>
-                    <li><a href="/#apps">Apps & Stacks</a></li>
+                    <li id="resources_nav" class="main_nav"><a href="/#resources">Cloud Management</a></li>
+                    <!-- <li id="images_nav" class="main_nav"><a href="/#images">Packed Images</a></li> -->
+                    <li id="assemblies_nav" class="main_nav"><a href="/#assemblies">Assemblies</a></li>
+                    <li id="stacks_nav" class="main_nav"><a href="/#stacks">Stacks</a></li>
+                    <li id="offerings_nav" class="main_nav"><a href="/#offerings">Offerings</a></li>
                 </ul>
                 <ul id="navLogin"></ul>
             </nav>
         </div>
     </div>
-    <div style="clear:both"></div>
+    <!-- <div style="clear:both;height:40px;"></div> -->
 
-    <div class="container-fluid">
+    <div class="container-fluid" style="padding:0px;">
     <div class="row-fluid" id="app_container">
         <!-- Sidebar content -->
         <section id="sidebar"></section>
@@ -61,8 +64,7 @@
             Copyright &copy; 2012-2013 - <a href="http://www.transcendcomputing.com">Transcend Computing</a>
         </p>
     </footer>
-    <br/>
-    <br/>
+    
     <script>
     var opts = {
             lines: 13, // The number of lines to draw

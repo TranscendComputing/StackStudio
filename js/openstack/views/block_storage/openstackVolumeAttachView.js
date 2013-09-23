@@ -12,8 +12,7 @@ define([
         'views/dialogView',
         'text!templates/openstack/block_storage/openstackVolumeAttachTemplate.html',
         '/js/openstack/collections/compute/openstackInstances.js',
-        'common',
-        'jquery.ui.selectmenu' 
+        'common'
 ], function( $, _, Backbone, DialogView, volumeAttachTemplate, Instances, Common ) {
     
     /**
@@ -70,7 +69,6 @@ define([
             }
             $("#volume_display").text(this.volume.get("id") + volumeName + " in " + this.volume.get("availability_zone"));
             $("#instance_zone_message").text("in " + this.volume.get("availability_zone"));
-            $("#instance_select").selectmenu();
             this.instances.on( 'reset', this.addAllInstances, this );
             this.instances.fetch({ 
                 data: $.param({ cred_id: this.credentialId, region: this.region, filters: {"availability-zone": this.volume.get("availability_zone")}}),
@@ -87,7 +85,6 @@ define([
             this.availabilityZones.each(function(az) {
                 $("#az_select").append($("<option></option>").text(az.attributes.zoneName));
             });
-            $("#az_select").selectmenu();
         },
         
         addAllInstances: function() {
@@ -95,7 +92,6 @@ define([
             this.instances.each(function(instance) {
                 $("#instance_select").append($("<option data-id="+ instance.id +">"+ instance.get("name") +"</option>"));
             });
-            $("#instance_select").selectmenu();
         },
         
         attach: function() {

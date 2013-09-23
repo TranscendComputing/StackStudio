@@ -13,7 +13,6 @@ define([
         'icanhaz',
         'views/dialogView',
         'text!templates/openstack/identity/openstackTenantConfirmRemoveTemplate.html',
-        'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter'
 ], function( $, _, Backbone, Common, ich, DialogView, tenantConfirmRemoveTemplate ) {

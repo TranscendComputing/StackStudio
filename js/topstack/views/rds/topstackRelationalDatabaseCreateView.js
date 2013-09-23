@@ -16,7 +16,6 @@ define([
         '/js/topstack/collections/rds/topstackDBParameterGroups.js',
         '/js/topstack/collections/rds/topstackDBSecurityGroups.js',
         'common',
-        'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
@@ -84,8 +83,6 @@ define([
                     }
                 }
             });
-            $("select").selectmenu();
-            $("#security_group_select").selectmenu("destroy");
             $("#security_group_select").multiselect({
                 selectedList: 3,
                 noneSelectedText: "Select Security Group(s)"
@@ -175,7 +172,6 @@ define([
             }else if($("#engine_select").val() === "sqlserver-ex" || $("#engine_select").val() === "sqlserver-web") {
                 $("#licence_model_select").append("<option value='license-included'>License Included</option>");
             }
-            $("#licence_model_select").selectmenu();
 
             //Setup Engine Version Options
             $("#engine_version_select").empty();
@@ -184,7 +180,6 @@ define([
                     $("#engine_version_select").append("<option value="+ engineVersion.attributes.EngineVersion +">"+ engineVersion.attributes.EngineVersion +"</option>");
                 }
             });
-            $("#engine_version_select").selectmenu();
 
             //Setup Instance Class Options
             $("#instance_class_select").empty();
@@ -201,7 +196,6 @@ define([
                                                     "<option value='db.m2.2xlarge'>db.m2.2xlarge</option>" +
                                                     "<option value='db.m2.4xlarge'>db.m2.4xlarge</option>");
             }
-            $("#instance_class_select").selectmenu();
 
             //Setup Multi AZ Deployment Options
             $("#multi_az_deployment_select").empty();
@@ -211,7 +205,6 @@ define([
                 $("#multi_az_deployment_select").append("<option value='false'>No</option>" +
                                                         "<option value='true'>Yes</option>");
             }
-            $("#multi_az_deployment_select").selectmenu();
 
             //Setup Storage label
             this.setupStorageLabel();
@@ -287,7 +280,6 @@ define([
                             $("#parameter_group_select").append("<option value="+param_group.attributes.id+">"+param_group.attributes.id+"</option>");
                         }
                     });
-                    $("#parameter_group_select").selectmenu();
                 }
 
             }
@@ -307,7 +299,6 @@ define([
             this.availabilityZones.each(function(az) {
                 $("#availability_zone_select").append("<option value="+az.attributes.name+">"+az.attributes.name+"</option>");
             });
-            $("#availability_zone_select").selectmenu();
         },
 
         displayValid: function(valid, selector) {
@@ -326,7 +317,6 @@ define([
                 $("#backup_window_options select").removeAttr("disabled");
                 $("#backup_window_options").removeClass("ui-state-disabled");
             }
-            $("#backup_window_options select").selectmenu();
         },
 
         maintenanceWindowEnable: function() {
@@ -337,7 +327,6 @@ define([
                 $("#maintenance_window_options select").removeAttr("disabled");
                 $("#maintenance_window_options").removeClass("ui-state-disabled");
             }
-            $("#maintenance_window_options select").selectmenu();
         },
 
         getBackUpWindowString: function() {

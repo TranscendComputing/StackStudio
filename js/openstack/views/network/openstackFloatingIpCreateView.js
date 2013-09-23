@@ -15,7 +15,6 @@ define([
         'text!templates/openstack/network/openstackFloatingIpCreateTemplate.html',
         '/js/openstack/models/network/openstackFloatingIp.js',
         '/js/openstack/collections/network/openstackFloatingIps.js',
-        'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter'
 ], function( $, _, Backbone, Common, ich, DialogView, floatingIpCreateTemplate, FloatingIp ) {
@@ -59,7 +58,6 @@ define([
                     }
                 }
             }); 
-            $("select").selectmenu();
         },
 
         create: function() {

@@ -41,9 +41,9 @@ define([
         
         modelStringIdentifier: "id",
         
-        columns: ["name", "os_ext_srv_attr_instance_name", "id", "key_name", "state"],
+        columns: ["name", "id", "key_name", "state"],
         
-        idColumnNumber: 2,
+        idColumnNumber: 1,
         
         model: Instance,
         

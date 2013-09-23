@@ -1,0 +1,35 @@
+<div style="height:700px;">
+	<div id="accordion" class="layout sidebar accordion" style="width:22%;float:left;">
+		<div class="accordion-group">
+			<div class="accordion-heading">
+		    	<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+			    	New Resources
+			    </a>
+			</div>
+			<div id="collapseOne" class="accordion-body collapse in">
+		     	<div class="accordion-inner">
+		        	<div id="new_resources"></div>
+		      	</div>
+		    </div>
+		</div>
+	</div>
+	<div id="design_editor" style="position:relative;left:20px;float:left;width:54%;height:660px;"></div>
+	<div id="stack_properties_accordion" class="layout sidebar accordion" style="position:relative;left:40px;float:left;width:20%;">
+		<div class="accordion-group">
+			<div class="accordion-heading">
+		    	<a class="accordion-toggle" data-toggle="collapse" data-parent="#stack_properties_accordion" href="#collapseTwo">
+			    	<span id="stack_name"></span>
+			    </a>
+			</div>
+			<div id="collapseTwo" class="accordion-body collapse in">
+		     	<div class="accordion-inner">
+		     		<label for="stack_description">Description:</label><span id="stack_description" class="span_label"></span>
+		     		<label for="stack_compatible_clouds">Compatible Clouds:</label><span id="stack_compatible_clouds" class="span_label"></span>
+		     		<div style="padding:5px 0px;">
+		        		<button id="save_template_button" type="button" data-action="save" class="btn btn-primary">Save</button>
+		        	</div>
+		      	</div>
+		    </div>
+		</div>
+	</div>
+</div>

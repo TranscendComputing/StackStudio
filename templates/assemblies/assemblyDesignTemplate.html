@@ -1,0 +1,64 @@
+<div id="assemblyLeftNav" class="span5">
+</div>
+
+<div id="assemblyRightNav" class="span7">
+  <h2>Assembly Details</h2>
+  <form class="form-horizontal" id="designForm">
+    <div class="control-group">
+      <label class="control-label" for="assemblyDesignName">Name</label>
+      <div class="controls">
+        <input type="text" name="name" id="assemblyDesignName" placeholder="Assembly">
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="inputAssembly">Cloud</label>
+      <div class="controls">
+        <select id="assemblyDesignCloud" name="cloud" placeholder="Cloud">
+          <option>OpenStack</option>
+          <option>AWS</option>
+        </select>
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="inputAssembly">Configuration Tool</label>
+      <div class="controls">
+        <select id="assemblyDesignTool" name="tool" placeholder="Cloud">
+          <option>Chef</option>
+          <option>Puppet</option>
+        </select>
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="assemblyDesignCloudCreds">Cloud Credential</label>
+      <div class="controls">
+        <select id="assemblyDesignCloudCreds" name="cloud_credential" placeholder="Cloud Credential">
+        </select>
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="assemblyDesignImagesTable">Image</label>
+      <div class="controls">
+        <div class="row-fluid">
+        <table id="assemblyDesignImagesTable" class="table table-striped table-bordered">
+          <thead>
+            <tr>
+              <th>Id</th>
+              <th>Image Name</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody id="image-container">
+           
+          </tbody>
+        </table>
+      </div>
+      </div>
+    </div>
+    <div class="control-group">
+      <div class="controls">
+        <button type="submit" id="save-assembly" class="btn btn-primary">Save</button>
+      </div>
+    </div>
+    <input type="hidden" name="image" id="assemblyDesignImage"/>
+  </form>
+</div>

@@ -67,7 +67,8 @@ module.exports = function(grunt) {
         eqnull: true,
         browser: true,
         smarttabs: true,
-        globals: {
+        devel:true,
+				globals: {
             jQuery: true,
             console: true,
             require: true,
@@ -163,12 +164,12 @@ module.exports = function(grunt) {
                             routers: 'js/routers',
                             views: 'js/views',
                             interpreters: 'js/interpreters',
-                            'jquery': 'js/vendor/jquery-1.8.3.min',
+                            'jquery': 'js/vendor/jquery-1.9.1.min',
                             'jquery-ui': 'js/vendor/jquery-ui-1.8.17.custom.min',
                             'underscore': 'js/vendor/lodash-1.1.1.min',
                             'backbone': 'js/vendor/backbone-1.0.min',
                             'icanhaz': 'js/vendor/ICanHaz',
-                            'jquery.terminal': 'js/vendor/jquery.terminal-0.4.22',
+                            'jquery.terminal': 'js/vendor/jquery.terminal-0.7.3',
                             'jquery.mousewheel': 'js/vendor/jquery.mousewheel-min'
                         }
                     }
@@ -189,7 +190,6 @@ module.exports = function(grunt) {
             "css/jquery.multiselect.css": "css/jquery.multiselect.less",
             "css/jquery.multiselect.filter.css": "css/jquery.multiselect.filter.less",
             "css/jquery-ui.css": "css/jquery-ui.less",
-            "css/jquery.ui.selectmenu.css": "css/jquery.ui.selectmenu.less",
             "css/morris.css": "css/morris.less"
         }        
       }

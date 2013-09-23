@@ -37,8 +37,8 @@ define([
                     cloudCreds.push(cloudCred);
                 });
             }
-            
             this.reset(cloudCreds);
+
 		},
 		/**
          * Creates a new set of cloud credentials for the user

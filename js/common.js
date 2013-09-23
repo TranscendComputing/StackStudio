@@ -90,10 +90,6 @@ requirejs.config({
             deps: ['jquery', 'jquery.cookie'],
             exports: 'jQuery.fn.jstree'
         },
-        'jquery-ui.selectmenu': {
-            deps: ['jquery', 'jquery-ui'],
-            exports: 'jQuery.fn.selectmenu'
-        },
         'morris': {
             deps: ['jquery', 'raphael'],
             exports: 'Morris'
@@ -110,21 +106,6 @@ requirejs.config({
         },
         'URIjs': {
 
-        },
-        'wijutil': {
-            deps: ['jquery-ui', 'jquery.mousewheel']
-        },
-        'wijsuperpanel': {
-            deps: ['wijutil']
-        },
-        'wijlist': {
-            deps: ['wijutil', 'wijsuperpanel']
-        },
-        'wijsplitter': {
-            deps: ['wijutil']
-        },
-        'wijmo': {
-            deps: ['jquery-ui', 'jquery.mousewheel']
         }
 	},
 	packages: [
@@ -147,7 +128,7 @@ requirejs.config({
         interpreters: '../interpreters',
         templates: '../../templates',
         wrappers: '../../wrappers',
-        'jquery': '//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min',
+        'jquery': '//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min',
         'jquery-ui': '//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min',
         'underscore': '//cdnjs.cloudflare.com/ajax/libs/lodash.js/1.1.0/lodash.min',
         'backbone': '//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min',
@@ -156,20 +137,16 @@ requirejs.config({
         'icanhaz': 'ICanHaz',
         'jquery.form': 'jquery.form',
         //'jquery.list': 'jquery.list.min',
-        'jquery.terminal': 'jquery.terminal-0.4.22',
+        'jquery.terminal': 'jquery.terminal-0.7.3',
         'jquery.mousewheel': 'jquery.mousewheel-min',
         'messenger': 'messenger.min',
         //'jquery.jstree': '//cachedcommons.org/cache/jquery-jstree/1.0.0/javascripts/jquery-jstree-min',
         'raphael': 'raphael-min',
         'spinner': 'spin.min',
          URIjs: 'uri/src',
-        'wijlist': 'jquery.wijmo.wijlist',
-        'wijutil': 'jquery.wijmo.wijutil',
-        'wijsuperpanel': 'jquery.wijmo.wijsuperpanel',
-        'wijsplitter': 'jquery.wijmo.wijsplitter',
-        'wijmo': 'wijmo-require',
-        'wijmo-actual': 'jquery.wijmo-open.all.2.3.2.min',
-        'bootstrap': '//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min'
+        'bootstrap': '//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min',
+        'typeahead': '../vendor/twitter/typeahead.min',
+        'ace-cdn': '//d1n0x3qji82z53.cloudfront.net/src-min-noconflict/ace'
     }
 });
 
@@ -184,75 +161,80 @@ requirejs.config({
  * a local copy if not available (e.g. working disconnected).
  */
 require(
-        ['jquery',
-         'underscore',
-         'backbone',
-         'icanhaz',
-         'jquery-ui'
-         ], function ($, _, Backbone, ich) {
-}, function (err) {
-    //The errback, error callback
-    //The error has a list of modules that failed
-    for (var i = 0; err.requireModules && i < err.requireModules.length; i++) {
-        var failedId = err.requireModules[i];
-        if (failedId === 'jquery') {
-            // undef is function only on the global requirejs object.
-            // Use it to clear internal knowledge of jQuery. Any modules
-            // that were dependent on jQuery and in the middle of loading
-            // will not be loaded yet, they will wait until a valid jQuery
-            // does load.
-            requirejs.undef(failedId);
+    [
+        'jquery',
+        'underscore',
+        'backbone',
+        'icanhaz',
+        'jquery-ui'
+    ],
+    function ($, _, Backbone, ich) {
 
-            // Set the path to jQuery to local path
-            console.log("Redirecting to local path.");
-            requirejs.config({
-                paths: {
-                    jquery: '../vendor/jquery-1.8.3.min'
-                }
-            });
+    },
+    function (err) {
+        //The errback, error callback
+        //The error has a list of modules that failed
+        for (var i = 0; err.requireModules && i < err.requireModules.length; i++) {
+            var failedId = err.requireModules[i];
+            if (failedId === 'jquery') {
+                // undef is function only on the global requirejs object.
+                // Use it to clear internal knowledge of jQuery. Any modules
+                // that were dependent on jQuery and in the middle of loading
+                // will not be loaded yet, they will wait until a valid jQuery
+                // does load.
+                requirejs.undef(failedId);
 
-            // Try again. Note that the above require callback
-            // with the "Do something with $ here" comment will
-            // be called if this new attempt to load jQuery succeeds.
-            require(['jquery'], function () {});
-        } else if (failedId === 'jquery-ui') {
-            requirejs.undef(failedId);
-            console.log("Redirecting to local path:" + failedId);
-            requirejs.config({
-                paths: {
-                    'jquery-ui': '../vendor/jquery-ui-1.9.2.min'
-                }
-            });
-            require(['jquery-ui'], function () {console.log("Got it now.")});
-        } else if (failedId === 'underscore') {
-            requirejs.undef(failedId);
-            requirejs.config({
-                paths: {
-                    'underscore': 'lodash-1.1.1.min'
-                }
-            });
-            require(['underscore'], function () {});
-        } else if (failedId === 'icanhaz') {
-            //requirejs.undef(failedId);
-            requirejs.config({
-                paths: {
-                    'icanhaz': 'ICanHaz'
-                }
-            });
-            require(['icanhaz'], function () {});
-        } else if (failedId === 'backbone') {
-            requirejs.undef(failedId);
-            requirejs.config({
-                paths: {
-                    'backbone': 'backbone-1.0.min'
-                }
-            });
-            require(['backbone'], function () {});
-        } else {
-            console.log("Unhandled require failure:" +failedId);
+                // Set the path to jQuery to local path
+                console.log("Redirecting to local path.");
+                requirejs.config({
+                    paths: {
+                        jquery: '../vendor/jquery-1.8.3.min'
+                    }
+                });
+
+                // Try again. Note that the above require callback
+                // with the "Do something with $ here" comment will
+                // be called if this new attempt to load jQuery succeeds.
+                require(['jquery'], function () {});
+            } else if (failedId === 'jquery-ui') {
+                requirejs.undef(failedId);
+                console.log("Redirecting to local path:" + failedId);
+                requirejs.config({
+                    paths: {
+                        'jquery-ui': '../vendor/jquery-ui-1.9.2.min'
+                    }
+                });
+                require(['jquery-ui'], function () {console.log("Got it now.")});
+            } else if (failedId === 'underscore') {
+                requirejs.undef(failedId);
+                requirejs.config({
+                    paths: {
+                        'underscore': 'lodash-1.1.1.min'
+                    }
+                });
+                require(['underscore'], function () {});
+            } else if (failedId === 'icanhaz') {
+                //requirejs.undef(failedId);
+                requirejs.config({
+                    paths: {
+                        'icanhaz': 'ICanHaz'
+                    }
+                });
+                require(['icanhaz'], function () {});
+            } else if (failedId === 'backbone') {
+                requirejs.undef(failedId);
+                requirejs.config({
+                    paths: {
+                        'backbone': 'backbone-1.0.min'
+                    }
+                });
+                require(['backbone'], function () {});
+            } else {
+                console.log("Unhandled require failure:" +failedId);
+            }
         }
     }
-});
+);
 
 
 /**
@@ -266,12 +248,13 @@ define(
          'views/consoleAppView',
          'routers/router',
          'views/errorDialog',
+         'text!/backend.json',
          'jquery-ui',
          'jquery-ui-plugins',
          'backbone.stickit'
-         ], function ($, _, Backbone, CommandLineView, Router, ErrorDialog) {
+         ], function ($, _, Backbone, CommandLineView, Router, ErrorDialog, backendTxt) {
 
-    // Added custom handler for selectmenu
+    // Added custom handler for select
     Backbone.Stickit.addHandler({
         selector: 'select',
         initialize: function($el, model, options) {
@@ -281,8 +264,6 @@ define(
                     selectedList: options.selectedList,
                     noneSelectedText: options.noneSelectedText
                 }).multiselectfilter();
-            }else{
-                $el.selectmenu();
             }
         }
     });
@@ -297,20 +278,7 @@ define(
 
     //Base url for API calls
     var apiUrl;
-
-    // Automatically choose URL based on current hostname.
-    // TODO: need a cleaner solution for this, w/o requiring too much config
-    if(location.hostname.indexOf("stackstudio2.appspot.com") !== -1 ) {
-       apiUrl = "http://cloudmux-demo.sdlc.transcendcomputing.com:9292";
-    }else if(location.hostname === "localhost") {
-        apiUrl = "http://localhost:9292";
-    }else if(location.hostname === "stackstudio-dev") {
-        apiUrl = "http://devessex.essex.momentumsoftware.com:8000";
-    }else if(location.hostname === "stackstudio-local") {
-        apiUrl = "http://stackstudio-api:9292";
-    }else if(location.hostname === "devessex.essex.momentumsoftware.com") {
-        apiUrl = "http://devessex.essex.momentumsoftware.com:8000";
-    }
+    apiUrl = JSON.parse(backendTxt).backend_endpoint;
 
     // Initialize custom events object
     var vent = _.extend({}, Backbone.Events);

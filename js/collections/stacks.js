@@ -13,27 +13,14 @@ define([
 ], function( $, Backbone, Stack, Common ) {
 	'use strict';
 
-	// Stacks Collection
-	// ---------------
-
 	var StackList = Backbone.Collection.extend({
 
-		// Reference to this collection's model.
 		model: Stack,
 
-		url: 'samples/sample_projects.json'
+		url: function(){return Common.apiUrl + '/stackstudio/v1/stacks/account/' + sessionStorage.account_id;}
 		
-        /*
-		// Filter down the list of all projects that are running.
-		running: function() {
-			return this.filter(function( project ) {
-				return project.get('running');
-			});
-		}
-		*/
 	});
 
-	// Create our global collection of **Stacks**.
-	return new StackList();
+	return StackList;
 
 });

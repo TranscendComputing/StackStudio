@@ -49,7 +49,6 @@ define([
                     }
                 }
             });
-            $("#family_select").selectmenu();
         },
 
         create: function() {

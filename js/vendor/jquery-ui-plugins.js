@@ -16,7 +16,6 @@ define(
     , function(jQuery){
 
         require([
-                 'jquery.ui.selectmenu'
                  ], function() {
          });
         var $ = jQuery;

@@ -33,14 +33,17 @@ define([
 
 		routes:{
             'account/cloudcredentials': 'cloudCredentials',
-            'account/management(/:action)': 'accountManagement',
+            'account/management(/:action)': 'accountManagementRoute',
 			'resources': 'resourcesRoute',
 			'resources/:cloud': 'resourcesRoute',
 			'resources/:cloud/:region': 'resourcesRoute',
 			'resources/:cloud/:region/:type': 'resourcesRoute',
 			'resources/:cloud/:region/:type/:subtype' : 'resourcesRoute',
 			'resources/:cloud/:region/:type/:subtype/:id': 'resourcesRoute',
-            'apps': 'appsRoute',
+			'images': 'imagesRoute',
+            'assemblies': 'assembliesRoute',
+            'stacks': 'stacksRoute',
+            'offerings': 'offeringsRoute',
 			'projects': 'projects',
 			'project/new': 'projectCreate',
 			'projects/:url': 'projectEdit',
@@ -59,6 +62,7 @@ define([
 		    } else {
                 $("#sidebar").empty();
                 $("#sidebar").hide();
+                $(".main_nav").removeClass("nav_selected");
                 this.trigger("route:dashboard");
 		    }
 		},
@@ -66,13 +70,49 @@ define([
 		resourcesRoute: function(cloud, region, type, subtype, id, action) {
 		    $("#sidebar").empty();
 		    $("#sidebar").hide();
+            $(".main_nav").removeClass("nav_selected");
+            $("#resources_nav").addClass("nav_selected");
 		    this.trigger("route:resources", cloud, region, type, subtype, id);
 		},
 
-		appsRoute: function(action) {
+		imagesRoute: function(action) {
             $("#sidebar").empty();
             $("#sidebar").hide();
-            this.trigger("route:apps");
+            $(".main_nav").removeClass("nav_selected");
+            $("#images_nav").addClass("nav_selected");
+            this.trigger("route:images");
+        },
+
+		assembliesRoute: function(action) {
+            $("#sidebar").empty();
+            $("#sidebar").hide();
+            $(".main_nav").removeClass("nav_selected");
+            $("#assemblies_nav").addClass("nav_selected");
+            this.trigger("route:assemblies");
+        },
+
+        stacksRoute: function(action) {
+            $("#sidebar").empty();
+            $("#sidebar").hide();
+            $(".main_nav").removeClass("nav_selected");
+            $("#stacks_nav").addClass("nav_selected");
+            this.trigger("route:stacks");
+        },
+
+        offeringsRoute: function(action) {
+            $("#sidebar").empty();
+            $("#sidebar").hide();
+            $(".main_nav").removeClass("nav_selected");
+            $("#offerings_nav").addClass("nav_selected");
+            this.trigger("route:offerings");
+        },
+
+        accountManagementRoute: function(action) {
+        	$("#sidebar").empty();
+            $("#sidebar").hide();
+            $(".main_nav").removeClass("nav_selected");
+            $("#nav_account").addClass("nav_selected");
+            this.trigger("route:accountManagement", action);
         }
 	});
 

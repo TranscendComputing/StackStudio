@@ -16,15 +16,6 @@
 
 @import "sidebar.less";
 
-/*
-@import "jquery.wijmo.wijlist.less";
-
-@import "jquery.wijmo.wijsuperpanel.less";
-
-@import "jquery.wijmo.wijsplitter.less";
-*/
-@import "jquery.wijmo-open.2.3.2.less";
-
 @import "autocomplete.less";
 
 @import "projectApp.less";
@@ -217,6 +208,7 @@ nav ul li {
     color: #6B6B6B;
     text-shadow: #EBEBEB 0 1px;
     text-decoration: none;
+    font-weight:bold;
     margin: 0;
     list-style-image: none;
     list-style-type: none;
@@ -225,6 +217,11 @@ nav ul li {
     float: left;
     padding-left: 0;
     padding-right: 0;
+}
+
+.nav_selected a{
+    color:#FFFFFF !important;
+    text-shadow:#000000 0.1em 0.1em .5em !important;
 }
 
 nav li + li {
@@ -347,6 +344,10 @@ footer a:visited {
     width: 100px;
 }
 
+.top_align {
+    vertical-align: top;
+}
+
 textarea {
     font-size: .9em !important;
     font-family: "PT Sans", "Helvetica Neue", Arial, sans-serif !important;
@@ -368,17 +369,33 @@ textarea {
 }
 
 table.dataTable tr.row_selected td.sorting_1 {
-    background: #F4A22B;
+    background: #F4A22B !important;
     color: #FFFFFF;
 }
 
 tr.row_selected td {
-    background: #F4A22B;
+    background: #F4A22B !important;
     color: #FFFFFF;
 }
 
 div.button_bar {
     margin: 5px 0px;
+}
+
+.ui-state-error p {
+    margin: 5px;
+}
+
+.resource_running ins {
+    background: url(/images/16x16greenCircle.png) !important;
+}
+
+.resource_not_running ins {
+    background: url(/images/16x16redCircle.png) !important;
+}
+
+.span_label {
+    line-height:1;
 }
 
 /*
@@ -765,8 +782,9 @@ img {
 /* Regular CSS files, imported via less to make 1 request. */
 @import "jquery.dataTables.less";
 @import "jquery.terminal.less";
-@import "jquery.ui.selectmenu.less";
 @import "jquery.multiselect.less";
 @import "jquery.multiselect.filter.less";
 @import "jquery-ui.less";
 @import "morris.less";
+@import "apps.less";
+@import "offerings.less";

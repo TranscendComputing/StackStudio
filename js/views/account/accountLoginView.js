@@ -44,7 +44,7 @@ define([
             this.$el.dialog({
                 title: title,
                 autoOpen: true,
-                width:400,
+                width:325,
                 minHeight: 150,
                 resizable: false,
                 modal: true,
@@ -118,6 +118,7 @@ define([
                 sessionStorage.cloud_credentials = JSON.stringify(data.account.cloud_credentials);
                 sessionStorage.permissions = JSON.stringify(data.account.permissions);
                 sessionStorage.project_memeberships = JSON.stringify(data.account.project_memberships);
+                sessionStorage.group_policies = JSON.stringify(data.account.group_policies);
                 
                 console.log("session login:" + sessionStorage.login);
                 Common.vent.trigger("loginSuccess");

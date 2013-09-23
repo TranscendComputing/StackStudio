@@ -13,8 +13,7 @@ define([
         'common',
         'views/resource/resourceRowView',
         'jquery.dataTables',
-        'jquery.dataTables.fnProcessingIndicator',
-        'wijmo'
+        'jquery.dataTables.fnProcessingIndicator'
 ], function( $, _, Backbone, ich, Common , ResourceRowView ) {
     'use strict';
 
@@ -127,7 +126,6 @@ define([
         },
 
         clickOne: function (event) {
-            //debugger
             console.log($(event.currentTarget).data());
             var id, parentNode;
             var rowData = this.$table.fnGetData(event.currentTarget);
@@ -139,7 +137,6 @@ define([
         },
 
         selectOne : function (id, rowNode) {
-            //debugger
             var selectedModel;
             var modelStringIdentifier = this.modelStringIdentifier;
             this.clearSelection();

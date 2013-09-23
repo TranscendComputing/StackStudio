@@ -226,8 +226,6 @@ define([
                 "bJQueryUI": true,
                 "sDom": 't'
             });
-            $("#lb_protocol_select").selectmenu();
-            $("#instance_protocol_select").selectmenu();
             $("#listener_save_button").button();
             this.listeners = new Listeners({"load_balancer_id": this.selectedId});
             this.listeners.on( 'reset', this.addAllListeners, this );
@@ -287,10 +285,8 @@ define([
         refreshMonitors: function() {
             $(".monitor_graph").empty();
             var loadBalancerApp = this;
-            $("#monitor_time_range").selectmenu({
-                change: function() {
-                    loadBalancerApp.refreshMonitors();
-                }
+            $("#monitor_time_range").change(function() {
+                loadBalancerApp.refreshMonitors();
             });
             $("#refresh_monitors_button").button();
 

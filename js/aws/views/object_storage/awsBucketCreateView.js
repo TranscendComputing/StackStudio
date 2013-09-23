@@ -73,7 +73,6 @@ define([
             $.each(this.cloudDefinitions["aws"].regions, function (index, value) {
                 $('#bucket_region_select').append($("<option value="+ value.zone +">"+ value.name +"</option>"));
             });
-            $("#bucket_region_select").selectmenu();
 		},
 
 		render: function() {

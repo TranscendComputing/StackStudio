@@ -63,28 +63,26 @@ define([
             var topicName = topicSplitArray[topicSplitArray.length-1];
             $("#topic_name_output").html(topicName);
 
-            $("#protocol_select").selectmenu({
-                change: function() {
-                    switch($("#protocol_select").val()) {
-                        case "email":
-                            $("#endpoint_message").html("e.g. user@domain.com");
-                            break;
-                        case "email-json":
-                            $("#endpoint_message").html("e.g. user@domain.com");
-                            break;
-                        case "http":
-                            $("#endpoint_message").html("e.g. http://company.com");
-                            break;
-                        case "https":
-                            $("#endpoint_message").html("e.g. https://company.com");
-                            break;
-                        case "sms":
-                            $("#endpoint_message").html("e.g. 1-206-555-6423");
-                            break;
-                        case "sqs":
-                            $("#endpoint_message").html("e.g. arn:aws:sqs:us-east-1:555555555555:my-queue");
-                            break;
-                    }
+            $("#protocol_select").change(function() {
+                switch($("#protocol_select").val()) {
+                    case "email":
+                        $("#endpoint_message").html("e.g. user@domain.com");
+                        break;
+                    case "email-json":
+                        $("#endpoint_message").html("e.g. user@domain.com");
+                        break;
+                    case "http":
+                        $("#endpoint_message").html("e.g. http://company.com");
+                        break;
+                    case "https":
+                        $("#endpoint_message").html("e.g. https://company.com");
+                        break;
+                    case "sms":
+                        $("#endpoint_message").html("e.g. 1-206-555-6423");
+                        break;
+                    case "sqs":
+                        $("#endpoint_message").html("e.g. arn:aws:sqs:us-east-1:555555555555:my-queue");
+                        break;
                 }
             });
         },

@@ -18,7 +18,6 @@ define([
         '/js/aws/collections/compute/awsKeyPairs.js',
         '/js/aws/collections/compute/awsSecurityGroups.js',
         'common',
-        'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
@@ -84,9 +83,7 @@ define([
                 selectedList: 3,
                 noneSelectedText: "Select AZ(s)"
             }).multiselectfilter();
-            $("#flavor_select").selectmenu();
-            $("#key_pair_select").selectmenu();
-            $("#elasticity_radio_group").buttonset(); 
+            //$("#elasticity_radio_group").buttonset(); 
             $("#security_group_select").multiselect({
                 selectedList: 3,
                 noneSelectedText: "Select Security Group(s)"
@@ -157,7 +154,6 @@ define([
             this.flavors.each(function(flavor) {
                 $("#flavor_select").append($("<option></option>").text(flavor.attributes.name));
             });
-            $("#flavor_select").selectmenu();
         },
         
         addAllKeyPairs: function() {
@@ -165,7 +161,6 @@ define([
             this.keyPairs.each(function(keyPair) {
                 $("#key_pair_select").append($("<option></option>").text(keyPair.attributes.name));
             });
-            $("#key_pair_select").selectmenu();
         },
         
         addAllSecurityGroups: function() {
@@ -278,12 +273,9 @@ define([
                     this.triggerRadioToggle();
                     this.triggerMeasurementChange();
                     var createView = this;
-                    $("#trigger_measurement_select").selectmenu({
-                        change: function() {
-                            createView.triggerMeasurementChange();
-                        }
+                    $("#trigger_measurement_select").change(function() {
+                        createView.triggerMeasurementChange();
                     });
-                    $("#trigger_statistic_select").selectmenu();
                     $("#measure_period_input").val("5");
                     $("#upper_scale_increment_input").val("1");
                     $("#lower_scale_increment_input").val("-1");
@@ -295,9 +287,7 @@ define([
             if($("#trigger_on").is(":checked")) {
                 $("#trigger_options").removeClass("ui-state-disabled");
                 $("#trigger_measurement_select").removeAttr("disabled");
-                $("#trigger_measurement_select").selectmenu();
                 $("#trigger_statistic_select").removeAttr("disabled");
-                $("#trigger_statistic_select").selectmenu();
                 $("#measure_period_input").removeAttr("disabled");
                 $("#upper_threshold_input").removeAttr("disabled");
                 $("#upper_scale_increment_input").removeAttr("disabled");
@@ -306,9 +296,7 @@ define([
             }else {
                 $("#trigger_options").addClass("ui-state-disabled");
                 $("#trigger_measurement_select").attr("disabled", true);
-                $("#trigger_measurement_select").selectmenu();
                 $("#trigger_statistic_select").attr("disabled", true);
-                $("#trigger_statistic_select").selectmenu();
                 $("#measure_period_input").attr("disabled", true);
                 $("#upper_threshold_input").attr("disabled", true);
                 $("#upper_scale_increment_input").attr("disabled", true);

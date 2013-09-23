@@ -1,0 +1,53 @@
+<div id="no_tool_selected" >
+  <div class="hero-unit">
+    <h3>Please select a configuration management tool on the right.</h3>
+  </div>
+</div>
+<div id="tool_selected" hidden>
+  <h2>Select Configurations</h2>
+  <div id="selectAccordion">
+
+            <div id="appAccordion">
+
+              <div class="accordion-group main-group" id="chefAccordion" hidden>
+                <div class="accordion-heading">
+                  <a class="accordion-toggle chefAccordionToggle" data-toggle="collapse" data-parent="#appAccordion" href="#collapseChef" id="chefAccordionToggle">
+                    <span>Chef</span>
+                    <span class="badge badge-info pull-right"></span>
+                  </a>
+                  <select id="chefEnvironmentSelect" class="pull-right" ></select>
+                </div>
+                <div id="collapseChef" class="accordion-body in">
+                  <div class="accordion-inner">
+                    <form id="chefForm">
+                      <div id="chef-selection">
+                        <div class="alert alert-info">Please select an environment first</div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+
+              <div class="accordion-group main-group" id="puppetAccordion" hidden>
+                <div class="accordion-heading">
+                  <a class="accordion-toggle puppetAccordionToggle" data-toggle="collapse" data-parent="#appAccordion" href="#collapsePuppet" id="puppetAccordionToggle">
+                    <span>Puppet</span>
+                    <span class="badge badge-info pull-right"></span>
+                  </a>
+                 </div>
+                <div id="collapsePuppet" class="accordion-body">
+                  <div class="accordion-inner">
+                    <form id="puppetForm">
+                      <div id="puppet-selection">
+                        <div class="alert alert-info">Please select a cloud credential first</div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+    </div>
+  </div>
+</div>

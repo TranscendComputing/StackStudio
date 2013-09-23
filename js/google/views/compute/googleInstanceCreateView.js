@@ -68,10 +68,6 @@ define([
                     }
                 }
             });
-            $("#zone_select").selectmenu();
-            $("#disk_select").selectmenu();
-            $("#image_select").selectmenu();
-            $("#machine_select").selectmenu();
             
             this.zones.on( 'reset', this.addAllZones, this );
             this.zones.fetch({ data: $.param({ cred_id: this.credentialId }), reset: true });
@@ -88,7 +84,6 @@ define([
             });
             $("#zone_select").val(this.region);
             $('#zone_select').trigger('change');
-            $("#zone_select").selectmenu();
         },
         
         zoneSelect: function(event){
@@ -119,7 +114,6 @@ define([
                             }
                         });
                     }
-                    $("#machine_select").selectmenu();
                 },
                 error: function(jqXHR) {
                     Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
@@ -144,7 +138,6 @@ define([
                            $("#disk_select").append("<option value='"+disk.name+"'>" + disk.name + "</option>");
                         });
                     }
-                    $("#disk_select").selectmenu();
                     instCreateView.addAllMachineTypes();
                 },
                 error: function(jqXHR) {

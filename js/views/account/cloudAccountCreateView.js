@@ -55,9 +55,6 @@ define([
         },
 
         render: function() {
-            $("#org_select").selectmenu();
-            $("#cloud_select").selectmenu();
-            
             this.clouds.on('reset', this.addClouds, this);
             this.clouds.fetch({ 
                 reset: true
@@ -128,7 +125,6 @@ define([
             this.clouds.each(function(cloud) {
                 $("#cloud_select").append("<option value="+cloud.attributes.id+">"+cloud.attributes.name+"</option>");
             });
-            $("#cloud_select").selectmenu();
         }
     });
     

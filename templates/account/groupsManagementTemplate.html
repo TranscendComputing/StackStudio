@@ -1,10 +1,15 @@
+<div id="save_alert" class="alert" style="width:70px;float:right;display:none;">
+  Group <strong>Updated...</strong>
+</div>
 <div class="management_page" style="margin:10px;">
 	<div style="margin-left:5px;">
 		<div id="group_button_bar" style="margin-bottom:5px;">
             <h3>Manage Group Users</h3>
             Group: <b><span id="selected_group_name"></span></b>
             <br/><br/>
-	        <button id="manage_group_users_button">Manage Group Users</button>
+	        <button id="manage_group_users_button" class="btn">Manage Group Users</button>
+            <select id="policy_select" style="float:right;"><option>Select Policy</option></select>
+            <label style="float:right;">Governance Policy:&nbsp;&nbsp;</label>
     	</div>
 		<table id="group_users_table">
 			<thead>

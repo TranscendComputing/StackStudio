@@ -179,6 +179,18 @@ define([
                     Common.vent.trigger("cloudAccountUpdated");
                 }
             });
+        },
+
+        updateConfigManager: function(managerId){
+            var url = Common.apiUrl + "/stackstudio/v1/orchestration/managers/" + managerId + "/account?account_id=" + this.get("id");
+            var options = {};
+            $.ajax({
+                url: url,
+                type: "POST",
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            });
         }
     });
 

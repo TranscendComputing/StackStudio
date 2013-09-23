@@ -15,7 +15,6 @@ define([
         '/js/openstack/collections/compute/openstackAvailabilityZones.js',
         '/js/openstack/collections/block_storage/openstackSnapshots.js',
         'common',
-        'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
@@ -61,8 +60,6 @@ define([
                     }
                 }
             });
-            $("#az_select").selectmenu();
-            $("#snapshot_select").selectmenu();
             
             this.availabilityZones.on( 'reset', this.addAllAvailabilityZones, this );
             this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region}), reset: true });
@@ -80,7 +77,6 @@ define([
             this.availabilityZones.each(function(az) {
                 $("#az_select").append($("<option></option>").text(az.get("name")));
             });
-            $("#az_select").selectmenu();
         },
         
         addAllSnapshots: function() {
@@ -91,7 +87,6 @@ define([
                 }
                 $("#snapshot_select").append($("<option value="+ snapshot.id +">"+ snapshotText +"</option>"));
             });
-            $("#snapshot_select").selectmenu();
         },
 		
 		create: function() {

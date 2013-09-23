@@ -55,7 +55,6 @@ define([
                 }
             });
             this.queue = new Queue();
-            $("select").selectmenu();
         },
         
         create: function() {

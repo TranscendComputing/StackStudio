@@ -110,10 +110,8 @@ define([
         refreshMonitors: function() {
             $(".monitor_graph").empty();
             var instanceApp = this;
-            $("#monitor_time_range").selectmenu({
-                change: function() {
-                    instanceApp.refreshMonitors();
-                }
+            $("#monitor_time_range").change(function() {
+                instanceApp.refreshMonitors();
             });
             $("#refresh_monitors_button").button();
 

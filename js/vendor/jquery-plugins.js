@@ -6,19 +6,20 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define(
-    'jquery-plugins'
-    , [
+    'jquery-plugins',
+    [
         'jquery'
-    ]
-    , function(jQuery){
+    ],
+    function(jQuery){
+        jQuery.migrateMute = true;
         require([
-                 'jquery.coverscroll.min',
-                 'jquery.purr'
-                 ], function() {
+                '//code.jquery.com/jquery-migrate-1.1.0.js',
+                'jquery.coverscroll.min',
+                'jquery.purr'
+        ], function() {
         });
-
         // because plugins AUGMENT $, no point returning them separately
         // just return back the augmented jQuery reference.
         return jQuery;
     }
-)
+);

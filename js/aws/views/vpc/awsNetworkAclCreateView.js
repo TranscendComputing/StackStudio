@@ -14,7 +14,6 @@ define([
         '/js/aws/models/vpc/awsNetworkAcl.js',
         'icanhaz',
         'common',
-        'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
@@ -62,8 +61,6 @@ define([
                     }
                 }
             });
-            
-            $("#vpc_select").selectmenu();
            
             return this;
 		},

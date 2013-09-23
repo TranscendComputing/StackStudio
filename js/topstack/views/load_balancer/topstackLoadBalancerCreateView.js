@@ -13,7 +13,6 @@ define([
         'text!templates/topstack/load_balancer/topstackLoadBalancerCreateTemplate.html',
         '/js/topstack/models/load_balancer/topstackLoadBalancer.js',
         'common',
-        'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter',
         'jquery.dataTables'
@@ -68,7 +67,6 @@ define([
                 "sDom": 't'
             });
             $("#listeners_table").dataTable().fnAddData(["HTTP", "80", "HTTP", "80"]);
-            $("select").selectmenu();
             $("button").button();
             var AvailabilityZonesType = this.availabilityZonesType;
             this.availabilityZones = new AvailabilityZonesType();
@@ -100,10 +98,8 @@ define([
 
         resetListenerInput: function() {
             $("#lb_protocol_select").val($("#lb_protocol_select option:first").val());
-            $("#lb_protocol_select").selectmenu();
             $("#lb_port_input").val("");
             $("#instance_protocol_select").val($("#instance_protocol_select option:first").val());
-            $("#instance_protocol_select").selectmenu();
             $("#instance_port_input").val("");
         },
 

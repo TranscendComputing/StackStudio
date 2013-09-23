@@ -14,8 +14,7 @@ define([
         '/js/aws/models/cloud_watch/awsAlarm.js',
         '/js/aws/collections/cloud_watch/awsMetrics.js',
         '/js/aws/collections/notification/awsTopics.js',
-        'common',
-        'jquery.ui.selectmenu'
+        'common'
         
 ], function( $, _, Backbone, DialogView, alarmCreateTemplate, Alarm, Metrics, Topics, Common ) {
     
@@ -83,11 +82,8 @@ define([
                 bInfo: false,
                 bPaginate : false
             }); 
-            $("select").selectmenu();
-            $("#namespace_select").selectmenu({
-                change: function() {
-                    createView.namespaceChange();
-                }
+            $("#namespace_select").change(function() {
+                createView.namespaceChange();
             });
             this.metrics.on( 'reset', this.addAllMetrics, this );
             this.namespaceChange();
@@ -105,7 +101,6 @@ define([
         namespaceChange: function() {
             $("#metric_select").empty();
             $("#metric_select").append("<option value='none'>No Metrics Available</option>");
-            $("#metric_select").selectmenu();
             switch($("#namespace_select").val()) 
             {
             case "AWS/EBS":
@@ -131,7 +126,6 @@ define([
         
         addAllMetrics: function() {
             $("#metric_select").empty();
-            $("#metric_select").selectmenu();
             if(this.metrics.length > 0) {
                 this.metrics.each(function (metric) {
                     if(metric.attributes.dimensions.length > 0) {
@@ -141,7 +135,6 @@ define([
             }else {
                $("#metric_select").append("<option value='none'>No Metrics Available</option>"); 
             }
-            $("#metric_select").selectmenu();
         },
         
         addAllTopics: function() {
@@ -149,7 +142,6 @@ define([
             this.topics.each(function(topic) {
                 $("#sns_topic_select").append("<option>" + topic.attributes.id + "</option>");
             });
-            $("#sns_topic_select").selectmenu();
         },
         
         selectAction: function(event) {

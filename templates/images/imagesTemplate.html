@@ -1,0 +1,219 @@
+<div class="row">
+    <div id="image_template_list" class="layout sidebar accordion span3">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#image_template_list" href="#collapseOne">
+                    Templates
+                </a>
+            </div>
+            <div id="collapseOne" class="accordion-body collapse in">
+                <div class="accordion-inner">
+                    <ul style="margin:0px;padding-bottom:10px;">
+                        <li><a>packer_template_1</a></li>
+                        <li><a>packer_template_2</a></li>
+                        <li><a>packer_template_3</a></li>
+                        <li><a>packer_template_4</a></li>
+                    </ul>
+                    <a id="new_image_template_button" class="btn"><i class="icon-large icon-plus" style="padding-right:3px;"></i>New</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="span9">
+        <div id="image_template_open" hidden>
+            <div id="image_initialization_accordion" class="layout sidebar accordion span12" style="margin-left:0px;">
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#image_initialization_accordion" href="#templateInitialization">
+                            Template Initialization
+                        </a>
+                    </div>
+                    <div id="templateInitialization" class="accordion-body collapse in">
+                        <div class="accordion-inner">
+                            <form class="form-horizontal">
+                                <fieldset>
+                                    <!-- Text input-->
+                                    <div class="control-group">
+                                        <label class="control-label">Template Name</label>
+                                        <div class="controls">
+                                            <input id="image_template_name_input" type="text" placeholder="MyTemplate" class="input-xlarge">
+                                        </div>
+                                    </div>
+
+                                    <!-- Text input-->
+                                    <div class="control-group">
+                                        <label class="control-label">Hypervisor</label>
+                                        <div class="controls">
+                                            <select id="image_hypervisor_select" class="input-xlarge">
+                                                <option>Xen</option>
+                                                <option>KVM</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Select Basic -->
+                                    <div class="control-group">
+                                        <label class="control-label">Builder Type</label>
+                                        <div class="controls">
+                                            <select id="image_type_select" class="input-xlarge">
+                                                <option value="qemu">QEMU</option>
+                                                <option value="ami">AMI</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                  
+                                    <!-- Select Basic -->
+                                    <div class="control-group">
+                                        <label class="control-label">Assembly Type</label>
+                                        <div class="controls">
+                                            <select id="image_config_management_select" class="input-xlarge">
+                                                <option value="none">None</option>
+                                                <option value="chef">Chef</option>
+                                                <option value="puppet">Puppet</option>
+                                                <option value="saltstack">SaltStack</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Text input-->
+                                    <div class="control-group">
+                                        <label class="control-label">ISO URL</label>
+                                        <div class="controls">
+                                            <input id="iso_url" name="iso_url" type="text" placeholder="http://mirror.raystedman.net/centos/6/isos/x86_64/CentOS-6.4-x86_64-minimal.iso" style="width:525px;">
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="image_initialization_accordion" class="layout sidebar accordion span12" style="margin-left:0px;">
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#image_settings_accordion" href="#advancedSettingsCollapse">
+                                Advanced Settings
+                            </a>
+                        </div>
+                        <div id="advancedSettingsCollapse" class="accordion-body collapse">
+                            <div class="accordion-inner">
+                                <form class="form-horizontal">
+                                    <fieldset>
+                                        <!-- Text input-->
+                                        <div class="control-group">
+                                            <label class="control-label">Boot Command</label>
+                                            <div class="controls">
+                                                <textarea id="boot_command" name="boot_command" type="text" placeholder="separate commands by comma" class="input-xlarge"></textarea>
+                                            </div>
+                                        </div>
+
+                                        <!-- Text input-->
+                                        <div class="control-group">
+                                            <label class="control-label">Disk Interface</label>
+                                            <div class="controls">
+                                                <input id="disk_interface" name="disk_interface" type="text" placeholder="virtio" class="input-xlarge">
+                                            </div>
+                                        </div>
+
+                                        <!-- Text input-->
+                                        <div class="control-group">
+                                            <label class="control-label">Disk Size</label>
+                                            <div class="controls">
+                                                <input id="disk_size" name="disk_size" type="text" placeholder="5000" class="input-xlarge">
+                                            </div>
+                                        </div>
+
+                                        <!-- Text input-->
+                                        <div class="control-group">
+                                            <label class="control-label">Format</label>
+                                            <div class="controls">
+                                                <input id="format" name="format" type="text" placeholder="qcow2" class="input-xlarge">
+                                            </div>
+                                        </div>
+
+                                        <!-- Text input-->
+                                        <div class="control-group">
+                                            <label class="control-label">HTTP Directory</label>
+                                            <div class="controls">
+                                                <input id="http_directory" name="http_directory" type="text" placeholder="/home/tdhite/packer/httpfiles" class="input-xlarge">
+                                            </div>
+                                        </div>
+
+                                        <!-- Text input-->
+                                        <div class="control-group">
+                                            <label class="control-label">ISO Checksum</label>
+                                            <div class="controls">
+                                                <input id="iso_checksum" name="iso_checksum" type="text" placeholder="4a5fa01c81cc300f4729136e28ebe600" class="input-xlarge">
+                                            </div>
+                                        </div>
+
+                                        <!-- Text input-->
+                                        <div class="control-group">
+                                            <label class="control-label">ISO Checksum Type</label>
+                                            <div class="controls">
+                                                <input id="iso_checksum_type" name="iso_checksum_type" type="text" placeholder="md5" class="input-xlarge">
+                                            </div>
+                                        </div>
+
+                                        <!-- Text input-->
+                                        <div class="control-group">
+                                            <label class="control-label">Network Device</label>
+                                            <div class="controls">
+                                                <input id="net_device" name="net_device" type="text" placeholder="virtio" class="input-xlarge">
+                                            </div>
+                                        </div>
+                                      
+                                        <!-- Text input-->
+                                        <div class="control-group">
+                                            <label class="control-label">Shutdown Command</label>
+                                            <div class="controls">
+                                                <input id="shutdown_command" name="shutdown_command" type="text" placeholder="shutdown -P now" class="input-xlarge">
+                                            </div>
+                                        </div>
+
+                                        <!-- Text input-->
+                                        <div class="control-group">
+                                            <label class="control-label">SSH Password</label>
+                                            <div class="controls">
+                                                <input id="ssh_password" name="ssh_password" type="text" placeholder="s0m3password" class="input-xlarge">
+                                            </div>
+                                        </div>
+
+                                        <!-- Text input-->
+                                        <div class="control-group">
+                                            <label class="control-label">SSH Username</label>
+                                            <div class="controls">
+                                                <input id="ssh_username" name="ssh_username" type="text" placeholder="root" class="input-xlarge">
+                                            </div>
+                                        </div>
+
+                                        <!-- Text input-->
+                                        <div class="control-group">
+                                            <label class="control-label">SSH Wait Timeout</label>
+                                            <div class="controls">
+                                                <input id="ssh_wait_timeout" name="ssh_wait_timeout" type="text" placeholder="90m" class="input-xlarge">
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls">
+                        <a id="save_image_template_button" class="btn btn-primary">Save</a>
+                        <a id="deploy_image_template_button" class="btn btn-success">Deploy</a>
+                        <a id="close_image_template_button" class="btn">Close</a>
+                        <a id="delete_image_template_button" class="btn btn-danger">Delete</a>
+                    </div>
+                </div>
+            </div>
+            <div id="image_template_not_opened" hidden>
+                <div class="hero-unit"> 
+                    <h3>Select an image template from the list to the left, or begin by creating a new template!</h3> 
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

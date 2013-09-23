@@ -13,11 +13,13 @@ define([
         'text!templates/account/groupsManagementTemplate.html',
         'collections/groups',
         'collections/users',
+        'collections/policies',
+        'models/policy',
         'views/account/groupCreateView',
         'views/account/groupManageUsersView',
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator'
-], function( $, _, Backbone, Common, groupsManagementTemplate, Groups, Users, CreateGroupView, ManageGroupUsers ) {
+], function( $, _, Backbone, Common, groupsManagementTemplate, Groups, Users, Policies, Policy, CreateGroupView, ManageGroupUsers ) {
 
     var GroupManagementView = Backbone.View.extend({
 
@@ -30,13 +32,16 @@ define([
         groups: undefined,
         
         users: new Users(),
+        
+        policies: undefined,
 
         selectedGroup: undefined,
 
         events: {
             "click #create_group_button" : "createGroup",
             "click #delete_group_button" : "deleteGroup",
-            "click #manage_group_users_button" : "manageGroupUsers"
+            "click #manage_group_users_button" : "manageGroupUsers",
+            "change #policy_select":"policySelect"
         },
 
         initialize: function() {
@@ -51,12 +56,14 @@ define([
             var groupsView = this;
             Common.vent.off("groupRefresh");
             Common.vent.on("groupRefresh", function() {
+                $("#save_alert").fadeIn("slow").animate({opacity: 1.0}, 3000).fadeOut("slow");
+                groupsView.refreshSession();
                 groupsView.render();
                 //refetch tree groups
-                
             });
             this.selectedGroup = undefined;
             this.groups = this.rootView.groups;
+            this.policies = this.rootView.policies;
             this.render();
         },
 
@@ -84,6 +91,14 @@ define([
                 var rowData = [value.group_membership.account.login, value.group_membership.account.first_name, value.group_membership.account.last_name];
                 $("#group_users_table").dataTable().fnAddData(rowData);
             });
+            $("#policy_select").empty();
+            $("#policy_select").append('<option>None</option>');
+            this.policies.each( function(policy) {
+                $("#policy_select").append('<option value="'+policy.attributes._id+'">'+policy.attributes.name+'</option>');
+            });
+            if(typeof this.selectedGroup.attributes.group_policy != 'undefined'){
+                $("#policy_select").val(this.selectedGroup.attributes.group_policy.group_policy.id);
+            }
         },
 
         disableSelectionRequiredButtons: function(toggle) {
@@ -144,6 +159,32 @@ define([
         clearSelection: function() {
             this.selectedGroup = undefined;
             $(".group_item").removeClass("selected_item");
+        },
+        
+        policySelect: function(event){
+            //if(event.target.value !== "None"){
+                var options = {};
+                options.group_policy_id = event.target.value;
+                options.group_id = this.selectedGroup.id;
+                var newPolicy = new Policy();
+                newPolicy.addToGroup(options,sessionStorage.org_id);
+                //}
+        },
+        
+        refreshSession: function(){
+            var url = Common.apiUrl + "/identity/v1/accounts/auth/" + sessionStorage.account_id;
+            
+            $.ajax({
+                url: url,
+                type: 'GET',
+                contentType: 'application/x-www-form-urlencoded',
+                success: function(data) {
+                    sessionStorage.group_policies = JSON.stringify(data.account.group_policies);
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            });
         },
 
         close: function(){

@@ -14,7 +14,6 @@ define([
         '/js/aws/models/vpc/awsVpc.js',
         'icanhaz',
         'common',
-        'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
@@ -56,7 +55,6 @@ define([
                     }
                 }
             });
-            $("#tenancy_select").selectmenu();
 		},
 
 		render: function() {

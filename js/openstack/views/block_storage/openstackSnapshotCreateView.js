@@ -15,7 +15,6 @@ define([
         'text!templates/openstack/block_storage/openstackSnapshotCreateTemplate.html',
         '/js/openstack/collections/block_storage/openstackSnapshots.js',
         '/js/openstack/collections/block_storage/openstackVolumes.js',
-        'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter'
 ], function( $, _, Backbone, Common, ich, DialogView, snapshotCreateTemplate, Snapshots, Volumes ) {
@@ -32,7 +31,7 @@ define([
 
         events: {
             "dialogclose": "close",
-            "selectmenuchange select#volume_select": "setSelectedVolume"
+            "change #volume_select": "setSelectedVolume"
         },
 
         initialize: function(options) {
@@ -88,12 +87,11 @@ define([
             if(!this.volume)
             {
                 this.volume = this.volumes.at(0);
-                $("#volume_select").selectmenu();
             }
         },
 
-        setSelectedVolume: function(event, object) {
-            var volId = $(object.option).data().id;
+        setSelectedVolume: function(event) {
+            var volId = $(event.target).find('option:selected').data().id;
             this.volume = this.volumes.get(volId);
             var newSnapName = this.volume.get("name") + "Snapshot";
             var newSnapDesc = this.volume.get("name") + "Snapshot Description";

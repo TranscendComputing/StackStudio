@@ -1,0 +1,33 @@
+<div id="google_disk_create">
+    <table>
+        <tr>
+            <td>Firewall Name*:</td>
+            <td>
+                <input id="name_input" type="text" style="width:200px;"/>&nbsp;(lowercase)
+            </td>
+        </tr>
+        <tr>
+            <td>Source Range:</td>
+            <td>
+                <input id="iprange_input" value="0.0.0.0/0" type="text" style="width:200px;"/>
+            </td>
+        </tr>
+        <tr>
+            <td><b>Allowed Protocol(s):</b></td>
+            <td>
+                <select id="allowed_select" multiple="multiple" style="width:200px;">
+                    <option>tcp</option>
+                    <option>udp</option>
+                    <option>icmp</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>Network:</td>
+            <td>
+                <select id="network_select" style="width:200px;">
+                </select>
+            </td>
+        </tr>
+    </table>
+</div>

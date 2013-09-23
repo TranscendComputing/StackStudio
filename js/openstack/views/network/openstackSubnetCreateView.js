@@ -15,7 +15,6 @@ define([
         'text!templates/openstack/network/openstackSubnetCreateTemplate.html',
         '/js/openstack/models/network/openstackSubnet.js',
         '/js/openstack/collections/network/openstackNetworks.js',
-        'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter',
         'backbone.stickit'
@@ -59,7 +58,6 @@ define([
                     }
                 }
             });
-            $("#network_select, #ip_version_select").selectmenu();
         },
 
         addAllNetworks: function() {
@@ -67,7 +65,6 @@ define([
             this.networks.each(function(network) {
                 $("#network_select").append($("<option value="+network.attributes.id+">"+network.attributes.name+"</option>"));
             });
-            $("#network_select").selectmenu();
         },
 
         displayValid: function(valid, selector) {

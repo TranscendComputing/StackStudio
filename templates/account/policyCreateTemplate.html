@@ -1,0 +1,112 @@
+<div id="google_disk_create">
+    <div id="accordion" >
+        <h3>Cloud Location Policies</h3>
+        <div style="height:98px;">
+            <table style="border-collapse:separate; border-spacing: 10px;">
+                <tr>
+                    <td><b>Usable_Clouds:</b></td>
+                    <td>
+                        <select id="usable_clouds_select" name="clouds" multiple="multiple">
+                          <option>AWS</option>
+                          <option>OpenStack</option>
+                          <option>Google</option>
+                        </select>
+                    </td>
+                    <td><input type="checkbox" id="check1"></input></td>
+                    <td>Unlimited</td>
+                </tr>
+                <tr>
+                    <td><b>Usable_Regions:</b></td>
+                    <td>
+                        <select id="usable_regions_select" name="regions" multiple="multiple">
+                          <option>US East (Northern Virginia)</option>
+                          <option>US West (Oregon)</option>
+                          <option>US West (Northern California)</option>
+                          <option>EU (Ireland)</option>
+                          <option>Asia Pacific (Singapore)</option>
+                          <option>Asia Pacific (Sydney)</option>
+                          <option>Asia Pacific (Tokyo)</option>
+                          <option>South America (Sao Paulo)</option>
+                          <option>US Gov</option>
+                        </select>
+                    </td>
+                    <td><input type="checkbox" id="check2"></input></td>
+                    <td>Unlimited</td>
+                </tr>
+            </table>
+        </div>
+        <h3>Instance Policies</h3>
+        <div>
+            <table style="border-collapse:separate; border-spacing: 15px;">
+                <tr>
+                    <td><b>Max_Instances:</b></td>
+                    <td>
+                        <input id="max_inst" style="width:50px;"></input>
+                    </td>
+                    <td><input type="checkbox" id="check3"></input></td>
+                    <td>Unlimited</td>
+                </tr>
+                <tr>
+                    <td><b>Max_Cores:</b></td>
+                    <td>
+                        <input id="max_core" style="width:50px;"></input>
+                    </td>
+                    <td><input type="checkbox" id="check4"></input></td>
+                    <td>Unlimited</td>
+                </tr>
+            </table>
+        </div>
+        <h3>Enabled Services</h3>
+        <div style="height:128px;">
+            <!--<table style="border-collapse:separate; border-spacing: 10px;">
+                <tr>
+                    <td>
+                        <select id="enabled_services_select" name="services" multiple="multiple">
+                          <option>Auto Scale</option>
+                          <option>CloudWatch</option>
+                          <option>Elasticache</option>
+                          <option>Elastic Beanstalk</option>
+                          <option>Elastic Compute Cloud</option>
+                          <option>Elastic Load Balancer</option>
+                          <option>IAM</option>
+                          <option>Relational Database</option>
+                          <option>Route 53</option>
+                          <option>Simple DB</option>
+                          <option>Simple Notification</option>
+                          <option>Simple Queue</option>
+                          <option>Simple Storage</option>
+                          <option>VPC</option>
+                        </select>
+                            
+                    </td>
+                    <td><input type="checkbox" id="check5"></input></td>
+                    <td>Unlimited</td>
+                </tr>
+            </table>-->
+            <table >
+                <tr>
+                    <td><input type="checkbox">Auto Scale</input></td>
+                    <td><input type="checkbox">CloudWatch</input></td>
+                    <td><input type="checkbox">Elasticache</input></td>
+                    <td><input type="checkbox">Elastic Beanstalk</input></td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox">Elastic Compute Cloud</input></td>
+                    <td><input type="checkbox">Elastic Load Balancer</input></td>
+                    <td><input type="checkbox">IAM</input></td>
+                    <td><input type="checkbox">Relational Database</input></td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox">Route 53</input></td>
+                    <td><input type="checkbox">Simple DB</input></td>
+                    <td><input type="checkbox">Simple Notification</input></td>
+                    <td><input type="checkbox">Simple Queue</input></td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox">Simple Storage</input></td>
+                    <td><input type="checkbox">VPC</input></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

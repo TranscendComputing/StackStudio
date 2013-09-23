@@ -16,7 +16,6 @@ define([
         '/js/openstack/models/network/openstackNetwork.js',
         '/js/openstack/collections/network/openstackNetworks.js',
         '/js/openstack/collections/identity/openstackTenants.js',
-        'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter'
 ], function( $, _, Backbone, Common, ich, DialogView, networkCreateTemplate, Network, Tenants ) {
@@ -59,7 +58,6 @@ define([
                     }
                 }
             });
-            $("#tenant_select").selectmenu();
         },
 
         addAllTenants: function() {
@@ -67,7 +65,6 @@ define([
             this.tenants.each(function(tenant) {
                 $("#tenant_select").append($("<option value="+tenant.attributes.id+">"+tenant.attributes.name+"</option>"));
             });
-            $("#tenant_select").selectmenu();
         },
 
         displayValid: function(valid, selector) {

@@ -16,7 +16,6 @@ define([
         '/js/aws/collections/block_storage/awsSnapshots.js',
         'icanhaz',
         'common',
-        'jquery.ui.selectmenu',
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
@@ -74,14 +73,10 @@ define([
                     }
                 }
             });
-            $("#volume_type_select").selectmenu({
-                change: function() {
-                    createView.volumeTypeChange();
-                }
+            $("#volume_type_select").change(function() {
+                createView.volumeTypeChange();
             });
             this.volumeTypeChange();
-            $("#az_select").selectmenu();
-            $("#snapshot_select").selectmenu();
             
             this.availabilityZones.on( 'reset', this.addAllAvailabilityZones, this );
             this.availabilityZones.fetch({ 
@@ -111,7 +106,6 @@ define([
             this.availabilityZones.each(function(az) {
                 $("#az_select").append($("<option></option>").text(az.attributes.zoneName));
             });
-            $("#az_select").selectmenu();
         },
         
         addAllOwnedSnapshots: function() {
@@ -122,7 +116,6 @@ define([
                 }
                 $("#snapshot_select").append($("<option value="+ ownedSnapshot.attributes.id +">"+ snapshotText +"</option>"));
             });
-            $("#snapshot_select").selectmenu();
         },
         
         addAllPublicSnapshots: function() {
@@ -133,7 +126,6 @@ define([
                 }
                 $("#snapshot_select").append($("<option value="+ publicSnapshot.attributes.id +">"+ snapshotText +"</option>"));
             });
-            $("#snapshot_select").selectmenu();
         },
 
 		volumeTypeChange: function() {

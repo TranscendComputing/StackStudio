@@ -109,11 +109,11 @@ define([
         
         performAction: function(event) {
             var instance = this.collection.get(this.selectedId);
+            
             switch(event.target.text)
             {
-            case "Delete":
-                //instance.start(this.credentialId, this.region);
-                alert("Delete this instance");
+            case "Terminate":
+                instance.delete(this.credentialId, this.region);
                 break;
             }
         },
@@ -121,10 +121,8 @@ define([
         refreshMonitors: function() {
             $(".monitor_graph").empty();
             var instanceApp = this;
-            $("#monitor_time_range").selectmenu({
-                change: function() {
-                    instanceApp.refreshMonitors();
-                }
+            $("#monitor_time_range").change(function() {
+                instanceApp.refreshMonitors();
             });
             $("#refresh_monitors_button").button();
 

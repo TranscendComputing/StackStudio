@@ -1,0 +1,51 @@
+<div>
+    <form id="new_config_manager_form" >
+        <table>
+            <tbody>
+                <tr>
+                    <td>Name:</td>
+                    <td>
+                        <input id="manager_name_input" name="name" type="text" style="width:200px"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Host:</td>
+                    <td>
+                        <input id="manager_host_input" name="host" type="text" style="width:200px"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Protocol:</td>
+                    <td>
+                        <input id="manager_protocol_input" name="protocol" type="text" style="width:200px"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Port:</td>
+                    <td>
+                        <input id="manager_port_input" name="port" type="text" style="width:200px"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Service Type:</td>
+                    <td>
+                        <select id="manager_type_input" name="type" style="width:200px">
+                            <option value=""/>
+                            <option value="chef">Chef</option>
+                            <option value="puppet">Puppet</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr id="authProp"/>
+                <tr id="otherAuthProp"/>
+            </tbody>
+        </table>
+    </form>
+</div>
+
+<script type="text/html" id="auth_prop_template">
+    <td>{{authPropName}}</td>
+    <td>
+        <{{tag}} id="manager_{{authProp}}" name="auth_properties.{{authProp}}" type="{{inputType}}" style="width:200px"/>
+    </td>
+</script>
