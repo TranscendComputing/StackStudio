@@ -512,16 +512,16 @@
                         <div class="control-group">
                             <label class="control-label">VPC:</label>
                             <div class="controls">
-                                <label class="checkbox" value="Only Admin can create, update, delete Internet Gateways for VPC" style="display:none;">
-                                    <input type="checkbox" name="vpc_rules">
+                                <label class="checkbox">
+                                    <input type="checkbox" name="vpc_rules" value="admin_internet_gateway">
                                     Only Admin can create, update, delete Internet Gateways for VPC
                                 </label>
-                                <label class="checkbox" style="display:none;">
-                                    <input type="checkbox" name="vpc_rules" value="Only Admin can create, update, delete Virtual Private Gateways for VPC">
+                                <label class="checkbox">
+                                    <input type="checkbox" name="vpc_rules" value="admin_private_gateway">
                                     Only Admin can create, update, delete Virtual Private Gateways for VPC
                                 </label>
-                                <label class="checkbox" style="display:none;">
-                                    <input type="checkbox" name="vpc_rules" value="Only Admin can create, update, delete Customer Gateways for VPC">
+                                <label class="checkbox">
+                                    <input type="checkbox" name="vpc_rules" value="admin_customer_gateway">
                                     Only Admin can create, update, delete Customer Gateways for VPC
                                 </label>
                                 <label class="checkbox">
