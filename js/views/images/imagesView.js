@@ -11,8 +11,10 @@ define([
         'bootstrap',
         'backbone',
         'common',
-        'text!templates/images/imagesTemplate.html'
-], function( $, _, bootstrap, Backbone, Common, imagesTemplate ) {
+        'text!templates/images/imagesTemplate.html',
+        'collections/packedImages',
+        'models/packedImage'
+], function( $, _, bootstrap, Backbone, Common, imagesTemplate, PackedImages, PackedImage ) {
 
     var ImagesView = Backbone.View.extend({
 
@@ -20,7 +22,9 @@ define([
 
         template: _.template(imagesTemplate),
 
-        currentImageTemplate: undefined,
+        model: undefined,
+        
+        collection: undefined,
 
         events: {
             "click #new_image_template_button": "newImageTemplate",
@@ -30,39 +34,51 @@ define([
         initialize: function() {
             $("#main").html(this.el);
             this.$el.html(this.template);
+            
+            var $this = this;
+            this.collection = new PackedImages()
+            this.collection.fetch({
+                success: function(){
+                    debugger
+                    this.$el.html(this.template({collection: this.collection}));
+                }
+            });
         },
 
         render: function() {
+            
             //Fetch image templates
-            if(this.currentImageTemplate) {
-                if(this.currentImageTemplate.id === "") {
+            if(this.model) {
+                if(this.model.id === "") {
                     // Set image template fields to defaults
                 }else {
+                    this.$el.html(this.template({collection: this.collection, test: this.model}));
                     // Fill in the image template fields to match the selected image template
                 }
                 $("#image_template_not_opened").hide();
                 $("#image_template_open").show();
             }else {
+                this.$el.html(this.template({collection: this.collection}));
                 $("#image_template_open").hide();
                 $("#image_template_not_opened").show();
             }
         },
 
         newImageTemplate: function() {
-            if(this.currentImageTemplate) {
+            if(this.model) {
                 var confirmation = confirm("Are you sure you want to open a new image template? Any unsaved changes to the current template will be lose.");
                 if(confirmation === true) {
-                    this.currentImageTemplate = "test";
+                    this.model = "test";
                     this.render();
                 }
             }else {
-                this.currentImageTemplate = "test";
+                this.model = "test";
                 this.render();
             }
         },
 
         closeImageTemplate: function() {
-            this.currentImageTemplate = undefined;
+            this.model = undefined;
             this.render();
         },
 
