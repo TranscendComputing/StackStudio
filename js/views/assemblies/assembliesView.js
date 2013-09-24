@@ -242,6 +242,10 @@ define([
             var confirmation = confirm("Are you sure you want to delete " + assembly.get("name") + "?");
             if(confirmation){
                 this.assemblies.deleteAssembly(assembly);
+                if(this.currentAssembly.id === assembly.id){
+                    this.currentAssembly = undefined;
+                    this.newAssemblyForm();
+                }
             }
         },
         confirmPageSwitch: function(){
