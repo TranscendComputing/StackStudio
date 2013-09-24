@@ -287,10 +287,10 @@ define([
                 }
                 instanceInfo.push({"name": name, "ip_addresses": ipAddrs});
             }
-            this.matchInstancesAjax(instanceInfo, this.chefIcon, chefApiUrl, "node");
-            this.matchInstancesAjax(instanceInfo, this.puppetIcon, puppetApiUrl, "agent");
+            this.matchInstancesAjax(instanceInfo, this.chefIcon, chefApiUrl, "node", "chef");
+            this.matchInstancesAjax(instanceInfo, this.puppetIcon, puppetApiUrl, "agent", "puppet");
         },
-        matchInstancesAjax: function(instances, icon, url, type){
+        matchInstancesAjax: function(instances, icon, url, type, tool){
             $.ajax({
                 url: url,
                 type: "POST",
@@ -301,7 +301,7 @@ define([
                         if(!$.isEmptyObject(data)){
                             var instanceRow = this.instanceTable.$("tr:eq("+i+")").first();
                             instanceRow.data(type, data);
-                            instanceRow.find("td:eq(0)").find(".chef_icon").append(icon);
+                            instanceRow.find("td:eq(0)").find("."+ tool +"_icon").html(icon);
                         }
                     }
                 },

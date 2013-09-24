@@ -27,7 +27,7 @@ define([
         template: _.template(assembliesTemplate),
 
         events: {
-            "click .assembly" : "openAssembly",
+            "click .assembly" : "clickAssemblyHandler",
             "click .assembly-delete" : "deleteAssembly",
             "click #create_assembly_button" : "newAssemblyForm"
         },
@@ -56,7 +56,11 @@ define([
                     $this.tabView = new RuntimeView({el: targetID, listView:$this.listView});
                 }else if(targetID ==="#assemblyDesign"){
                     $this.tabView = new DesignView({el: targetID, assemblies:$this.assemblies, listView:$this.listView});
-                    $this.newAssemblyForm();
+                    if($this.currentAssembly.id){
+                        $this.openAssembly($this.currentAssembly.id);
+                    }else{
+                        $this.newAssemblyForm();
+                    }
                 }
             });
         },
@@ -66,10 +70,9 @@ define([
             this.configureTabs();
 
             Common.vent.on("assembliesViewRefresh", this.fetchAssemblies, this);
-
+            this.newAssemblyForm();
             this.assemblies = new Assemblies();
             this.fetchAssemblies();
-            this.newAssemblyForm();
             
         },
 
@@ -102,14 +105,18 @@ define([
             });
         },
 
-        openAssembly: function(evt){
-            var $this = this;
+        clickAssemblyHandler: function(evt){
             var id = evt.currentTarget.id;
+            this.openAssembly(id);
+            
+        },
+        openAssembly: function(id){
+            var $this = this;
             if(!(this.tabView instanceof DesignView)){
-                $("#assembliesTabs a:first").trigger("click");
+                $("#assembliesTabs a:first").click();
             }
-            $("#designForm :input:reset");
             this.currentAssembly = this.assemblies.get(id);
+            $("#designForm :input:reset");
             this.tabView.currentAssembly = this.currentAssembly;
             this.tabView.listView = new ConfigListView();
             this.tabView.listView.render();
@@ -235,6 +242,10 @@ define([
             var confirmation = confirm("Are you sure you want to delete " + assembly.get("name") + "?");
             if(confirmation){
                 this.assemblies.deleteAssembly(assembly);
+                if(this.currentAssembly.id === assembly.id){
+                    this.currentAssembly = undefined;
+                    this.newAssemblyForm();
+                }
             }
         },
         confirmPageSwitch: function(){

@@ -11,7 +11,7 @@
                 <div id="cred_message">Create an AWS credential before creating a policy.</div>
             </div>
         </div>
-        <div id="whole_form">
+        <div id="whole_form" hidden>
         <form id="aws_gov_policy" class="form-horizontal">
             <fieldset>
 
@@ -528,11 +528,11 @@
                                     Only Admin can create, update, delete Internet Gateways for VPC
                                 </label>
                                 <label class="checkbox">
-                                    <input type="checkbox" name="vpc_rules" value="admin_private_gateway">
+                                    <input type="checkbox" name="vpc_rules" value="admin_private_gateway" style="display: none;">
                                     Only Admin can create, update, delete Virtual Private Gateways for VPC
                                 </label>
                                 <label class="checkbox">
-                                    <input type="checkbox" name="vpc_rules" value="admin_customer_gateway">
+                                    <input type="checkbox" name="vpc_rules" value="admin_customer_gateway" style="display: none;">
                                     Only Admin can create, update, delete Customer Gateways for VPC
                                 </label>
                                 <label class="checkbox">
