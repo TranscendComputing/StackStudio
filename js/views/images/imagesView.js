@@ -12,9 +12,9 @@ define([
         'backbone',
         'common',
         'text!templates/images/imagesTemplate.html',
-        'collections/packedImages',
-        'models/packedImage'
-], function( $, _, bootstrap, Backbone, Common, imagesTemplate, PackedImages, PackedImage ) {
+        'text!templates/images/advancedTemplate.html',
+        'jquery-ui'
+], function( $, _, bootstrap, Backbone, Common, imagesTemplate, advancedTemplate ) {
 
     var ImagesView = Backbone.View.extend({
 
@@ -22,69 +22,97 @@ define([
 
         template: _.template(imagesTemplate),
 
-        model: undefined,
-        
-        collection: undefined,
+        currentImageTemplate: undefined,
 
         events: {
             "click #new_image_template_button": "newImageTemplate",
-            "click #close_image_template_button": "closeImageTemplate"
+            "click #close_image_template_button": "closeImageTemplate",
+            "change #image_type_select":"builderSelect",
+            "change #image_config_management_select":"provisionerSelect"
         },
 
         initialize: function() {
             $("#main").html(this.el);
-            //this.$el.html(this.template);
+            this.$el.html(this.template);
         },
 
         render: function() {
-            
-            var $this = this;
-            this.collection = new PackedImages()
-            this.collection.fetch({
-                success: function(collection){
-                    $this.$el.html($this.template({templates: ['one','two'],
-                                                   builders: collection.models[0].attributes,
-                                                   }));
-                }
-            });
+            this.fetchDropDowns();
             //Fetch image templates
-            this.renderTemplate();
-        },
-        
-        renderTemplate: function(){
-            if(this.model) {
-                if(this.model.id === "") {
+            if(this.currentImageTemplate) {
+                if(this.currentImageTemplate.id === "") {
                     // Set image template fields to defaults
                 }else {
-                    this.$el.html(this.template({templates: ['one','two'],
-                                                 builders: this.collection.models[0].attributes,
-                                                 template: this.model}));
                     // Fill in the image template fields to match the selected image template
                 }
                 $("#image_template_not_opened").hide();
                 $("#image_template_open").show();
             }else {
-                //this.$el.html(this.template({collection: this.collection}));
                 $("#image_template_open").hide();
                 $("#image_template_not_opened").show();
             }
         },
 
         newImageTemplate: function() {
-            if(this.model) {
+            if(this.currentImageTemplate) {
                 var confirmation = confirm("Are you sure you want to open a new image template? Any unsaved changes to the current template will be lose.");
                 if(confirmation === true) {
-                    this.model = "test";
-                    this.renderTemplate();
+                    this.currentImageTemplate = "test";
+                    this.render();
                 }
             }else {
-                this.model = "test";
-                this.renderTemplate();
+                this.currentImageTemplate = "test";
+                this.render();
             }
+        },
+        
+        fetchDropDowns: function(){
+            $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/builders", function( builders ) {
+                $("#image_type_select").empty();
+                for (var key in builders) {
+                    $("#image_type_select").append("<option>"+key+"</option>");
+                }
+                $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/builders/" + $("#image_type_select").val(), function( builder ) {
+                    $("#builder_settings").html(_.template(advancedTemplate)({optional: builder.optional, required: builder.required, title: "Builder: "+$("#image_type_select").val()}));
+                    $("#builder_settings").tooltip();
+                });
+            });
+            $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/provisioners", function( provisioners ) {
+                $("#image_config_management_select").empty();
+                for (var key in provisioners) {
+                    $("#image_config_management_select").append("<option>"+key+"</option>");
+                }
+                $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/provisioners/" + $("#image_config_management_select").val(), function( provisioner ) {
+                    if(provisioner.shell !== undefined){
+                        provisioner.optional = provisioner.shell.optional;
+                        provisioner.required = provisioner.shell.required_xor;
+                    }
+                    $("#provisioner_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, required: provisioner.required, title: "Provisioner: "+$("#image_config_management_select").val()}));
+                    $("#provisioner_settings").tooltip();
+                });
+            });
+        },
+        
+        builderSelect: function(){
+            $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/builders/" + $("#image_type_select").val(), function( builder ) {
+                $("#builder_settings").html(_.template(advancedTemplate)({optional: builder.optional, required: builder.required, title: "Builder: "+$("#image_type_select").val()}));
+                $("#builder_settings").tooltip();
+            });
+        },
+        
+        provisionerSelect: function(event){
+            $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/provisioners/" + $("#image_config_management_select").val(), function( provisioner ) {
+                if(provisioner.shell !== undefined){
+                    provisioner.optional = provisioner.shell.optional;
+                    provisioner.required = provisioner.shell.required_xor;
+                }
+                $("#provisioner_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, required: provisioner.required, title: "Provisioner: "+$("#image_config_management_select").val()}));
+                $("#provisioner_settings").tooltip();
+            });
         },
 
         closeImageTemplate: function() {
-            this.model = undefined;
+            this.currentImageTemplate = undefined;
             this.render();
         },
 

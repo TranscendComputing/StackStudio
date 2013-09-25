@@ -1,0 +1,28 @@
+<legend><%= title %></legend>
+<% _.each(required, function(key,field){ %>
+       <div class="control-group">
+           <label class="control-label"><%= field %></label>
+           <div class="controls">
+               <% if (key.type === "bool" || key.type === "boolean") { %>
+                   <input type="checkbox" id="<%= field %>" name="<%= field %>" title="<%= key.description %>">
+               <% }else{ %>
+               <input id="<%= field %>" name="<%= field %>" type="text" placeholder="<%= field %>" class="input-xlarge" title="<%= key.description %>">
+               <% } %>
+               <%= key.type %>
+           </div>
+       </div>
+<% }); %>
+<hr>
+<% _.each(optional, function(key,field){ %>
+       <div class="control-group">
+           <label class="control-label"><%= field %></label>
+           <div class="controls">
+               <% if (key.type === "bool" || key.type === "boolean") { %>
+                   <input type="checkbox" id="<%= field %>" name="<%= field %>" title="<%= key.description %>">
+               <% }else{ %>
+               <input id="<%= field %>" name="<%= field %>" type="text" placeholder="<%= field %>" class="input-xlarge" title="<%= key.description %>">
+               <% } %>
+               <%= key.type %>
+           </div>
+       </div>
+<% }); %>
