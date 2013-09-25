@@ -95,7 +95,11 @@
                             <div class="accordion-inner">
                                 <form class="form-horizontal">
                                     <fieldset>
-                                        <div id="builder_settings" class="well">
+                                        <ul class="nav nav-tabs">
+                                          <li class="active"><a href="#images" class="adv_tab" id="builder_tab">Builder</a></li>
+                                          <li><a href="#images" class="adv_tab" id="provisioner_tab">Provisioner</a></li>
+                                        </ul>
+                                        <div id="builder_settings" class="adv_tab_panel">
                                             <!-- Text input-->
                                             <div class="control-group">
                                                 <label class="control-label">Boot Command</label>
@@ -192,7 +196,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div id="provisioner_settings" class="well"></div>
+                                        <div id="provisioner_settings" class="adv_tab_panel" style="display:none;"></div>
                                     </fieldset>
                                 </form>
                             </div>

@@ -28,7 +28,8 @@ define([
             "click #new_image_template_button": "newImageTemplate",
             "click #close_image_template_button": "closeImageTemplate",
             "change #image_type_select":"builderSelect",
-            "change #image_config_management_select":"provisionerSelect"
+            "change #image_config_management_select":"provisionerSelect",
+            "click .adv_tab": "advTabSelect"
         },
 
         initialize: function() {
@@ -95,7 +96,7 @@ define([
         
         builderSelect: function(){
             $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/builders/" + $("#image_type_select").val(), function( builder ) {
-                $("#builder_settings").html(_.template(advancedTemplate)({optional: builder.optional, required: builder.required, title: "Builder: "+$("#image_type_select").val()}));
+                $("#builder_settings").html(_.template(advancedTemplate)({optional: builder.optional, required: builder.required, title: "Builder: "+$("#image_type_select").val()})).hide().fadeIn('slow');
                 $("#builder_settings").tooltip();
             });
         },
@@ -106,9 +107,20 @@ define([
                     provisioner.optional = provisioner.shell.optional;
                     provisioner.required = provisioner.shell.required_xor;
                 }
-                $("#provisioner_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, required: provisioner.required, title: "Provisioner: "+$("#image_config_management_select").val()}));
+                $("#provisioner_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, required: provisioner.required, title: "Provisioner: "+$("#image_config_management_select").val()})).hide().fadeIn('slow');
                 $("#provisioner_settings").tooltip();
             });
+        },
+        
+        advTabSelect: function(event){
+            $(".active").removeClass('active');
+            $("#"+event.target.id).closest('li').addClass('active');
+            $(".adv_tab_panel").hide('slow');
+            if(event.target.text === "Builder"){
+                $("#builder_settings").show('slow');
+            }else if(event.target.text === "Provisioner"){
+                $("#provisioner_settings").show('slow');
+            }
         },
 
         closeImageTemplate: function() {

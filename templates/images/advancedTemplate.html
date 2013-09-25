@@ -1,4 +1,5 @@
-<legend><%= title %></legend>
+<legend>&nbsp;&nbsp;<%= title %></legend>
+<div class="well">
 <% _.each(required, function(key,field){ %>
        <div class="control-group">
            <label class="control-label"><%= field %></label>
@@ -12,7 +13,10 @@
            </div>
        </div>
 <% }); %>
-<hr>
+</div>
+
+<legend>&nbsp;&nbsp;Optional</legend>
+<div class="well">
 <% _.each(optional, function(key,field){ %>
        <div class="control-group">
            <label class="control-label"><%= field %></label>
@@ -26,3 +30,4 @@
            </div>
        </div>
 <% }); %>
+</div>
