@@ -17,7 +17,7 @@ define([
 
 		model: PackedImage,
 
-        url: function(){return "";}
+        url: function(){return Common.apiUrl + "/stackstudio/v1/packed_images/";}
 	
 	});
 

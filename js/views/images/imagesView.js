@@ -33,32 +33,38 @@ define([
 
         initialize: function() {
             $("#main").html(this.el);
-            this.$el.html(this.template);
-            
-            var $this = this;
-            this.collection = new PackedImages()
-            this.collection.fetch({
-                success: function(){
-                    debugger
-                    this.$el.html(this.template({collection: this.collection}));
-                }
-            });
+            //this.$el.html(this.template);
         },
 
         render: function() {
             
+            var $this = this;
+            this.collection = new PackedImages()
+            this.collection.fetch({
+                success: function(collection){
+                    $this.$el.html($this.template({templates: ['one','two'],
+                                                   builders: collection.models[0].attributes,
+                                                   }));
+                }
+            });
             //Fetch image templates
+            this.renderTemplate();
+        },
+        
+        renderTemplate: function(){
             if(this.model) {
                 if(this.model.id === "") {
                     // Set image template fields to defaults
                 }else {
-                    this.$el.html(this.template({collection: this.collection, test: this.model}));
+                    this.$el.html(this.template({templates: ['one','two'],
+                                                 builders: this.collection.models[0].attributes,
+                                                 template: this.model}));
                     // Fill in the image template fields to match the selected image template
                 }
                 $("#image_template_not_opened").hide();
                 $("#image_template_open").show();
             }else {
-                this.$el.html(this.template({collection: this.collection}));
+                //this.$el.html(this.template({collection: this.collection}));
                 $("#image_template_open").hide();
                 $("#image_template_not_opened").show();
             }
@@ -69,11 +75,11 @@ define([
                 var confirmation = confirm("Are you sure you want to open a new image template? Any unsaved changes to the current template will be lose.");
                 if(confirmation === true) {
                     this.model = "test";
-                    this.render();
+                    this.renderTemplate();
                 }
             }else {
                 this.model = "test";
-                this.render();
+                this.renderTemplate();
             }
         },
 
