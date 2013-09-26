@@ -58,8 +58,10 @@ define([
             "shown": "accordionShown",
             "change .recipes input": "recipeChangeHandler",
             "change .puppetClasses input": "classChangeHandler",
+            "change .saltStates input" : "stateChangeHandler",
             "change #chef-selection .accordion-heading": "chefGroupChangeHandler",
-            "change #puppet-selection .accordion-heading" : "puppetGroupChangeHandler"
+            "change #puppet-selection .accordion-heading" : "puppetGroupChangeHandler",
+            "change #salt-selection .accordion-heading" : "saltGroupChangeHandler"
         },
         initialize: function(){
         },
@@ -307,6 +309,7 @@ define([
             if (isLoaded && id !== "collapsePuppet") {
                 return;
             }
+            debugger;
             if (data.hasOwnProperty("cookbook")) {
                 var $book = data.cookbook;
                 if (!$book) {
@@ -329,7 +332,13 @@ define([
                 }
                 $("#chef-selection").closest(".accordion-group").find(".accordion-toggle:first span.badge:first").text('');
                 //TODO: Clear Chef
-            } //else: CLEAR PUPPET when cliick on chef
+            } else if (id === "collapseSalt"){
+                if(!$destination.data("isLoaded")){
+                    $this.fetchSaltStates();
+                }else{
+                    $this.recalculateSaltBadges();
+                }
+            }
         },
         populatePuppetClasses:function (){
             var $this = this;
@@ -376,6 +385,10 @@ define([
         },
         classChangeHandler: function(evt){
             this.recalculatePuppetBadges();
+        },
+        stateChangeHandler: function(evt){
+            debugger;
+            this.recalculateSaltBadges();
         },
 
         recalculateChefBadges: function(){
@@ -547,7 +560,7 @@ define([
                     var elem = $($this.renderAccordionGroup("salt-selection", formula, "formula"));
                     elem.find(".accordion-heading")
                         .prepend(
-                            $("<input type='checkbox' class='stateSelector'>")//.data("level", "formula")
+                            $("<input type='checkbox' class='formulaSelector'>")//.data("level", "formula")
                     );
                     elem.appendTo(formulaList);
                     var statesList = this.renderSaltStates(formulas[formula], []);
@@ -565,7 +578,7 @@ define([
                 $("<li></li>")
                     .data("class", item)
                     .data("isClass", true)
-                    .append("<input type='checkbox' " + checkedState + " class='classSelector'" + " />")
+                    .append("<input type='checkbox' " + checkedState + " class='stateSelector'" + " />")
                     .append("<span class='saltState'>" + item.name + "</span>")
                     .appendTo(ul);
             });
@@ -579,6 +592,12 @@ define([
                 .split("{{accordionId}}").join(id);
             return elem;
         },
+        saltGroupChangeHandler: function(evt){
+            var checkbox = $(evt.target);
+            var ver = checkbox.closest(".accordion-group")
+                .find(".accordion-inner:first");
+            ver.find(".stateSelector").first().click();
+        },
         recalculateSaltBadges: function(){
             var badgeCount = 0;
             var saltContainer = $("#salt-selection");
@@ -587,7 +606,6 @@ define([
                     return !$(this).parent().hasClass("accordion-heading");
                 });
             saltContainer.closest(".accordion-group").find(".accordion-toggle:first span.badge:first").text(allChecked.length ? allChecked.length : '');
-
             var formulas = $("#salt-selection>.accordion-group");
             formulas.each(function(){
                 var formula = $(this);
