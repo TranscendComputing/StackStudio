@@ -30,6 +30,7 @@ define([
         'collections/cookbooks',
         'collections/chefEnvironments',
         'collections/puppetClasses',
+        'collections/saltStates',
         'views/assemblies/appListView',
         'models/app',
         'jquery-plugins',
@@ -37,7 +38,7 @@ define([
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator',
         'jquery.sortable'
-],function( $, _, bootstrap, Backbone, ich, Common, typeahead, appsTemplate, Apps, CloudCredentials, Cookbooks, ChefEnvironments, PuppetClasses, AppListView, App ) {
+],function( $, _, bootstrap, Backbone, ich, Common, typeahead, appsTemplate, Apps, CloudCredentials, Cookbooks, ChefEnvironments, PuppetClasses, SaltStates, AppListView, App ) {
 
     var ConfigListView = Backbone.View.extend({
         id: 'config_list',
@@ -519,6 +520,90 @@ define([
             return nodeConfig;
         },
 
+        fetchSaltStates: function(){
+            var $this = this;
+
+            var destination = $("#collapseSalt").find(".accordion-inner");
+
+            $this.saltStates = new SaltStates();
+            $this.saltStates.fetch({
+                success:function(collection, response, data){
+                    $this.populateSaltTree(collection);
+                    $this.recalculateSaltBadges();
+                    destination.data("isLoaded", "true");
+                },
+                error:function(collection, response, data){
+                    Common.errorDialog("Server error", "Could not fetch Salt states");
+                }
+            });
+        },
+        populateSaltTree: function(states) {
+            var formulas = states.toJSON();
+            var $this = this;
+            var formulaList = $("#salt-selection");
+            formulaList.empty();
+            for (var formula in formulas) {
+                if (formulas.hasOwnProperty(formula)) {
+                    var elem = $($this.renderAccordionGroup("salt-selection", formula, "formula"));
+                    elem.find(".accordion-heading")
+                        .prepend(
+                            $("<input type='checkbox' class='stateSelector'>")//.data("level", "formula")
+                    );
+                    elem.appendTo(formulaList);
+                    var statesList = this.renderSaltStates(formulas[formula], []);
+                    $("#" + formula + "-formula").find(".accordion-inner").empty().append(statesList);
+                }
+            }
+            this.recalculateSaltBadges();
+            Common.vent.trigger("formulasLoaded");
+        },
+
+        renderSaltStates: function(states, selected ){
+            var ul = $("<ul class='saltStates'></ul>");
+            $.each(states, function( index, item ) {
+                var checkedState = (selected.indexOf(item) !== -1) ? "checked='true'": "";
+                $("<li></li>")
+                    .data("class", item)
+                    .data("isClass", true)
+                    .append("<input type='checkbox' " + checkedState + " class='classSelector'" + " />")
+                    .append("<span class='saltState'>" + item.name + "</span>")
+                    .appendTo(ul);
+            });
+            return ul;
+        },
+
+        renderAccordionGroup: function(id, name, type){
+            var elem = this.accordionGroupTemplate
+                .split("{{name}}").join(name)
+                .split("{{collapseId}}").join(name + "-" + type)
+                .split("{{accordionId}}").join(id);
+            return elem;
+        },
+        recalculateSaltBadges: function(){
+            var badgeCount = 0;
+            var saltContainer = $("#salt-selection");
+            var allChecked = saltContainer.find("input[type='checkbox']:checked")
+                .filter(function(){
+                    return !$(this).parent().hasClass("accordion-heading");
+                });
+            saltContainer.closest(".accordion-group").find(".accordion-toggle:first span.badge:first").text(allChecked.length ? allChecked.length : '');
+
+            var formulas = $("#salt-selection>.accordion-group");
+            formulas.each(function(){
+                var formula = $(this);
+                var badge = formula.find(".accordion-toggle:first span.badge:first");
+                allChecked = formula.find("input[type='checkbox']:checked")
+                    .filter(function(){
+                        return !$(this).parent().hasClass("accordion-heading");
+                    });
+                formula.find(".accordion-toggle:first span.badge:first").text(allChecked.length ? allChecked.length : '');
+            });
+
+            this.trigger("badge-refresh", {badgeCount: badgeCount});
+            Common.vent.trigger("saltSelectionChanged");
+
+
+        },
         close: function(){
             this.$el.empty();
             this.undelegateEvents();

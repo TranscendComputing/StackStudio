@@ -8,7 +8,7 @@
   <div id="selectAccordion">
 
             <div id="appAccordion">
-
+              <!-- CHEF SELECTION -->
               <div class="accordion-group main-group" id="chefAccordion" hidden>
                 <div class="accordion-heading">
                   <a class="accordion-toggle chefAccordionToggle" data-toggle="collapse" data-parent="#appAccordion" href="#collapseChef" id="chefAccordionToggle">
@@ -29,6 +29,7 @@
               </div>
 
 
+              <!-- PUPPET SELECTION -->
               <div class="accordion-group main-group" id="puppetAccordion" hidden>
                 <div class="accordion-heading">
                   <a class="accordion-toggle puppetAccordionToggle" data-toggle="collapse" data-parent="#appAccordion" href="#collapsePuppet" id="puppetAccordionToggle">
@@ -40,6 +41,26 @@
                   <div class="accordion-inner">
                     <form id="puppetForm">
                       <div id="puppet-selection">
+                        <div class="alert alert-info">Please select a cloud credential first</div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SALT SELECTION -->
+              <div class="accordion-group main-group" id="saltAccordion" hidden>
+                <div class="accordion-heading">
+                  <a class="accordion-toggle saltAccordionToggle" data-toggle="collapse" data-parent="#appAccordion" href="#collapseSalt" id="saltAccordionToggle">
+                    <span>Salt</span>
+                    <span class="badge badge-info pull-right"></span>
+                  </a>
+                 </div>
+                <div id="collapseSalt" class="accordion-body">
+                  <div class="accordion-inner">
+                    <form id="saltForm">
+                      <div id="salt-selection">
                         <div class="alert alert-info">Please select a cloud credential first</div>
                       </div>
                     </form>

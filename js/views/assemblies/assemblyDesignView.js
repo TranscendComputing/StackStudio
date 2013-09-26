@@ -121,6 +121,8 @@ define([
                 $this.listView.populateChefEnvironments(new ChefEnvironments(model));
             });
             this.listView.populatePuppetClasses();
+            this.listView.fetchSaltStates();
+
             this.populateImages(credential.get("cloud_provider").toLowerCase(), credential);
         },
         saveAssemblyHandler: function(e) {

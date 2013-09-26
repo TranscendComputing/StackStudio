@@ -87,21 +87,26 @@ define([
             }
             $("#authProp").html("");
             $("#otherAuthProp").html("");
-            var data = {};
-            if($("#manager_type_input").val().toLowerCase() === "puppet"){
-
-                data = {"authPropName":"Foreman User", tag:"input", inputType:"text", authProp:"foreman_user"};
+            var toolType = $("#manager_type_input").val().toLowerCase();
+            if(toolType){
+                var data = {};
+                var otherData = {};
+                switch(toolType){
+                    case "puppet":
+                        data = {"authPropName":"Foreman User", tag:"input", inputType:"text", authProp:"foreman_user"};
+                        otherData = {"authPropName":"Foreman Password", tag:"input", inputType:"password",authProp:"foreman_pass"};
+                        break;
+                    case "chef":
+                        data = {"authPropName":"Client Name", tag:"input", inputType:"text",authProp:"client_name"};
+                        otherData = {"authPropName":"Key", tag:"textarea", inputType:"text",authProp:"key"};
+                        break;
+                    case "salt":
+                        data = {"authPropName":"Salt Username", tag:"input", inputType:"text",authProp:"salt_user"};
+                        otherData = {"authPropName":"Salt Password", tag:"input", inputType:"password",authProp:"salt_pass"};
+                        break;
+                }
                 $("#authProp").html(ich["auth_prop_template"](data));
-
-                data = {"authPropName":"Foreman Password", tag:"input", inputType:"password",authProp:"foreman_pass"};
-                $("#otherAuthProp").html(ich["auth_prop_template"](data));
-
-            }else if ($("#manager_type_input").val().toLowerCase() === "chef"){
-                data = {"authPropName":"Client Name", tag:"input", inputType:"text",authProp:"client_name"};
-                $("#authProp").html(ich["auth_prop_template"](data));
-
-                data = {"authPropName":"Key", tag:"textarea", inputType:"text",authProp:"key"};
-                $("#otherAuthProp").html(ich["auth_prop_template"](data));
+                $("#otherAuthProp").html(ich["auth_prop_template"](otherData));
             }
         },
         changed:function(evt) {

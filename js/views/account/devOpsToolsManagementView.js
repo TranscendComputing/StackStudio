@@ -128,9 +128,6 @@ define([
         deleteManager: function(event) {
             var serviceData = $(event.currentTarget.parentElement).find("input").data();
             this.configManagers.deleteManager(serviceData);
-            
-            // this.refreshServices();
-            
             return false;
         },
 
