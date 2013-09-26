@@ -6,11 +6,13 @@
            <div class="controls">
                <% if (key.type === "bool" || key.type === "boolean") { %>
                    <input type="checkbox" id="<%= field %>" name="<%= field %>" title="<%= key.description %>" data-type="<%= key.type %>">
+               <% }else if (key.type === "int") { %>
+                   <input id="<%= field %>" name="<%= field %>" type="number" min="0" placeholder="<%= field %>" class="input-xlarge" title="<%= key.description %>" data-type="<%= key.type %>">
                <% }else if (key.type.indexOf("max") != -1) { %>
-                   <input id="<%= field %>" name="<%= field %>" type="text" placeholder="<%= field %>" class="input-xlarge" title="<%= key.description %>" data-type="<%= key.type %>">
-                   <input id="<%= field.replace('min','max') %>" name="<%= field.replace('min','max') %>" type="text" placeholder="<%= field.replace('min','max') %>" class="input-xlarge" title="<%= key.description %>" data-type="<%= key.type %>">
+                   <input id="<%= field %>" name="<%= field %>" type="number" placeholder="<%= field %>" class="input-xlarge" title="<%= key.description %>" data-type="<%= key.type %>">
+                   <input id="<%= field.replace('min','max') %>" name="<%= field.replace('min','max') %>" type="number" placeholder="<%= field.replace('min','max') %>" class="input-xlarge" title="<%= key.description %>" data-type="<%= key.type %>">
                <% }else{ %>
-                   <input id="<%= field %>" name="<%= field %>" type="text" placeholder="<%= key.type %>" class="input-xlarge" title="<%= key.description %>" data-type="<%= key.type %>">
+                   <input id="<%= field %>" name="<%= field %>" type="text" placeholder="<%= field %>" class="input-xlarge" title="<%= key.description %>" data-type="<%= key.type %>">
                <% } %>
            </div>
        </div>
@@ -25,11 +27,13 @@
            <div class="controls">
                <% if (key.type === "bool" || key.type === "boolean") { %>
                    <input type="checkbox" id="<%= field %>" name="<%= field %>" title="<%= key.description %>" data-type="<%= key.type %>">
+               <% }else if (key.type === "int") { %>
+                   <input id="<%= field %>" name="<%= field %>" type="number" min="0" placeholder="<%= field %>" class="input-xlarge" title="<%= key.description %>" data-type="<%= key.type %>">
                <% }else if (key.type.indexOf("max") != -1) { %>
-                   <input id="<%= field %>" name="<%= field %>" type="text" placeholder="<%= field %>" class="input-xlarge" title="<%= key.description %>" data-type="<%= key.type %>">
-                   <input id="<%= field.replace('min','max') %>" name="<%= field.replace('min','max') %>" type="text" placeholder="<%= field.replace('min','max') %>" class="input-xlarge" title="<%= key.description %>" data-type="<%= key.type %>">
+                   <input id="<%= field %>" name="<%= field %>" type="number" placeholder="<%= field %>" class="input-xlarge" title="<%= key.description %>" data-type="<%= key.type %>">
+                   <input id="<%= field.replace('min','max') %>" name="<%= field.replace('min','max') %>" type="number" placeholder="<%= field.replace('min','max') %>" class="input-xlarge" title="<%= key.description %>" data-type="<%= key.type %>">
                <% }else{ %>
-                   <input id="<%= field %>" name="<%= field %>" type="text" placeholder="<%= key.type %>" class="input-xlarge" title="<%= key.description %>" data-type="<%= key.type %>">
+                   <input id="<%= field %>" name="<%= field %>" type="text" placeholder="<%= field %>" class="input-xlarge" title="<%= key.description %>" data-type="<%= key.type %>">
                <% } %>
            </div>
        </div>

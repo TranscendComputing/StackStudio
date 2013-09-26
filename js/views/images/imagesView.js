@@ -29,7 +29,8 @@ define([
             "click #close_image_template_button": "closeImageTemplate",
             "change #image_type_select":"builderSelect",
             "change #image_config_management_select":"provisionerSelect",
-            "click .adv_tab": "advTabSelect"
+            "click .adv_tab": "advTabSelect",
+            "click #save_image_template_button":"packImage"
         },
 
         initialize: function() {
@@ -121,6 +122,27 @@ define([
             }else if(event.target.text === "Provisioner"){
                 $("#provisioner_settings").show('slow');
             }
+        },
+        
+        packImage: function(){
+            var builder = {};
+            $("#builder_settings :input").each(function() {
+                if($(this).attr('type') === 'number'){
+                    builder[$(this).attr('name')] = parseInt($( this ).val());
+                }else{
+                    builder[$(this).attr('name')] = $( this ).val();
+                }
+            });
+            var provisioner = {};
+            $("#provisioner_settings :input").each(function() {
+                if($(this).attr('type') === 'number'){
+                    provisioner[$(this).attr('name')] = parseInt($( this ).val());
+                }else{
+                    provisioner[$(this).attr('name')] = $( this ).val();
+                }
+            });
+            var packed_image = {"builders":[builder],"provisioners":[provisioner]};
+            console.log(packed_image);
         },
 
         closeImageTemplate: function() {
