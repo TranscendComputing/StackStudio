@@ -15,7 +15,12 @@ define([
 
         defaults: {
 
-        }
+        },
+        
+        save: function() {
+            var url = Common.apiUrl + "/stackstudio/v1/packed_images/save?uid=" + sessionStorage.org_id;
+            this.sendAjaxAction(url, "POST", {"packed_image": this.attributes}, "packedImageAppRefresh");
+        },
 
     });
 

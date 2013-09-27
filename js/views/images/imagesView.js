@@ -13,8 +13,9 @@ define([
         'common',
         'text!templates/images/imagesTemplate.html',
         'text!templates/images/advancedTemplate.html',
+        'models/packedImage',
         'jquery-ui'
-], function( $, _, bootstrap, Backbone, Common, imagesTemplate, advancedTemplate ) {
+], function( $, _, bootstrap, Backbone, Common, imagesTemplate, advancedTemplate, PackedImage ) {
 
     var ImagesView = Backbone.View.extend({
 
@@ -127,22 +128,35 @@ define([
         packImage: function(){
             var builder = {};
             $("#builder_settings :input").each(function() {
-                if($(this).attr('type') === 'number'){
+                if($( this ).val().length == 0){
+                    //dont add
+                }else if($(this).attr('type') === 'checkbox'){
+                    builder[$(this).attr('name')] = $( this ).is(':checked');
+                }else if($(this).attr('type') === 'number' && isNaN($( this ).val())){
                     builder[$(this).attr('name')] = parseInt($( this ).val());
+                }else if($(this).attr('data-type').indexOf("array") !== -1){
+                    builder[$(this).attr('name')] = [$( this ).val()];
                 }else{
                     builder[$(this).attr('name')] = $( this ).val();
                 }
             });
             var provisioner = {};
             $("#provisioner_settings :input").each(function() {
-                if($(this).attr('type') === 'number'){
+                if($( this ).val().length == 0){
+                    //dont add
+                }else if($(this).attr('type') === 'checkbox'){
+                    provisioner[$(this).attr('name')] = $( this ).is(':checked');
+                }else if($(this).attr('type') === 'number' && isNaN($( this ).val())){
                     provisioner[$(this).attr('name')] = parseInt($( this ).val());
+                }else if($(this).attr('data-type').indexOf("array") !== -1){
+                    provisioner[$(this).attr('name')] = [$( this ).val()];
                 }else{
                     provisioner[$(this).attr('name')] = $( this ).val();
                 }
             });
-            var packed_image = {"builders":[builder],"provisioners":[provisioner]};
-            console.log(packed_image);
+            this.currentImageTemplate = new PackedImage({"builders":[builder],"provisioners":[provisioner]});
+            this.currentImageTemplate.save();
+            console.log(this.currentImageTemplate);
         },
 
         closeImageTemplate: function() {
