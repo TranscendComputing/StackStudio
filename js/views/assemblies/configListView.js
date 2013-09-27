@@ -309,7 +309,6 @@ define([
             if (isLoaded && id !== "collapsePuppet") {
                 return;
             }
-            debugger;
             if (data.hasOwnProperty("cookbook")) {
                 var $book = data.cookbook;
                 if (!$book) {
@@ -387,7 +386,6 @@ define([
             this.recalculatePuppetBadges();
         },
         stateChangeHandler: function(evt){
-            debugger;
             this.recalculateSaltBadges();
         },
 
@@ -492,16 +490,20 @@ define([
             var configurations = {};
 
             var tool = $(toolId).val();
-            if(tool === "Puppet"){
-                var puppet = {};
-                puppet["node_config"] = this.getPuppetConfig();
-                configurations["puppet"] = puppet;
-            }
-            else if(tool === "Chef"){
-                var chef = {};
-                chef["env"] = $("#chefEnvironmentSelect :selected").val();
-                chef["run_list"] = this.getChefConfig();
-                configurations["chef"] = chef;
+            switch(tool){
+                case "Puppet":
+                    var puppet = {};
+                    puppet["node_config"] = this.getPuppetConfig();
+                    configurations["puppet"] = puppet;
+                    break;
+                case "Chef":                   
+                    var chef = {};
+                    chef["env"] = $("#chefEnvironmentSelect :selected").val();
+                    chef["run_list"] = this.getChefConfig();
+                    configurations["chef"] = chef;
+                    break;
+                case "Salt":
+                    break;
             }
             return {
                 "configurations": configurations
