@@ -157,7 +157,7 @@ define([
         },
         */
         updateSession: function(){
-            debugger
+            //debugger
         },
         
         updateAuthModel: function(){
