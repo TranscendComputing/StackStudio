@@ -12,11 +12,12 @@ define([
         'views/dialogView',
         'text!templates/topstack/autoscale/topstackAutoscaleGroupCreateTemplate.html',
         '/js/topstack/models/autoscale/topstackAutoscaleGroup.js',
+        '/js/openstack/collections/compute/openstackImages.js',
         'common',
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
-], function( $, _, Backbone, DialogView, autoscaleGroupCreateTemplate, AutoscaleGroup, Common ) {
+], function( $, _, Backbone, DialogView, autoscaleGroupCreateTemplate, AutoscaleGroup, Images, Common ) {
     
     var TopStackAutoscaleGroupCreateView = DialogView.extend({
 
@@ -37,6 +38,8 @@ define([
         securityGroups: undefined,
         
         autoscaleGroup: new AutoscaleGroup(),
+        
+        imagesType: Images,
         
         // Delegated events for creating new instances, etc.
         events: {
@@ -82,7 +85,7 @@ define([
             var ImageType = this.imagesType;
             this.images = new ImageType();
             this.images.on( 'reset', this.addAllImages, this );
-            this.images.fetch({reset: true});
+            this.images.fetch({data: $.param({ cred_id: this.credentialId, region: this.region }),reset: true});
             
             var FlavorsType = this.flavorsType;
             this.flavors = new FlavorsType();
@@ -112,6 +115,16 @@ define([
             $("#image_select").autocomplete({
                 source: createView.images.toJSON(),
                 minLength: 0
+            }).data("autocomplete")._renderItem = function (ul, item) {
+                item["label"] = item.name;
+                item["value"] = item.name;
+                var imageItem = "<a>"+item.name+"</a>";
+                return $("<li>").data("item.autocomplete", item).append(imageItem).appendTo(ul);
+            };
+            /*var createView = this;
+            $("#image_select").autocomplete({
+                source: createView.images.toJSON(),
+                minLength: 0
             })
             .data("autocomplete")._renderItem = function (ul, item){
                 var imagePath;
@@ -138,7 +151,7 @@ define([
                 var description = '<td>'+item.description+'</td>';
                 var imageItem = '<a><table stlye="min-width:150px;"><tr>'+ img + name + '</tr><tr>' + description + '</tr></table></a>';
                 return $("<li>").data("item.autocomplete", item).append(imageItem).appendTo(ul);
-            };
+            };*/
         },
 
         addAllAvailabilityZones: function() {
@@ -365,8 +378,8 @@ define([
                 launch_config_options.id = $("#autoscale_group_name").val() + "-lc";
             }
             $.each(this.images.toJSON(), function(index, image) {
-                if(image.label === $("#image_select").val()) {
-                    launch_config_options.image_id = image.region["us-east-1"];
+                if(image.name === $("#image_select").val()) {
+                    launch_config_options.image_id = image.id;
                 }
             });
             if(launch_config_options.image_id) {
