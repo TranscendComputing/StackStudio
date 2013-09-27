@@ -13,11 +13,15 @@ define([
         'text!templates/topstack/autoscale/topstackAutoscaleGroupCreateTemplate.html',
         '/js/topstack/models/autoscale/topstackAutoscaleGroup.js',
         '/js/openstack/collections/compute/openstackImages.js',
+        '/js/openstack/collections/compute/openstackFlavors.js',
+        '/js/openstack/collections/compute/openstackAvailabilityZones.js',
+        '/js/openstack/collections/compute/openstackKeyPairs.js',
+        '/js/openstack/collections/compute/openstackSecurityGroups.js',
         'common',
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
-], function( $, _, Backbone, DialogView, autoscaleGroupCreateTemplate, AutoscaleGroup, Images, Common ) {
+], function( $, _, Backbone, DialogView, autoscaleGroupCreateTemplate, AutoscaleGroup, Images, Flavors, AvailabilityZones, KeyPairs, SecurityGroups, Common ) {
     
     var TopStackAutoscaleGroupCreateView = DialogView.extend({
 
@@ -49,19 +53,25 @@ define([
             "change input[name=triggers]": "triggerRadioToggle"
         },
 
+        initialize: function(options){
+            this.credentialId = options.cred_id;
+            this.region = options.region;
+            this.gid = options.gid;
+        },
+        
         render: function() {
             var createView = this;
             this.$el.html(this.template);
-
+            
             this.$el.dialog({
                 autoOpen: true,
-                title: "Create Auto Scale Group",
+                title: "Update Auto Scale Group",
                 width:575,
                 minHeight: 500,
                 resizable: false,
                 modal: true,
                 buttons: {
-                    Create: function () {
+                    Update: function () {
                         createView.create();
                     },
                     Cancel: function() {
@@ -87,27 +97,30 @@ define([
             this.images.on( 'reset', this.addAllImages, this );
             this.images.fetch({data: $.param({ cred_id: this.credentialId, region: this.region }),reset: true});
             
-            var FlavorsType = this.flavorsType;
-            this.flavors = new FlavorsType();
+            //var FlavorsType = this.flavorsType;
+            this.flavors = new Flavors();
             this.flavors.on( 'reset', this.addAllFlavors, this );
             this.flavors.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset:true });
             
-            var AvailabilityZonesType = this.availabilityZonesType;
-            this.availabilityZones = new AvailabilityZonesType();
+            //var AvailabilityZonesType = this.availabilityZonesType;
+            this.availabilityZones = new AvailabilityZones();
             this.availabilityZones.on( 'reset', this.addAllAvailabilityZones, this );
             this.availabilityZones.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true });
             
-            var KeyPairsType = this.keyPairsType;
-            this.keyPairs = new KeyPairsType();
+            //var KeyPairsType = this.keyPairsType;
+            this.keyPairs = new KeyPairs();
             this.keyPairs.on( 'reset', this.addAllKeyPairs, this );
             this.keyPairs.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true });
             
-            var SecurityGroupsType = this.securityGroupsType;
-            this.securityGroups = new SecurityGroupsType();
+            //var SecurityGroupsType = this.securityGroupsType;
+            this.securityGroups = new SecurityGroups();
             this.securityGroups.on( 'reset', this.addAllSecurityGroups, this );
             this.securityGroups.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true });
 
             this.elasticityChange();
+            
+            $("#autoscale_group_name").val(createView.gid);
+            $("#autoscale_group_name").prop('disabled', true);
         },
         
         addAllImages: function() {
@@ -193,6 +206,7 @@ define([
         },
         
         elasticityChange: function () {
+            //debugger
             switch($("input[name=elasticity]:checked").attr('id'))
             {
                 case "auto_recovery":
@@ -444,7 +458,7 @@ define([
             }
 
             if(!issue) {
-                newAutoscaleGroup.create(launch_config_options, autoscale_group_options, trigger_options, this.credentialId, this.region);
+                newAutoscaleGroup.update(launch_config_options, autoscale_group_options, trigger_options, this.credentialId, this.region);
                 this.$el.dialog('close');
             } 
         }
