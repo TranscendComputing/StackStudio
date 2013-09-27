@@ -399,13 +399,13 @@ define([
             }else {
                 launch_config_options["SecurityGroups"] = [];
             }
-            if($("#availability_zone_select").val()) {
-                $("#az_select_message").html("");
-                autoscale_group_options["AvailabilityZones"] = $("#availability_zone_select").val();
-            }else {
-                issue = true;
-                $("#az_select_alert").html("Required");
-            }
+            // if($("#availability_zone_select").val()) {
+            //     $("#az_select_message").html("");
+            //     autoscale_group_options["AvailabilityZones"] = $("#availability_zone_select").val();
+            // }else {
+            //     issue = true;
+            //     $("#az_select_alert").html("Required");
+            // }
             switch($("input[name=elasticity]:checked").val())
             {
                 case "auto_recovery":
