@@ -14,8 +14,9 @@ define([
         'text!templates/images/imagesTemplate.html',
         'text!templates/images/advancedTemplate.html',
         'models/packedImage',
+        '/js/aws/collections/compute/awsImages.js',
         'jquery-ui'
-], function( $, _, bootstrap, Backbone, Common, imagesTemplate, advancedTemplate, PackedImage ) {
+], function( $, _, bootstrap, Backbone, Common, imagesTemplate, advancedTemplate, PackedImage, Images ) {
 
     var ImagesView = Backbone.View.extend({
 
@@ -24,6 +25,8 @@ define([
         template: _.template(imagesTemplate),
 
         currentImageTemplate: undefined,
+        
+        images: undefined,
 
         events: {
             "click #new_image_template_button": "newImageTemplate",
@@ -31,16 +34,21 @@ define([
             "change #image_type_select":"builderSelect",
             "change #image_config_management_select":"provisionerSelect",
             "click .adv_tab": "advTabSelect",
-            "click #save_image_template_button":"packImage"
+            "click #save_image_template_button":"packImage",
+            "focus #os_input": "openImageList"
         },
 
         initialize: function() {
             $("#main").html(this.el);
             this.$el.html(this.template);
+            
+            this.images = new Images();
+            this.images.on( 'reset', this.addAllImages, this );
         },
 
         render: function() {
             this.fetchDropDowns();
+            this.images.fetch({reset: true});
             //Fetch image templates
             if(this.currentImageTemplate) {
                 if(this.currentImageTemplate.id === "") {
@@ -96,6 +104,46 @@ define([
             });
         },
         
+        addAllImages: function() {
+            var createView = this;
+            $("#os_input").autocomplete({
+                source: createView.images.toJSON(),
+                minLength: 0
+            })
+            .data("autocomplete")._renderItem = function (ul, item){
+                var imagePath;
+                switch(item.logo)
+                {
+                case "aws":
+                    imagePath = "/images/ImageLogos/amazon20.png";
+                    break;
+                case "redhat":
+                    imagePath = "/images/ImageLogos/redhat20.png";
+                    break;
+                case "suse":
+                    imagePath = "/images/ImageLogos/suse20.png";
+                    break;
+                case "ubuntu":
+                    imagePath = "/images/ImageLogos/canonical20.gif";
+                    break;
+                case "windows":
+                    imagePath = "/images/ImageLogos/windows20.png";
+                    break;
+                }
+                var img = '<td style="width:22px;" rowspan="2"><img height="20" width="20" src="'+imagePath+'"/></td>';
+                var name = '<td>'+item.label+'</td>';
+                var description = '<td>'+item.description+'</td>';
+                var imageItem = '<a><table stlye="min-width:150px;"><tr>'+ img + name + '</tr><tr>' + description + '</tr></table></a>';
+                return $("<li>").data("item.autocomplete", item).append(imageItem).appendTo(ul);
+            };
+        },
+        
+        openImageList: function() {
+            if($("ul.ui-autocomplete").is(":hidden")) {
+                $("#os_input").autocomplete("search", "");
+            }
+        },
+        
         builderSelect: function(){
             $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/builders/" + $("#image_type_select").val(), function( builder ) {
                 $("#builder_settings").html(_.template(advancedTemplate)({optional: builder.optional, required: builder.required, title: "Builder: "+$("#image_type_select").val()})).hide().fadeIn('slow');
@@ -122,6 +170,8 @@ define([
                 $("#builder_settings").show('slow');
             }else if(event.target.text === "Provisioner"){
                 $("#provisioner_settings").show('slow');
+            }else if(event.target.text === "DevOps Tool"){
+                $("#devops_settings").show('slow');
             }
         },
         
