@@ -30,7 +30,7 @@ define([
             options.wait = true;
             options.emulateHTTP =true;
             options.success= function(model){
-                new Messenger().post({message:"Assembly created.", type:"success"});
+                new Messenger().post({message:model.get("name")+ " created", type:"success"});
                 Common.vent.trigger("assembliesViewRefresh", model);
             };
             options.error = function(model, xhr) {
@@ -47,7 +47,7 @@ define([
             options.wait = true;
             options.success= function(model){
                 accounts.remove(model);
-                new Messenger().post({message:model.get("name") +" deleted successfully.", type:"success"});
+                new Messenger().post({message:model.get("name") +" deleted", type:"success"});
                 Common.vent.trigger("assembliesViewRefresh");
             };
             options.error = function(model, xhr) {

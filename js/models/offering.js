@@ -39,17 +39,20 @@ define([
 
         create: function(options) {
             var url = Common.apiUrl + "/stackstudio/v1/offerings";
-            this.sendAjaxAction(url, "POST", options, "offeringCreated");
+            var successMessage = this.get("name") + " created";
+            this.sendAjaxAction(url, "POST", options, "offeringCreated", successMessage);
         },
 
         update: function(options) {
             var url = Common.apiUrl + "/stackstudio/v1/offerings/" + this.id +"?_method=PUT";
-            this.sendAjaxAction(url, "POST", options, "offeringUpdated");
+            var successMessage = this.get("name") + " updated";
+            this.sendAjaxAction(url, "POST", options, "offeringUpdated", successMessage);
         },
 
         destroy:function() {
             var url = Common.apiUrl + "/stackstudio/v1/offerings/" + this.id +"?_method=DELETE";
-            this.sendAjaxAction(url, "POST", undefined, "offeringDeleted");
+            var successMessage = this.get("name") + " deleted";
+            this.sendAjaxAction(url, "POST", undefined, successMessage);
         }
 
     });
