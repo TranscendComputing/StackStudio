@@ -44,7 +44,7 @@
                 <tbody>
                     <tr><td><b>Name:</b></td>                   <td>{{ id }}</td>                   <td><b>Comparison Operator:</b></td>    <td>{{ comparison_operator }}</td></tr>
                     <tr><td><b>Description:</b></td>            <td>{{ alarm_description }}</td>    <td><b>Namespace:</b></td>              <td>{{ namespace }}</td></tr>
-                    <tr><td><b>Resource Name:</b></td>          <td>{{ arn }}</td>                  <td><b>Period:</b></td>                 <td>{{ period }}</td></tr>
+                    <tr><td><b>Resource Name:</b></td>          <td id="rc_name">{{ dimensions }}</td>                  <td><b>Period:</b></td>                 <td>{{ period }}</td></tr>
                     <tr><td><b>Actions Enabled:</b></td>        <td>{{ actions_enabled }}</td>      <td><b>Statistic:</b></td>              <td>{{ statistic }}</td></tr>
                     <tr><td><b>Metric Name:</b></td>            <td>{{ metric_name }}</td></tr>
                     <tr><td><b>Threshold:</b></td>              <td>{{ threshold }}</td></tr>          
