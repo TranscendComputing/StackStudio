@@ -222,7 +222,7 @@ define([
                                             "<tr><td>Max:</td><td><input id='as_max'/></td></tr>" +
                                             "<tr><td>Desired Capacity:</td><td><input id='as_desired_capacity'/></td></tr>" +
                                         "</table>" +
-                                        "<div id='trigger_radio'>" +
+                                        "<br/><div id='trigger_radio'>" +
                                             "<input type='radio' id='trigger_on' name='triggers' value='on'/><label for='trigger_on'>Trigger On</label>" +
                                             "<input type='radio' id='trigger_off' name='triggers' value='off' checked/><label for='trigger_off'>Trigger Off</label>" +
                                         "</div>" +
