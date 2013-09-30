@@ -143,6 +143,8 @@ define([
                 this.policy = this.rootView.treePolicy;
                 this.model = this.rootView.policies.get(this.policy);
                 this.populateForm(this.model);
+            }else{
+                this.prePopForm();
             }
             this.disableSelectionRequiredButtons(false);
         },
@@ -482,8 +484,17 @@ define([
                 target.removeAttr("disabled");
                 target.removeClass("ui-state-disabled");
             }
-        },
-
+        },
+        
+        prePopForm: function(){
+            $("input:checkbox[name='usable_regions']").each(function(){
+                $(this).prop('checked', true);
+            });
+            $("input:checkbox").each(function(){
+                $(this).prop('checked', true);
+            });
+        },
+        
         close: function(){
             this.$el.remove();
         }  

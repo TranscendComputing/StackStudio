@@ -154,7 +154,7 @@ define([
                     provisioner[$(this).attr('name')] = $( this ).val();
                 }
             });
-            this.currentImageTemplate = new PackedImage({"builders":[builder],"provisioners":[provisioner]});
+            this.currentImageTemplate = new PackedImage({"builders":[builder],"provisioners":[provisioner],name: $("#image_template_name_input").val()});
             this.currentImageTemplate.save();
             console.log(this.currentImageTemplate);
         },
