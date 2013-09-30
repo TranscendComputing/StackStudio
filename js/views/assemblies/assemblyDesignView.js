@@ -17,12 +17,13 @@ define([
     'models/assembly',
     'collections/assemblies',
     'views/assemblies/configListView',
+    'messenger',
     'jquery-plugins',
     'jquery-ui-plugins',
     'jquery.dataTables',
     'jquery.dataTables.fnProcessingIndicator',
     'jquery.sortable'
-], function($, _, bootstrap, Backbone, Common, assemblyDesignTemplate, ChefEnvironments, CloudCredentials, Assembly, Assemblies, ConfigListView) {
+], function($, _, bootstrap, Backbone, Common, assemblyDesignTemplate, ChefEnvironments, CloudCredentials, Assembly, Assemblies, ConfigListView,Messenger) {
 
     var AssemblyDesignView = Backbone.View.extend({
 
@@ -134,6 +135,7 @@ define([
             else{
                 this.currentAssembly.save({},{
                     success:function(){
+                        Messenger().post("Assembly updated.");
                         Common.vent.trigger("assembliesViewRefresh");
                     },
                     error:function(){

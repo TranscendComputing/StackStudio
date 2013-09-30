@@ -9,8 +9,9 @@ define([
         'jquery',
         'backbone',
         'models/assembly',
-        'common'
-], function( $, Backbone, Assembly, Common) {
+        'common',
+        'messenger'
+], function( $, Backbone, Assembly, Common, Messenger) {
 	'use strict';
 
 	// Cloud Account Collection
@@ -29,6 +30,7 @@ define([
             options.wait = true;
             options.emulateHTTP =true;
             options.success= function(model){
+                new Messenger().post({message:"Assembly created.", type:"success"});
                 Common.vent.trigger("assembliesViewRefresh");
             };
             options.error = function(model, xhr) {
@@ -45,6 +47,7 @@ define([
             options.wait = true;
             options.success= function(model){
                 accounts.remove(model);
+                new Messenger().post({message:model.get("name") +" deleted successfully.", type:"success"});
                 Common.vent.trigger("assembliesViewRefresh");
             };
             options.error = function(model, xhr) {
