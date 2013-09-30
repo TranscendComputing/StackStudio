@@ -116,7 +116,7 @@ define([
                 $("#assembliesTabs a:first").click();
             }
             this.currentAssembly = this.assemblies.get(id);
-            $("#selectAssemblyButton").html("Selected Assembly: " + this.currentAssembly.get("name"));
+            $("#selectAssemblyButton span:first").html("Selected Assembly: " + this.currentAssembly.get("name"));
             $("#designForm :input:reset");
             this.tabView.currentAssembly = this.currentAssembly;
             this.tabView.listView = new ConfigListView();
@@ -223,10 +223,11 @@ define([
             
             
         },
-        newAssemblyForm: function(evt, justDeleted){
-            if(!justDeleted && !this.confirmPageSwitch()){
+        newAssemblyForm: function(){
+            if(!this.confirmPageSwitch()){
                 return;
             }
+            $("#selectAssemblyButton span:first").html("Select Assembly");
             $("#designForm :input:reset");
             this.currentAssembly = new Assembly();
             this.tabView.currentAssembly = this.currentAssembly;

@@ -139,7 +139,7 @@ define([
             else{
                 this.currentAssembly.save({},{
                     success:function(model){
-                        $("#selectAssemblyButton").html("Selected Assembly: " + model.get("name"));
+                        $("#selectAssemblyButton span:first").html("Selected Assembly: " + model.get("name"));
                         Messenger().post({message:"Assembly updated.", type:"success"});
                         Common.vent.trigger("assembliesViewRefresh");
                     },
