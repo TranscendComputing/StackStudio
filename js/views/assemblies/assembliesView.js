@@ -48,6 +48,10 @@ define([
                 e.preventDefault();
                 $(this).tab('show');
 
+                if($this.tabView instanceof DesignView){
+                    $this.currentAssembly.set($this.listView.getConfigs("#assemblyDesignTool"));
+                }
+
                 $this.listView.close();
                 $this.tabView.close();
                 $this.listView = new ConfigListView();
@@ -57,9 +61,11 @@ define([
                 }else if(targetID ==="#assemblyDesign"){
                     $this.tabView = new DesignView({el: targetID, assemblies:$this.assemblies, listView:$this.listView});
                     if($this.currentAssembly.id){
-                        $this.openAssembly($this.currentAssembly.id);
+                        var assembly = $this.assemblies.get($this.currentAssembly.id);
+                        $this.openAssembly(assembly);
                     }else{
-                        $this.newAssemblyForm();
+                        $this.openAssembly($this.currentAssembly);
+                        //$this.newAssemblyForm();
                     }
                 }
             });
@@ -107,15 +113,15 @@ define([
 
         clickAssemblyHandler: function(evt){
             var id = evt.currentTarget.id;
-            this.openAssembly(id);
+            this.openAssembly(this.assemblies.get(id));
             
         },
-        openAssembly: function(id){
+        openAssembly: function(assembly){
             var $this = this;
             if(!(this.tabView instanceof DesignView)){
                 $("#assembliesTabs a:first").click();
             }
-            this.currentAssembly = this.assemblies.get(id);
+            this.currentAssembly = assembly;
             $("#selectAssemblyButton span:first").html("Selected Assembly: " + this.currentAssembly.get("name"));
             $("#designForm :input:reset");
             this.tabView.currentAssembly = this.currentAssembly;
@@ -163,7 +169,6 @@ define([
                     return;
                 }
             }
-            Common.errorDialog("Not found", "Could not find image saved with this assembly.");
         },
         sortListByContainer: function(list){
             var containers = {};
