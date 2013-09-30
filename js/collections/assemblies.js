@@ -31,7 +31,7 @@ define([
             options.emulateHTTP =true;
             options.success= function(model){
                 new Messenger().post({message:"Assembly created.", type:"success"});
-                Common.vent.trigger("assembliesViewRefresh");
+                Common.vent.trigger("assembliesViewRefresh", model);
             };
             options.error = function(model, xhr) {
                 Common.errorDialog(xhr.statusText, xhr.responseText);

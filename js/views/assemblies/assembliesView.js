@@ -116,6 +116,7 @@ define([
                 $("#assembliesTabs a:first").click();
             }
             this.currentAssembly = this.assemblies.get(id);
+            $("#selectAssemblyButton").html("Selected Assembly: " + this.currentAssembly.get("name"));
             $("#designForm :input:reset");
             this.tabView.currentAssembly = this.currentAssembly;
             this.tabView.listView = new ConfigListView();

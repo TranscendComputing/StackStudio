@@ -130,12 +130,17 @@ define([
             this.currentAssembly.set(configs);
             //If no id, then it's a new assembly.  Otherwise, update existing assembly.
             if(!this.currentAssembly.id){
+                var $this = this;
+                Common.vent.once("assembliesViewRefresh", function(newAssembly){
+                    $this.currentAssembly = newAssembly;
+                });
                 this.assemblies.createAssembly(this.currentAssembly, {});
             }
             else{
                 this.currentAssembly.save({},{
-                    success:function(){
-                        Messenger().post("Assembly updated.");
+                    success:function(model){
+                        $("#selectAssemblyButton").html("Selected Assembly: " + model.get("name"));
+                        Messenger().post({message:"Assembly updated.", type:"success"});
                         Common.vent.trigger("assembliesViewRefresh");
                     },
                     error:function(){
