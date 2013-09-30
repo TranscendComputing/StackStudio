@@ -151,9 +151,9 @@ define([
             
             var spinnerOptions = {
                 //lines: 13, // The number of lines to draw
-                length: 50, // The length of each line
-                width: 16, // The line thickness
-                radius: 50, // The radius of the inner circle
+                length: 10, // The length of each line
+                width: 8, // The line thickness
+                radius: 5, // The radius of the inner circle
                 corners: 1, // Corner roundness (0..1)
                 rotate: 0, // The rotation offset
                 color: '#000', // #rgb or #rrggbb
