@@ -243,6 +243,7 @@ define([
             });
             o["default_alarms"] = this.alarms;
             o["default_images"] = this.default_images;
+            //debugger
             newPolicy.save(o,this.policy,sessionStorage.org_id);
         },
         
