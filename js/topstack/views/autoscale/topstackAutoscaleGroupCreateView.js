@@ -377,6 +377,9 @@ define([
                 autoscale_group_options["LaunchConfigurationName"] = $("#autoscale_group_name").val() + "-lc";
                 launch_config_options.id = $("#autoscale_group_name").val() + "-lc";
             }
+            
+            autoscale_group_options['InstanceType'] = $("#flavor_select").val();
+            
             $.each(this.images.toJSON(), function(index, image) {
                 if(image.name === $("#image_select").val()) {
                     launch_config_options.image_id = image.id;
@@ -393,6 +396,9 @@ define([
                     launch_config_options.instance_type = flavor.attributes.id;
                 } 
             });
+            
+            launch_config_options.instance_type = $("#flavor_select").val();
+            
             launch_config_options["KeyName"] = $("#key_pair_select").val();
             if($("#security_group_select").val()) {
                 launch_config_options["SecurityGroups"] = $("#security_group_select").val();
