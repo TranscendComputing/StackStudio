@@ -17,7 +17,7 @@ define([
 	// Cloud Account Collection
 	// ---------------
 
-	var AppList = Backbone.Collection.extend({
+	var AssembliesList = Backbone.Collection.extend({
 
 		// Reference to this collection's model.
 		model: Assembly,
@@ -36,8 +36,7 @@ define([
             options.error = function(model, xhr) {
                 Common.errorDialog(xhr.statusText, xhr.responseText);
             };
-            model.url = this.url;
-            this.create(model,options);
+            this.create(model.attributes,options);
         },
         deleteAssembly : function(id) {
             var options = {};
@@ -57,6 +56,6 @@ define([
         }
 	});
 	Backbone.emulateHTTP = true;
-	return AppList;
+	return AssembliesList;
 
 });

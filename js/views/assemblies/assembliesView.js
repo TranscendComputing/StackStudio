@@ -60,13 +60,7 @@ define([
                     $this.tabView = new RuntimeView({el: targetID, listView:$this.listView});
                 }else if(targetID ==="#assemblyDesign"){
                     $this.tabView = new DesignView({el: targetID, assemblies:$this.assemblies, listView:$this.listView});
-                    if($this.currentAssembly.id){
-                        var assembly = $this.assemblies.get($this.currentAssembly.id);
-                        $this.openAssembly(assembly);
-                    }else{
-                        $this.openAssembly($this.currentAssembly);
-                        //$this.newAssemblyForm();
-                    }
+                    $this.openAssembly($this.currentAssembly);
                 }
             });
         },
@@ -88,13 +82,17 @@ define([
             this.stopListening();
             this.unbind();
         },
-        fetchAssemblies: function(){
+        fetchAssemblies: function(model){
             var $this = this;
             this.assemblies.fetch({
                 reset: true,
                 success:function(collection, response, options){
-                    $this.assemblies = collection;
-                    $this.tabView.assemblies = collection;
+                    $this.assemblies = $this.tabView.assemblies = collection;
+                    //Need ID to get model from new collection;
+                    var id = model ? model.id : $this.currentAssembly.id;
+                    if(id){
+                        $this.currentAssembly = $this.tabView.currentAssembly = collection.get(id);
+                    }
                     $this.populateAssemblySelect();
                 },
                 error: function(xhr, response, options){

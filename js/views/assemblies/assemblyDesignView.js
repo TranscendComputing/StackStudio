@@ -113,7 +113,7 @@ define([
             var optionSelected = $("option:selected", evt.target);
             var credential = this.credential = optionSelected.data("cloudCredentials");
             if (!credential) {
-                this.flashError("We're sorry.  Cloud credentials could not be retrieved.");
+                //this.flashError("We're sorry.  Cloud credentials could not be retrieved.");
                 return;
             }
 
