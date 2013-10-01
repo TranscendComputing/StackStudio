@@ -46,11 +46,13 @@ define([
             //this.listView.render();
             $("#assembliesTabs a").click(function(e){
                 e.preventDefault();
+                if($this.tabView instanceof DesignView){
+                    if($("#assemblyDesignTool").val() && $("#assemblyDesignTool").val() !== ""){
+                        $this.currentAssembly.set($this.listView.getConfigs("#assemblyDesignTool"));
+                    }
+                }
                 $(this).tab('show');
 
-                if($this.tabView instanceof DesignView){
-                    $this.currentAssembly.set($this.listView.getConfigs("#assemblyDesignTool"));
-                }
 
                 $this.listView.close();
                 $this.tabView.close();
@@ -124,6 +126,7 @@ define([
             $("#designForm :input:reset");
             this.tabView.currentAssembly = this.currentAssembly;
             this.tabView.listView = new ConfigListView();
+            this.tabView.listView.loadingAssembly = true;
             this.tabView.listView.render();
 
             $("#designForm :input[type!='hidden']").each(function(){
@@ -140,22 +143,33 @@ define([
             });
             $("#assemblyDesignCloudCreds").change();
             $("#assemblyDesignTool").change();
-            if(this.currentAssembly.get("tool") === "Chef"){
-                var chefConfig = this.currentAssembly.get("configurations")["chef"];
-                Common.vent.once("chefEnvironmentsPopulated", function(){
-                    $("#chefEnvironmentSelect").val(chefConfig["env"]);
-                    $("#chefEnvironmentSelect").change();
-                });
-                Common.vent.once("cookbooksLoaded", function(){
-                    var recipeList = $this.sortListByContainer(chefConfig["run_list"]);
-                    $this.selectRecipes(recipeList);
-                });
-            }else if(this.currentAssembly.get("tool") === "Puppet"){
-                var puppetConfig = this.currentAssembly.get("configurations")["puppet"];
-                Common.vent.once("modulesLoaded", function(){
-                    var classList = $this.sortListByContainer(puppetConfig["node_config"]);
-                    $this.selectClasses(classList);
-                });
+
+            var tool = this.currentAssembly.get("tool");
+            var config = this.currentAssembly.get("configurations")[tool.toLowerCase()];
+
+            switch(tool){
+                case "Chef":
+                    Common.vent.once("chefEnvironmentsPopulated", function(){
+                        $("#chefEnvironmentSelect").val(config["env"]);
+                        $("#chefEnvironmentSelect").change();
+                    });
+                    Common.vent.once("cookbooksLoaded", function(){
+                        var recipeList = $this.sortListByContainer(config["run_list"]);
+                        $this.selectRecipes(recipeList);
+                    });
+                    break;
+                case "Puppet":
+                    Common.vent.once("modulesLoaded", function(){
+                        var classList = $this.sortListByContainer(config["node_config"]);
+                        $this.selectConfigs(classList, "module", "class");
+                    });
+                    break;
+                case "Salt":
+                    Common.vent.once("formulasLoaded", function(){
+                        var stateList = $this.sortListByContainer(config["minion_config"]);
+                        $this.selectConfigs(stateList, "formula", "saltState");
+                    });
+                    break;
             }
         },
         findImage: function(imageData){
@@ -188,15 +202,15 @@ define([
                 }
             }
         },
-        selectClasses: function(classes){
-            for(var name in classes){
-                if(classes.hasOwnProperty(name)){
-                    var classNodeList = $("#"+name+"-module").parent().find("li");
-                    for(var i = 0; i < classNodeList.length; i++){
-                        var classNode = classNodeList.get(i);
-                        var nodeName = $(classNode).data("class").name;
-                        if(classes[name].indexOf(nodeName) !== -1){
-                            $(classNode).find("input[type=checkbox]").click();
+        selectConfigs: function(list, type, subtype){
+            for(var name in list){
+                if(list.hasOwnProperty(name)){
+                    var nodeList = $("#"+ name + "-"+ type).parent().find("li");
+                    for(var i = 0; i < nodeList.length; i++){
+                        var node = nodeList.get(i);
+                        var nodeName = $(node).data(subtype).name;
+                        if(list[name].indexOf(nodeName) !== -1){
+                            $(node).find("input[type=checkbox]").click();
                         }
                     }
                 }

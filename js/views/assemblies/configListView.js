@@ -162,11 +162,14 @@ define([
             list.forEach(function(element, indexlist){
                 var option = $("<option value='" + element.get("name") + "'>" + element.get("name") + "</option></select>").appendTo(select);
             });
-            if(select.find("option[value=_default]").length > 0){
-                select.val("_default").change();
-            }else{
-                var first = select.find("option").first();
-                select.val(first.val()).change();
+            if(!this.loadingAssembly){
+                if(select.find("option[value=_default]").length > 0){
+                    select.val("_default").change();
+                }else{
+                    var first = select.find("option").first();
+                    select.val(first.val()).change();
+                }
+                this.loadingAssembly = false;
             }
             Common.vent.trigger("chefEnvironmentsPopulated");
         },
@@ -495,49 +498,42 @@ define([
             var configurations = {};
 
             var tool = $(toolId).val();
+            var data = {};
             switch(tool){
                 case "Puppet":
-                    var puppet = {};
-                    puppet["node_config"] = this.getPuppetConfig();
-                    configurations["puppet"] = puppet;
+                    data["node_config"] = this.getConfig("class");
                     break;
-                case "Chef":                   
-                    var chef = {};
-                    chef["env"] = $("#chefEnvironmentSelect :selected").val();
-                    chef["run_list"] = this.getChefConfig();
-                    configurations["chef"] = chef;
+                case "Chef":
+                    data["env"] = $("#chefEnvironmentSelect :selected").val();
+                    data["run_list"] = this.getConfig("recipe");
                     break;
                 case "Salt":
+                    data["minion_config"] = this.getConfig("saltState");
                     break;
             }
+            configurations[tool.toLowerCase()] = data;
             return {
                 "configurations": configurations
             };
         },
 
-        getChefConfig: function() {
-            var runlist = [];
-            $("input:checkbox[class=recipeSelector]:checked").each(function(index, object) {
-                var recipeData = $(object.parentElement).data();
-                runlist.push({
-                    "type": "recipe",
-                    "version": recipeData["cookbook"].get("latest_version"),
-                    "name": recipeData["recipe"]["name"]
-                });
+        getConfig: function(type){
+            var config = [];
+            $("input:checkbox[class="+type+"Selector]:checked").each(function(index, object){
+                var nodeData = $(object.parentElement).data();
+                var data = {"name": nodeData[type]["name"], "type":type};
+
+                switch(type){
+                    case "recipe":
+                        data["version"] = nodeData["cookbook"].get("latest_version");
+                        break;
+                    case "class":
+                        data["id"] = nodeData["class"]["id"];
+                        break;
+                }
+                config.push(data);
             });
-            return runlist;
-        },
-        getPuppetConfig: function() {
-            var nodeConfig = [];
-            $("input:checkbox[class=classSelector]:checked").each(function(index, object) {
-                var classData = $(object.parentElement).data();
-                nodeConfig.push({
-                    "type": "class",
-                    "id" : classData["class"]["id"],
-                    "name": classData["class"]["name"]
-                });
-            });
-            return nodeConfig;
+            return config;
         },
 
         fetchSaltStates: function(){
@@ -583,9 +579,8 @@ define([
             $.each(states, function( index, item ) {
                 var checkedState = (selected.indexOf(item) !== -1) ? "checked='true'": "";
                 $("<li></li>")
-                    .data("class", item)
-                    .data("isClass", true)
-                    .append("<input type='checkbox' " + checkedState + " class='stateSelector'" + " />")
+                    .data("saltState", item)
+                    .append("<input type='checkbox' " + checkedState + " class='saltStateSelector'" + " />")
                     .append("<span class='saltState'>" + item.name + "</span>")
                     .appendTo(ul);
             });
@@ -603,7 +598,7 @@ define([
             var checkbox = $(evt.target);
             var ver = checkbox.closest(".accordion-group")
                 .find(".accordion-inner:first");
-            ver.find(".stateSelector").first().click();
+            ver.find(".saltStateSelector").first().click();
         },
         recalculateSaltBadges: function(){
             var badgeCount = 0;
