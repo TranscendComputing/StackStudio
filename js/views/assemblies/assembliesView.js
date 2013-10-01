@@ -48,6 +48,10 @@ define([
                 e.preventDefault();
                 $(this).tab('show');
 
+                if($this.tabView instanceof DesignView){
+                    $this.currentAssembly.set($this.listView.getConfigs("#assemblyDesignTool"));
+                }
+
                 $this.listView.close();
                 $this.tabView.close();
                 $this.listView = new ConfigListView();
@@ -56,11 +60,7 @@ define([
                     $this.tabView = new RuntimeView({el: targetID, listView:$this.listView});
                 }else if(targetID ==="#assemblyDesign"){
                     $this.tabView = new DesignView({el: targetID, assemblies:$this.assemblies, listView:$this.listView});
-                    if($this.currentAssembly.id){
-                        $this.openAssembly($this.currentAssembly.id);
-                    }else{
-                        $this.newAssemblyForm();
-                    }
+                    $this.openAssembly($this.currentAssembly);
                 }
             });
         },
@@ -82,13 +82,17 @@ define([
             this.stopListening();
             this.unbind();
         },
-        fetchAssemblies: function(){
+        fetchAssemblies: function(model){
             var $this = this;
             this.assemblies.fetch({
                 reset: true,
                 success:function(collection, response, options){
-                    $this.assemblies = collection;
-                    $this.tabView.assemblies = collection;
+                    $this.assemblies = $this.tabView.assemblies = collection;
+                    //Need ID to get model from new collection;
+                    var id = model ? model.id : $this.currentAssembly.id;
+                    if(id){
+                        $this.currentAssembly = $this.tabView.currentAssembly = collection.get(id);
+                    }
                     $this.populateAssemblySelect();
                 },
                 error: function(xhr, response, options){
@@ -107,15 +111,16 @@ define([
 
         clickAssemblyHandler: function(evt){
             var id = evt.currentTarget.id;
-            this.openAssembly(id);
+            this.openAssembly(this.assemblies.get(id));
             
         },
-        openAssembly: function(id){
+        openAssembly: function(assembly){
             var $this = this;
             if(!(this.tabView instanceof DesignView)){
                 $("#assembliesTabs a:first").click();
             }
-            this.currentAssembly = this.assemblies.get(id);
+            this.currentAssembly = assembly;
+            $("#selectAssemblyButton span:first").html("Selected Assembly: " + this.currentAssembly.get("name"));
             $("#designForm :input:reset");
             this.tabView.currentAssembly = this.currentAssembly;
             this.tabView.listView = new ConfigListView();
@@ -162,7 +167,6 @@ define([
                     return;
                 }
             }
-            Common.errorDialog("Not found", "Could not find image saved with this assembly.");
         },
         sortListByContainer: function(list){
             var containers = {};
@@ -222,10 +226,11 @@ define([
             
             
         },
-        newAssemblyForm: function(evt, justDeleted){
-            if(!justDeleted && !this.confirmPageSwitch()){
+        newAssemblyForm: function(){
+            if(!this.confirmPageSwitch()){
                 return;
             }
+            $("#selectAssemblyButton span:first").html("Select Assembly");
             $("#designForm :input:reset");
             this.currentAssembly = new Assembly();
             this.tabView.currentAssembly = this.currentAssembly;

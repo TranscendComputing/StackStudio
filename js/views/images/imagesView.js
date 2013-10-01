@@ -13,8 +13,9 @@ define([
         'common',
         'text!templates/images/imagesTemplate.html',
         'text!templates/images/advancedTemplate.html',
+        'models/packedImage',
         'jquery-ui'
-], function( $, _, bootstrap, Backbone, Common, imagesTemplate, advancedTemplate ) {
+], function( $, _, bootstrap, Backbone, Common, imagesTemplate, advancedTemplate, PackedImage ) {
 
     var ImagesView = Backbone.View.extend({
 
@@ -28,7 +29,9 @@ define([
             "click #new_image_template_button": "newImageTemplate",
             "click #close_image_template_button": "closeImageTemplate",
             "change #image_type_select":"builderSelect",
-            "change #image_config_management_select":"provisionerSelect"
+            "change #image_config_management_select":"provisionerSelect",
+            "click .adv_tab": "advTabSelect",
+            "click #save_image_template_button":"packImage"
         },
 
         initialize: function() {
@@ -95,7 +98,7 @@ define([
         
         builderSelect: function(){
             $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/builders/" + $("#image_type_select").val(), function( builder ) {
-                $("#builder_settings").html(_.template(advancedTemplate)({optional: builder.optional, required: builder.required, title: "Builder: "+$("#image_type_select").val()}));
+                $("#builder_settings").html(_.template(advancedTemplate)({optional: builder.optional, required: builder.required, title: "Builder: "+$("#image_type_select").val()})).hide().fadeIn('slow');
                 $("#builder_settings").tooltip();
             });
         },
@@ -106,9 +109,54 @@ define([
                     provisioner.optional = provisioner.shell.optional;
                     provisioner.required = provisioner.shell.required_xor;
                 }
-                $("#provisioner_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, required: provisioner.required, title: "Provisioner: "+$("#image_config_management_select").val()}));
+                $("#provisioner_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, required: provisioner.required, title: "Provisioner: "+$("#image_config_management_select").val()})).hide().fadeIn('slow');
                 $("#provisioner_settings").tooltip();
             });
+        },
+        
+        advTabSelect: function(event){
+            $(".active").removeClass('active');
+            $("#"+event.target.id).closest('li').addClass('active');
+            $(".adv_tab_panel").hide('slow');
+            if(event.target.text === "Builder"){
+                $("#builder_settings").show('slow');
+            }else if(event.target.text === "Provisioner"){
+                $("#provisioner_settings").show('slow');
+            }
+        },
+        
+        packImage: function(){
+            var builder = {};
+            $("#builder_settings :input").each(function() {
+                if($( this ).val().length == 0){
+                    //dont add
+                }else if($(this).attr('type') === 'checkbox'){
+                    builder[$(this).attr('name')] = $( this ).is(':checked');
+                }else if($(this).attr('type') === 'number' && isNaN($( this ).val())){
+                    builder[$(this).attr('name')] = parseInt($( this ).val());
+                }else if($(this).attr('data-type').indexOf("array") !== -1){
+                    builder[$(this).attr('name')] = [$( this ).val()];
+                }else{
+                    builder[$(this).attr('name')] = $( this ).val();
+                }
+            });
+            var provisioner = {};
+            $("#provisioner_settings :input").each(function() {
+                if($( this ).val().length == 0){
+                    //dont add
+                }else if($(this).attr('type') === 'checkbox'){
+                    provisioner[$(this).attr('name')] = $( this ).is(':checked');
+                }else if($(this).attr('type') === 'number' && isNaN($( this ).val())){
+                    provisioner[$(this).attr('name')] = parseInt($( this ).val());
+                }else if($(this).attr('data-type').indexOf("array") !== -1){
+                    provisioner[$(this).attr('name')] = [$( this ).val()];
+                }else{
+                    provisioner[$(this).attr('name')] = $( this ).val();
+                }
+            });
+            this.currentImageTemplate = new PackedImage({"builders":[builder],"provisioners":[provisioner],name: $("#image_template_name_input").val()});
+            this.currentImageTemplate.save();
+            console.log(this.currentImageTemplate);
         },
 
         closeImageTemplate: function() {

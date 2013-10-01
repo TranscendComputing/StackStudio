@@ -159,10 +159,15 @@ define([
         },
         populateChefEnvironments: function(list){
             var select = $("#chefEnvironmentSelect").empty();
-            $("<option value='' disabled selected style='display:none;'>Select Environment</option></select>").appendTo(select);
-            list.forEach(function(element, index, list){
-                $("<option value='" + element.get("name") + "'>" + element.get("name") + "</option></select>").appendTo(select);
+            list.forEach(function(element, indexlist){
+                var option = $("<option value='" + element.get("name") + "'>" + element.get("name") + "</option></select>").appendTo(select);
             });
+            if(select.find("option[value=_default]").length > 0){
+                select.val("_default").change();
+            }else{
+                var first = select.find("option").first();
+                select.val(first.val()).change();
+            }
             Common.vent.trigger("chefEnvironmentsPopulated");
         },
         populateCookbooks: function(credential){

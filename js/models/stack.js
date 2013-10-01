@@ -31,17 +31,20 @@ define([
 
         create: function(options) {
             var url = Common.apiUrl + "/stackstudio/v1/stacks";
-            this.sendAjaxAction(url, "POST", options, "stackCreated");
+            var successMessage = options.name + " created";
+            this.sendAjaxAction(url, "POST", options, "stackCreated", successMessage);
         },
 
         update: function(options) {
             var url = Common.apiUrl + "/stackstudio/v1/stacks/" + this.id +"?_method=PUT";
-            this.sendAjaxAction(url, "POST", options, "stackUpdated");
+            var successMessage = this.get("name") + " updated";
+            this.sendAjaxAction(url, "POST", options, "stackUpdated", successMessage);
         },
 
         destroy:function() {
             var url = Common.apiUrl + "/stackstudio/v1/stacks/" + this.id +"?_method=DELETE";
-            this.sendAjaxAction(url, "POST", undefined, "stackDeleted");
+            var successMessage = this.get("name") + " deleted";
+            this.sendAjaxAction(url, "POST", undefined, "stackDeleted", successMessage);
         }
 
     });

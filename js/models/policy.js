@@ -22,7 +22,7 @@ define([
         
         create: function(options, credentialId) {
             var url = Common.apiUrl + "/identity/v1/policies?&cred_id=" + credentialId;
-            this.sendAjaxAction(url, "POST", {"policy": options}, "policyAppRefresh");
+            this.sendAjaxAction(url, "POST", {"policy": options}, "policyAppRefresh", "Policy Created");
         },
         
         save: function(options,id, orgId) {
@@ -32,7 +32,7 @@ define([
             }else{
                 url = Common.apiUrl + "/identity/v1/policies/"+id+"?&org_id=" + orgId;
             }
-            this.sendAjaxAction(url, "POST", {"policy": options}, "policyAppRefresh");
+            this.sendAjaxAction(url, "POST", {"policy": options}, "policyAppRefresh", "Policy Saved");
         },
         
         addToGroup: function(options,orgId) {

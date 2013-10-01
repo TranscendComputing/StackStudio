@@ -22,11 +22,12 @@ define([
         '/js/aws/views/cloud_watch/awsDefaultAlarmCreateView.js',
         '/js/aws/views/notification/awsTopicsCreateView.js',
         '/js/aws/views/vpc/awsVpcCreateView.js',
-        '/js/aws/views/vpc/awsSubnetCreateView.js',
+        '/js/aws/views/vpc/awsSubnetCreateView.js',
+        'spinner',
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator',
         'bootstrap'
-], function( $, _, Backbone, Common, groupsManagementTemplate, Policy, Users, Topics, Images, Vpcs, Subnets, CreateGroupView, ManageGroupUsers, CreateAlarmView, CreateTopicsView, CreateVpcsView, CreateSubnetView ) {
+], function( $, _, Backbone, Common, groupsManagementTemplate, Policy, Users, Topics, Images, Vpcs, Subnets, CreateGroupView, ManageGroupUsers, CreateAlarmView, CreateTopicsView, CreateVpcsView, CreateSubnetView, Spinner ) {
 
     var GroupManagementView = Backbone.View.extend({
 
@@ -143,8 +144,31 @@ define([
                 this.policy = this.rootView.treePolicy;
                 this.model = this.rootView.policies.get(this.policy);
                 this.populateForm(this.model);
+            }else{
+                this.prePopForm();
             }
             this.disableSelectionRequiredButtons(false);
+            
+            var spinnerOptions = {
+                //lines: 13, // The number of lines to draw
+                length: 10, // The length of each line
+                width: 8, // The line thickness
+                radius: 5, // The radius of the inner circle
+                corners: 1, // Corner roundness (0..1)
+                rotate: 0, // The rotation offset
+                color: '#000', // #rgb or #rrggbb
+                speed: 1, // Rounds per second
+                trail: 60, // Afterglow percentage
+                shadow: false, // Whether to render a shadow
+                hwaccel: false, // Whether to use hardware acceleration
+                className: 'spinner', // The CSS class to assign to the spinner
+                zIndex: 2e9, // The z-index (defaults to 2000000000)
+                //top: 150, // Top position relative to parent in px
+                //left: 211 // Left position relative to parent in px
+            };
+            
+            new Spinner(spinnerOptions).spin($("#images_table").get(0));
+            
         },
         
         treeSelect: function() {
@@ -219,6 +243,7 @@ define([
             });
             o["default_alarms"] = this.alarms;
             o["default_images"] = this.default_images;
+            //debugger
             newPolicy.save(o,this.policy,sessionStorage.org_id);
         },
         
@@ -367,6 +392,7 @@ define([
         },
         
         addAllImages: function(collection){
+            $(".spinner").remove();
             $("#images_table").dataTable().fnClearTable();
             collection.each(function(model) {
                 var rowData = [model.attributes.imageId,model.attributes.imageLocation,model.attributes.architecture];
@@ -410,13 +436,34 @@ define([
             
             $("#add_image").show(1000);
             $("#add_image_source").show(1000);
-        },
-        
+        },
+        
         imageFilterSelect: function(event){
-            $("#images_table").dataTable().fnClearTable();
+            //$("#images_table").dataTable().fnClearTable();
+            
+            var spinnerOptions = {
+                //lines: 13, // The number of lines to draw
+                length: 50, // The length of each line
+                width: 16, // The line thickness
+                radius: 50, // The radius of the inner circle
+                corners: 1, // Corner roundness (0..1)
+                rotate: 0, // The rotation offset
+                color: '#000', // #rgb or #rrggbb
+                speed: 1, // Rounds per second
+                trail: 60, // Afterglow percentage
+                shadow: false, // Whether to render a shadow
+                hwaccel: false, // Whether to use hardware acceleration
+                className: 'spinner', // The CSS class to assign to the spinner
+                zIndex: 2e9, // The z-index (defaults to 2000000000)
+                //top: 150, // Top position relative to parent in px
+                //left: 211 // Left position relative to parent in px
+            };
+            
+            new Spinner(spinnerOptions).spin($("#images_table").get(0));
+            
             this.images.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val(), platform: $("#filter_platform").val()}), reset: true });
-        },
-        
+        },
+        
         topicCreate: function(event){
             var createTopicsDialog = new CreateTopicsView({cred_id: $("#default_credentials").val(), region: $("#default_region").val()});
             createTopicsDialog.render();
@@ -482,8 +529,17 @@ define([
                 target.removeAttr("disabled");
                 target.removeClass("ui-state-disabled");
             }
-        },
-
+        },
+        
+        prePopForm: function(){
+            $("input:checkbox[name='usable_regions']").each(function(){
+                $(this).prop('checked', true);
+            });
+            $("input:checkbox").each(function(){
+                $(this).prop('checked', true);
+            });
+        },
+        
         close: function(){
             this.$el.remove();
         }  

@@ -17,12 +17,13 @@ define([
     'models/assembly',
     'collections/assemblies',
     'views/assemblies/configListView',
+    'messenger',
     'jquery-plugins',
     'jquery-ui-plugins',
     'jquery.dataTables',
     'jquery.dataTables.fnProcessingIndicator',
     'jquery.sortable'
-], function($, _, bootstrap, Backbone, Common, assemblyDesignTemplate, ChefEnvironments, CloudCredentials, Assembly, Assemblies, ConfigListView) {
+], function($, _, bootstrap, Backbone, Common, assemblyDesignTemplate, ChefEnvironments, CloudCredentials, Assembly, Assemblies, ConfigListView,Messenger) {
 
     var AssemblyDesignView = Backbone.View.extend({
 
@@ -112,7 +113,7 @@ define([
             var optionSelected = $("option:selected", evt.target);
             var credential = this.credential = optionSelected.data("cloudCredentials");
             if (!credential) {
-                this.flashError("We're sorry.  Cloud credentials could not be retrieved.");
+                //this.flashError("We're sorry.  Cloud credentials could not be retrieved.");
                 return;
             }
 
@@ -131,11 +132,17 @@ define([
             this.currentAssembly.set(configs);
             //If no id, then it's a new assembly.  Otherwise, update existing assembly.
             if(!this.currentAssembly.id){
+                var $this = this;
+                Common.vent.once("assembliesViewRefresh", function(newAssembly){
+                    $this.currentAssembly = newAssembly;
+                });
                 this.assemblies.createAssembly(this.currentAssembly, {});
             }
             else{
                 this.currentAssembly.save({},{
-                    success:function(){
+                    success:function(model){
+                        $("#selectAssemblyButton span:first").html("Selected Assembly: " + model.get("name"));
+                        Messenger().post({message:model.get("name") +" updated", type:"success"});
                         Common.vent.trigger("assembliesViewRefresh");
                     },
                     error:function(){

@@ -1,16 +1,33 @@
 <div style="height:700px;">
-	<div id="accordion" class="layout sidebar accordion" style="width:22%;float:left;">
-		<div class="accordion-group">
-			<div class="accordion-heading">
-		    	<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-			    	New Resources
-			    </a>
+	<div style="width:22%;float:left;">
+		<div id="resources_accordion" class="layout sidebar accordion">
+			<div class="accordion-group">
+				<div class="accordion-heading">
+			    	<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+				    	New Resources
+				    </a>
+				</div>
+				<div id="collapseOne" class="accordion-body collapse in">
+			     	<div class="accordion-inner">
+			        	<div id="new_resources"></div>
+			      	</div>
+			    </div>
+			    
 			</div>
-			<div id="collapseOne" class="accordion-body collapse in">
-		     	<div class="accordion-inner">
-		        	<div id="new_resources"></div>
-		      	</div>
-		    </div>
+		</div>
+		<div id="assemblies_accordion" class="layout sidebar accordion">
+			<div class="accordion-group">
+				<div class="accordion-heading">
+			    	<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+				    	Assemblies
+				    </a>
+				</div>
+			    <div id="collapseTwo" class="accordion-body collapse in">
+			     	<div class="accordion-inner">
+			        	<div id="assemblies_list"></div>
+			      	</div>
+			    </div>
+			</div>
 		</div>
 	</div>
 	<div id="design_editor" style="position:relative;left:20px;float:left;width:54%;height:660px;"></div>

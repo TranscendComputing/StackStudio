@@ -11,10 +11,11 @@ define([
         'backbone',
         'common',
         'text!templates/stacks/stackDesignTemplate.html',
+        'collections/assemblies',
         'ace-cdn',
         'ace/mode/json',
         'jquery.jstree'
-], function( $, _, Backbone, Common, stacksDesignTemplate) {
+], function( $, _, Backbone, Common, stacksDesignTemplate, Assemblies) {
     'use strict';
 
     var StackDesignView = Backbone.View.extend({
@@ -29,6 +30,8 @@ define([
 
         newResourceTree: undefined,
 
+        assembilies: undefined,
+
         events: {
             "click .jstree_custom_item": "treeFolderClick",
             "click .new_item_link": "addResource",
@@ -38,6 +41,8 @@ define([
         initialize: function() {
             $("#design_time_content").html(this.el);
             this.$el.html(this.template);
+            this.assemblies = new Assemblies();
+            this.assemblies.on( 'reset', this.addAllAssemblies, this );
         },
 
         render: function() {
@@ -46,9 +51,9 @@ define([
             this.editor.getSession().setUseWorker(false);
             this.editor.getSession().setMode(new (require("ace/mode/json")).Mode);
 
-            this.newResourceTree = $("#new_resources").jstree({ 
+            this.newResourceTree = $("#new_resources").jstree({
                 // List of active plugins
-                "plugins" : [ 
+                "plugins" : [
                     "json_data", "crrm", "themeroller"
                 ],
                 
@@ -56,7 +61,7 @@ define([
                     "animation": 0
                  },
 
-                "json_data" : { 
+                "json_data" : {
                     "ajax": {
                         "url": "samples/cloud_resources.json",
                         "success": function(data) {
@@ -71,11 +76,11 @@ define([
                                  itemId = d.label.toLowerCase().replace(/\s/g, "_");
                                  services[d.service].push({
                                      "data": {
-                                         "title": d.label, 
+                                         "title": d.label,
                                          "attr": {
-                                             "id": itemId, 
+                                             "id": itemId,
                                              "class": "new_item_link"
-                                         } 
+                                         }
                                      },
                                      "attr": {"id": itemId + "_container"},
                                      "metadata": d
@@ -87,7 +92,7 @@ define([
                                 treeData.push({
                                     data: s,
                                     children: v,
-                                    "metadata": {"parent_tree": "#new_resources"} 
+                                    "metadata": {"parent_tree": "#new_resources"}
                                 });
                             });
                             return treeData;
@@ -101,9 +106,18 @@ define([
                 }
             });
 
+            this.assemblies.fetch({reset:true});
+            
             if(this.stack) {
                 this.setStack(this.stack);
             }
+        },
+
+        addAllAssemblies: function() {
+            $("#assemblies_list").empty();
+            this.assemblies.each(function(assembly) {
+                $("#assemblies_list").append("<a>"+assembly.attributes.name+"</a>");
+            });
         },
 
         setStack: function(stack) {

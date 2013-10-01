@@ -29,17 +29,20 @@ define([
 
         create: function(options) {
             var url = Common.apiUrl + "/stackstudio/v1/portfolios";
-            this.sendAjaxAction(url, "POST", options, "portfolioCreated");
+            var successMessage = options.name + " created";
+            this.sendAjaxAction(url, "POST", options, "portfolioCreated", successMessage);
         },
 
         update: function(options) {
             var url = Common.apiUrl + "/stackstudio/v1/portfolios/" + this.id +"?_method=PUT";
-            this.sendAjaxAction(url, "POST", options, "portfolioUpdated");
+            var successMessage = this.get("name") + " updated";
+            this.sendAjaxAction(url, "POST", options, "portfolioUpdated", successMessage);
         },
 
         destroy:function() {
             var url = Common.apiUrl + "/stackstudio/v1/portfolios/" + this.id +"?_method=DELETE";
-            this.sendAjaxAction(url, "POST", undefined, "portfolioDeleted");
+            var successMessage = this.get("name") + " deleted";
+            this.sendAjaxAction(url, "POST", undefined, "portfolioDeleted", successMessage);
         }
 
     });

@@ -59,6 +59,8 @@ define([
         
         toggleActions: function(e) {
             //Disable any needed actions
+            var alarm = this.collection.get(this.selectedId);
+            $("#rc_name").html(alarm.attributes.dimensions[0].Value);
         },
         
         performAction: function(event) {
