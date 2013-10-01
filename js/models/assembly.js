@@ -28,6 +28,9 @@ define([
         defaults: {
             name: '',
             configurations: {}
+        },
+        url: function(){
+            return Backbone.Model.prototype.url.apply(this, arguments) + "?account_id="+ sessionStorage.account_id;
         }
 
     });
