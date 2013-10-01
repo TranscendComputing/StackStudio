@@ -25,6 +25,11 @@ define([
         comparator : function(model){
             return model.get("name");
         },
+        fetch: function(options){
+            options.data = $.param({account_id:sessionStorage.account_id});
+            Backbone.Collection.prototype.fetch.apply(this, arguments);
+        },
+
 
 		createAssembly : function(model, options) {
             options.wait = true;
