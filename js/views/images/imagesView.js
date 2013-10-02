@@ -15,8 +15,9 @@ define([
         'text!templates/images/advancedTemplate.html',
         'models/packedImage',
         '/js/aws/collections/compute/awsImages.js',
+        'collections/packedImages',
         'jquery-ui'
-], function( $, _, bootstrap, Backbone, Common, imagesTemplate, advancedTemplate, PackedImage, Images ) {
+], function( $, _, bootstrap, Backbone, Common, imagesTemplate, advancedTemplate, PackedImage, Images, PackedImages ) {
 
     var ImagesView = Backbone.View.extend({
 
@@ -27,6 +28,8 @@ define([
         currentImageTemplate: undefined,
         
         images: undefined,
+        
+        packed_images: undefined,
 
         events: {
             "click #new_image_template_button": "newImageTemplate",
@@ -42,6 +45,17 @@ define([
             $("#main").html(this.el);
             this.$el.html(this.template);
             
+            var creds = JSON.parse(sessionStorage.cloud_credentials);
+            $("#aws_cred_select").empty();
+            for (var i in creds) {
+                if(creds[i].cloud_credential.cloud_provider === "AWS"){
+                    $("#aws_cred_select").append("<option value='"+creds[i].cloud_credential.id+"' data-ak='"+creds[i].cloud_credential.access_key+"' data-sk='"+creds[i].cloud_credential.secret_key+"'>"+creds[i].cloud_credential.name+"</option>");
+                }
+            }
+            
+            this.packed_images = new PackedImages();
+            this.packed_images.on( 'reset', this.addAllPackedImages, this );
+            
             this.images = new Images();
             this.images.on( 'reset', this.addAllImages, this );
         },
@@ -49,6 +63,7 @@ define([
         render: function() {
             this.fetchDropDowns();
             this.images.fetch({reset: true});
+            this.packed_images.fetch({reset: true});
             //Fetch image templates
             if(this.currentImageTemplate) {
                 if(this.currentImageTemplate.id === "") {
@@ -83,7 +98,7 @@ define([
                 for (var key in builders) {
                     $("#image_type_select").append("<option>"+key+"</option>");
                 }
-                $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/builders/" + $("#image_type_select").val(), function( builder ) {
+                $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/builders/" + $("#image_type_select").val().replace('-',''), function( builder ) {
                     $("#builder_settings").html(_.template(advancedTemplate)({optional: builder.optional, required: builder.required, title: "Builder: "+$("#image_type_select").val()}));
                     $("#builder_settings").tooltip();
                 });
@@ -138,6 +153,12 @@ define([
             };
         },
         
+        addAllPackedImages: function(collection){
+            collection.each(function(model) {
+                //model.attributes.name;
+            });
+        },
+        
         openImageList: function() {
             if($("ul.ui-autocomplete").is(":hidden")) {
                 $("#os_input").autocomplete("search", "");
@@ -145,7 +166,7 @@ define([
         },
         
         builderSelect: function(){
-            $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/builders/" + $("#image_type_select").val(), function( builder ) {
+            $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/builders/" + $("#image_type_select").val().replace('-',''), function( builder ) {
                 $("#builder_settings").html(_.template(advancedTemplate)({optional: builder.optional, required: builder.required, title: "Builder: "+$("#image_type_select").val()})).hide().fadeIn('slow');
                 $("#builder_settings").tooltip();
             });
@@ -204,9 +225,58 @@ define([
                     provisioner[$(this).attr('name')] = $( this ).val();
                 }
             });
-            this.currentImageTemplate = new PackedImage({"builders":[builder],"provisioners":[provisioner],name: $("#image_template_name_input").val()});
+            
+            //base_image
+            var base_image = {};
+            
+            var clouds = [];
+            $("input[name='clouds_select']:checkbox:checked").each(function(){  clouds.push($(this).val());   });
+            
+            base_image.name = $('#image_template_name_input').val();
+            base_image.clouds = clouds;
+            base_image.os = $('#os_input').val();
+
+            var packed_image = this.map_base(base_image);
+            
+            this.currentImageTemplate = new PackedImage(packed_image);
             this.currentImageTemplate.save();
-            console.log(this.currentImageTemplate);
+        },
+        
+        map_base: function(base){
+            var builders = [];
+            var provisioners = [];
+            for (var i in base.clouds) {
+                if(base.clouds[i] == 'aws'){
+                    var mappings = undefined;
+                    $.ajax({
+                      url: '/samples/awsImages.json',
+                      async: false,
+                      success: function(data) {
+                        mappings = data;
+                      }
+                    });
+                    for(var i in mappings){
+                        if(mappings[i].label == $('#os_input').val()){
+                            var aws = {
+                                        "type": "amazon-ebs",
+                                        "access_key": $("#aws_cred_select option:selected").attr('data-ak'),
+                                        "secret_key": $("#aws_cred_select option:selected").attr('data-sk'),
+                                        "region": $("#aws_region_select").val(),
+                                        'source_ami' : mappings[i].region[$("#aws_region_select").val()],
+                                        "instance_type": $("#instance_type_select").val(),
+                                        "ssh_username": "ubuntu",
+                                        "ami_name": $("#image_template_name_input").val() + '{timestamp}'
+                                       };
+                            builders.push(aws);
+                        }
+                    }
+                }
+                if(base.clouds[i] == 'openstack'){
+                    
+                }
+            }
+            
+            return {'builders':builders,'provisioners':provisioners};
         },
 
         closeImageTemplate: function() {
