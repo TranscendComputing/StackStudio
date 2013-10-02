@@ -621,8 +621,31 @@ define([
 
             this.trigger("badge-refresh", {badgeCount: badgeCount});
             Common.vent.trigger("saltSelectionChanged");
+        },
+        toolChangeHandler: function(evt){
+            var $this = this;
 
-
+            $(".main-group").hide();
+            $("#no_tool_selected").hide();
+            $("#tool_selected").show();
+            var currentTool = $(evt.currentTarget).val().toLowerCase();
+            var accordion = $("#" + currentTool + "Accordion");
+            accordion.show();
+            debugger;
+            switch(currentTool){
+                case "puppet":
+                    this.populatePuppetClasses();
+                    break;
+                case "chef":
+                    this.fetchChefEnvironments().done(function(model){
+                        $this.populateChefEnvironments(new ChefEnvironments(model));
+                    });
+                    break;
+                case "salt":
+                    this.fetchSaltStates();
+                    debugger;
+                    break;
+            }
         },
         close: function(){
             this.$el.empty();

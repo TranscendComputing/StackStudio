@@ -145,14 +145,11 @@ define([
             }, this));
         },
 
+        
         toolChangeHandler: function(evt){
-            $(".main-group").hide();
-            $("#no_tool_selected").hide();
-            $("#tool_selected").show();
-            var currentTool = $(evt.currentTarget).val().toLowerCase();
-            var accordion = $("#" + currentTool + "Accordion");
-            accordion.show();
+            this.listView.toolChangeHandler(evt);
         },
+
         populateToolMenu: function(){
             var menu = $("#assemblyRuntimeTool");
             menu.empty();
@@ -206,18 +203,6 @@ define([
 
             this.populateRegions(credential);
             this.listView.credential = credential;
-            this.listView.fetchChefEnvironments().done(function(model){
-                $this.populateChefEnvironments(new ChefEnvironments(model));
-            });
-            this.listView.populatePuppetClasses();
-        },
-
-        populateChefEnvironments: function(list){
-            var select = $("#chefEnvironmentSelect").empty();
-            $("<option value='' disabled selected style='display:none;'>Select Environment</option></select>").appendTo(select);
-            list.forEach(function(element, index, list){
-                $("<option value='" + element.get("name") + "'>" + element.get("name") + "</option></select>").appendTo(select);
-            });
         },
 
         populateCredentials: function(list, options){
@@ -358,7 +343,7 @@ define([
             this.instanceTable.fnClearTable();
             this.instanceTable.fnAddData(instances);
             this.instanceTable.fnProcessingIndicator(false);
-            this.updateDeployButtonState();
+            //this.updateDeployButtonState();
         },
 
         loadCredentials: function(){

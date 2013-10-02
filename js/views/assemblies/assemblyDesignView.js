@@ -118,11 +118,6 @@ define([
             }
 
             this.listView.credential = credential;
-            this.listView.fetchChefEnvironments().done(function(model) {
-                $this.listView.populateChefEnvironments(new ChefEnvironments(model));
-            });
-            this.listView.populatePuppetClasses();
-            this.listView.fetchSaltStates();
 
             this.populateImages(credential.get("cloud_provider").toLowerCase(), credential);
         },
@@ -196,13 +191,7 @@ define([
                 .change();
         },
         toolChangeHandler: function(evt){
-            $(".main-group").hide();
-            $("#no_tool_selected").hide();
-            $("#tool_selected").show();
-            var currentTool = $(evt.currentTarget).val().toLowerCase();
-            var accordion = $("#" + currentTool + "Accordion");
-            accordion.show();
-            //accordion.find("a").first().click();
+            this.listView.toolChangeHandler(evt);
         }
     });
 
