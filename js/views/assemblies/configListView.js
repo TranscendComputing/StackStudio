@@ -631,7 +631,6 @@ define([
             var currentTool = $(evt.currentTarget).val().toLowerCase();
             var accordion = $("#" + currentTool + "Accordion");
             accordion.show();
-            debugger;
             switch(currentTool){
                 case "puppet":
                     this.populatePuppetClasses();
@@ -643,7 +642,6 @@ define([
                     break;
                 case "salt":
                     this.fetchSaltStates();
-                    debugger;
                     break;
             }
         },
