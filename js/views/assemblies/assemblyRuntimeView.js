@@ -62,6 +62,7 @@ define([
 
         chefIcon: "<img src='/images/CompanyLogos/chefLogo.jpg' class='chef_icon'/>",
         puppetIcon: "<img src='/images/CompanyLogos/puppet.png' class='puppet_icon'/>",
+        saltIcon: "<img src='/images/CompanyLogos/saltLogo.jpg' class='salt_icon'/>",
 
         subViews: [],
 
@@ -104,7 +105,10 @@ define([
                         aTargets: [0],
                         sWidth: "7em",
                         mData: function(instance){
-                            return "<input type='checkbox' data-instance-id='" + instance.id + "'></input><span class='chef_icon' /><span class='puppet_icon' />";
+                            return "<input type='checkbox' data-instance-id='" + instance.id + "'></input>"+
+                            "<span class='chef_icon'></span>"+
+                            "<span class='puppet_icon'></span>"+
+                            "<span class='salt_icon'></salt>";
                         }
                     },
                     {
@@ -252,6 +256,7 @@ define([
             var accountId = this.credential.get("cloud_account_id");
             var chefApiUrl = Common.apiUrl + "/stackstudio/v1/orchestration/chef/nodes/find?account_id=" + accountId;
             var puppetApiUrl = Common.apiUrl + "/stackstudio/v1/orchestration/puppet/agents/find?account_id=" + accountId;
+            var saltApiUrl = Common.apiUrl + "/stackstudio/v1/orchestration/salt/minions/find?account_id=" + accountId;
 
             for (var i = 0; i < instances.length; i++) {
                 var name = instances[i]["name"] || instances[i]["dns_name"];
@@ -274,6 +279,7 @@ define([
             }
             this.matchInstancesAjax(instanceInfo, this.chefIcon, chefApiUrl, "node", "chef");
             this.matchInstancesAjax(instanceInfo, this.puppetIcon, puppetApiUrl, "agent", "puppet");
+            this.matchInstancesAjax(instanceInfo, this.saltIcon, saltApiUrl, "minion", "salt");
         },
         matchInstancesAjax: function(instances, icon, url, type, tool){
             $.ajax({
@@ -437,20 +443,6 @@ define([
             this.stopListening();
             this.unbind();
         }
-
-        // toggleInstInfra: function(ev){
-        //     switch(ev.target.id)
-        //     {
-        //         case ("collapseConfig"):{
-        //             $("#deploy-inst").show();
-        //             $("#deploy-infra").hide();
-        //         }break;
-        //         case ("collapseInfra"):{
-        //             $("#deploy-inst").hide();
-        //             $("#deploy-infra").show();
-        //         }break;
-        //     }
-        // },
 
         // searchClick: function(evt) {
         //     var label, clicked;
