@@ -84,8 +84,10 @@ define([
             }
             var chefEndpoints = ich['config_managers_template']({"managers":this.configManagers.toJSON().chef, "managerType": "Chef"});
             var puppetEndpoints = ich['config_managers_template']({"managers":this.configManagers.toJSON().puppet, "managerType": "Puppet"});
+            var saltEndpoints = ich['config_managers_template']({"managers":this.configManagers.toJSON().salt, "managerType": "Salt"});
             $('#config_managers_page').html(chefEndpoints);
             $('#config_managers_page').append(puppetEndpoints);
+            $('#config_managers_page').append(saltEndpoints);
 
             $('input').prop('disabled', true);
             
