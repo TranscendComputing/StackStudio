@@ -543,6 +543,7 @@ define([
 
             $this.saltStates = new SaltStates();
             $this.saltStates.fetch({
+                data: {account_id: this.credential.get("cloud_account_id")},
                 success:function(collection, response, data){
                     $this.populateSaltTree(collection);
                     $this.recalculateSaltBadges();

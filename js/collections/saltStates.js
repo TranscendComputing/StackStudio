@@ -18,8 +18,8 @@ define([
 
         // Reference to this collection's model.
         model: State,
-        url: '../samples/saltStates.json',
-        //url: Common.apiUrl + "/stackstudio/v1/orchestration/salt/states",
+        //url: '../samples/saltStates.json',
+        url: Common.apiUrl + "/stackstudio/v1/orchestration/salt/states",
 
         comparator : function(model){
             return model.get("name");
