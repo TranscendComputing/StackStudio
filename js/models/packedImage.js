@@ -19,7 +19,7 @@ define([
         
         save: function() {
             var url = Common.apiUrl + "/stackstudio/v1/packed_images/save?uid=" + sessionStorage.org_id;
-            this.sendAjaxAction(url, "POST", {"packed_image": this.attributes}, "packedImageAppRefresh");
+            this.sendAjaxAction(url, "POST", {"packed_image": this.attributes.packed_image,"name":this.attributes.name}, "packedImageAppRefresh", "Image Saved...");
         },
 
     });

@@ -36,6 +36,7 @@ define([
             "click #close_image_template_button": "closeImageTemplate",
             "change #image_type_select":"builderSelect",
             "change #image_config_management_select":"provisionerSelect",
+            "change #dev_ops_select":"devopsSelect",
             "click .adv_tab": "advTabSelect",
             "click #save_image_template_button":"packImage",
             "focus #os_input": "openImageList"
@@ -58,12 +59,18 @@ define([
             
             this.images = new Images();
             this.images.on( 'reset', this.addAllImages, this );
-        },
 
-        render: function() {
+            var piView = this;
+            Common.vent.on("packedImageAppRefresh", function() {
+                piView.packed_images.fetch({reset: true});
+            });
+
             this.fetchDropDowns();
             this.images.fetch({reset: true});
             this.packed_images.fetch({reset: true});
+        },
+
+        render: function() {
             //Fetch image templates
             if(this.currentImageTemplate) {
                 if(this.currentImageTemplate.id === "") {
@@ -105,8 +112,13 @@ define([
             });
             $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/provisioners", function( provisioners ) {
                 $("#image_config_management_select").empty();
+                $("#dev_ops_select").empty();
                 for (var key in provisioners) {
-                    $("#image_config_management_select").append("<option>"+key+"</option>");
+                    if(key == 'chef-solo' || key == 'salt-masterless'){
+                    	$("#dev_ops_select").append("<option>"+key+"</option>");
+                    }else{
+                    	$("#image_config_management_select").append("<option>"+key+"</option>");
+                    }
                 }
                 $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/provisioners/" + $("#image_config_management_select").val(), function( provisioner ) {
                     if(provisioner.shell !== undefined){
@@ -115,6 +127,10 @@ define([
                     }
                     $("#provisioner_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, required: provisioner.required, title: "Provisioner: "+$("#image_config_management_select").val()}));
                     $("#provisioner_settings").tooltip();
+                });
+                $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/provisioners/" + $("#dev_ops_select").val(), function( provisioner ) {
+                    $("#devops_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, required: provisioner.required, title: "DevOps Tool: "+$("#dev_ops_select").val()}));
+                    $("#devops_settings").tooltip();
                 });
             });
         },
@@ -154,9 +170,12 @@ define([
         },
         
         addAllPackedImages: function(collection){
+            $("#packed_images_list").hide('slow');
+            $("#packed_images_list").empty();
             collection.each(function(model) {
-                //model.attributes.name;
+                $("#packed_images_list").append("<li>"+model.attributes.name+"</li>");
             });
+            $("#packed_images_list").show('slow');
         },
         
         openImageList: function() {
@@ -181,6 +200,13 @@ define([
                 $("#provisioner_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, required: provisioner.required, title: "Provisioner: "+$("#image_config_management_select").val()})).hide().fadeIn('slow');
                 $("#provisioner_settings").tooltip();
             });
+        },
+
+        devopsSelect: function(event){
+        	$.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/provisioners/" + $("#dev_ops_select").val(), function( provisioner ) {
+        	    $("#devops_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, required: provisioner.required, title: "DevOps Tool: "+$("#dev_ops_select").val()})).hide().fadeIn('slow');
+        	    $("#devops_settings").tooltip();
+        	});
         },
         
         advTabSelect: function(event){
@@ -238,7 +264,7 @@ define([
 
             var packed_image = this.map_base(base_image);
             
-            this.currentImageTemplate = new PackedImage(packed_image);
+            this.currentImageTemplate = new PackedImage({'packed_image':packed_image,'name':base_image.name});
             this.currentImageTemplate.save();
         },
         
