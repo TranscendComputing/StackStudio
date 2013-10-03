@@ -8,8 +8,9 @@
 define([
         'jquery',
         'backbone',
-        'common'
-], function( $, Backbone, Common ) {
+        'common',
+        'messenger'
+], function( $, Backbone, Common, Messenger) {
     'use strict';
 
     var resourceModel = Backbone.Model.extend({
