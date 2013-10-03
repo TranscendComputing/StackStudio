@@ -93,6 +93,7 @@ define([
 
             Common.vent.on("chefSelectionChanged", this.updateDeployButtonState, this);
             Common.vent.on("puppetSelectionChanged", this.updateDeployButtonState, this);
+            Common.vent.on("saltSelectionChanged", this.updateDeployButtonState, this);
 
             this.instanceTable = $('#deploy-inst table:first').dataTable({
                 "bJQueryUI": true,
@@ -159,6 +160,7 @@ define([
             menu.empty();
             menu.append('<option value="Chef">Chef</option>');
             menu.append('<option value="Puppet">Puppet</option>');
+            menu.append('<option value="Salt">Salt</option>');
             menu.get(0).value = "";
         },
 
@@ -309,17 +311,18 @@ define([
 
 
             var enabled;
-            var selectedLength;
+            var selectedLength = $(tool.toLowerCase()+"-selection").find("input[type='checkbox']:checked").length;
             if(instanceChecked){
                 switch(tool)
                 {
                     case "Chef":
-                        selectedLength = $("#chef-selection").find("input[type='checkbox']:checked").length;
                         enabled = selectedLength !==0 || configsList["chef"]["run_list"].length !==0;
                         break;
                     case "Puppet":
-                        selectedLength = $("#puppet-selection").find("input[type='checkbox']:checked").length;
                         enabled = (selectedLength !==0|| configsList["puppet"]["node_config"].length !==0 );
+                        break;
+                    case "Salt":
+                        enabled = (selectedLength !==0|| configsList["salt"]["minion_config"].length !==0 );
                         break;
                 }
             }
@@ -417,6 +420,17 @@ define([
                             this.updateInstanceConfig("chef/nodes", nodeData["name"], runlist, "runListUpdated");
                         }
                         break;
+
+                    case "Salt":
+                        var minionName = rowData.minion.name;
+                        if(minionName){
+                            var states = {"states":[]};
+                            var minionConfig = configSelection["minion_config"];
+                            for(var k = 0; k< minionConfig.length; k++){
+                                states["states"].push(minionConfig[k].name);
+                            }
+                            this.updateInstanceConfig("salt/minions", minionName, states, "minionConfigUpdated");
+                        }
                 }
             }
         },
