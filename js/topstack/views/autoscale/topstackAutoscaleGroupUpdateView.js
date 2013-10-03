@@ -72,7 +72,7 @@ define([
             this.$el.dialog({
                 autoOpen: true,
                 title: "Update Auto Scale Group",
-                width:650,
+                width:500,
                 minHeight: 500,
                 resizable: false,
                 modal: true,
@@ -234,7 +234,7 @@ define([
             {
                 case "auto_recovery":
                     $("#elasticity_image").attr("src", "/images/IconPNGs/Autorestart.png");
-                    var autoRecoveryHTML = "<img id='elasticity_image' src='/images/IconPNGs/NewServer.png' style='float:right;width:30px'/><table>" +
+                    var autoRecoveryHTML = "<table>" +
                                                 "<tr>" +
                                                     "<td>Min:</td><td>1</td>" +
                                                 "</tr>" +
@@ -249,12 +249,12 @@ define([
                     break;
                 case "fixed_array":
                     $("#elasticity_image").attr("src", "/images/IconPNGs/Autoscale.png");
-                    var fixedArrayHTML = "<img id='elasticity_image' src='/images/IconPNGs/NewServer.png' style='float:right;width:30px'/><table><tr><td>Number of Instances:</td><td><input id='fixed_array_size'/></td></tr></table>";
+                    var fixedArrayHTML = "<table><tr><td>Number of Instances:</td><td><input id='fixed_array_size'/></td></tr></table>";
                     $("#elasticity_config").hide('slow').html(fixedArrayHTML).show('slow');
                     break;
                 case "auto_scale":
                     $("#elasticity_image").attr("src", "/images/IconPNGs/Autoscale.png");
-                    var autoScaleHTML = "<img id='elasticity_image' src='/images/IconPNGs/NewServer.png' style='float:right;width:30px'/><table>" +
+                    var autoScaleHTML = "<table>" +
                                             "<tr><td>Min:</td><td><input id='as_min'/></td></tr>" +
                                             "<tr><td>Max:</td><td><input id='as_max'/></td></tr>" +
                                             "<tr><td>Desired Capacity:</td><td><input id='as_desired_capacity'/></td></tr>" +
