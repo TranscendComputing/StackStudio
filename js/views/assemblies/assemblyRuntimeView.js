@@ -31,12 +31,13 @@ define([
         'collections/chefEnvironments',
         'views/assemblies/appListView',
         'models/app',
+        'messenger',
         'jquery-plugins',
         'jquery-ui-plugins',
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator',
         'jquery.sortable'
-], function( $, _, bootstrap, Backbone, ich, Common, typeahead, appsTemplate, Apps, CloudCredentials, Cookbooks, ChefEnvironments, AssemblyRuntimeListView, App ) {
+], function( $, _, bootstrap, Backbone, ich, Common, typeahead, appsTemplate, Apps, CloudCredentials, Cookbooks, ChefEnvironments, AssemblyRuntimeListView, App, Messenger ) {
 	// The Assembly Runtime View
 	// ------------------------------
 
@@ -399,6 +400,7 @@ define([
             for(var i = 0; i < selected.length; i++){
                 var row = $(selected[i]).parents()[1];
                 var rowData = $(row).data();
+                var instanceName = $(row).find("td:eq(1)").text();
                 switch (tool) {
                     case "Puppet":
                         if(rowData["agent"]){
@@ -408,7 +410,7 @@ define([
                             for(var j =0; j < nodeConfig.length; j++){
                                 postData["puppetclass_ids"].push(nodeConfig[j].id);
                             }
-                            this.updateInstanceConfig("puppet/agents", id, postData, "nodeConfigUpdated");
+                            this.updateInstanceConfig("puppet/agents", id, instanceName,  postData, "nodeConfigUpdated");
 
                         }
                         break;
@@ -417,7 +419,7 @@ define([
                         var env = configSelection["env"];
                         var nodeData = $(row).data()["node"];
                         if(nodeData){
-                            this.updateInstanceConfig("chef/nodes", nodeData["name"], runlist, "runListUpdated");
+                            this.updateInstanceConfig("chef/nodes", nodeData["name"], instanceName,  runlist, "runListUpdated");
                         }
                         break;
 
@@ -429,25 +431,29 @@ define([
                             for(var k = 0; k< minionConfig.length; k++){
                                 states["states"].push(minionConfig[k].name);
                             }
-                            this.updateInstanceConfig("salt/minions", minionName, states, "minionConfigUpdated");
+                            this.updateInstanceConfig("salt/minions", minionName, instanceName, states, "minionConfigUpdated");
                         }
                 }
             }
         },
 
-        updateInstanceConfig: function(subUrl, id, data, eventName){
+        updateInstanceConfig: function(subUrl, id, instanceName, data, eventName){
             var accountId = this.credential.get("cloud_account_id");
             var url = Common.apiUrl + "/stackstudio/v1/orchestration/" + subUrl + "/"+ id  +"?account_id=" + accountId + "&_method=PUT";
+            data["instanceName"] = instanceName;
             $.ajax({
                 url: url,
                 type: "POST",
                 data: JSON.stringify(data),
                 success: function(response) {
+                    new Messenger().post({type:"success", message:"Updated " + data.instanceName + "'s configuration"});
                     Common.vent.trigger(eventName);
                 },
                 error: function(response){
-                    Common.errorDialog("Server Error", "Could not update instance configuration.");
-                }
+                    new Messenger().post({type:"error", message:"Could not update " + data.instanceName + "'s configuration"});
+                    //Common.errorDialog("Server Error", "Could not update instance configuration.");
+                },
+                context:this
             });
         },
 
