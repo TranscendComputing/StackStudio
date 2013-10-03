@@ -14,10 +14,11 @@ define([
         '/js/topstack/models/autoscale/topstackAutoscaleGroup.js',
         '/js/openstack/collections/compute/openstackImages.js',
         'common',
+        'spinner',
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
-], function( $, _, Backbone, DialogView, autoscaleGroupCreateTemplate, AutoscaleGroup, Images, Common ) {
+], function( $, _, Backbone, DialogView, autoscaleGroupCreateTemplate, AutoscaleGroup, Images, Common, Spinner ) {
     
     var TopStackAutoscaleGroupCreateView = DialogView.extend({
 
@@ -110,6 +111,26 @@ define([
 
             this.elasticityChange();
             $("#as-b").click();
+            
+            var spinnerOptions = {
+                //lines: 13, // The number of lines to draw
+                length: 50, // The length of each line
+                width: 16, // The line thickness
+                radius: 50, // The radius of the inner circle
+                corners: 1, // Corner roundness (0..1)
+                rotate: 0, // The rotation offset
+                color: '#000', // #rgb or #rrggbb
+                speed: 1, // Rounds per second
+                trail: 60, // Afterglow percentage
+                shadow: false, // Whether to render a shadow
+                hwaccel: false, // Whether to use hardware acceleration
+                className: 'spinner', // The CSS class to assign to the spinner
+                zIndex: 2e9, // The z-index (defaults to 2000000000)
+                //top: 150, // Top position relative to parent in px
+                //left: 211 // Left position relative to parent in px
+            };
+            
+            new Spinner(spinnerOptions).spin($("#launch_config_opt").get(0));
         },
         
         addAllImages: function() {
@@ -179,6 +200,7 @@ define([
         },
         
         addAllSecurityGroups: function() {
+            $(".spinner").remove();
             $("#security_group_select").empty();
             this.securityGroups.each(function(sg) {
                 if(sg.attributes.name) {
