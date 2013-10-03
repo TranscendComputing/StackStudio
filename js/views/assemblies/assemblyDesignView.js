@@ -57,8 +57,6 @@ define([
             this.cloudCredentials = new CloudCredentials();
             this.cloudCredentials.on('reset', this.populateCredentials, this);
 
-            //Cloud Credentials fetch is asyncronous due to custom fetch behavior.
-            this.cloudCredentials.fetch();
             var $this = this;
             this.imageTable = $("#assemblyDesignImagesTable").dataTable({
                 "bJQueryUI": true,
@@ -86,6 +84,8 @@ define([
                     }
                 }]
             });
+            //Cloud Credentials fetch is asyncronous due to custom fetch behavior.
+            this.cloudCredentials.fetch();
         },
 
         close: function() {
@@ -106,7 +106,6 @@ define([
                     .data("cloudCredentials", element)
                     .appendTo(select);
             });
-            //select.trigger("change");
         },
         credentialChangeHandler: function(evt) {
             var $this = this;

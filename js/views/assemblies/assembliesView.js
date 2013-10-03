@@ -243,6 +243,7 @@ define([
             
         },
         newAssemblyForm: function(){
+            var $this =this;
             if(!this.confirmPageSwitch()){
                 return;
             }
@@ -253,13 +254,21 @@ define([
             }
             this.currentAssembly = new Assembly();
             this.tabView.currentAssembly = this.currentAssembly;
-            $("#designForm :input").each(function(){
-                this.value = "";
-            });
+            
             this.tabView.listView.close();
             this.tabView.listView = new ConfigListView();
             this.tabView.listView.render();
             this.tabView.imageTable.fnClearTable();
+
+            $("#designForm :input").each(function(){
+                if(this.name === "cloud_credential"){
+                    $this.listView.credential = $(this).find(":selected").data().cloudCredentials;
+                    $(this).change();
+                }
+                else{
+                    this.value = "";
+                }
+            });
         },
         deleteAssembly: function(evt){
             var assembly = this.assemblies.get(evt.currentTarget.id);

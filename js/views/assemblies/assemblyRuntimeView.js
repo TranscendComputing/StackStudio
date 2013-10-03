@@ -370,25 +370,7 @@ define([
         enableDeployLaunch: function(){
             $("#deploy-launch").removeClass("disabled");
         },
-
-        // queueToInstance: function(evt){
-        //     var $this = this;
-
-        //     var configSelection = this.listView.getConfigs()["configurations"];
-        //     var runlist = configSelection["chef"]["run_list"];
-        //     var chefEnv = configSelection["chef"]["env"];
-
-        //     var nodeConfig = configSelection["puppet"];
-        //     var checked = this.instanceTable.$("input[type=checkbox]:checked");
-        //     checked.each(function(index, checkbox){
-        //         var row = $(checkbox).parents()[1];
-        //         var nodeData = $(row).data()["node"];
-        //         if(nodeData){
-        //             $this.addToRunlist(nodeData["name"], runlist);
-        //         }
-        //     });
-
-        // },
+        
         queueToInstance: function(evt) {
             var $this = this;
             var accountId = this.credential.get("cloud_account_id");

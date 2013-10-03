@@ -17,7 +17,8 @@ define([
 
         model: Image,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/compute/images'
+       // url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/compute/images'
+       url: "samples/openstackImages.json"
     });
     
     return ImageList;
