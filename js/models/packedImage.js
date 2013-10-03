@@ -21,6 +21,11 @@ define([
             var url = Common.apiUrl + "/stackstudio/v1/packed_images/save?uid=" + sessionStorage.org_id;
             this.sendAjaxAction(url, "POST", {"packed_image": this.attributes.packed_image,"name":this.attributes.name}, "packedImageAppRefresh", "Image Saved...");
         },
+        
+        deploy: function() {
+            var url = Common.apiUrl + "/stackstudio/v1/packed_images/deploy?uid=" + sessionStorage.org_id + "&doc_id=" + this.attributes.doc_id;
+            this.sendAjaxAction(url, "POST", {"packed_image": this.attributes.packed_image,"name":this.attributes.name}, "packedImageAppRefresh", "Image Deployed...");
+        }
 
     });
 

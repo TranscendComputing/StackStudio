@@ -99,9 +99,9 @@ define([
             {
                 case "Update Group":
                     if(this.region) {
-                        this.newResourceDialog = new UpdateView({cred_id: this.credentialId, region: this.region, gid: autoscaleGroup.id});
+                        this.newResourceDialog = new UpdateView({cred_id: this.credentialId, region: this.region, gid: autoscaleGroup.id, group: autoscaleGroup});
                     }else {
-                        this.newResourceDialog = new UpdateView({cred_id: this.credentialId, gid: autoscaleGroup.id});
+                        this.newResourceDialog = new UpdateView({cred_id: this.credentialId, gid: autoscaleGroup.id, group: autoscaleGroup});
                     }
                     this.newResourceDialog.render();
                     break;

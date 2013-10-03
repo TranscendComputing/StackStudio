@@ -41,6 +41,10 @@ define([
         
         securityGroups: undefined,
         
+        group: undefined,
+        
+        config: undefined,
+        
         autoscaleGroup: new AutoscaleGroup(),
         
         imagesType: Images,
@@ -50,13 +54,15 @@ define([
             "focus #image_select": "openImageList",
             "dialogclose": "close",
             "change input[name=elasticity]": "elasticityChange",
-            "change input[name=triggers]": "triggerRadioToggle"
+            "change input[name=triggers]": "triggerRadioToggle",
+            "click .top-buttons":"clickTopButtons"
         },
 
         initialize: function(options){
             this.credentialId = options.cred_id;
             this.region = options.region;
             this.gid = options.gid;
+            this.group = options.group;
         },
         
         render: function() {
@@ -66,7 +72,7 @@ define([
             this.$el.dialog({
                 autoOpen: true,
                 title: "Update Auto Scale Group",
-                width:575,
+                width:650,
                 minHeight: 500,
                 resizable: false,
                 modal: true,
@@ -118,9 +124,26 @@ define([
             this.securityGroups.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true });
 
             this.elasticityChange();
+            $("#as-b").click();
             
             $("#autoscale_group_name").val(createView.gid);
             $("#autoscale_group_name").prop('disabled', true);
+            
+            $.getJSON( Common.apiUrl + "/stackstudio/v1/cloud_management/topstack/autoscale/configurations/" + this.group.attributes.launch_configuration_name + "?cred_id=" + this.credentialId, function( config ) {
+                createView.config = config;
+                
+                createView.images.each(function(image) {
+                    if(image.id == createView.config.image_id){
+                        $("#image_select").val(image.attributes.name);
+                    }
+                });
+                createView.flavors.each(function(flavor) {
+                    if(flavor.id == createView.config.instance_type){
+                        $("#flavor_select").val(flavor.attributes.name);
+                    }
+                });
+                $("#key_pair_select").val(createView.config.key_name);
+            });
         },
         
         addAllImages: function() {
@@ -211,7 +234,7 @@ define([
             {
                 case "auto_recovery":
                     $("#elasticity_image").attr("src", "/images/IconPNGs/Autorestart.png");
-                    var autoRecoveryHTML = "<table>" +
+                    var autoRecoveryHTML = "<img id='elasticity_image' src='/images/IconPNGs/NewServer.png' style='float:right;width:30px'/><table>" +
                                                 "<tr>" +
                                                     "<td>Min:</td><td>1</td>" +
                                                 "</tr>" +
@@ -222,16 +245,16 @@ define([
                                                     "<td>Desired Capacity:</td><td>1</td>" +
                                                 "</tr>" +
                                             "</table>";
-                    $("#elasticity_config").html(autoRecoveryHTML);
+                    $("#elasticity_config").hide('slow').html(autoRecoveryHTML).show('slow');
                     break;
                 case "fixed_array":
                     $("#elasticity_image").attr("src", "/images/IconPNGs/Autoscale.png");
-                    var fixedArrayHTML = "<table><tr><td>Number of Instances:</td><td><input id='fixed_array_size'/></td></tr></table>";
-                    $("#elasticity_config").html(fixedArrayHTML);
+                    var fixedArrayHTML = "<img id='elasticity_image' src='/images/IconPNGs/NewServer.png' style='float:right;width:30px'/><table><tr><td>Number of Instances:</td><td><input id='fixed_array_size'/></td></tr></table>";
+                    $("#elasticity_config").hide('slow').html(fixedArrayHTML).show('slow');
                     break;
                 case "auto_scale":
                     $("#elasticity_image").attr("src", "/images/IconPNGs/Autoscale.png");
-                    var autoScaleHTML = "<table>" +
+                    var autoScaleHTML = "<img id='elasticity_image' src='/images/IconPNGs/NewServer.png' style='float:right;width:30px'/><table>" +
                                             "<tr><td>Min:</td><td><input id='as_min'/></td></tr>" +
                                             "<tr><td>Max:</td><td><input id='as_max'/></td></tr>" +
                                             "<tr><td>Desired Capacity:</td><td><input id='as_desired_capacity'/></td></tr>" +
@@ -295,7 +318,7 @@ define([
                                                 "</tr>" +
                                             "</table>" +
                                         "</div>";
-                    $("#elasticity_config").html(autoScaleHTML);
+                    $("#elasticity_config").hide('slow').html(autoScaleHTML).show('slow');
                     $("#trigger_radio").buttonset();
                     this.triggerRadioToggle();
                     this.triggerMeasurementChange();
@@ -307,6 +330,26 @@ define([
                     $("#upper_scale_increment_input").val("1");
                     $("#lower_scale_increment_input").val("-1");
                     break;
+            }
+              
+            $("#as_min").val(this.group.attributes.min_size);
+            $("#as_max").val(this.group.attributes.max_size);
+            $("#as_desired_capacity").val(this.group.attributes.desired_capacity);
+            $("#fixed_array_size").val(this.group.attributes.desired_capacity);
+        },
+        
+        clickTopButtons: function(event){
+            switch (event.target.id)
+            {
+                case 'ar-b':
+                  $("#auto_recovery").click();
+                  break;
+                case 'fa-b':
+                  $("#fixed_array").click();
+                  break;
+                case 'as-b':
+                  $("#auto_scale").click();
+                  break;
             }
         },
 

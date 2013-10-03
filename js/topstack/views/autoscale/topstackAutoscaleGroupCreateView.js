@@ -46,7 +46,8 @@ define([
             "focus #image_select": "openImageList",
             "dialogclose": "close",
             "change input[name=elasticity]": "elasticityChange",
-            "change input[name=triggers]": "triggerRadioToggle"
+            "change input[name=triggers]": "triggerRadioToggle",
+            "click .top-buttons":"clickTopButtons"
         },
 
         render: function() {
@@ -56,7 +57,7 @@ define([
             this.$el.dialog({
                 autoOpen: true,
                 title: "Create Auto Scale Group",
-                width:575,
+                width:650,
                 minHeight: 500,
                 resizable: false,
                 modal: true,
@@ -108,6 +109,7 @@ define([
             this.securityGroups.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true });
 
             this.elasticityChange();
+            $("#as-b").click();
         },
         
         addAllImages: function() {
@@ -197,7 +199,7 @@ define([
             {
                 case "auto_recovery":
                     $("#elasticity_image").attr("src", "/images/IconPNGs/Autorestart.png");
-                    var autoRecoveryHTML = "<table>" +
+                    var autoRecoveryHTML = "<img id='elasticity_image' src='/images/IconPNGs/NewServer.png' style='float:right;width:30px'/><table>" +
                                                 "<tr>" +
                                                     "<td>Min:</td><td>1</td>" +
                                                 "</tr>" +
@@ -208,16 +210,16 @@ define([
                                                     "<td>Desired Capacity:</td><td>1</td>" +
                                                 "</tr>" +
                                             "</table>";
-                    $("#elasticity_config").html(autoRecoveryHTML);
+                    $("#elasticity_config").hide('slow').html(autoRecoveryHTML).show('slow');
                     break;
                 case "fixed_array":
                     $("#elasticity_image").attr("src", "/images/IconPNGs/Autoscale.png");
-                    var fixedArrayHTML = "<table><tr><td>Number of Instances:</td><td><input id='fixed_array_size'/></td></tr></table>";
-                    $("#elasticity_config").html(fixedArrayHTML);
+                    var fixedArrayHTML = "<img id='elasticity_image' src='/images/IconPNGs/NewServer.png' style='float:right;width:30px'/><table><tr><td>Number of Instances:</td><td><input id='fixed_array_size'/></td></tr></table>";
+                    $("#elasticity_config").hide('slow').html(fixedArrayHTML).show('slow');
                     break;
                 case "auto_scale":
                     $("#elasticity_image").attr("src", "/images/IconPNGs/Autoscale.png");
-                    var autoScaleHTML = "<table>" +
+                    var autoScaleHTML = "<img id='elasticity_image' src='/images/IconPNGs/NewServer.png' style='float:right;width:30px'/><table>" +
                                             "<tr><td>Min:</td><td><input id='as_min'/></td></tr>" +
                                             "<tr><td>Max:</td><td><input id='as_max'/></td></tr>" +
                                             "<tr><td>Desired Capacity:</td><td><input id='as_desired_capacity'/></td></tr>" +
@@ -281,7 +283,7 @@ define([
                                                 "</tr>" +
                                             "</table>" +
                                         "</div>";
-                    $("#elasticity_config").html(autoScaleHTML);
+                    $("#elasticity_config").hide('slow').html(autoScaleHTML).show('slow');
                     $("#trigger_radio").buttonset();
                     this.triggerRadioToggle();
                     this.triggerMeasurementChange();
@@ -315,6 +317,21 @@ define([
                 $("#upper_scale_increment_input").attr("disabled", true);
                 $("#lower_threshold_input").attr("disabled", true);
                 $("#lower_scale_increment_input").attr("disabled", true);
+            }
+        },
+        
+        clickTopButtons: function(event){
+            switch (event.target.id)
+            {
+                case 'ar-b':
+                  $("#auto_recovery").click();
+                  break;
+                case 'fa-b':
+                  $("#fixed_array").click();
+                  break;
+                case 'as-b':
+                  $("#auto_scale").click();
+                  break;
             }
         },
 

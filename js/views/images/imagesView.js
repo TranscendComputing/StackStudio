@@ -39,6 +39,7 @@ define([
             "change #dev_ops_select":"devopsSelect",
             "click .adv_tab": "advTabSelect",
             "click #save_image_template_button":"packImage",
+            "click #deploy_image_template_button":"deployImage",
             "focus #os_input": "openImageList"
         },
 
@@ -61,7 +62,8 @@ define([
             this.images.on( 'reset', this.addAllImages, this );
 
             var piView = this;
-            Common.vent.on("packedImageAppRefresh", function() {
+            Common.vent.on("packedImageAppRefresh", function(data) {
+                piView.currentImageTemplate.attributes.doc_id = data['Id'];
                 piView.packed_images.fetch({reset: true});
             });
 
@@ -268,6 +270,10 @@ define([
             this.currentImageTemplate.save();
         },
         
+        deployImage: function(){
+            this.currentImageTemplate.deploy();
+        },
+        
         map_base: function(base){
             var builders = [];
             var provisioners = [];
@@ -291,7 +297,7 @@ define([
                                         'source_ami' : mappings[i].region[$("#aws_region_select").val()],
                                         "instance_type": $("#instance_type_select").val(),
                                         "ssh_username": "ubuntu",
-                                        "ami_name": $("#image_template_name_input").val() + '{timestamp}'
+                                        "ami_name": $("#image_template_name_input").val()
                                        };
                             builders.push(aws);
                         }

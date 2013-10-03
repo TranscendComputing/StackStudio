@@ -43,15 +43,20 @@
         </div>
         <h3>Elasticity</h3>
         <div>
-            <div id="elasticity_radio_group" style="float:left;">
-                <input type="radio" id="auto_recovery" name="elasticity" value="auto_recovery" checked/><label for="auto_recovery">Auto Recovery</label>
-                <input type="radio" id="fixed_array" name="elasticity" value="fixed_array"/><label for="fixed_array">Fixed Array</label>
-                <input type="radio" id="auto_scale" name="elasticity" value="autoscale"/><label for="auto_scale">Auto Scale</label>
+            <div class="btn-group" data-toggle="buttons-radio">
+              <button type="button" id="ar-b" class="btn btn-primary top-buttons">Auto Recovery</button>
+              <button type="button" id="fa-b" class="btn btn-primary top-buttons">Fixed Array</button>
+              <button type="button" id="as-b" class="btn btn-primary top-buttons">Auto Scale</button>
             </div>
-            <img id="elasticity_image" src="/images/IconPNGs/NewServer.png" style="float:right;width:30px"/>
+            <div id="elasticity_radio_group" style="display:none;">
+                <input type="radio" id="auto_recovery" name="elasticity" value="auto_recovery" /><label for="auto_recovery">Auto Recovery</label>
+                <input type="radio" id="fixed_array" name="elasticity" value="fixed_array"/><label for="fixed_array">Fixed Array</label>
+                <input type="radio" id="auto_scale" name="elasticity" value="autoscale" checked/><label for="auto_scale">Auto Scale</label>
+            </div>
+            <!-- <img id="elasticity_image" src="/images/IconPNGs/NewServer.png" style="float:right;width:30px"/>
             <br />
-            <br />
-            <div id="elasticity_config"></div>
+            <br /> -->
+            <div id="elasticity_config" style="width:400px;"></div>
         </div>
         <h3>Additional Configuration</h3>
         <div>
