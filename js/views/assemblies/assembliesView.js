@@ -62,7 +62,9 @@ define([
                     $this.tabView = new RuntimeView({el: targetID, listView:$this.listView});
                 }else if(targetID ==="#assemblyDesign"){
                     $this.tabView = new DesignView({el: targetID, assemblies:$this.assemblies, listView:$this.listView});
-                    $this.openAssembly($this.currentAssembly);
+                    if($this.currentAssembly.id){
+                        $this.openAssembly($this.currentAssembly);
+                    }
                 }
             });
         },
@@ -246,6 +248,9 @@ define([
             }
             $("#selectAssemblyButton span:first").html("Select Assembly");
             $("#designForm :input:reset");
+            if(!(this.tabView instanceof DesignView)){
+                $("#assembliesTabs a:first").click();
+            }
             this.currentAssembly = new Assembly();
             this.tabView.currentAssembly = this.currentAssembly;
             $("#designForm :input").each(function(){
