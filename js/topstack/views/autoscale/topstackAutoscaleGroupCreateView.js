@@ -225,8 +225,8 @@ define([
                                             "<tr><td>Desired Capacity:</td><td><input id='as_desired_capacity'/></td></tr>" +
                                         "</table>" +
                                         "<br/><div id='trigger_radio'>" +
-                                            "<input type='radio' id='trigger_on' name='triggers' value='on'/><label for='trigger_on'>Trigger On</label>" +
-                                            "<input type='radio' id='trigger_off' name='triggers' value='off' checked/><label for='trigger_off'>Trigger Off</label>" +
+                                            "<input type='radio' id='trigger_on' name='triggers' value='on'/>Trigger On &nbsp" +
+                                            "<input type='radio' id='trigger_off' name='triggers' value='off' checked/>Trigger Off" +
                                         "</div>" +
                                         "<br />" +
                                         "<div id='trigger_options' class='border_group'>" +
