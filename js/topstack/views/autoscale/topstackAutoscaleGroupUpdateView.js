@@ -41,6 +41,10 @@ define([
         
         securityGroups: undefined,
         
+        group: undefined,
+        
+        config: undefined,
+        
         autoscaleGroup: new AutoscaleGroup(),
         
         imagesType: Images,
@@ -50,13 +54,15 @@ define([
             "focus #image_select": "openImageList",
             "dialogclose": "close",
             "change input[name=elasticity]": "elasticityChange",
-            "change input[name=triggers]": "triggerRadioToggle"
+            "change input[name=triggers]": "triggerRadioToggle",
+            "click .top-buttons":"clickTopButtons"
         },
 
         initialize: function(options){
             this.credentialId = options.cred_id;
             this.region = options.region;
             this.gid = options.gid;
+            this.group = options.group;
         },
         
         render: function() {
@@ -66,7 +72,7 @@ define([
             this.$el.dialog({
                 autoOpen: true,
                 title: "Update Auto Scale Group",
-                width:575,
+                width:500,
                 minHeight: 500,
                 resizable: false,
                 modal: true,
@@ -118,9 +124,46 @@ define([
             this.securityGroups.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true });
 
             this.elasticityChange();
+            $("#as-b").click();
             
             $("#autoscale_group_name").val(createView.gid);
             $("#autoscale_group_name").prop('disabled', true);
+            
+            $.getJSON( Common.apiUrl + "/stackstudio/v1/cloud_management/topstack/autoscale/configurations/" + this.group.attributes.launch_configuration_name + "?cred_id=" + this.credentialId, function( config ) {
+                createView.config = config;
+                
+                createView.images.each(function(image) {
+                    if(image.id == createView.config.image_id){
+                        $("#image_select").val(image.attributes.name);
+                    }
+                });
+                createView.flavors.each(function(flavor) {
+                    if(flavor.id == createView.config.instance_type){
+                        $("#flavor_select").val(flavor.attributes.name);
+                    }
+                });
+                $("#key_pair_select").val(createView.config.key_name);
+            });
+            
+            var spinnerOptions = {
+                //lines: 13, // The number of lines to draw
+                length: 50, // The length of each line
+                width: 16, // The line thickness
+                radius: 50, // The radius of the inner circle
+                corners: 1, // Corner roundness (0..1)
+                rotate: 0, // The rotation offset
+                color: '#000', // #rgb or #rrggbb
+                speed: 1, // Rounds per second
+                trail: 60, // Afterglow percentage
+                shadow: false, // Whether to render a shadow
+                hwaccel: false, // Whether to use hardware acceleration
+                className: 'spinner', // The CSS class to assign to the spinner
+                zIndex: 2e9, // The z-index (defaults to 2000000000)
+                //top: 150, // Top position relative to parent in px
+                //left: 211 // Left position relative to parent in px
+            };
+            
+            new Spinner(spinnerOptions).spin($("#launch_config_opt").get(0));
         },
         
         addAllImages: function() {
@@ -190,6 +233,7 @@ define([
         },
         
         addAllSecurityGroups: function() {
+            $(".spinner").remove();
             $("#security_group_select").empty();
             this.securityGroups.each(function(sg) {
                 if(sg.attributes.name) {
@@ -222,12 +266,12 @@ define([
                                                     "<td>Desired Capacity:</td><td>1</td>" +
                                                 "</tr>" +
                                             "</table>";
-                    $("#elasticity_config").html(autoRecoveryHTML);
+                    $("#elasticity_config").hide('slow').html(autoRecoveryHTML).show('slow');
                     break;
                 case "fixed_array":
                     $("#elasticity_image").attr("src", "/images/IconPNGs/Autoscale.png");
                     var fixedArrayHTML = "<table><tr><td>Number of Instances:</td><td><input id='fixed_array_size'/></td></tr></table>";
-                    $("#elasticity_config").html(fixedArrayHTML);
+                    $("#elasticity_config").hide('slow').html(fixedArrayHTML).show('slow');
                     break;
                 case "auto_scale":
                     $("#elasticity_image").attr("src", "/images/IconPNGs/Autoscale.png");
@@ -237,8 +281,8 @@ define([
                                             "<tr><td>Desired Capacity:</td><td><input id='as_desired_capacity'/></td></tr>" +
                                         "</table>" +
                                         "<br/><div id='trigger_radio'>" +
-                                            "<input type='radio' id='trigger_on' name='triggers' value='on'/><label for='trigger_on'>Trigger On</label>" +
-                                            "<input type='radio' id='trigger_off' name='triggers' value='off' checked/><label for='trigger_off'>Trigger Off</label>" +
+                                            "<input type='radio' id='trigger_on' name='triggers' value='on'/>Trigger On &nbsp" +
+                                            "<input type='radio' id='trigger_off' name='triggers' value='off' checked/>Trigger Off" +
                                         "</div>" +
                                         "<br />" +
                                         "<div id='trigger_options' class='border_group'>" +
@@ -295,7 +339,7 @@ define([
                                                 "</tr>" +
                                             "</table>" +
                                         "</div>";
-                    $("#elasticity_config").html(autoScaleHTML);
+                    $("#elasticity_config").hide('slow').html(autoScaleHTML).show('slow');
                     $("#trigger_radio").buttonset();
                     this.triggerRadioToggle();
                     this.triggerMeasurementChange();
@@ -307,6 +351,26 @@ define([
                     $("#upper_scale_increment_input").val("1");
                     $("#lower_scale_increment_input").val("-1");
                     break;
+            }
+              
+            $("#as_min").val(this.group.attributes.min_size);
+            $("#as_max").val(this.group.attributes.max_size);
+            $("#as_desired_capacity").val(this.group.attributes.desired_capacity);
+            $("#fixed_array_size").val(this.group.attributes.desired_capacity);
+        },
+        
+        clickTopButtons: function(event){
+            switch (event.target.id)
+            {
+                case 'ar-b':
+                  $("#auto_recovery").click();
+                  break;
+                case 'fa-b':
+                  $("#fixed_array").click();
+                  break;
+                case 'as-b':
+                  $("#auto_scale").click();
+                  break;
             }
         },
 

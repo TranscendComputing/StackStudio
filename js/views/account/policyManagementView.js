@@ -70,7 +70,8 @@ define([
             "click .create_topic_btn":"topicCreate",
             "click .create_vpc_btn":"vpcCreate",
             "click .create_subnet_btn":"subnetCreate",
-            'change input[type=checkbox]': 'checkboxChanged'
+            'change input[type=checkbox]': 'checkboxChanged',
+            'click #project_name': 'pnFocus'
         },
 
         initialize: function() {
@@ -516,6 +517,9 @@ define([
                 break;
             case "check_max_in_autoscale":
                 this.disableInput($("#max_in_autoscale"),$("#"+lambda.target.id).is(':checked'));
+                break;
+            case "project_name_toggle":
+                this.disablePNInput($("#project_name"),!$("#"+lambda.target.id).is(':checked'));
                 break;
             }
         },
@@ -529,6 +533,25 @@ define([
                 target.removeAttr("disabled");
                 target.removeClass("ui-state-disabled");
             }
+        },
+        
+        disablePNInput: function(target,toggle){
+            if(toggle === true && !target.is(":focus")){
+                //$("#project_name_toggle").prop('checked', false);
+                target.attr("disabled", true);
+                target.addClass("ui-state-disabled");
+                target.val("");
+            }else{
+                //$("#project_name_toggle").prop('checked', false);
+                target.removeAttr("disabled");
+                target.removeClass("ui-state-disabled");
+            }
+        },
+        
+        pnFocus: function(event){
+            if(event.target.id == "project_name"){
+                $("#project_name_toggle").prop("checked", false);//.prop('checked', true);
+            }
         },
         
         prePopForm: function(){
