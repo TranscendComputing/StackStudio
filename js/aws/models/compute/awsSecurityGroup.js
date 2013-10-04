@@ -60,8 +60,8 @@ define([
 
         deleteRule: function(data, credentialId) {
             delete data['action'];
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/security_groups/delete_rule?_method=DELETE&cred_id=" + credentialId;
-            this.sendPostAction(url, {group_id: this.id, options: data}, "securityGroup:ruleDeleted");
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/security_groups/" + this.id + "/delete_rule?_method=DELETE&cred_id=" + credentialId;
+            this.sendPostAction(url, {'options': data}, "securityGroup:ruleDeleted");
         },
         
         sendPostAction: function(url, options, trigger) {
