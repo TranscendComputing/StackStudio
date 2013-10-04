@@ -285,8 +285,11 @@ define([
                 this.selectedCredential = $("#credential_select option:first").val();
             }
             
-            if(sessionStorage['selected_cred_'+this.cloudProvider]){
-                
+            //debugger
+            if(sessionStorage['selected_cred_'+this.cloudProvider] !== undefined){
+                $("#credential_select").val(sessionStorage['selected_cred_'+this.cloudProvider]);
+                $("#credential_nav").html($("#credential_select option:selected").text());
+                this.selectedCredential = $("#credential_select option:selected").val();
             }
         },
 
