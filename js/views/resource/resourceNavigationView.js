@@ -253,6 +253,10 @@ define([
             
             sessionStorage['selected_cred_'+this.cloudProvider] = this.selectedCredential;
             
+            $("#service_menu").hide();
+            $("#resource_app").hide();
+            $("#resource_not_opened").show();
+            
             this.refreshCloudSpecs();
         },
 
