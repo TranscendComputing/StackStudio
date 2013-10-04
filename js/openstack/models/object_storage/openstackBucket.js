@@ -35,7 +35,7 @@ define([
 		
         create: function(options, credentialId, region) {
             var url = "?cred_id=" + credentialId + "&region=" + region;
-            this.sendPostAction(url, {directory: this.attributes});
+            this.sendPostAction(url, {directory: options});
         },
         
         destroy: function(credentialId, region) {
@@ -48,7 +48,7 @@ define([
             options = typeof options !== 'undefined' ? options : {};
             trigger = typeof trigger !== 'undefined' ? trigger : "objectStorageAppRefresh";
             $.ajax({
-                url: this.url() + url,
+                url: Common.apiUrl + '/stackstudio/v1/cloud_management/openstack/object_storage/directories' + url,
                 type: 'POST',
                 contentType: 'application/x-www-form-urlencoded',
                 dataType: 'json',
