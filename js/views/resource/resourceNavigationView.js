@@ -250,6 +250,9 @@ define([
 
         credentialChange: function(event) {
             this.selectedCredential = event.target.value;
+            
+            sessionStorage['selected_cred_'+this.cloudProvider] = this.selectedCredential;
+            
             this.refreshCloudSpecs();
         },
 
@@ -280,6 +283,10 @@ define([
             if(!credentialFound) {
                 $("#credential_nav").html($("#credential_select option:first").text());
                 this.selectedCredential = $("#credential_select option:first").val();
+            }
+            
+            if(sessionStorage['selected_cred_'+this.cloudProvider]){
+                
             }
         },
 
