@@ -233,6 +233,32 @@ define([
                 this.diskWriteOpsData.fetch({ data: $.param(metricStatisticOptions), reset: true });
                 
                 this.initialMonitorLoad = true;
+                
+                var spinnerOptions = {
+                    lines: 13, // The number of lines to draw
+                    length: 7, // The length of each line
+                    width: 4, // The line thickness
+                    radius: 10, // The radius of the inner circle
+                    corners: 1, // Corner roundness (0..1)
+                    rotate: 0, // The rotation offset
+                    color: '#000', // #rgb or #rrggbb
+                    speed: 1, // Rounds per second
+                    trail: 60, // Afterglow percentage
+                    shadow: false, // Whether to render a shadow
+                    hwaccel: false, // Whether to use hardware acceleration
+                    className: 'spinner', // The CSS class to assign to the spinner
+                    zIndex: 2e9, // The z-index (defaults to 2000000000)
+                    top: 50, // Top position relative to parent in px
+                    left: 211 // Left position relative to parent in px
+                };
+
+                new Spinner(spinnerOptions).spin($("#cpuGraph").get(0));
+                new Spinner(spinnerOptions).spin($("#diskReadBytesGraph").get(0));
+                new Spinner(spinnerOptions).spin($("#diskReadOpsGraph").get(0));
+                new Spinner(spinnerOptions).spin($("#diskWriteBytesGraph").get(0));
+                new Spinner(spinnerOptions).spin($("#diskWriteOpsGraph").get(0));
+                new Spinner(spinnerOptions).spin($("#networkInGraph").get(0));
+                new Spinner(spinnerOptions).spin($("#networkOutGraph").get(0));
             }
         },
         
