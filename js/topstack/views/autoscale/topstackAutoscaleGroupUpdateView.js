@@ -266,12 +266,12 @@ define([
                                                     "<td>Desired Capacity:</td><td>1</td>" +
                                                 "</tr>" +
                                             "</table>";
-                    $("#elasticity_config").hide('slow').html(autoRecoveryHTML).show('slow');
+                    $("#elasticity_config").html(autoRecoveryHTML).show('slow');
                     break;
                 case "fixed_array":
                     $("#elasticity_image").attr("src", "/images/IconPNGs/Autoscale.png");
                     var fixedArrayHTML = "<table><tr><td>Number of Instances:</td><td><input id='fixed_array_size'/></td></tr></table>";
-                    $("#elasticity_config").hide('slow').html(fixedArrayHTML).show('slow');
+                    $("#elasticity_config").html(fixedArrayHTML).show('slow');
                     break;
                 case "auto_scale":
                     $("#elasticity_image").attr("src", "/images/IconPNGs/Autoscale.png");
@@ -339,7 +339,7 @@ define([
                                                 "</tr>" +
                                             "</table>" +
                                         "</div>";
-                    $("#elasticity_config").hide('slow').html(autoScaleHTML).show('slow');
+                    $("#elasticity_config").html(autoScaleHTML).show('slow');
                     $("#trigger_radio").buttonset();
                     this.triggerRadioToggle();
                     this.triggerMeasurementChange();
