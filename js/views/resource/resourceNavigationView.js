@@ -106,7 +106,10 @@ define([
                         Common.router.navigate("#resources/"+firstCloudProvider, {trigger: false});
                         this.cloudSelection(firstCloudProvider);
                     }
-                }else {
+                }else if(sessionStorage['selected_cloud'] !== undefined){
+                	Common.router.navigate("#resources/"+sessionStorage['selected_cloud'], {trigger: false});
+                    this.cloudSelection(sessionStorage['selected_cloud']);
+                }else{
                     Common.router.navigate("#resources/"+firstCloudProvider, {trigger: false});
                     this.cloudSelection(firstCloudProvider);
                 }
@@ -183,6 +186,9 @@ define([
         
         cloudSelection: function (cloudProvider) {
             this.cloudProvider = cloudProvider;
+
+            sessionStorage['selected_cloud'] = this.cloudProvider;
+
             var resourceNav = this;
             //Add the services of the cloud to the resource table
             var row = 1;
