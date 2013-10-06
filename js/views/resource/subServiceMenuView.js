@@ -54,7 +54,6 @@ define([
                 });
             }
             this.openMenu();
-            
         },
         
         selectSubService: function( click ) {
@@ -86,7 +85,7 @@ define([
             $("#subservice_menu").show('fast');
             $("#resource_app").removeClass("span11");
             $("#resource_app").addClass("span9");
-            $("#service_menu").removeClass("span1");
+            //$("#service_menu").removeClass("span1");
             $("#service_menu").addClass("span3");
             $("#menu_toggle_button a span").removeClass("ui-icon-arrowthick-1-e");
             $("#menu_toggle_button a span").addClass("ui-icon-arrowthick-1-w");
@@ -99,7 +98,7 @@ define([
             $("#resource_app").removeClass("span9");
             $("#resource_app").addClass("span11");
             $("#service_menu").removeClass("span3");
-            $("#service_menu").addClass("span1");
+            //$("#service_menu").addClass("span1");
             //$("#resource_app").width("1079px");
             //$("#resource_app").width("20%");
             $("#menu_toggle_button a span").removeClass("ui-icon-arrowthick-1-w");
