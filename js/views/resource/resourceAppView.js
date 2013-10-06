@@ -57,6 +57,11 @@ define([
             });
             this.$table.fnProcessingIndicator(true);
 
+            $('#resource_table').css('table-layout','fixed');
+            $('#resource_table').css('word-wrap','break-word');
+            $('#regions').css('float','right');
+            $('#topstack_services_table').css('width','36%');
+
             var CollectionType = this.collectionType;
             this.collection = new CollectionType();
             this.collection.on( 'add', this.addOne, this );
