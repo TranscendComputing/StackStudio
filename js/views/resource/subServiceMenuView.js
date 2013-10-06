@@ -81,17 +81,23 @@ define([
         
         openMenu: function() {
             //$("#resource_app").width("890px");
+<<<<<<< HEAD
             //$("#resource_app").width("80%");
             $("#subservice_menu").show('fast');
             $("#resource_app").removeClass("span11");
             $("#resource_app").addClass("span9");
             //$("#service_menu").removeClass("span1");
             $("#service_menu").addClass("span3");
+=======
+            $("#resource_app").width("80%");
+            $("#subservice_menu").show();
+>>>>>>> parent of 73f1679... Merge branch 'packedImages' into dev
             $("#menu_toggle_button a span").removeClass("ui-icon-arrowthick-1-e");
             $("#menu_toggle_button a span").addClass("ui-icon-arrowthick-1-w");
         },
         
         closeMenu: function() {
+<<<<<<< HEAD
             //service_menu
             //resource_app
             $("#subservice_menu").hide('fast');
@@ -99,8 +105,11 @@ define([
             $("#resource_app").addClass("span11");
             $("#service_menu").removeClass("span3");
             //$("#service_menu").addClass("span1");
+=======
+            $("#subservice_menu").hide();
+>>>>>>> parent of 73f1679... Merge branch 'packedImages' into dev
             //$("#resource_app").width("1079px");
-            //$("#resource_app").width("20%");
+            $("#resource_app").width("20%");
             $("#menu_toggle_button a span").removeClass("ui-icon-arrowthick-1-w");
             $("#menu_toggle_button a span").addClass("ui-icon-arrowthick-1-e");
         }

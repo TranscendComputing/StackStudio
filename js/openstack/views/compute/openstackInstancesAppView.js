@@ -210,9 +210,9 @@ define([
             if(!this.initialMonitorLoad) {
                 var metricStatisticOptions = {
                     cred_id: this.credentialId,
-                    time_range: "10800", 
+                    time_range: "3600", 
                     namespace: "AWS/EC2",
-                    period: "300",
+                    period: "360",
                     statistic: "Average",
                     dimension_name: "InstanceId",
                     dimension_value: this.selectedId

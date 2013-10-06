@@ -180,8 +180,6 @@ define([
                 $("#resource_app").hide();
                 $("#resource_not_opened").show();
             }
-            $('#regions').css('float','right');
-            $('#topstack_services_table').css('width','36%');
         },
         
         cloudSelection: function (cloudProvider) {
