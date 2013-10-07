@@ -41,6 +41,7 @@ define([
 			'resources/:cloud/:region/:type/:subtype' : 'resourcesRoute',
 			'resources/:cloud/:region/:type/:subtype/:id': 'resourcesRoute',
 			'images': 'imagesRoute',
+            'images/:id': 'imagesRoute',
             'assemblies': 'assembliesRoute',
             'stacks': 'stacksRoute',
             'offerings': 'offeringsRoute',
@@ -80,7 +81,7 @@ define([
             $("#sidebar").hide();
             $(".main_nav").removeClass("nav_selected");
             $("#images_nav").addClass("nav_selected");
-            this.trigger("route:images");
+            this.trigger("route:images", action);
         },
 
 		assembliesRoute: function(action) {

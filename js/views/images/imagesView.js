@@ -40,6 +40,7 @@ define([
             "click .adv_tab": "advTabSelect",
             "click #save_image_template_button":"packImage",
             "click #deploy_image_template_button":"deployImage",
+            "click .img_item":"loadPackedImage",
             "focus #os_input": "openImageList"
         },
 
@@ -175,7 +176,7 @@ define([
             $("#packed_images_list").hide('slow');
             $("#packed_images_list").empty();
             collection.each(function(model) {
-                $("#packed_images_list").append("<li>"+model.attributes.name+"</li>");
+                $("#packed_images_list").append("<li><a id='"+model.attributes.doc_id+"' class='img_item'>"+model.attributes.name+"</a></li>");
             });
             $("#packed_images_list").show('slow');
         },
@@ -224,7 +225,23 @@ define([
             }
         },
         
+        loadPackedImage: function(event){
+            //debugger
+        },
+        
         packImage: function(){
+            //base_image
+            var base_image = {};
+            
+            var clouds = [];
+            $("input[name='clouds_select']:checkbox:checked").each(function(){  clouds.push($(this).val());   });
+            
+            base_image.name = $('#image_template_name_input').val();
+            base_image.clouds = clouds;
+            base_image.os = $('#os_input').val();
+
+            var packed_image = this.map_base(base_image);
+            
             var builder = {};
             $("#builder_settings :input").each(function() {
                 if($( this ).val().length == 0){
@@ -253,21 +270,31 @@ define([
                     provisioner[$(this).attr('name')] = $( this ).val();
                 }
             });
+            var devopsP = {};
+            $("#devops_settings :input").each(function() {
+                if($( this ).val().length == 0){
+                    //dont add
+                }else if($(this).attr('type') === 'checkbox'){
+                    devopsP[$(this).attr('name')] = $( this ).is(':checked');
+                }else if($(this).attr('type') === 'number' && isNaN($( this ).val())){
+                    devopsP[$(this).attr('name')] = parseInt($( this ).val());
+                }else if($(this).attr('data-type').indexOf("array") !== -1){
+                    devopsP[$(this).attr('name')] = [$( this ).val()];
+                }else{
+                    devopsP[$(this).attr('name')] = $( this ).val();
+                }
+            });
             
-            //base_image
-            var base_image = {};
-            
-            var clouds = [];
-            $("input[name='clouds_select']:checkbox:checked").each(function(){  clouds.push($(this).val());   });
-            
-            base_image.name = $('#image_template_name_input').val();
-            base_image.clouds = clouds;
-            base_image.os = $('#os_input').val();
-
-            var packed_image = this.map_base(base_image);
+            $.extend( packed_image.builders[0], builder );
+            if(!$.isEmptyObject(provisioner)){
+                packed_image.provisioners.push(provisioner);
+            }
+            if(!$.isEmptyObject(devopsP)){
+                packed_image.provisioners.push(devopsP);
+            }
             
             this.currentImageTemplate = new PackedImage({'packed_image':packed_image,'name':base_image.name});
-            this.currentImageTemplate.save();
+            //this.currentImageTemplate.save();
         },
         
         deployImage: function(){
@@ -290,7 +317,7 @@ define([
                     for(var i in mappings){
                         if(mappings[i].label == $('#os_input').val()){
                             var aws = {
-                                        "type": "amazon-ebs",
+                                        "type": $("#image_type_select").val(),
                                         "access_key": $("#aws_cred_select option:selected").attr('data-ak'),
                                         "secret_key": $("#aws_cred_select option:selected").attr('data-sk'),
                                         "region": $("#aws_region_select").val(),
@@ -326,13 +353,14 @@ define([
 
     var imagesView;
 
-    Common.router.on('route:images', function () {
+    Common.router.on('route:images', function (id) {
         if(sessionStorage.account_id) {
             if (this.previousView !== imagesView) {
                 this.unloadPreviousState();
                 imagesView = new ImagesView();
                 this.setPreviousState(imagesView);
             }
+            imagesView.imgId = id;
             imagesView.render();
         }else {
             Common.router.navigate("", {trigger: true});

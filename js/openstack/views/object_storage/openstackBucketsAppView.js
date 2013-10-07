@@ -18,12 +18,13 @@ define([
         'views/resource/resourceRowView',
         'icanhaz',
         'common',
+        'spinner',
         'jquery.dataTables',
         'jquery.jstree',
         'jquery.form',
         'dataTables.fnReloadAjax',
         'jquery.dataTables.fnProcessingIndicator'
-], function( $, _, Backbone, AppView, openstackBucketAppTemplate, Bucket, Buckets, OpenstackBucketCreateView, Files, ResourceRowView, ich, Common ) {
+], function( $, _, Backbone, AppView, openstackBucketAppTemplate, Bucket, Buckets, OpenstackBucketCreateView, Files, ResourceRowView, ich, Common, Spinner ) {
     'use strict';
 
     // Openstack Application View
@@ -155,6 +156,7 @@ define([
                     region: appView.region
                 },
                 complete: function() {
+                    $(".spinner").remove();
                     appView.fetchFiles();
                 },
                 error: function(jqXHR) {
@@ -167,6 +169,21 @@ define([
 
             // attach handler to form's submit event 
             $('#file_form').submit(function() {
+                var spinnerOptions = {
+                    length: 10, // The length of each line
+                    width: 8, // The line thickness
+                    radius: 5, // The radius of the inner circle
+                    corners: 1, // Corner roundness (0..1)
+                    rotate: 0, // The rotation offset
+                    color: '#000', // #rgb or #rrggbb
+                    speed: 1, // Rounds per second
+                    trail: 60, // Afterglow percentage
+                    shadow: false, // Whether to render a shadow
+                    hwaccel: false, // Whether to use hardware acceleration
+                    className: 'spinner', // The CSS class to assign to the spinner
+                    zIndex: 2e9, // The z-index (defaults to 2000000000)
+                };
+                new Spinner(spinnerOptions).spin($("#object_upload_button").get(0));
                 // submit the form
                 $(this).ajaxSubmit(formOptions);
                 // return false to prevent normal browser submit and page navigation
