@@ -29,6 +29,16 @@ define([
         destroy: function(credentialId, region) {
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/topstack/rds/security_groups/" + this.attributes.id + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
             this.sendAjaxAction(url, "POST", undefined, "securityGroupAppRefresh");
+        },
+        
+        addCIDR: function(cidr_val,credentialId, region){
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/topstack/rds/security_groups/"+this.attributes.id+"/ipranges?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", {"cidrip": cidr_val}, "securityGroupAppRefresh","CIDR Block Authorized");
+        },
+        
+        addNovaGroup: function(group_val,credentialId, region){
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/topstack/rds/security_groups/"+this.attributes.id+"/ec2_groups?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", {"ec2_group": group_val}, "securityGroupAppRefresh","Nova Group Authorized");
         }
 
     });
