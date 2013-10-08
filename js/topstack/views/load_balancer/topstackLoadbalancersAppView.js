@@ -104,6 +104,14 @@ define([
                 $("#detail_tabs").tabs("select", this.selectedTabIndex);
                 this.reselectTab = false;
             }
+            var rows = $("#resource_table").dataTable().fnGetNodes();
+            for(var i=0;i<rows.length;i++)
+            {
+                // Get HTML of 3rd column (for example)
+                var ip_address = $(rows[i]).find("td:eq(1)").html();
+                $(rows[i]).find("td:eq(1)").empty();
+                $(rows[i]).find("td:eq(1)").html("<a href='http://"+ip_address+"'>"+ip_address+"</a>"); 
+            }
         },
 
         refreshInstancesTab: function() {
