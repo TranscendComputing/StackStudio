@@ -16,7 +16,8 @@ define([
         'models/packedImage',
         '/js/aws/collections/compute/awsImages.js',
         'collections/packedImages',
-        'jquery-ui'
+        'jquery-ui',
+        'jquery.form'
 ], function( $, _, bootstrap, Backbone, Common, imagesTemplate, advancedTemplate, PackedImage, Images, PackedImages ) {
 
     var ImagesView = Backbone.View.extend({
@@ -65,12 +66,20 @@ define([
             var piView = this;
             Common.vent.on("packedImageAppRefresh", function(data) {
                 piView.currentImageTemplate.attributes.doc_id = data['Id'];
+                piView.uploadAsync();
                 piView.packed_images.fetch({reset: true});
             });
 
             this.fetchDropDowns();
             this.images.fetch({reset: true});
             this.packed_images.fetch({reset: true});
+            
+            $('#upForm').ajaxForm({
+                complete: function() {
+                    alert('uploaded');
+                },
+                contentType: 'application/x-www-form-urlencoded'
+            });
         },
 
         render: function() {
@@ -257,6 +266,7 @@ define([
                 }
             });
             var provisioner = {};
+            provisioner['type'] = $("#image_config_management_select").val();
             $("#provisioner_settings :input").each(function() {
                 if($( this ).val().length == 0){
                     //dont add
@@ -271,6 +281,7 @@ define([
                 }
             });
             var devopsP = {};
+            devopsP['type'] = $("#dev_ops_select").val();
             $("#devops_settings :input").each(function() {
                 if($( this ).val().length == 0){
                     //dont add
@@ -292,9 +303,8 @@ define([
             if(!$.isEmptyObject(devopsP)){
                 packed_image.provisioners.push(devopsP);
             }
-            
             this.currentImageTemplate = new PackedImage({'packed_image':packed_image,'name':base_image.name});
-            //this.currentImageTemplate.save();
+            this.currentImageTemplate.save();
         },
         
         deployImage: function(){
@@ -331,11 +341,40 @@ define([
                     }
                 }
                 if(base.clouds[i] == 'openstack'){
-                    
+                    builders.push({
+                        "type": "openstack",
+                        "username": "buildbot-grizzly",
+                        "password": "buildbot-grizzly",
+                        //"provider": "",
+                        "region": "nova",
+                        "ssh_username": "ubuntu",
+                        "image_name": $("#image_template_name_input").val(),
+                        "source_image": "b53eea94-b195-4978-abcb-691d31ca57b5",
+                        "flavor": "2"         
+                    });
                 }
             }
             
             return {'builders':builders,'provisioners':provisioners};
+        },
+        
+        uploadAsync: function(){
+            var d_id = this.currentImageTemplate.attributes.doc_id;
+            var upUrl = Common.apiUrl + "/stackstudio/v1/packed_images/save?uid=" + sessionStorage.org_id + "&docid=" + d_id;
+            $("#upForm").attr('action',upUrl);
+            $("#upSub").click();
+            // $.ajax({
+//                 url: upUrl,
+//                 data: $("#upForm").serialize(),
+//                 contentType: 'application/x-www-form-urlencoded',
+//                 success: function(data){
+//                     new Messenger().post({type:"success", message:"Files Uploaded"});
+//                 },
+//                 error: function(jqXHR) {
+//                     Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+//                 }
+//             });
+            
         },
 
         closeImageTemplate: function() {

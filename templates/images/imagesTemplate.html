@@ -269,12 +269,16 @@
                     <div class="accordion-group">
                         <div class="accordion-heading">
                             <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#image_settings_accordion" href="#uploadSettingsCollapse">
-                                Upload Image
+                                Upload Files
                             </a>
                         </div>
                         <div id="uploadSettingsCollapse" class="accordion-body collapse">
                             <div class="accordion-inner">
-                                <input type="file" id="mciaas_files" name="mciaas_files"/>
+                                <!-- <input multiple="" type="file" id="mciaas_files" name="mciaas_files"/> -->
+                                <form multiple="" id="upForm" action="" method="post" enctype="multipart/form-data">
+                                     <input multiple="" type="file" id="mciaas_files" name="mciaas_files">
+                                     <input id="upSub" type="submit">
+                                 </form>
                             </div>
                         </div>
                     </div>
