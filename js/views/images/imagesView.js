@@ -76,7 +76,7 @@ define([
             
             $('#upForm').ajaxForm({
                 complete: function() {
-                    alert('uploaded');
+                    new Messenger().post({type:"success", message:"File Uploaded..."});
                 },
                 contentType: 'application/x-www-form-urlencoded'
             });
@@ -132,6 +132,7 @@ define([
                     	$("#image_config_management_select").append("<option>"+key+"</option>");
                     }
                 }
+                $("#dev_ops_select").append("<option>None</option>");
                 $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/provisioners/" + $("#image_config_management_select").val(), function( provisioner ) {
                     if(provisioner.shell !== undefined){
                         provisioner.optional = provisioner.shell.optional;
@@ -215,10 +216,14 @@ define([
         },
 
         devopsSelect: function(event){
-        	$.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/provisioners/" + $("#dev_ops_select").val(), function( provisioner ) {
-        	    $("#devops_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, required: provisioner.required, title: "DevOps Tool: "+$("#dev_ops_select").val()})).hide().fadeIn('slow');
-        	    $("#devops_settings").tooltip();
-        	});
+        	if($("#dev_ops_select").val() != "None"){
+                $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/provisioners/" + $("#dev_ops_select").val(), function( provisioner ) {
+            	    $("#devops_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, required: provisioner.required, title: "DevOps Tool: "+$("#dev_ops_select").val()})).hide().fadeIn('slow');
+            	    $("#devops_settings").tooltip();
+            	});
+        	}else{
+        	    $("#devops_settings").hide('slow');
+        	}
         },
         
         advTabSelect: function(event){
@@ -281,20 +286,22 @@ define([
                 }
             });
             var devopsP = {};
-            devopsP['type'] = $("#dev_ops_select").val();
-            $("#devops_settings :input").each(function() {
-                if($( this ).val().length == 0){
-                    //dont add
-                }else if($(this).attr('type') === 'checkbox'){
-                    devopsP[$(this).attr('name')] = $( this ).is(':checked');
-                }else if($(this).attr('type') === 'number' && isNaN($( this ).val())){
-                    devopsP[$(this).attr('name')] = parseInt($( this ).val());
-                }else if($(this).attr('data-type').indexOf("array") !== -1){
-                    devopsP[$(this).attr('name')] = [$( this ).val()];
-                }else{
-                    devopsP[$(this).attr('name')] = $( this ).val();
-                }
-            });
+            if($("#dev_ops_select").val() != "None"){
+                devopsP['type'] = $("#dev_ops_select").val();
+                $("#devops_settings :input").each(function() {
+                    if($( this ).val().length == 0){
+                        //dont add
+                    }else if($(this).attr('type') === 'checkbox'){
+                        devopsP[$(this).attr('name')] = $( this ).is(':checked');
+                    }else if($(this).attr('type') === 'number' && isNaN($( this ).val())){
+                        devopsP[$(this).attr('name')] = parseInt($( this ).val());
+                    }else if($(this).attr('data-type').indexOf("array") !== -1){
+                        devopsP[$(this).attr('name')] = [$( this ).val()];
+                    }else{
+                        devopsP[$(this).attr('name')] = $( this ).val();
+                    }
+                });
+            }
             
             $.extend( packed_image.builders[0], builder );
             if(!$.isEmptyObject(provisioner)){
@@ -342,7 +349,7 @@ define([
                 }
                 if(base.clouds[i] == 'openstack'){
                     builders.push({
-                        "type": "openstack",
+                        "type": "qemu",
                         "username": "buildbot-grizzly",
                         "password": "buildbot-grizzly",
                         //"provider": "",
@@ -362,19 +369,9 @@ define([
             var d_id = this.currentImageTemplate.attributes.doc_id;
             var upUrl = Common.apiUrl + "/stackstudio/v1/packed_images/save?uid=" + sessionStorage.org_id + "&docid=" + d_id;
             $("#upForm").attr('action',upUrl);
-            $("#upSub").click();
-            // $.ajax({
-//                 url: upUrl,
-//                 data: $("#upForm").serialize(),
-//                 contentType: 'application/x-www-form-urlencoded',
-//                 success: function(data){
-//                     new Messenger().post({type:"success", message:"Files Uploaded"});
-//                 },
-//                 error: function(jqXHR) {
-//                     Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
-//                 }
-//             });
-            
+            if($("#mciaas_files").val() != ""){
+                $("#upSub").click();
+            }            
         },
 
         closeImageTemplate: function() {
