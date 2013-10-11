@@ -12,9 +12,10 @@ define([
         'common',
         'text!templates/account/homeTemplate.html',
         'views/account/newLoginView',
+        'models/account',
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator'
-], function( $, _, Backbone, Common, usersManagementTemplate, NewLoginView) {
+], function( $, _, Backbone, Common, usersManagementTemplate, NewLoginView, Account) {
 
     var UserManagementView = Backbone.View.extend({
 
@@ -23,16 +24,35 @@ define([
         template: _.template(usersManagementTemplate),
 
         events: {
+            "click #updateUserB":"setUser"
         },
 
         initialize: function() {
             this.$el.html(this.template);
             $("#submanagement_app").html(this.$el);
             this.render();
+            
+            this.account = new Account();
+            var x = this;
+            Common.vent.on("accountUpdate", function(data) {
+                x.render();
+                x.setAccountFields(data.account);
+            });
+            this.account.getUser();
         },
 
         render: function () {
             $("#username_label").html(sessionStorage.login);
+        },
+        
+        setAccountFields: function(account){
+            if(account.rss_url != undefined){
+                $("#rss_input").val(account.rss_url);
+            }
+        },
+        
+        setUser: function(){
+            this.account.setUser({"rss_url":$("#rss_input").val()});
         },
 
         close: function(){

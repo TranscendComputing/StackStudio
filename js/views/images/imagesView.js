@@ -65,6 +65,7 @@ define([
 
             var piView = this;
             Common.vent.on("packedImageAppRefresh", function(data) {
+                console.log(data);
                 piView.currentImageTemplate.attributes.doc_id = data['Id'];
                 piView.uploadAsync();
                 piView.packed_images.fetch({reset: true});
@@ -75,7 +76,7 @@ define([
             this.packed_images.fetch({reset: true});
             
             $('#upForm').ajaxForm({
-                complete: function() {
+                success: function(data) {
                     new Messenger().post({type:"success", message:"File Uploaded..."});
                 },
                 contentType: 'application/x-www-form-urlencoded'
@@ -310,6 +311,9 @@ define([
             if(!$.isEmptyObject(devopsP)){
                 packed_image.provisioners.push(devopsP);
             }
+            
+            //delete packed_image['provisioners'];
+            
             this.currentImageTemplate = new PackedImage({'packed_image':packed_image,'name':base_image.name});
             this.currentImageTemplate.save();
         },

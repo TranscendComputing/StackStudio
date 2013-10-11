@@ -68,6 +68,39 @@ define([
             });
         },
         
+        getUser: function(){
+            var url = Common.apiUrl + "/identity/v1/accounts/" + sessionStorage.account_id +".json";
+            $.ajax({
+                url: url,
+                type: 'GET',
+                contentType: 'application/x-www-form-urlencoded',
+                success: function(data) {
+                    Common.vent.trigger("accountUpdate",data);
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            });
+        },
+        
+        setUser: function(options){
+            var url = Common.apiUrl + "/identity/v1/accounts/" + sessionStorage.account_id + "/update?_method=PUT";
+            $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: JSON.stringify(options),
+                success: function(data) {
+                    sessionStorage.rss_url = data.rss_url;
+                    new Messenger().post({type:"success", message:"User Updated..."});
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            });
+        },
+        
         login: function(login, password) {
             console.log(this);
         }
