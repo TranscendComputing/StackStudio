@@ -14,7 +14,7 @@ define([
         'text!templates/aws/cloud_formation/awsCloudFormationAppTemplate.html',
         '/js/aws/models/cloud_formation/awsStack.js',
         '/js/aws/collections/cloud_formation/awsStacks.js',
-        '/js/aws/views/autoscale/awsAutoscaleGroupCreateView.js',
+        '/js/aws/views/cloud_formation/awsCloudFormationStackCreateView.js',
         'icanhaz',
         'common',
         'morris',

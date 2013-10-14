@@ -1,0 +1,74 @@
+<div id="cf_stack_create">
+    <div id="accordion" style="height:350px;">
+            <div id="view0" class="view_stack">
+                <table>
+                    <tr>
+                        <td>
+                            <label for="cf_create_stack_name">Name:</label>
+                            <input id="cf_create_stack_name" type="text" class="medium_width"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="radio" id="template_url_option" name="templateOption" value="template_url" selected/>
+                            <label for="template_url_option">Provide a Template URL</label>
+                            <input type="url" id="template_url" name="template" class="template_input"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="radio" id="template_file_option" name="templateOption" value="template_file"/>
+                            <label for="template_file_option">Upload a Template File</label>
+
+                            <span id="template_file_span">
+                                <input type="file" name="template" class="template_input"/>
+                            </span>
+                        </td>
+                    </tr>
+<!--                     <tr>
+                        <td>
+                            <input type="checkbox" id="options_checkbox">
+                            <label for="options_checkbox">Show Advanced Options</label>
+                        </td>
+                    </tr> -->
+                </table>
+            </div>
+            <div id="view1" class="view_stack">
+                <h4>Parameters</h4>
+                <div id="parameters_list"/>
+                <div>
+                    <input type="checkbox" id="iam_acknowledge">
+                    <label for="iam_acknowledge">I acknowledge that this template may create IAM resources</label>
+                </div>
+            </div>
+            <div id="view2" class="view_stack">
+                <table id="stack_tags_table">
+                    <thead>
+                        <tr>
+                            <th>Key</th>
+                            <th>Value</th>
+                            <th>Remove</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                </table>
+                <span id='add_tag_span'><a id="add_tag" href="#">Add another tag </a><span>(Maximum of 10)</span></span>
+            </div>
+            <div id="view3" class="view_stack">
+                <table>
+            <tbody>
+                <tr><td colspan="2" class="review_cell"><h4>Stack Information<h4></td><tr>
+                <tr><td class="review_cell"><b>Stack Name:</b></td><td id="name_review"></td></tr>
+                <tr><td class="review_cell"><b>Stack Description:</b></td><td id="description_review"></td></tr>
+                <tr><td class="review_cell"><b>Template:</b></td><td id="template_review"></td></tr>
+
+                <tr id="parameter_review_title"><td colspan="2"><h4>Parameters<h4></td></tr>
+                <tr><td colspan="2" class="review_cell"><h4>Notification</h4></td></tr>
+                <tr><td class="review_cell"><b>Notification:</b></td><td id="notification_review">none</td><tr>
+                <tr><td class="review_cell"><b>Creation Timeout (minutes):</b></td><td id="create_timeout_review">none</td><tr>
+                <tr><td class="review_cell"><b>Rollback on Failure:</b></td><td id="rollback_review">true</td><tr>
+            </tbody>
+        </table>
+            </div>
+    </div>
+</div>

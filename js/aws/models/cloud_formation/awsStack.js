@@ -27,6 +27,21 @@ define([
         fetchTemplate: function(options, credentialId, region){
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/cloud_formation/stacks/"+ this.get("StackName") +"/template?&cred_id=" + credentialId + "&region=" + region;
             this.sendAjaxAction(url, "GET", undefined,  "stackTemplateLoaded");
+        },
+        create: function(options, credentialId, region){
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/cloud_formation/stacks?cred_id=" + credentialId + "&region=" + region;
+            $.ajax({
+                    url: url,
+                    type: "POST",
+                    data: {"RequestParams":options},
+                    success: function(data) {
+                        Common.vent.trigger("cloudFormationAppRefresh", data);
+                    },
+                    error: function(jqXHR) {
+                        Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                    }
+                });
+           // this.sendAjaxAction(url, "POST", options, "cloudFormationStackCreated");
         }
     });
 
