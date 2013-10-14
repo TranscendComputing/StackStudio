@@ -86,38 +86,38 @@ define([
             var ip_ranges = this.reduceHashes(this.collection.get(this.selectedId).get('ip_ranges'));
             var ec2_security_groups = this.reduceHashes(this.collection.get(this.selectedId).get('ec2_security_groups'));
             $('#cidrip_table').dataTable( {
-        		"aaData": ip_ranges,
-        		"aoColumns": [
-        			{ "sTitle": "CIDRIP" },
-        			{ "sTitle": "Status" }
-        		],
+                "aaData": ip_ranges,
+                "aoColumns": [
+                    { "sTitle": "CIDRIP" },
+                    { "sTitle": "Status" }
+                ],
                 "bPaginate": false,
                 "sDom": 't',
                 "bJQueryUI": true
-        	} );
+            } );
             $('#ec2groups_table').dataTable( {
-        		"aaData": ec2_security_groups,
-        		"aoColumns": [
-        			{ "sTitle": "EC2SecurityGroupOwnerId" },
+                "aaData": ec2_security_groups,
+                "aoColumns": [
+                    { "sTitle": "EC2SecurityGroupOwnerId" },
                     { "sTitle": "EC2SecurityGroupName" },
                     { "sTitle": "Status" }
-        		],
+                ],
                 "bPaginate": false,
                 "sDom": 't',
                 "bJQueryUI": true
-        	} );
+            } );
             $('#rules_tab tbody').hide().show('slow');
             $("#rules_tab tbody tr").on('click',function(event) {
-                $("#rules_tab tbody tr").removeClass('row_selected');        
+                $("#rules_tab tbody tr").removeClass('row_selected');
                 $(this).addClass('row_selected');
             });
             
-        	this.novaGroups.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true });
+            this.novaGroups.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true });
         },
         
         reduceHashes: function(array){
             var reduced = [];
-            for(i in array){
+            for(var i in array){
                 var frag = [];
                 for(var key in array[i]){
                     frag.push(array[i][key]);

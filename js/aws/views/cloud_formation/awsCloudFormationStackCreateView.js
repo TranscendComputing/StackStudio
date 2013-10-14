@@ -250,7 +250,7 @@ define([
             });
 
 
-            var topic = $("#notifications_select :selected").text() === "" ? "none" : $("#notifications_select :selected").text()
+            var topic = $("#notifications_select :selected").text() === "" ? "none" : $("#notifications_select :selected").text();
             $("#notification_review").html(topic);
 
             var timeout = $("#creation_timeout_select").val() === 0 ? "none" : $("#creation_timeout_select").val();

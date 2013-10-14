@@ -6,9 +6,10 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
+        'jquery',
         'models/resource/resourceModel',
         'common'
-], function( ResourceModel, Common ) {
+], function($, ResourceModel, Common ) {
     'use strict';
 
     var Stack = ResourceModel.extend({
