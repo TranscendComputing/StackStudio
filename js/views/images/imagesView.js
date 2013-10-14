@@ -38,6 +38,7 @@ define([
             "change #image_type_select":"builderSelect",
             "change #image_config_management_select":"provisionerSelect",
             "change #dev_ops_select":"devopsSelect",
+            "change #post_processor_select":"postProcessorSelect",
             "click .adv_tab": "advTabSelect",
             "click #save_image_template_button":"packImage",
             "click #deploy_image_template_button":"deployImage",
@@ -147,6 +148,17 @@ define([
                     $("#devops_settings").tooltip();
                 });
             });
+            $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/postprocessors", function( postprocessors ) {
+                $("#post_processor_select").empty();
+                for (var key in postprocessors) {
+                    $("#post_processor_select").append("<option>"+key+"</option>");
+                }
+                $("#post_processor_select").append("<option>None</option>");
+                $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/postprocessors/" + $("#post_processor_select").val().replace('-',''), function( postprocessor ) {
+                    $("#postprocessor_settings").html(_.template(advancedTemplate)({optional: postprocessor.optional, required: postprocessor.required, title: "Post-Processor: "+$("#post_processor_select").val()}));
+                    $("#postprocessor_settings").tooltip();
+                });
+            });
         },
         
         addAllImages: function() {
@@ -227,6 +239,17 @@ define([
         	}
         },
         
+        postProcessorSelect: function(event){
+        	if($("#post_processor_select").val() != "None"){
+                $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/postprocessors/" + $("#post_processor_select").val(), function( postprocessor ) {
+            	    $("#postprocessor_settings").html(_.template(advancedTemplate)({optional: postprocessor.optional, required: postprocessor.required, title: "Post-Processor: "+$("#post_processor_select").val()})).hide().fadeIn('slow');
+            	    $("#postprocessor_settings").tooltip();
+            	});
+        	}else{
+        	    $("#postprocessor_settings").hide('slow');
+        	}
+        },
+        
         advTabSelect: function(event){
             $(".active").removeClass('active');
             $("#"+event.target.id).closest('li').addClass('active');
@@ -237,6 +260,8 @@ define([
                 $("#provisioner_settings").show('slow');
             }else if(event.target.text === "DevOps Tool"){
                 $("#devops_settings").show('slow');
+            }else if(event.target.text === "Post-Processor"){
+                $("#postprocessor_settings").show('slow');
             }
         },
         
@@ -303,6 +328,23 @@ define([
                     }
                 });
             }
+            var postProcessor = {};
+            if($("#post_processor_select").val() != "None"){
+                postProcessor['type'] = $("#post_processor_select").val();
+                $("#postprocessor_settings :input").each(function() {
+                    if($( this ).val().length == 0){
+                        //dont add
+                    }else if($(this).attr('type') === 'checkbox'){
+                        postProcessor[$(this).attr('name')] = $( this ).is(':checked');
+                    }else if($(this).attr('type') === 'number' && isNaN($( this ).val())){
+                        postProcessor[$(this).attr('name')] = parseInt($( this ).val());
+                    }else if($(this).attr('data-type').indexOf("array") !== -1){
+                        postProcessor[$(this).attr('name')] = [$( this ).val()];
+                    }else{
+                        postProcessor[$(this).attr('name')] = $( this ).val();
+                    }
+                });
+            }
             
             $.extend( packed_image.builders[0], builder );
             if(!$.isEmptyObject(provisioner)){
@@ -310,6 +352,9 @@ define([
             }
             if(!$.isEmptyObject(devopsP)){
                 packed_image.provisioners.push(devopsP);
+            }
+            if(!$.isEmptyObject(postProcessor)){
+                packed_image['post-processors'] = [postProcessor];
             }
             
             //delete packed_image['provisioners'];
@@ -353,15 +398,15 @@ define([
                 }
                 if(base.clouds[i] == 'openstack'){
                     builders.push({
-                        "type": "qemu",
-                        "username": "buildbot-grizzly",
-                        "password": "buildbot-grizzly",
+                        "type": "qemu"
+                        //"username": "buildbot-grizzly",
+                        //"password": "buildbot-grizzly",
                         //"provider": "",
-                        "region": "nova",
-                        "ssh_username": "ubuntu",
-                        "image_name": $("#image_template_name_input").val(),
-                        "source_image": "b53eea94-b195-4978-abcb-691d31ca57b5",
-                        "flavor": "2"         
+                        //"region": "nova",
+                        //"ssh_username": "ubuntu",
+                        //"image_name": $("#image_template_name_input").val(),
+                        //"source_image": "b53eea94-b195-4978-abcb-691d31ca57b5",
+                        //"flavor": "2"         
                     });
                 }
             }

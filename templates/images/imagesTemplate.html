@@ -97,6 +97,8 @@
                                         </div>
                                     </div>
 
+                                    <hr/>
+                                    
                                     <!-- Select Basic -->
                                     <div class="control-group" >
                                         <label class="control-label">Builder Type</label>
@@ -131,6 +133,16 @@
                                             </select>
                                         </div>
                                     </div>
+                                    
+                                    <!-- Select Basic -->
+                                    <div class="control-group">
+                                        <label class="control-label">Post-Processor</label>
+                                        <div class="controls">
+                                            <select id="post_processor_select" class="input-xlarge">
+                                                <option value="none">None</option>
+                                            </select>
+                                        </div>
+                                    </div>
 
                                     <!-- Text input-->
                                     <div class="control-group" style="display:none;">
@@ -160,6 +172,7 @@
                                           <li class="active"><a href="#images" class="adv_tab" id="builder_tab">Builder</a></li>
                                           <li><a href="#images" class="adv_tab" id="provisioner_tab">Provisioner</a></li>
                                           <li><a href="#images" class="adv_tab" id="devops_tab">DevOps Tool</a></li>
+                                          <li><a href="#images" class="adv_tab" id="postprocessor_tab">Post-Processor</a></li>
                                         </ul>
                                         <div id="builder_settings" class="adv_tab_panel">
                                             <!-- Text input-->
@@ -260,6 +273,7 @@
                                         </div>
                                         <div id="provisioner_settings" class="adv_tab_panel" style="display:none;"></div>
                                         <div id="devops_settings" class="adv_tab_panel" style="display:none;"></div>
+                                        <div id="postprocessor_settings" class="adv_tab_panel" style="display:none;"></div>
                                     </fieldset>
                                 </form>
                             </div>
