@@ -35,9 +35,11 @@ define([
                     type: "POST",
                     data: {"RequestParams":options},
                     success: function(data) {
-                        Common.vent.trigger("cloudFormationAppRefresh", data);
+                        Common.vent.off("cloudFormationStackFailed");
+                        Common.vent.trigger("cloudFormationStackCreated cloudFormationAppRefresh", data);
                     },
                     error: function(jqXHR) {
+                        Common.vent.off("cloudFormationStackCreated");
                         Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
                     }
                 });

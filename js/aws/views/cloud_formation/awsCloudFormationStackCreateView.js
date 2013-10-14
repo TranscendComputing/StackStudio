@@ -147,9 +147,12 @@ define([
 
         },
         create: function(){
+            var $this = this;
             var creationParams = this.generateCreationParams();
             this.stack.create(creationParams, this.credentialId, this.region);
-            this.$el.dialog('close');
+            Common.vent.once("cloudFormationStackCreated", function(){
+                $this.$el.dialog('close');
+            });
         },
 
         previous: function() {
