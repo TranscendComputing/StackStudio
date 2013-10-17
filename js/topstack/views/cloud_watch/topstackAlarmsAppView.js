@@ -89,6 +89,7 @@ define([
         },
         
         addAlarmHistory: function(data){
+            $("#alarm_history").dataTable().fnClearTable();
             for(var i in data){
                 $("#alarm_history").dataTable().fnAddData([data[i]['HistorySummary'],data[i]['HistoryItemType'],data[i]['Timestamp']]);
             }
