@@ -1,0 +1,60 @@
+{
+  "builders":
+  [
+    {
+      "type": "qemu",
+      "name": "tomscentos",
+      "iso_url": "http://mirror.raystedman.net/centos/6/isos/x86_64/CentOS-6.4-x86_64-minimal.iso",
+      "iso_checksum": "4a5fa01c81cc300f4729136e28ebe600",
+      "iso_checksum_type": "md5",
+      "ssh_wait_timeout": "30s",
+      "shutdown_command": "shutdown -P now",
+      "disk_size": 5000,
+      "format": "qcow2",
+      "headless": false,
+      "ssh_username": "root",
+      "ssh_password": "s0m3password",
+      "ssh_port": 22,
+      "ssh_wait_timeout": "90m",
+      "vm_name": "tdhtest",
+      "net_device": "virtio-net",
+      "disk_interface": "virtio",
+      "qemuargs": [ ["-m", "1024m"], ["-cpu", "core2duo"] ],
+      "boot_command":
+      [
+        "<tab><wait>",
+        " ks=http://10.0.2.2:{{ .HTTPPort }}/centos6-ks.cfg<enter>"
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+        "rm -fv /etc/udev/rules.d/70*",
+        "find /etc/sysconfig/net* -name \"*.bak\" -exec rm -fv {} \\;",
+        "rm -fv /etc/sysconfig/networking/profiles/default/*",
+        "rm -fv /etc/sysconfig/networking/devices/*",
+        "awk '!/HWADDR/' /etc/sysconfig/network-scripts/ifcfg-eth0 >/tmp/ifcfg-eth0",
+        "awk '!/NM_MANAGED/' /tmp/ifcfg-eth0 >/etc/sysconfig/network-scripts/ifcfg-eth0"
+      ]
+    }
+  ],
+  "post-processors": [
+    {
+	  "type": "openstack",
+      "username": "tdhite",
+	  "password": "m0mentum3i",
+	  "project": "TranscendDev",
+	  "provider": "http://grizzlyfe.momentumsoftware.com:35357/v2.0/tokens",
+      "region": "RegionOne",
+      "qemu": {
+		"service_name": "glance",
+		"service_type": "image",
+	    "image_name": "toms-mciaa-test",
+	    "visibility": "public",
+	    "tags": [ "tom", "hite", "tag3", "this is just another tag" ]
+      }
+	}
+  ]
+}

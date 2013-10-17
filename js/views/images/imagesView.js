@@ -155,6 +155,7 @@ define([
                 }
                 $("#post_processor_select").append("<option>None</option>");
                 $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/postprocessors/" + $("#post_processor_select").val().replace('-',''), function( postprocessor ) {
+                    delete postprocessor.optional['qemu']
                     $("#postprocessor_settings").html(_.template(advancedTemplate)({optional: postprocessor.optional, required: postprocessor.required, title: "Post-Processor: "+$("#post_processor_select").val()}));
                     $("#postprocessor_settings").tooltip();
                 });
@@ -358,6 +359,7 @@ define([
             }
             
             //delete packed_image['provisioners'];
+            packed_image = this.getDefaultTemplate();
             
             this.currentImageTemplate = new PackedImage({'packed_image':packed_image,'name':base_image.name});
             this.currentImageTemplate.save();
@@ -412,6 +414,18 @@ define([
             }
             
             return {'builders':builders,'provisioners':provisioners};
+        },
+        
+        getDefaultTemplate: function(){
+            var mappings = undefined;
+            $.ajax({
+              url: '/samples/packer-centos-6.json',
+              async: false,
+              success: function(data) {
+                mappings = data;
+              }
+            });
+            return mappings;
         },
         
         uploadAsync: function(){
