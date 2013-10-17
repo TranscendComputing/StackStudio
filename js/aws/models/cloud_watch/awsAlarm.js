@@ -68,6 +68,21 @@ define([
             return this.attributes.metric_name + " " + comparisonSign + " " + this.attributes.threshold.toString() + " " + this.attributes.unit + " for " + timeLength + " minutes.";
         },
         
+        getAlarmHistory: function(credentialId, region){
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/monitor/alarms/" + this.id + "/alarm_history?_method=GET&cred_id=" + credentialId + "&region=" + region;
+            $.ajax({
+                url: url,
+                type: "GET",
+                contentType: 'application/x-www-form-urlencoded',
+                success: function(data) {
+                    Common.vent.trigger("alarmHistoryRefresh", data);
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            });
+        },
+        
         create: function(options, credentialId, region) {
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/monitor/alarms?cred_id=" + credentialId + "&region=" + region;
             this.sendAjaxAction(url, "POST", {"alarm": options}, "alarmAppRefresh");

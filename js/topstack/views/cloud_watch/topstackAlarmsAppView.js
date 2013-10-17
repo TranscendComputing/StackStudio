@@ -39,7 +39,8 @@ define([
         events: {
             'click .create_button': 'createNew',
             'click #action_menu ul li': 'performAction',
-            'click #resource_table tr': "clickOne"
+            'click #resource_table tr': "clickOne",
+            'click #history_tab' : 'refreshHistoryTab'
         },
 
         initialize: function(options) {
@@ -51,9 +52,17 @@ define([
             }
             this.render();
             
+            $("#alarm_history").dataTable({
+                "bJQueryUI": true,
+                "sDom": 't'
+            });
+            
             var alarmApp = this;
             Common.vent.on("alarmAppRefresh", function() {
                 alarmApp.render();
+            });
+            Common.vent.on("alarmHistoryRefresh", function(data) {
+                alarmApp.addAlarmHistory(data);
             });
         },
         
@@ -72,6 +81,18 @@ define([
                 alarm.destroy(this.credentialId, this.region);
                 break;
             }
+        },
+        
+        refreshHistoryTab: function(e){
+            var alarm = this.collection.get(this.selectedId);
+            alarm.getAlarmHistory(this.credentialId, this.region);
+        },
+        
+        addAlarmHistory: function(data){
+            for(var i in data){
+                $("#alarm_history").dataTable().fnAddData([data[i]['HistorySummary'],data[i]['HistoryItemType'],data[i]['Timestamp']]);
+            }
+            $("#alarm_history").dataTable();
         }
     });
     
