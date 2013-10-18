@@ -138,19 +138,18 @@ define([
 
         },
         performAction: function(event) {
-            var autoscaleGroup = this.collection.get(this.selectedId);
+            var stack = this.collection.get(this.selectedId);
             
             switch(event.target.text)
             {
-                case "Spin Down Group":
-                    autoscaleGroup.spinDown(this.credentialId, this.region);
+                case "Update Stack":
+                    //stack.update(this.credentialId, this.region);
                     break;
-                case "Delete Group":
-                    autoscaleGroup.destroy(this.credentialId, this.region);
+                case "Delete Stack":
+                    stack.destroy(this.credentialId, this.region);
                     break;
             }
-        },
-
+        }
 
     });
     

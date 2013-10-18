@@ -45,6 +45,10 @@ define([
                     }
                 });
            // this.sendAjaxAction(url, "POST", options, "cloudFormationStackCreated");
+        },
+        destroy: function(credentialId, region){
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/cloud_formation/stacks/"+ this.get("StackName") + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "cloudFormationAppRefresh");
         }
     });
 
