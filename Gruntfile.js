@@ -207,7 +207,7 @@ module.exports = function(grunt) {
 
   // Default task.
   grunt.registerTask('default', ['jshint', 'jasmine']);
-  grunt.registerTask('run', ['less', 'connect:sstudio', 'watch']);
-  grunt.registerTask('build', ['jasmine', 'concat', 'uglify']);
+  grunt.registerTask('run', ['jshint', 'less', 'connect:sstudio', 'watch']);
+  grunt.registerTask('build', ['jshint', 'jasmine', 'concat', 'uglify']);
 
 };

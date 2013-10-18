@@ -181,7 +181,7 @@ define([
                     shadow: false, // Whether to render a shadow
                     hwaccel: false, // Whether to use hardware acceleration
                     className: 'spinner', // The CSS class to assign to the spinner
-                    zIndex: 2e9, // The z-index (defaults to 2000000000)
+                    zIndex: 2e9 // The z-index (defaults to 2000000000)
                 };
                 new Spinner(spinnerOptions).spin($("#object_upload_button").get(0));
                 // submit the form
