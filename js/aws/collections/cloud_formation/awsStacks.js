@@ -18,7 +18,17 @@ define([
 
         model: Stack,
 
-        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/cloud_formation/stacks'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/cloud_formation/stacks',
+
+        parse: function(response){
+            var result = [];
+            $.grep(response, function(stack, index){
+                if(stack.StackStatus !=="DELETE_COMPLETE"){
+                    result.push(stack);
+                }
+            });
+            return result;
+        }
         
     });
 

@@ -30,7 +30,7 @@ define([
 
         modelStringIdentifier: "name",
 
-        columns: ["StackName", "Description", "StackStatus", "CreationTime"],
+        columns: ["StackName", "TemplateDescription", "StackStatus", "CreationTime"],
         
         idColumnNumber: 0,
         
