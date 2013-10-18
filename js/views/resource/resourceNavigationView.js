@@ -199,9 +199,11 @@ define([
                     addService = true;
                 }else{
                     $.each(JSON.parse(sessionStorage.group_policies), function(index,value){
-                        var enabled_services = value.group_policy.aws_governance.enabled_services;
-                        if($.inArray(service.name, enabled_services) !== -1){
-                            addService = true;
+                        if(value != null){
+                            var enabled_services = value.group_policy.aws_governance.enabled_services;
+                            if($.inArray(service.name, enabled_services) !== -1){
+                                addService = true;
+                            }
                         }
                     });
                 }
@@ -317,9 +319,11 @@ define([
                         addRegion = true;
                     }else{
                         $.each(JSON.parse(sessionStorage.group_policies), function(index,value){
-                            var usable_regions = value.group_policy.aws_governance.usable_regions;
-                            if($.inArray(region.name, usable_regions) !== -1){
-                                addRegion = true;
+                            if(value != null){
+                                var usable_regions = value.group_policy.aws_governance.usable_regions;
+                                if($.inArray(region.name, usable_regions) !== -1){
+                                    addRegion = true;
+                                }
                             }
                         });
                     }
