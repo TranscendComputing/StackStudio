@@ -19,7 +19,7 @@ Getting Started
     cd StackStudio
     npm install
     # If you've never installed Grunt, you'll need the command line
-    sudo npm install grunt-cli
+    sudo npm install -g grunt-cli
     ```
 
 4. To launch a web server, you can run a task:
