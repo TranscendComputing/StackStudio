@@ -15,13 +15,14 @@ define([
         '/js/aws/models/cloud_formation/awsStack.js',
         '/js/aws/collections/cloud_formation/awsStacks.js',
         '/js/aws/views/cloud_formation/awsCloudFormationStackCreateView.js',
+        '/js/aws/views/cloud_formation/awsCloudFormationStackUpdateView.js',
         'icanhaz',
         'common',
         'morris',
         'spinner',
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator'
-], function( $, _, Backbone, ResourceAppView, ResourceRowView, awsCloudFormationAppTemplate, Stack, Stacks, StackCreate, ich, Common, Morris, Spinner ) {
+], function( $, _, Backbone, ResourceAppView, ResourceRowView, awsCloudFormationAppTemplate, Stack, Stacks, StackCreate, StackUpdate, ich, Common, Morris, Spinner ) {
     'use strict';
 
     var AwsCloudFormationAppView = ResourceAppView.extend({
@@ -43,6 +44,7 @@ define([
         subtype: "cloud_formation",
 
         CreateView: StackCreate,
+        UpdateView: StackUpdate,
         
         events: {
             'click .create_button': 'createNew',
@@ -144,11 +146,21 @@ define([
             {
                 case "Update Stack":
                     //stack.update(this.credentialId, this.region);
+                    this.updateStack();
                     break;
                 case "Delete Stack":
                     stack.destroy(this.credentialId, this.region);
                     break;
             }
+        },
+        updateStack: function(){
+            var UpdateView = this.UpdateView;
+            if(this.region) {
+                this.updateDialog = new UpdateView({stack: this.collection.get(this.selectedId), cred_id: this.credentialId, region: this.region});
+            }else {
+                this.updateDialog = new UpdateView({stack: this.collection.get(this.selectedId), cred_id: this.credentialId});
+            }
+            this.updateDialog.render();
         }
 
     });
