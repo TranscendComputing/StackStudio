@@ -11,8 +11,9 @@ define([
         'gh3',
         'base64',
         'github',
-        'common'
-], function( $, Backbone, Gh3, Base64, Github, Common ) {
+        'common',
+        'messenger'
+], function( $, Backbone, Gh3, Base64, Github, Common, Messenger) {
     'use strict';
 
     // Account Model

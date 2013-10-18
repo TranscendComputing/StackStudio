@@ -136,7 +136,7 @@ define([
                 this.currentAssembly.save({},{
                     success:function(model){
                         $("#selectAssemblyButton span:first").html("Selected Assembly: " + model.get("name"));
-                        Messenger().post({message:model.get("name") +" updated", type:"success"});
+                        new Messenger().post({message:model.get("name") +" updated", type:"success"});
                         Common.vent.trigger("assembliesViewRefresh");
                     },
                     error:function(){

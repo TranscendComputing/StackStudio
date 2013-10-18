@@ -107,7 +107,7 @@ define([
                         this.cloudSelection(firstCloudProvider);
                     }
                 }else if(sessionStorage['selected_cloud'] !== undefined){
-                	Common.router.navigate("#resources/"+sessionStorage['selected_cloud'], {trigger: false});
+                    Common.router.navigate("#resources/"+sessionStorage['selected_cloud'], {trigger: false});
                     this.cloudSelection(sessionStorage['selected_cloud']);
                 }else{
                     Common.router.navigate("#resources/"+firstCloudProvider, {trigger: false});

@@ -218,9 +218,9 @@ define([
         },
         
         addPolicyImages: function(gps){
-            for(i in gps){
+            for(var i in gps){
                 var imgz = gps[i].group_policy.aws_governance.default_images;
-                for(j in imgz){
+                for(var j in imgz){
                     $("#image_select_default").append("<option value='"+imgz[j].image_id+"'>"+imgz[j].source+"</option>");
                 }
             }

@@ -6,9 +6,11 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
+        'jquery',
+        'underscore',
         'models/resource/resourceModel',
         'common'
-], function( ResourceModel, Common ) {
+], function( $, _, ResourceModel, Common ) {
     'use strict';
 
     var SecurityGroup = ResourceModel.extend({

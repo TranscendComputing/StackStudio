@@ -26,7 +26,7 @@ define([
             this.$el.html(this.template);
             
             var url = sessionStorage.rss_url;
-            if(url == "undefined" || url == "" || url == undefined){
+            if(url === "undefined" || url === "" || url === undefined){
                 url = Common.rssFeed;
             }
             

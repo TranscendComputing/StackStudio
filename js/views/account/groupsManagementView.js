@@ -96,7 +96,7 @@ define([
             this.policies.each( function(policy) {
                 $("#policy_select").append('<option value="'+policy.attributes._id+'">'+policy.attributes.name+'</option>');
             });
-            if(typeof this.selectedGroup.attributes.group_policy != 'undefined'){
+            if(typeof this.selectedGroup.attributes.group_policy !== 'undefined'){
                 $("#policy_select").val(this.selectedGroup.attributes.group_policy.group_policy.id);
             }
         },

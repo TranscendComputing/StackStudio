@@ -16,9 +16,10 @@ define([
         'models/packedImage',
         '/js/aws/collections/compute/awsImages.js',
         'collections/packedImages',
+        'messenger',
         'jquery-ui',
         'jquery.form'
-], function( $, _, bootstrap, Backbone, Common, imagesTemplate, advancedTemplate, PackedImage, Images, PackedImages ) {
+], function( $, _, bootstrap, Backbone, Common, imagesTemplate, advancedTemplate, PackedImage, Images, PackedImages, Messenger ) {
 
     var ImagesView = Backbone.View.extend({
 
@@ -128,10 +129,10 @@ define([
                 $("#image_config_management_select").empty();
                 $("#dev_ops_select").empty();
                 for (var key in provisioners) {
-                    if(key == 'chef-solo' || key == 'salt-masterless'){
-                    	$("#dev_ops_select").append("<option>"+key+"</option>");
+                    if(key === 'chef-solo' || key === 'salt-masterless'){
+                        $("#dev_ops_select").append("<option>"+key+"</option>");
                     }else{
-                    	$("#image_config_management_select").append("<option>"+key+"</option>");
+                        $("#image_config_management_select").append("<option>"+key+"</option>");
                     }
                 }
                 $("#dev_ops_select").append("<option>None</option>");
@@ -155,7 +156,7 @@ define([
                 }
                 $("#post_processor_select").append("<option>None</option>");
                 $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/postprocessors/" + $("#post_processor_select").val().replace('-',''), function( postprocessor ) {
-                    delete postprocessor.optional['qemu']
+                    delete postprocessor.optional['qemu'];
                     $("#postprocessor_settings").html(_.template(advancedTemplate)({optional: postprocessor.optional, required: postprocessor.required, title: "Post-Processor: "+$("#post_processor_select").val()}));
                     $("#postprocessor_settings").tooltip();
                 });
@@ -230,25 +231,25 @@ define([
         },
 
         devopsSelect: function(event){
-        	if($("#dev_ops_select").val() != "None"){
+            if($("#dev_ops_select").val() !== "None"){
                 $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/provisioners/" + $("#dev_ops_select").val(), function( provisioner ) {
-            	    $("#devops_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, required: provisioner.required, title: "DevOps Tool: "+$("#dev_ops_select").val()})).hide().fadeIn('slow');
-            	    $("#devops_settings").tooltip();
-            	});
-        	}else{
-        	    $("#devops_settings").hide('slow');
-        	}
+                    $("#devops_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, required: provisioner.required, title: "DevOps Tool: "+$("#dev_ops_select").val()})).hide().fadeIn('slow');
+                    $("#devops_settings").tooltip();
+                });
+            }else{
+                $("#devops_settings").hide('slow');
+            }
         },
         
         postProcessorSelect: function(event){
-        	if($("#post_processor_select").val() != "None"){
+            if($("#post_processor_select").val() !== "None"){
                 $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/postprocessors/" + $("#post_processor_select").val(), function( postprocessor ) {
-            	    $("#postprocessor_settings").html(_.template(advancedTemplate)({optional: postprocessor.optional, required: postprocessor.required, title: "Post-Processor: "+$("#post_processor_select").val()})).hide().fadeIn('slow');
-            	    $("#postprocessor_settings").tooltip();
-            	});
-        	}else{
-        	    $("#postprocessor_settings").hide('slow');
-        	}
+                    $("#postprocessor_settings").html(_.template(advancedTemplate)({optional: postprocessor.optional, required: postprocessor.required, title: "Post-Processor: "+$("#post_processor_select").val()})).hide().fadeIn('slow');
+                    $("#postprocessor_settings").tooltip();
+                });
+            }else{
+                $("#postprocessor_settings").hide('slow');
+            }
         },
         
         advTabSelect: function(event){
@@ -285,12 +286,12 @@ define([
             
             var builder = {};
             $("#builder_settings :input").each(function() {
-                if($( this ).val().length == 0){
+                if($( this ).val().length === 0){
                     //dont add
                 }else if($(this).attr('type') === 'checkbox'){
                     builder[$(this).attr('name')] = $( this ).is(':checked');
                 }else if($(this).attr('type') === 'number' && isNaN($( this ).val())){
-                    builder[$(this).attr('name')] = parseInt($( this ).val());
+                    builder[$(this).attr('name')] = parseInt($( this ).val(),10);
                 }else if($(this).attr('data-type').indexOf("array") !== -1){
                     builder[$(this).attr('name')] = [$( this ).val()];
                 }else{
@@ -300,12 +301,12 @@ define([
             var provisioner = {};
             provisioner['type'] = $("#image_config_management_select").val();
             $("#provisioner_settings :input").each(function() {
-                if($( this ).val().length == 0){
+                if($( this ).val().length === 0){
                     //dont add
                 }else if($(this).attr('type') === 'checkbox'){
                     provisioner[$(this).attr('name')] = $( this ).is(':checked');
                 }else if($(this).attr('type') === 'number' && isNaN($( this ).val())){
-                    provisioner[$(this).attr('name')] = parseInt($( this ).val());
+                    provisioner[$(this).attr('name')] = parseInt($( this ).val(),10);
                 }else if($(this).attr('data-type').indexOf("array") !== -1){
                     provisioner[$(this).attr('name')] = [$( this ).val()];
                 }else{
@@ -313,15 +314,15 @@ define([
                 }
             });
             var devopsP = {};
-            if($("#dev_ops_select").val() != "None"){
+            if($("#dev_ops_select").val() !== "None"){
                 devopsP['type'] = $("#dev_ops_select").val();
                 $("#devops_settings :input").each(function() {
-                    if($( this ).val().length == 0){
+                    if($( this ).val().length === 0){
                         //dont add
                     }else if($(this).attr('type') === 'checkbox'){
                         devopsP[$(this).attr('name')] = $( this ).is(':checked');
                     }else if($(this).attr('type') === 'number' && isNaN($( this ).val())){
-                        devopsP[$(this).attr('name')] = parseInt($( this ).val());
+                        devopsP[$(this).attr('name')] = parseInt($( this ).val(),10);
                     }else if($(this).attr('data-type').indexOf("array") !== -1){
                         devopsP[$(this).attr('name')] = [$( this ).val()];
                     }else{
@@ -330,15 +331,15 @@ define([
                 });
             }
             var postProcessor = {};
-            if($("#post_processor_select").val() != "None"){
+            if($("#post_processor_select").val() !== "None"){
                 postProcessor['type'] = $("#post_processor_select").val();
                 $("#postprocessor_settings :input").each(function() {
-                    if($( this ).val().length == 0){
+                    if($( this ).val().length === 0){
                         //dont add
                     }else if($(this).attr('type') === 'checkbox'){
                         postProcessor[$(this).attr('name')] = $( this ).is(':checked');
                     }else if($(this).attr('type') === 'number' && isNaN($( this ).val())){
-                        postProcessor[$(this).attr('name')] = parseInt($( this ).val());
+                        postProcessor[$(this).attr('name')] = parseInt($( this ).val(),10);
                     }else if($(this).attr('data-type').indexOf("array") !== -1){
                         postProcessor[$(this).attr('name')] = [$( this ).val()];
                     }else{
@@ -372,24 +373,24 @@ define([
         map_base: function(base){
             var builders = [];
             var provisioners = [];
+            var mappings;
+            $.ajax({
+              url: '/samples/awsImages.json',
+              async: false,
+              success: function(data) {
+                mappings = data;
+              }
+            });
             for (var i in base.clouds) {
-                if(base.clouds[i] == 'aws'){
-                    var mappings = undefined;
-                    $.ajax({
-                      url: '/samples/awsImages.json',
-                      async: false,
-                      success: function(data) {
-                        mappings = data;
-                      }
-                    });
-                    for(var i in mappings){
-                        if(mappings[i].label == $('#os_input').val()){
+                if(base.clouds[i] === 'aws'){
+                    for(var j in mappings){
+                        if(mappings[j].label === $('#os_input').val()){
                             var aws = {
                                         "type": $("#image_type_select").val(),
                                         "access_key": $("#aws_cred_select option:selected").attr('data-ak'),
                                         "secret_key": $("#aws_cred_select option:selected").attr('data-sk'),
                                         "region": $("#aws_region_select").val(),
-                                        'source_ami' : mappings[i].region[$("#aws_region_select").val()],
+                                        'source_ami' : mappings[j].region[$("#aws_region_select").val()],
                                         "instance_type": $("#instance_type_select").val(),
                                         "ssh_username": "ubuntu",
                                         "ami_name": $("#image_template_name_input").val()
@@ -398,7 +399,7 @@ define([
                         }
                     }
                 }
-                if(base.clouds[i] == 'openstack'){
+                if(base.clouds[i] === 'openstack'){
                     builders.push({
                         "type": "qemu"
                         //"username": "buildbot-grizzly",
@@ -417,7 +418,7 @@ define([
         },
         
         getDefaultTemplate: function(){
-            var mappings = undefined;
+            var mappings;
             $.ajax({
               url: '/samples/packer-centos-6.json',
               async: false,
@@ -432,7 +433,7 @@ define([
             var d_id = this.currentImageTemplate.attributes.doc_id;
             var upUrl = Common.apiUrl + "/stackstudio/v1/packed_images/save?uid=" + sessionStorage.org_id + "&docid=" + d_id;
             $("#upForm").attr('action',upUrl);
-            if($("#mciaas_files").val() != ""){
+            if($("#mciaas_files").val() !== ""){
                 $("#upSub").click();
             }            
         },

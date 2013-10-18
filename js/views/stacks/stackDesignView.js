@@ -15,7 +15,7 @@ define([
         'ace-cdn',
         'ace/mode/json',
         'jquery.jstree'
-], function( $, _, Backbone, Common, stacksDesignTemplate, Assemblies) {
+], function( $, _, Backbone, Common, stacksDesignTemplate, Assemblies, ace) {
     'use strict';
 
     var StackDesignView = Backbone.View.extend({
@@ -49,7 +49,7 @@ define([
             this.editor = ace.edit("design_editor");
             this.editor.setTheme("ace/theme/monokai");
             this.editor.getSession().setUseWorker(false);
-            this.editor.getSession().setMode(new (require("ace/mode/json")).Mode);
+            this.editor.getSession().setMode(new (require("ace/mode/json")).Mode());
 
             this.newResourceTree = $("#new_resources").jstree({
                 // List of active plugins

@@ -46,7 +46,7 @@ define([
         },
         
         setAccountFields: function(account){
-            if(account.rss_url != undefined){
+            if(account.rss_url !== undefined){
                 $("#rss_input").val(account.rss_url);
             }
         },

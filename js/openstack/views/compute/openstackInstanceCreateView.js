@@ -18,9 +18,10 @@ define([
         '/js/openstack/collections/compute/openstackKeyPairs.js',
         '/js/openstack/collections/compute/openstackSecurityGroups.js',
         'common',
+        'spinner',
         'jquery.multiselect',
         'jquery.multiselect.filter'
-], function( $, _, Backbone, DialogView, instanceCreateTemplate, Instance, Images, AvailabilityZones, Flavors, KeyPairs, SecurityGroups, Common ) {
+], function( $, _, Backbone, DialogView, instanceCreateTemplate, Instance, Images, AvailabilityZones, Flavors, KeyPairs, SecurityGroups, Common, Spinner) {
     
     var InstanceCreateView = DialogView.extend({
         
@@ -103,9 +104,9 @@ define([
                 shadow: false, // Whether to render a shadow
                 hwaccel: false, // Whether to use hardware acceleration
                 className: 'spinner', // The CSS class to assign to the spinner
-                zIndex: 2e9, // The z-index (defaults to 2000000000)
-                //top: 150, // Top position relative to parent in px
-                //left: 211 // Left position relative to parent in px
+                zIndex: 2e9 // The z-index (defaults to 2000000000)
+                //top: 150,  Top position relative to parent in px
+                //left: 211  Left position relative to parent in px
             };
             
             new Spinner(spinnerOptions).spin($("#instance_create").get(0));
