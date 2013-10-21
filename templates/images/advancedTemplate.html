@@ -74,7 +74,7 @@
 
 <% if (qemu !== undefined) { %>
     <legend>&nbsp;&nbsp;Qemu</legend>
-    <div class="well">
+    <div class="well" id="qemu-well">
     <% _.each(qemu, function(key,field){ %>
            <div class="control-group">
                <label class="control-label"><%= field.split('_').join(' ').replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}) %></label>

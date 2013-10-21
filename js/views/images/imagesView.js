@@ -357,7 +357,7 @@ define([
             var postProcessor = {};
             if($("#post_processor_select").val() !== "None"){
                 postProcessor['type'] = $("#post_processor_select").val();
-                $("#postprocessor_settings :input").each(function() {
+                $("#postprocessor_settings :input").not("#qemu-well :input").each(function() {
                     if($( this ).val().length === 0){
                         //dont add
                     }else if($(this).attr('type') === 'checkbox'){
@@ -372,6 +372,24 @@ define([
                         }
                     }else{
                         postProcessor[$(this).attr('name')] = $( this ).val();
+                    }
+                });
+                postProcessor['qemu'] = {};
+                $("#qemu-well :input").each(function() {
+                    if($( this ).val().length === 0){
+                        //dont add
+                    }else if($(this).attr('type') === 'checkbox'){
+                        postProcessor['qemu'][$(this).attr('name')] = $( this ).is(':checked');
+                    }else if($(this).attr('type') === 'number' && isNaN($( this ).val())){
+                        postProcessor['qemu'][$(this).attr('name')] = parseInt($( this ).val(),10);
+                    }else if($(this).attr('data-type').indexOf("array") !== -1){
+                        if(postProcessor['qemu'][$(this).attr('name')] === undefined){
+                            postProcessor['qemu'][$(this).attr('name')] = [$( this ).val()];
+                        }else{
+                            postProcessor['qemu'][$(this).attr('name')].push($( this ).val());
+                        }
+                    }else{
+                        postProcessor['qemu'][$(this).attr('name')] = $( this ).val();
                     }
                 });
             }
