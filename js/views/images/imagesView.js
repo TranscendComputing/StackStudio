@@ -136,6 +136,7 @@ define([
                     }
                 }
                 $("#dev_ops_select").append("<option>None</option>");
+                $("#image_config_management_select").append("<option>None</option>");
                 $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/provisioners/" + $("#image_config_management_select").val(), function( provisioner ) {
                     if(provisioner.shell !== undefined){
                         provisioner.optional = provisioner.shell.optional;
@@ -221,14 +222,18 @@ define([
         },
         
         provisionerSelect: function(event){
-            $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/provisioners/" + $("#image_config_management_select").val(), function( provisioner ) {
-                if(provisioner.shell !== undefined){
-                    provisioner.optional = provisioner.shell.optional;
-                    provisioner.required = provisioner.shell.required_xor;
-                }
-                $("#provisioner_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, advanced: provisioner.advanced, qemu: undefined, required: provisioner.required, title: "Provisioner: "+$("#image_config_management_select").val()})).hide().fadeIn('slow');
-                $("#provisioner_settings").tooltip();
-            });
+            if($("#image_config_management_select").val() !== "None"){
+                $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/provisioners/" + $("#image_config_management_select").val(), function( provisioner ) {
+                    if(provisioner.shell !== undefined){
+                        provisioner.optional = provisioner.shell.optional;
+                        provisioner.required = provisioner.shell.required_xor;
+                    }
+                    $("#provisioner_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, advanced: provisioner.advanced, qemu: undefined, required: provisioner.required, title: "Provisioner: "+$("#image_config_management_select").val()})).hide().fadeIn('slow');
+                    $("#provisioner_settings").tooltip();
+                });
+            }else{
+                $("#provisioner_settings").hide('slow');
+            }
         },
 
         devopsSelect: function(event){
@@ -301,21 +306,25 @@ define([
                     builder[$(this).attr('name')] = $( this ).val();
                 }
             });
+            
             var provisioner = {};
-            provisioner['type'] = $("#image_config_management_select").val();
-            $("#provisioner_settings :input").each(function() {
-                if($( this ).val().length === 0){
-                    //dont add
-                }else if($(this).attr('type') === 'checkbox'){
-                    provisioner[$(this).attr('name')] = $( this ).is(':checked');
-                }else if($(this).attr('type') === 'number' && isNaN($( this ).val())){
-                    provisioner[$(this).attr('name')] = parseInt($( this ).val(),10);
-                }else if($(this).attr('data-type').indexOf("array") !== -1){
-                    provisioner[$(this).attr('name')] = [$( this ).val()];
-                }else{
-                    provisioner[$(this).attr('name')] = $( this ).val();
-                }
-            });
+            if($("#image_config_management_select").val() !== "None"){
+                provisioner['type'] = $("#image_config_management_select").val();
+                $("#provisioner_settings :input").each(function() {
+                    if($( this ).val().length === 0){
+                        //dont add
+                    }else if($(this).attr('type') === 'checkbox'){
+                        provisioner[$(this).attr('name')] = $( this ).is(':checked');
+                    }else if($(this).attr('type') === 'number' && isNaN($( this ).val())){
+                        provisioner[$(this).attr('name')] = parseInt($( this ).val(),10);
+                    }else if($(this).attr('data-type').indexOf("array") !== -1){
+                        provisioner[$(this).attr('name')] = [$( this ).val()];
+                    }else{
+                        provisioner[$(this).attr('name')] = $( this ).val();
+                    }
+                });
+            }
+            
             var devopsP = {};
             if($("#dev_ops_select").val() !== "None"){
                 devopsP['type'] = $("#dev_ops_select").val();
@@ -333,6 +342,7 @@ define([
                     }
                 });
             }
+            
             var postProcessor = {};
             if($("#post_processor_select").val() !== "None"){
                 postProcessor['type'] = $("#post_processor_select").val();
@@ -359,11 +369,11 @@ define([
                 packed_image.provisioners.push(devopsP);
             }
             if(!$.isEmptyObject(postProcessor)){
-                packed_image['post-processors'] = [postProcessor];
+                packed_image['post-processors'].push(postProcessor);
             }
             
-            //delete packed_image['provisioners'];
-            packed_image = this.getDefaultTemplate();
+            //packed_image = this.getDefaultTemplate();
+            //debugger
             
             this.currentImageTemplate = new PackedImage({'packed_image':packed_image,'name':base_image.name});
             this.currentImageTemplate.save();
@@ -376,6 +386,7 @@ define([
         map_base: function(base){
             var builders = [];
             var provisioners = [];
+            var postProcessors = [];
             var mappings;
             $.ajax({
               url: '/samples/awsImages.json',
@@ -417,7 +428,7 @@ define([
                 }
             }
             
-            return {'builders':builders,'provisioners':provisioners};
+            return {'builders':builders,'provisioners':provisioners, 'post-processors':postProcessors};
         },
         
         getDefaultTemplate: function(){
