@@ -11,6 +11,9 @@
                <% }else if (key.type.indexOf("max") != -1) { %>
                    <input id="<%= field %>" name="<%= field %>" type="number" placeholder="<%= field %>" class="input-xlarge" title="<%= key.description %>" data-type="<%= key.type %>">
                    <input id="<%= field.replace('min','max') %>" name="<%= field.replace('min','max') %>" type="number" placeholder="<%= field.replace('min','max') %>" class="input-xlarge" title="<%= key.description %>" data-type="<%= key.type %>">
+               <% }else if(key.type.indexOf("array") != -1){ %>
+                   <input id="<%= field %>" name="<%= field %>" type="text" placeholder="<%= field %>" class="input-xlarge" title="<%= key.description %>" data-type="<%= key.type %>">
+                   <a class="btn append-btn" data-name="<%= field %>">+</a>
                <% }else{ %>
                    <input id="<%= field %>" name="<%= field %>" type="text" placeholder="<%= field %>" class="input-xlarge" title="<%= key.description %>" data-type="<%= key.type %>">
                <% } %>
@@ -32,6 +35,9 @@
                <% }else if (key.type.indexOf("max") != -1) { %>
                    <input id="<%= field %>" name="<%= field %>" type="number" placeholder="<%= field %>" class="input-xlarge" title="<%= key.description %>" data-type="<%= key.type %>">
                    <input id="<%= field.replace('min','max') %>" name="<%= field.replace('min','max') %>" type="number" placeholder="<%= field.replace('min','max') %>" class="input-xlarge" title="<%= key.description %>" data-type="<%= key.type %>">
+               <% }else if(key.type.indexOf("array") != -1){ %>
+                   <input id="<%= field %>" name="<%= field %>" type="text" placeholder="<%= field %>" class="input-xlarge" title="<%= key.description %>" data-type="<%= key.type %>">
+                   <a class="btn append-btn" data-name="<%= field %>">+</a>
                <% }else{ %>
                    <input id="<%= field %>" name="<%= field %>" type="text" placeholder="<%= field %>" class="input-xlarge" title="<%= key.description %>" data-type="<%= key.type %>">
                <% } %>
@@ -54,6 +60,9 @@
                    <% }else if (key.type.indexOf("max") != -1) { %>
                        <input id="<%= field %>" name="<%= field %>" type="number" placeholder="<%= field %>" class="input-xlarge" title="<%= key.description %>" data-type="<%= key.type %>">
                        <input id="<%= field.replace('min','max') %>" name="<%= field.replace('min','max') %>" type="number" placeholder="<%= field.replace('min','max') %>" class="input-xlarge" title="<%= key.description %>" data-type="<%= key.type %>">
+                   <% }else if(key.type.indexOf("array") != -1){ %>
+                       <input id="<%= field %>" name="<%= field %>" type="text" placeholder="<%= field %>" class="input-xlarge" title="<%= key.description %>" data-type="<%= key.type %>">
+                       <a class="btn append-btn" data-name="<%= field %>">+</a>
                    <% }else{ %>
                        <input id="<%= field %>" name="<%= field %>" type="text" placeholder="<%= field %>" class="input-xlarge" title="<%= key.description %>" data-type="<%= key.type %>">
                    <% } %>
@@ -77,6 +86,9 @@
                    <% }else if (key.type.indexOf("max") != -1) { %>
                        <input id="<%= field %>" name="<%= field %>" type="number" placeholder="<%= field %>" class="input-xlarge" title="<%= key.description %>" data-type="<%= key.type %>">
                        <input id="<%= field.replace('min','max') %>" name="<%= field.replace('min','max') %>" type="number" placeholder="<%= field.replace('min','max') %>" class="input-xlarge" title="<%= key.description %>" data-type="<%= key.type %>">
+                   <% }else if(key.type.indexOf("array") != -1){ %>
+                       <input id="<%= field %>" name="<%= field %>" type="text" placeholder="<%= field %>" class="input-xlarge" title="<%= key.description %>" data-type="<%= key.type %>">
+                       <a class="btn append-btn" data-name="<%= field %>">+</a>
                    <% }else{ %>
                        <input id="<%= field %>" name="<%= field %>" type="text" placeholder="<%= field %>" class="input-xlarge" title="<%= key.description %>" data-type="<%= key.type %>">
                    <% } %>

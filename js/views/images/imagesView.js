@@ -44,6 +44,7 @@ define([
             "click #save_image_template_button":"packImage",
             "click #deploy_image_template_button":"deployImage",
             "click .img_item":"loadPackedImage",
+            "click .append-btn":"appendButton",
             "focus #os_input": "openImageList"
         },
 
@@ -301,7 +302,11 @@ define([
                 }else if($(this).attr('type') === 'number' && isNaN($( this ).val())){
                     builder[$(this).attr('name')] = parseInt($( this ).val(),10);
                 }else if($(this).attr('data-type').indexOf("array") !== -1){
-                    builder[$(this).attr('name')] = [$( this ).val()];
+                    if(builder[$(this).attr('name')] === undefined){
+                        builder[$(this).attr('name')] = [$( this ).val()];
+                    }else{
+                        builder[$(this).attr('name')].push($( this ).val());
+                    }
                 }else{
                     builder[$(this).attr('name')] = $( this ).val();
                 }
@@ -318,7 +323,11 @@ define([
                     }else if($(this).attr('type') === 'number' && isNaN($( this ).val())){
                         provisioner[$(this).attr('name')] = parseInt($( this ).val(),10);
                     }else if($(this).attr('data-type').indexOf("array") !== -1){
-                        provisioner[$(this).attr('name')] = [$( this ).val()];
+                        if(provisioner[$(this).attr('name')] === undefined){
+                            provisioner[$(this).attr('name')] = [$( this ).val()];
+                        }else{
+                            provisioner[$(this).attr('name')].push($( this ).val());
+                        }
                     }else{
                         provisioner[$(this).attr('name')] = $( this ).val();
                     }
@@ -336,7 +345,11 @@ define([
                     }else if($(this).attr('type') === 'number' && isNaN($( this ).val())){
                         devopsP[$(this).attr('name')] = parseInt($( this ).val(),10);
                     }else if($(this).attr('data-type').indexOf("array") !== -1){
-                        devopsP[$(this).attr('name')] = [$( this ).val()];
+                        if(devopsP[$(this).attr('name')] === undefined){
+                            devopsP[$(this).attr('name')] = [$( this ).val()];
+                        }else{
+                            devopsP[$(this).attr('name')].push($( this ).val());
+                        }
                     }else{
                         devopsP[$(this).attr('name')] = $( this ).val();
                     }
@@ -354,7 +367,11 @@ define([
                     }else if($(this).attr('type') === 'number' && isNaN($( this ).val())){
                         postProcessor[$(this).attr('name')] = parseInt($( this ).val(),10);
                     }else if($(this).attr('data-type').indexOf("array") !== -1){
-                        postProcessor[$(this).attr('name')] = [$( this ).val()];
+                        if(postProcessor[$(this).attr('name')] === undefined){
+                            postProcessor[$(this).attr('name')] = [$( this ).val()];
+                        }else{
+                            postProcessor[$(this).attr('name')].push($( this ).val());
+                        }
                     }else{
                         postProcessor[$(this).attr('name')] = $( this ).val();
                     }
@@ -373,7 +390,6 @@ define([
             }
             
             //packed_image = this.getDefaultTemplate();
-            //debugger
             
             this.currentImageTemplate = new PackedImage({'packed_image':packed_image,'name':base_image.name});
             this.currentImageTemplate.save();
@@ -450,6 +466,15 @@ define([
             if($("#mciaas_files").val() !== ""){
                 $("#upSub").click();
             }            
+        },
+        
+        appendButton: function(e){
+            var id = e.target.getAttribute('data-name');
+            var placeholder = $("#"+id).attr('placeholder');
+            var title = $("#"+id).attr('title');
+            var dataType = $("#"+id).attr('data-type');
+            $( "<br/><input name='"+id+"' placeholder='"+placeholder+"' title='"+title+"' data-type='"+dataType+"' style='margin-top: 4px;' type='text' class='input-xlarge'></input>" ).insertAfter( e.target ).hide().show('fast');
+            //debugger
         },
 
         closeImageTemplate: function() {
