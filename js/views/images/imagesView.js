@@ -139,9 +139,8 @@ define([
                 $("#dev_ops_select").append("<option>None</option>");
                 $("#image_config_management_select").append("<option>None</option>");
                 $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/provisioners/" + $("#image_config_management_select").val(), function( provisioner ) {
-                    if(provisioner.shell !== undefined){
-                        provisioner.optional = provisioner.shell.optional;
-                        provisioner.required = provisioner.shell.required_xor;
+                    if(provisioner.required_xor !== undefined){
+                        provisioner.required = provisioner.required_xor;
                     }
                     $("#provisioner_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, advanced: provisioner.advanced, qemu: undefined, required: provisioner.required, title: "Provisioner: "+$("#image_config_management_select").val()}));
                     $("#provisioner_settings").tooltip();
@@ -225,9 +224,8 @@ define([
         provisionerSelect: function(event){
             if($("#image_config_management_select").val() !== "None"){
                 $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/provisioners/" + $("#image_config_management_select").val(), function( provisioner ) {
-                    if(provisioner.shell !== undefined){
-                        provisioner.optional = provisioner.shell.optional;
-                        provisioner.required = provisioner.shell.required_xor;
+                    if(provisioner.required_xor !== undefined){
+                        provisioner.required = provisioner.required_xor;
                     }
                     $("#provisioner_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, advanced: provisioner.advanced, qemu: undefined, required: provisioner.required, title: "Provisioner: "+$("#image_config_management_select").val()})).hide().fadeIn('slow');
                     $("#provisioner_settings").tooltip();
