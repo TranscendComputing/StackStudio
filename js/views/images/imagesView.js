@@ -121,7 +121,7 @@ define([
                     $("#image_type_select").append("<option>"+key+"</option>");
                 }
                 $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/builders/" + $("#image_type_select").val().replace('-',''), function( builder ) {
-                    $("#builder_settings").html(_.template(advancedTemplate)({optional: builder.optional, required: builder.required, title: "Builder: "+$("#image_type_select").val()}));
+                    $("#builder_settings").html(_.template(advancedTemplate)({optional: builder.optional, advanced: builder.advanced, qemu: undefined, required: builder.required, title: "Builder: "+$("#image_type_select").val()}));
                     $("#builder_settings").tooltip();
                 });
             });
@@ -141,11 +141,11 @@ define([
                         provisioner.optional = provisioner.shell.optional;
                         provisioner.required = provisioner.shell.required_xor;
                     }
-                    $("#provisioner_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, required: provisioner.required, title: "Provisioner: "+$("#image_config_management_select").val()}));
+                    $("#provisioner_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, advanced: provisioner.advanced, qemu: undefined, required: provisioner.required, title: "Provisioner: "+$("#image_config_management_select").val()}));
                     $("#provisioner_settings").tooltip();
                 });
                 $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/provisioners/" + $("#dev_ops_select").val(), function( provisioner ) {
-                    $("#devops_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, required: provisioner.required, title: "DevOps Tool: "+$("#dev_ops_select").val()}));
+                    $("#devops_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, advanced: provisioner.advanced, qemu: undefined, required: provisioner.required, title: "DevOps Tool: "+$("#dev_ops_select").val()}));
                     $("#devops_settings").tooltip();
                 });
             });
@@ -156,8 +156,9 @@ define([
                 }
                 $("#post_processor_select").append("<option>None</option>");
                 $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/postprocessors/" + $("#post_processor_select").val().replace('-',''), function( postprocessor ) {
+                    var q = postprocessor.optional['qemu'];
                     delete postprocessor.optional['qemu'];
-                    $("#postprocessor_settings").html(_.template(advancedTemplate)({optional: postprocessor.optional, required: postprocessor.required, title: "Post-Processor: "+$("#post_processor_select").val()}));
+                    $("#postprocessor_settings").html(_.template(advancedTemplate)({optional: postprocessor.optional, advanced: postprocessor.advanced, qemu: q, required: postprocessor.required, title: "Post-Processor: "+$("#post_processor_select").val()}));
                     $("#postprocessor_settings").tooltip();
                 });
             });
@@ -214,7 +215,7 @@ define([
         
         builderSelect: function(){
             $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/builders/" + $("#image_type_select").val().replace('-',''), function( builder ) {
-                $("#builder_settings").html(_.template(advancedTemplate)({optional: builder.optional, required: builder.required, title: "Builder: "+$("#image_type_select").val()})).hide().fadeIn('slow');
+                $("#builder_settings").html(_.template(advancedTemplate)({optional: builder.optional, advanced: builder.advanced, qemu: undefined, required: builder.required, title: "Builder: "+$("#image_type_select").val()})).hide().fadeIn('slow');
                 $("#builder_settings").tooltip();
             });
         },
@@ -225,7 +226,7 @@ define([
                     provisioner.optional = provisioner.shell.optional;
                     provisioner.required = provisioner.shell.required_xor;
                 }
-                $("#provisioner_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, required: provisioner.required, title: "Provisioner: "+$("#image_config_management_select").val()})).hide().fadeIn('slow');
+                $("#provisioner_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, advanced: provisioner.advanced, qemu: undefined, required: provisioner.required, title: "Provisioner: "+$("#image_config_management_select").val()})).hide().fadeIn('slow');
                 $("#provisioner_settings").tooltip();
             });
         },
@@ -233,7 +234,7 @@ define([
         devopsSelect: function(event){
             if($("#dev_ops_select").val() !== "None"){
                 $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/provisioners/" + $("#dev_ops_select").val(), function( provisioner ) {
-                    $("#devops_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, required: provisioner.required, title: "DevOps Tool: "+$("#dev_ops_select").val()})).hide().fadeIn('slow');
+                    $("#devops_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, advanced: provisioner.advanced, qemu: undefined, required: provisioner.required, title: "DevOps Tool: "+$("#dev_ops_select").val()})).hide().fadeIn('slow');
                     $("#devops_settings").tooltip();
                 });
             }else{
@@ -244,7 +245,9 @@ define([
         postProcessorSelect: function(event){
             if($("#post_processor_select").val() !== "None"){
                 $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/postprocessors/" + $("#post_processor_select").val(), function( postprocessor ) {
-                    $("#postprocessor_settings").html(_.template(advancedTemplate)({optional: postprocessor.optional, required: postprocessor.required, title: "Post-Processor: "+$("#post_processor_select").val()})).hide().fadeIn('slow');
+                    var q = postprocessor.optional['qemu'];
+                    delete postprocessor.optional['qemu'];
+                    $("#postprocessor_settings").html(_.template(advancedTemplate)({optional: postprocessor.optional, advanced: postprocessor.advanced, qemu: q, required: postprocessor.required, title: "Post-Processor: "+$("#post_processor_select").val()})).hide().fadeIn('slow');
                     $("#postprocessor_settings").tooltip();
                 });
             }else{
