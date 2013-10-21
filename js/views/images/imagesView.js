@@ -233,7 +233,7 @@ define([
                     $("#provisioner_settings").tooltip();
                 });
             }else{
-                $("#provisioner_settings").hide('slow');
+                $("#provisioner_settings").hide('slow').html('');
             }
         },
 
@@ -244,7 +244,7 @@ define([
                     $("#devops_settings").tooltip();
                 });
             }else{
-                $("#devops_settings").hide('slow');
+                $("#devops_settings").hide('slow').html('');
             }
         },
         
@@ -257,7 +257,7 @@ define([
                     $("#postprocessor_settings").tooltip();
                 });
             }else{
-                $("#postprocessor_settings").hide('slow');
+                $("#postprocessor_settings").hide('slow').html('');
             }
         },
         
