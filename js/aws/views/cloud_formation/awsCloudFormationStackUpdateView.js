@@ -152,7 +152,7 @@ define([
             var templateField = $("#view0").find("input[type=radio]:checked").parent().find("input[name=template]");
             var updateParams= {
                 "Parameters": {},
-                "Capabilities": [],
+                "Capabilities": []
             };
             if(templateField.attr("type") ==="url"){
                 updateParams["TemplateURL"] = templateField.val();
@@ -198,7 +198,6 @@ define([
                 case 0:
                     var templateField = $("#view0").find("input[type=radio]:checked").parent().find("input[name=template]");
                     if(templateField.length === 0 || !templateField.val() || templateField.val() === ""){
-                        allValid = false;
                         this.displayValid(false, templateField);
                     }
                     else{
