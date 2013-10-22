@@ -1,0 +1,32 @@
+{
+    "Ubuntu Server 12.04.1 LTS 64-bit":{
+        "label":"Ubuntu Server 12.04.1 LTS 64-bit",
+        "url":"http://releases.ubuntu.com/12.04/ubuntu-12.04.3-server-amd64.iso",
+        "checksum":"2cbe868812a871242cdcdd8f2fd6feb9"
+    },
+    "Ubuntu Server 12.04.1 LTS 32-bit":{
+        "label":"Ubuntu Server 12.04.1 LTS 32-bit",
+        "url":"http://releases.ubuntu.com/12.04/ubuntu-12.04.3-server-i386.iso",
+        "checksum":"e7917ff0543d8248d00ffb166def849e"
+    },
+    "Fedora 8 v1.14 x86_64":{
+        "label":"Fedora 8 v1.14 x86_64",
+        "url":"http://download.fedoraproject.org/pub/fedora/linux/releases/19/Fedora/x86_64/iso/Fedora-19-x86_64-DVD.iso",
+        "checksum":"6e7e263e607cfcadc90ea2ef5668aa3945d9eca596485a7a1f8a9f2478cc7084"
+    },
+    "Fedora 8 v1.14 i386":{
+        "label":"Fedora 8 v1.14 i386",
+        "url":"http://download.fedoraproject.org/pub/fedora/linux/releases/19/Fedora/i386/iso/Fedora-19-i386-DVD.iso",
+        "checksum":"0da29695c4f503e2b27350406c1ceb7a4e5b9b699ea722774368fd16ab277bce"
+    },
+    "CentOS x86_64":{
+        "label":"CentOS x86_64",
+        "url":"http://mirror.raystedman.net/centos/6/isos/x86_64/CentOS-6.4-x86_64-minimal.iso",
+        "checksum":"4a5fa01c81cc300f4729136e28ebe600"
+    },
+    "CentOS 32-bit":{
+        "label":"CentOS 32-bit",
+        "url":"http://mirror.raystedman.net/centos/6/isos/i386/CentOS-6.4-i386-minimal.iso",
+        "checksum":"6b5c727fa76fcce7c9ab6213ad3df75a"
+    }
+}

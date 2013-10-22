@@ -132,6 +132,12 @@ define([
                 case "windows":
                     imagePath = "/images/ImageLogos/windows20.png";
                     break;
+                case "centos":
+                    imagePath = "/images/ImageLogos/centos.gif";
+                    break;
+                case "fedora":
+                    imagePath = "/images/ImageLogos/fedora36.png";
+                    break;
                 }
                 var img = '<td style="width:22px;" rowspan="2"><img height="20" width="20" src="'+imagePath+'"/></td>';
                 var name = '<td>'+item.label+'</td>';

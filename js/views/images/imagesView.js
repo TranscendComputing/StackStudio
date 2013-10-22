@@ -190,6 +190,12 @@ define([
                 case "windows":
                     imagePath = "/images/ImageLogos/windows20.png";
                     break;
+                case "centos":
+                    imagePath = "/images/ImageLogos/centos.gif";
+                    break;
+                case "fedora":
+                    imagePath = "/images/ImageLogos/fedora36.png";
+                    break;
                 }
                 var img = '<td style="width:22px;" rowspan="2"><img height="20" width="20" src="'+imagePath+'"/></td>';
                 var name = '<td>'+item.label+'</td>';
@@ -420,11 +426,19 @@ define([
             var provisioners = [];
             var postProcessors = [];
             var mappings;
+            var qMap;
             $.ajax({
               url: '/samples/awsImages.json',
               async: false,
               success: function(data) {
                 mappings = data;
+              }
+            });
+            $.ajax({
+              url: '/samples/imageISO.json',
+              async: false,
+              success: function(data) {
+                qMap = data;
               }
             });
             for (var i in base.clouds) {
@@ -446,17 +460,10 @@ define([
                     }
                 }
                 if(base.clouds[i] === 'openstack'){
-                    builders.push({
-                        "type": "qemu"
-                        //"username": "buildbot-grizzly",
-                        //"password": "buildbot-grizzly",
-                        //"provider": "",
-                        //"region": "nova",
-                        //"ssh_username": "ubuntu",
-                        //"image_name": $("#image_template_name_input").val(),
-                        //"source_image": "b53eea94-b195-4978-abcb-691d31ca57b5",
-                        //"flavor": "2"         
-                    });
+                    var qHash = this.getDefaultTemplate()['builders'][0];
+                    qHash['iso_checksum'] = qMap[$('#os_input').val()]['checksum'];
+                    qHash['iso_url'] = qMap[$('#os_input').val()]['url'];
+                    builders.push(qHash);
                 }
             }
             

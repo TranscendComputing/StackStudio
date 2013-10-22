@@ -94,5 +94,69 @@
             "ap-northeast-1": "ami-9563e694",
             "sa-east-1": "ami-db6ab2c6"
         }
+    },
+    {
+        "label": "CentOS x86_64",
+        "description": "CentOS x86_64",
+        "logo": "centos",
+        "product": "Linux/UNIX",
+        "region": {
+            "us-east-1": "ami-673af20e",
+            "us-west-1": "ami-673af20e",
+            "us-west-2": "ami-673af20e",
+            "eu-west-1": "ami-673af20e",
+            "ap-southeast-1": "ami-673af20e",
+            "ap-southeast-2": "ami-673af20e",
+            "ap-northeast-1": "ami-673af20e",
+            "sa-east-1": "ami-673af20e"
+        }
+    },
+    {
+        "label": "CentOS 32-bit",
+        "description": "CentOS 32-bit",
+        "logo": "centos",
+        "product": "Linux/UNIX",
+        "region": {
+            "us-east-1": "ami-713af218",
+            "us-west-1": "ami-713af218",
+            "us-west-2": "ami-713af218",
+            "eu-west-1": "ami-713af218",
+            "ap-southeast-1": "ami-713af218",
+            "ap-southeast-2": "ami-713af218",
+            "ap-northeast-1": "ami-713af218",
+            "sa-east-1": "ami-713af218"
+        }
+    },
+    {
+        "label": "Fedora 8 v1.14 x86_64",
+        "description": "Fedora 8 v1.14 x86_64 std-root lvm-swap lvm-storage",
+        "logo": "fedora",
+        "product": "Linux/UNIX",
+        "region": {
+            "us-east-1": "ami-86db39ef",
+            "us-west-1": "ami-86db39ef",
+            "us-west-2": "ami-86db39ef",
+            "eu-west-1": "ami-86db39ef",
+            "ap-southeast-1": "ami-86db39ef",
+            "ap-southeast-2": "ami-86db39ef",
+            "ap-northeast-1": "ami-86db39ef",
+            "sa-east-1": "ami-86db39ef"
+        }
+    },
+    {
+        "label": "Fedora 8 v1.14 i386",
+        "description": "Fedora 8 v1.14 i386 std-root lvm-swap lvm-storage",
+        "logo": "fedora",
+        "product": "Linux/UNIX",
+        "region": {
+            "us-east-1": "ami-84db39ed",
+            "us-west-1": "ami-84db39ed",
+            "us-west-2": "ami-84db39ed",
+            "eu-west-1": "ami-84db39ed",
+            "ap-southeast-1": "ami-84db39ed",
+            "ap-southeast-2": "ami-84db39ed",
+            "ap-northeast-1": "ami-84db39ed",
+            "sa-east-1": "ami-84db39ed"
+        }
     }
 ]
