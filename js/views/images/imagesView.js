@@ -41,7 +41,7 @@ define([
             "change #dev_ops_select":"devopsSelect",
             "change #post_processor_select":"postProcessorSelect",
             "click .adv_tab": "advTabSelect",
-            "click #save_image_template_button":"packImage",
+            "click #save_image_template_button":"saveButton",
             "click #deploy_image_template_button":"deployImage",
             "click .img_item":"loadPackedImage",
             "click .append-btn":"appendButton",
@@ -89,13 +89,14 @@ define([
         render: function() {
             //Fetch image templates
             if(this.currentImageTemplate) {
-                if(this.currentImageTemplate.id === "") {
+                $("#image_template_not_opened").hide();
+                $("#image_template_open").show();
+                if(this.currentImageTemplate === "") {
                     // Set image template fields to defaults
                 }else {
                     // Fill in the image template fields to match the selected image template
+                    this.popForm(this.currentImageTemplate);
                 }
-                $("#image_template_not_opened").hide();
-                $("#image_template_open").show();
             }else {
                 $("#image_template_open").hide();
                 $("#image_template_not_opened").show();
@@ -106,11 +107,11 @@ define([
             if(this.currentImageTemplate) {
                 var confirmation = confirm("Are you sure you want to open a new image template? Any unsaved changes to the current template will be lose.");
                 if(confirmation === true) {
-                    this.currentImageTemplate = "test";
+                    this.currentImageTemplate = "";
                     this.render();
                 }
             }else {
-                this.currentImageTemplate = "test";
+                this.currentImageTemplate = "";
                 this.render();
             }
         },
@@ -209,7 +210,7 @@ define([
             $("#packed_images_list").hide('slow');
             $("#packed_images_list").empty();
             collection.each(function(model) {
-                $("#packed_images_list").append("<li><a id='"+model.attributes.doc_id+"' class='img_item'>"+model.attributes.name+"</a></li>");
+                $("#packed_images_list").append("<li><a href='#images/"+model.attributes.doc_id+"' id='"+model.attributes.doc_id+"' class='img_item'>"+model.attributes.name+"</a></li>");
             });
             $("#packed_images_list").show('slow');
         },
@@ -282,6 +283,17 @@ define([
         
         loadPackedImage: function(event){
             //debugger
+        },
+        
+        popForm: function(doc_id){
+           var url = Common.apiUrl + "/stackstudio/v1/packed_images/templates/"+sessionStorage.org_id+"/"+doc_id;
+           //debugger
+        },
+        
+        saveButton: function(e){
+            if(this.validate()){
+                this.packImage();
+            }
         },
         
         packImage: function(){
@@ -412,6 +424,7 @@ define([
             }
             
             //packed_image = this.getDefaultTemplate();
+            this.validate(packed_image);
             
             this.currentImageTemplate = new PackedImage({'packed_image':packed_image,'name':base_image.name});
             this.currentImageTemplate.save();
@@ -499,6 +512,36 @@ define([
             $( "<br/><input name='"+id+"' placeholder='"+placeholder+"' title='"+title+"' data-type='"+dataType+"' style='margin-top: 4px;' type='text' class='input-xlarge'></input>" ).insertAfter( e.target ).hide().show('fast');
             //debugger
         },
+        
+        validate: function(){
+            var valid = true;
+            $("#os_input_msg").empty();
+            $("#clouds_select_msg").empty();
+            $("#os_input").css('border-color','grey');
+            $("#image_template_name_input").css('border-color','grey');
+            if($("#clouds_select_openstack").is(':checked')){
+                if($("#os_input").val().indexOf("Amazon") !== -1){
+                    $("#os_input").css('border-color','red');
+                    $("#os_input_msg").html("Amazon Linux not compatible with OpenStack");
+                    valid = false;
+                }else if($("#os_input").val().indexOf("Red Hat") !== -1){
+                    $("#os_input").css('border-color','red');
+                    $("#os_input_msg").html("Red Hat not compatible with OpenStack, try CentOS or Fedora");
+                    valid = false;
+                }
+            }
+            if($("#image_template_name_input").val()===""){
+                $("#image_template_name_input").css('border-color','red');
+                valid = false;
+            }
+            var clouds = [];
+            $("input[name='clouds_select']:checkbox:checked").each(function(){  clouds.push($(this).val());   });
+            if(clouds.length <= 0){
+                $("#clouds_select_msg").html("Must choose a cloud");
+                valid = false;
+            }
+            return valid;
+        },
 
         closeImageTemplate: function() {
             this.currentImageTemplate = undefined;
@@ -522,7 +565,7 @@ define([
                 imagesView = new ImagesView();
                 this.setPreviousState(imagesView);
             }
-            imagesView.imgId = id;
+            imagesView.currentImageTemplate = id;
             imagesView.render();
         }else {
             Common.router.navigate("", {trigger: true});
