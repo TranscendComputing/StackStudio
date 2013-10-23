@@ -231,7 +231,7 @@ define([
             });
         },
         
-        provisionerSelect: function(event){
+        provisionerSelect: function(){
             if($("#image_config_management_select").val() !== "None"){
                 $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/provisioners/" + $("#image_config_management_select").val(), function( provisioner ) {
                     if(provisioner.required_xor !== undefined){
@@ -245,7 +245,7 @@ define([
             }
         },
 
-        devopsSelect: function(event){
+        devopsSelect: function(){
             if($("#dev_ops_select").val() !== "None"){
                 $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/provisioners/" + $("#dev_ops_select").val(), function( provisioner ) {
                     $("#devops_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, advanced: provisioner.advanced, qemu: undefined, required: provisioner.required, title: "DevOps Tool: "+$("#dev_ops_select").val()})).hide().fadeIn('slow');
@@ -256,7 +256,7 @@ define([
             }
         },
         
-        postProcessorSelect: function(event){
+        postProcessorSelect: function(){
             if($("#post_processor_select").val() !== "None"){
                 $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/postprocessors/" + $("#post_processor_select").val(), function( postprocessor ) {
                     var q = postprocessor.optional['qemu'];
@@ -307,6 +307,11 @@ define([
            $("#image_config_management_select").hide().show('slow').val(base_image.provisioner);
            $("#dev_ops_select").hide().show('slow').val(base_image.devops_tool);
            $("#post_processor_select").hide().show('slow').val(base_image.post_processor);
+           
+           this.builderSelect();
+           this.provisionerSelect();
+           this.devopsSelect();
+           this.postProcessorSelect();
         },
         
         saveButton: function(e){
