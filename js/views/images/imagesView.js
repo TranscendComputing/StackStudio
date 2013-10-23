@@ -69,7 +69,7 @@ define([
             var piView = this;
             Common.vent.on("packedImageAppRefresh", function(data) {
                 console.log(data);
-                piView.currentImageTemplate.attributes.doc_id = data['Id'];
+                piView.currentImageTemplate = data['Id'];
                 piView.uploadAsync();
                 piView.packed_images.fetch({reset: true});
             });
@@ -95,7 +95,7 @@ define([
                     // Set image template fields to defaults
                 }else {
                     // Fill in the image template fields to match the selected image template
-                    this.popForm(this.currentImageTemplate);
+                    // this.popForm(this.currentImageTemplate);
                 }
             }else {
                 $("#image_template_open").hide();
@@ -107,11 +107,11 @@ define([
             if(this.currentImageTemplate) {
                 var confirmation = confirm("Are you sure you want to open a new image template? Any unsaved changes to the current template will be lose.");
                 if(confirmation === true) {
-                    this.currentImageTemplate = "";
+                    this.currentImageTemplate = "test";
                     this.render();
                 }
             }else {
-                this.currentImageTemplate = "";
+                this.currentImageTemplate = "test";
                 this.render();
             }
         },
@@ -213,6 +213,9 @@ define([
                 $("#packed_images_list").append("<li><a href='#images/"+model.attributes.doc_id+"' id='"+model.attributes.doc_id+"' class='img_item'>"+model.attributes.name+"</a></li>");
             });
             $("#packed_images_list").show('slow');
+            if(this.currentImageTemplate){
+                this.popForm(this.currentImageTemplate);
+            }
         },
         
         openImageList: function() {
@@ -282,12 +285,28 @@ define([
         },
         
         loadPackedImage: function(event){
-            //debugger
+            this.popForm(event.target.id);
         },
         
         popForm: function(doc_id){
-           var url = Common.apiUrl + "/stackstudio/v1/packed_images/templates/"+sessionStorage.org_id+"/"+doc_id;
-           //debugger
+           var pi = this.packed_images.find(function(model) { return model.get('doc_id') === doc_id; });
+           var base_image = pi.attributes.base_image;
+           $('#image_template_name_input').val(base_image.name);
+           $('input:checkbox').removeAttr('checked');
+           for(var i in base_image.clouds){
+               if(base_image.clouds[i] === 'aws'){
+                   $('#clouds_select_aws').prop('checked', true);
+               }else if(base_image.clouds[i] === 'openstack'){
+                   $('#clouds_select_openstack').prop('checked', true);
+               }
+           }
+           $('#os_input').val(base_image.os);
+           
+           $("#instance_type_select").val(base_image.machine_type);
+           $("#image_type_select").val(base_image.builder_type);
+           $("#image_config_management_select").val(base_image.provisioner);
+           $("#dev_ops_select").val(base_image.devops_tool);
+           $("#post_processor_select").val(base_image.post_processor);
         },
         
         saveButton: function(e){
@@ -306,7 +325,13 @@ define([
             base_image.name = $('#image_template_name_input').val();
             base_image.clouds = clouds;
             base_image.os = $('#os_input').val();
-
+            
+            base_image.machine_type = $("#instance_type_select").val();
+            base_image.builder_type = $("#image_type_select").val();
+            base_image.provisioner = $("#image_config_management_select").val();
+            base_image.devops_tool = $("#dev_ops_select").val();
+            base_image.post_processor = $("#post_processor_select").val();
+            
             var packed_image = this.map_base(base_image);
             
             var builder = {};
@@ -424,9 +449,8 @@ define([
             }
             
             //packed_image = this.getDefaultTemplate();
-            this.validate(packed_image);
             
-            this.currentImageTemplate = new PackedImage({'packed_image':packed_image,'name':base_image.name});
+            this.currentImageTemplate = new PackedImage({'packed_image':packed_image,'name':base_image.name,'base_image':base_image});
             this.currentImageTemplate.save();
         },
         
@@ -496,7 +520,7 @@ define([
         },
         
         uploadAsync: function(){
-            var d_id = this.currentImageTemplate.attributes.doc_id;
+            var d_id = this.currentImageTemplate;
             var upUrl = Common.apiUrl + "/stackstudio/v1/packed_images/save?uid=" + sessionStorage.org_id + "&docid=" + d_id;
             $("#upForm").attr('action',upUrl);
             if($("#mciaas_files").val() !== ""){
