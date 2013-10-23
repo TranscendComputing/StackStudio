@@ -291,22 +291,22 @@ define([
         popForm: function(doc_id){
            var pi = this.packed_images.find(function(model) { return model.get('doc_id') === doc_id; });
            var base_image = pi.attributes.base_image;
-           $('#image_template_name_input').val(base_image.name);
+           $('#image_template_name_input').hide().show('slow').val(base_image.name);
            $('input:checkbox').removeAttr('checked');
            for(var i in base_image.clouds){
                if(base_image.clouds[i] === 'aws'){
-                   $('#clouds_select_aws').prop('checked', true);
+                   $('#clouds_select_aws').hide().show('slow').prop('checked', true);
                }else if(base_image.clouds[i] === 'openstack'){
-                   $('#clouds_select_openstack').prop('checked', true);
+                   $('#clouds_select_openstack').hide().show('slow').prop('checked', true);
                }
            }
-           $('#os_input').val(base_image.os);
+           $('#os_input').hide().show('slow').val(base_image.os);
            
-           $("#instance_type_select").val(base_image.machine_type);
-           $("#image_type_select").val(base_image.builder_type);
-           $("#image_config_management_select").val(base_image.provisioner);
-           $("#dev_ops_select").val(base_image.devops_tool);
-           $("#post_processor_select").val(base_image.post_processor);
+           $("#instance_type_select").hide().show('slow').val(base_image.machine_type);
+           $("#image_type_select").hide().show('slow').val(base_image.builder_type);
+           $("#image_config_management_select").hide().show('slow').val(base_image.provisioner);
+           $("#dev_ops_select").hide().show('slow').val(base_image.devops_tool);
+           $("#post_processor_select").hide().show('slow').val(base_image.post_processor);
         },
         
         saveButton: function(e){
