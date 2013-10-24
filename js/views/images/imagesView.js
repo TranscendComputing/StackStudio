@@ -336,7 +336,23 @@ define([
             for(var i in list){
                 for(var k in list[i]){
                     if(k==="qemu"){
-                        //iterate
+                        for(var kQ in list[i][k]){
+                            if($("#"+kQ).attr('type') === 'checkbox'){
+                                $("#"+kQ).prop('checked',list[i][k]);
+                            }else if($("#"+kQ).attr('data-type') && $("#"+kQ).attr('data-type').indexOf("array") !== -1){
+                                var id = $("#"+kQ).attr('name');
+                                var placeholder = $("#"+id).attr('placeholder');
+                                var title = $("#"+id).attr('title');
+                                var dataType = $("#"+id).attr('data-type');
+                                $("#"+kQ).val(list[i][k][kQ][0]);
+                                for(var j=1;j<list[i][k][kQ].length;j++){
+                                    $( "<br/><input name='"+id+"' placeholder='"+placeholder+"' title='"+title+"' data-type='"+dataType+"' style='margin-top: 4px;' type='text' class='input-xlarge'></input>" ).insertAfter( $("#"+id).next('a') ).val(list[i][k][kQ][j]);
+                                }
+                            }
+                            else{
+                                $("#"+kQ).val(list[i][k][kQ]);
+                            }
+                        }
                     }else if($("#"+k).attr('type') === 'checkbox'){
                         $("#"+k).prop('checked',list[i]);
                     }else if($("#"+k).attr('data-type') && $("#"+k).attr('data-type').indexOf("array") !== -1){
