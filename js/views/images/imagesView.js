@@ -225,13 +225,16 @@ define([
         },
         
         builderSelect: function(){
+            var me = this;
             $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/builders/" + $("#image_type_select").val().replace('-',''), function( builder ) {
                 $("#builder_settings").html(_.template(advancedTemplate)({optional: builder.optional, advanced: builder.advanced, qemu: undefined, required: builder.required, title: "Builder: "+$("#image_type_select").val()})).hide().fadeIn('slow');
                 $("#builder_settings").tooltip();
+                me.mapAdvanced("builders",me.currentImageTemplate);
             });
         },
         
         provisionerSelect: function(){
+            var me = this;
             if($("#image_config_management_select").val() !== "None"){
                 $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/provisioners/" + $("#image_config_management_select").val(), function( provisioner ) {
                     if(provisioner.required_xor !== undefined){
@@ -239,6 +242,7 @@ define([
                     }
                     $("#provisioner_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, advanced: provisioner.advanced, qemu: undefined, required: provisioner.required, title: "Provisioner: "+$("#image_config_management_select").val()})).hide().fadeIn('slow');
                     $("#provisioner_settings").tooltip();
+                    me.mapAdvanced("provisioners",me.currentImageTemplate);
                 });
             }else{
                 $("#provisioner_settings").hide('slow').html('');
@@ -246,10 +250,12 @@ define([
         },
 
         devopsSelect: function(){
+            var me = this;
             if($("#dev_ops_select").val() !== "None"){
                 $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/provisioners/" + $("#dev_ops_select").val(), function( provisioner ) {
                     $("#devops_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, advanced: provisioner.advanced, qemu: undefined, required: provisioner.required, title: "DevOps Tool: "+$("#dev_ops_select").val()})).hide().fadeIn('slow');
                     $("#devops_settings").tooltip();
+                    me.mapAdvanced("provisioners",me.currentImageTemplate);
                 });
             }else{
                 $("#devops_settings").hide('slow').html('');
@@ -257,12 +263,14 @@ define([
         },
         
         postProcessorSelect: function(){
+            var me = this;
             if($("#post_processor_select").val() !== "None"){
                 $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/postprocessors/" + $("#post_processor_select").val(), function( postprocessor ) {
                     var q = postprocessor.optional['qemu'];
                     delete postprocessor.optional['qemu'];
                     $("#postprocessor_settings").html(_.template(advancedTemplate)({optional: postprocessor.optional, advanced: postprocessor.advanced, qemu: q, required: postprocessor.required, title: "Post-Processor: "+$("#post_processor_select").val()})).hide().fadeIn('slow');
                     $("#postprocessor_settings").tooltip();
+                    me.mapAdvanced("post-processors",me.currentImageTemplate);
                 });
             }else{
                 $("#postprocessor_settings").hide('slow').html('');
@@ -308,10 +316,28 @@ define([
            $("#dev_ops_select").hide().show('slow').val(base_image.devops_tool);
            $("#post_processor_select").hide().show('slow').val(base_image.post_processor);
            
+           $.ajax({
+             url: Common.apiUrl + "/stackstudio/v1/packed_images/templates/" + sessionStorage.org_id + "/" + doc_id,
+             async: false,
+             success: function(data) {
+                 pi.attributes.packed_image = data;
+             }
+           });
+           
            this.builderSelect();
            this.provisionerSelect();
            this.devopsSelect();
            this.postProcessorSelect();
+        },
+        
+        mapAdvanced: function(key,doc_id){
+            var pi = this.packed_images.find(function(model) { return model.get('doc_id') === doc_id; });
+            var list = pi.attributes.packed_image[key];
+            for(var i in list){
+                for(var k in list[i]){
+                    $("#"+k).val(list[i][k]);
+                }
+            }
         },
         
         saveButton: function(e){
