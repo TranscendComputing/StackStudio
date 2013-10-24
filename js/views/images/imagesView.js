@@ -335,7 +335,20 @@ define([
             var list = pi.attributes.packed_image[key];
             for(var i in list){
                 for(var k in list[i]){
-                    $("#"+k).val(list[i][k]);
+                    if(k==="qemu"){
+                        
+                    }else if($("#"+k).attr('type') === 'checkbox'){
+                        $("#"+k).prop('checked',list[i])
+                    }else if($("#"+k).attr('data-type') && $("#"+k).attr('data-type').indexOf("array") !== -1){
+                        var id = $("#"+k).attr('data-name');
+                        var placeholder = $("#"+id).attr('placeholder');
+                        var title = $("#"+id).attr('title');
+                        var dataType = $("#"+id).attr('data-type');
+                        $( "<br/><input name='"+id+"' placeholder='"+placeholder+"' title='"+title+"' data-type='"+dataType+"' style='margin-top: 4px;' type='text' class='input-xlarge'></input>" ).insertAfter( $("#"+id).closest('a') );
+                    }
+                    else{
+                        $("#"+k).val(list[i][k]);
+                    }
                 }
             }
         },
