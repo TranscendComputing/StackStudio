@@ -12,10 +12,11 @@ define([
         'common',
         'text!templates/stacks/stackDesignTemplate.html',
         'collections/assemblies',
+        '/js/aws/views/cloud_formation/awsCloudFormationStackCreateView.js',
         'ace',
         'mode-json',
         'jquery.jstree'
-], function( $, _, Backbone, Common, stacksDesignTemplate, Assemblies, ace) {
+], function( $, _, Backbone, Common, stacksDesignTemplate, Assemblies, StackCreate, ace) {
     'use strict';
 
     var StackDesignView = Backbone.View.extend({
@@ -35,7 +36,8 @@ define([
         events: {
             "click .jstree_custom_item": "treeFolderClick",
             "click .new_item_link": "addResource",
-            "click #save_template_button": "saveTemplate"
+            "click #save_template_button": "saveTemplate",
+            'click #run_template_button': "runTemplate"
         },
 
         initialize: function() {
@@ -171,6 +173,12 @@ define([
                 $(event.target.parentElement).addClass("jstree-closed");
             }
             return false;
+        },
+
+        runTemplate: function() {
+            var template = this.editor.getValue();
+            this.newResourceDialog = new StackCreate({cred_id: this.credentialId});
+            this.newResourceDialog.render();
         }
     });
 

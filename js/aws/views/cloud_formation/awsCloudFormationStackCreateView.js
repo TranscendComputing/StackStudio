@@ -15,10 +15,12 @@ define([
         '/js/aws/collections/notification/awsTopics.js',
         '/js/aws/models/notification/awsTopic.js',
         '/js/aws/models/notification/awsSubscription.js',
+        'collections/cloudCredentials',
         'common',
         'jquery.form'
         
-], function( $, _, Backbone, DialogView, StackCreateTemplate, Stack, Topics, Topic, Subscription, Common ) {
+], function( $, _, Backbone, DialogView, StackCreateTemplate, 
+    Stack, Topics, Topic, Subscription, CloudCredentials, Common ) {
     
     var CloudFormationStackCreateView = DialogView.extend({
 
@@ -36,7 +38,8 @@ define([
             "click #add_tag": "addTagHandler",
             "click .remove_tag": "removeTagHandler",
             "change #options_checkbox":"showAdvancedOptions",
-            "change #notifications_select":"notificationsMenuHandler"
+            "change #notifications_select":"notificationsMenuHandler",
+            "change #cloud_credential":"changeCloudCreds"
         },
 
         addTagHandler: function(e){
@@ -62,10 +65,10 @@ define([
             this.region = options.region;
             this.stack = new Stack();
             this.topics = new Topics();
-            this.fetchTopics();
+            if (this.region && this.credentialId) {
+                this.fetchTopics();
+            }
             Common.vent.on("reloadTopics", this.fetchTopics);
-
-
         },
         render: function() {
             var createView = this;
@@ -115,6 +118,12 @@ define([
                     "sZeroRecords": ""
                 }
             });
+            // From CloudManagement, credentials are chosen; if not, enable in view.
+            if (!this.region || !this.credentialId) {
+                this.cloudCredentials = new CloudCredentials();
+                this.cloudCredentials.on('reset', this.populateCredentials, this);
+                this.cloudCredentials.fetch();
+            }
             this.tagsTable.fnAddData({});
             this.refreshView(0);
             $(".template_input").hide();
@@ -145,7 +154,74 @@ define([
                     }
                 });
         },
-
+        populateCredentials: function() {
+            var list = this.cloudCredentials;
+            var select = $("#cf_cloud_creds")
+                .empty()
+                .on("change", $.proxy(this.credentialChangeHandler, this));
+            list.forEach(function(element, index, list) {
+                // For now, only AWS supports stacks.
+                if (element.get("cloud_name") === "Amazon Web Services") {
+                    $('<option>')
+                        .text(element.get("cloud_name") + ":" + element.get("name"))
+                        .data("cloudCredentials", element)
+                        .appendTo(select);
+                }
+            });
+        },
+        credentialChangeHandler: function(evt) {
+            var $this = this;
+            var optionSelected = $("option:selected", evt.target);
+            var credential = optionSelected.data("cloudCredentials");
+            if (!credential) {
+                return;
+            }
+            this.credentialId = credential.id;
+            this.cloudProvider = credential.get("cloud_provider").toLowerCase();
+            this.populateRegions();
+            if (this.region && this.credentialId) {
+                this.fetchTopics();
+            }
+        },
+        populateRegions: function() {
+            var $this = this;
+            var response = $.ajax({
+                url: "samples/cloudDefinitions.json",
+                async: false
+            }).responseText;
+            var select = $("#cf_cloud_region")
+                .empty()
+                .on("change", $.proxy(this.regionChangeHandler, this));
+            this.cloudDefinitions = $.parseJSON(response);
+            if(this.cloudDefinitions[this.cloudProvider].regions.length) {
+                $.each($this.cloudDefinitions[this.cloudProvider].regions, function(index, region) {
+                    //regions check
+                    var addRegion = false;
+                    if(JSON.parse(sessionStorage.group_policies)[0] == null){
+                        addRegion = true;
+                    }else{
+                        $.each(JSON.parse(sessionStorage.group_policies), function(index,value){
+                            if(value != null){
+                                var usable_regions = value.group_policy.aws_governance.usable_regions;
+                                if($.inArray(region.name, usable_regions) !== -1){
+                                    addRegion = true;
+                                }
+                            }
+                        });
+                    }
+                    if (addRegion) {
+                        $('#cf_cloud_region').append($("<option value='" + region.zone + "'></option>").text(region.name));
+                    }
+                });
+            }
+        },
+        regionChangeHandler: function(evt) {
+            var optionSelected = $("option:selected", evt.target);
+            this.region = optionSelected.val();
+            if (this.region && this.credentialId) {
+                this.fetchTopics();
+            }
+        },        
         templateOptionChange: function(e){
             var templateInput = $(e.currentTarget.parentElement).find("input[name=template]");
             $(".template_input").hide();
@@ -443,6 +519,13 @@ define([
                 $("#new_topic_form").show();
             }else{
                 $("#new_topic_form").hide();
+            }
+        },
+        changeCloudCreds: function(evt){
+            if($(evt.currentTarget).is(":checked")){
+                $("#advanced_options").show();
+            }else{
+                $("#advanced_options").hide();
             }
         }
 
