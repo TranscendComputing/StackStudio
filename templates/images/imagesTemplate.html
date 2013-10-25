@@ -45,26 +45,48 @@
                                           <input type="checkbox" name="clouds_select" id="clouds_select_aws" value="aws">
                                           AWS
                                         </label>
-                                        <select id="aws_cred_select" class='input-xlarge'><option>Cred</option></select>
-                                        <select id="aws_region_select" name="aws_region_select" class="input-xlarge">
-                                            <option value="us-east-1">US East (Northern Virginia)</option>
-                                            <option value="us-west-2">US West (Oregon)</option>
-                                            <option value="us-west-1">US West (Northern California)   EU (Ireland)</option>
-                                            <option value="eu-west-1">EU (Ireland)</option>
-                                            <option value="ap-southeast-1">Asia Pacific (Singapore)</option>
-                                            <option value="ap-southeast-2">Asia Pacific (Sydney)</option>
-                                            <option value="ap-northeast-1">Asia Pacific (Tokyo)</option>
-                                            <option value="sa-east-1">South America (Sao Paulo)</option>
-                                            <option value="us-gov-west-1">US Gov</option>
-                                        </select>
-                                        <hr/>
+                                        <!-- checkbox?-->
                                         <label class="checkbox" for="clouds_select_openstack">
                                           <input type="checkbox" name="clouds_select" id="clouds_select_openstack" value="openstack">
                                           Openstack
-                                          <br/><span id="clouds_select_msg" style="color:red;"></span>
+                                          <span id="clouds_select_msg" style="color:red;"></span>
                                         </label>
                                       </div>
                                     </div>
+                                    
+                                    <!-- Select Basic -->
+                                    <div class="control-group well" >
+                                        <label class="control-label">AWS Builder</label>
+                                        <div class="controls">
+                                            <select id="image_type_select" class="input-xlarge">
+                                                <option>QEMU</option>
+                                            </select><br/>
+                                            <select id="aws_cred_select" class='input-xlarge'><option>Cred</option></select><br/>
+                                            <select id="aws_region_select" name="aws_region_select" class="input-xlarge">
+                                                <option value="us-east-1">US East (Northern Virginia)</option>
+                                                <option value="us-west-2">US West (Oregon)</option>
+                                                <option value="us-west-1">US West (Northern California)   EU (Ireland)</option>
+                                                <option value="eu-west-1">EU (Ireland)</option>
+                                                <option value="ap-southeast-1">Asia Pacific (Singapore)</option>
+                                                <option value="ap-southeast-2">Asia Pacific (Sydney)</option>
+                                                <option value="ap-northeast-1">Asia Pacific (Tokyo)</option>
+                                                <option value="sa-east-1">South America (Sao Paulo)</option>
+                                                <option value="us-gov-west-1">US Gov</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Select Basic -->
+                                    <div class="control-group well" >
+                                        <label class="control-label">OpenStack Builder</label>
+                                        <div class="controls">
+                                            <select id="openstack_type_select" class="input-xlarge">
+                                                <option>QEMU</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="well">
                                     
                                     <!-- Text input-->
                                     <div class="control-group">
@@ -99,18 +121,9 @@
                                         </div>
                                     </div>
 
-                                    <hr/>
-                                    
-                                    <!-- Select Basic -->
-                                    <div class="control-group" >
-                                        <label class="control-label">Builder Type</label>
-                                        <div class="controls">
-                                            <select id="image_type_select" class="input-xlarge">
-                                                <option>QEMU</option>
-                                            </select>
-                                        </div>
                                     </div>
                                   
+                                    <div class="well">
                                     <!-- Select Basic -->
                                     <div class="control-group">
                                         <label class="control-label">Provisioner</label>
@@ -145,6 +158,7 @@
                                             </select>
                                         </div>
                                     </div>
+                                    </div>
 
                                     <!-- Text input-->
                                     <div class="control-group" style="display:none;">
@@ -172,6 +186,7 @@
                                     <fieldset>
                                         <ul class="nav nav-tabs">
                                           <li class="active"><a class="adv_tab" id="builder_tab">Builder</a></li>
+                                          <li><a class="adv_tab" id="openstack_tab">Openstack</a></li>
                                           <li><a class="adv_tab" id="provisioner_tab">Provisioner</a></li>
                                           <li><a class="adv_tab" id="devops_tab">DevOps Tool</a></li>
                                           <li><a class="adv_tab" id="postprocessor_tab">Post-Processor</a></li>
@@ -273,6 +288,7 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div id="openstack_settings" class="adv_tab_panel" style="display:none;"></div>
                                         <div id="provisioner_settings" class="adv_tab_panel" style="display:none;"></div>
                                         <div id="devops_settings" class="adv_tab_panel" style="display:none;"></div>
                                         <div id="postprocessor_settings" class="adv_tab_panel" style="display:none;"></div>

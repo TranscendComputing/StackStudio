@@ -40,6 +40,7 @@ define([
             "change #image_config_management_select":"provisionerSelect",
             "change #dev_ops_select":"devopsSelect",
             "change #post_processor_select":"postProcessorSelect",
+            "change #openstack_type_select":"openstackTypeSelect",
             "click .adv_tab": "advTabSelect",
             "click #save_image_template_button":"saveButton",
             "click #deploy_image_template_button":"deployImage",
@@ -107,29 +108,41 @@ define([
             if(this.currentImageTemplate) {
                 var confirmation = confirm("Are you sure you want to open a new image template? Any unsaved changes to the current template will be lose.");
                 if(confirmation === true) {
+                    this.clearForm();
                     this.currentImageTemplate = "test";
                     this.render();
                 }
             }else {
+                this.clearForm();
                 this.currentImageTemplate = "test";
                 this.render();
             }
         },
         
         fetchDropDowns: function(){
+            $("#builder_settings").empty();
             $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/builders", function( builders ) {
                 $("#image_type_select").empty();
+                $("#image_type_select").append("<option>None</option>");
+                $("#openstack_type_select").empty();
+                $("#openstack_type_select").append("<option>None</option>");
                 for (var key in builders) {
-                    $("#image_type_select").append("<option>"+key+"</option>");
+                    if(key === 'qemu' ){
+                        $("#openstack_type_select").append("<option>"+key+"</option>");
+                    }else{
+                        $("#image_type_select").append("<option>"+key+"</option>");
+                    }
                 }
-                $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/builders/" + $("#image_type_select").val().replace('-',''), function( builder ) {
-                    $("#builder_settings").html(_.template(advancedTemplate)({optional: builder.optional, advanced: builder.advanced, qemu: undefined, required: builder.required, title: "Builder: "+$("#image_type_select").val()}));
-                    $("#builder_settings").tooltip();
-                });
+                // $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/builders/" + $("#image_type_select").val().replace('-',''), function( builder ) {
+//                     $("#builder_settings").html(_.template(advancedTemplate)({optional: builder.optional, advanced: builder.advanced, qemu: undefined, required: builder.required, title: "Builder: "+$("#image_type_select").val()}));
+//                     $("#builder_settings").tooltip();
+//                 });
             });
             $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/provisioners", function( provisioners ) {
                 $("#image_config_management_select").empty();
                 $("#dev_ops_select").empty();
+                $("#dev_ops_select").append("<option>None</option>");
+                $("#image_config_management_select").append("<option>None</option>");
                 for (var key in provisioners) {
                     if(key === 'chef-solo' || key === 'salt-masterless'){
                         $("#dev_ops_select").append("<option>"+key+"</option>");
@@ -137,32 +150,30 @@ define([
                         $("#image_config_management_select").append("<option>"+key+"</option>");
                     }
                 }
-                $("#dev_ops_select").append("<option>None</option>");
-                $("#image_config_management_select").append("<option>None</option>");
-                $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/provisioners/" + $("#image_config_management_select").val(), function( provisioner ) {
-                    if(provisioner.required_xor !== undefined){
-                        provisioner.required = provisioner.required_xor;
-                    }
-                    $("#provisioner_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, advanced: provisioner.advanced, qemu: undefined, required: provisioner.required, title: "Provisioner: "+$("#image_config_management_select").val()}));
-                    $("#provisioner_settings").tooltip();
-                });
-                $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/provisioners/" + $("#dev_ops_select").val(), function( provisioner ) {
-                    $("#devops_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, advanced: provisioner.advanced, qemu: undefined, required: provisioner.required, title: "DevOps Tool: "+$("#dev_ops_select").val()}));
-                    $("#devops_settings").tooltip();
-                });
+                // $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/provisioners/" + $("#image_config_management_select").val(), function( provisioner ) {
+//                     if(provisioner.required_xor !== undefined){
+//                         provisioner.required = provisioner.required_xor;
+//                     }
+//                     $("#provisioner_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, advanced: provisioner.advanced, qemu: undefined, required: provisioner.required, title: "Provisioner: "+$("#image_config_management_select").val()}));
+//                     $("#provisioner_settings").tooltip();
+//                 });
+//                 $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/provisioners/" + $("#dev_ops_select").val(), function( provisioner ) {
+//                     $("#devops_settings").html(_.template(advancedTemplate)({optional: provisioner.optional, advanced: provisioner.advanced, qemu: undefined, required: provisioner.required, title: "DevOps Tool: "+$("#dev_ops_select").val()}));
+//                     $("#devops_settings").tooltip();
+//                 });
             });
             $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/postprocessors", function( postprocessors ) {
                 $("#post_processor_select").empty();
+                $("#post_processor_select").append("<option>None</option>");
                 for (var key in postprocessors) {
                     $("#post_processor_select").append("<option>"+key+"</option>");
                 }
-                $("#post_processor_select").append("<option>None</option>");
-                $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/postprocessors/" + $("#post_processor_select").val().replace('-',''), function( postprocessor ) {
-                    var q = postprocessor.optional['qemu'];
-                    delete postprocessor.optional['qemu'];
-                    $("#postprocessor_settings").html(_.template(advancedTemplate)({optional: postprocessor.optional, advanced: postprocessor.advanced, qemu: q, required: postprocessor.required, title: "Post-Processor: "+$("#post_processor_select").val()}));
-                    $("#postprocessor_settings").tooltip();
-                });
+                // $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/postprocessors/" + $("#post_processor_select").val().replace('-',''), function( postprocessor ) {
+//                     var q = postprocessor.optional['qemu'];
+//                     delete postprocessor.optional['qemu'];
+//                     $("#postprocessor_settings").html(_.template(advancedTemplate)({optional: postprocessor.optional, advanced: postprocessor.advanced, qemu: q, required: postprocessor.required, title: "Post-Processor: "+$("#post_processor_select").val()}));
+//                     $("#postprocessor_settings").tooltip();
+//                 });
             });
         },
         
@@ -277,12 +288,27 @@ define([
             }
         },
         
+        openstackTypeSelect: function(){
+            var me = this;
+            if($("#openstack_type_select").val() !== "None"){
+                $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/builders/" + $("#openstack_type_select").val().replace('-',''), function( builder ) {
+                    $("#openstack_settings").html(_.template(advancedTemplate)({optional: builder.optional, advanced: builder.advanced, qemu: undefined, required: builder.required, title: "Builder: "+$("#openstack_type_select").val()})).hide().fadeIn('slow');
+                    $("#openstack_settings").tooltip();
+                    me.mapAdvanced("builders",me.currentImageTemplate);
+                });
+            }else{
+                $("#openstack_settings").hide('slow').html('');
+            }
+        },
+        
         advTabSelect: function(event){
             $(".active").removeClass('active');
             $("#"+event.target.id).closest('li').addClass('active');
             $(".adv_tab_panel").hide('slow');
             if(event.target.text === "Builder"){
                 $("#builder_settings").show('slow');
+            }else if(event.target.text === "Openstack"){
+                $("#openstack_settings").show('slow');
             }else if(event.target.text === "Provisioner"){
                 $("#provisioner_settings").show('slow');
             }else if(event.target.text === "DevOps Tool"){
@@ -315,6 +341,7 @@ define([
            $("#image_config_management_select").hide().show('slow').val(base_image.provisioner);
            $("#dev_ops_select").hide().show('slow').val(base_image.devops_tool);
            $("#post_processor_select").hide().show('slow').val(base_image.post_processor);
+           $("#openstack_type_select").hide().show('slow').val(base_image.builder_type_os);
            
            $.ajax({
              url: Common.apiUrl + "/stackstudio/v1/packed_images/templates/" + sessionStorage.org_id + "/" + doc_id,
@@ -328,45 +355,49 @@ define([
            this.provisionerSelect();
            this.devopsSelect();
            this.postProcessorSelect();
+           this.openstackTypeSelect();
         },
         
         mapAdvanced: function(key,doc_id){
+            //debugger
             var pi = this.packed_images.find(function(model) { return model.get('doc_id') === doc_id; });
-            var list = pi.attributes.packed_image[key];
-            for(var i in list){
-                for(var k in list[i]){
-                    if(k==="qemu"){
-                        for(var kQ in list[i][k]){
-                            if($("#"+kQ).attr('type') === 'checkbox'){
-                                $("#"+kQ).prop('checked',list[i][k]);
-                            }else if($("#"+kQ).attr('data-type') && $("#"+kQ).attr('data-type').indexOf("array") !== -1){
-                                var id = $("#"+kQ).attr('name');
-                                var placeholder = $("#"+id).attr('placeholder');
-                                var title = $("#"+id).attr('title');
-                                var dataType = $("#"+id).attr('data-type');
-                                $("#"+kQ).val(list[i][k][kQ][0]);
-                                for(var j=1;j<list[i][k][kQ].length;j++){
-                                    $( "<br/><input name='"+id+"' placeholder='"+placeholder+"' title='"+title+"' data-type='"+dataType+"' style='margin-top: 4px;' type='text' class='input-xlarge'></input>" ).insertAfter( $("#"+id).next('a') ).val(list[i][k][kQ][j]);
+            if(pi){
+                var list = pi.attributes.packed_image[key];
+                for(var i in list){
+                    for(var k in list[i]){
+                        if(k==="qemu"){
+                            for(var kQ in list[i][k]){
+                                if($("#"+kQ).attr('type') === 'checkbox'){
+                                    $("#"+kQ).prop('checked',list[i][k]);
+                                }else if($("#"+kQ).attr('data-type') && $("#"+kQ).attr('data-type').indexOf("array") !== -1){
+                                    var id = $("#"+kQ).attr('name');
+                                    var placeholder = $("#"+id).attr('placeholder');
+                                    var title = $("#"+id).attr('title');
+                                    var dataType = $("#"+id).attr('data-type');
+                                    $("#"+kQ).val(list[i][k][kQ][0]);
+                                    for(var j=1;j<list[i][k][kQ].length;j++){
+                                        $( "<br/><input name='"+id+"' placeholder='"+placeholder+"' title='"+title+"' data-type='"+dataType+"' style='margin-top: 4px;' type='text' class='input-xlarge'></input>" ).insertAfter( $("#"+id).next('a') ).val(list[i][k][kQ][j]);
+                                    }
+                                }
+                                else{
+                                    $("#"+kQ).val(list[i][k][kQ]);
                                 }
                             }
-                            else{
-                                $("#"+kQ).val(list[i][k][kQ]);
+                        }else if($("#"+k).attr('type') === 'checkbox'){
+                            $("#"+k).prop('checked',list[i]);
+                        }else if($("#"+k).attr('data-type') && $("#"+k).attr('data-type').indexOf("array") !== -1){
+                            var id = $("#"+k).attr('name');
+                            var placeholder = $("#"+id).attr('placeholder');
+                            var title = $("#"+id).attr('title');
+                            var dataType = $("#"+id).attr('data-type');
+                            $("#"+k).val(list[i][k][0]);
+                            for(var j=1;j<list[i][k].length;j++){
+                                $( "<br/><input name='"+id+"' placeholder='"+placeholder+"' title='"+title+"' data-type='"+dataType+"' style='margin-top: 4px;' type='text' class='input-xlarge'></input>" ).insertAfter( $("#"+id).next('a') ).val(list[i][k][j]);
                             }
                         }
-                    }else if($("#"+k).attr('type') === 'checkbox'){
-                        $("#"+k).prop('checked',list[i]);
-                    }else if($("#"+k).attr('data-type') && $("#"+k).attr('data-type').indexOf("array") !== -1){
-                        var id = $("#"+k).attr('name');
-                        var placeholder = $("#"+id).attr('placeholder');
-                        var title = $("#"+id).attr('title');
-                        var dataType = $("#"+id).attr('data-type');
-                        $("#"+k).val(list[i][k][0]);
-                        for(var j=1;j<list[i][k].length;j++){
-                            $( "<br/><input name='"+id+"' placeholder='"+placeholder+"' title='"+title+"' data-type='"+dataType+"' style='margin-top: 4px;' type='text' class='input-xlarge'></input>" ).insertAfter( $("#"+id).next('a') ).val(list[i][k][j]);
+                        else{
+                            $("#"+k).val(list[i][k]);
                         }
-                    }
-                    else{
-                        $("#"+k).val(list[i][k]);
                     }
                 }
             }
@@ -394,6 +425,7 @@ define([
             base_image.provisioner = $("#image_config_management_select").val();
             base_image.devops_tool = $("#dev_ops_select").val();
             base_image.post_processor = $("#post_processor_select").val();
+            base_image.builder_type_os = $("#openstack_type_select").val();
             
             var packed_image = this.map_base(base_image);
             
@@ -628,6 +660,25 @@ define([
                 valid = false;
             }
             return valid;
+        },
+        
+        clearForm: function(){
+            $("#image_template_name_input").val('');
+            $("#clouds_select_aws").prop('checked',false);
+            $("#clouds_select_openstack").prop('checked',false);
+            $("#image_type_select").val('None');
+            $("#openstack_type_select").val('None');
+            $("#os_input").val('');
+            
+            $("#image_config_management_select").val('None');
+            $("#dev_ops_select").val('None');
+            $("#post_processor_select").val('None');
+            
+            $("#builder_settings").empty();
+            $("#openstack_settings").empty();
+            $("#provisioner_settings").empty();
+            $("#devops_settings").empty();
+            $("#postprocessor_settings").empty();
         },
 
         closeImageTemplate: function() {
