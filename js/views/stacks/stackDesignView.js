@@ -12,8 +12,8 @@ define([
         'common',
         'text!templates/stacks/stackDesignTemplate.html',
         'collections/assemblies',
-        'ace-cdn',
-        'ace/mode/json',
+        'ace',
+        'mode-json',
         'jquery.jstree'
 ], function( $, _, Backbone, Common, stacksDesignTemplate, Assemblies, ace) {
     'use strict';
@@ -30,7 +30,7 @@ define([
 
         newResourceTree: undefined,
 
-        assembilies: undefined,
+        assemblies: undefined,
 
         events: {
             "click .jstree_custom_item": "treeFolderClick",
@@ -46,17 +46,17 @@ define([
         },
 
         render: function() {
-            this.editor = ace.edit("design_editor");
+            this.editor = window.ace.edit("design_editor");
             this.editor.setTheme("ace/theme/monokai");
             this.editor.getSession().setUseWorker(false);
-            this.editor.getSession().setMode(new (require("ace/mode/json")).Mode());
+            this.editor.getSession().setMode("ace/mode/json");
 
             this.newResourceTree = $("#new_resources").jstree({
                 // List of active plugins
                 "plugins" : [
                     "json_data", "crrm", "themeroller"
                 ],
-                
+
                 "core": {
                     "animation": 0
                  },
@@ -86,7 +86,7 @@ define([
                                      "metadata": d
                                  });
                             });
-                            
+
                             var treeData = [];
                             $.each(services, function(s, v) {
                                 treeData.push({
@@ -100,14 +100,14 @@ define([
                     },
                     "correct_state": false
                 },
-                
+
                 "themeroller": {
                     "item": "jstree_custom_item"
                 }
             });
 
             this.assemblies.fetch({reset:true});
-            
+
             if(this.stack) {
                 this.setStack(this.stack);
             }
@@ -116,7 +116,7 @@ define([
         addAllAssemblies: function() {
             $("#assemblies_list").empty();
             this.assemblies.each(function(assembly) {
-                $("#assemblies_list").append("<a>"+assembly.attributes.name+"</a>");
+                $("#assemblies_list").append("<li><a>"+assembly.attributes.name+"</a></li>");
             });
         },
 

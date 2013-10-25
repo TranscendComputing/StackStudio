@@ -107,13 +107,8 @@ requirejs.config({
         'URIjs': {
 
         }
-	},
-	packages: [
-        'ace', {
-            name: 'ace',
-            main: 'ace',
-            location: 'ace'
-        },
+    },
+    packages: [
         'JSV', {
             name: 'JSV',
             main: 'jsv',
@@ -146,7 +141,8 @@ requirejs.config({
          URIjs: 'uri/src',
         'bootstrap': '//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min',
         'typeahead': '../vendor/twitter/typeahead.min',
-        'ace-cdn': '//d1n0x3qji82z53.cloudfront.net/src-min-noconflict/ace'
+        'ace': '//cdnjs.cloudflare.com/ajax/libs/ace/1.1.01/ace',
+        'mode-json': '//cdnjs.cloudflare.com/ajax/libs/ace/1.1.01/mode-json'
     }
 });
 
