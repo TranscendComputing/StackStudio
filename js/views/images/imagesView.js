@@ -386,13 +386,13 @@ define([
                         }else if($("#"+k).attr('type') === 'checkbox'){
                             $("#"+k).prop('checked',list[i]);
                         }else if($("#"+k).attr('data-type') && $("#"+k).attr('data-type').indexOf("array") !== -1){
-                            var id = $("#"+k).attr('name');
-                            var placeholder = $("#"+id).attr('placeholder');
-                            var title = $("#"+id).attr('title');
-                            var dataType = $("#"+id).attr('data-type');
+                            var id1 = $("#"+k).attr('name');
+                            var placeholder1 = $("#"+id1).attr('placeholder');
+                            var title1 = $("#"+id1).attr('title');
+                            var dataType1 = $("#"+id1).attr('data-type');
                             $("#"+k).val(list[i][k][0]);
-                            for(var j=1;j<list[i][k].length;j++){
-                                $( "<br/><input name='"+id+"' placeholder='"+placeholder+"' title='"+title+"' data-type='"+dataType+"' style='margin-top: 4px;' type='text' class='input-xlarge'></input>" ).insertAfter( $("#"+id).next('a') ).val(list[i][k][j]);
+                            for(var j1=1;j1<list[i][k].length;j1++){
+                                $( "<br/><input name='"+id1+"' placeholder='"+placeholder1+"' title='"+title1+"' data-type='"+dataType1+"' style='margin-top: 4px;' type='text' class='input-xlarge'></input>" ).insertAfter( $("#"+id1).next('a') ).val(list[i][k][j1]);
                             }
                         }
                         else{
@@ -550,7 +550,9 @@ define([
         },
         
         deployImage: function(){
-            this.currentImageTemplate.deploy();
+            var doc_id = this.currentImageTemplate;
+            var pi = this.packed_images.find(function(model) { return model.get('doc_id') === doc_id; });
+            pi.deploy();
         },
         
         map_base: function(base){
