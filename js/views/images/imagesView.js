@@ -46,7 +46,8 @@ define([
             "click #deploy_image_template_button":"deployImage",
             "click .img_item":"loadPackedImage",
             "click .append-btn":"appendButton",
-            "focus #os_input": "openImageList"
+            "focus #os_input": "openImageList",
+            "click #delete_image_template_button":"deleteImage"
         },
 
         initialize: function() {
@@ -73,6 +74,11 @@ define([
                 piView.currentImageTemplate = data['Id'];
                 piView.uploadAsync();
                 piView.packed_images.fetch({reset: true});
+            });
+            Common.vent.on("packedImageAppDelete", function() {
+                piView.currentImageTemplate = 'test';
+                piView.packed_images.fetch({reset: true});
+                window.location.hash = "#images";
             });
 
             this.fetchDropDowns();
@@ -224,7 +230,9 @@ define([
                 $("#packed_images_list").append("<li><a href='#images/"+model.attributes.doc_id+"' id='"+model.attributes.doc_id+"' class='img_item'>"+model.attributes.name+"</a></li>");
             });
             $("#packed_images_list").show('slow');
-            if(this.currentImageTemplate){
+            if(this.currentImageTemplate === 'test'){
+                this.clearForm();
+            }else if(this.currentImageTemplate){
                 this.popForm(this.currentImageTemplate);
             }
         },
@@ -545,7 +553,8 @@ define([
             
             //packed_image = this.getDefaultTemplate();
             
-            this.currentImageTemplate = new PackedImage({'packed_image':packed_image,'name':base_image.name,'base_image':base_image});
+            var id = this.currentImageTemplate;
+            this.currentImageTemplate = new PackedImage({'packed_image':packed_image,'name':base_image.name,'base_image':base_image,'doc_id':id});
             this.currentImageTemplate.save();
         },
         
@@ -553,6 +562,12 @@ define([
             var doc_id = this.currentImageTemplate;
             var pi = this.packed_images.find(function(model) { return model.get('doc_id') === doc_id; });
             pi.deploy();
+        },
+        
+        deleteImage: function(){
+            var doc_id = this.currentImageTemplate;
+            var pi = this.packed_images.find(function(model) { return model.get('doc_id') === doc_id; });
+            pi.destroy();
         },
         
         map_base: function(base){
