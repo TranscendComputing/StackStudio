@@ -77,7 +77,6 @@ define([
             });
             Common.vent.on("packedImageAppDelete", function() {
                 piView.currentImageTemplate = 'test';
-                piView.packed_images.fetch({reset: true});
                 window.location.hash = "#images";
             });
 
@@ -245,11 +244,15 @@ define([
         
         builderSelect: function(){
             var me = this;
-            $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/builders/" + $("#image_type_select").val().replace('-',''), function( builder ) {
-                $("#builder_settings").html(_.template(advancedTemplate)({optional: builder.optional, advanced: builder.advanced, qemu: undefined, required: builder.required, title: "Builder: "+$("#image_type_select").val()})).hide().fadeIn('slow');
-                $("#builder_settings").tooltip();
-                me.mapAdvanced("builders",me.currentImageTemplate);
-            });
+            if($("#image_type_select").val() !== "None"){
+                $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/builders/" + $("#image_type_select").val().replace('-',''), function( builder ) {
+                    $("#builder_settings").html(_.template(advancedTemplate)({optional: builder.optional, advanced: builder.advanced, qemu: undefined, required: builder.required, title: "Builder: "+$("#image_type_select").val()})).hide().fadeIn('slow');
+                    $("#builder_settings").tooltip();
+                    me.mapAdvanced("builders",me.currentImageTemplate);
+                });
+            }else{
+                $("#builder_settings").hide('slow').html('');
+            }
         },
         
         provisionerSelect: function(){
@@ -456,6 +459,25 @@ define([
                 }
             });
             
+            var builderOS = {};
+            $("#openstack_settings :input").each(function() {
+                if($( this ).val().length === 0){
+                    //dont add
+                }else if($(this).attr('type') === 'checkbox'){
+                    builderOS[$(this).attr('name')] = $( this ).is(':checked');
+                }else if($(this).attr('type') === 'number' && isNaN($( this ).val())){
+                    builderOS[$(this).attr('name')] = parseInt($( this ).val(),10);
+                }else if($(this).attr('data-type').indexOf("array") !== -1){
+                    if(builderOS[$(this).attr('name')] === undefined){
+                        builderOS[$(this).attr('name')] = [$( this ).val()];
+                    }else{
+                        builderOS[$(this).attr('name')].push($( this ).val());
+                    }
+                }else{
+                    builderOS[$(this).attr('name')] = $( this ).val();
+                }
+            });
+            
             var provisioner = {};
             if($("#image_config_management_select").val() !== "None"){
                 provisioner['type'] = $("#image_config_management_select").val();
@@ -540,7 +562,20 @@ define([
                 });
             }
             
-            $.extend( packed_image.builders[0], builder );
+            if(!$.isEmptyObject(builder)){
+                for(var awsI in packed_image.builders){
+                    if(packed_image.builders[awsI].type === "aws-ebs" || packed_image.builders[awsI].type === "aws-ami"){
+                        $.extend( packed_image.builders[awsI], builder );
+                    }
+                }
+            }
+            if(!$.isEmptyObject(builderOS)){
+                for(var osI in packed_image.builders){
+                    if(packed_image.builders[osI].type === "qemu"){
+                        $.extend( packed_image.builders[osI], builderOS );
+                    }
+                }
+            }
             if(!$.isEmptyObject(provisioner)){
                 packed_image.provisioners.push(provisioner);
             }
