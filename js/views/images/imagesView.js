@@ -47,6 +47,7 @@ define([
             "click .img_item":"loadPackedImage",
             "click .append-btn":"appendButton",
             "focus #os_input": "openImageList",
+            "focusout #os_input": "selectImageList",
             "click #delete_image_template_button":"deleteImage"
         },
 
@@ -239,6 +240,20 @@ define([
         openImageList: function() {
             if($("ul.ui-autocomplete").is(":hidden")) {
                 $("#os_input").autocomplete("search", "");
+            }
+        },
+        
+        selectImageList: function() {
+            $("#os_input_msg").empty();
+            $("#os_input").css('border-color','grey');
+            if($("#clouds_select_openstack").is(':checked')){
+                if($("#os_input").val().indexOf("Amazon") !== -1){
+                    $("#os_input").css('border-color','red');
+                    $("#os_input_msg").html("Amazon Linux not compatible with OpenStack");
+                }else if($("#os_input").val().indexOf("Red Hat") !== -1){
+                    $("#os_input").css('border-color','red');
+                    $("#os_input_msg").html("Red Hat not compatible with OpenStack, try CentOS or Fedora");
+                }
             }
         },
         
