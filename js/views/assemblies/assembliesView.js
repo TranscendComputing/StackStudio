@@ -172,6 +172,12 @@ define([
                         $this.selectConfigs(stateList, "formula", "saltState");
                     });
                     break;
+                case "Ansible":
+                    Common.vent.once("playbooksLoaded", function(){
+                        var stateList = $this.sortListByContainer(config["playbook_config"]);
+                        $this.selectConfigs(stateList, "playbook", "task");
+                    });
+                    break;
             }
         },
         findImage: function(imageData){

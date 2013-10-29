@@ -31,6 +31,7 @@ define([
         'collections/chefEnvironments',
         'collections/puppetClasses',
         'collections/saltStates',
+        'collections/ansiblePlaybooks',
         'views/assemblies/appListView',
         'models/app',
         'jquery-plugins',
@@ -38,7 +39,7 @@ define([
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator',
         'jquery.sortable'
-],function( $, _, bootstrap, Backbone, ich, Common, typeahead, appsTemplate, Apps, CloudCredentials, Cookbooks, ChefEnvironments, PuppetClasses, SaltStates, AppListView, App ) {
+],function( $, _, bootstrap, Backbone, ich, Common, typeahead, appsTemplate, Apps, CloudCredentials, Cookbooks, ChefEnvironments, PuppetClasses, SaltStates, AnsiblePlaybooks, AppListView, App ) {
 
     var ConfigListView = Backbone.View.extend({
         id: 'config_list',
@@ -59,9 +60,11 @@ define([
             "change .recipes input": "recipeChangeHandler",
             "change .puppetClasses input": "classChangeHandler",
             "change .saltStates input" : "stateChangeHandler",
+            "change .ansiblePlaybooks input" : "playbookChangeHandler",
             "change #chef-selection .accordion-heading": "chefGroupChangeHandler",
             "change #puppet-selection .accordion-heading" : "puppetGroupChangeHandler",
-            "change #salt-selection .accordion-heading" : "saltGroupChangeHandler"
+            "change #salt-selection .accordion-heading" : "saltGroupChangeHandler",
+            "change #ansible-selection .accordion-heading" : "ansibleGroupChangeHandler"
         },
         initialize: function(){
         },
@@ -345,6 +348,12 @@ define([
                 }else{
                     $this.recalculateSaltBadges();
                 }
+            } else if (id === "collapseAnsible") {
+              if (!$destination.data("isLoaded")){
+                $this.fetchAnsiblePlaybooks();
+              } else {
+                $this.recalculateAnsibleBadges();
+              }
             }
         },
         populatePuppetClasses:function (){
@@ -510,6 +519,9 @@ define([
                 case "Salt":
                     data["minion_config"] = this.getConfig("saltState");
                     break;
+                case "Ansible":
+                    data["playbook_config"] = this.getConfig("playbook");
+                    break;
             }
             configurations[tool.toLowerCase()] = data;
             return {
@@ -646,6 +658,98 @@ define([
                     break;
             }
         },
+        // Ansible Assembly
+        ansibleGroupChangeHandler: function(evt){
+          var checkbox = $(evt.target);
+          var ver = checkbox.closest(".accordion-group")
+            .find(".accordion-inner:first");
+          ver.find(".ansibleStateSelector").first().click();
+        },
+        
+        fetchAnsiblePlaybooks: function(evt) {
+          var $this = this;
+          var destination = $("#collapseAnsible").find(".accordion-inner");
+          $this.ansiblePlaybooks = new AnsiblePlaybooks();
+          $this.ansiblePlaybooks.fetch({
+            data: {account_id: this.credential.get("cloud_account_id")},
+            success: function(collection, response, data) {
+              $this.populateAnsiblePlaybooks();
+              destination.data("isloaded", "true");
+            },
+            error: function(collection, response, data){
+              Common.errorDialog("Server error", "Could not fetch Ansible playbooks");
+            }
+          });
+        },
+        
+        populateAnsiblePlaybooks: function(col) {
+          var playbooks = col.toJSON();
+          var $this = this;
+          var playbookEl = $("#ansible-selection");
+          playbookEl.empty();
+          for (var playbook in playbooks) {
+            if (playbooks.hasOwnProperty(playbook)){
+              var el = $($this.renderAccordionGroup("ansible-selection",
+                playbook, "playbook")); 
+              el.find(".accordion-heading").prepend(
+                $("<input type=\"checkbox\" class=\"playbookSelector\">"));
+              el.appendTo(playbookEl);
+              var playbookList = this.renderAnsiblePlaybooks(playbooks[playbook],[]);
+              $("#" + playbook + "-playbook").find(".accordion-inner").empty()
+                .append(playbookEl);
+            }
+          }
+          this.recalculateAnsibleBadges();
+          Common.vent.trigger("playbooksLoaded");
+        },
+
+        renderAnsiblePlaybooks: function(playbooks, selected ) {
+          var ul = $("<ul class=\"ansiblePlaybooks\"></ul>");
+          $.each(playbooks, function( index, item) {
+            var checked = (selected.indexOf(item) !== -1) ? "checked=\"true\"": "";
+            $("<li></li>")
+              .data("ansiblePlaybook", item)
+              .append("<input type=\"checkbox\" " + checked + 
+                " class=\"ansiblePlaybookSelector\" />")
+              .append("<span class=\"ansiblePlaybook\">" + item.name + "</span>")
+              .appendTo(ul);
+          });
+          return ul;
+        },
+
+        recalculateAnsibleBadges: function() {
+          var badgeCount = 0;
+          var ansibleContainer = $("#ansible-selection");
+
+          var allChecked = ansibleContainer.find("input[type=\"checkbox\"]:checked")
+            .filter(function() {
+              return !$(this).parent().hasClass("accordion-heading");  
+            });
+
+          ansibleContainer.closest(".accordion-group")
+            .find(".accordion-toggle:first span.badge:first")
+            .text(allChecked.length ? allChecked.length : "");
+
+          var playbooks = $("ansible-selection>.accordion-group");
+          playbooks.each(function() {
+            var playbook = $(this);
+            var badge = playbook.find(".accordion-toggle:first span.badge:first");
+            allChecked = playbook.find("input[type=\"checkbox\"]:checked")
+              .filter(function(){
+                return !$(this).parent().hasClass("accordion-heading"); 
+              });
+            playbook.find(".accordion-toggle:first span.badge:first")
+              .text(allChecked.length ? allChecked.length : "");
+          });
+          this.trigger("badge-refresh", {badgeCount: badgeCount});
+          Common.vent.trigger("ansibleSelectionChanged");
+        },
+
+        playbookChangeHandler: function() {
+          this.recalculateAnsibleBadges();
+        },
+        // End Ansible
+        //
         close: function(){
             this.$el.empty();
             this.undelegateEvents();

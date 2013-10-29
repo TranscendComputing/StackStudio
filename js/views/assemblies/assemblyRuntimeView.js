@@ -64,6 +64,7 @@ define([
         chefIcon: "<img src='/images/CompanyLogos/chefLogo.jpg' class='chef_icon'/>",
         puppetIcon: "<img src='/images/CompanyLogos/puppet.png' class='puppet_icon'/>",
         saltIcon: "<img src='/images/CompanyLogos/saltLogo.jpg' class='salt_icon'/>",
+        ansibleIcon: "<img src='/images/CompanyLogos/ansible.jpg' class='ansible_icon'/>",
 
         subViews: [],
 
@@ -110,7 +111,8 @@ define([
                             return "<input type='checkbox' data-instance-id='" + instance.id + "'></input>"+
                             "<span class='chef_icon'></span>"+
                             "<span class='puppet_icon'></span>"+
-                            "<span class='salt_icon'></salt>";
+                            "<span class='salt_icon'></span>"+
+                            "<span class=\"ansible_icon\"></span>";
                         }
                     },
                     {
@@ -162,6 +164,7 @@ define([
             menu.append('<option value="Chef">Chef</option>');
             menu.append('<option value="Puppet">Puppet</option>');
             menu.append('<option value="Salt">Salt</option>');
+            menu.append('<option value="Ansible">Ansible</option>');
             menu.get(0).value = "";
         },
 
@@ -260,6 +263,7 @@ define([
             var chefApiUrl = Common.apiUrl + "/stackstudio/v1/orchestration/chef/nodes/find?account_id=" + accountId;
             var puppetApiUrl = Common.apiUrl + "/stackstudio/v1/orchestration/puppet/agents/find?account_id=" + accountId;
             var saltApiUrl = Common.apiUrl + "/stackstudio/v1/orchestration/salt/minions/find?account_id=" + accountId;
+            var ansibleApiUrl = Common.apiUrl + "/stackstudio/v1/orchestration/ansible/inventory/find?account_id=" + accountId;
 
             for (var i = 0; i < instances.length; i++) {
                 var name = instances[i]["name"] || instances[i]["dns_name"];
@@ -283,6 +287,7 @@ define([
             this.matchInstancesAjax(instanceInfo, this.chefIcon, chefApiUrl, "node", "chef");
             this.matchInstancesAjax(instanceInfo, this.puppetIcon, puppetApiUrl, "agent", "puppet");
             this.matchInstancesAjax(instanceInfo, this.saltIcon, saltApiUrl, "minion", "salt");
+            this.matchInstancesAjax(instanceInfo, this.ansibleIcon, ansibleApiUrl, "host", "ansible");
         },
         matchInstancesAjax: function(instances, icon, url, type, tool){
             $.ajax({
@@ -324,6 +329,9 @@ define([
                         break;
                     case "Salt":
                         enabled = (selectedLength !==0|| configsList["salt"]["minion_config"].length !==0 );
+                        break;
+                    case "Ansible":
+                        enabled = (selectedLength !==0|| configsList["ansible"]["ansible_config"].length !==0 );
                         break;
                 }
             }
@@ -415,6 +423,19 @@ define([
                             }
                             this.updateInstanceConfig("salt/minions", minionName, instanceName, states, "minionConfigUpdated");
                         }
+                        break;
+
+                    case "Ansible":
+                        var hostName = rowData.hosts.name;
+                        if(minionName){
+                            var playbooks = {"playbooks":[]};
+                            var playbookConfig = configSelection["playbook_config"];
+                            for (var n = 0; n< playbookConfig.length; n++){
+                                playbooks["playbooks"].push(playbookConfig[n].name);
+                            }
+                            this.updateInstanceConfig("ansible/hosts", hostName, instanceName, playbooks, "playbookConfigUpdated");
+                        }
+                        break;
                 }
             }
         },

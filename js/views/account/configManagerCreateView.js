@@ -104,6 +104,10 @@ define([
                         data = {"authPropName":"Salt Username", tag:"input", inputType:"text",authProp:"salt_user"};
                         otherData = {"authPropName":"Salt Password", tag:"input", inputType:"password",authProp:"salt_pass"};
                         break;
+                    case "ansible":
+                        data = {"authPropName":"Ansible Username", tag:"input", inputType:"text",authProp:"ansible_user"};
+                        otherData = {"authPropName":"Ansible Password", tag:"input", inputType:"password",authProp:"ansible_pass"};
+                        break;
                 }
                 $("#authProp").html(ich["auth_prop_template"](data));
                 $("#otherAuthProp").html(ich["auth_prop_template"](otherData));
