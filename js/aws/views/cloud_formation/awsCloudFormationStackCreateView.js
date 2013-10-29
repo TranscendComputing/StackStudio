@@ -26,10 +26,13 @@ define([
 
         template: _.template(StackCreateTemplate),
 
+        stackContent: undefined,
+
         credentialId: undefined,
 
         region: undefined,
         stack : undefined,
+        mode : "create", // create or run; from cloud management or from stacks page
         currentViewIndex: 0,
         // Delegated events for creating new instances, etc.
         events: {
@@ -68,6 +71,13 @@ define([
             if (this.region && this.credentialId) {
                 this.fetchTopics();
             }
+            if (options.mode) {
+                this.mode = options.mode;
+            }
+            if (options.stack) {
+                this.stack.set("name", options.stack.get("name"));
+            }
+            this.stackContent = options.content;
             Common.vent.on("reloadTopics", this.fetchTopics);
         },
         render: function() {
@@ -76,7 +86,7 @@ define([
 
             this.$el.dialog({
                 autoOpen: true,
-                title: "Create Stack",
+                title: this.mode === "create"? "Create Stack" : "Run Stack",
                 width:575,
                 minHeight: 500,
                 resizable: false,
@@ -98,6 +108,16 @@ define([
                     }
                 }
             });
+            if (this.mode === "run") {
+                var name = this.stack.attributes.name;
+                $("#cf_create_stack_name").val(name);
+                $("#stack_name_chosen").html(name);
+                $("#cf_create_stack_name").hide();
+                $(".cloud_creds").show();
+                $(".template_source").hide();
+            } else {
+                $(".cloud_creds").hide();
+            }
             this.tagsTable = $("#view2 table").dataTable({
                 "bJQueryUI": true,
                 "bPaginate": false,
@@ -168,6 +188,7 @@ define([
                         .appendTo(select);
                 }
             });
+            select.change();
         },
         credentialChangeHandler: function(evt) {
             var $this = this;
@@ -214,6 +235,7 @@ define([
                     }
                 });
             }
+            select.change();
         },
         regionChangeHandler: function(evt) {
             var optionSelected = $("option:selected", evt.target);
@@ -306,8 +328,12 @@ define([
             this.refreshView(this.currentViewIndex);
         },
         renderReviewScreen: function(){
-            var templateField = $("#view0").find("input[type=radio]:checked").parent().find("input[name=template]");
-
+            var templateField;
+            if (this.mode !== "run") {
+                templateField = $("#view0").find("input[type=radio]:checked").parent().find("input[name=template]");
+            } else {
+                templateField = $("#cf_create_stack_name");
+            }
             $("#name_review").html($("#cf_create_stack_name").val());
             $("#description_review").html(templateField.data("TemplateInfo").Description);
             $("#template_review").html(templateField.val().split("C:\\fakepath\\").pop());
@@ -337,7 +363,11 @@ define([
 
         },
         generateCreationParams: function(){
-            var templateField = $("#view0").find("input[type=radio]:checked").parent().find("input[name=template]");
+            var templateField;
+            templateField = $("#view0").find("input[type=radio]:checked").parent().find("input[name=template]");
+            if (this.mode === "run") {
+                templateField = $("#cf_create_stack_name");
+            }
             var creationParams= {
                 "StackName": $("#cf_create_stack_name").val(),
                 "Parameters": {},
@@ -345,7 +375,7 @@ define([
                 "Capabilities": [],
                 "NotificationARNs": []
             };
-            if(templateField.attr("type") ==="url"){
+            if (this.mode !== "run" && templateField && templateField.attr("type") ==="url"){
                 creationParams["TemplateURL"] = templateField.val();
             }else{
                 creationParams["TemplateBody"] = JSON.stringify(templateField.data("TemplateBody"));
@@ -412,8 +442,10 @@ define([
 
                     var templateField = $("#view0").find("input[type=radio]:checked").parent().find("input[name=template]");
                     if(templateField.length === 0 || !templateField.val() || templateField.val() === ""){
-                        allValid = false;
-                        this.displayValid(false, templateField);
+                        if (!this.stackContent) {
+                            allValid = false;
+                            this.displayValid(false, templateField);
+                        }
                     }
                     else{
                         this.displayValid(true, templateField);
@@ -438,14 +470,20 @@ define([
         },
 
         validateTemplate: function(){
-            var templateField = $("#view0").find("input[type=radio]:checked").parent().find("input[name=template]");
-            if(templateField.val() && templateField.val() !==""){
-                var type = templateField[0].type;
+            var templateField, sendForm, templateValue;
+            if (this.stackContent === undefined) {
+                templateField = $("#view0").find("input[type=radio]:checked").parent().find("input[name=template]");
+                templateValue = templateField.val();
+            } else {
+                templateValue = this.stackContent;
+            }
+            if(templateValue && templateValue !==""){
+                var type = templateField? templateField[0].type : "body";
                 var apiUrl = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/cloud_formation/template/validate?cred_id=" + this.credentialId + "&type="+ type;
                 if(type==="file"){
                     //$("#template_upload").attr("action", apiUrl);
                     
-                    var sendForm = $('<form></form>')
+                    sendForm = $('<form></form>')
                     .attr("action", apiUrl)
                     .attr("enctype", "multipart/form-data")
                     .attr("method", "POST")
@@ -478,6 +516,25 @@ define([
                         type: "POST",
                         url: apiUrl,
                         data: JSON.stringify({"TemplateURL": templateField.val()})
+                    });
+                }
+                else if(type==="body"){                   
+                    $.ajax({
+                        url: apiUrl,
+                        type: "POST",
+                        data: this.stackContent,
+                        processData: false,
+                        dataType: 'json',
+                        success: function(response){
+                            // Content passed in; don't have a control to set, use template name.
+                            templateField = $("#cf_create_stack_name");
+                            templateField.data("TemplateBody", response.TemplateBody);
+                            templateField.data("TemplateInfo", response.ValidationResult);
+                            Common.vent.trigger("templateValidated", response.ValidationResult);
+                        },
+                        error: function(xhr){
+                            Common.vent.trigger("templateValidationFailed", xhr);
+                        }
                     });
                 }
             }

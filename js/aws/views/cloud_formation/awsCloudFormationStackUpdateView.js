@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/cloud_formation/awsStackUpdateTemplate.html',
-        '/aws/models/cloud_formation/awsStack.js',
+        '/js/aws/models/cloud_formation/awsStack.js',
         '/js/aws/collections/notification/awsTopics.js',
         '/js/aws/models/notification/awsTopic.js',
         '/js/aws/models/notification/awsSubscription.js',

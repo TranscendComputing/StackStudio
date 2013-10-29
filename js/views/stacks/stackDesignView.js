@@ -177,7 +177,11 @@ define([
 
         runTemplate: function() {
             var template = this.editor.getValue();
-            this.newResourceDialog = new StackCreate({cred_id: this.credentialId});
+            this.newResourceDialog = new StackCreate({cred_id: this.credentialId, 
+                mode: "run",
+                stack: this.stack,
+                content: template
+            });
             this.newResourceDialog.render();
         }
     });
