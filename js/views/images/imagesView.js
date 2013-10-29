@@ -48,7 +48,8 @@ define([
             "click .append-btn":"appendButton",
             "focus #os_input": "openImageList",
             "focusout #os_input": "selectImageList",
-            "click #delete_image_template_button":"deleteImage"
+            "click #delete_image_template_button":"deleteImage",
+            "click input[type='checkbox'][name='clouds_select']":"cloudSelect"
         },
 
         initialize: function() {
@@ -579,7 +580,7 @@ define([
             
             if(!$.isEmptyObject(builder)){
                 for(var awsI in packed_image.builders){
-                    if(packed_image.builders[awsI].type === "aws-ebs" || packed_image.builders[awsI].type === "aws-ami"){
+                    if(packed_image.builders[awsI].type === "amazon-ebs" || packed_image.builders[awsI].type === "amazon-ami"){
                         $.extend( packed_image.builders[awsI], builder );
                     }
                 }
@@ -727,6 +728,16 @@ define([
                 valid = false;
             }
             return valid;
+        },
+        
+        cloudSelect: function(e){
+            if(e.target.id === "clouds_select_openstack"){
+                $("#openstack_type_select").prop('disabled', !$(e.target).prop('checked'));
+            }else if(e.target.id === "clouds_select_aws"){
+                $("#image_type_select").prop('disabled', !$(e.target).prop('checked'));
+                $("#aws_cred_select").prop('disabled', !$(e.target).prop('checked'));
+                $("#aws_region_select").prop('disabled', !$(e.target).prop('checked'));
+            }
         },
         
         clearForm: function(){

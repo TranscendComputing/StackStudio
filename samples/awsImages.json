@@ -37,7 +37,7 @@
         "logo": "redhat",
         "product": "Linux/UNIX",
         "region": {
-            "us-east-1": "ami-cc5af9a5",
+            "us-east-1": "ami-5b722232",
             "us-west-1": "ami-51f4ae14",
             "us-west-2": "ami-8a25a9ba",
             "eu-west-1": "ami-8bf2f7ff",
@@ -53,7 +53,7 @@
         "logo": "redhat",
         "product": "Linux/UNIX",
         "region": {
-            "us-east-1": "ami-d258fbbb",
+            "us-east-1": "ami-937121fa",
             "us-west-1": "ami-53f4ae16",
             "us-west-2": "ami-8625a9b6",
             "eu-west-1": "ami-8ff2f7fb",

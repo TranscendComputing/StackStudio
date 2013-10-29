@@ -52,12 +52,18 @@
                                       <div class="controls">
                                         <label class="checkbox" for="clouds_select_aws">
                                           <input type="checkbox" name="clouds_select" id="clouds_select_aws" value="aws">
-                                          AWS
+                                          <a class="btn primary">
+                                            <img src="/images/CloudLogos/amazon.png" class="pull-left"/>
+                                            AWS
+                                          </a>
                                         </label>
                                         <!-- checkbox?-->
                                         <label class="checkbox" for="clouds_select_openstack">
                                           <input type="checkbox" name="clouds_select" id="clouds_select_openstack" value="openstack">
-                                          Openstack
+                                          <a class="btn primary">
+                                            <img src="/images/CloudLogos/openstack.png" class="pull-left"/>
+                                            Openstack
+                                          </a>
                                           <span id="clouds_select_msg" style="color:red;"></span>
                                         </label>
                                       </div>
@@ -145,6 +151,7 @@
                                                 <option value="saltstack">SaltStack</option>
                                                 <option value="ansible">Ansible</option>
                                             </select>
+                                            <br/><br/><span style="color:grey;">Invoke kickstart commands.</span>
                                         </div>
                                     </div>
                                     
@@ -158,6 +165,7 @@
                                                 <option value="puppet">Puppet</option>
                                                 <option value="ansible">Ansible</option>
                                             </select>
+                                            <br/><br/><span style="color:grey;">Simplify the task of Configuration Management.</span>
                                         </div>
                                     </div>
                                     
@@ -168,6 +176,7 @@
                                             <select id="post_processor_select" class="input-xlarge">
                                                 <option value="none">None</option>
                                             </select>
+                                            <br/><br/><span style="color:grey;">Invoke tasks after image has been built. (image upload)</span>
                                         </div>
                                     </div>
                                     </div>
