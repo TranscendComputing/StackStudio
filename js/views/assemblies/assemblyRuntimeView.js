@@ -29,6 +29,7 @@ define([
         'collections/cloudCredentials',
         'collections/cookbooks',
         'collections/chefEnvironments',
+        'collections/ansibleJobTemplates',
         'views/assemblies/appListView',
         'models/app',
         'messenger',
@@ -37,7 +38,7 @@ define([
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator',
         'jquery.sortable'
-], function( $, _, bootstrap, Backbone, ich, Common, typeahead, appsTemplate, Apps, CloudCredentials, Cookbooks, ChefEnvironments, AssemblyRuntimeListView, App, Messenger ) {
+], function( $, _, bootstrap, Backbone, ich, Common, typeahead, appsTemplate, Apps, CloudCredentials, Cookbooks, ChefEnvironments, AssemblyRuntimeListView, App, Messenger, AnsibleJobTemplates ) {
 	// The Assembly Runtime View
 	// ------------------------------
 
@@ -425,15 +426,16 @@ define([
                         }
                         break;
 
+                    // [XXX] This is b0rked
                     case "Ansible":
                         var hostName = rowData.hosts.name;
                         if(minionName){
-                            var playbooks = {"playbooks":[]};
-                            var playbookConfig = configSelection["playbook_config"];
-                            for (var n = 0; n< playbookConfig.length; n++){
-                                playbooks["playbooks"].push(playbookConfig[n].name);
+                            var jobtemplates = {"jobtemplates":[]};
+                            var jobtemplateConfig = configSelection["jobtemplate_config"];
+                            for (var n = 0; n< jobtemplateConfig.length; n++){
+                                jobtemplates["jobtemplates"].push(jobtemplateConfig[n].name);
                             }
-                            this.updateInstanceConfig("ansible/hosts", hostName, instanceName, playbooks, "playbookConfigUpdated");
+                            this.updateInstanceConfig("ansible/hosts", hostName, instanceName, jobtemplates, "jobtemplateConfigUpdated");
                         }
                         break;
                 }

@@ -13,8 +13,8 @@ define([
   'backbone'],
   function($,Backbone) {
     'use strict';
-    var AnsiblePlaybook = Backbone.Model.extend({
+    var AnsibleJobTemplate = Backbone.Model.extend({
       idAttribute: 'name'});
-    return AnsiblePlaybook;
+    return AnsibleJobTemplate;
   }
 );

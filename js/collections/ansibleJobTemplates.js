@@ -10,15 +10,15 @@ define([
   'jquery',
   'underscore',
   'backbone',
-  'models/ansiblePlaybook',
+  'models/ansibleJobTemplate',
   'common'],
 
-  function ($,_,Backbone, AnsiblePlaybook, Common) {
+  function ($,_,Backbone, AnsibleJobTemplate, Common) {
     'use strict';
 
-    var Playbooks = Backbone.Collection.extend({
-      model : AnsiblePlaybook,
-      url: Common.apiUrl + "/stackstudio/v1/orchestration/ansible/playbooks",
+    var JobTemplates = Backbone.Collection.extend({
+      model : AnsibleJobTemplate,
+      url: Common.apiUrl + "/stackstudio/v1/orchestration/ansible/job_templates",
 
       comparator : function (model) {
         return model.get("name");
@@ -42,6 +42,6 @@ define([
         return result;
       }
     });
-    return Playbooks;
+    return JobTemplates;
   }
 );

@@ -31,7 +31,7 @@ define([
         'collections/chefEnvironments',
         'collections/puppetClasses',
         'collections/saltStates',
-        'collections/ansiblePlaybooks',
+        'collections/ansibleJobTemplates',
         'views/assemblies/appListView',
         'models/app',
         'jquery-plugins',
@@ -39,7 +39,7 @@ define([
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator',
         'jquery.sortable'
-],function( $, _, bootstrap, Backbone, ich, Common, typeahead, appsTemplate, Apps, CloudCredentials, Cookbooks, ChefEnvironments, PuppetClasses, SaltStates, AnsiblePlaybooks, AppListView, App ) {
+],function( $, _, bootstrap, Backbone, ich, Common, typeahead, appsTemplate, Apps, CloudCredentials, Cookbooks, ChefEnvironments, PuppetClasses, SaltStates, AnsibleJobTemplates, AppListView, App ) {
 
     var ConfigListView = Backbone.View.extend({
         id: 'config_list',
@@ -60,7 +60,7 @@ define([
             "change .recipes input": "recipeChangeHandler",
             "change .puppetClasses input": "classChangeHandler",
             "change .saltStates input" : "stateChangeHandler",
-            "change .ansiblePlaybooks input" : "playbookChangeHandler",
+            "change .ansibleJobTemplates input" : "jobtemplateChangeHandler",
             "change #chef-selection .accordion-heading": "chefGroupChangeHandler",
             "change #puppet-selection .accordion-heading" : "puppetGroupChangeHandler",
             "change #salt-selection .accordion-heading" : "saltGroupChangeHandler",
@@ -350,7 +350,7 @@ define([
                 }
             } else if (id === "collapseAnsible") {
               if (!$destination.data("isLoaded")){
-                $this.fetchAnsiblePlaybooks();
+                $this.fetchAnsibleJobTemplates();
               } else {
                 $this.recalculateAnsibleBadges();
               }
@@ -520,7 +520,7 @@ define([
                     data["minion_config"] = this.getConfig("saltState");
                     break;
                 case "Ansible":
-                    data["playbook_config"] = this.getConfig("playbook");
+                    data["jobtemplate_config"] = this.getConfig("jobtemplate");
                     break;
             }
             configurations[tool.toLowerCase()] = data;
@@ -666,46 +666,46 @@ define([
           ver.find(".ansibleStateSelector").first().click();
         },
         
-        fetchAnsiblePlaybooks: function(evt) {
+        fetchAnsibleJobTemplates: function(evt) {
           var $this = this;
           var destination = $("#collapseAnsible").find(".accordion-inner");
-          $this.ansiblePlaybooks = new AnsiblePlaybooks();
-          $this.ansiblePlaybooks.fetch({
+          $this.ansibleJobTemplates = new AnsibleJobTemplates();
+          $this.ansibleJobTemplates.fetch({
             data: {account_id: this.credential.get("cloud_account_id")},
             success: function(collection, response, data) {
-              $this.populateAnsiblePlaybooks();
+              $this.populateAnsibleJobTemplates();
               destination.data("isloaded", "true");
             },
             error: function(collection, response, data){
-              Common.errorDialog("Server error", "Could not fetch Ansible playbooks");
+              Common.errorDialog("Server error", "Could not fetch Ansible Job Templates");
             }
           });
         },
         
-        populateAnsiblePlaybooks: function(col) {
-          var playbooks = col.toJSON();
+        populateAnsibleJobTemplates: function(col) {
+          var jobtemplates = col.toJSON();
           var $this = this;
-          var playbookEl = $("#ansible-selection");
-          playbookEl.empty();
-          for (var playbook in playbooks) {
-            if (playbooks.hasOwnProperty(playbook)){
+          var jobtemplateEl = $("#ansible-selection");
+          jobtemplateEl.empty();
+          for (var jobtemplate in jobtemplates) {
+            if (jobtemplates.hasOwnProperty(jobtemplate)){
               var el = $($this.renderAccordionGroup("ansible-selection",
-                playbook, "playbook")); 
+                jobtemplate, "jobtemplate")); 
               el.find(".accordion-heading").prepend(
-                $("<input type=\"checkbox\" class=\"playbookSelector\">"));
-              el.appendTo(playbookEl);
-              var playbookList = this.renderAnsiblePlaybooks(playbooks[playbook],[]);
-              $("#" + playbook + "-playbook").find(".accordion-inner").empty()
-                .append(playbookEl);
+                $("<input type=\"checkbox\" class=\"jobtemplateSelector\">"));
+              el.appendTo(jobtemplateEl);
+              var jobtemplateList = this.renderAnsibleJobTemplates(jobtemplates[jobtemplate],[]);
+              $("#" + jobtemplate + "-jobtemplate").find(".accordion-inner").empty()
+                .append(jobtemplateEl);
             }
           }
           this.recalculateAnsibleBadges();
-          Common.vent.trigger("playbooksLoaded");
+          Common.vent.trigger("jobtemplatesLoaded");
         },
 
-        renderAnsiblePlaybooks: function(playbooks, selected ) {
-          var ul = $("<ul class=\"ansiblePlaybooks\"></ul>");
-          $.each(playbooks, function( index, item) {
+        renderAnsibleJobTemplates: function(jobtemplates, selected ) {
+          var ul = $("<ul class=\"ansibleJobTemplates\"></ul>");
+          $.each(jobtemplates, function( index, item) {
             var checked = (selected.indexOf(item) !== -1) ? "checked=\"true\"": "";
             $("<li></li>")
               .data("ansiblePlaybook", item)
@@ -730,22 +730,22 @@ define([
             .find(".accordion-toggle:first span.badge:first")
             .text(allChecked.length ? allChecked.length : "");
 
-          var playbooks = $("ansible-selection>.accordion-group");
-          playbooks.each(function() {
-            var playbook = $(this);
-            var badge = playbook.find(".accordion-toggle:first span.badge:first");
-            allChecked = playbook.find("input[type=\"checkbox\"]:checked")
+          var jobtemplates = $("ansible-selection>.accordion-group");
+          jobtemplates.each(function() {
+            var jobtemplate = $(this);
+            var badge = jobtemplate.find(".accordion-toggle:first span.badge:first");
+            allChecked = jobtemplate.find("input[type=\"checkbox\"]:checked")
               .filter(function(){
                 return !$(this).parent().hasClass("accordion-heading"); 
               });
-            playbook.find(".accordion-toggle:first span.badge:first")
+            jobtemplate.find(".accordion-toggle:first span.badge:first")
               .text(allChecked.length ? allChecked.length : "");
           });
           this.trigger("badge-refresh", {badgeCount: badgeCount});
           Common.vent.trigger("ansibleSelectionChanged");
         },
 
-        playbookChangeHandler: function() {
+        jobtemplateChangeHandler: function() {
           this.recalculateAnsibleBadges();
         },
         // End Ansible
