@@ -41,7 +41,7 @@ define([
             }, this);
             */
             if(options) {
-                $.ajax({
+                return $.ajax({
                     url: url,
                     type: type,
                     contentType: 'application/x-www-form-urlencoded',
@@ -58,7 +58,7 @@ define([
                     }
                 });
             }else {
-                $.ajax({
+                return $.ajax({
                     url: url,
                     type: type,
                     contentType: 'application/x-www-form-urlencoded',
