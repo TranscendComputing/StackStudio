@@ -18,10 +18,11 @@ define([
         'collections/cloudCredentials',
         'common',
         'spinner',
+        'messenger',
         'jquery.form'
         
 ], function( $, _, Backbone, DialogView, StackCreateTemplate, 
-    Stack, Topics, Topic, Subscription, CloudCredentials, Common, Spinner ) {
+    Stack, Topics, Topic, Subscription, CloudCredentials, Common, Spinner, Messenger ) {
     
     var CloudFormationStackCreateView = DialogView.extend({
 
@@ -65,7 +66,6 @@ define([
             return false;
         },
         initialize: function(options) {
-            var $this = this;
             this.credentialId = options.cred_id;
             this.region = options.region;
             this.stack = new Stack();
@@ -150,33 +150,35 @@ define([
         },
 
         fetchTopics: function(){
-            var $this=this;
+            var $this = this;
             this.topics.fetch(
                 {
                     data: $.param({ cred_id: this.credentialId, region: this.region }),
-                    success:function(collection){
+                    success: _.bind(function(collection){
                         var menu = $("#notifications_select");
                         menu.html("");
                         menu.append("<option value=''>(no notification)</option>");
                         menu.append("<option value='#create_topic'>Create a new SNS topic</option>");
-                        collection.each(function(model){
+                        collection.each(_.bind(function(model){
                             var option = $("<option></option>")
                             .attr("value", model.id)
                             .html(model.get("Name"));
-                            if($this.selectedTopic === model.id){
+                            if(this.selectedTopic === model.id){
                                 option.attr("selected", "selected");
                             }
                             menu.append("<option value='"+model.id +"'>"+ model.get("Name")+"</option>");
-                        });
-                    },
+                        }, this));
+                    }, this),
                     error:function(xhr){
                         Common.errorDialog("Topic Retrieval Failure", "Could not retrieve SNS topics");
                     }
                 });
         },
         changeName: function(evt) {
-            var $this = this, name = $("#cf_create_stack_name").val();
+            var name = $("#cf_create_stack_name").val();
+            name = this.slugify(name);
             this.stack.set("name", name);
+            $("#cf_create_stack_name").val(name);
         },
         populateCredentials: function() {
             var list = this.cloudCredentials;
@@ -195,7 +197,6 @@ define([
             select.change();
         },
         credentialChangeHandler: function(evt) {
-            var $this = this;
             var optionSelected = $("option:selected", evt.target);
             var credential = optionSelected.data("cloudCredentials");
             if (!credential) {
@@ -209,7 +210,6 @@ define([
             }
         },
         populateRegions: function() {
-            var $this = this;
             var response = $.ajax({
                 url: "samples/cloudDefinitions.json",
                 async: false
@@ -219,7 +219,7 @@ define([
                 .on("change", $.proxy(this.regionChangeHandler, this));
             this.cloudDefinitions = $.parseJSON(response);
             if(this.cloudDefinitions[this.cloudProvider].regions.length) {
-                $.each($this.cloudDefinitions[this.cloudProvider].regions, function(index, region) {
+                $.each(this.cloudDefinitions[this.cloudProvider].regions, function(index, region) {
                     //regions check
                     var addRegion = false;
                     if(JSON.parse(sessionStorage.group_policies)[0] == null){
@@ -263,14 +263,13 @@ define([
                 this.refreshView(this.currentViewIndex);
             }
             else {
-                var $this = this;
                 var validated = this.validateInputFields(this.currentViewIndex);
                 if(validated){
                     if(this.currentViewIndex === 0){
-                        Common.vent.once("templateValidated", function(result){
+                        Common.vent.once("templateValidated", _.bind(function(result){
                             Common.vent.off("templateValidationFailed");
-                            $this.topicHandler(result);
-                        });
+                            this.topicHandler(result);
+                        }, this));
                         Common.vent.once("templateValidationFailed", function(xhr){
                             Common.vent.off("templateValidated");
                             Common.errorDialog("Template Validation Failed", JSON.parse(xhr.responseText).message);
@@ -284,7 +283,6 @@ define([
 
         },
         create: function(){
-            var $this = this;
             var creationParams = this.generateCreationParams();
             var spinnerOptions = {
                 length: 50, // The length of each line
@@ -306,17 +304,19 @@ define([
                 always(function(xhr) {
                     $(".spinner").remove();
                 });
-            Common.vent.once("cloudFormationStackCreated", function(){
-                $this.$el.dialog('close');
-            });
+            Common.vent.once("cloudFormationStackCreated", _.bind(function(){
+                var messengerString = "Stack " + (this.mode === "create"? "creation":"run") +
+                    " in progress.";
+                new Messenger().post({type:"success", message:messengerString});
+                this.$el.dialog('close');
+            }, this));
         },
         topicHandler: function(validateTemplateResult){
-            var $this = this;
-            var nextPage = function(){
-                $this.currentViewIndex++;
-                $this.refreshView($this.currentViewIndex);
-                $this.populateParameters(validateTemplateResult.Parameters);
-            };
+            var nextPage = _.bind(function(){
+                this.currentViewIndex++;
+                this.refreshView(this.currentViewIndex);
+                this.populateParameters(validateTemplateResult.Parameters);
+            }, this);
 
             if($("#notifications_select").val() !=="#create_topic"){
                 nextPage();
@@ -329,7 +329,7 @@ define([
 
                 var options = {"name": $("#new_sns_name").val()};
                 newTopic.create(options, this.credentialId, this.region, "topicCreated");
-                Common.vent.once("topicCreated", function(response){
+                Common.vent.once("topicCreated", _.bind(function(response){
                     var topicId = response.data.body.TopicArn;
                     var topicName = topicId.split(":").pop();
                     $("#notifications_select").append("<option value='"+ topicId +"'>"+ topicName+"</option>");
@@ -339,11 +339,11 @@ define([
                     $("#new_topic_form").hide();
 
                     options = {"endpoint": snsEmail, "protocol":"email"};
-                    newSubscription.create(response.data.body.TopicArn, options, $this.credentialId, $this.region, "subscriptionCreated");
+                    newSubscription.create(response.data.body.TopicArn, options, this.credentialId, this.region, "subscriptionCreated");
                     Common.vent.once("subscriptionCreated",function(){
                         nextPage();
                     });
-                });
+                }, this));
             }
         },
         previous: function() {
@@ -633,11 +633,24 @@ define([
             }else{
                 $("#advanced_options").hide();
             }
+        },
+        slugify: function(str) {
+            str = str.replace(/^\s+|\s+$/g, ''); // trim
+
+            // remove accents, swap ñ for n, etc
+            var from = "ãàáäâẽèéëêìíïîõòóöôùúüûñç·/_,:;";
+            var to   = "aaaaaeeeeeiiiiooooouuuunc      ";
+            for (var i=0, l=from.length ; i<l ; i++) {
+                str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
+            }
+
+            str = str.replace(/[^A-Za-z0-9]/g, '') // remove invalid chars
+                .replace(/\s+/g, ''); // collapse whitespace 
+            return str;
         }
 
-
         
-       });
+    });
     
     return CloudFormationStackCreateView;
 });
