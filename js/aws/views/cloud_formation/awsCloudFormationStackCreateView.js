@@ -17,10 +17,11 @@ define([
         '/js/aws/models/notification/awsSubscription.js',
         'collections/cloudCredentials',
         'common',
+        'spinner',
         'jquery.form'
         
 ], function( $, _, Backbone, DialogView, StackCreateTemplate, 
-    Stack, Topics, Topic, Subscription, CloudCredentials, Common ) {
+    Stack, Topics, Topic, Subscription, CloudCredentials, Common, Spinner ) {
     
     var CloudFormationStackCreateView = DialogView.extend({
 
@@ -42,7 +43,8 @@ define([
             "click .remove_tag": "removeTagHandler",
             "change #options_checkbox":"showAdvancedOptions",
             "change #notifications_select":"notificationsMenuHandler",
-            "change #cloud_credential":"changeCloudCreds"
+            "change #cloud_credential":"changeCloudCreds",
+            "change #cf_create_stack_name":"changeName"
         },
 
         addTagHandler: function(e){
@@ -111,8 +113,6 @@ define([
             if (this.mode === "run") {
                 var name = this.stack.attributes.name;
                 $("#cf_create_stack_name").val(name);
-                $("#stack_name_chosen").html(name);
-                $("#cf_create_stack_name").hide();
                 $(".cloud_creds").show();
                 $(".template_source").hide();
             } else {
@@ -173,6 +173,10 @@ define([
                         Common.errorDialog("Topic Retrieval Failure", "Could not retrieve SNS topics");
                     }
                 });
+        },
+        changeName: function(evt) {
+            var $this = this, name = $("#cf_create_stack_name").val();
+            this.stack.set("name", name);
         },
         populateCredentials: function() {
             var list = this.cloudCredentials;
@@ -282,7 +286,26 @@ define([
         create: function(){
             var $this = this;
             var creationParams = this.generateCreationParams();
-            this.stack.create(creationParams, this.credentialId, this.region);
+            var spinnerOptions = {
+                length: 50, // The length of each line
+                width: 12, // The line thickness
+                radius: 25, // The radius of the inner circle
+                corners: 1, // Corner roundness (0..1)
+                rotate: 0, // The rotation offset
+                color: '#000', // #rgb or #rrggbb
+                speed: 1, // Rounds per second
+                trail: 60, // Afterglow percentage
+                shadow: false, // Whether to render a shadow
+                hwaccel: false, // Whether to use hardware acceleration
+                className: 'spinner', // The CSS class to assign to the spinner
+                zIndex: 2e9 // The z-index (defaults to 2000000000)
+            };
+            new Spinner(spinnerOptions).spin($("#cf_stack_create").get(0));
+
+            this.stack.create(creationParams, this.credentialId, this.region).
+                always(function(xhr) {
+                    $(".spinner").remove();
+                });
             Common.vent.once("cloudFormationStackCreated", function(){
                 $this.$el.dialog('close');
             });
@@ -431,46 +454,51 @@ define([
             }
             $("#next_button").button();
         },
-        validateInputFields: function(viewIndex){
-            switch(viewIndex){
-                case 0:
-                    var allValid = false;
-
-                    var validField = $("#cf_create_stack_name").val().trim() !== "";
-                    this.displayValid(validField, "#cf_create_stack_name");
-                    allValid = validField;
-
-                    var templateField = $("#view0").find("input[type=radio]:checked").parent().find("input[name=template]");
-                    if(templateField.length === 0 || !templateField.val() || templateField.val() === ""){
-                        if (!this.stackContent) {
-                            allValid = false;
-                            this.displayValid(false, templateField);
-                        }
-                    }
-                    else{
-                        this.displayValid(true, templateField);
-                    }
-                    if($("#notifications_select").val() ==="#create_topic"){
-                        validField = $("#new_sns_name").val().trim() !== "";
-                        allValid = allValid && validField;
-                        this.displayValid(validField, "#new_sns_name");
-
-
-                        validField = $("#new_sns_email").val().trim() !== "";
-                        allValid = allValid && validField;
-                        this.displayValid(validField, "#new_sns_email");
-                    }
-                    if(allValid){
-                        this.validateTemplate();
-                    }
-                    return allValid;
-                default:
-                    return true;
+        validateInputFields: function(viewIndex) {
+            if (viewIndex !== 0) {
+                return true;
             }
+            var allValid = false;
+
+            var validField = $("#cf_create_stack_name").val().trim() !== "";
+            this.displayValid(validField, "#cf_create_stack_name");
+            allValid = validField;
+
+            var templateField = $("#view0").find("input[type=radio]:checked").parent().find("input[name=template]");
+            if(templateField.length === 0 || !templateField.val() || templateField.val() === ""){
+                if (!this.stackContent) { // don't require if content passed in
+                    allValid = false;
+                    this.displayValid(false, templateField);
+                }
+            }
+            else{
+                this.displayValid(true, templateField);
+            }
+            if (!this.credentialId) {
+                this.displayValid(false, "#cf_cloud_creds");
+            }
+            if (!this.region) {
+                this.displayValid(false, "#cf_cloud_region");
+            }
+            if($("#notifications_select").val() ==="#create_topic"){
+                validField = $("#new_sns_name").val().trim() !== "";
+                allValid = allValid && validField;
+                this.displayValid(validField, "#new_sns_name");
+
+
+                validField = $("#new_sns_email").val().trim() !== "";
+                allValid = allValid && validField;
+                this.displayValid(validField, "#new_sns_email");
+            }
+            if(allValid){
+                this.validateTemplate();
+            }
+            return allValid;
         },
 
         validateTemplate: function(){
             var templateField, sendForm, templateValue;
+
             if (this.stackContent === undefined) {
                 templateField = $("#view0").find("input[type=radio]:checked").parent().find("input[name=template]");
                 templateValue = templateField.val();
@@ -478,8 +506,24 @@ define([
                 templateValue = this.stackContent;
             }
             if(templateValue && templateValue !==""){
+                var ajaxer;
                 var type = templateField? templateField[0].type : "body";
                 var apiUrl = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/cloud_formation/template/validate?cred_id=" + this.credentialId + "&type="+ type;
+                var spinnerOptions = {
+                    length: 50, // The length of each line
+                    width: 12, // The line thickness
+                    radius: 25, // The radius of the inner circle
+                    corners: 1, // Corner roundness (0..1)
+                    rotate: 0, // The rotation offset
+                    color: '#000', // #rgb or #rrggbb
+                    speed: 1, // Rounds per second
+                    trail: 60, // Afterglow percentage
+                    shadow: false, // Whether to render a shadow
+                    hwaccel: false, // Whether to use hardware acceleration
+                    className: 'spinner', // The CSS class to assign to the spinner
+                    zIndex: 2e9 // The z-index (defaults to 2000000000)
+                };
+                new Spinner(spinnerOptions).spin($("#cf_stack_create").get(0));
                 if(type==="file"){
                     //$("#template_upload").attr("action", apiUrl);
                     
@@ -491,27 +535,25 @@ define([
                     .ajaxForm({
                         dataType: 'json',
                         success: function(response){
+                            $(".spinner").remove();
                             templateField.data("TemplateBody", response.TemplateBody);
                             templateField.data("TemplateInfo", response.ValidationResult);
                             Common.vent.trigger("templateValidated", response.ValidationResult);
                         },
                         error: function(xhr){
+                            $(".spinner").remove();
                             Common.vent.trigger("templateValidationFailed", xhr);
                             //Common.errorDialog(xhr.statusText, JSON.parse(xhr.responseText).message);
                         }
                     });
-                    sendForm.submit();
+                    ajaxer = sendForm.submit();
                     $("#template_file_span").html(templateField);
                     // $("#template_upload").submit();
                 }
                 else if(type==="url"){
-                    $.ajax({
+                    ajaxer = $.ajax({
                         success:function(response){
                             templateField.data("TemplateInfo", response.ValidationResult);
-                            Common.vent.trigger("templateValidated", response.ValidationResult);
-                        },
-                        error:function(xhr){
-                            Common.vent.trigger("templateValidationFailed", xhr);
                         },
                         type: "POST",
                         url: apiUrl,
@@ -519,7 +561,7 @@ define([
                     });
                 }
                 else if(type==="body"){                   
-                    $.ajax({
+                    ajaxer = $.ajax({
                         url: apiUrl,
                         type: "POST",
                         data: this.stackContent,
@@ -530,11 +572,18 @@ define([
                             templateField = $("#cf_create_stack_name");
                             templateField.data("TemplateBody", response.TemplateBody);
                             templateField.data("TemplateInfo", response.ValidationResult);
-                            Common.vent.trigger("templateValidated", response.ValidationResult);
-                        },
-                        error: function(xhr){
-                            Common.vent.trigger("templateValidationFailed", xhr);
                         }
+                    });
+                }
+                if (ajaxer && ajaxer.always) {
+                    ajaxer.done(function(response, textStatus, xhr) {
+                        Common.vent.trigger("templateValidated", response.ValidationResult);
+                    });
+                    ajaxer.fail(function(xhr, textStatus, errorThrown) {
+                        Common.vent.trigger("templateValidationFailed", xhr);
+                    });
+                    ajaxer.always(function(data) {
+                        $(".spinner").remove();
                     });
                 }
             }
@@ -561,7 +610,7 @@ define([
             if(valid) {
                 $(selector).css(target, "");
             }else{
-                $(selector).css(target, "#FF0000");
+                $(selector).css(target, "red");
             }
         },
         showAdvancedOptions: function(e){
