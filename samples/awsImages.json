@@ -133,14 +133,14 @@
         "logo": "fedora",
         "product": "Linux/UNIX",
         "region": {
-            "us-east-1": "ami-86db39ef",
-            "us-west-1": "ami-86db39ef",
-            "us-west-2": "ami-86db39ef",
-            "eu-west-1": "ami-86db39ef",
-            "ap-southeast-1": "ami-86db39ef",
-            "ap-southeast-2": "ami-86db39ef",
-            "ap-northeast-1": "ami-86db39ef",
-            "sa-east-1": "ami-86db39ef"
+            "us-east-1": "ami-b22e5cdb",
+            "us-west-1": "ami-b22e5cdb",
+            "us-west-2": "ami-b22e5cdb",
+            "eu-west-1": "ami-b22e5cdb",
+            "ap-southeast-1": "ami-b22e5cdb",
+            "ap-southeast-2": "ami-b22e5cdb",
+            "ap-northeast-1": "ami-b22e5cdb",
+            "sa-east-1": "ami-b22e5cdb"
         }
     },
     {
@@ -149,14 +149,14 @@
         "logo": "fedora",
         "product": "Linux/UNIX",
         "region": {
-            "us-east-1": "ami-84db39ed",
-            "us-west-1": "ami-84db39ed",
-            "us-west-2": "ami-84db39ed",
-            "eu-west-1": "ami-84db39ed",
-            "ap-southeast-1": "ami-84db39ed",
-            "ap-southeast-2": "ami-84db39ed",
-            "ap-northeast-1": "ami-84db39ed",
-            "sa-east-1": "ami-84db39ed"
+            "us-east-1": "ami-182f5d71",
+            "us-west-1": "ami-182f5d71",
+            "us-west-2": "ami-182f5d71",
+            "eu-west-1": "ami-182f5d71",
+            "ap-southeast-1": "ami-182f5d71",
+            "ap-southeast-2": "ami-182f5d71",
+            "ap-northeast-1": "ami-182f5d71",
+            "sa-east-1": "ami-182f5d71"
         }
     }
 ]
