@@ -173,9 +173,9 @@ define([
                     });
                     break;
                 case "Ansible":
-                    Common.vent.once("playbooksLoaded", function(){
-                        var stateList = $this.sortListByContainer(config["playbook_config"]);
-                        $this.selectConfigs(stateList, "playbook", "task");
+                    Common.vent.once("jobtemplatesLoaded", function(){
+                        var stateList = $this.sortListByContainer(config["jobtemplate_config"]);
+                        $this.selectConfigs(stateList, "jobtemplate", "task");
                     });
                     break;
             }

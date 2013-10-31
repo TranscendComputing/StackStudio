@@ -708,10 +708,10 @@ define([
           $.each(jobtemplates, function( index, item) {
             var checked = (selected.indexOf(item) !== -1) ? "checked=\"true\"": "";
             $("<li></li>")
-              .data("ansiblePlaybook", item)
+              .data("ansibleJobTemplate", item)
               .append("<input type=\"checkbox\" " + checked + 
-                " class=\"ansiblePlaybookSelector\" />")
-              .append("<span class=\"ansiblePlaybook\">" + item.name + "</span>")
+                " class=\"ansibleJobTemplateSelector\" />")
+              .append("<span class=\"ansibleJobTemplate\">" + item.name + "</span>")
               .appendTo(ul);
           });
           return ul;
