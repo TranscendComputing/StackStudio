@@ -673,7 +673,7 @@ define([
           $this.ansibleJobTemplates.fetch({
             data: {account_id: this.credential.get("cloud_account_id")},
             success: function(collection, response, data) {
-              $this.populateAnsibleJobTemplates();
+              $this.populateAnsibleJobTemplates(response);
               destination.data("isloaded", "true");
             },
             error: function(collection, response, data){
@@ -682,38 +682,37 @@ define([
           });
         },
         
-        populateAnsibleJobTemplates: function(col) {
-          var jobtemplates = col.toJSON();
+        populateAnsibleJobTemplates: function(jobtemplates) {
+          //var jobtemplates = response.toJSON();
           var $this = this;
           var jobtemplateEl = $("#ansible-selection");
           jobtemplateEl.empty();
-          for (var jobtemplate in jobtemplates) {
-            if (jobtemplates.hasOwnProperty(jobtemplate)){
-              var el = $($this.renderAccordionGroup("ansible-selection",
-                jobtemplate, "jobtemplate")); 
-              el.find(".accordion-heading").prepend(
-                $("<input type=\"checkbox\" class=\"jobtemplateSelector\">"));
-              el.appendTo(jobtemplateEl);
-              var jobtemplateList = this.renderAnsibleJobTemplates(jobtemplates[jobtemplate],[]);
-              $("#" + jobtemplate + "-jobtemplate").find(".accordion-inner").empty()
-                .append(jobtemplateEl);
-            }
+          for (var i in jobtemplates) {
+            var jobtemplate = jobtemplates[i];
+            var el = $($this.renderAccordionGroup("ansible-selection",
+              jobtemplate.name, "jobtemplate")); 
+            el.find(".accordion-heading")
+              .prepend($("<input type=\"checkbox\" class=\"jobtemplateSelector\">"));
+            el.appendTo(jobtemplateEl);
+            var jobtemplateList = this.renderAnsibleJobTemplates(jobtemplate,[]);
+            $("#" + jobtemplate.id + "-jobtemplate")
+              .find(".accordion-inner")
+              .empty()
+              .append(jobtemplateEl);
           }
           this.recalculateAnsibleBadges();
           Common.vent.trigger("jobtemplatesLoaded");
         },
 
-        renderAnsibleJobTemplates: function(jobtemplates, selected ) {
+        renderAnsibleJobTemplates: function(jobtemplate, selected ) {
           var ul = $("<ul class=\"ansibleJobTemplates\"></ul>");
-          $.each(jobtemplates, function( index, item) {
-            var checked = (selected.indexOf(item) !== -1) ? "checked=\"true\"": "";
-            $("<li></li>")
-              .data("ansibleJobTemplate", item)
-              .append("<input type=\"checkbox\" " + checked + 
-                " class=\"ansibleJobTemplateSelector\" />")
-              .append("<span class=\"ansibleJobTemplate\">" + item.name + "</span>")
-              .appendTo(ul);
-          });
+          var checked = (selected.indexOf(jobtemplate.name) !== -1) ? "checked=\"true\"": "";
+          $("<li></li>")
+            .data("ansibleJobTemplate", jobtemplate.name)
+            .append("<input type=\"checkbox\" " + checked + 
+              " class=\"ansibleJobTemplateSelector\" />")
+            .append("<span class=\"ansibleJobTemplate\">" + jobtemplate.name + "</span>")
+            .appendTo(ul);
           return ul;
         },
 

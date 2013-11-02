@@ -36,8 +36,9 @@ define([
         var $this = this;
         var result = {};
         $this.each( function(value) {
-          var name = value.id;
-          result[name].push(name);
+          //var name = value.id;
+          // [XXX] send the whole shebang over
+          result[name].push(value);
         });
         return result;
       }

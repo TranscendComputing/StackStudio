@@ -14,7 +14,27 @@ define([
   function($,Backbone) {
     'use strict';
     var AnsibleJobTemplate = Backbone.Model.extend({
-      idAttribute: 'name'});
+      idAttribute: 'name',
+      // [XXX] We are populating these for future reference
+      id: '',
+      related: [],
+      summary_fields: {},
+      created: '',
+      modified: '',
+      name: '',
+      description: '',
+      job_type: '',
+      inventory: '',
+      project: '',
+      playbook: '',
+      credential: '',
+      forks: '',
+      limit: '',
+      verbosity: '',
+      extra_vars: '',
+      job_tags: '',
+      host_config_key: ''
+    });
     return AnsibleJobTemplate;
   }
 );

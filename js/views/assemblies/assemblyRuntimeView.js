@@ -264,7 +264,7 @@ define([
             var chefApiUrl = Common.apiUrl + "/stackstudio/v1/orchestration/chef/nodes/find?account_id=" + accountId;
             var puppetApiUrl = Common.apiUrl + "/stackstudio/v1/orchestration/puppet/agents/find?account_id=" + accountId;
             var saltApiUrl = Common.apiUrl + "/stackstudio/v1/orchestration/salt/minions/find?account_id=" + accountId;
-            var ansibleApiUrl = Common.apiUrl + "/stackstudio/v1/orchestration/ansible/inventory/find?account_id=" + accountId;
+            var ansibleApiUrl = Common.apiUrl + "/stackstudio/v1/orchestration/ansible/inventories?account_id=" + accountId;
 
             for (var i = 0; i < instances.length; i++) {
                 var name = instances[i]["name"] || instances[i]["dns_name"];
@@ -429,7 +429,7 @@ define([
                     // [XXX] This is b0rked
                     case "Ansible":
                         var hostName = rowData.hosts.name;
-                        if(minionName){
+                        if(hostName){
                             var jobtemplates = {"jobtemplates":[]};
                             var jobtemplateConfig = configSelection["jobtemplate_config"];
                             for (var n = 0; n< jobtemplateConfig.length; n++){
