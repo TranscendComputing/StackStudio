@@ -12,10 +12,11 @@ define([
         'common',
         'text!templates/stacks/stackDesignTemplate.html',
         'collections/assemblies',
-        'ace-cdn',
-        'ace/mode/json',
+        '/js/aws/views/cloud_formation/awsCloudFormationStackCreateView.js',
+        'ace',
+        'mode-json',
         'jquery.jstree'
-], function( $, _, Backbone, Common, stacksDesignTemplate, Assemblies, ace) {
+], function( $, _, Backbone, Common, stacksDesignTemplate, Assemblies, StackCreate, ace) {
     'use strict';
 
     var StackDesignView = Backbone.View.extend({
@@ -30,12 +31,13 @@ define([
 
         newResourceTree: undefined,
 
-        assembilies: undefined,
+        assemblies: undefined,
 
         events: {
             "click .jstree_custom_item": "treeFolderClick",
             "click .new_item_link": "addResource",
-            "click #save_template_button": "saveTemplate"
+            "click #save_template_button": "saveTemplate",
+            'click #run_template_button': "runTemplate"
         },
 
         initialize: function() {
@@ -46,17 +48,17 @@ define([
         },
 
         render: function() {
-            this.editor = ace.edit("design_editor");
+            this.editor = window.ace.edit("design_editor");
             this.editor.setTheme("ace/theme/monokai");
             this.editor.getSession().setUseWorker(false);
-            this.editor.getSession().setMode(new (require("ace/mode/json")).Mode());
+            this.editor.getSession().setMode("ace/mode/json");
 
             this.newResourceTree = $("#new_resources").jstree({
                 // List of active plugins
                 "plugins" : [
                     "json_data", "crrm", "themeroller"
                 ],
-                
+
                 "core": {
                     "animation": 0
                  },
@@ -86,7 +88,7 @@ define([
                                      "metadata": d
                                  });
                             });
-                            
+
                             var treeData = [];
                             $.each(services, function(s, v) {
                                 treeData.push({
@@ -100,14 +102,14 @@ define([
                     },
                     "correct_state": false
                 },
-                
+
                 "themeroller": {
                     "item": "jstree_custom_item"
                 }
             });
 
             this.assemblies.fetch({reset:true});
-            
+
             if(this.stack) {
                 this.setStack(this.stack);
             }
@@ -116,7 +118,7 @@ define([
         addAllAssemblies: function() {
             $("#assemblies_list").empty();
             this.assemblies.each(function(assembly) {
-                $("#assemblies_list").append("<a>"+assembly.attributes.name+"</a>");
+                $("#assemblies_list").append("<li><a>"+assembly.attributes.name+"</a></li>");
             });
         },
 
@@ -171,6 +173,16 @@ define([
                 $(event.target.parentElement).addClass("jstree-closed");
             }
             return false;
+        },
+
+        runTemplate: function() {
+            var template = this.editor.getValue();
+            this.newResourceDialog = new StackCreate({cred_id: this.credentialId, 
+                mode: "run",
+                stack: this.stack,
+                content: template
+            });
+            this.newResourceDialog.render();
         }
     });
 

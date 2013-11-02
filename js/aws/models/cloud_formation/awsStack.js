@@ -17,21 +17,21 @@ define([
 
         fetchResources: function(options, credentialId, region){
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/cloud_formation/stacks/"+ this.get("StackName") +"/resources?&cred_id=" + credentialId + "&region=" + region;
-            this.sendAjaxAction(url, "GET", undefined,  "stackResourcesLoaded");
+            return this.sendAjaxAction(url, "GET", undefined,  "stackResourcesLoaded");
         },
 
         fetchEvents: function(options, credentialId, region){
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/cloud_formation/stacks/"+ this.get("StackName") +"/events?&cred_id=" + credentialId + "&region=" + region;
-            this.sendAjaxAction(url, "GET", undefined,  "stackEventsLoaded");
+            return this.sendAjaxAction(url, "GET", undefined,  "stackEventsLoaded");
         },
 
         fetchTemplate: function(options, credentialId, region){
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/cloud_formation/stacks/"+ this.get("StackName") +"/template?&cred_id=" + credentialId + "&region=" + region;
-            this.sendAjaxAction(url, "GET", undefined,  "stackTemplateLoaded");
+            return this.sendAjaxAction(url, "GET", undefined,  "stackTemplateLoaded");
         },
         create: function(options, credentialId, region){
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/cloud_formation/stacks?cred_id=" + credentialId + "&region=" + region;
-            $.ajax({
+            return $.ajax({
                     url: url,
                     type: "POST",
                     data: {"RequestParams":options},
@@ -44,16 +44,15 @@ define([
                         Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
                     }
                 });
-           // this.sendAjaxAction(url, "POST", options, "cloudFormationStackCreated");
         },
         destroy: function(credentialId, region){
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/cloud_formation/stacks/"+ this.get("StackName") + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
-            this.sendAjaxAction(url, "POST", undefined, "cloudFormationAppRefresh");
+            return this.sendAjaxAction(url, "POST", undefined, "cloudFormationAppRefresh");
         },
         
         update: function(options, credentialId, region){
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/cloud_formation/stacks/"+ this.get("StackName") + "?_method=PUT&cred_id=" + credentialId + "&region=" + region;
-            $.ajax({
+            return $.ajax({
                     url: url,
                     type: "POST",
                     data: {"RequestParams":options},

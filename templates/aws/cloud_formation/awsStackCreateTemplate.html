@@ -6,16 +6,33 @@
                         <td>
                             <label for="cf_create_stack_name">Name:</label>
                             <input id="cf_create_stack_name" type="text" class="medium_width"/>
+                            <span id="stack_name_chosen"></span>
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="cloud_creds">
+                        <td>
+                            <label for="cf_cloud_creds">Cloud Credential:</label>
+                            <select id="cf_cloud_creds" name="cloud_credential">
+                                <option>Not Selected</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr class="cloud_creds">
+                        <td>
+                            <label for="cf_cloud_region">Cloud Region:</label>
+                            <select id="cf_cloud_region" name="cloud_region" placeholder="Cloud Region">
+                                <option>Not Selected</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr class="template_source">
                         <td>
                             <input type="radio" id="template_url_option" name="templateOption" value="template_url" selected/>
                             <label for="template_url_option">Provide a Template URL</label>
                             <input type="url" id="template_url" name="template" class="template_input"/>
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="template_source">
                         <td>
                             <input type="radio" id="template_file_option" name="templateOption" value="template_file"/>
                             <label for="template_file_option">Upload a Template File</label>

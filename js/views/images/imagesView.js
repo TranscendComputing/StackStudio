@@ -354,11 +354,17 @@ define([
            var base_image = pi.attributes.base_image;
            $('#image_template_name_input').hide().show('slow').val(base_image.name);
            $('input:checkbox').removeAttr('checked');
+           $('#os_toggle').removeClass('active');
+           $('#aws_toggle').removeClass('active');
            for(var i in base_image.clouds){
                if(base_image.clouds[i] === 'aws'){
-                   $('#clouds_select_aws').hide().show('slow').prop('checked', true);
+                   $('#clouds_select_aws').prop('checked', true);
+                   $("#aws_toggle").toggleClass('active');
+                   $("#aws_well").show('fast');
                }else if(base_image.clouds[i] === 'openstack'){
-                   $('#clouds_select_openstack').hide().show('slow').prop('checked', true);
+                   $('#clouds_select_openstack').prop('checked', true);
+                   $("#os_toggle").toggleClass('active');
+                   $("#os_well").show('fast');
                }
            }
            $('#os_input').hide().show('slow').val(base_image.os);
@@ -422,7 +428,7 @@ define([
                                 $( "<br/><input name='"+id1+"' placeholder='"+placeholder1+"' title='"+title1+"' data-type='"+dataType1+"' style='margin-top: 4px;' type='text' class='input-xlarge'></input>" ).insertAfter( $("#"+id1).next('a') ).val(list[i][k][j1]);
                             }
                         }
-                        else{
+                        else if(k !== "mciaas_files"){
                             $("#"+k).val(list[i][k]);
                         }
                     }
@@ -660,7 +666,8 @@ define([
                     }
                 }
                 if(base.clouds[i] === 'openstack'){
-                    var qHash = this.getDefaultTemplate()['builders'][0];
+                    var qHash = {};//this.getDefaultTemplate()['builders'][0];
+                    qHash['type'] = $("#openstack_type_select").val();
                     qHash['iso_checksum'] = qMap[$('#os_input').val()]['checksum'];
                     qHash['iso_url'] = qMap[$('#os_input').val()]['url'];
                     builders.push(qHash);
@@ -732,8 +739,12 @@ define([
         
         cloudSelect: function(e){
             if(e.target.id === "clouds_select_openstack"){
+                $("#os_well").toggle('slow');
+                $("#os_toggle").toggleClass('active');
                 $("#openstack_type_select").prop('disabled', !$(e.target).prop('checked'));
             }else if(e.target.id === "clouds_select_aws"){
+                $("#aws_well").toggle('slow');
+                $("#aws_toggle").toggleClass('active');
                 $("#image_type_select").prop('disabled', !$(e.target).prop('checked'));
                 $("#aws_cred_select").prop('disabled', !$(e.target).prop('checked'));
                 $("#aws_region_select").prop('disabled', !$(e.target).prop('checked'));
