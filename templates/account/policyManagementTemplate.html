@@ -352,8 +352,13 @@
                         </div>
                     </div> -->
                     <div class="well" style="margin-top:40px;">
-                        <legend>Default Images</legend>
-                        <div class="row" style="margin:0px;">
+                        <legend>Available Images</legend>
+                        <div class="row">
+                            <label class="checkbox"><input type="checkbox" name="use_approved_images" value="use_approved_images"/>
+                                Constrain images to the following:
+                            </label>
+                        </div>
+                        <div class="row" style="margin:0px;display:none;">
                             <div class="span3"><b>Selected Image:</b><div id="add_image"></div></div>
                             <div class="span7"><b>Source:</b><div id="add_image_source"></div></div>
                             <div class="span2"><a id="add_image_btn" class="btn btn-primary" style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;margin-bottom:8px;"><i class="icon-plus-sign icon-white"></i>&nbsp;Add</a>

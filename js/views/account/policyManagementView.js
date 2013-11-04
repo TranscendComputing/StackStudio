@@ -93,7 +93,10 @@ define([
                         { "sWidth": "20%" },
                         { "sWidth": "75%" },
                         { "sWidth": "5%" }
-                    ]
+                    ],
+                "oLanguage": {
+                        "sEmptyTable": "No images have been added."
+                      }
             });
             
             var groupsView = this;
@@ -169,7 +172,6 @@ define([
             };
             
             new Spinner(spinnerOptions).spin($("#images_table").get(0));
-            
         },
         
         treeSelect: function() {
@@ -274,6 +276,7 @@ define([
             }
             this.default_images = this.model.attributes.aws_governance.default_images;
             for(var k in this.default_images){
+                $('input[name=use_approved_images]').attr('checked', true);
                 $("#default_images_table").dataTable().fnAddData([this.default_images[k]["image_id"],this.default_images[k]["source"],"<a class='btn btn-mini btn-danger remove_image'><i class='icon-minus-sign icon-white'></i></a>"]);
             }
         },
@@ -428,14 +431,16 @@ define([
             
             var rowData = $("#images_table").dataTable().fnGetData(event.currentTarget);
             
-            $("#add_image").hide();
-            $("#add_image_source").hide();
+            // $("#add_image").hide();
+//             $("#add_image_source").hide();
             
             $("#add_image").html(rowData[0]);
             $("#add_image_source").html(rowData[1]);
             
-            $("#add_image").show(1000);
-            $("#add_image_source").show(1000);
+            // $("#add_image").show(1000);
+//             $("#add_image_source").show(1000);
+            
+            this.addImage();
         },
         
         imageFilterSelect: function(event){
@@ -482,6 +487,7 @@ define([
         addImage: function(){
             this.default_images.push({"image_id" : $("#add_image").html(),"source": $("#add_image_source").html()});
             $("#default_images_table").dataTable().fnAddData([$("#add_image").html(),$("#add_image_source").html(),"<a class='btn btn-mini btn-danger remove_image'><i class='icon-minus-sign icon-white'></i></a>"]);
+            $('input[name=use_approved_images]').attr('checked', true);
         },
         
         saveImages: function(){
