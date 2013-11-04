@@ -398,7 +398,9 @@ define([
                 var list = pi.attributes.packed_image[key];
                 for(var i in list){
                     for(var k in list[i]){
-                        if(k==="qemu"){
+                        if(k === "type" && key !== 'post-processors'){
+                            //do nothing
+                        }else if(k==="qemu"){
                             for(var kQ in list[i][k]){
                                 if($("#"+kQ).attr('type') === 'checkbox'){
                                     $("#"+kQ).prop('checked',list[i][k]);
@@ -546,7 +548,6 @@ define([
             
             var postProcessor = {};
             if($("#post_processor_select").val() !== "None"){
-                postProcessor['type'] = $("#post_processor_select").val();
                 $("#postprocessor_settings :input").not("#qemu-well :input").each(function() {
                     if($( this ).val().length === 0){
                         //dont add
@@ -564,6 +565,7 @@ define([
                         postProcessor[$(this).attr('name')] = $( this ).val();
                     }
                 });
+                postProcessor['type'] = $("#post_processor_select").val();
                 postProcessor['qemu'] = {};
                 $("#qemu-well :input").each(function() {
                     if($( this ).val().length === 0){
