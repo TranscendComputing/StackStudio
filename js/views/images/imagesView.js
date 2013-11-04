@@ -376,6 +376,8 @@ define([
            $("#post_processor_select").hide().show('slow').val(base_image.post_processor);
            $("#openstack_type_select").hide().show('slow').val(base_image.builder_type_os);
            
+           this.toggleComponents();
+           
            $.ajax({
              url: Common.apiUrl + "/stackstudio/v1/packed_images/templates/" + sessionStorage.org_id + "/" + doc_id,
              async: false,
@@ -756,12 +758,14 @@ define([
                 $("#aws_cred_select").prop('disabled', !$(e.target).prop('checked'));
                 $("#aws_region_select").prop('disabled', !$(e.target).prop('checked'));
             }
+            this.toggleComponents();
+            this.validate();
         },
         
         clearForm: function(){
             $("#image_template_name_input").val('');
-            $("#clouds_select_aws").prop('checked',false);
-            $("#clouds_select_openstack").prop('checked',false);
+            // $("#clouds_select_aws").prop('checked',false);
+//             $("#clouds_select_openstack").prop('checked',false);
             $("#image_type_select").val('None');
             $("#openstack_type_select").val('None');
             $("#os_input").val('');
@@ -775,6 +779,18 @@ define([
             $("#provisioner_settings").empty();
             $("#devops_settings").empty();
             $("#postprocessor_settings").empty();
+            
+            //this.toggleComponents();
+        },
+        
+        toggleComponents: function(){
+            if(!$("#clouds_select_openstack").prop('checked') && !$("#clouds_select_aws").prop('checked')){
+                $("#instance_well").hide('fast');
+                $("#components_well").hide('fast');
+            }else{
+                $("#instance_well").show('fast');
+                $("#components_well").show('fast');
+            }
         },
 
         closeImageTemplate: function() {
