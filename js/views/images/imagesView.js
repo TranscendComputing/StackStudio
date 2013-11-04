@@ -332,7 +332,7 @@ define([
             $(".active").removeClass('active');
             $("#"+event.target.id).closest('li').addClass('active');
             $(".adv_tab_panel").hide('slow');
-            if(event.target.text === "Builder"){
+            if(event.target.text === "AWS"){
                 $("#builder_settings").show('slow');
             }else if(event.target.text === "Openstack"){
                 $("#openstack_settings").show('slow');
@@ -609,6 +609,11 @@ define([
             }
             
             //packed_image = this.getDefaultTemplate();
+            // p = this.getDefaultTemplate();
+//             p.builders.push(packed_image.builders[0]);
+//             packed_image = p;
+//             delete packed_image.builders[1]['tags'];
+//             debugger
             
             var id = this.currentImageTemplate;
             this.currentImageTemplate = new PackedImage({'packed_image':packed_image,'name':base_image.name,'base_image':base_image,'doc_id':id});
