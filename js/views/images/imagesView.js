@@ -356,6 +356,8 @@ define([
            $('input:checkbox').removeAttr('checked');
            $('#os_toggle').removeClass('active');
            $('#aws_toggle').removeClass('active');
+           $("#aws_well").hide('fast');
+           $("#os_well").hide('fast');
            for(var i in base_image.clouds){
                if(base_image.clouds[i] === 'aws'){
                    $('#clouds_select_aws').prop('checked', true);
