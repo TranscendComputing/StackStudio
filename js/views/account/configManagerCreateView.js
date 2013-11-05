@@ -91,6 +91,7 @@ define([
             if(toolType){
                 var data = {};
                 var otherData = {};
+                var additionalData = [];
                 switch(toolType){
                     case "puppet":
                         data = {"authPropName":"Foreman User", tag:"input", inputType:"text", authProp:"foreman_user"};
@@ -107,10 +108,29 @@ define([
                     case "ansible":
                         data = {"authPropName":"Ansible Username", tag:"input", inputType:"text",authProp:"ansible_user"};
                         otherData = {"authPropName":"Ansible Password", tag:"input", inputType:"password",authProp:"ansible_pass"};
+                        additionalData.push(
+                          {"authPropName":"Ansible SSH Private Key", tag:"input", 
+                          inputType:"textarea", authProp:"ansible_ssh_private_key"});
+                        additionalData.push(
+                          {"authPropName":"Ansible SSH Key Passphrase", tag:"input", 
+                          inputType:"text", authProp:"ansible_ssh_key_passphrase"});
+                        additionalData.push(
+                          {"authPropName":"Ansible SSH User Name", tag:"input", 
+                          inputType:"text", authProp:"ansible_ssh_username"});
+                        additionalData.push(
+                          {"authPropName":"Ansible SSH Password", tag:"input", 
+                          inputType:"text", authProp:"ansible_ssh_password"});
                         break;
                 }
                 $("#authProp").html(ich["auth_prop_template"](data));
                 $("#otherAuthProp").html(ich["auth_prop_template"](otherData));
+                // [XXX] There is a better way of doing this
+                if (additionalData.length > 0){
+                  for (var i in additionalData){
+                    $("#additionalAuthProp_"+i).html(
+                      ich["auth_prop_template"](additionalData[i]));
+                  }
+                }
             }
         },
         changed:function(evt) {

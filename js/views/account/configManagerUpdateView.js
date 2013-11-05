@@ -77,6 +77,8 @@ define([
             $("#authProp").html("");
             $("#otherAuthProp").html("");
             var data = {};
+            var otherData = {};
+            var additionalData = [];
             if($this.configManager.get("type").toLowerCase() === "puppet"){
 
                 data = {"authPropName":"Foreman User", tag:"input", inputType:"text",authProp:"foreman_user"};
@@ -91,6 +93,31 @@ define([
 
                 data = {"authPropName":"Key", tag:"textarea", inputType:"text",authProp:"key"};
                 $("#otherAuthProp").html(ich["auth_prop_template"](data));
+            } else if ($this.configManager.get("type").toLowerCase() === "ansible"){
+              data = {"authPropName":"Ansible Username", tag:"input", inputType:"text",authProp:"ansible_user"};
+              otherData = {"authPropName":"Ansible Password", tag:"input", inputType:"password",authProp:"ansible_pass"};
+              additionalData.push(
+                {"authPropName":"Ansible SSH Private Key", tag:"input", 
+                inputType:"textarea", authProp:"ansible_ssh_private_key"});
+              additionalData.push(
+                {"authPropName":"Ansible SSH Key Passphrase", tag:"input", 
+                inputType:"text", authProp:"ansible_ssh_key_passphrase"});
+              additionalData.push(
+                {"authPropName":"Ansible SSH User Name", tag:"input", 
+                inputType:"text", authProp:"ansible_ssh_username"});
+              additionalData.push(
+                {"authPropName":"Ansible SSH Password", tag:"input", 
+                inputType:"text", authProp:"ansible_ssh_password"});
+              $("#authProp").html(ich["auth_prop_template"](data));
+              $("#otherAuthProp").html(ich["auth_prop_template"](otherData));
+              // [XXX] There is a better way of doing this
+              if (additionalData.length > 0){
+                for (var i in additionalData){
+                  $("#additionalAuthProp_"+i).html(
+                    ich["auth_prop_template"](additionalData[i]));
+                }
+              }
+
             }
             $("#update_config_manager_form :input").each(function() {
                 if(this.name.indexOf("auth_properties") !== -1){
