@@ -95,7 +95,8 @@ module.exports = function(grunt) {
     connect: {
         sstudio: {
             options: {
-                port: 9001
+                port: 9001,
+                hostname: "*"
             }
         },
         test : {
