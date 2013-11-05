@@ -58,7 +58,7 @@
 		  <arg line="${build}/${package.file} stackstudio@${deploy.ip}:/${sstudio2.home}"/>
         </exec>
         <exec executable="ssh" failonerror="true">
-          <arg line="stackstudio@${deploy.ip} sudo rm -r ${sstudio2.home}/StackStudio" failonerror="true"/>
+          <arg line="stackstudio@${deploy.ip} sudo rm -r ${sstudio2.home}/StackStudio"/>
         </exec>
         <exec executable="ssh" failonerror="true">
           <arg line="stackstudio@${deploy.ip} sudo tar xzf ${sstudio2.home}/${package.file} -C ${sstudio2.home}"/>

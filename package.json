@@ -6,7 +6,7 @@
     "grunt-contrib-jshint": "~0.3.0",
     "grunt-contrib-nodeunit": "~0.1.0",
     "grunt-contrib-jasmine": "~0.3.1",
-    "grunt-contrib-uglify": "~0.1.0",
+    "grunt-contrib-uglify": "~0.1.2",
     "grunt-contrib-concat": "~0.1.1",
     "grunt-contrib-watch": "~0.1.4",
     "grunt-contrib-connect": "~0.5.0",
@@ -14,5 +14,43 @@
     "grunt-template-jasmine-istanbul": "~0.2.0",
     "grunt-selenium": "~0.1.5",
     "grunt-contrib-less": "~0.5.0"
-  }
+  },
+  "readmeFilename": "README.md",
+  "description": "StackStudio multi-cloud managment platform.",
+  "main": "Gruntfile.js",
+  "bugs": "https://github.com/TranscendComputing/StackStudio/issues",
+  "directories": {
+    "test": "test",
+    "js": "js"
+  },
+  "dependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-concat": "~0.1.3",
+    "grunt-contrib-connect": "~0.5.0",
+    "grunt-contrib-jasmine": "~0.3.3",
+    "grunt-contrib-jshint": "~0.3.0",
+    "grunt-contrib-less": "~0.5.2",
+    "grunt-contrib-watch": "~0.1.4",
+    "grunt-template-jasmine-istanbul": "~0.2.5",
+    "grunt-contrib-nodeunit": "~0.1.2",
+    "grunt-template-jasmine-requirejs": "~0.1.5",
+    "grunt-selenium": "~0.1.7",
+    "grunt-contrib-uglify": "~0.1.2"
+  },
+  "scripts": {
+    "test": "grunt jasmine"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TranscendComputing/StackStudio.git"
+  },
+  "keywords": [
+    "cloud",
+    "managment",
+    "ec2",
+    "openstack",
+    "aws"
+  ],
+  "author": "Transcend Computing",
+  "license": "Apache2"
 }
