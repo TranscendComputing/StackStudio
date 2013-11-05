@@ -54,14 +54,30 @@
 
 	<target name="deploy" depends="package">
         <echo message="Deploying StackStudio to ${deploy.ip}"/>
-		<exec command="scp ${build}/${package.file} stackstudio@${deploy.ip}:/${sstudio2.home}" failonerror="true"/>
-        <exec command="ssh stackstudio@${deploy.ip} sudo rm -r ${sstudio2.home}/StackStudio" failonerror="true"/>
-        <exec command="ssh stackstudio@${deploy.ip} sudo tar xvzf ${sstudio2.home}/${package.file} -C ${sstudio2.home}" failonerror="true"/>
-		<exec command="ssh stackstudio@${deploy.ip} sudo chmod 755 ${sstudio2.home}/StackStudio" failonerror="true"/>
-		<exec command="ssh stackstudio@${deploy.ip} sudo find ${sstudio2.home}/StackStudio -type d -exec chmod 755 {} \;" failonerror="true"/>
-        <exec command="ssh stackstudio@${deploy.ip} sudo find ${sstudio2.home}/StackStudio -type f -exec chmod 644 {} \;" failonerror="true"/>
-        <exec command="ssh stackstudio@${deploy.ip} sudo chown -R stackstudio:stackstudio ${sstudio2.home}/StackStudio" failonerror="true"/>
-        <exec command="ssh stackstudio@${deploy.ip} sudo /etc/init.d/${sstudio.webserver} restart" failonerror="true"/>
+		<exec executable="scp" failonerror="true">
+		  <arg line="${build}/${package.file} stackstudio@${deploy.ip}:/${sstudio2.home}"/>
+        </exec>
+        <exec executable="ssh" failonerror="true">
+          <arg line="stackstudio@${deploy.ip} sudo rm -r ${sstudio2.home}/StackStudio" failonerror="true"/>
+        </exec>
+        <exec executable="ssh" failonerror="true">
+          <arg line="stackstudio@${deploy.ip} sudo tar xzf ${sstudio2.home}/${package.file} -C ${sstudio2.home}"/>
+        </exec>
+        <exec executable="ssh" failonerror="true">
+		  <arg line="stackstudio@${deploy.ip} sudo chmod 755 ${sstudio2.home}/StackStudio"/>
+        </exec>
+        <exec executable="ssh" failonerror="true">
+		  <arg line="stackstudio@${deploy.ip} sudo find ${sstudio2.home}/StackStudio -type d -exec chmod 755 {} \;" />
+        </exec>
+        <exec executable="ssh" failonerror="true">
+          <arg line="stackstudio@${deploy.ip} sudo find ${sstudio2.home}/StackStudio -type f -exec chmod 644 {} \;"/>
+        </exec>
+        <exec executable="ssh" failonerror="true">
+          <arg line="stackstudio@${deploy.ip} sudo chown -R stackstudio:stackstudio ${sstudio2.home}/StackStudio" />
+        </exec>
+        <exec executable="ssh" failonerror="true">
+          <arg line="stackstudio@${deploy.ip} sudo /etc/init.d/${sstudio.webserver} restart" />
+        </exec>
 	</target>
 
     <available file=".git" type="dir" property="git.present"/>
@@ -86,8 +102,10 @@
 	</target>
 
     <target name="grunt">
-        <exec command="npm install" failonerror="true"/>
-        <exec command="grunt" failonerror="true"/>
+        <exec executable="npm" failonerror="true">
+          <arg value="install"/>
+        </exec>
+        <exec executable="grunt" failonerror="true"/>
     </target>
 
     <target name="setBackend">
@@ -127,7 +145,7 @@
 		<element name="include-patterns"/>
 		<element name="exclude-patterns"/>
 		<sequential>
-			<tar destfile="@{destfile}" compression="gzip">
+			<tar destfile="@{destfile}" compression="gzip" longfile="gnu">
 				<tarfileset dir="${project.base.dir}" prefix="StackStudio">
 					<include name="*/**"/>
 				    <exclude name=".git/**"/>
