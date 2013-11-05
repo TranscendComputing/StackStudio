@@ -207,7 +207,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-selenium');
 
   // Default task.
-  grunt.registerTask('default', ['jshint', 'jasmine']);
+  grunt.registerTask('default', ['jshint', 'less', 'jasmine']);
   grunt.registerTask('run', ['jshint', 'less', 'connect:sstudio', 'watch']);
   grunt.registerTask('build', ['jshint', 'jasmine', 'concat', 'uglify']);
 
