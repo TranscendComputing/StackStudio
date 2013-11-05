@@ -353,6 +353,7 @@ define([
            var pi = this.packed_images.find(function(model) { return model.get('doc_id') === doc_id; });
            var base_image = pi.attributes.base_image;
            $('#image_template_name_input').hide().show('slow').val(base_image.name);
+           $('#image_template_desc_input').hide().show('slow').val(base_image.description);
            $('input:checkbox').removeAttr('checked');
            $('#os_toggle').removeClass('active');
            $('#aws_toggle').removeClass('active');
@@ -456,6 +457,7 @@ define([
             $("input[name='clouds_select']:checkbox:checked").each(function(){  clouds.push($(this).val());   });
             
             base_image.name = $('#image_template_name_input').val();
+            base_image.description = $('#image_template_desc_input').val();
             base_image.clouds = clouds;
             base_image.os = $('#os_input').val();
             
@@ -766,6 +768,7 @@ define([
         
         clearForm: function(){
             $("#image_template_name_input").val('');
+            $("#image_template_desc_input").val('');
             // $("#clouds_select_aws").prop('checked',false);
 //             $("#clouds_select_openstack").prop('checked',false);
             $("#image_type_select").val('None');
