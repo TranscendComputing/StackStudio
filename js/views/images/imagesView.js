@@ -41,6 +41,7 @@ define([
             "change #dev_ops_select":"devopsSelect",
             "change #post_processor_select":"postProcessorSelect",
             "change #openstack_type_select":"openstackTypeSelect",
+            "click #adv_collapse_btn":"advCollapseBtn",
             "click .adv_tab": "advTabSelect",
             "click #save_image_template_button":"saveButton",
             "click #deploy_image_template_button":"deployImage",
@@ -343,6 +344,10 @@ define([
             }else if(event.target.text === "Post-Processor"){
                 $("#postprocessor_settings").show('slow');
             }
+        },
+        
+        advCollapseBtn: function(e){
+            $(".adv_tab")[0].click();
         },
         
         loadPackedImage: function(event){
