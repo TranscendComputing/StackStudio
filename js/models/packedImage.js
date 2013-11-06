@@ -27,7 +27,7 @@ define([
         
         deploy: function() {
             var url = Common.apiUrl + "/stackstudio/v1/packed_images/deploy?uid=" + sessionStorage.org_id + "&doc_id=" + this.attributes.doc_id;
-            this.sendAjaxAction(url, "POST", {"packed_image": this.attributes.packed_image,"name":this.attributes.name,"base_image":this.attributes.base_image}, "packedImageAppRefresh", "Image Deployed...");
+            this.sendAjaxAction(url, "POST", undefined, "packedImageAppRefresh", "Image Deployed...");
         },
         
         destroy: function(){
