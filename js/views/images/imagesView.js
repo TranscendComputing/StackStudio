@@ -424,7 +424,7 @@ define([
                                 }
                             }
                         }else if($("#"+k).attr('type') === 'checkbox'){
-                            $("#"+k).prop('checked',list[i]);
+                            $("#"+k).prop('checked',list[i][k]);
                         }else if($("#"+k).attr('data-type') && $("#"+k).attr('data-type').indexOf("array") !== -1){
                             var id1 = $("#"+k).attr('name');
                             var placeholder1 = $("#"+id1).attr('placeholder');
@@ -683,6 +683,7 @@ define([
                     qHash['type'] = $("#openstack_type_select").val();
                     qHash['iso_checksum'] = qMap[$('#os_input').val()]['checksum'];
                     qHash['iso_url'] = qMap[$('#os_input').val()]['url'];
+                    qHash['name'] = $("#image_template_name_input").val();
                     builders.push(qHash);
                 }
             }
