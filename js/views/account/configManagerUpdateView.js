@@ -101,13 +101,13 @@ define([
                 inputType:"textarea", authProp:"ansible_ssh_private_key"});
               additionalData.push(
                 {"authPropName":"Ansible SSH Key Passphrase", tag:"input", 
-                inputType:"text", authProp:"ansible_ssh_key_passphrase"});
+                inputType:"password", authProp:"ansible_ssh_key_passphrase"});
               additionalData.push(
                 {"authPropName":"Ansible SSH User Name", tag:"input", 
                 inputType:"text", authProp:"ansible_ssh_username"});
               additionalData.push(
-                {"authPropName":"Ansible SSH Password", tag:"input", 
-                inputType:"text", authProp:"ansible_ssh_password"});
+                {"authPropName":"Ansible SSH/Sudo Password", tag:"input", 
+                inputType:"password", authProp:"ansible_ssh_password"});
               $("#authProp").html(ich["auth_prop_template"](data));
               $("#otherAuthProp").html(ich["auth_prop_template"](otherData));
               // [XXX] There is a better way of doing this

@@ -62,7 +62,10 @@ define([
             var issue = false;
             
             $('input, textarea, select').each(function(){
-                if($(this).val() === ""){
+                if ($(this).attr('title') === "optional"){
+                    $(this).css("border-color", "");
+                }
+                else if($(this).val() === ""){
                     $(this).css("border-color", "red");
                     issue = true;
                 }
@@ -110,16 +113,16 @@ define([
                         otherData = {"authPropName":"Ansible Password", tag:"input", inputType:"password",authProp:"ansible_pass"};
                         additionalData.push(
                           {"authPropName":"Ansible SSH Private Key", tag:"input", 
-                          inputType:"textarea", authProp:"ansible_ssh_private_key"});
+                          inputType:"textarea", title:"optional", authProp:"ansible_ssh_private_key"});
                         additionalData.push(
                           {"authPropName":"Ansible SSH Key Passphrase", tag:"input", 
-                          inputType:"text", authProp:"ansible_ssh_key_passphrase"});
+                          inputType:"password", title:"optional", authProp:"ansible_ssh_key_passphrase"});
                         additionalData.push(
                           {"authPropName":"Ansible SSH User Name", tag:"input", 
-                          inputType:"text", authProp:"ansible_ssh_username"});
+                          inputType:"text", title:"optional", authProp:"ansible_ssh_username"});
                         additionalData.push(
-                          {"authPropName":"Ansible SSH Password", tag:"input", 
-                          inputType:"text", authProp:"ansible_ssh_password"});
+                          {"authPropName":"Ansible SSH/Sudo Password", tag:"input", 
+                          inputType:"password", title:"optional", authProp:"ansible_ssh_password"});
                         break;
                 }
                 $("#authProp").html(ich["auth_prop_template"](data));
