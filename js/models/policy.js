@@ -25,14 +25,14 @@ define([
             this.sendAjaxAction(url, "POST", {"policy": options}, "policyAppRefresh", "Policy Created");
         },
         
-        save: function(options,id, orgId) {
+        save: function(options,oS,id, orgId) {
             var url;
             if(id === undefined){
                 url = Common.apiUrl + "/identity/v1/policies?&org_id=" + orgId;
             }else{
                 url = Common.apiUrl + "/identity/v1/policies/"+id+"?&org_id=" + orgId;
             }
-            this.sendAjaxAction(url, "POST", {"policy": options}, "policyAppRefresh", "Policy Saved");
+            this.sendAjaxAction(url, "POST", {"policy": options,"policy_os" : oS}, "policyAppRefresh", "Policy Saved");
         },
         
         addToGroup: function(options,orgId) {

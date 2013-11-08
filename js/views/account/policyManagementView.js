@@ -11,6 +11,7 @@ define([
         'backbone',
         'common',
         'text!templates/account/policyManagementTemplate.html',
+        'text!templates/account/policyManagementTemplateOS.html',
         'models/policy',
         'collections/users',
         '/js/aws/collections/notification/awsTopics.js',
@@ -27,11 +28,13 @@ define([
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator',
         'bootstrap'
-], function( $, _, Backbone, Common, groupsManagementTemplate, Policy, Users, Topics, Images, Vpcs, Subnets, CreateGroupView, ManageGroupUsers, CreateAlarmView, CreateTopicsView, CreateVpcsView, CreateSubnetView, Spinner ) {
+], function( $, _, Backbone, Common, groupsManagementTemplate, groupsManagementTemplateOS, Policy, Users, Topics, Images, Vpcs, Subnets, CreateGroupView, ManageGroupUsers, CreateAlarmView, CreateTopicsView, CreateVpcsView, CreateSubnetView, Spinner ) {
 
     var GroupManagementView = Backbone.View.extend({
 
         tagName: 'div',
+
+        template_os: _.template(groupsManagementTemplateOS),
 
         template: _.template(groupsManagementTemplate),
         
@@ -71,15 +74,16 @@ define([
             "click .create_vpc_btn":"vpcCreate",
             "click .create_subnet_btn":"subnetCreate",
             'change input[type=checkbox]': 'checkboxChanged',
-            'click #project_name': 'pnFocus'
+            'click #project_name': 'pnFocus',
+            'click .cloud-button' : 'clickCloudButton',
+            'click .cloud-tab' : 'clickCloudTab'
         },
 
         initialize: function() {
             this.$el.html(this.template);
             this.rootView = this.options.rootView;
             $("#submanagement_app").html(this.$el);
-            //$("button").button();
-            
+            $("#content_os").html(this.template_os);            
             $("#images_table").dataTable({
                 "aoColumns": [
                         { "sWidth": "25%" },
@@ -143,6 +147,7 @@ define([
         },
 
         render: function () {
+            $("#gov_page").hide().show("slow");
             this.addCreds();
             if(typeof this.rootView !== 'undefined' && typeof this.rootView.treePolicy !== 'undefined'){
                 this.policy = this.rootView.treePolicy;
@@ -233,7 +238,7 @@ define([
             var newPolicy = new Policy();
             
             var o = {};
-            var a = $("form").serializeArray();
+            var a = $("#content form").serializeArray();
             $.each(a, function() {
                 if (o[this.name]) {
                     if (!o[this.name].push) {
@@ -247,9 +252,51 @@ define([
             o["default_alarms"] = this.alarms;
             o["default_images"] = this.default_images;
             //debugger
-            newPolicy.save(o,this.policy,sessionStorage.org_id);
+            var oS = {};
+            var aOS = $("#content_os form").serializeArray();
+            $.each(aOS, function() {
+                if (oS[this.name]) {
+                    if (!oS[this.name].push) {
+                        oS[this.name] = [oS[this.name]];
+                    }
+                    oS[this.name].push(this.value || '');
+                } else {
+                    oS[this.name] = this.value || '';
+                }
+            });
+            oS["default_alarms"] = this.alarms;
+            oS["default_images"] = this.default_images;
+            newPolicy.save(o,oS,this.policy,sessionStorage.org_id);
         },
-        
+        populateFormOS: function(p){
+            for (var key in p) {
+              if (p.hasOwnProperty(key)) {    
+                var typ = $( "input[name='"+key+"']" ).prop("type");
+                if(typ === "checkbox"){
+                    if(typeof p[key] === 'string'){
+                        $( "input[name='"+key+"'][value='"+p[key]+"']" ).attr('checked','checked');
+                    }else{
+                        for (var i in p[key]) {
+                          $( "input[name='"+key+"'][value='"+p[key][i]+"']" ).attr('checked','checked');
+                        }
+                    }
+                }else if(typ === "radio"){
+                    $( "input[name='"+key+"'][value='"+p[key]+"']" ).attr('checked','checked');
+                }else{
+                    $("#"+key).val(p[key]);
+                }
+              }
+            }
+            this.alarms = p.default_alarms;
+            for (var j in this.alarms){
+                $("#alarm_table").append("<tr><td>"+this.alarms[j].namespace+"</td><td>"+this.alarms[j].metric_name+"</td><td>"+this.alarms[j].threshold+"</td><td>"+this.alarms[j].period+"</td><td><a class='btn btn-mini btn-danger remove_alarm'><i class='icon-minus-sign icon-white'></i></a></td></tr>");
+            }       
+            this.default_images = this.model.attributes.aws_governance.default_images;
+            for(var k in this.default_images){
+                $('input[name=use_approved_images]').attr('checked', true);
+                $("#default_images_table").dataTable().fnAddData([this.default_images[k]["image_id"],this.default_images[k]["source"],"<a class='btn btn-mini btn-danger remove_image'><i class='icon-minus-sign icon-white'></i></a>"]);
+            }
+        },
         populateForm: function(model){
             var p = model.attributes.aws_governance;
             for (var key in p) {
@@ -279,6 +326,7 @@ define([
                 $('input[name=use_approved_images]').attr('checked', true);
                 $("#default_images_table").dataTable().fnAddData([this.default_images[k]["image_id"],this.default_images[k]["source"],"<a class='btn btn-mini btn-danger remove_image'><i class='icon-minus-sign icon-white'></i></a>"]);
             }
+            this.populateFormOS(model.attributes.os_governance);
         },
         
         refreshSession: function(){
@@ -559,6 +607,42 @@ define([
             }
         },
         
+        clickCloudTab: function(event){
+            $(".tab-selector.active").removeClass("active");
+            if(event.target.id === "tab_os"){
+                $("#content").hide("slow");
+                $("#content_os").show("slow");
+                $("#os_tab_item").addClass("active");
+
+            }
+            if(event.target.id === "tab_aws"){
+                $("#content").show("slow");
+                $("#content_os").hide("slow");  
+                $("#aws_tab_item").addClass("active");
+            }
+
+        },
+
+        clickCloudButton: function(event){
+            if(event.target.id === "os_button" || event.target.id === "os_img"){
+                $("#os_button").toggleClass("active");
+                $("#os_tab_item").toggle();
+            }
+            if(event.target.id === "aws_button" || event.target.id === "aws_img"){
+                $("#aws_button").toggleClass("active");
+                $("#aws_tab_item").toggle();
+            }
+            if($("#aws_button").hasClass("active") || $("#os_button").hasClass("active")){
+                $("#clouds_select_msg").hide();
+            }
+            else{
+                $("#clouds_select_msg").show();
+                $("#content").hide("slow");
+                $("#content_os").hide("slow");
+
+            }
+        },
+
         prePopForm: function(){
             $("input:checkbox[name='usable_regions']").each(function(){
                 $(this).prop('checked', true);
