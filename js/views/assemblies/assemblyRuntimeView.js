@@ -264,7 +264,7 @@ define([
             var chefApiUrl = Common.apiUrl + "/stackstudio/v1/orchestration/chef/nodes/find?account_id=" + accountId;
             var puppetApiUrl = Common.apiUrl + "/stackstudio/v1/orchestration/puppet/agents/find?account_id=" + accountId;
             var saltApiUrl = Common.apiUrl + "/stackstudio/v1/orchestration/salt/minions/find?account_id=" + accountId;
-            var ansibleApiUrl = Common.apiUrl + "/stackstudio/v1/orchestration/ansible/inventories?account_id=" + accountId;
+            var ansibleApiUrl = Common.apiUrl + "/stackstudio/v1/orchestration/ansible/hosts/find?account_id=" + accountId;
 
             for (var i = 0; i < instances.length; i++) {
                 var name = instances[i]["name"] || instances[i]["dns_name"];
