@@ -165,7 +165,9 @@ define([
             menu.append('<option value="Chef">Chef</option>');
             menu.append('<option value="Puppet">Puppet</option>');
             menu.append('<option value="Salt">Salt</option>');
-            menu.append('<option value="Ansible">Ansible</option>');
+            if (window.ansible){
+              menu.append('<option value="Ansible">Ansible</option>');
+            }
             menu.get(0).value = "";
         },
 
@@ -426,7 +428,6 @@ define([
                         }
                         break;
 
-                    // [XXX] This is b0rked
                     case "Ansible":
                         var hostName = rowData.hosts.name;
                         if(hostName){
