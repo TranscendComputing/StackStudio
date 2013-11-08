@@ -666,7 +666,7 @@ define([
                 .split("{{accordionId}}").join(id);
             return elem;
         },
-        # [XXX] the source of my woe
+        // [XXX] the source of my woe
         ansibleGroupChangeHandler: function(evt){
           var checkbox = $(evt.target);
           var ver = checkbox.closest(".accordion-group")
