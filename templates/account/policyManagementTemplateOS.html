@@ -1,0 +1,396 @@
+
+    <p>
+        <!-- Form Name -->
+        <form class="form-horizontal">
+            <fieldset>
+                <legend style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;border-radius: 5px 5px 0px 0px;">&nbsp;OpenStack Governance Policy</legend>
+                <div class="well">
+        
+                    <!-- Text input-->
+                    <div class="control-group">
+                        <label class="control-label">Policy Name:</label>
+                        <div class="controls">
+                            <input id="policy_name_os" name="policy_name_os" type="text" placeholder="Policy Name" class="input-xlarge">
+    
+                        </div>
+                    </div>
+                                    
+                    <!-- Multiple Checkboxes (inline) -->
+                    <div class="control-group">
+                        <label class="control-label">Usable Regions:</label>
+                        <div class="controls">
+                            <label class="checkbox">
+                                <input type="checkbox" name="usable_regions_os" value="US East (Northern Virginia)">
+                                US East (Northern Virginia)
+                            </label>
+                            
+                        </div>
+                    </div>
+
+                    <!-- Select Basic -->
+                    <div class="control-group">
+                        <label class="control-label">Default Region:</label>
+                        <div class="controls">
+                            <select id="default_region_os" name="default_region_os" class="input-xlarge">
+                                <option value="us-east-1">US East (Northern Virginia)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <!-- Multiple Checkboxes (inline) -->
+                    <div class="control-group">
+                        <label class="control-label">Enabled Services:</label>
+                        <div class="controls">
+                            <label class="checkbox">
+                                <input type="checkbox" name="enabled_services_os" value="Auto Scale">
+                                    Admin Console
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="enabled_services_os" value="Auto Scale">
+                                    Auto Scale
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="enabled_services_os" value="DNS 53">
+                                    DNS 53
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="enabled_services_os" value="Elastic Cache">
+                                    Elastic Cache
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="enabled_services_os" value="Monitor Service">
+                                    Monitor Service
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="enabled_services_os" value="Relational Database">
+                                    Relational Database
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="enabled_services_os" value="Scalable Load Balancer">
+                                    Scalable Load Balancer
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="enabled_services_os" value="Scalable Queue">
+                                    Scalable Queue
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="enabled_services_os" value="Block Storage">
+                                    Block Storage
+                                </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="enabled_services_os" value="Compute Service">
+                                    Compute Service
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="enabled_services_os" value="Identity">
+                                    Identity
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="enabled_services_os" value="Network Services">
+                                    Network Services
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="enabled_services_os" value="Object Storage">
+                                    Object Storage
+                            </label>
+                        </div>
+                    </div>
+
+                    <hr>
+                </div>
+            </fieldset>
+        </form>
+        
+        <form class="form-horizontal">
+            <fieldset>
+
+                <!-- Form Name -->
+                <legend style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;border-radius: 5px 5px 0px 0px;">&nbsp;Instance Policies</legend>
+                    <div class="well">
+                        <div class="well" style="margin-top:40px;">
+                            <legend>Available Images</legend>
+                            <div class="row">
+                                <label class="checkbox"><input type="checkbox" name="use_approved_images_os" value="use_approved_images"/>
+                                    Constrain images to the following:
+                                </label>
+                            </div>
+                            <div class="row" style="margin:0px;display:none;">
+                                <div class="span3"><b>Selected Image:</b><div id="add_image"></div></div>
+                                <div class="span7"><b>Source:</b><div id="add_image_source"></div></div>
+                                <div class="span2"><a id="add_image_btn" class="btn btn-primary" style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;margin-bottom:8px;"><i class="icon-plus-sign icon-white"></i>&nbsp;Add</a>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <table id="default_images_table" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Image ID</th>
+                                            <th>Source</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                            <p class="help-block">*Choose images to add from the table below.</p>
+                        
+                            <div class="row">
+                                <div class="span12">
+                                    <table id="images_table" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Image ID</th>
+                                                <th>Source</th>
+                                                <th>Architecture</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <!-- Appended checkbox -->
+                        <div class="control-group">
+                            <label class="control-label">Max On-Demand Instances:</label>
+                            <div class="controls">
+                                <div class="input-append">
+                                    <input id="max_on_demand" name="max_on_demand_os" class="span5" type="text" placeholder="# Instances">
+                                    <span class="add-on">
+                                        <input type="checkbox" id="check_max_on_demand_os"> Unlimited</input>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+        
+                        <!-- Appended checkbox -->
+                        <div class="control-group">
+                            <label class="control-label">Max Dedicated Instances:</label>
+                            <div class="controls">
+                                <div class="input-append">
+                                    <input id="max_dedicated_os" name="max_dedicated_os" class="span5" type="text" placeholder="# Instances">
+                                    <span class="add-on">
+                                        <input type="checkbox" id="check_max_dedicated_os"> Unlimited</input>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+        
+                        <!-- Appended checkbox -->
+                        <div class="control-group">
+                            <label class="control-label">Max Spot Instances:</label>
+                            <div class="controls">
+                                <div class="input-append">
+                                    <input id="max_spot_os" name="max_spot_os" class="span5" type="text" placeholder="# Instances">
+                                    <span class="add-on">
+                                        <input type="checkbox" id="check_max_spot_os"> Unlimited</input>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+        
+                        <!-- Appended checkbox -->
+                        <div class="control-group">
+                            <label class="control-label">Max # in Auto Scale Group:</label>
+                            <div class="controls">
+                                <div class="input-append">
+                                    <input id="max_in_autoscale_os" name="max_in_autoscale_os" class="span5" type="text" placeholder="# Instances">
+                                    <span class="add-on">
+                                        <input type="checkbox" id="check_max_in_autoscale_os"> Unlimited</input>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+        
+                        <!-- Appended checkbox -->
+                        <div class="control-group" style="display:none;">
+                            <label class="control-label">Max Cores:</label>
+                            <div class="controls">
+                                <div class="input-append">
+                                    <input id="max_cores_os" name="max_cores_os" class="span5" type="text" placeholder="# Cores">
+                                    <span class="add-on">
+                                        <input type="checkbox"> Unlimited</input>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <hr>
+        
+                        <!-- Multiple Checkboxes -->
+                        <div class="control-group" style="display:none;">
+                            <label class="control-label">Instance Lifetime:</label>
+                            <div class="controls">
+                                <label class="checkbox">
+                                <input type="checkbox" name="require_lifetime_os" value="Require an expected lifetime when an instance is launched">
+                                    Require an expected lifetime when an instance is launched
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Multiple Radios -->
+                        <div class="control-group" style="display:none;">
+                            <label class="control-label">When lifetime is up:</label>
+                            <div class="controls">
+                                <label class="radio">
+                                <input type="radio" name="post_lifetime_os" value="Terminate Instance" checked="checked">
+                                        Terminate Instance
+                                </label>
+                                <label class="radio">
+                                    <input type="radio" name="post_lifetime_os" value="Notify user of expiration">
+                                        Notify user of expiration
+                                </label>
+                                <label class="radio">
+                                    <input type="radio" name="post_lifetime_os" value="Leave disposition up to user">
+                                        Leave disposition up to user
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+            </fieldset>
+        </form>
+        
+        <form class="form-horizontal">
+            <fieldset>
+
+                <!-- Form Name -->
+                <legend style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;border-radius: 5px 5px 0px 0px;">&nbsp;Service Policies</legend>
+                <div class="well">
+                    </div>
+        
+                    <div class="well">
+                        <legend>SNS Notifications</legend>
+                        <!-- Multiple Checkboxes -->
+                        <div class="control-group" style="display:none;">
+                        <label class="control-label">SNS Notifications:</label>
+                        <div class="controls">
+                            <label class="checkbox">
+                                <input type="checkbox" name="sns_notifications_os" value="All users are automatically setup as SNS users">
+                                All users are automatically setup as SNS users
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="sns_notifications_os" value="Users are email notified when an instance is started">
+                                Users are email notified when an instance is started
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="sns_notifications_os" value="Users are email notified when a CloudFormation has 'completed' or 'failed'">
+                                Users are email notified when a CloudFormation has 'completed' or 'failed'
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Select Basic -->
+                    <div class="control-group">
+                        <label class="control-label">Default Informational:</label>
+                        <div class="controls">
+                            <select id="default_informational" style="width:365px;" name="default_informational" class="input-xlarge topic_select">
+                                <option>Select Default Informational</option>
+                            </select>
+                            <a class="btn create_topic_btn">Create Topic</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Select Basic -->
+                    <div class="control-group">
+                        <label class="control-label">Default Warning:</label>
+                        <div class="controls">
+                            <select id="default_warning" style="width:365px;" name="default_warning" class="input-xlarge topic_select">
+                                <option>Select Default Warning</option>
+                            </select>
+                            <a class="btn create_topic_btn">Create Topic</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Select Basic -->
+                    <div class="control-group">
+                        <label class="control-label">Default Error:</label>
+                        <div class="controls">
+                            <select id="default_error" style="width:365px;" name="default_error" class="input-xlarge topic_select">
+                                <option>Select Default Error</option>
+                            </select>
+                            <a class="btn create_topic_btn">Create Topic</a>
+                        </div>
+                    </div>
+                    </div>
+                    
+                    <div class="well">
+                        <legend>RDS</legend>
+                        <!-- Appended checkbox -->
+                        <div class="control-group">
+                        <label class="control-label">Max # of RDS Databases:</label>
+                        <div class="controls">
+                            <div class="input-append">
+                                <input id="max_rds_os" name="max_rds_os" class="span3" type="text" placeholder="# DB's">
+                                <span class="add-on">
+                                    <input type="checkbox" id="check_rds_os"> Unlimited</input>
+                                </span>
+                            </div>
+                            <p class="help-block">*Read replica counts as additional database.</p>
+                        </div>
+                    </div>
+                    </div>
+                    
+                    <div class="well">
+                        <legend>Miscellaneous</legend>
+                        
+                        <!-- Multiple Checkboxes -->
+                        <div class="control-group">
+                          <label class="control-label">Auto Tags:</label>
+                          <div class="controls">
+                            <label class="checkbox">
+                              <input id="project_name_toggle_os" type="checkbox" name="auto_tags_os" value="ProjectName"/>
+                              ProjectName:
+                              <input id="project_name_os" style="margin-left:10px" name="project_name_os" type="text" placeholder="Project Name" class="input-medium"/>
+                            </label>
+                            
+                            <label class="checkbox">
+                              <input type="checkbox" name="auto_tags_os" value="UserName">
+                              UserName
+                            </label>
+                            <label class="checkbox">
+                              <input type="checkbox" name="auto_tags_os" value="GroupName">
+                              GroupName
+                            </label>
+                            <label class="checkbox">
+                              <input type="checkbox" name="auto_tags_os" value="Modifiable">
+                              Modifiable
+                            </label>
+                          </div>
+                        </div>
+                       </div>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+        
+        <form class="form-horizontal">
+            <fieldset>
+                <!-- Form Name -->
+                <legend style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;border-radius: 5px 5px 0px 0px;">&nbsp;CloudWatch Alarms</legend>
+                <div class="well">
+                    <div class="control-group well" style="margin-top: 40px;">
+                        <legend>Add Default Alarms</legend>
+                        <a id="create_alarm_btn" class="btn btn-primary" style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;margin-bottom:8px;"><i class="icon-plus-sign icon-white"></i>&nbsp;Add</a>
+                        <table class="table">  
+                                <thead>  
+                                  <tr>  
+                                    <th>Metric</th>
+                                    <th>Alarm</th>  
+                                    <th>Threshold</th>
+                                    <th>Duration</th>
+                                    <!-- <th>Remove<th> -->  
+                                  </tr>  
+                                </thead>  
+                                <tbody id="alarm_table">  
+                                </tbody>  
+                        </table>  
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+        
+        <a id="save_button" class="btn" style="float:right;margin-bottom:1cm;background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;">Save Policy <i class="icon-file icon-white"></i></a>
+        <div id="save_alert" class="alert" style="width:90px;display:none;">
+            Policy <strong>Saved...</strong>
+        </div>
+    </p>
