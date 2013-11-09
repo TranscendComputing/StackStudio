@@ -165,7 +165,9 @@ define([
             menu.append('<option value="Chef">Chef</option>');
             menu.append('<option value="Puppet">Puppet</option>');
             menu.append('<option value="Salt">Salt</option>');
-            menu.append('<option value="Ansible">Ansible</option>');
+            if (window.ansible){
+              menu.append('<option value="Ansible">Ansible</option>');
+            }
             menu.get(0).value = "";
         },
 
@@ -264,7 +266,7 @@ define([
             var chefApiUrl = Common.apiUrl + "/stackstudio/v1/orchestration/chef/nodes/find?account_id=" + accountId;
             var puppetApiUrl = Common.apiUrl + "/stackstudio/v1/orchestration/puppet/agents/find?account_id=" + accountId;
             var saltApiUrl = Common.apiUrl + "/stackstudio/v1/orchestration/salt/minions/find?account_id=" + accountId;
-            var ansibleApiUrl = Common.apiUrl + "/stackstudio/v1/orchestration/ansible/inventories?account_id=" + accountId;
+            var ansibleApiUrl = Common.apiUrl + "/stackstudio/v1/orchestration/ansible/hosts/find?account_id=" + accountId;
 
             for (var i = 0; i < instances.length; i++) {
                 var name = instances[i]["name"] || instances[i]["dns_name"];
@@ -426,7 +428,6 @@ define([
                         }
                         break;
 
-                    // [XXX] This is b0rked
                     case "Ansible":
                         var hostName = rowData.hosts.name;
                         if(hostName){

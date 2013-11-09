@@ -32,7 +32,7 @@ define([
             var createView = this;
             var compiledTemplate = _.template(managerCreateTemplate);
 
-            this.$el.html(compiledTemplate);
+            this.$el.html(compiledTemplate({ansible:window.ansible}));
             this.$el.dialog({
                 autoOpen: true,
                 title: "New Configuration Manager",
@@ -62,7 +62,10 @@ define([
             var issue = false;
             
             $('input, textarea, select').each(function(){
-                if($(this).val() === ""){
+                if ($(this).attr('title') === "optional"){
+                    $(this).css("border-color", "");
+                }
+                else if($(this).val() === ""){
                     $(this).css("border-color", "red");
                     issue = true;
                 }
@@ -109,17 +112,23 @@ define([
                         data = {"authPropName":"Ansible Username", tag:"input", inputType:"text",authProp:"ansible_user"};
                         otherData = {"authPropName":"Ansible Password", tag:"input", inputType:"password",authProp:"ansible_pass"};
                         additionalData.push(
-                          {"authPropName":"Ansible SSH Private Key", tag:"input", 
-                          inputType:"textarea", authProp:"ansible_ssh_private_key"});
+                          {"authPropName":"SSH Private Key", tag:"textarea", 
+                          inputType:"text", title:"optional", authProp:"ansible_ssh_key_data"});
                         additionalData.push(
-                          {"authPropName":"Ansible SSH Key Passphrase", tag:"input", 
-                          inputType:"text", authProp:"ansible_ssh_key_passphrase"});
+                          {"authPropName":"SSH Key Passphrase", tag:"input", 
+                          inputType:"password", title:"optional", authProp:"ansible_ssh_key_unlock"});
                         additionalData.push(
-                          {"authPropName":"Ansible SSH User Name", tag:"input", 
-                          inputType:"text", authProp:"ansible_ssh_username"});
+                          {"authPropName":"SSH User Name", tag:"input", 
+                          inputType:"text", title:"optional", authProp:"ansible_ssh_username"});
                         additionalData.push(
-                          {"authPropName":"Ansible SSH Password", tag:"input", 
-                          inputType:"text", authProp:"ansible_ssh_password"});
+                          {"authPropName":"SSH Password", tag:"input", 
+                          inputType:"password", title:"optional", authProp:"ansible_ssh_password"});
+                        additionalData.push(
+                          {"authPropName":"Sudo Username", tag:"input", 
+                          inputType:"text", title:"optional", authProp:"ansible_sudo_username"});
+                        additionalData.push(
+                          {"authPropName":"Sudo Password", tag:"input", 
+                          inputType:"password", title:"optional", authProp:"ansible_sudo_password"});
                         break;
                 }
                 $("#authProp").html(ich["auth_prop_template"](data));

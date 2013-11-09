@@ -41,6 +41,7 @@ define([
             "change #dev_ops_select":"devopsSelect",
             "change #post_processor_select":"postProcessorSelect",
             "change #openstack_type_select":"openstackTypeSelect",
+            "click #adv_collapse_btn":"advCollapseBtn",
             "click .adv_tab": "advTabSelect",
             "click #save_image_template_button":"saveButton",
             "click #deploy_image_template_button":"deployImage",
@@ -345,6 +346,10 @@ define([
             }
         },
         
+        advCollapseBtn: function(e){
+            $(".adv_tab")[0].click();
+        },
+        
         loadPackedImage: function(event){
             this.popForm(event.target.id);
         },
@@ -424,7 +429,7 @@ define([
                                 }
                             }
                         }else if($("#"+k).attr('type') === 'checkbox'){
-                            $("#"+k).prop('checked',list[i]);
+                            $("#"+k).prop('checked',list[i][k]);
                         }else if($("#"+k).attr('data-type') && $("#"+k).attr('data-type').indexOf("array") !== -1){
                             var id1 = $("#"+k).attr('name');
                             var placeholder1 = $("#"+id1).attr('placeholder');
@@ -683,6 +688,7 @@ define([
                     qHash['type'] = $("#openstack_type_select").val();
                     qHash['iso_checksum'] = qMap[$('#os_input').val()]['checksum'];
                     qHash['iso_url'] = qMap[$('#os_input').val()]['url'];
+                    qHash['name'] = $("#image_template_name_input").val();
                     builders.push(qHash);
                 }
             }

@@ -659,6 +659,14 @@ define([
             }
         },
         // Ansible Assembly
+        renderAnsibleGroup: function(id, name, type){
+            var elem = this.accordionGroupTemplate
+                .split("{{name}}").join(name)
+                .split("{{collapseId}}").join(name.replace(/ /g,'') + "-" + type)
+                .split("{{accordionId}}").join(id);
+            return elem;
+        },
+        // [XXX] the source of my woe
         ansibleGroupChangeHandler: function(evt){
           var checkbox = $(evt.target);
           var ver = checkbox.closest(".accordion-group")
@@ -683,22 +691,22 @@ define([
         },
         
         populateAnsibleJobTemplates: function(jobtemplates) {
-          //var jobtemplates = response.toJSON();
           var $this = this;
           var jobtemplateEl = $("#ansible-selection");
           jobtemplateEl.empty();
           for (var i in jobtemplates) {
             var jobtemplate = jobtemplates[i];
-            var el = $($this.renderAccordionGroup("ansible-selection",
-              jobtemplate.name, "jobtemplate")); 
+            var el = $($this.renderAnsibleGroup("ansible-selection",
+              jobtemplate.name, "jobtemplate")) 
+              .data('jobtemplate', jobtemplate);
             el.find(".accordion-heading")
               .prepend($("<input type=\"checkbox\" class=\"jobtemplateSelector\">"));
             el.appendTo(jobtemplateEl);
             var jobtemplateList = this.renderAnsibleJobTemplates(jobtemplate,[]);
-            $("#" + jobtemplate.id + "-jobtemplate")
+            $("#" + jobtemplate.name.replace(/ /g, '') + "-jobtemplate")
               .find(".accordion-inner")
               .empty()
-              .append(jobtemplateEl);
+              .append(jobtemplateList);
           }
           this.recalculateAnsibleBadges();
           Common.vent.trigger("jobtemplatesLoaded");
@@ -706,7 +714,7 @@ define([
 
         renderAnsibleJobTemplates: function(jobtemplate, selected ) {
           var ul = $("<ul class=\"ansibleJobTemplates\"></ul>");
-          var checked = (selected.indexOf(jobtemplate.name) !== -1) ? "checked=\"true\"": "";
+          var checked = (selected.indexOf(jobtemplate.id) !== -1) ? "checked=\"true\"": "";
           $("<li></li>")
             .data("ansibleJobTemplate", jobtemplate.name)
             .append("<input type=\"checkbox\" " + checked + 

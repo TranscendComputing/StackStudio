@@ -34,7 +34,9 @@
                             <option value="chef">Chef</option>
                             <option value="puppet">Puppet</option>
                             <option value="salt">Salt</option>
+<% if (ansible) { %>
                             <option value="ansible">Ansible</option>
+<% } %>
                         </select>
                     </td>
                 </tr>
@@ -45,6 +47,7 @@
                 <tr id="additionalAuthProp_3"/>
                 <tr id="additionalAuthProp_4"/>
                 <tr id="additionalAuthProp_5"/>
+                <tr id="additionalAuthProp_6"/>
             </tbody>
         </table>
     </form>
@@ -53,6 +56,6 @@
 <script type="text/html" id="auth_prop_template">
     <td>{{authPropName}}</td>
     <td>
-        <{{tag}} id="manager_{{authProp}}" name="auth_properties.{{authProp}}" type="{{inputType}}" style="width:200px"/>
+        <{{tag}} id="manager_{{authProp}}" title="{{title}}" name="auth_properties.{{authProp}}" type="{{inputType}}" style="width:200px"/>
     </td>
 </script>

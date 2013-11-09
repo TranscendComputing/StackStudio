@@ -97,17 +97,23 @@ define([
               data = {"authPropName":"Ansible Username", tag:"input", inputType:"text",authProp:"ansible_user"};
               otherData = {"authPropName":"Ansible Password", tag:"input", inputType:"password",authProp:"ansible_pass"};
               additionalData.push(
-                {"authPropName":"Ansible SSH Private Key", tag:"input", 
-                inputType:"textarea", authProp:"ansible_ssh_private_key"});
+                {"authPropName":"SSH Private Key", tag:"textarea", 
+                inputType:"text", authProp:"ansible_ssh_key_data"});
               additionalData.push(
-                {"authPropName":"Ansible SSH Key Passphrase", tag:"input", 
-                inputType:"text", authProp:"ansible_ssh_key_passphrase"});
+                {"authPropName":"SSH Key Passphrase", tag:"input", 
+                inputType:"password", authProp:"ansible_ssh_key_unlock"});
               additionalData.push(
-                {"authPropName":"Ansible SSH User Name", tag:"input", 
+                {"authPropName":"SSH User Name", tag:"input", 
                 inputType:"text", authProp:"ansible_ssh_username"});
               additionalData.push(
-                {"authPropName":"Ansible SSH Password", tag:"input", 
-                inputType:"text", authProp:"ansible_ssh_password"});
+                {"authPropName":"SSH Password", tag:"input", 
+                inputType:"password", authProp:"ansible_ssh_password"});
+              additionalData.push(
+                {"authPropName":"Sudo Username", tag:"input", 
+                inputType:"text", authProp:"ansible_sudo_username"});
+              additionalData.push(
+                {"authPropName":"Sudo Password", tag:"input", 
+                inputType:"password", authProp:"ansible_sudo_password"});
               $("#authProp").html(ich["auth_prop_template"](data));
               $("#otherAuthProp").html(ich["auth_prop_template"](otherData));
               // [XXX] There is a better way of doing this
