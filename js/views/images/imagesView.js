@@ -699,7 +699,7 @@ define([
         getDefaultTemplate: function(){
             var mappings;
             $.ajax({
-              url: '/samples/packer-centos-6.json',
+              url: '/samples/packer-ubuntu-12.json',
               async: false,
               success: function(data) {
                 mappings = data;
