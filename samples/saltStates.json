@@ -1,0 +1,11 @@
+[
+	"apache2.vhost",
+	"edit.vim",
+	"edit",
+	"nginx",
+	"mysql",
+	"beaver",
+	"memcached",
+	"apache2",
+	"ssh.server"
+]

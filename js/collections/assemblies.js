@@ -9,14 +9,15 @@ define([
         'jquery',
         'backbone',
         'models/assembly',
-        'common'
-], function( $, Backbone, Assembly, Common) {
+        'common',
+        'messenger'
+], function( $, Backbone, Assembly, Common, Messenger) {
 	'use strict';
 
 	// Cloud Account Collection
 	// ---------------
 
-	var AppList = Backbone.Collection.extend({
+	var AssembliesList = Backbone.Collection.extend({
 
 		// Reference to this collection's model.
 		model: Assembly,
@@ -24,18 +25,23 @@ define([
         comparator : function(model){
             return model.get("name");
         },
+        fetch: function(options){
+            options.data = $.param({account_id:sessionStorage.account_id});
+            Backbone.Collection.prototype.fetch.apply(this, arguments);
+        },
+
 
 		createAssembly : function(model, options) {
             options.wait = true;
             options.emulateHTTP =true;
             options.success= function(model){
-                Common.vent.trigger("assembliesViewRefresh");
+                new Messenger().post({message:model.get("name")+ " created", type:"success"});
+                Common.vent.trigger("assembliesViewRefresh", model);
             };
             options.error = function(model, xhr) {
                 Common.errorDialog(xhr.statusText, xhr.responseText);
             };
-            model.url = this.url;
-            this.create(model,options);
+            this.create(model.attributes,options);
         },
         deleteAssembly : function(id) {
             var options = {};
@@ -45,6 +51,7 @@ define([
             options.wait = true;
             options.success= function(model){
                 accounts.remove(model);
+                new Messenger().post({message:model.get("name") +" deleted", type:"success"});
                 Common.vent.trigger("assembliesViewRefresh");
             };
             options.error = function(model, xhr) {
@@ -54,6 +61,6 @@ define([
         }
 	});
 	Backbone.emulateHTTP = true;
-	return AppList;
+	return AssembliesList;
 
 });

@@ -15,12 +15,18 @@ Getting Started
 
 3. Install Grunt and dependencies, cd to the <tt>StackStudio</tt> directory and run NPM:
 
-    `cd StackStudio`
-    `npm install`
+    ```
+    cd StackStudio
+    npm install
+    # If you've never installed Grunt, you'll need the command line
+    sudo npm install -g grunt-cli
+    ```
 
 4. To launch a web server, you can run a task:
 
-    `grunt run`
+    ```
+    grunt run
+    ```
 
     (9001 is the default listening port)
 
@@ -28,7 +34,9 @@ Getting Started
 
 	Copy backend.json.sample to backend.json
 
-	'cp backend.json.sample backend.json'
+    ```
+	cp backend.json.sample backend.json
+    ```
 
 	Edit backend.json @backend_endpoint@ field to point to your CloudMux backend.
 
@@ -41,10 +49,10 @@ Compatibility
 
 StackStudio targets the following browser platforms:
 
-✔ IE 6+
-✔ Firefox 2+
-✔ Safari 3.2+
-✔ Chrome 3+
-✔ Opera 10+
+✔ IE 6+  
+✔ Firefox 2+  
+✔ Safari 3.2+  
+✔ Chrome 3+  
+✔ Opera 10+  
 
 

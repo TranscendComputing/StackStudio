@@ -372,11 +372,18 @@ table.dataTable tr.row_selected td.sorting_1 {
     background: #F4A22B !important;
     color: #FFFFFF;
 }
+#resource_table td {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 40em;
+}
 
 tr.row_selected td {
     background: #F4A22B !important;
     color: #FFFFFF;
 }
+
 
 div.button_bar {
     margin: 5px 0px;
@@ -396,6 +403,10 @@ div.button_bar {
 
 .span_label {
     line-height:1;
+}
+
+.review_cell{
+    min-width:9em;
 }
 
 /*
@@ -777,6 +788,16 @@ img {
 
 #loading_content {
     min-height: 200px;
+}
+
+.btn-primary{
+    background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;
+    color: #ffffff;
+}
+
+.btn-primary.active{
+    background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) repeat-x;
+    color: #ffffff;
 }
 
 /* Regular CSS files, imported via less to make 1 request. */

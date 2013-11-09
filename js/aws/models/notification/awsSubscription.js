@@ -22,9 +22,10 @@ define([
             Endpoint: ''
         },
 
-        create: function(topic, options, credentialId, region) {
+        create: function(topic, options, credentialId, region, eventString) {
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/notification/topics/"+ topic +"/subscriptions?cred_id=" + credentialId + "&region=" + region;
-            this.sendAjaxAction(url, "POST", {"subscription": options}, "subscriptionRefresh");
+            var eventName = eventString ? eventString : "subscriptionRefresh";
+            this.sendAjaxAction(url, "POST", {"subscription": options}, eventName);
         },
 
         destroy: function(credentialId, region) {

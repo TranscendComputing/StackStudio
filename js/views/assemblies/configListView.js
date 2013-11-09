@@ -30,6 +30,8 @@ define([
         'collections/cookbooks',
         'collections/chefEnvironments',
         'collections/puppetClasses',
+        'collections/saltStates',
+        'collections/ansibleJobTemplates',
         'views/assemblies/appListView',
         'models/app',
         'jquery-plugins',
@@ -37,7 +39,7 @@ define([
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator',
         'jquery.sortable'
-],function( $, _, bootstrap, Backbone, ich, Common, typeahead, appsTemplate, Apps, CloudCredentials, Cookbooks, ChefEnvironments, PuppetClasses, AppListView, App ) {
+],function( $, _, bootstrap, Backbone, ich, Common, typeahead, appsTemplate, Apps, CloudCredentials, Cookbooks, ChefEnvironments, PuppetClasses, SaltStates, AnsibleJobTemplates, AppListView, App ) {
 
     var ConfigListView = Backbone.View.extend({
         id: 'config_list',
@@ -57,8 +59,12 @@ define([
             "shown": "accordionShown",
             "change .recipes input": "recipeChangeHandler",
             "change .puppetClasses input": "classChangeHandler",
+            "change .saltStates input" : "stateChangeHandler",
+            "change .ansibleJobTemplates input" : "jobtemplateChangeHandler",
             "change #chef-selection .accordion-heading": "chefGroupChangeHandler",
-            "change #puppet-selection .accordion-heading" : "puppetGroupChangeHandler"
+            "change #puppet-selection .accordion-heading" : "puppetGroupChangeHandler",
+            "change #salt-selection .accordion-heading" : "saltGroupChangeHandler",
+            "change #ansible-selection .accordion-heading" : "ansibleGroupChangeHandler"
         },
         initialize: function(){
         },
@@ -156,10 +162,18 @@ define([
         },
         populateChefEnvironments: function(list){
             var select = $("#chefEnvironmentSelect").empty();
-            $("<option value='' disabled selected style='display:none;'>Select Environment</option></select>").appendTo(select);
-            list.forEach(function(element, index, list){
-                $("<option value='" + element.get("name") + "'>" + element.get("name") + "</option></select>").appendTo(select);
+            list.forEach(function(element, indexlist){
+                var option = $("<option value='" + element.get("name") + "'>" + element.get("name") + "</option></select>").appendTo(select);
             });
+            if(!this.loadingAssembly){
+                if(select.find("option[value=_default]").length > 0){
+                    select.val("_default").change();
+                }else{
+                    var first = select.find("option").first();
+                    select.val(first.val()).change();
+                }
+                this.loadingAssembly = false;
+            }
             Common.vent.trigger("chefEnvironmentsPopulated");
         },
         populateCookbooks: function(credential){
@@ -328,7 +342,19 @@ define([
                 }
                 $("#chef-selection").closest(".accordion-group").find(".accordion-toggle:first span.badge:first").text('');
                 //TODO: Clear Chef
-            } //else: CLEAR PUPPET when cliick on chef
+            } else if (id === "collapseSalt"){
+                if(!$destination.data("isLoaded")){
+                    $this.fetchSaltStates();
+                }else{
+                    $this.recalculateSaltBadges();
+                }
+            } else if (id === "collapseAnsible") {
+              if (!$destination.data("isLoaded")){
+                $this.fetchAnsibleJobTemplates();
+              } else {
+                $this.recalculateAnsibleBadges();
+              }
+            }
         },
         populatePuppetClasses:function (){
             var $this = this;
@@ -375,6 +401,9 @@ define([
         },
         classChangeHandler: function(evt){
             this.recalculatePuppetBadges();
+        },
+        stateChangeHandler: function(evt){
+            this.recalculateSaltBadges();
         },
 
         recalculateChefBadges: function(){
@@ -478,47 +507,256 @@ define([
             var configurations = {};
 
             var tool = $(toolId).val();
-            if(tool === "Puppet"){
-                var puppet = {};
-                puppet["node_config"] = this.getPuppetConfig();
-                configurations["puppet"] = puppet;
+            var data = {};
+            switch(tool){
+                case "Puppet":
+                    data["node_config"] = this.getConfig("class");
+                    break;
+                case "Chef":
+                    data["env"] = $("#chefEnvironmentSelect :selected").val();
+                    data["run_list"] = this.getConfig("recipe");
+                    break;
+                case "Salt":
+                    data["minion_config"] = this.getConfig("saltState");
+                    break;
+                case "Ansible":
+                    data["jobtemplate_config"] = this.getConfig("jobtemplate");
+                    break;
             }
-            else if(tool === "Chef"){
-                var chef = {};
-                chef["env"] = $("#chefEnvironmentSelect :selected").val();
-                chef["run_list"] = this.getChefConfig();
-                configurations["chef"] = chef;
-            }
+            configurations[tool.toLowerCase()] = data;
             return {
                 "configurations": configurations
             };
         },
 
-        getChefConfig: function() {
-            var runlist = [];
-            $("input:checkbox[class=recipeSelector]:checked").each(function(index, object) {
-                var recipeData = $(object.parentElement).data();
-                runlist.push({
-                    "type": "recipe",
-                    "version": recipeData["cookbook"].get("latest_version"),
-                    "name": recipeData["recipe"]["name"]
-                });
+        getConfig: function(type){
+            var config = [];
+            $("input:checkbox[class="+type+"Selector]:checked").each(function(index, object){
+                var nodeData = $(object.parentElement).data();
+                var data = {"name": nodeData[type]["name"], "type":type};
+
+                switch(type){
+                    case "recipe":
+                        data["version"] = nodeData["cookbook"].get("latest_version");
+                        break;
+                    case "class":
+                        data["id"] = nodeData["class"]["id"];
+                        break;
+                }
+                config.push(data);
             });
-            return runlist;
-        },
-        getPuppetConfig: function() {
-            var nodeConfig = [];
-            $("input:checkbox[class=classSelector]:checked").each(function(index, object) {
-                var classData = $(object.parentElement).data();
-                nodeConfig.push({
-                    "type": "class",
-                    "id" : classData["class"]["id"],
-                    "name": classData["class"]["name"]
-                });
-            });
-            return nodeConfig;
+            return config;
         },
 
+        fetchSaltStates: function(){
+            var $this = this;
+
+            var destination = $("#collapseSalt").find(".accordion-inner");
+
+            $this.saltStates = new SaltStates();
+            $this.saltStates.fetch({
+                data: {account_id: this.credential.get("cloud_account_id")},
+                success:function(collection, response, data){
+                    $this.populateSaltTree(collection);
+                    $this.recalculateSaltBadges();
+                    destination.data("isLoaded", "true");
+                },
+                error:function(collection, response, data){
+                    Common.errorDialog("Server error", "Could not fetch Salt states");
+                }
+            });
+        },
+        populateSaltTree: function(states) {
+            var formulas = states.toJSON();
+            var $this = this;
+            var formulaList = $("#salt-selection");
+            formulaList.empty();
+            for (var formula in formulas) {
+                if (formulas.hasOwnProperty(formula)) {
+                    var elem = $($this.renderAccordionGroup("salt-selection", formula, "formula"));
+                    elem.find(".accordion-heading")
+                        .prepend(
+                            $("<input type='checkbox' class='formulaSelector'>")//.data("level", "formula")
+                    );
+                    elem.appendTo(formulaList);
+                    var statesList = this.renderSaltStates(formulas[formula], []);
+                    $("#" + formula + "-formula").find(".accordion-inner").empty().append(statesList);
+                }
+            }
+            this.recalculateSaltBadges();
+            Common.vent.trigger("formulasLoaded");
+        },
+
+        renderSaltStates: function(states, selected ){
+            var ul = $("<ul class='saltStates'></ul>");
+            $.each(states, function( index, item ) {
+                var checkedState = (selected.indexOf(item) !== -1) ? "checked='true'": "";
+                $("<li></li>")
+                    .data("saltState", item)
+                    .append("<input type='checkbox' " + checkedState + " class='saltStateSelector'" + " />")
+                    .append("<span class='saltState'>" + item.name + "</span>")
+                    .appendTo(ul);
+            });
+            return ul;
+        },
+
+        renderAccordionGroup: function(id, name, type){
+            var elem = this.accordionGroupTemplate
+                .split("{{name}}").join(name)
+                .split("{{collapseId}}").join(name + "-" + type)
+                .split("{{accordionId}}").join(id);
+            return elem;
+        },
+        saltGroupChangeHandler: function(evt){
+            var checkbox = $(evt.target);
+            var ver = checkbox.closest(".accordion-group")
+                .find(".accordion-inner:first");
+            ver.find(".saltStateSelector").first().click();
+        },
+        recalculateSaltBadges: function(){
+            var badgeCount = 0;
+            var saltContainer = $("#salt-selection");
+            var allChecked = saltContainer.find("input[type='checkbox']:checked")
+                .filter(function(){
+                    return !$(this).parent().hasClass("accordion-heading");
+                });
+            saltContainer.closest(".accordion-group").find(".accordion-toggle:first span.badge:first").text(allChecked.length ? allChecked.length : '');
+            var formulas = $("#salt-selection>.accordion-group");
+            formulas.each(function(){
+                var formula = $(this);
+                var badge = formula.find(".accordion-toggle:first span.badge:first");
+                allChecked = formula.find("input[type='checkbox']:checked")
+                    .filter(function(){
+                        return !$(this).parent().hasClass("accordion-heading");
+                    });
+                formula.find(".accordion-toggle:first span.badge:first").text(allChecked.length ? allChecked.length : '');
+            });
+
+            this.trigger("badge-refresh", {badgeCount: badgeCount});
+            Common.vent.trigger("saltSelectionChanged");
+        },
+        toolChangeHandler: function(evt){
+            var $this = this;
+
+            $(".main-group").hide();
+            $("#no_tool_selected").hide();
+            $("#tool_selected").show();
+            var currentTool = $(evt.currentTarget).val().toLowerCase();
+            var accordion = $("#" + currentTool + "Accordion");
+            accordion.show();
+            switch(currentTool){
+                case "puppet":
+                    this.populatePuppetClasses();
+                    break;
+                case "chef":
+                    this.fetchChefEnvironments().done(function(model){
+                        $this.populateChefEnvironments(new ChefEnvironments(model));
+                    });
+                    break;
+                case "salt":
+                    this.fetchSaltStates();
+                    break;
+            }
+        },
+        // Ansible Assembly
+        renderAnsibleGroup: function(id, name, type){
+            var elem = this.accordionGroupTemplate
+                .split("{{name}}").join(name)
+                .split("{{collapseId}}").join(name.replace(/ /g,'') + "-" + type)
+                .split("{{accordionId}}").join(id);
+            return elem;
+        },
+        // [XXX] the source of my woe
+        ansibleGroupChangeHandler: function(evt){
+          var checkbox = $(evt.target);
+          var ver = checkbox.closest(".accordion-group")
+            .find(".accordion-inner:first");
+          ver.find(".ansibleStateSelector").first().click();
+        },
+        
+        fetchAnsibleJobTemplates: function(evt) {
+          var $this = this;
+          var destination = $("#collapseAnsible").find(".accordion-inner");
+          $this.ansibleJobTemplates = new AnsibleJobTemplates();
+          $this.ansibleJobTemplates.fetch({
+            data: {account_id: this.credential.get("cloud_account_id")},
+            success: function(collection, response, data) {
+              $this.populateAnsibleJobTemplates(response);
+              destination.data("isloaded", "true");
+            },
+            error: function(collection, response, data){
+              Common.errorDialog("Server error", "Could not fetch Ansible Job Templates");
+            }
+          });
+        },
+        
+        populateAnsibleJobTemplates: function(jobtemplates) {
+          var $this = this;
+          var jobtemplateEl = $("#ansible-selection");
+          jobtemplateEl.empty();
+          for (var i in jobtemplates) {
+            var jobtemplate = jobtemplates[i];
+            var el = $($this.renderAnsibleGroup("ansible-selection",
+              jobtemplate.name, "jobtemplate")) 
+              .data('jobtemplate', jobtemplate);
+            el.find(".accordion-heading")
+              .prepend($("<input type=\"checkbox\" class=\"jobtemplateSelector\">"));
+            el.appendTo(jobtemplateEl);
+            var jobtemplateList = this.renderAnsibleJobTemplates(jobtemplate,[]);
+            $("#" + jobtemplate.name.replace(/ /g, '') + "-jobtemplate")
+              .find(".accordion-inner")
+              .empty()
+              .append(jobtemplateList);
+          }
+          this.recalculateAnsibleBadges();
+          Common.vent.trigger("jobtemplatesLoaded");
+        },
+
+        renderAnsibleJobTemplates: function(jobtemplate, selected ) {
+          var ul = $("<ul class=\"ansibleJobTemplates\"></ul>");
+          var checked = (selected.indexOf(jobtemplate.id) !== -1) ? "checked=\"true\"": "";
+          $("<li></li>")
+            .data("ansibleJobTemplate", jobtemplate.name)
+            .append("<input type=\"checkbox\" " + checked + 
+              " class=\"ansibleJobTemplateSelector\" />")
+            .append("<span class=\"ansibleJobTemplate\">" + jobtemplate.name + "</span>")
+            .appendTo(ul);
+          return ul;
+        },
+
+        recalculateAnsibleBadges: function() {
+          var badgeCount = 0;
+          var ansibleContainer = $("#ansible-selection");
+
+          var allChecked = ansibleContainer.find("input[type=\"checkbox\"]:checked")
+            .filter(function() {
+              return !$(this).parent().hasClass("accordion-heading");  
+            });
+
+          ansibleContainer.closest(".accordion-group")
+            .find(".accordion-toggle:first span.badge:first")
+            .text(allChecked.length ? allChecked.length : "");
+
+          var jobtemplates = $("ansible-selection>.accordion-group");
+          jobtemplates.each(function() {
+            var jobtemplate = $(this);
+            var badge = jobtemplate.find(".accordion-toggle:first span.badge:first");
+            allChecked = jobtemplate.find("input[type=\"checkbox\"]:checked")
+              .filter(function(){
+                return !$(this).parent().hasClass("accordion-heading"); 
+              });
+            jobtemplate.find(".accordion-toggle:first span.badge:first")
+              .text(allChecked.length ? allChecked.length : "");
+          });
+          this.trigger("badge-refresh", {badgeCount: badgeCount});
+          Common.vent.trigger("ansibleSelectionChanged");
+        },
+
+        jobtemplateChangeHandler: function() {
+          this.recalculateAnsibleBadges();
+        },
+        // End Ansible
+        //
         close: function(){
             this.$el.empty();
             this.undelegateEvents();

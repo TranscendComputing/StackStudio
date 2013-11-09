@@ -37,7 +37,7 @@
         "logo": "redhat",
         "product": "Linux/UNIX",
         "region": {
-            "us-east-1": "ami-cc5af9a5",
+            "us-east-1": "ami-5b722232",
             "us-west-1": "ami-51f4ae14",
             "us-west-2": "ami-8a25a9ba",
             "eu-west-1": "ami-8bf2f7ff",
@@ -53,7 +53,7 @@
         "logo": "redhat",
         "product": "Linux/UNIX",
         "region": {
-            "us-east-1": "ami-d258fbbb",
+            "us-east-1": "ami-937121fa",
             "us-west-1": "ami-53f4ae16",
             "us-west-2": "ami-8625a9b6",
             "eu-west-1": "ami-8ff2f7fb",
@@ -93,6 +93,70 @@
             "ap-southeast-2": "ami-ecba2cd6",
             "ap-northeast-1": "ami-9563e694",
             "sa-east-1": "ami-db6ab2c6"
+        }
+    },
+    {
+        "label": "CentOS x86_64",
+        "description": "CentOS x86_64",
+        "logo": "centos",
+        "product": "Linux/UNIX",
+        "region": {
+            "us-east-1": "ami-673af20e",
+            "us-west-1": "ami-673af20e",
+            "us-west-2": "ami-673af20e",
+            "eu-west-1": "ami-673af20e",
+            "ap-southeast-1": "ami-673af20e",
+            "ap-southeast-2": "ami-673af20e",
+            "ap-northeast-1": "ami-673af20e",
+            "sa-east-1": "ami-673af20e"
+        }
+    },
+    {
+        "label": "CentOS 32-bit",
+        "description": "CentOS 32-bit",
+        "logo": "centos",
+        "product": "Linux/UNIX",
+        "region": {
+            "us-east-1": "ami-713af218",
+            "us-west-1": "ami-713af218",
+            "us-west-2": "ami-713af218",
+            "eu-west-1": "ami-713af218",
+            "ap-southeast-1": "ami-713af218",
+            "ap-southeast-2": "ami-713af218",
+            "ap-northeast-1": "ami-713af218",
+            "sa-east-1": "ami-713af218"
+        }
+    },
+    {
+        "label": "Fedora 8 v1.14 x86_64",
+        "description": "Fedora 8 v1.14 x86_64 std-root lvm-swap lvm-storage",
+        "logo": "fedora",
+        "product": "Linux/UNIX",
+        "region": {
+            "us-east-1": "ami-b22e5cdb",
+            "us-west-1": "ami-b22e5cdb",
+            "us-west-2": "ami-b22e5cdb",
+            "eu-west-1": "ami-b22e5cdb",
+            "ap-southeast-1": "ami-b22e5cdb",
+            "ap-southeast-2": "ami-b22e5cdb",
+            "ap-northeast-1": "ami-b22e5cdb",
+            "sa-east-1": "ami-b22e5cdb"
+        }
+    },
+    {
+        "label": "Fedora 8 v1.14 i386",
+        "description": "Fedora 8 v1.14 i386 std-root lvm-swap lvm-storage",
+        "logo": "fedora",
+        "product": "Linux/UNIX",
+        "region": {
+            "us-east-1": "ami-182f5d71",
+            "us-west-1": "ami-182f5d71",
+            "us-west-2": "ami-182f5d71",
+            "eu-west-1": "ami-182f5d71",
+            "ap-southeast-1": "ami-182f5d71",
+            "ap-southeast-2": "ami-182f5d71",
+            "ap-northeast-1": "ami-182f5d71",
+            "sa-east-1": "ami-182f5d71"
         }
     }
 ]

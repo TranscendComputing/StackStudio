@@ -29,14 +29,16 @@ define([
         'collections/cloudCredentials',
         'collections/cookbooks',
         'collections/chefEnvironments',
+        'collections/ansibleJobTemplates',
         'views/assemblies/appListView',
         'models/app',
+        'messenger',
         'jquery-plugins',
         'jquery-ui-plugins',
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator',
         'jquery.sortable'
-], function( $, _, bootstrap, Backbone, ich, Common, typeahead, appsTemplate, Apps, CloudCredentials, Cookbooks, ChefEnvironments, AssemblyRuntimeListView, App ) {
+], function( $, _, bootstrap, Backbone, ich, Common, typeahead, appsTemplate, Apps, CloudCredentials, Cookbooks, ChefEnvironments, AssemblyRuntimeListView, App, Messenger, AnsibleJobTemplates ) {
 	// The Assembly Runtime View
 	// ------------------------------
 
@@ -62,6 +64,8 @@ define([
 
         chefIcon: "<img src='/images/CompanyLogos/chefLogo.jpg' class='chef_icon'/>",
         puppetIcon: "<img src='/images/CompanyLogos/puppet.png' class='puppet_icon'/>",
+        saltIcon: "<img src='/images/CompanyLogos/saltLogo.jpg' class='salt_icon'/>",
+        ansibleIcon: "<img src='/images/CompanyLogos/ansible.jpg' class='ansible_icon'/>",
 
         subViews: [],
 
@@ -92,6 +96,7 @@ define([
 
             Common.vent.on("chefSelectionChanged", this.updateDeployButtonState, this);
             Common.vent.on("puppetSelectionChanged", this.updateDeployButtonState, this);
+            Common.vent.on("saltSelectionChanged", this.updateDeployButtonState, this);
 
             this.instanceTable = $('#deploy-inst table:first').dataTable({
                 "bJQueryUI": true,
@@ -104,7 +109,11 @@ define([
                         aTargets: [0],
                         sWidth: "7em",
                         mData: function(instance){
-                            return "<input type='checkbox' data-instance-id='" + instance.id + "'></input><span class='chef_icon' /><span class='puppet_icon' />";
+                            return "<input type='checkbox' data-instance-id='" + instance.id + "'></input>"+
+                            "<span class='chef_icon'></span>"+
+                            "<span class='puppet_icon'></span>"+
+                            "<span class='salt_icon'></span>"+
+                            "<span class=\"ansible_icon\"></span>";
                         }
                     },
                     {
@@ -145,19 +154,20 @@ define([
             }, this));
         },
 
+        
         toolChangeHandler: function(evt){
-            $(".main-group").hide();
-            $("#no_tool_selected").hide();
-            $("#tool_selected").show();
-            var currentTool = $(evt.currentTarget).val().toLowerCase();
-            var accordion = $("#" + currentTool + "Accordion");
-            accordion.show();
+            this.listView.toolChangeHandler(evt);
         },
+
         populateToolMenu: function(){
             var menu = $("#assemblyRuntimeTool");
             menu.empty();
             menu.append('<option value="Chef">Chef</option>');
             menu.append('<option value="Puppet">Puppet</option>');
+            menu.append('<option value="Salt">Salt</option>');
+            if (window.ansible){
+              menu.append('<option value="Ansible">Ansible</option>');
+            }
             menu.get(0).value = "";
         },
 
@@ -206,18 +216,6 @@ define([
 
             this.populateRegions(credential);
             this.listView.credential = credential;
-            this.listView.fetchChefEnvironments().done(function(model){
-                $this.populateChefEnvironments(new ChefEnvironments(model));
-            });
-            this.listView.populatePuppetClasses();
-        },
-
-        populateChefEnvironments: function(list){
-            var select = $("#chefEnvironmentSelect").empty();
-            $("<option value='' disabled selected style='display:none;'>Select Environment</option></select>").appendTo(select);
-            list.forEach(function(element, index, list){
-                $("<option value='" + element.get("name") + "'>" + element.get("name") + "</option></select>").appendTo(select);
-            });
         },
 
         populateCredentials: function(list, options){
@@ -267,6 +265,8 @@ define([
             var accountId = this.credential.get("cloud_account_id");
             var chefApiUrl = Common.apiUrl + "/stackstudio/v1/orchestration/chef/nodes/find?account_id=" + accountId;
             var puppetApiUrl = Common.apiUrl + "/stackstudio/v1/orchestration/puppet/agents/find?account_id=" + accountId;
+            var saltApiUrl = Common.apiUrl + "/stackstudio/v1/orchestration/salt/minions/find?account_id=" + accountId;
+            var ansibleApiUrl = Common.apiUrl + "/stackstudio/v1/orchestration/ansible/hosts/find?account_id=" + accountId;
 
             for (var i = 0; i < instances.length; i++) {
                 var name = instances[i]["name"] || instances[i]["dns_name"];
@@ -289,6 +289,8 @@ define([
             }
             this.matchInstancesAjax(instanceInfo, this.chefIcon, chefApiUrl, "node", "chef");
             this.matchInstancesAjax(instanceInfo, this.puppetIcon, puppetApiUrl, "agent", "puppet");
+            this.matchInstancesAjax(instanceInfo, this.saltIcon, saltApiUrl, "minion", "salt");
+            this.matchInstancesAjax(instanceInfo, this.ansibleIcon, ansibleApiUrl, "host", "ansible");
         },
         matchInstancesAjax: function(instances, icon, url, type, tool){
             $.ajax({
@@ -318,17 +320,21 @@ define([
 
 
             var enabled;
-            var selectedLength;
+            var selectedLength = $(tool.toLowerCase()+"-selection").find("input[type='checkbox']:checked").length;
             if(instanceChecked){
                 switch(tool)
                 {
                     case "Chef":
-                        selectedLength = $("#chef-selection").find("input[type='checkbox']:checked").length;
                         enabled = selectedLength !==0 || configsList["chef"]["run_list"].length !==0;
                         break;
                     case "Puppet":
-                        selectedLength = $("#puppet-selection").find("input[type='checkbox']:checked").length;
                         enabled = (selectedLength !==0|| configsList["puppet"]["node_config"].length !==0 );
+                        break;
+                    case "Salt":
+                        enabled = (selectedLength !==0|| configsList["salt"]["minion_config"].length !==0 );
+                        break;
+                    case "Ansible":
+                        enabled = (selectedLength !==0|| configsList["ansible"]["ansible_config"].length !==0 );
                         break;
                 }
             }
@@ -358,7 +364,7 @@ define([
             this.instanceTable.fnClearTable();
             this.instanceTable.fnAddData(instances);
             this.instanceTable.fnProcessingIndicator(false);
-            this.updateDeployButtonState();
+            //this.updateDeployButtonState();
         },
 
         loadCredentials: function(){
@@ -375,25 +381,7 @@ define([
         enableDeployLaunch: function(){
             $("#deploy-launch").removeClass("disabled");
         },
-
-        // queueToInstance: function(evt){
-        //     var $this = this;
-
-        //     var configSelection = this.listView.getConfigs()["configurations"];
-        //     var runlist = configSelection["chef"]["run_list"];
-        //     var chefEnv = configSelection["chef"]["env"];
-
-        //     var nodeConfig = configSelection["puppet"];
-        //     var checked = this.instanceTable.$("input[type=checkbox]:checked");
-        //     checked.each(function(index, checkbox){
-        //         var row = $(checkbox).parents()[1];
-        //         var nodeData = $(row).data()["node"];
-        //         if(nodeData){
-        //             $this.addToRunlist(nodeData["name"], runlist);
-        //         }
-        //     });
-
-        // },
+        
         queueToInstance: function(evt) {
             var $this = this;
             var accountId = this.credential.get("cloud_account_id");
@@ -405,6 +393,7 @@ define([
             for(var i = 0; i < selected.length; i++){
                 var row = $(selected[i]).parents()[1];
                 var rowData = $(row).data();
+                var instanceName = $(row).find("td:eq(1)").text();
                 switch (tool) {
                     case "Puppet":
                         if(rowData["agent"]){
@@ -414,7 +403,7 @@ define([
                             for(var j =0; j < nodeConfig.length; j++){
                                 postData["puppetclass_ids"].push(nodeConfig[j].id);
                             }
-                            this.updateInstanceConfig("puppet/agents", id, postData, "nodeConfigUpdated");
+                            this.updateInstanceConfig("puppet/agents", id, instanceName,  postData, "nodeConfigUpdated");
 
                         }
                         break;
@@ -423,26 +412,54 @@ define([
                         var env = configSelection["env"];
                         var nodeData = $(row).data()["node"];
                         if(nodeData){
-                            this.updateInstanceConfig("chef/nodes", nodeData["name"], runlist, "runListUpdated");
+                            this.updateInstanceConfig("chef/nodes", nodeData["name"], instanceName,  runlist, "runListUpdated");
+                        }
+                        break;
+
+                    case "Salt":
+                        var minionName = rowData.minion.name;
+                        if(minionName){
+                            var states = {"states":[]};
+                            var minionConfig = configSelection["minion_config"];
+                            for(var k = 0; k< minionConfig.length; k++){
+                                states["states"].push(minionConfig[k].name);
+                            }
+                            this.updateInstanceConfig("salt/minions", minionName, instanceName, states, "minionConfigUpdated");
+                        }
+                        break;
+
+                    case "Ansible":
+                        var hostName = rowData.hosts.name;
+                        if(hostName){
+                            var jobtemplates = {"jobtemplates":[]};
+                            var jobtemplateConfig = configSelection["jobtemplate_config"];
+                            for (var n = 0; n< jobtemplateConfig.length; n++){
+                                jobtemplates["jobtemplates"].push(jobtemplateConfig[n].name);
+                            }
+                            this.updateInstanceConfig("ansible/hosts", hostName, instanceName, jobtemplates, "jobtemplateConfigUpdated");
                         }
                         break;
                 }
             }
         },
 
-        updateInstanceConfig: function(subUrl, id, data, eventName){
+        updateInstanceConfig: function(subUrl, id, instanceName, data, eventName){
             var accountId = this.credential.get("cloud_account_id");
             var url = Common.apiUrl + "/stackstudio/v1/orchestration/" + subUrl + "/"+ id  +"?account_id=" + accountId + "&_method=PUT";
+            data["instanceName"] = instanceName;
             $.ajax({
                 url: url,
                 type: "POST",
                 data: JSON.stringify(data),
                 success: function(response) {
+                    new Messenger().post({type:"success", message:"Updated " + data.instanceName + "'s configuration"});
                     Common.vent.trigger(eventName);
                 },
                 error: function(response){
-                    Common.errorDialog("Server Error", "Could not update instance configuration.");
-                }
+                    new Messenger().post({type:"error", message:"Could not update " + data.instanceName + "'s configuration"});
+                    //Common.errorDialog("Server Error", "Could not update instance configuration.");
+                },
+                context:this
             });
         },
 
@@ -452,20 +469,6 @@ define([
             this.stopListening();
             this.unbind();
         }
-
-        // toggleInstInfra: function(ev){
-        //     switch(ev.target.id)
-        //     {
-        //         case ("collapseConfig"):{
-        //             $("#deploy-inst").show();
-        //             $("#deploy-infra").hide();
-        //         }break;
-        //         case ("collapseInfra"):{
-        //             $("#deploy-inst").hide();
-        //             $("#deploy-infra").show();
-        //         }break;
-        //     }
-        // },
 
         // searchClick: function(evt) {
         //     var label, clicked;

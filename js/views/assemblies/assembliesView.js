@@ -46,7 +46,13 @@ define([
             //this.listView.render();
             $("#assembliesTabs a").click(function(e){
                 e.preventDefault();
+                if($this.tabView instanceof DesignView){
+                    if($("#assemblyDesignTool").val() && $("#assemblyDesignTool").val() !== ""){
+                        $this.currentAssembly.set($this.listView.getConfigs("#assemblyDesignTool"));
+                    }
+                }
                 $(this).tab('show');
+
 
                 $this.listView.close();
                 $this.tabView.close();
@@ -57,9 +63,7 @@ define([
                 }else if(targetID ==="#assemblyDesign"){
                     $this.tabView = new DesignView({el: targetID, assemblies:$this.assemblies, listView:$this.listView});
                     if($this.currentAssembly.id){
-                        $this.openAssembly($this.currentAssembly.id);
-                    }else{
-                        $this.newAssemblyForm();
+                        $this.openAssembly($this.currentAssembly);
                     }
                 }
             });
@@ -82,13 +86,17 @@ define([
             this.stopListening();
             this.unbind();
         },
-        fetchAssemblies: function(){
+        fetchAssemblies: function(model){
             var $this = this;
             this.assemblies.fetch({
                 reset: true,
                 success:function(collection, response, options){
-                    $this.assemblies = collection;
-                    $this.tabView.assemblies = collection;
+                    $this.assemblies = $this.tabView.assemblies = collection;
+                    //Need ID to get model from new collection;
+                    var id = model ? model.id : $this.currentAssembly.id;
+                    if(id){
+                        $this.currentAssembly = $this.tabView.currentAssembly = collection.get(id);
+                    }
                     $this.populateAssemblySelect();
                 },
                 error: function(xhr, response, options){
@@ -107,18 +115,20 @@ define([
 
         clickAssemblyHandler: function(evt){
             var id = evt.currentTarget.id;
-            this.openAssembly(id);
+            this.openAssembly(this.assemblies.get(id));
             
         },
-        openAssembly: function(id){
+        openAssembly: function(assembly){
             var $this = this;
             if(!(this.tabView instanceof DesignView)){
                 $("#assembliesTabs a:first").click();
             }
-            this.currentAssembly = this.assemblies.get(id);
+            this.currentAssembly = assembly;
+            $("#selectAssemblyButton span:first").html("Selected Assembly: " + this.currentAssembly.get("name"));
             $("#designForm :input:reset");
             this.tabView.currentAssembly = this.currentAssembly;
             this.tabView.listView = new ConfigListView();
+            this.tabView.listView.loadingAssembly = true;
             this.tabView.listView.render();
 
             $("#designForm :input[type!='hidden']").each(function(){
@@ -135,22 +145,39 @@ define([
             });
             $("#assemblyDesignCloudCreds").change();
             $("#assemblyDesignTool").change();
-            if(this.currentAssembly.get("tool") === "Chef"){
-                var chefConfig = this.currentAssembly.get("configurations")["chef"];
-                Common.vent.once("chefEnvironmentsPopulated", function(){
-                    $("#chefEnvironmentSelect").val(chefConfig["env"]);
-                    $("#chefEnvironmentSelect").change();
-                });
-                Common.vent.once("cookbooksLoaded", function(){
-                    var recipeList = $this.sortListByContainer(chefConfig["run_list"]);
-                    $this.selectRecipes(recipeList);
-                });
-            }else if(this.currentAssembly.get("tool") === "Puppet"){
-                var puppetConfig = this.currentAssembly.get("configurations")["puppet"];
-                Common.vent.once("modulesLoaded", function(){
-                    var classList = $this.sortListByContainer(puppetConfig["node_config"]);
-                    $this.selectClasses(classList);
-                });
+
+            var tool = this.currentAssembly.get("tool");
+            var config = this.currentAssembly.get("configurations")[tool.toLowerCase()];
+
+            switch(tool){
+                case "Chef":
+                    Common.vent.once("chefEnvironmentsPopulated", function(){
+                        $("#chefEnvironmentSelect").val(config["env"]);
+                        $("#chefEnvironmentSelect").change();
+                    });
+                    Common.vent.once("cookbooksLoaded", function(){
+                        var recipeList = $this.sortListByContainer(config["run_list"]);
+                        $this.selectRecipes(recipeList);
+                    });
+                    break;
+                case "Puppet":
+                    Common.vent.once("modulesLoaded", function(){
+                        var classList = $this.sortListByContainer(config["node_config"]);
+                        $this.selectConfigs(classList, "module", "class");
+                    });
+                    break;
+                case "Salt":
+                    Common.vent.once("formulasLoaded", function(){
+                        var stateList = $this.sortListByContainer(config["minion_config"]);
+                        $this.selectConfigs(stateList, "formula", "saltState");
+                    });
+                    break;
+                case "Ansible":
+                    Common.vent.once("jobtemplatesLoaded", function(){
+                        var stateList = $this.sortListByContainer(config["jobtemplate_config"]);
+                        $this.selectConfigs(stateList, "jobtemplate", "task");
+                    });
+                    break;
             }
         },
         findImage: function(imageData){
@@ -162,7 +189,6 @@ define([
                     return;
                 }
             }
-            Common.errorDialog("Not found", "Could not find image saved with this assembly.");
         },
         sortListByContainer: function(list){
             var containers = {};
@@ -184,15 +210,15 @@ define([
                 }
             }
         },
-        selectClasses: function(classes){
-            for(var name in classes){
-                if(classes.hasOwnProperty(name)){
-                    var classNodeList = $("#"+name+"-module").parent().find("li");
-                    for(var i = 0; i < classNodeList.length; i++){
-                        var classNode = classNodeList.get(i);
-                        var nodeName = $(classNode).data("class").name;
-                        if(classes[name].indexOf(nodeName) !== -1){
-                            $(classNode).find("input[type=checkbox]").click();
+        selectConfigs: function(list, type, subtype){
+            for(var name in list){
+                if(list.hasOwnProperty(name)){
+                    var nodeList = $("#"+ name + "-"+ type).parent().find("li");
+                    for(var i = 0; i < nodeList.length; i++){
+                        var node = nodeList.get(i);
+                        var nodeName = $(node).data(subtype).name;
+                        if(list[name].indexOf(nodeName) !== -1){
+                            $(node).find("input[type=checkbox]").click();
                         }
                     }
                 }
@@ -222,20 +248,33 @@ define([
             
             
         },
-        newAssemblyForm: function(evt, justDeleted){
-            if(!justDeleted && !this.confirmPageSwitch()){
+        newAssemblyForm: function(){
+            var $this =this;
+            if(!this.confirmPageSwitch()){
                 return;
             }
+            $("#selectAssemblyButton span:first").html("Select Assembly");
             $("#designForm :input:reset");
+            if(!(this.tabView instanceof DesignView)){
+                $("#assembliesTabs a:first").click();
+            }
             this.currentAssembly = new Assembly();
             this.tabView.currentAssembly = this.currentAssembly;
-            $("#designForm :input").each(function(){
-                this.value = "";
-            });
+            
             this.tabView.listView.close();
             this.tabView.listView = new ConfigListView();
             this.tabView.listView.render();
             this.tabView.imageTable.fnClearTable();
+
+            $("#designForm :input").each(function(){
+                if(this.name === "cloud_credential"){
+                    $this.listView.credential = $(this).find(":selected").data().cloudCredentials;
+                    $(this).change();
+                }
+                else{
+                    this.value = "";
+                }
+            });
         },
         deleteAssembly: function(evt){
             var assembly = this.assemblies.get(evt.currentTarget.id);

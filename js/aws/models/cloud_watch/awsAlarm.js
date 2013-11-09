@@ -6,10 +6,11 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
+        'jquery',
         'backbone',
         'models/resource/resourceModel',
         'common'
-], function( Backbone, ResourceModel, Common ) {
+], function( $, Backbone, ResourceModel, Common ) {
     'use strict';
 
     var Alarm = ResourceModel.extend({
@@ -66,6 +67,21 @@ define([
             }
             var timeLength = (this.attributes.period * this.attributes.evaluation_periods/60).toString();
             return this.attributes.metric_name + " " + comparisonSign + " " + this.attributes.threshold.toString() + " " + this.attributes.unit + " for " + timeLength + " minutes.";
+        },
+        
+        getAlarmHistory: function(credentialId, region){
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/monitor/alarms/" + this.id + "/alarm_history?_method=GET&cred_id=" + credentialId + "&region=" + region;
+            $.ajax({
+                url: url,
+                type: "GET",
+                contentType: 'application/x-www-form-urlencoded',
+                success: function(data) {
+                    Common.vent.trigger("alarmHistoryRefresh", data);
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            });
         },
         
         create: function(options, credentialId, region) {

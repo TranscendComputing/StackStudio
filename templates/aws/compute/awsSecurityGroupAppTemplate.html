@@ -38,6 +38,7 @@
     <div id="detail_tabs">
         <ul>
             <li><a href="#properties_tab">Details</a></li>
+            <li><a href="#rules_tab">Rules</a></li>
         </ul>
         <div id="properties_tab" class="tab">
             <table>
@@ -49,6 +50,32 @@
                     <tr><td><b>VPC ID:</b></td>         <td>{{ vpc_id }}</td></tr>
                 </tbody>
             </table>
+        </div>
+        <div id="rules_tab">
+            <div class="row">
+                <div class="fivecol">
+                    <form>
+                        <fieldset>
+                            <legend>Security Group Ingress</legend>
+                            <p><label class="field">New Rule:</label>
+                                <select class="select-200" id="new_rule_select">
+                                    <option data-cidr="0.0.0.0/0" data-protocol="tcp">Custom TCP</option>
+                                    <option data-from-port="1" data-to-port="65535" data-cidr="0.0.0.0/0" data-protocol="tcp">ALL TCP</option>
+                                </select>
+                            </p>
+                            <p><label class="field">Port Range:</label><input id="port_range_input" class="textbox-200" type="text"></input></p>
+                            <p><label class="field">Source:</label></p>
+                            <p><input type="radio" name="source" value="cidr" checked="checked" class="sub-field" ></input><label class="sub-field">CIDR IP:</label><input type="text" class="sub-textbox-150" id="cidr_input"></input></p>
+                            <p><input type="radio" name="source" value="group" class="sub-field"></input><label class="sub-field">Existing Group:</label><input type="text" class="sub-textbox-150" id="group_input"></input></p><br>
+                            <button id="add_rule_button">Add Rule</button>
+                        </fieldset>
+                    </form>
+                </div>
+                <div class="sevencol">
+                    <table id="rules_table">
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </script>

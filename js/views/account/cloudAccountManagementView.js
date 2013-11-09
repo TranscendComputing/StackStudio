@@ -40,6 +40,7 @@ define([
             "click button#delete_cloud_account": "deleteCloudAccount",
             "click button.delete-button": "deleteService",
             "click button#update_auth_url_button": "updateAuthUrl",
+            "click button#default_region_button": "updateRegion",
             "change input#auth_url_input": "updateAuthModel",
             "click button.save-manager" : "saveManager"
         },
@@ -97,7 +98,7 @@ define([
         /** Add all of my own html elements */
         render: function () {
             //Render my template
-            this.$el.append(this.template);
+            this.$el.append(this.template({ansible:window.ansible}));
             //$("#update_auth_url_button").button();
             //$("ul#cloud_account_list").menu();
             //$("div#detail_tabs").tabs();
@@ -132,6 +133,15 @@ define([
             $("#update_auth_url_button").removeClass("ui-state-hover");
             
         },
+        
+        updateRegion: function(){
+            this.selectedCloudAccount.attributes.default_region = $("#default_region_input").val();
+            this.selectedCloudAccount.update();
+            
+            $("#default_region_button").attr("disabled", true);
+            $("#default_region_button").addClass("ui-state-disabled");
+            $("#default_region_button").removeClass("ui-state-hover");
+        },
         /*
         updateServices: function(){
             var thisView = this;
@@ -147,7 +157,7 @@ define([
         },
         */
         updateSession: function(){
-            
+            //debugger
         },
         
         updateAuthModel: function(){
@@ -187,8 +197,15 @@ define([
                 }else{
                     $("#auth_url_input").val("");
                 }
+                $("#default_region_div").show();
+                if(this.selectedCloudAccount.attributes.default_region){
+                    $("#default_region_input").val(this.selectedCloudAccount.attributes.default_region);
+                }else{
+                    $("#default_region_input").val("");
+                }
             }else{
                 $("#auth_url_div").hide();
+                $("#default_region_div").hide();
             }
             
             this.renderAccountAttributes();

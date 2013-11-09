@@ -23,7 +23,7 @@ define([
 
         url: Common.apiUrl + '/stackstudio/v1/orchestration/managers',
         toJSON: function() {
-            var result = {"puppet":[], "chef":[]};
+            var result = {"puppet":[], "chef":[], "salt":[], "ansible":[]};
             var models = this.models;
             for(var i = 0; i < models.length; i++){
                 result[models[i].get("type").toLowerCase()].push(models[i].toJSON());

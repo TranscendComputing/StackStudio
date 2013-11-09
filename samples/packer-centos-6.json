@@ -1,0 +1,83 @@
+{
+   "builders":[
+      {
+         "accelerator":"kvm",
+         "boot_command":[
+            "\u003ctab\u003e\u003cwait\u003e",
+            " ks=http://10.0.2.2:{{ .HTTPPort }}/centos6-ks.cfg\u003center\u003e"
+         ],
+         "disk_interface":"virtio",
+         "disk_size":5000,
+         "format":"qcow2",
+         "headless":false,
+         "http_port_max":10999,
+         "http_port_min":10000,
+         "iso_checksum":"4a5fa01c81cc300f4729136e28ebe600",
+         "iso_checksum_type":"md5",
+         "iso_url":"http://mirror.raystedman.net/centos/6/isos/x86_64/CentOS-6.4-x86_64-minimal.iso",
+         "name":"tomscentos",
+         "net_device":"virtio-net",
+         "output_directory":"output_tomscentos",
+         "qemuargs":[
+            [
+               "-display",
+               "none"
+            ],
+            [
+               "-m",
+               "1024m"
+            ]
+         ],
+         "shutdown_command":"shutdown -P now",
+         "ssh_host_port_max":11999,
+         "ssh_host_port_min":11000,
+         "ssh_password":"s0m3password",
+         "ssh_port":22,
+         "ssh_username":"root",
+         "ssh_wait_timeout":"90m",
+         "type":"qemu",
+         "vm_name":"tdhtest"
+      }
+   ],
+   "post-processors":[
+      {
+         "password":"m0mentum3i",
+         "project":"TranscendDev",
+         "provider":"http://grizzlyfe.momentumsoftware.com:35357/v2.0/tokens",
+         "qemu":{
+            "image_name":"{{user `qemu_image_name`}}",
+            "service_name":"glance",
+            "service_type":"image",
+            "tags":[
+               "tom",
+               "hite",
+               "tag3",
+               "this is just another tag"
+            ],
+            "visibility":"{{user `openstack_image_visibility`}}"
+         },
+         "region":"RegionOne",
+         "type":"openstack",
+         "username":"tdhite"
+      }
+   ],
+   "provisioners":[
+      {
+         "inline":[
+            "rm -fv /etc/udev/rules.d/70*",
+            "find /etc/sysconfig/net* -name \"*.bak\" -exec rm -fv {} \\;",
+            "rm -fv /etc/sysconfig/networking/profiles/default/*",
+            "rm -fv /etc/sysconfig/networking/devices/*",
+            "awk '!/HWADDR/' /etc/sysconfig/network-scripts/ifcfg-eth0 \u003e/tmp/ifcfg-eth0",
+            "awk '!/NM_MANAGED/' /tmp/ifcfg-eth0 \u003e/etc/sysconfig/network-scripts/ifcfg-eth0"
+         ],
+         "type":"shell"
+      }
+   ],
+   "variables":{
+      "openstack_image_visibility":"public",
+      "qemu_image_name":"toms-mciaa-test",
+      "var1":"value1",
+      "var2":"value2"
+   }
+}

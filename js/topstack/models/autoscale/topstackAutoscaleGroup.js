@@ -43,6 +43,15 @@ define([
             }
             this.sendAjaxAction(url, "POST", options, "autoscaleAppRefresh");
         },
+        
+        update: function(launch_config_options, autoscale_group_options, trigger_options, credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/topstack/autoscale/autoscale_groups/"+autoscale_group_options.AutoScalingGroupName+"?cred_id=" + credentialId + "&region=" + region;
+            var options = {"launch_configuration": launch_config_options, "autoscale_group": autoscale_group_options};
+            if(trigger_options) {
+                options["trigger"] = trigger_options;
+            }
+            this.sendAjaxAction(url, "POST", options, "autoscaleAppRefresh");
+        },
 
         spinDown: function(credentialId, region) {
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/topstack/autoscale/autoscale_groups/"+ this.attributes.id +"/spin_down?cred_id=" + credentialId + "&region=" + region;

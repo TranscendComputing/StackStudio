@@ -17,12 +17,13 @@ define([
     'models/assembly',
     'collections/assemblies',
     'views/assemblies/configListView',
+    'messenger',
     'jquery-plugins',
     'jquery-ui-plugins',
     'jquery.dataTables',
     'jquery.dataTables.fnProcessingIndicator',
     'jquery.sortable'
-], function($, _, bootstrap, Backbone, Common, assemblyDesignTemplate, ChefEnvironments, CloudCredentials, Assembly, Assemblies, ConfigListView) {
+], function($, _, bootstrap, Backbone, Common, assemblyDesignTemplate, ChefEnvironments, CloudCredentials, Assembly, Assemblies, ConfigListView,Messenger) {
 
     var AssemblyDesignView = Backbone.View.extend({
 
@@ -47,7 +48,7 @@ define([
         initialize: function(options) {
             console.log("Initialize assembly design view.");
             $("#assemblyDesign").html(this.el);
-            this.$el.html(this.template);
+            this.$el.html(this.template({ansible:window.ansible}));
             this.listView = options.listView;
             this.assemblies = options.assemblies;
             this.currentAssembly = new Assembly();
@@ -56,8 +57,6 @@ define([
             this.cloudCredentials = new CloudCredentials();
             this.cloudCredentials.on('reset', this.populateCredentials, this);
 
-            //Cloud Credentials fetch is asyncronous due to custom fetch behavior.
-            this.cloudCredentials.fetch();
             var $this = this;
             this.imageTable = $("#assemblyDesignImagesTable").dataTable({
                 "bJQueryUI": true,
@@ -85,6 +84,8 @@ define([
                     }
                 }]
             });
+            //Cloud Credentials fetch is asyncronous due to custom fetch behavior.
+            this.cloudCredentials.fetch();
         },
 
         close: function() {
@@ -105,22 +106,18 @@ define([
                     .data("cloudCredentials", element)
                     .appendTo(select);
             });
-            //select.trigger("change");
         },
         credentialChangeHandler: function(evt) {
             var $this = this;
             var optionSelected = $("option:selected", evt.target);
             var credential = this.credential = optionSelected.data("cloudCredentials");
             if (!credential) {
-                this.flashError("We're sorry.  Cloud credentials could not be retrieved.");
+                //this.flashError("We're sorry.  Cloud credentials could not be retrieved.");
                 return;
             }
 
             this.listView.credential = credential;
-            this.listView.fetchChefEnvironments().done(function(model) {
-                $this.listView.populateChefEnvironments(new ChefEnvironments(model));
-            });
-            this.listView.populatePuppetClasses();
+
             this.populateImages(credential.get("cloud_provider").toLowerCase(), credential);
         },
         saveAssemblyHandler: function(e) {
@@ -129,11 +126,17 @@ define([
             this.currentAssembly.set(configs);
             //If no id, then it's a new assembly.  Otherwise, update existing assembly.
             if(!this.currentAssembly.id){
+                var $this = this;
+                Common.vent.once("assembliesViewRefresh", function(newAssembly){
+                    $this.currentAssembly = newAssembly;
+                });
                 this.assemblies.createAssembly(this.currentAssembly, {});
             }
             else{
                 this.currentAssembly.save({},{
-                    success:function(){
+                    success:function(model){
+                        $("#selectAssemblyButton span:first").html("Selected Assembly: " + model.get("name"));
+                        new Messenger().post({message:model.get("name") +" updated", type:"success"});
                         Common.vent.trigger("assembliesViewRefresh");
                     },
                     error:function(){
@@ -187,13 +190,7 @@ define([
                 .change();
         },
         toolChangeHandler: function(evt){
-            $(".main-group").hide();
-            $("#no_tool_selected").hide();
-            $("#tool_selected").show();
-            var currentTool = $(evt.currentTarget).val().toLowerCase();
-            var accordion = $("#" + currentTool + "Accordion");
-            accordion.show();
-            //accordion.find("a").first().click();
+            this.listView.toolChangeHandler(evt);
         }
     });
 

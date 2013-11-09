@@ -32,7 +32,7 @@ define([
             var createView = this;
             var compiledTemplate = _.template(managerCreateTemplate);
 
-            this.$el.html(compiledTemplate);
+            this.$el.html(compiledTemplate({ansible:window.ansible}));
             this.$el.dialog({
                 autoOpen: true,
                 title: "New Configuration Manager",
@@ -62,7 +62,10 @@ define([
             var issue = false;
             
             $('input, textarea, select').each(function(){
-                if($(this).val() === ""){
+                if ($(this).attr('title') === "optional"){
+                    $(this).css("border-color", "");
+                }
+                else if($(this).val() === ""){
                     $(this).css("border-color", "red");
                     issue = true;
                 }
@@ -87,21 +90,56 @@ define([
             }
             $("#authProp").html("");
             $("#otherAuthProp").html("");
-            var data = {};
-            if($("#manager_type_input").val().toLowerCase() === "puppet"){
-
-                data = {"authPropName":"Foreman User", tag:"input", inputType:"text", authProp:"foreman_user"};
+            var toolType = $("#manager_type_input").val().toLowerCase();
+            if(toolType){
+                var data = {};
+                var otherData = {};
+                var additionalData = [];
+                switch(toolType){
+                    case "puppet":
+                        data = {"authPropName":"Foreman User", tag:"input", inputType:"text", authProp:"foreman_user"};
+                        otherData = {"authPropName":"Foreman Password", tag:"input", inputType:"password",authProp:"foreman_pass"};
+                        break;
+                    case "chef":
+                        data = {"authPropName":"Client Name", tag:"input", inputType:"text",authProp:"client_name"};
+                        otherData = {"authPropName":"Key", tag:"textarea", inputType:"text",authProp:"key"};
+                        break;
+                    case "salt":
+                        data = {"authPropName":"Salt Username", tag:"input", inputType:"text",authProp:"salt_user"};
+                        otherData = {"authPropName":"Salt Password", tag:"input", inputType:"password",authProp:"salt_pass"};
+                        break;
+                    case "ansible":
+                        data = {"authPropName":"Ansible Username", tag:"input", inputType:"text",authProp:"ansible_user"};
+                        otherData = {"authPropName":"Ansible Password", tag:"input", inputType:"password",authProp:"ansible_pass"};
+                        additionalData.push(
+                          {"authPropName":"SSH Private Key", tag:"textarea", 
+                          inputType:"text", title:"optional", authProp:"ansible_ssh_key_data"});
+                        additionalData.push(
+                          {"authPropName":"SSH Key Passphrase", tag:"input", 
+                          inputType:"password", title:"optional", authProp:"ansible_ssh_key_unlock"});
+                        additionalData.push(
+                          {"authPropName":"SSH User Name", tag:"input", 
+                          inputType:"text", title:"optional", authProp:"ansible_ssh_username"});
+                        additionalData.push(
+                          {"authPropName":"SSH Password", tag:"input", 
+                          inputType:"password", title:"optional", authProp:"ansible_ssh_password"});
+                        additionalData.push(
+                          {"authPropName":"Sudo Username", tag:"input", 
+                          inputType:"text", title:"optional", authProp:"ansible_sudo_username"});
+                        additionalData.push(
+                          {"authPropName":"Sudo Password", tag:"input", 
+                          inputType:"password", title:"optional", authProp:"ansible_sudo_password"});
+                        break;
+                }
                 $("#authProp").html(ich["auth_prop_template"](data));
-
-                data = {"authPropName":"Foreman Password", tag:"input", inputType:"password",authProp:"foreman_pass"};
-                $("#otherAuthProp").html(ich["auth_prop_template"](data));
-
-            }else if ($("#manager_type_input").val().toLowerCase() === "chef"){
-                data = {"authPropName":"Client Name", tag:"input", inputType:"text",authProp:"client_name"};
-                $("#authProp").html(ich["auth_prop_template"](data));
-
-                data = {"authPropName":"Key", tag:"textarea", inputType:"text",authProp:"key"};
-                $("#otherAuthProp").html(ich["auth_prop_template"](data));
+                $("#otherAuthProp").html(ich["auth_prop_template"](otherData));
+                // [XXX] There is a better way of doing this
+                if (additionalData.length > 0){
+                  for (var i in additionalData){
+                    $("#additionalAuthProp_"+i).html(
+                      ich["auth_prop_template"](additionalData[i]));
+                  }
+                }
             }
         },
         changed:function(evt) {

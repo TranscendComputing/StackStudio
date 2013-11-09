@@ -1,0 +1,95 @@
+<div>
+    <div class="button_bar">
+        <table>
+            <tr>
+                <td>
+                    <button class="create_button">Create Stack</button>
+                </td>
+                <td>
+                    <ul id="action_menu">
+                        <li style="z-index: 1000">
+                            <a id="action_button">Actions</a>
+                            <ul>
+                                <li><a>Update Stack</a></li>
+                                <li><a>Delete Stack</a></li>             
+                            </ul>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table id="resource_table" class="full_width">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th class="medium_width">Status</th>
+                <th class="medium_width">Created</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    <div id="details" class="detail_panel"></div>
+</div>
+
+<script type="text/html" id="resource_detail">
+    <div id="detail_tabs">
+        <ul>
+            <li><a href="#details-tab">Details</a></li>
+            <li><a href="#outputs-tab">Outputs</a></li>
+            <li><a href="#resources-tab">Resources</a></li>
+            <li><a href="#events-tab">Events</a></li>
+            <li><a href="#template-tab">Template</a></li>
+            <li><a href="#parameters-tab">Parameters</a></li>
+        </ul>
+        <div id="details-tab" class="tab">
+            <table>
+                <tbody>
+                    <tr><td><b>Stack Name:</b></td>        <td>{{ StackName }}</td> </tr>
+                    <tr><td><b>Stack Id:</b></td>           <td>{{ StackId }}</td></tr>
+                    <tr><td><b>Status:</b></td>     <td>{{ StackStatus }}</td></tr>
+                    <tr><td><b>Created:</b></td>      <td>{{ CreationTime }}</td></tr>
+                    <tr><td><b>Description:</b></td>      <td>{{ TemplateDescription }}</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="outputs-tab" class="tab">
+            <table class="simple-tab-table" style="width:50%;margin:0;">
+                <thead>
+                    <tr>
+                        <th>Key</th>
+                        <th>Value</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#Outputs}}<tr><td>{{OutputKey}}</td>  <td>{{OutputValue}}</td><td>{{Description}}</td></tr>{{/Outputs}}
+                </tbody>
+            </table>
+        </div>
+        <div id="resources-tab" class="tab">
+            <table/>
+        </div>
+        <div id="events-tab" class="tab">
+            <table/>
+        </div>
+        <div id="template-tab" class="tab"/>
+        <div id="parameters-tab" class="tab">
+            <table class="simple-tab-table" style="width:33%;margin:0;">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#Parameters}}<tr><td>{{ParameterKey}}</td>  <td>{{ParameterValue}}</td></tr>{{/Parameters}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</script>

@@ -76,9 +76,11 @@ define([
             $("#namespace_select").change(function() {
                 createView.namespaceChange();
             });
-            /*
+            
             this.metrics.on( 'reset', this.addAllMetrics, this );
+            
             this.namespaceChange();
+            /*
             this.topics.on( 'reset', this.addAllTopics, this );
             this.topics.fetch({ 
                 data: $.param({ cred_id: this.credentialId, region: this.region }),
@@ -86,30 +88,54 @@ define([
             });
             */
         },
-        /*
+        
         namespaceChange: function() {
             $("#metric_select").empty();
             $("#metric_select").append("<option value='none'>No Metrics Available</option>");
-            switch($("#namespace_select").val()) 
-            {
-            case "AWS/EBS":
-                this.metrics.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region, filters: {"Namespace": "AWS/EBS", "Dimensions":"VolumeId"}}), reset: true });
-                break;
-            case "AWS/EC2":
-                this.metrics.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region, filters: {"Namespace": "AWS/EC2", "Dimensions":"InstanceId"}}), reset: true });
-                break;
-            case "AWS/ELB":
-                this.metrics.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region, filters: {"Namespace": "AWS/ELB", "Dimensions":"LoadBalancerName"}}), reset: true });
-                break;
-            case "AWS/RDS":
-                this.metrics.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region, filters: {"Namespace": "AWS/RDS", "Dimensions":"DBInstanceIdentifier"}}), reset: true });
-                break;
-            case "AWS/SNS":
-                this.metrics.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region, filters: {"Namespace": "AWS/SNS", "Dimensions":"TopicName"}}), reset: true });
-                break;
-            case "AWS/SQS":
-                this.metrics.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region, filters: {"Namespace": "AWS/SQS", "Dimensions":"QueueName"}}), reset: true });
-                break;
+            $("#dimension_name_select").empty();
+            $("#dimension_name_select").append("<option value='none'>No Dimensions Available</option>");
+            
+            var mappings = undefined;
+            $.ajax({
+              url: '/samples/metrics.json',
+              async: false,
+              success: function(data) {
+                mappings = data;
+              }
+            });
+            this.addMets(mappings[$("#namespace_select").val()]);
+            // switch($("#namespace_select").val()) 
+//             {
+//             case "AWS/EBS":
+//                 this.metrics.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region, filters: {"Namespace": "AWS/EBS", "Dimensions":"VolumeId"}}), reset: true });
+//                 this.addMets(mappings[$("#namespace_select").val()]);
+//                 break;
+//             case "AWS/EC2":
+//                 this.metrics.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region, filters: {"Namespace": "AWS/EC2", "Dimensions":"InstanceId"}}), reset: true });
+//                 break;
+//             case "AWS/ELB":
+//                 this.metrics.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region, filters: {"Namespace": "AWS/ELB", "Dimensions":"LoadBalancerName"}}), reset: true });
+//                 break;
+//             case "AWS/RDS":
+//                 this.metrics.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region, filters: {"Namespace": "AWS/RDS", "Dimensions":"DBInstanceIdentifier"}}), reset: true });
+//                 break;
+//             case "AWS/SNS":
+//                 this.metrics.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region, filters: {"Namespace": "AWS/SNS", "Dimensions":"TopicName"}}), reset: true });
+//                 break;
+//             case "AWS/SQS":
+//                 this.metrics.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region, filters: {"Namespace": "AWS/SQS", "Dimensions":"QueueName"}}), reset: true });
+//                 break;
+//             }
+        },
+        
+        addMets: function(map){
+            $("#metric_select").empty();
+            for(i in  map.metrics){
+                $("#metric_select").append("<option>" + map.metrics[i] + "</option>");
+            }
+            $("#dimension_name_select").empty();
+            for(i in  map.dimensions){
+                $("#dimension_name_select").append("<option>" + map.dimensions[i] + "</option>");
             }
         },
         
@@ -125,7 +151,7 @@ define([
                $("#metric_select").append("<option value='none'>No Metrics Available</option>"); 
             }
         },
-        
+        /*
         addAllTopics: function() {
             $("#sns_topic_select").empty();
             this.topics.each(function(topic) {
@@ -174,8 +200,11 @@ define([
                 options.metric_name = metric.name;
             }
             */
-           options.metric_name = $("#metric_input").val();
-           options.dimensions = [{"Name": $("#dimension_name_input").val(), "Value": $("#dimension_value_input").val()}];
+           // options.metric_name = $("#metric_input").val();
+//            options.dimensions = [{"Name": $("#dimension_name_input").val(), "Value": $("#dimension_value_input").val()}];
+            
+            options.metric_name = $("#metric_select").val();
+            options.dimensions = [{"Name": $("#dimension_name_select").val(), "Value": $("#dimension_value_input").val()}];
             
             if($("#threshold_input").val() !== "") {
                 var thresholdInt = parseInt($("#threshold_input").val(), 10);

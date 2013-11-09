@@ -9,6 +9,11 @@
                 "defaultSubtype": "autoscalegroups"
             },
             {
+                "name": "Cloud Formation",
+                "type": "cloud_formation",
+                "defaultSubtype": "cloudFormation"
+            },
+            {
                 "name": "CloudWatch",
                 "type": "cloud_watch",
                 "defaultSubtype": "alarms"

@@ -33,4 +33,5 @@ js/*-all*js*
 *.sublime*
 .DS_Store
 backend.json
-
+.grunt/
+*.swp

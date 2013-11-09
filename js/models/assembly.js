@@ -27,7 +27,10 @@ define([
         idAttribute: "_id",
         defaults: {
             name: '',
-            configurations: {chef:{run_list:[], puppet:{}}}
+            configurations: {}
+        },
+        url: function(){
+            return Backbone.Model.prototype.url.apply(this, arguments) + "?account_id="+ sessionStorage.account_id;
         }
 
     });

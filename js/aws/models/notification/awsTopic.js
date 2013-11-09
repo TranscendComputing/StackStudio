@@ -26,9 +26,10 @@ define([
             TopicArn: ''
         },
 
-        create: function(options, credentialId, region) {
+        create: function(options, credentialId, region, eventString) {
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/notification/topics?cred_id=" + credentialId + "&region=" + region;
-            this.sendAjaxAction(url, "POST", {"topic": options}, "topicAppRefresh");
+            var eventName = eventString ? eventString : "topicAppRefresh";
+            this.sendAjaxAction(url, "POST", {"topic": options}, eventName);
         },
 
         publish: function(options, credentialId, region) {

@@ -15,6 +15,24 @@ define([
 
         defaults: {
 
+        },
+        
+        save: function() {
+            var url = Common.apiUrl + "/stackstudio/v1/packed_images/save?uid=" + sessionStorage.org_id;
+            if(this.attributes.doc_id !== "test"){
+                url = Common.apiUrl + "/stackstudio/v1/packed_images/save?uid=" + sessionStorage.org_id + "&docid=" + this.attributes.doc_id;
+            }
+            this.sendAjaxAction(url, "POST", {"packed_image": this.attributes.packed_image,"name":this.attributes.name,"base_image":this.attributes.base_image}, "packedImageAppRefresh", "Image Saved...");
+        },
+        
+        deploy: function() {
+            var url = Common.apiUrl + "/stackstudio/v1/packed_images/deploy?uid=" + sessionStorage.org_id + "&doc_id=" + this.attributes.doc_id;
+            this.sendAjaxAction(url, "POST", undefined, "packedImageAppRefresh", "Image Deployed...");
+        },
+        
+        destroy: function(){
+            var url = Common.apiUrl + "/stackstudio/v1/packed_images/templates/" + sessionStorage.org_id + "/" + this.attributes.doc_id + "?_method=DELETE";
+            this.sendAjaxAction(url, "POST", undefined, "packedImageAppDelete", "Image Deleted...");
         }
 
     });

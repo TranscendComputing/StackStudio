@@ -1,0 +1,22 @@
+{
+    "AWS/EBS":{
+        "metrics":["VolumeReadBytes","VolumeWriteBytes","VolumeReadOps","VolumeWriteOps","VolumeTotalReadTime","VolumeTotalWriteTime","VolumeIdleTime","VolumeQueueLength","VolumeThroughputPercentage","VolumeConsumedReadWriteOps"],
+        "dimensions":["VolumeId"]
+    },
+    "AWS/EC2":{
+        "metrics":["CPUUtilization","DiskReadOps","DiskWriteOps","DiskReadBytes","DiskWriteBytes","NetworkIn","NetworkOut","StatusCheckFailed","StatusCheckFailed_Instance","StatusCheckFailed_System"],
+        "dimensions":["AutoScalingGroupName","ImageId","InstanceId","InstanceType"]
+    },
+    "AWS/ELB":{
+        "metrics":["Latency","RequestCount","HealthyHostCount","UnHealthyHostCount","HTTPCode_ELB_4XX","HTTPCode_ELB_5XX","HTTPCode_Backend_2XX","HTTPCode_Backend_3XX","HTTPCode_Backend_4XX","HTTPCode_Backend_5XX"],
+        "dimensions":["LoadBalancerName","AvailabilityZone"]
+    },
+    "AWS/RDS":{
+        "metrics":["BinLogDiskUsage","CPUUtilization","DatabaseConnections","DiskQueueDepth","FreeableMemory","FreeStorageSpace","ReplicaLag","SwapUsage","ReadIOPS","WriteIOPS","ReadLatency","WriteLatency","ReadThroughput","WriteThroughput"],
+        "dimensions":["DBInstanceIdentifier","DatabaseClass","EngineName"]
+    },
+    "AWS/SQS":{
+        "metrics":["NumberOfMessagesSent","SentMessageSize","NumberOfMessagesReceived","NumberOfEmptyReceives","NumberOfMessagesDeleted","ApproximateNumberOfMessagesDelayed","ApproximateNumberOfMessagesVisible","ApproximateNumberOfMessagesNotVisible"],
+        "dimensions":["QueueName"]
+    }
+}

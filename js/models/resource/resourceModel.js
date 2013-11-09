@@ -8,13 +8,14 @@
 define([
         'jquery',
         'backbone',
-        'common'
-], function( $, Backbone, Common ) {
+        'common',
+        'messenger'
+], function( $, Backbone, Common, Messenger) {
     'use strict';
 
     var resourceModel = Backbone.Model.extend({
 
-        sendAjaxAction: function(url, type, options, triggerString) {
+        sendAjaxAction: function(url, type, options, triggerString, messengerString) {
 
             /*
             
@@ -40,25 +41,31 @@ define([
             }, this);
             */
             if(options) {
-                $.ajax({
+                return $.ajax({
                     url: url,
                     type: type,
                     contentType: 'application/x-www-form-urlencoded',
                     dataType: 'json',
                     data: JSON.stringify(options),
                     success: function(data) {
+                        if(messengerString){
+                            new Messenger().post({type:"success", message:messengerString});
+                        }
                         Common.vent.trigger(triggerString, data);
                     },
                     error: function(jqXHR) {
                         Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
                     }
-                }); 
+                });
             }else {
-                $.ajax({
+                return $.ajax({
                     url: url,
                     type: type,
                     contentType: 'application/x-www-form-urlencoded',
                     success: function(data) {
+                        if(messengerString){
+                            new Messenger().post({type:"success", message:messengerString});
+                        }
                         Common.vent.trigger(triggerString, data);
                     },
                     error: function(jqXHR) {

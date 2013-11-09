@@ -24,8 +24,14 @@ define([
 
         render: function() {
             this.$el.html(this.template);
+            
+            var url = sessionStorage.rss_url;
+            if(url === "undefined" || url === "" || url === undefined){
+                url = Common.rssFeed;
+            }
+            
             $("#divRss").FeedEk({
-                FeedUrl: Common.rssFeed,
+                FeedUrl: url,
                 MaxCount: 5,
                 ShowDesc: true,
                 ShowPubDate: true,

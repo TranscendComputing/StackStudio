@@ -1,0 +1,74 @@
+{
+  "provisioners": [
+    {
+      "type": "shell",
+      "scripts": [
+        "httpfiles/base.sh"
+      ],
+      "override": {
+        "qemuubuntu": {
+          "execute_command": "echo 'vagrant'|sudo -S sh 'httpfiles/base.sh'"
+        }
+      }
+    }
+  ],
+  "builders": [
+    {
+      "type": "qemu",
+      "boot_command": [
+        "<esc><esc><enter><wait>",
+        "/install/vmlinuz noapic preseed/url=http://10.0.2.2:{{ .HTTPPort }}/preseed.cfg <wait>",
+        "debian-installer=en_US auto locale=en_US kbd-chooser/method=us <wait>",
+        "hostname={{ .Name }} <wait>",
+        "fb=false debconf/frontend=noninteractive <wait>",
+        "keyboard-configuration/modelcode=SKIP keyboard-configuration/layout=USA keyboard-configuration/variant=USA console-setup/ask_detect=false <wait>",
+        "initrd=/install/initrd.gz -- <enter><wait>"
+      ],
+      "boot_wait": "4s",
+      "disk_size": 10140,
+      "headless":true,
+      "iso_checksum": "2cbe868812a871242cdcdd8f2fd6feb9",
+      "iso_checksum_type": "md5",
+      "iso_url": "http://releases.ubuntu.com/12.04/ubuntu-12.04.3-server-amd64.iso",
+      "name":"qemuubuntu",
+      "vm_name":"qemuubuntu",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "ssh_port": 22,
+      "ssh_wait_timeout": "10000s",
+      "shutdown_command": "echo 'shutdown -P now' > shutdown.sh; echo 'vagrant'|sudo -S sh 'shutdown.sh'",
+      "qemuargs":[
+         [
+            "-display",
+            "none"
+         ],
+         [
+            "-m",
+            "1024m"
+         ]
+      ]
+    }
+  ],
+  "post-processors":[
+     {
+        "password":"m0mentum3i",
+        "project":"TranscendDev",
+        "provider":"http://grizzlyfe.momentumsoftware.com:35357/v2.0/tokens",
+        "qemu":{
+           "image_name":"qemuubuntutest",
+           "service_name":"glance",
+           "service_type":"image",
+           "tags":[
+              "tom",
+              "hite",
+              "tag3",
+              "this is just another tag"
+           ],
+           "visibility":"public"
+        },
+        "region":"RegionOne",
+        "type":"openstack",
+        "username":"tdhite"
+     }
+  ]
+}

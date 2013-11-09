@@ -106,7 +106,10 @@ define([
                         Common.router.navigate("#resources/"+firstCloudProvider, {trigger: false});
                         this.cloudSelection(firstCloudProvider);
                     }
-                }else {
+                }else if(sessionStorage['selected_cloud'] !== undefined){
+                    Common.router.navigate("#resources/"+sessionStorage['selected_cloud'], {trigger: false});
+                    this.cloudSelection(sessionStorage['selected_cloud']);
+                }else{
                     Common.router.navigate("#resources/"+firstCloudProvider, {trigger: false});
                     this.cloudSelection(firstCloudProvider);
                 }
@@ -181,6 +184,9 @@ define([
         
         cloudSelection: function (cloudProvider) {
             this.cloudProvider = cloudProvider;
+
+            sessionStorage['selected_cloud'] = this.cloudProvider;
+
             var resourceNav = this;
             //Add the services of the cloud to the resource table
             var row = 1;
@@ -193,9 +199,11 @@ define([
                     addService = true;
                 }else{
                     $.each(JSON.parse(sessionStorage.group_policies), function(index,value){
-                        var enabled_services = value.group_policy.aws_governance.enabled_services;
-                        if($.inArray(service.name, enabled_services) !== -1){
-                            addService = true;
+                        if(value != null){
+                            var enabled_services = value.group_policy.aws_governance.enabled_services;
+                            if($.inArray(service.name, enabled_services) !== -1){
+                                addService = true;
+                            }
                         }
                     });
                 }
@@ -250,6 +258,13 @@ define([
 
         credentialChange: function(event) {
             this.selectedCredential = event.target.value;
+            
+            sessionStorage['selected_cred_'+this.cloudProvider] = this.selectedCredential;
+            
+            $("#service_menu").hide();
+            $("#resource_app").hide();
+            $("#resource_not_opened").show();
+            
             this.refreshCloudSpecs();
         },
 
@@ -281,6 +296,12 @@ define([
                 $("#credential_nav").html($("#credential_select option:first").text());
                 this.selectedCredential = $("#credential_select option:first").val();
             }
+            
+            if(sessionStorage['selected_cred_'+this.cloudProvider] !== undefined){
+                $("#credential_select").val(sessionStorage['selected_cred_'+this.cloudProvider]);
+                $("#credential_nav").html($("#credential_select option:selected").text());
+                this.selectedCredential = $("#credential_select option:selected").val();
+            }
         },
 
         refreshRegions: function() {
@@ -298,9 +319,11 @@ define([
                         addRegion = true;
                     }else{
                         $.each(JSON.parse(sessionStorage.group_policies), function(index,value){
-                            var usable_regions = value.group_policy.aws_governance.usable_regions;
-                            if($.inArray(region.name, usable_regions) !== -1){
-                                addRegion = true;
+                            if(value != null){
+                                var usable_regions = value.group_policy.aws_governance.usable_regions;
+                                if($.inArray(region.name, usable_regions) !== -1){
+                                    addRegion = true;
+                                }
                             }
                         });
                     }

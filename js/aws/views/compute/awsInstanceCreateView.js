@@ -137,6 +137,12 @@ define([
                 case "windows":
                     imagePath = "/images/ImageLogos/windows20.png";
                     break;
+                case "centos":
+                    imagePath = "/images/ImageLogos/centos.gif";
+                    break;
+                case "fedora":
+                    imagePath = "/images/ImageLogos/fedora36.png";
+                    break;
                 }
                 var img = '<td style="width:22px;" rowspan="2"><img height="20" width="20" src="'+imagePath+'"/></td>';
                 var name = '<td>'+item.label+'</td>';
@@ -218,9 +224,9 @@ define([
         },
         
         addPolicyImages: function(gps){
-            for(i in gps){
+            for(var i in gps){
                 var imgz = gps[i].group_policy.aws_governance.default_images;
-                for(j in imgz){
+                for(var j in imgz){
                     $("#image_select_default").append("<option value='"+imgz[j].image_id+"'>"+imgz[j].source+"</option>");
                 }
             }

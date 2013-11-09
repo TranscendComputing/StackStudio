@@ -14,13 +14,14 @@ define([
         'text!templates/topstack/autoscale/topstackAutoscaleAppTemplate.html',
         '/js/topstack/models/autoscale/topstackAutoscaleGroup.js',
         '/js/topstack/collections/autoscale/topstackAutoscaleGroups.js',
+        '/js/topstack/views/autoscale/topstackAutoscaleGroupUpdateView.js',
         '/js/topstack/collections/cloud_watch/topstackMetricStatistics.js',
         'text!templates/emptyGraphTemplate.html',
         'icanhaz',
         'common',
         'morris',
         'spinner'
-], function( $, _, Backbone, ResourceAppView, ResourceRowView, topstackAutoscaleAppTemplate, AutoscaleGroup, AutoscaleGroups, MetricStatistics, emptyGraph, ich, Common, Morris, Spinner ) {
+], function( $, _, Backbone, ResourceAppView, ResourceRowView, topstackAutoscaleAppTemplate, AutoscaleGroup, AutoscaleGroups, UpdateView, MetricStatistics, emptyGraph, ich, Common, Morris, Spinner ) {
     'use strict';
 
     var TopStackAutoscaleAppView = ResourceAppView.extend({
@@ -94,9 +95,16 @@ define([
         
         performAction: function(event) {
             var autoscaleGroup = this.collection.get(this.selectedId);
-            
             switch(event.target.text)
             {
+                case "Update Group":
+                    if(this.region) {
+                        this.newResourceDialog = new UpdateView({cred_id: this.credentialId, region: this.region, gid: autoscaleGroup.id, group: autoscaleGroup});
+                    }else {
+                        this.newResourceDialog = new UpdateView({cred_id: this.credentialId, gid: autoscaleGroup.id, group: autoscaleGroup});
+                    }
+                    this.newResourceDialog.render();
+                    break;
                 case "Spin Down Group":
                     autoscaleGroup.spinDown(this.credentialId, this.region);
                     break;

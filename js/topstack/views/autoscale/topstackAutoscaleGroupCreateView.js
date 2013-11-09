@@ -12,11 +12,13 @@ define([
         'views/dialogView',
         'text!templates/topstack/autoscale/topstackAutoscaleGroupCreateTemplate.html',
         '/js/topstack/models/autoscale/topstackAutoscaleGroup.js',
+        '/js/openstack/collections/compute/openstackImages.js',
         'common',
+        'spinner',
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
-], function( $, _, Backbone, DialogView, autoscaleGroupCreateTemplate, AutoscaleGroup, Common ) {
+], function( $, _, Backbone, DialogView, autoscaleGroupCreateTemplate, AutoscaleGroup, Images, Common, Spinner ) {
     
     var TopStackAutoscaleGroupCreateView = DialogView.extend({
 
@@ -38,12 +40,15 @@ define([
         
         autoscaleGroup: new AutoscaleGroup(),
         
+        imagesType: Images,
+        
         // Delegated events for creating new instances, etc.
         events: {
             "focus #image_select": "openImageList",
             "dialogclose": "close",
             "change input[name=elasticity]": "elasticityChange",
-            "change input[name=triggers]": "triggerRadioToggle"
+            "change input[name=triggers]": "triggerRadioToggle",
+            "click .top-buttons":"clickTopButtons"
         },
 
         render: function() {
@@ -53,7 +58,7 @@ define([
             this.$el.dialog({
                 autoOpen: true,
                 title: "Create Auto Scale Group",
-                width:575,
+                width:500,
                 minHeight: 500,
                 resizable: false,
                 modal: true,
@@ -82,7 +87,7 @@ define([
             var ImageType = this.imagesType;
             this.images = new ImageType();
             this.images.on( 'reset', this.addAllImages, this );
-            this.images.fetch({reset: true});
+            this.images.fetch({data: $.param({ cred_id: this.credentialId, region: this.region }),reset: true});
             
             var FlavorsType = this.flavorsType;
             this.flavors = new FlavorsType();
@@ -105,10 +110,41 @@ define([
             this.securityGroups.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true });
 
             this.elasticityChange();
+            $("#as-b").click();
+            
+            var spinnerOptions = {
+                //lines: 13, // The number of lines to draw
+                length: 50, // The length of each line
+                width: 16, // The line thickness
+                radius: 50, // The radius of the inner circle
+                corners: 1, // Corner roundness (0..1)
+                rotate: 0, // The rotation offset
+                color: '#000', // #rgb or #rrggbb
+                speed: 1, // Rounds per second
+                trail: 60, // Afterglow percentage
+                shadow: false, // Whether to render a shadow
+                hwaccel: false, // Whether to use hardware acceleration
+                className: 'spinner', // The CSS class to assign to the spinner
+                zIndex: 2e9, // The z-index (defaults to 2000000000)
+                //top: 150, // Top position relative to parent in px
+                //left: 211 // Left position relative to parent in px
+            };
+            
+            new Spinner(spinnerOptions).spin($("#launch_config_opt").get(0));
         },
         
         addAllImages: function() {
             var createView = this;
+            $("#image_select").autocomplete({
+                source: createView.images.toJSON(),
+                minLength: 0
+            }).data("autocomplete")._renderItem = function (ul, item) {
+                item["label"] = item.name;
+                item["value"] = item.name;
+                var imageItem = "<a>"+item.name+"</a>";
+                return $("<li>").data("item.autocomplete", item).append(imageItem).appendTo(ul);
+            };
+            /*var createView = this;
             $("#image_select").autocomplete({
                 source: createView.images.toJSON(),
                 minLength: 0
@@ -138,7 +174,7 @@ define([
                 var description = '<td>'+item.description+'</td>';
                 var imageItem = '<a><table stlye="min-width:150px;"><tr>'+ img + name + '</tr><tr>' + description + '</tr></table></a>';
                 return $("<li>").data("item.autocomplete", item).append(imageItem).appendTo(ul);
-            };
+            };*/
         },
 
         addAllAvailabilityZones: function() {
@@ -164,6 +200,7 @@ define([
         },
         
         addAllSecurityGroups: function() {
+            $(".spinner").remove();
             $("#security_group_select").empty();
             this.securityGroups.each(function(sg) {
                 if(sg.attributes.name) {
@@ -180,7 +217,7 @@ define([
         },
         
         elasticityChange: function () {
-            switch($("input[name=elasticity]:checked").val())
+            switch($("input[name=elasticity]:checked").attr('id'))
             {
                 case "auto_recovery":
                     $("#elasticity_image").attr("src", "/images/IconPNGs/Autorestart.png");
@@ -195,23 +232,23 @@ define([
                                                     "<td>Desired Capacity:</td><td>1</td>" +
                                                 "</tr>" +
                                             "</table>";
-                    $("#elasticity_config").html(autoRecoveryHTML);
+                    $("#elasticity_config").html(autoRecoveryHTML).show('slow');
                     break;
                 case "fixed_array":
                     $("#elasticity_image").attr("src", "/images/IconPNGs/Autoscale.png");
                     var fixedArrayHTML = "<table><tr><td>Number of Instances:</td><td><input id='fixed_array_size'/></td></tr></table>";
-                    $("#elasticity_config").html(fixedArrayHTML);
+                    $("#elasticity_config").html(fixedArrayHTML).show('slow');
                     break;
-                case "autoscale":
+                case "auto_scale":
                     $("#elasticity_image").attr("src", "/images/IconPNGs/Autoscale.png");
                     var autoScaleHTML = "<table>" +
                                             "<tr><td>Min:</td><td><input id='as_min'/></td></tr>" +
                                             "<tr><td>Max:</td><td><input id='as_max'/></td></tr>" +
                                             "<tr><td>Desired Capacity:</td><td><input id='as_desired_capacity'/></td></tr>" +
                                         "</table>" +
-                                        "<div id='trigger_radio'>" +
-                                            "<input type='radio' id='trigger_on' name='triggers' value='on'/><label for='trigger_on'>Trigger On</label>" +
-                                            "<input type='radio' id='trigger_off' name='triggers' value='off' checked/><label for='trigger_off'>Trigger Off</label>" +
+                                        "<br/><div id='trigger_radio'>" +
+                                            "<input type='radio' id='trigger_on' name='triggers' value='on'/>Trigger On &nbsp" +
+                                            "<input type='radio' id='trigger_off' name='triggers' value='off' checked/>Trigger Off" +
                                         "</div>" +
                                         "<br />" +
                                         "<div id='trigger_options' class='border_group'>" +
@@ -268,7 +305,7 @@ define([
                                                 "</tr>" +
                                             "</table>" +
                                         "</div>";
-                    $("#elasticity_config").html(autoScaleHTML);
+                    $("#elasticity_config").html(autoScaleHTML).show('slow');
                     $("#trigger_radio").buttonset();
                     this.triggerRadioToggle();
                     this.triggerMeasurementChange();
@@ -302,6 +339,21 @@ define([
                 $("#upper_scale_increment_input").attr("disabled", true);
                 $("#lower_threshold_input").attr("disabled", true);
                 $("#lower_scale_increment_input").attr("disabled", true);
+            }
+        },
+        
+        clickTopButtons: function(event){
+            switch (event.target.id)
+            {
+                case 'ar-b':
+                  $("#auto_recovery").click();
+                  break;
+                case 'fa-b':
+                  $("#fixed_array").click();
+                  break;
+                case 'as-b':
+                  $("#auto_scale").click();
+                  break;
             }
         },
 
@@ -364,9 +416,12 @@ define([
                 autoscale_group_options["LaunchConfigurationName"] = $("#autoscale_group_name").val() + "-lc";
                 launch_config_options.id = $("#autoscale_group_name").val() + "-lc";
             }
+            
+            autoscale_group_options['InstanceType'] = $("#flavor_select").val();
+            
             $.each(this.images.toJSON(), function(index, image) {
-                if(image.label === $("#image_select").val()) {
-                    launch_config_options.image_id = image.region["us-east-1"];
+                if(image.name === $("#image_select").val()) {
+                    launch_config_options.image_id = image.id;
                 }
             });
             if(launch_config_options.image_id) {
@@ -380,20 +435,23 @@ define([
                     launch_config_options.instance_type = flavor.attributes.id;
                 } 
             });
+            
+            launch_config_options.instance_type = $("#flavor_select").val();
+            
             launch_config_options["KeyName"] = $("#key_pair_select").val();
             if($("#security_group_select").val()) {
                 launch_config_options["SecurityGroups"] = $("#security_group_select").val();
             }else {
                 launch_config_options["SecurityGroups"] = [];
             }
-            if($("#availability_zone_select").val()) {
-                $("#az_select_message").html("");
-                autoscale_group_options["AvailabilityZones"] = $("#availability_zone_select").val();
-            }else {
-                issue = true;
-                $("#az_select_alert").html("Required");
-            }
-            switch($("input[name=elasticity]:checked").val())
+            // if($("#availability_zone_select").val()) {
+            //     $("#az_select_message").html("");
+            //     autoscale_group_options["AvailabilityZones"] = $("#availability_zone_select").val();
+            // }else {
+            //     issue = true;
+            //     $("#az_select_alert").html("Required");
+            // }
+            switch($("input[name=elasticity]:checked").attr('id'))
             {
                 case "auto_recovery":
                     autoscale_group_options["MaxSize"]= 1
@@ -405,7 +463,7 @@ define([
                     autoscale_group_options["MinSize"] = parseInt($("#fixed_array_size").val(), 10);
                     autoscale_group_options["DesiredCapacity"] = parseInt($("#fixed_array_size").val(), 10);
                     break;
-                case "autoscale":
+                case "auto_scale":
                     autoscale_group_options["MaxSize"] = parseInt($("#as_max").val(), 10);
                     autoscale_group_options["MinSize"] = parseInt($("#as_min").val(), 10);
                     if($("#as_desired_capacity").val() !== "") {
@@ -417,7 +475,7 @@ define([
             }
             launch_config_options["InstanceMonitoring.Enabled"] = $("#detailed_monitoring").is(":checked");
             var trigger_options;
-            if($("input[name=elasticity]:checked").val() === "autoscale" && $("#trigger_on").is(":checked")) {
+            if($("input[name=elasticity]:checked").attr('id') === "auto_scale" && $("#trigger_on").is(":checked")) {
                 trigger_options = {
                     "trigger_measurement": $("#trigger_measurement_select").val(),
                     "statistic": $("#trigger_statistic_select").val(),

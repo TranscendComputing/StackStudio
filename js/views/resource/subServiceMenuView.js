@@ -82,6 +82,7 @@ define([
         
         openMenu: function() {
             //$("#resource_app").width("890px");
+
             $("#resource_app").width("80%");
             $("#subservice_menu").show();
             $("#menu_toggle_button a span").removeClass("ui-icon-arrowthick-1-e");
@@ -90,6 +91,7 @@ define([
         
         closeMenu: function() {
             $("#subservice_menu").hide();
+            //$("#service_menu").addClass("span1");
             //$("#resource_app").width("1079px");
             $("#resource_app").width("20%");
             $("#menu_toggle_button a span").removeClass("ui-icon-arrowthick-1-w");

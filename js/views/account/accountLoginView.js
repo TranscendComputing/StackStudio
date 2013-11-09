@@ -120,6 +120,8 @@ define([
                 sessionStorage.project_memeberships = JSON.stringify(data.account.project_memberships);
                 sessionStorage.group_policies = JSON.stringify(data.account.group_policies);
                 
+                sessionStorage.rss_url = data.account.rss_url;
+                
                 console.log("session login:" + sessionStorage.login);
                 Common.vent.trigger("loginSuccess");
                 if(data.account.cloud_credentials && data.account.cloud_credentials.length > 0) {
