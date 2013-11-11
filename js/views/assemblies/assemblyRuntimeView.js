@@ -334,7 +334,7 @@ define([
                         enabled = (selectedLength !==0|| configsList["salt"]["minion_config"].length !==0 );
                         break;
                     case "Ansible":
-                        enabled = (selectedLength !==0|| configsList["ansible"]["ansible_config"].length !==0 );
+                        enabled = (selectedLength !==0|| configsList["ansible"]["host_config"].length !==0 );
                         break;
                 }
             }
@@ -429,14 +429,14 @@ define([
                         break;
 
                     case "Ansible":
-                        var hostName = rowData.hosts.name;
+                        var hostName = rowData['host']['name'];
                         if(hostName){
                             var jobtemplates = {"jobtemplates":[]};
-                            var jobtemplateConfig = configSelection["jobtemplate_config"];
-                            for (var n = 0; n< jobtemplateConfig.length; n++){
-                                jobtemplates["jobtemplates"].push(jobtemplateConfig[n].name);
+                            var hostConfig = configSelection["host_config"];
+                            for (var n = 0; n< hostConfig.length; n++){
+                                jobtemplates["jobtemplate_id"].push(hostConfig[n].name);
                             }
-                            this.updateInstanceConfig("ansible/hosts", hostName, instanceName, jobtemplates, "jobtemplateConfigUpdated");
+                            this.updateInstanceConfig("ansible/hosts", hostName, instanceName, jobtemplates, "hostConfigUpdated");
                         }
                         break;
                 }

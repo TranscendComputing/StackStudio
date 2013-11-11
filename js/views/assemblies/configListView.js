@@ -520,7 +520,7 @@ define([
                     data["minion_config"] = this.getConfig("saltState");
                     break;
                 case "Ansible":
-                    data["jobtemplate_config"] = this.getConfig("jobtemplate");
+                    data["host_config"] = this.getConfig("ansibleJobTemplate");
                     break;
             }
             configurations[tool.toLowerCase()] = data;
@@ -671,7 +671,7 @@ define([
           var checkbox = $(evt.target);
           var ver = checkbox.closest(".accordion-group")
             .find(".accordion-inner:first");
-          ver.find(".ansibleStateSelector").first().click();
+          ver.find(".ansibleJobTemplateSelector").first().click();
         },
         
         fetchAnsibleJobTemplates: function(evt) {
@@ -716,7 +716,7 @@ define([
           var ul = $("<ul class=\"ansibleJobTemplates\"></ul>");
           var checked = (selected.indexOf(jobtemplate.id) !== -1) ? "checked=\"true\"": "";
           $("<li></li>")
-            .data("ansibleJobTemplate", jobtemplate.name)
+            .data("ansibleJobTemplate", jobtemplate)
             .append("<input type=\"checkbox\" " + checked + 
               " class=\"ansibleJobTemplateSelector\" />")
             .append("<span class=\"ansibleJobTemplate\">" + jobtemplate.name + "</span>")
