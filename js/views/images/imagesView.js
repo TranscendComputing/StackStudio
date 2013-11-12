@@ -629,6 +629,7 @@ define([
 //             debugger
             
             var id = this.currentImageTemplate;
+            
             this.currentImageTemplate = new PackedImage({'packed_image':packed_image,'name':base_image.name,'base_image':base_image,'doc_id':id});
             this.currentImageTemplate.save();
         },
