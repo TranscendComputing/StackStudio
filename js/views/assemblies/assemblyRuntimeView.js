@@ -429,14 +429,14 @@ define([
                         break;
 
                     case "Ansible":
-                        var hostName = rowData['host']['name'];
-                        if(hostName){
+                        var hostData = rowData['host'];
+                        if(hostData){
                             var jobtemplates = {"jobtemplates":[]};
                             var hostConfig = configSelection["host_config"];
                             for (var n = 0; n< hostConfig.length; n++){
                                 jobtemplates["jobtemplate_id"].push(hostConfig[n].name);
                             }
-                            this.updateInstanceConfig("ansible/hosts", hostName, instanceName, jobtemplates, "hostConfigUpdated");
+                            this.updateInstanceConfig("ansible/hosts", hostData["name"], instanceName, jobtemplates, "hostConfigUpdated");
                         }
                         break;
                 }
