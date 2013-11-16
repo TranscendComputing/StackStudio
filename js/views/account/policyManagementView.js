@@ -182,6 +182,13 @@ define([
         treeSelect: function() {
             this.clearSelection();
             this.render();
+            $("#aws_button").removeClass("active");
+            $("#os_button").removeClass("active");
+            $("#content").hide("fast");
+            $("#content_os").hide("fast");
+            $("#os_tab_item").hide("fast");
+            $("#aws_tab_item").hide("fast");
+
         },
 
         disableSelectionRequiredButtons: function(toggle) {
@@ -249,8 +256,10 @@ define([
                     o[this.name] = this.value || '';
                 }
             });
+            
             o["default_alarms"] = this.alarms;
             o["default_images"] = this.default_images;
+            o["button_press"] = $("#aws_button").hasClass("active");
             //debugger
             var oS = {};
             var aOS = $("#content_os form").serializeArray();
@@ -266,7 +275,9 @@ define([
             });
             oS["default_alarms"] = this.alarms;
             oS["default_images"] = this.default_images;
-            newPolicy.save(o,oS,this.policy,sessionStorage.org_id);
+            oS["button_press"] = $("#os_button").hasClass("active");
+
+            newPolicy.save($("#policy_name").val(),o,oS,this.policy,sessionStorage.org_id);
         },
         populateFormOS: function(p){
             for (var key in p) {
@@ -298,6 +309,8 @@ define([
             }
         },
         populateForm: function(model){
+            $('input:checkbox').removeAttr('checked');
+            $("#policy_name").val(model.attributes.name);
             var p = model.attributes.aws_governance;
             for (var key in p) {
               if (p.hasOwnProperty(key)) {
@@ -573,6 +586,12 @@ define([
                 break;
             case "project_name_toggle":
                 this.disablePNInput($("#project_name"),!$("#"+lambda.target.id).is(':checked'));
+                break;
+            case "check_max_on_demand_os":
+                this.disableInput($("#max_on_demand_os"),$("#"+lambda.target.id).is(':checked'));
+                break;
+            case "check_max_in_autoscale_os":
+                this.disableInput($("#max_in_autoscale_os"),$("#"+lambda.target.id).is(':checked'));
                 break;
             }
         },
