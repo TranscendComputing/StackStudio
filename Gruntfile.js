@@ -219,6 +219,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-curl');
 
   // Default task.
+  grunt.registerTask('test', ['jshint', 'less', 'curl', 'jasmine']);
   grunt.registerTask('default', ['jshint', 'less', 'curl', 'jasmine']);
   grunt.registerTask('run', ['jshint', 'less', 'curl', 'connect:sstudio', 'watch']);
   grunt.registerTask('build', ['jshint', 'curl', 'jasmine', 'concat', 'uglify']);
