@@ -26,7 +26,7 @@ define([
         },
         parse: function(response){
             var result = [];
-            for(var i =0; i < response.length; i++){
+            for(var i =0; response != null && i < response.length; i++){
                 result.push({name:response[i]});
             }
             return result;
