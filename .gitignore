@@ -40,3 +40,4 @@ backend.json
 js/vendor/backbone.js
 js/vendor/jquery-ui
 js/vendor/lodash.js
+js/vendor/ace/*.js

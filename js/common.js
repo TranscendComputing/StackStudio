@@ -108,13 +108,6 @@ requirejs.config({
 
         }
     },
-    packages: [
-        'JSV', {
-            name: 'JSV',
-            main: 'jsv',
-            location: 'JSV/lib'
-        }
-    ],
     paths: {
         collections: '../collections',
         models: '../models',
