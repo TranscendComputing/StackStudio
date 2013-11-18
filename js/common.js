@@ -122,13 +122,13 @@ requirejs.config({
         'backbone': '//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min',
         'backbone.stickit': 'backbone.stickit.min',
         'backbone-validation': 'backbone-validation.min',
-        'icanhaz': 'ICanHaz',
+        'icanhaz': '//cdnjs.cloudflare.com/ajax/libs/ICanHaz.js/0.10/ICanHaz.min',
         'jquery.form': 'jquery.form',
         //'jquery.list': 'jquery.list.min',
         'jquery.terminal': 'jquery.terminal-0.7.3',
         'jquery.mousewheel': 'jquery.mousewheel-min',
+        'jquery.jstree': '//cachedcommons.org/cache/jquery-jstree/1.0.0/javascripts/jquery-jstree-min',
         'messenger': 'messenger.min',
-        //'jquery.jstree': '//cachedcommons.org/cache/jquery-jstree/1.0.0/javascripts/jquery-jstree-min',
         'raphael': 'raphael-min',
         'spinner': 'spin.min',
          URIjs: 'uri/src',
@@ -203,7 +203,7 @@ require(
                 });
                 require(['underscore'], function () {});
             } else if (failedId === 'icanhaz') {
-                //requirejs.undef(failedId);
+                requirejs.undef(failedId);
                 requirejs.config({
                     paths: {
                         'icanhaz': 'ICanHaz'
@@ -218,6 +218,14 @@ require(
                     }
                 });
                 require(['backbone'], function () {});
+            } else if (failedId === 'jquery.jstree') {
+                requirejs.undef(failedId);
+                requirejs.config({
+                    paths: {
+                        'jquery.jstree': 'jquery.jstree'
+                    }
+                });
+                require(['jquery.jstree'], function () {});
             } else {
                 console.log("Unhandled require failure:" +failedId);
             }

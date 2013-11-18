@@ -41,3 +41,6 @@ js/vendor/backbone.js
 js/vendor/jquery-ui
 js/vendor/lodash.js
 js/vendor/ace/*.js
+js/vendor/jquery.jstree.js
+js/vendor/ICanHaz.js
+js/vendor/require.js
