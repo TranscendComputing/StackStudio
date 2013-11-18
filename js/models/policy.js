@@ -20,19 +20,19 @@ define([
             name: ''
         },
         
-        create: function(options, credentialId) {
+        create: function(name,options,oS,credentialId) {
             var url = Common.apiUrl + "/identity/v1/policies?&cred_id=" + credentialId;
-            this.sendAjaxAction(url, "POST", {"policy": options}, "policyAppRefresh", "Policy Created");
+            this.sendAjaxAction(url, "POST", {"policy": options,"policy_os": oS,"name":name}, "policyAppRefresh", "Policy Created");
         },
         
-        save: function(options,oS,id, orgId) {
-            var url;
+        save: function(name,options,oS,id, orgId) {
+            var url;    
             if(id === undefined){
                 url = Common.apiUrl + "/identity/v1/policies?&org_id=" + orgId;
             }else{
                 url = Common.apiUrl + "/identity/v1/policies/"+id+"?&org_id=" + orgId;
             }
-            this.sendAjaxAction(url, "POST", {"policy": options,"policy_os" : oS}, "policyAppRefresh", "Policy Saved");
+            this.sendAjaxAction(url, "POST", {"policy": options,"policy_os" : oS,"name":name}, "policyAppRefresh", "Policy Saved");
         },
         
         addToGroup: function(options,orgId) {

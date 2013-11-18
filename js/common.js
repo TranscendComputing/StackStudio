@@ -108,13 +108,6 @@ requirejs.config({
 
         }
     },
-    packages: [
-        'JSV', {
-            name: 'JSV',
-            main: 'jsv',
-            location: 'JSV/lib'
-        }
-    ],
     paths: {
         collections: '../collections',
         models: '../models',
@@ -197,7 +190,7 @@ require(
                 console.log("Redirecting to local path:" + failedId);
                 requirejs.config({
                     paths: {
-                        'jquery-ui': '../vendor/jquery-ui-1.9.2.min'
+                        'jquery-ui': '../vendor/jquery-ui'
                     }
                 });
                 require(['jquery-ui'], function () {console.log("Got it now.")});
@@ -205,7 +198,7 @@ require(
                 requirejs.undef(failedId);
                 requirejs.config({
                     paths: {
-                        'underscore': 'lodash-1.1.1.min'
+                        'underscore': 'lodash'
                     }
                 });
                 require(['underscore'], function () {});
@@ -221,7 +214,7 @@ require(
                 requirejs.undef(failedId);
                 requirejs.config({
                     paths: {
-                        'backbone': 'backbone-1.0.min'
+                        'backbone': 'backbone'
                     }
                 });
                 require(['backbone'], function () {});

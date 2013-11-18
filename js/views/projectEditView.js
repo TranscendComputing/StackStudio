@@ -18,9 +18,8 @@ define([
         'ace',
         'icanhaz',
         'common',
-        'JSV',
         'jquery-ui'
-], function( $, _, Backbone, projectEditTemplate, projects, Project, templateResources, AutocompleteItemView, ace, ich, Common, JSV ) {
+], function( $, _, Backbone, projectEditTemplate, projects, Project, templateResources, AutocompleteItemView, ace, ich, Common ) {
 
     'use strict';
 

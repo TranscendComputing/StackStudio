@@ -1,15 +1,20 @@
 {
   "provisioners": [
     {
-      "type": "shell",
-      "scripts": [
-        "httpfiles/base.sh"
-      ],
-      "override": {
-        "qemuubuntu": {
-          "execute_command": "echo 'vagrant'|sudo -S sh 'httpfiles/base.sh'"
-        }
-      }
+       "inline":[
+          "echo '\u0025vagrant ALL=NOPASSWD:ALL' > /tmp/vagrant",
+          "chmod 0440 /tmp/vagrant",
+          "mv /tmp/vagrant /etc/sudoers.d/",
+          "apt-get -y install nfs-common",
+          "rm /var/lib/dhcp/*",
+          "rm /etc/udev/rules.d/70-persistent-net.rules",
+          "mkdir /etc/udev/rules.d/70-persistent-net.rules",
+          "rm -rf /dev/.udev/",
+          "rm /lib/udev/rules.d/75-persistent-net-generator.rules",
+          "echo 'pre-up sleep 2' >> /etc/network/interfaces",
+          "exit"
+       ],
+       "type":"shell"
     }
   ],
   "builders": [

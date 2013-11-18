@@ -24,7 +24,6 @@ define([
         return model.get("name");
       },
 
-      // [XXX] Iz all BS, still needs to be implemented on CloudMux
       parse: function (response) {
         var result = [];
         for (var i=0; i<response.length;i++) {
