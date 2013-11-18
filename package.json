@@ -13,7 +13,8 @@
     "grunt-template-jasmine-requirejs": "~0.1.0",
     "grunt-template-jasmine-istanbul": "~0.2.0",
     "grunt-selenium": "~0.1.5",
-    "grunt-contrib-less": "~0.5.0"
+    "grunt-contrib-less": "~0.5.0",
+    "grunt-curl": "1.2.1"
   },
   "readmeFilename": "README.md",
   "description": "StackStudio multi-cloud managment platform.",

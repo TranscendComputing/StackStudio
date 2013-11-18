@@ -1,5 +1,5 @@
 /*jshint smarttabs:true */
-/*global module:false require:true*/
+/*global module:false*/
 module.exports = function(grunt) {
 
   // Project configuration.
@@ -48,6 +48,28 @@ module.exports = function(grunt) {
           'dist/<%= pkg.name %>.min.js': ['<%= source.files %>', '<%= concat.dist.dest %>']
         }
       }
+    },
+    // Download some CDN assets to serve as backups (served locally as last resort)
+    curl: {
+      'js/vendor/jquery.dataTables.js': 'http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.js',
+      'js/vendor/ace/ace.js': 'https://github.com/ajaxorg/ace-builds/blob/master/src-min/ace.js',
+      'js/vendor/backbone.js': 'http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min.js',
+      'js/vendor/lodash.js': 'http://cdnjs.cloudflare.com/ajax/libs/lodash.js/1.1.0/lodash.min.js',
+      'js/vendor/jquery-ui': 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js'
+      /*
+      long: {
+        src: [
+          ''
+        ],
+        dest: 'js/vendor/ace'
+      } 
+      ,
+      'curl-dir': {
+        'js/vendor/ace/editor': [
+          'http://cdnjs.cloudflare.com/ajax/libs/ace/1.1.01/ace/editor.js',
+          'http://cdnjs.cloudflare.com/ajax/libs/ace/1.1.01/ace/edit-session.js',
+        ],
+      }*/
     },
     watch: {
       files: '<%= lint.files %>',
@@ -166,9 +188,9 @@ module.exports = function(grunt) {
                           views: 'js/views',
                           interpreters: 'js/interpreters',
                           'jquery': 'js/vendor/jquery-1.9.1.min',
-                          'jquery-ui': 'js/vendor/jquery-ui-1.8.17.custom.min',
-                          'underscore': 'js/vendor/lodash-1.1.1.min',
-                          'backbone': 'js/vendor/backbone-1.0.min',
+                          'jquery-ui': 'js/vendor/jquery-ui',
+                          'underscore': 'js/vendor/lodash',
+                          'backbone': 'js/vendor/backbone',
                           'icanhaz': 'js/vendor/ICanHaz',
                           'jquery.terminal': 'js/vendor/jquery.terminal-0.7.3',
                           'jquery.mousewheel': 'js/vendor/jquery.mousewheel-min'
@@ -205,10 +227,11 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-less');
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-selenium');
+  grunt.loadNpmTasks('grunt-curl');
 
   // Default task.
-  grunt.registerTask('default', ['jshint', 'less', 'jasmine']);
-  grunt.registerTask('run', ['jshint', 'less', 'connect:sstudio', 'watch']);
-  grunt.registerTask('build', ['jshint', 'jasmine', 'concat', 'uglify']);
+  grunt.registerTask('default', ['jshint', 'less', 'curl', 'jasmine']);
+  grunt.registerTask('run', ['jshint', 'less', 'curl', 'connect:sstudio', 'watch']);
+  grunt.registerTask('build', ['jshint', 'curl', 'jasmine', 'concat', 'uglify']);
 
 };

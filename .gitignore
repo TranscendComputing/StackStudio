@@ -35,3 +35,8 @@ js/*-all*js*
 backend.json
 .grunt/
 *.swp
+=======
+# Vendor files (downloaded)
+js/vendor/backbone.js
+js/vendor/jquery-ui
+js/vendor/lodash.js
