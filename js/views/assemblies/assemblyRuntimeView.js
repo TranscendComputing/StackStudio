@@ -434,9 +434,9 @@ define([
                             var jobtemplates = {"jobtemplates":[]};
                             var hostConfig = configSelection["host_config"];
                             for (var n = 0; n< hostConfig.length; n++){
-                                jobtemplates["jobtemplate_id"].push(hostConfig[n].name);
+                                jobtemplates["jobtemplates"].push(hostConfig[n].id);
                             }
-                            this.updateInstanceConfig("ansible/hosts", hostData["name"], instanceName, jobtemplates, "hostConfigUpdated");
+                            this.updateInstanceConfig("ansible/hosts", hostData["id"], instanceName, jobtemplates, "hostConfigUpdated");
                         }
                         break;
                 }

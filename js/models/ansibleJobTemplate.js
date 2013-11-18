@@ -18,7 +18,6 @@ define([
       defaults: {
         name: '',
         description: '',
-        // [XXX] We defining these just for future reference
         id: '',
         related: [],
         summary_fields: {},

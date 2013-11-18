@@ -542,6 +542,9 @@ define([
                     case "class":
                         data["id"] = nodeData["class"]["id"];
                         break;
+                    case 'ansibleJobTemplate':
+                      data['id'] = nodeData['ansibleJobTemplate']['id'];
+                      break;
                 }
                 config.push(data);
             });
