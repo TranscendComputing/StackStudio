@@ -35,7 +35,6 @@ js/*-all*js*
 backend.json
 .grunt/
 *.swp
-=======
 # Vendor files (downloaded)
 js/vendor/backbone.js
 js/vendor/jquery-ui
@@ -43,6 +42,7 @@ js/vendor/lodash.js
 js/vendor/ace/*.js
 js/vendor/jquery.jstree.js
 js/vendor/jquery.dataTables.js
+js/vendor/jquery.terminal*js
 js/vendor/ICanHaz.js
 js/vendor/require.js
 js/vendor/twitter/*.js
