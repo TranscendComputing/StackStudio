@@ -330,7 +330,7 @@ define([
         },
         
         advTabSelect: function(event){
-            $(".active").removeClass('active');
+            $("li").removeClass('active');
             $("#"+event.target.id).closest('li').addClass('active');
             $(".adv_tab_panel").hide('slow');
             if(event.target.text === "AWS"){
@@ -700,7 +700,7 @@ define([
         getDefaultTemplate: function(){
             var mappings;
             $.ajax({
-              url: '/samples/packer-ubuntu-12.json',
+              url: '/samples/packer-centos-6.json',
               async: false,
               success: function(data) {
                 mappings = data;
