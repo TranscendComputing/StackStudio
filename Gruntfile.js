@@ -58,8 +58,10 @@ module.exports = function(grunt) {
       'js/vendor/lodash.js': 'http://cdnjs.cloudflare.com/ajax/libs/lodash.js/1.1.0/lodash.min.js',
       'js/vendor/jquery-ui': 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js',
       'js/vendor/jquery.jstree.js': 'http://cachedcommons.org/cache/jquery-jstree/1.0.0/javascripts/jquery-jstree-min.js',
+      'js/vendor/jquery.terminal.js': 'http://cdn.jsdelivr.net/jquery.terminal/0.7.8/jquery.terminal-min.js',
       'js/vendor/ICanHaz.js': 'http://cdnjs.cloudflare.com/ajax/libs/ICanHaz.js/0.10/ICanHaz.min.js',
-      'js/vendor/twitter/typeahead.js': 'http://cdn.jsdelivr.net/typeahead.js/0.9.3/typeahead.min.js'
+      'js/vendor/twitter/typeahead.js': 'http://cdn.jsdelivr.net/typeahead.js/0.9.3/typeahead.min.js',
+      'js/vendor/URI.js': 'http://cdn.jsdelivr.net/uri.js/1.9.1/URI.js'
     },
     watch: {
       files: '<%= lint.files %>',
