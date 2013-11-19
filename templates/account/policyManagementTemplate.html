@@ -1,21 +1,11 @@
 <div id="gov_page" class="management_page" style="margin:10px;">
 	<div style="margin-left:5px;">
 
-        <!-- Select Basic -->
-        <div class="control-group">
-            <label class="control-label">Default Credentials:</label>
-            <div class="controls">
-                <select id="default_credentials" name="default_credentials" class="input-xlarge default_credentials">
-                    <option>Select Credentials</option>
-                </select>
-                <div id="cred_message">Create an AWS credential before creating a policy.</div>
-            </div>
-        </div>
         <!-- Text input-->
         <div class="control-group">
                 <label class="control-label">Policy Name:</label>
                 <div class="controls">
-                    <input id="policy_name" name="policy_name" type="text" placeholder="Policy Name" class="input-xlarge">
+                    <input id="policy_name" name="policy_name" type="text" placeholder="Policy Name" class="input-xlarge AWS">
 
                 </div>
         </div>
@@ -41,7 +31,18 @@
         <li class="active tab-selector" id="aws_tab_item" style="display:none"><a  role="tab" class="cloud-tab" id="tab_aws">AWS</a></li>
         <li class="tab-selector" id="os_tab_item" style="display:none"><a  role="tab" class="cloud-tab" id="tab_os">OpenStack</a></li>
         </ul>
+
         <div id="content" style="display:none;">
+                <!-- Select Basic -->
+            <div id = "cred_AWS" class="credentials">
+                <label class="control-label">Default Credentials:</label>
+                <div class="controls">
+                    <select id="default_credentials" name="default_credentials" class="input-xlarge default_credentials">
+                        <option>Select Credentials</option>
+                    </select>
+                    <div id="cred_message">Create an AWS credential before creating a policy.</div>
+                </div>
+            </div>
             <div id="whole_form" hidden>
                 <form id="aws_gov_policy" class="form-horizontal">
                     <fieldset>
@@ -55,15 +56,15 @@
                                     <label class="control-label">Require Admin to Add:</label>
                                     <div class="controls">
                                         <label class="checkbox inline">
-                                            <input type="checkbox" name="admin_add" value="Cloud">
+                                            <input type="checkbox" name="admin_add" value="Cloud" class="AWS">
                                                 Cloud
                                         </label>
                                         <label class="checkbox inline">
-                                            <input type="checkbox" name="admin_add" value="Region">
+                                            <input type="checkbox" name="admin_add" value="Region" class="AWS">
                                                 Region
                                         </label>
                                         <label class="checkbox inline">
-                                            <input type="checkbox" name="admin_add" value="Service">
+                                            <input type="checkbox" name="admin_add" value="Service" class="AWS">
                                                 Service
                                         </label>
                                     </div>
@@ -76,39 +77,39 @@
                                     <label class="control-label">Usable Regions:</label>
                                     <div class="controls">
                                         <label class="checkbox">
-                                            <input type="checkbox" name="usable_regions" value="US East (Northern Virginia)">
+                                            <input type="checkbox" name="usable_regions" value="US East (Northern Virginia)" class="AWS">
                                                 US East (Northern Virginia)
                                         </label>
                                         <label class="checkbox">
-                                            <input type="checkbox" name="usable_regions" value="US West (Oregon)">
+                                            <input type="checkbox" name="usable_regions" value="US West (Oregon)" class="AWS">
                                                 US West (Oregon)
                                         </label>
                                         <label class="checkbox">
-                                            <input type="checkbox" name="usable_regions" value="US West (Northern California)">
+                                            <input type="checkbox" name="usable_regions" value="US West (Northern California)" class="AWS">
                                                 US West (Northern California)
                                         </label>
                                         <label class="checkbox">
-                                            <input type="checkbox" name="usable_regions" value="EU (  Ireland)">
+                                            <input type="checkbox" name="usable_regions" value="EU (  Ireland)" class="AWS">
                                                 EU (Ireland)
                                         </label>
                                         <label class="checkbox">
-                                            <input type="checkbox" name="usable_regions" value="Asia Pacific (Singapore)">
+                                            <input type="checkbox" name="usable_regions" value="Asia Pacific (Singapore)" class="AWS">
                                                 Asia Pacific (Singapore)
                                         </label>
                                         <label class="checkbox">
-                                        <input type="checkbox" name="usable_regions" value="Asia Pacific (Sydney)">
+                                        <input type="checkbox" name="usable_regions" value="Asia Pacific (Sydney)" class="AWS">
                                             Asia Pacific (Sydney)
                                         </label>
                                         <label class="checkbox">
-                                            <input type="checkbox" name="usable_regions" value="Asia Pacific (Tokyo)">
+                                            <input type="checkbox" name="usable_regions" value="Asia Pacific (Tokyo)" class="AWS">
                                             Asia Pacific (Tokyo)
                                         </label>
                                         <label class="checkbox">
-                                            <input type="checkbox" name="usable_regions" value="South America (Sao Paulo)">
+                                            <input type="checkbox" name="usable_regions" value="South America (Sao Paulo)" class="AWS">
                                             South America (Sao Paulo)
                                         </label>
                                         <label class="checkbox">
-                                            <input type="checkbox" name="usable_regions" value="US Gov">
+                                            <input type="checkbox" name="usable_regions" value="US Gov" class="AWS">
                                             US Gov
                                         </label>
                                     </div>
@@ -166,63 +167,63 @@
                                     <label class="control-label">Enabled Services:</label>
                                     <div class="controls">
                                         <label class="checkbox">
-                                            <input type="checkbox" name="enabled_services" value="Auto Scale">
+                                            <input type="checkbox" name="enabled_services" value="Auto Scale" class="AWS">
                                                 Auto Scale
                                         </label>
                                         <label class="checkbox">
-                                            <input type="checkbox" name="enabled_services" value="CloudWatch">
+                                            <input type="checkbox" name="enabled_services" value="CloudWatch" class="AWS">
                                                 CloudWatch
                                         </label>
                                         <label class="checkbox">
-                                            <input type="checkbox" name="enabled_services" value="Elasticache">
+                                            <input type="checkbox" name="enabled_services" value="Elasticache" class="AWS">
                                                 Elasticache
                                         </label>
                                         <label class="checkbox">
-                                            <input type="checkbox" name="enabled_services" value="Elastic Beanstalk">
+                                            <input type="checkbox" name="enabled_services" value="Elastic Beanstalk" class="AWS">
                                                 Elastic Beanstalk
                                         </label>
                                         <label class="checkbox">
-                                            <input type="checkbox" name="enabled_services" value="Elastic Block Storage">
+                                            <input type="checkbox" name="enabled_services" value="Elastic Block Storage" class="AWS">
                                                 Elastic Block Storage
                                         </label>
                                         <label class="checkbox">
-                                            <input type="checkbox" name="enabled_services" value="Elastic Compute Cloud">
+                                            <input type="checkbox" name="enabled_services" value="Elastic Compute Cloud" class="AWS">
                                                 Elastic Compute Cloud
                                         </label>
                                         <label class="checkbox">
-                                            <input type="checkbox" name="enabled_services" value="Elastic Load Balancer">
+                                            <input type="checkbox" name="enabled_services" value="Elastic Load Balancer" class="AWS">
                                                 Elastic Load Balancer
                                         </label>
                                         <label class="checkbox">
-                                            <input type="checkbox" name="enabled_services" value="IAM">
+                                            <input type="checkbox" name="enabled_services" value="IAM" class="AWS">
                                                 IAM
                                         </label>
                                         <label class="checkbox">
-                                            <input type="checkbox" name="enabled_services" value="  Relational Database">
+                                            <input type="checkbox" name="enabled_services" value="  Relational Database" class="AWS">
                                                 Relational Database
                                         </label>
                                         <label class="checkbox">
-                                            <input type="checkbox" name="enabled_services" value="Route 53">
+                                            <input type="checkbox" name="enabled_services" value="Route 53" class="AWS">
                                                 Route 53
                                         </label>
                                         <label class="checkbox">
-                                            <input type="checkbox" name="enabled_services" value="Simple DB">
+                                            <input type="checkbox" name="enabled_services" value="Simple DB" class="AWS">
                                                 Simple DB
                                         </label>
                                         <label class="checkbox">
-                                            <input type="checkbox" name="enabled_services" value="Simple Notification">
+                                            <input type="checkbox" name="enabled_services" value="Simple Notification" class="AWS">
                                                 Simple Notification
                                         </label>
                                         <label class="checkbox">
-                                            <input type="checkbox" name="enabled_services" value="Simple Queue">
+                                            <input type="checkbox" name="enabled_services" value="Simple Queue" class="AWS">
                                                 Simple Queue
                                         </label>
                                         <label class="checkbox">
-                                            <input type="checkbox" name="enabled_services" value="Simple Storage">
+                                            <input type="checkbox" name="enabled_services" value="Simple Storage" class="AWS">
                                                 Simple Storage
                                         </label>
                                         <label class="checkbox">
-                                            <input type="checkbox" name="enabled_services" value="VPC">
+                                            <input type="checkbox" name="enabled_services" value="VPC" class="AWS">
                                                 VPC
                                         </label>
                                     </div>
@@ -235,9 +236,9 @@
                                     <label class="control-label">Password Length:</label>
                                     <div class="controls">
                                         <div class="input-append">
-                                            <input id="password_rules" name="password_rules" class="span4" type="text" placeholder="# characters">
+                                            <input id="password_rules" name="password_rules" class="span4 AWS" type="text" placeholder="# characters">
                                             <span class="add-on">
-                                            <input type="checkbox"> digits required</input>
+                                            <input type="checkbox" class="AWS"> digits required</input>
                                             </span>
                                         </div>
 
@@ -249,7 +250,7 @@
                                     <label class="control-label">Credential Rotation:</label>
                                     <div class="controls">
                                         <div class="input-append">
-                                            <input id="credential_rotation" name="credential_rotation" class="span5" placeholder="# Periods" type="text">
+                                            <input id="credential_rotation" name="credential_rotation" class="span5 AWS" placeholder="# Periods" type="text">
                                             <div class="btn-group">
                                                 <button class="btn dropdown-toggle" data-toggle="dropdown">
                                                     Period
@@ -374,7 +375,7 @@
                             <div class="well" style="margin-top:40px;">
                                 <legend>Available Images</legend>
                                 <div class="row">
-                                    <label class="checkbox"><input type="checkbox" name="use_approved_images" value="use_approved_images"/>
+                                    <label class="checkbox"><input type="checkbox" name="use_approved_images" value="use_approved_images" class="AWS"/>
                                         Constrain images to the following:
                                     </label>
                                 </div>
@@ -429,9 +430,9 @@
                                 <label class="control-label">Max On-Demand Instances:</label>
                                 <div class="controls">
                                     <div class="input-append">
-                                        <input id="max_on_demand" name="max_on_demand" class="span5" type="text" placeholder="# Instances">
+                                        <input id="max_on_demand" name="max_on_demand" class="span5 AWS" type="text" placeholder="# Instances">
                                         <span class="add-on">
-                                            <input type="checkbox" id="check_max_on_demand"> Unlimited</input>
+                                            <input type="checkbox" id="check_max_on_demand" class="AWS"> Unlimited</input>
                                         </span>
                                     </div>
                                 </div>
@@ -442,9 +443,9 @@
                                 <label class="control-label">Max Reserved Instances:</label>
                                 <div class="controls">
                                     <div class="input-append">
-                                        <input id="max_reserved" name="max_reserved" class="span5" type="text" placeholder="# Instances">
+                                        <input id="max_reserved" name="max_reserved" class="span5 AWS" type="text" placeholder="# Instances">
                                         <span class="add-on">
-                                            <input type="checkbox" id="check_max_reserved"> Unlimited</input>
+                                            <input type="checkbox" id="check_max_reserved" class="AWS"> Unlimited</input>
                                         </span>
                                     </div>
                                 </div>
@@ -455,9 +456,9 @@
                                 <label class="control-label">Max Dedicated Instances:</label>
                                 <div class="controls">
                                     <div class="input-append">
-                                        <input id="max_dedicated" name="max_dedicated" class="span5" type="text" placeholder="# Instances">
+                                        <input id="max_dedicated" name="max_dedicated" class="span5 AWS" type="text" placeholder="# Instances">
                                         <span class="add-on">
-                                            <input type="checkbox" id="check_max_dedicated"> Unlimited</input>
+                                            <input type="checkbox" id="check_max_dedicated" class="AWS"> Unlimited</input>
                                         </span>
                                     </div>
                                 </div>
@@ -468,9 +469,9 @@
                                 <label class="control-label">Max Spot Instances:</label>
                                 <div class="controls">
                                     <div class="input-append">
-                                        <input id="max_spot" name="max_spot" class="span5" type="text" placeholder="# Instances">
+                                        <input id="max_spot" name="max_spot" class="span5 AWS" type="text" placeholder="# Instances">
                                         <span class="add-on">
-                                            <input type="checkbox" id="check_max_spot"> Unlimited</input>
+                                            <input type="checkbox" id="check_max_spot" class="AWS"> Unlimited</input>
                                         </span>
                                     </div>
                                 </div>
@@ -481,9 +482,9 @@
                                 <label class="control-label">Max # in Auto Scale Group:</label>
                                 <div class="controls">
                                     <div class="input-append">
-                                        <input id="max_in_autoscale" name="max_in_autoscale" class="span5" type="text" placeholder="# Instances">
+                                        <input id="max_in_autoscale" name="max_in_autoscale" class="span5 AWS" type="text" placeholder="# Instances">
                                         <span class="add-on">
-                                            <input type="checkbox" id="check_max_in_autoscale"> Unlimited</input>
+                                            <input type="checkbox" id="check_max_in_autoscale" class="AWS"> Unlimited</input>
                                         </span>
                                     </div>
                                 </div>
@@ -494,9 +495,9 @@
                                 <label class="control-label">Max Cores:</label>
                                 <div class="controls">
                                     <div class="input-append">
-                                        <input id="max_cores" name="max_cores" class="span5" type="text" placeholder="# Cores">
+                                        <input id="max_cores" name="max_cores" class="span5 AWS" type="text" placeholder="# Cores">
                                         <span class="add-on">
-                                            <input type="checkbox"> Unlimited</input>
+                                            <input type="checkbox" class="AWS"> Unlimited</input>
                                         </span>
                                     </div>
                                 </div>
@@ -509,7 +510,7 @@
                                 <label class="control-label">Instance Lifetime:</label>
                                 <div class="controls">
                                     <label class="checkbox">
-                                        <input type="checkbox" name="require_lifetime" value="Require an expected lifetime when an instance is launched">
+                                        <input type="checkbox" name="require_lifetime" value="Require an expected lifetime when an instance is launched" class="AWS">
                                             Require an expected lifetime when an instance is launched
                                     </label>
                                 </div>
@@ -520,15 +521,15 @@
                                 <label class="control-label">When lifetime is up:</label>
                                     <div class="controls">
                                         <label class="radio">
-                                            <input type="radio" name="post_lifetime" value="Terminate Instance" checked="checked">
+                                            <input type="radio" name="post_lifetime" value="Terminate Instance" checked="checked" class="AWS">
                                                 Terminate Instance
                                         </label>
                                         <label class="radio">
-                                            <input type="radio" name="post_lifetime" value="Notify user of expiration">
+                                            <input type="radio" name="post_lifetime" value="Notify user of expiration" class="AWS">
                                                 Notify user of expiration
                                         </label>
                                         <label class="radio">
-                                            <input type="radio" name="post_lifetime" value="Leave disposition up to user">
+                                            <input type="radio" name="post_lifetime" value="Leave disposition up to user" class="AWS">
                                                 Leave disposition up to user
                                         </label>
                                     </div>
@@ -548,19 +549,19 @@
                                         <label class="control-label">VPC:</label>
                                         <div class="controls">
                                             <label class="checkbox">
-                                                <input type="checkbox" name="vpc_rules" value="admin_internet_gateway">
+                                                <input type="checkbox" name="vpc_rules" value="admin_internet_gateway" class="AWS">
                                                     Only Admin can create, update, delete Internet Gateways for VPC
                                             </label>
                                             <label class="checkbox">
-                                                <input type="checkbox" name="vpc_rules" value="admin_private_gateway">
+                                                <input type="checkbox" name="vpc_rules" value="admin_private_gateway" class="AWS">
                                                     Only Admin can create, update, delete Virtual Private Gateways for VPC
                                             </label>
                                             <label class="checkbox">
-                                                <input type="checkbox" name="vpc_rules" value="admin_customer_gateway">
+                                                <input type="checkbox" name="vpc_rules" value="admin_customer_gateway" class="AWS">
                                                     Only Admin can create, update, delete Customer Gateways for VPC
                                             </label>
                                             <label class="checkbox">
-                                                <input type="checkbox" name="vpc_rules" value="require_vpc">
+                                                <input type="checkbox" name="vpc_rules" value="require_vpc" class="AWS">
                                                     Users must create all resources in a VPC
                                             </label>
                                         </div>
@@ -570,7 +571,7 @@
                                     <div class="control-group">
                                         <label class="control-label">Default VPC:</label>
                                         <div class="controls">
-                                            <select id="default_vpc" name="default_vpc" class="input-xlarge">
+                                            <select id="default_vpc" name="default_vpc" class="input-xlarge AWS">
                                                 <option>Select VPC</option>
                                             </select>
                                             <a class="btn create_vpc_btn">Create VPC</a>
@@ -581,7 +582,7 @@
                                     <div class="control-group">
                                         <label class="control-label">Default Subnet:</label>
                                             <div class="controls">
-                                                <select id="default_subnet" name="default_subnet" class="input-xlarge">
+                                                <select id="default_subnet" name="default_subnet" class="input-xlarge AWS">
                                                     <option>Select Subnet</option>
                                                 </select>
                                                 <a class="btn create_subnet_btn">Create Subnet</a>
@@ -596,7 +597,7 @@
                                         <label class="control-label">Configuration Management:</label>
                                         <div class="controls">
                                             <label class="checkbox">
-                                                <input type="checkbox" name="config_management" value="Only Admin can add a configuration management endpoint (Puppet / Chef)">
+                                                <input type="checkbox" name="config_management" value="Only Admin can add a configuration management endpoint (Puppet / Chef)" class="AWS">
                                                 Only Admin can add a configuration management endpoint (Puppet / Chef)
                                             </label>
                                         </div>
@@ -610,15 +611,15 @@
                                         <label class="control-label">SNS Notifications:</label>
                                         <div class="controls">
                                             <label class="checkbox">
-                                                <input type="checkbox" name="sns_notifications" value="All users are automatically setup as SNS users">
+                                                <input type="checkbox" name="sns_notifications" value="All users are automatically setup as SNS users" class="AWS">
                                                     All users are automatically setup as SNS users
                                             </label>
                                             <label class="checkbox">
-                                                <input type="checkbox" name="sns_notifications" value="Users are email notified when an instance is started">
+                                                <input type="checkbox" name="sns_notifications" value="Users are email notified when an instance is started" class="AWS">
                                                     Users are email notified when an instance is started
                                             </label>
                                             <label class="checkbox">
-                                                <input type="checkbox" name="sns_notifications" value="Users are email notified when a CloudFormation has 'completed' or 'failed'">
+                                                <input type="checkbox" name="sns_notifications" value="Users are email notified when a CloudFormation has 'completed' or 'failed'" class="AWS">
                                                     Users are email notified when a CloudFormation has 'completed' or 'failed'
                                             </label>
                                         </div>
@@ -665,9 +666,9 @@
                                         <label class="control-label">Max # of RDS Databases:</label>
                                         <div class="controls">
                                             <div class="input-append">
-                                                <input id="max_rds" name="max_rds" class="span3" type="text" placeholder="# DB's">
+                                                <input id="max_rds" name="max_rds" class="span3 AWS" type="text" placeholder="# DB's">
                                                 <span class="add-on">
-                                                    <input type="checkbox" id="check_rds"> Unlimited</input>
+                                                    <input type="checkbox" id="check_rds" class="AWS"> Unlimited</input>
                                                 </span>
                                             </div>
                                             <p class="help-block">*Read replica counts as additional database.</p>
@@ -683,21 +684,21 @@
                                         <label class="control-label">Auto Tags:</label>
                                         <div class="controls">
                                             <label class="checkbox">
-                                                <input id="project_name_toggle" type="checkbox" name="auto_tags" value="ProjectName"/>
+                                                <input id="project_name_toggle" type="checkbox" name="auto_tags" value="ProjectName" class="AWS"/>
                                                     ProjectName:
-                                                <input id="project_name" style="margin-left:10px" name="project_name" type="text" placeholder="Project Name" class="input-medium"/>
+                                                <input id="project_name" style="margin-left:10px" name="project_name" type="text" placeholder="Project Name" class="input-medium" "AWS"/>
                                             </label>
 
                                             <label class="checkbox">
-                                                <input type="checkbox" name="auto_tags" value="UserName">
+                                                <input type="checkbox" name="auto_tags" value="UserName" class="AWS">
                                                     UserName
                                             </label>
                                             <label class="checkbox">
-                                                <input type="checkbox" name="auto_tags" value="GroupName">
+                                                <input type="checkbox" name="auto_tags" value="GroupName" class="AWS">
                                                     GroupName
                                             </label>
                                             <label class="checkbox">
-                                                <input type="checkbox" name="auto_tags" value="Modifiable">
+                                                <input type="checkbox" name="auto_tags" value="Modifiable" class="AWS">
                                                     Modifiable
                                             </label>
                                         </div>
@@ -708,7 +709,7 @@
                                         <label class="control-label">AWS Console:</label>
                                         <div class="controls">
                                             <label class="checkbox">
-                                                <input type="checkbox" name="disable_aws_console" value="Disable access to AWS Console">
+                                                <input type="checkbox" name="disable_aws_console" value="Disable access to AWS Console" class="AWS">
                                                     Disable access to AWS Console
                                             </label>
                                         </div>
@@ -729,42 +730,42 @@
                                         <label class="control-label">CPUUtilization</label>
                                         <div class="controls">
                                             <span>></span>
-                                            <input id="cpu_util_value" name="cpu_util_value" type="text" placeholder="#" class="input-mini">
+                                            <input id="cpu_util_value" name="cpu_util_value" type="text" placeholder="#" class="input-mini AWS">
                                             <span>for</span>
-                                            <input id="cpu_util_duration" name="cpu_util_duration" type="text" placeholder="#" class="input-mini">
+                                            <input id="cpu_util_duration" name="cpu_util_duration" type="text" placeholder="#" class="input-mini AWS">
                                             <span>minutes</span>
                                             &nbsp;
                                             <label class="radio inline">
-                                                <input type="radio" name="cpu_util_topic" value="arn:aws:sns:us-east-1:983391187112:Informational">
+                                                <input type="radio" name="cpu_util_topic" value="arn:aws:sns:us-east-1:983391187112:Informational" class="AWS">
                                                     Informational
                                             </label>
                                             <label class="radio inline">
-                                                <input type="radio" name="cpu_util_topic" value="arn:aws:sns:us-east-1:983391187112:Warning">
+                                                <input type="radio" name="cpu_util_topic" value="arn:aws:sns:us-east-1:983391187112:Warning" class="AWS">
                                                     Warning
                                             </label>
                                             <label class="radio inline">
-                                                <input type="radio" name="cpu_util_topic" value="arn:aws:sns:us-east-1:983391187112:Error">
+                                                <input type="radio" name="cpu_util_topic" value="arn:aws:sns:us-east-1:983391187112:Error" class="AWS">
                                                     Error
                                             </label>
                                         </div>
                                         <label class="control-label">StatusCheckFailed</label>
                                         <div class="controls">
                                             <span>></span>
-                                            <input id="status_failed_value" name="status_failed_value" type="text" placeholder="#" class="input-mini">
+                                            <input id="status_failed_value" name="status_failed_value" type="text" placeholder="#" class="input-mini AWS">
                                             <span>for</span>
-                                            <input id="status_failed_duration" name="status_failed_duration" type="text" placeholder="#" class="input-mini">
+                                            <input id="status_failed_duration" name="status_failed_duration" type="text" placeholder="#" class="input-mini AWS">
                                             <span>minutes</span>
                                             &nbsp;
                                             <label class="radio inline">
-                                                <input type="radio" name="status_failed_topic" value="arn:aws:sns:us-east-1:983391187112:Informational">
+                                                <input type="radio" name="status_failed_topic" value="arn:aws:sns:us-east-1:983391187112:Informational" class="AWS">
                                                     Informational
                                             </label>
                                             <label class="radio inline">
-                                                <input type="radio" name="status_failed_topic" value="arn:aws:sns:us-east-1:983391187112:Warning">
+                                                <input type="radio" name="status_failed_topic" value="arn:aws:sns:us-east-1:983391187112:Warning" class="AWS">
                                                     Warning
                                             </label>
                                             <label class="radio inline">
-                                                <input type="radio" name="status_failed_topic" value="arn:aws:sns:us-east-1:983391187112:Error">
+                                                <input type="radio" name="status_failed_topic" value="arn:aws:sns:us-east-1:983391187112:Error" class="AWS">
                                                     Error
                                             </label>
                                         </div>
@@ -776,63 +777,63 @@
                                         <label class="control-label">Latency</label>
                                         <div class="controls">
                                             <span>></span>
-                                            <input id="latency_value" name="latency_value" type="text" placeholder="#" class="input-mini">
+                                            <input id="latency_value" name="latency_value" type="text" placeholder="#" class="input-mini AWS">
                                             <span>for</span>
-                                            <input id="latency_duration" name="latency_duration" type="text" placeholder="#" class="input-mini">
+                                            <input id="latency_duration" name="latency_duration" type="text" placeholder="#" class="input-mini AWS">
                                             <span>minutes</span>
                                             &nbsp;
                                             <label class="radio inline">
-                                                <input type="radio" name="latency_topic" value="arn:aws:sns:us-east-1:983391187112:Informational">
+                                                <input type="radio" name="latency_topic" value="arn:aws:sns:us-east-1:983391187112:Informational" class="AWS">
                                                     Informational
                                             </label>
                                         <label class="radio inline">
-                                            <input type="radio" name="latency_topic" value="arn:aws:sns:us-east-1:983391187112:Warning">
+                                            <input type="radio" name="latency_topic" value="arn:aws:sns:us-east-1:983391187112:Warning" class="AWS">
                                                 Warning
                                         </label>
                                         <label class="radio inline">
-                                            <input type="radio" name="latency_topic" value="arn:aws:sns:us-east-1:983391187112:Error">
+                                            <input type="radio" name="latency_topic" value="arn:aws:sns:us-east-1:983391187112:Error" class="AWS">
                                                 Error
                                         </label>
                                         </div>
                                         <label class="control-label">UnhealthyHostCount</label>
                                         <div class="controls">
                                             <span>></span>
-                                            <input id="unhealthy_host_value" name="unhealthy_host_value" type="text" placeholder="#" class="input-mini">
+                                            <input id="unhealthy_host_value" name="unhealthy_host_value" type="text" placeholder="#" class="input-mini AWS">
                                             <span>for</span>
-                                            <input id="unhealthy_host_duration" name="unhealthy_host_duration" type="text" placeholder="#" class="input-mini">
+                                            <input id="unhealthy_host_duration" name="unhealthy_host_duration" type="text" placeholder="#" class="input-mini AWS">
                                             <span>minutes</span>
                                             &nbsp;
                                             <label class="radio inline">
-                                            <input type="radio" name="unhealthy_host_topic" value="arn:aws:sns:us-east-1:983391187112:Informational">
+                                            <input type="radio" name="unhealthy_host_topic" value="arn:aws:sns:us-east-1:983391187112:Informational" class="AWS">
                                                 Informational
                                             </label>
                                             <label class="radio inline">
-                                            <input type="radio" name="unhealthy_host_topic" value="arn:aws:sns:us-east-1:983391187112:Warning">
+                                            <input type="radio" name="unhealthy_host_topic" value="arn:aws:sns:us-east-1:983391187112:Warning" class="AWS">
                                                 Warning
                                             </label>
                                             <label class="radio inline">
-                                                <input type="radio" name="unhealthy_host_topic" value="arn:aws:sns:us-east-1:983391187112:Error">
+                                                <input type="radio" name="unhealthy_host_topic" value="arn:aws:sns:us-east-1:983391187112:Error" class="AWS">
                                                 Error
                                             </label>
                                         </div>
                                         <label class="control-label">FailedHealthChecks</label>
                                         <div class="controls">
                                             <span>></span>
-                                            <input id="failed_healthcheck_value" name="failed_healthcheck_value" type="text" placeholder="#" class="input-mini">
+                                            <input id="failed_healthcheck_value" name="failed_healthcheck_value" type="text" placeholder="#" class="input-mini AWS">
                                             <span>for</span>
-                                            <input id="failed_healthcheck_duration" name="failed_healthcheck_duration" type="text" placeholder="#" class="input-mini">
+                                            <input id="failed_healthcheck_duration" name="failed_healthcheck_duration" type="text" placeholder="#" class="input-mini AWS">
                                             <span>minutes</span>
                                             &nbsp;
                                             <label class="radio inline">
-                                                <input type="radio" name="failed_healthcheck_topic" value="arn:aws:sns:us-east-1:983391187112:Informational">
+                                                <input type="radio" name="failed_healthcheck_topic" value="arn:aws:sns:us-east-1:983391187112:Informational" class="AWS">
                                                     Informational
                                             </label>
                                             <label class="radio inline">
-                                                <input type="radio" name="failed_healthcheck_topic" value="arn:aws:sns:us-east-1:983391187112:Warning">
+                                                <input type="radio" name="failed_healthcheck_topic" value="arn:aws:sns:us-east-1:983391187112:Warning" class="AWS">
                                                 Warning
                                             </label>
                                             <label class="radio inline">
-                                                <input type="radio" name="failed_healthcheck_topic" value="arn:aws:sns:us-east-1:983391187112:Error">
+                                                <input type="radio" name="failed_healthcheck_topic" value="arn:aws:sns:us-east-1:983391187112:Error" class="AWS">
                                                     Error
                                             </label>
                                         </div>
