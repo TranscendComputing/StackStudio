@@ -122,7 +122,7 @@ requirejs.config({
         'backbone': '//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min',
         'backbone.stickit': 'backbone.stickit.min',
         'backbone-validation': 'backbone-validation.min',
-        'icanhaz': '//cdnjs.cloudflare.com/ajax/libs/ICanHaz.js/0.10/ICanHaz.min',
+        'icanhaz': 'ICanHaz',
         'jquery.form': 'jquery.form',
         //'jquery.list': 'jquery.list.min',
         'jquery.terminal': 'jquery.terminal-0.7.3',
@@ -133,7 +133,7 @@ requirejs.config({
         'spinner': 'spin.min',
          URIjs: 'uri/src',
         'bootstrap': '//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min',
-        'typeahead': '../vendor/twitter/typeahead.min',
+        'typeahead': '../vendor/twitter/typeahead',
         'ace': '//cdnjs.cloudflare.com/ajax/libs/ace/1.1.01/ace',
         'mode-json': '//cdnjs.cloudflare.com/ajax/libs/ace/1.1.01/mode-json'
     }

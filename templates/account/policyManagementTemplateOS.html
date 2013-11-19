@@ -1,5 +1,16 @@
 
-    <p>
+<p>
+        <!-- Select Basic -->
+            <div id="cred_OS" class="credentialsOS">
+                <label class="control-label">Default Credentials:</label>
+                <div class="controls">
+                    <select id="default_credentials_os" name="default_credentials" class="input-xlarge default_credentials">
+                        <option>Select Credentials</option>
+                    </select>
+                    <div id="cred_message_os">Create an OpenStack credential before creating a policy.</div>
+                </div>
+            </div>
+    <div id="whole_form_os" hidden>
         <!-- Form Name -->
         <form class="form-horizontal">
             <fieldset>
@@ -12,7 +23,7 @@
                         <label class="control-label">Usable Regions:</label>
                         <div class="controls">
                             <label class="checkbox">
-                                <input type="checkbox" name="usable_regions_os" value="US East (Northern Virginia)">
+                                <input type="checkbox" name="usable_regions" value="US East (Northern Virginia)" class="OS">
                                 US East (Northern Virginia)
                             </label>
                             
@@ -23,7 +34,7 @@
                     <div class="control-group">
                         <label class="control-label">Default Region:</label>
                         <div class="controls">
-                            <select id="default_region_os" name="default_region_os" class="input-xlarge">
+                            <select id="default_region_os" name="default_region" class="input-xlarge OS">
                                 <option value="us-east-1">US East (Northern Virginia)</option>
                             </select>
                         </div>
@@ -36,55 +47,55 @@
                         <label class="control-label">Enabled Services:</label>
                         <div class="controls">
                             <label class="checkbox">
-                                <input type="checkbox" name="enabled_services" value="Admin Console">
+                                <input type="checkbox" name="enabled_services" value="Admin Console" class="OS">
                                     Admin Console
                             </label>
                             <label class="checkbox">
-                                <input type="checkbox" name="enabled_services" value="Auto Scale">
+                                <input type="checkbox" name="enabled_services" value="Auto Scale" class="OS">
                                     Auto Scale
                             </label>
                             <label class="checkbox">
-                                <input type="checkbox" name="enabled_services" value="DNS 53">
+                                <input type="checkbox" name="enabled_services" value="DNS 53" class="OS">
                                     DNS 53
                             </label>
                             <label class="checkbox">
-                                <input type="checkbox" name="enabled_services" value="Elastic Cache">
+                                <input type="checkbox" name="enabled_services" value="Elastic Cache" class="OS">
                                     Elastic Cache
                             </label>
                             <label class="checkbox">
-                                <input type="checkbox" name="enabled_services" value="Monitor Service">
+                                <input type="checkbox" name="enabled_services" value="Monitor Service" class="OS">
                                     Monitor Service
                             </label>
                             <label class="checkbox">
-                                <input type="checkbox" name="enabled_services" value="Relational Database">
+                                <input type="checkbox" name="enabled_services" value="Relational Database" class="OS">
                                     Relational Database
                             </label>
                             <label class="checkbox">
-                                <input type="checkbox" name="enabled_services" value="Scalable Load Balancer">
+                                <input type="checkbox" name="enabled_services" value="Scalable Load Balancer" class="OS">
                                     Scalable Load Balancer
                             </label>
                             <label class="checkbox">
-                                <input type="checkbox" name="enabled_services" value="Scalable Queue">
+                                <input type="checkbox" name="enabled_services" value="Scalable Queue" class="OS">
                                     Scalable Queue
                             </label>
                             <label class="checkbox">
-                                <input type="checkbox" name="enabled_services" value="Block Storage">
+                                <input type="checkbox" name="enabled_services" value="Block Storage" class="OS">
                                     Block Storage
                                 </label>
                             <label class="checkbox">
-                                <input type="checkbox" name="enabled_services" value="Compute Service">
+                                <input type="checkbox" name="enabled_services" value="Compute Service" class="OS">
                                     Compute Service
                             </label>
                             <label class="checkbox">
-                                <input type="checkbox" name="enabled_services" value="Identity">
+                                <input type="checkbox" name="enabled_services" value="Identity" class="OS">
                                     Identity
                             </label>
                             <label class="checkbox">
-                                <input type="checkbox" name="enabled_services" value="Network Services">
+                                <input type="checkbox" name="enabled_services" value="Network Services" class="OS">
                                     Network Services
                             </label>
                             <label class="checkbox">
-                                <input type="checkbox" name="enabled_services" value="Object Storage">
+                                <input type="checkbox" name="enabled_services" value="Object Storage" class="OS">
                                     Object Storage
                             </label>
                         </div>
@@ -104,7 +115,7 @@
                         <div class="well" style="margin-top:40px;">
                             <legend>Available Images</legend>
                             <div class="row">
-                                <label class="checkbox"><input type="checkbox" name="use_approved_images_os" value="use_approved_images"/>
+                                <label class="checkbox"><input type="checkbox" name="use_approved_images_os" value="use_approved_images" class="OS"/>
                                     Constrain images to the following:
                                 </label>
                             </div>
@@ -147,9 +158,9 @@
                             <label class="control-label">Max On-Demand Instances:</label>
                             <div class="controls">
                                 <div class="input-append">
-                                    <input id="max_on_demand_os" name="max_on_demand" class="span5" type="text" placeholder="# Instances">
+                                    <input id="max_on_demand_os" name="max_on_demand" class="span5 OS" type="text" placeholder="# Instances">
                                     <span class="add-on">
-                                        <input type="checkbox" id="check_max_on_demand"> Unlimited</input>
+                                        <input type="checkbox" id="check_max_on_demand" class="OS"> Unlimited</input>
                                     </span>
                                 </div>
                             </div>
@@ -161,9 +172,9 @@
                             <label class="control-label">Max # in Auto Scale Group:</label>
                             <div class="controls">
                                 <div class="input-append">
-                                    <input id="max_in_autoscale_os" name="max_in_autoscale" class="span5" type="text" placeholder="# Instances">
+                                    <input id="max_in_autoscale_os" name="max_in_autoscale" class="span5 OS" type="text" placeholder="# Instances">
                                     <span class="add-on">
-                                        <input type="checkbox" id="check_max_in_autoscale"> Unlimited</input>
+                                        <input type="checkbox" id="check_max_in_autoscale" class="OS"> Unlimited</input>
                                     </span>
                                 </div>
                             </div>
@@ -174,9 +185,9 @@
                             <label class="control-label">Max Cores:</label>
                             <div class="controls">
                                 <div class="input-append">
-                                    <input id="max_cores_os" name="max_cores" class="span5" type="text" placeholder="# Cores">
+                                    <input id="max_cores_os" name="max_cores" class="span5 OS" type="text" placeholder="# Cores">
                                     <span class="add-on">
-                                        <input type="checkbox"> Unlimited</input>
+                                        <input type="checkbox" class="OS"> Unlimited</input>
                                     </span>
                                 </div>
                             </div>
@@ -189,7 +200,7 @@
                             <label class="control-label">Instance Lifetime:</label>
                             <div class="controls">
                                 <label class="checkbox">
-                                <input type="checkbox" name="require_lifetime" value="Require an expected lifetime when an instance is launched">
+                                <input type="checkbox" name="require_lifetime" value="Require an expected lifetime when an instance is launched" class="OS">
                                     Require an expected lifetime when an instance is launched
                                 </label>
                             </div>
@@ -200,15 +211,15 @@
                             <label class="control-label">When lifetime is up:</label>
                             <div class="controls">
                                 <label class="radio">
-                                <input type="radio" name="post_lifetime" value="Terminate Instance" checked="checked">
+                                <input type="radio" name="post_lifetime" value="Terminate Instance" class="OS" checked="checked">
                                         Terminate Instance
                                 </label>
                                 <label class="radio">
-                                    <input type="radio" name="post_lifetime" value="Notify user of expiration">
+                                    <input type="radio" name="post_lifetime" value="Notify user of expiration" class="OS">
                                         Notify user of expiration
                                 </label>
                                 <label class="radio">
-                                    <input type="radio" name="post_lifetime" value="Leave disposition up to user">
+                                    <input type="radio" name="post_lifetime" value="Leave disposition up to user" class="OS">
                                         Leave disposition up to user
                                 </label>
                             </div>
@@ -232,15 +243,15 @@
                         <label class="control-label">SNS Notifications:</label>
                         <div class="controls">
                             <label class="checkbox">
-                                <input type="checkbox" name="sns_notifications" value="All users are automatically setup as SNS users">
+                                <input type="checkbox" name="sns_notifications" value="All users are automatically setup as SNS users" class="OS">
                                 All users are automatically setup as SNS users
                             </label>
                             <label class="checkbox">
-                                <input type="checkbox" name="sns_notifications" value="Users are email notified when an instance is started">
+                                <input type="checkbox" name="sns_notifications" value="Users are email notified when an instance is started" class="OS">
                                 Users are email notified when an instance is started
                             </label>
                             <label class="checkbox">
-                                <input type="checkbox" name="sns_notifications" value="Users are email notified when a CloudFormation has 'completed' or 'failed'">
+                                <input type="checkbox" name="sns_notifications" value="Users are email notified when a CloudFormation has 'completed' or 'failed'" class="OS">
                                 Users are email notified when a CloudFormation has 'completed' or 'failed'
                             </label>
                         </div>
@@ -287,9 +298,9 @@
                         <label class="control-label">Max # of RDS Databases:</label>
                         <div class="controls">
                             <div class="input-append">
-                                <input id="max_rds_os" name="max_rds" class="span3" type="text" placeholder="# DB's">
+                                <input id="max_rds_os" name="max_rds" class="span3 OS" type="text" placeholder="# DB's">
                                 <span class="add-on">
-                                    <input type="checkbox" id="check_rds_os"> Unlimited</input>
+                                    <input type="checkbox" id="check_rds_os" class="OS"> Unlimited</input>
                                 </span>
                             </div>
                             <p class="help-block">*Read replica counts as additional database.</p>
@@ -305,21 +316,21 @@
                           <label class="control-label">Auto Tags:</label>
                           <div class="controls">
                             <label class="checkbox">
-                              <input id="project_name_toggle_os" type="checkbox" name="auto_tags" value="ProjectName"/>
+                              <input id="project_name_toggle_os" type="checkbox" name="auto_tags" value="ProjectName" class="OS"/>
                               ProjectName:
-                              <input id="project_name_os" style="margin-left:10px" name="project_name" type="text" placeholder="Project Name" class="input-medium"/>
+                              <input id="project_name_os" style="margin-left:10px" name="project_name" type="text" placeholder="Project Name" class="input-medium OS"/>
                             </label>
                             
                             <label class="checkbox">
-                              <input type="checkbox" name="auto_tags" value="UserName">
+                              <input type="checkbox" name="auto_tags" value="UserName" class="OS">
                               UserName
                             </label>
                             <label class="checkbox">
-                              <input type="checkbox" name="auto_tags" value="GroupName">
+                              <input type="checkbox" name="auto_tags" value="GroupName" class="OS">
                               GroupName
                             </label>
                             <label class="checkbox">
-                              <input type="checkbox" name="auto_tags" value="Modifiable">
+                              <input type="checkbox" name="auto_tags" value="Modifiable" class="OS">
                               Modifiable
                             </label>
                           </div>
@@ -360,4 +371,5 @@
         <div id="save_alert" class="alert" style="width:90px;display:none;">
             Policy <strong>Saved...</strong>
         </div>
-    </p>
+    </div>
+</p>

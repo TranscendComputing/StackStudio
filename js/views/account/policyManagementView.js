@@ -256,11 +256,10 @@ define([
                     o[this.name] = this.value || '';
                 }
             });
-            
             o["default_alarms"] = this.alarms;
             o["default_images"] = this.default_images;
             o["button_press"] = $("#aws_button").hasClass("active");
-            //debugger
+
             var oS = {};
             var aOS = $("#content_os form").serializeArray();
             $.each(aOS, function() {
@@ -294,14 +293,16 @@ define([
                 }else if(typ === "radio"){
                     $( "input[name='"+key+"'][value='"+p[key]+"']" ).attr('checked','checked');
                 }else{
-                    $("#"+key).val(p[key]);
+                    $("#"+key+"_os").val(p[key]);
                 }
               }
             }
+
             this.alarms = p.default_alarms;
             for (var j in this.alarms){
                 $("#alarm_table").append("<tr><td>"+this.alarms[j].namespace+"</td><td>"+this.alarms[j].metric_name+"</td><td>"+this.alarms[j].threshold+"</td><td>"+this.alarms[j].period+"</td><td><a class='btn btn-mini btn-danger remove_alarm'><i class='icon-minus-sign icon-white'></i></a></td></tr>");
-            }       
+            } 
+
             this.default_images = this.model.attributes.aws_governance.default_images;
             for(var k in this.default_images){
                 $('input[name=use_approved_images]').attr('checked', true);
@@ -312,6 +313,7 @@ define([
             $('input:checkbox').removeAttr('checked');
             $("#policy_name").val(model.attributes.name);
             var p = model.attributes.aws_governance;
+
             for (var key in p) {
               if (p.hasOwnProperty(key)) {
                 var typ = $( "input[name='"+key+"']" ).prop("type");
@@ -330,15 +332,18 @@ define([
                 }
               }
             }
+
             this.alarms = p.default_alarms;
             for (var j in this.alarms){
                 $("#alarm_table").append("<tr><td>"+this.alarms[j].namespace+"</td><td>"+this.alarms[j].metric_name+"</td><td>"+this.alarms[j].threshold+"</td><td>"+this.alarms[j].period+"</td><td><a class='btn btn-mini btn-danger remove_alarm'><i class='icon-minus-sign icon-white'></i></a></td></tr>");
             }
+
             this.default_images = this.model.attributes.aws_governance.default_images;
             for(var k in this.default_images){
                 $('input[name=use_approved_images]').attr('checked', true);
                 $("#default_images_table").dataTable().fnAddData([this.default_images[k]["image_id"],this.default_images[k]["source"],"<a class='btn btn-mini btn-danger remove_image'><i class='icon-minus-sign icon-white'></i></a>"]);
             }
+            
             this.populateFormOS(model.attributes.os_governance);
         },
         
@@ -373,23 +378,34 @@ define([
         addCreds: function(){
             var creds = JSON.parse(sessionStorage.cloud_credentials);
             $("#default_credentials").empty();
+            $("#default_credentials_os").empty();
+
             for (var i in creds) {
                 if(creds[i].cloud_credential.cloud_provider === "AWS"){
                     $("#default_credentials").append("<option value='"+creds[i].cloud_credential.id+"'>"+creds[i].cloud_credential.name+"</option>");
                 }
+                else if(creds[i].cloud_credential.cloud_provider === "OpenStack"){
+                    $("#default_credentials_os").append("<option value='"+creds[i].cloud_credential.id+"'>"+creds[i].cloud_credential.name+"</option>");
+                }
+
             }
 
             if(typeof this.rootView !== 'undefined' && typeof this.rootView.treePolicy !== 'undefined'){
                 var tp = this.rootView.policies.get(this.rootView.treePolicy);
                 $("#default_credentials").val(tp.attributes.aws_governance.default_credentials);
+                $("#default_credentials_os").val(tp.attributes.os_governance.default_credentials);
             }
-            if(creds.length > 0){
+            if($("#default_credentials").length > 0){
                 $("#whole_form").show("slow");
                 $("#cred_message").hide("slow");
                 this.topics.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
                 this.images.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val(), platform: $("#filter_platform").val()}), reset: true });
                 this.vpcs.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
                 this.subnets.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
+            }
+            if($("#default_credentials_os").length > 0){
+                $("#whole_form_os").show("slow");
+                $("#cred_message_os").hide("slow");
             }
         },
 
@@ -398,7 +414,6 @@ define([
         },
 
         addCredDependent: function(){
-            //debugger
             this.topics.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
             this.images.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val(), platform: $("#filter_platform").val()}), reset: true });
             this.vpcs.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
@@ -406,7 +421,6 @@ define([
         },
         
         addAlarm: function(options){
-            //debugger
             this.alarms.push(options);
             $("#alarm_table").append("<tr><td>"+options.namespace+"</td><td>"+options.metric_name+"</td><td>"+options.threshold+"</td><td>"+options.period+"</td><td><a class='btn btn-mini btn-danger remove_alarm'><i class='icon-minus-sign icon-white'></i></a></td></tr>");
         },
@@ -625,7 +639,7 @@ define([
                 $("#project_name_toggle").prop("checked", false);//.prop('checked', true);
             }
         },
-        
+
         clickCloudTab: function(event){
             $(".tab-selector.active").removeClass("active");
             if(event.target.id === "tab_os"){
