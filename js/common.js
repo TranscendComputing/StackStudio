@@ -131,7 +131,7 @@ requirejs.config({
         'messenger': 'messenger.min',
         'raphael': 'raphael-min',
         'spinner': 'spin.min',
-         URIjs: 'uri/src',
+         URIjs: 'URI',
         'bootstrap': '//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min',
         'typeahead': '../vendor/twitter/typeahead',
         'ace': '//cdnjs.cloudflare.com/ajax/libs/ace/1.1.01/ace',
