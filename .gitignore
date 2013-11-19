@@ -46,3 +46,4 @@ js/vendor/jquery.terminal*js
 js/vendor/ICanHaz.js
 js/vendor/require.js
 js/vendor/twitter/*.js
+js/vendor/URI
