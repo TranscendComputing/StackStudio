@@ -59,9 +59,12 @@ module.exports = function(grunt) {
       'js/vendor/jquery-ui': 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js',
       'js/vendor/jquery.jstree.js': 'http://cachedcommons.org/cache/jquery-jstree/1.0.0/javascripts/jquery-jstree-min.js',
       'js/vendor/jquery.terminal.js': 'http://cdn.jsdelivr.net/jquery.terminal/0.7.8/jquery.terminal-min.js',
-      'js/vendor/ICanHaz.js': 'http://cdnjs.cloudflare.com/ajax/libs/ICanHaz.js/0.10/ICanHaz.min.js',
+      'js/vendor/ICanHaz.js': 'https://raw.github.com/HenrikJoreteg/ICanHaz.js/master/ICanHaz.js',
       'js/vendor/twitter/typeahead.js': 'http://cdn.jsdelivr.net/typeahead.js/0.9.3/typeahead.min.js',
-      'js/vendor/URI.js': 'http://cdn.jsdelivr.net/uri.js/1.9.1/URI.js'
+      'js/vendor/URI/URI.js': 'http://cdn.jsdelivr.net/uri.js/1.10.2/URI.js',
+      'js/vendor/URI/punycode.js': 'http://cdn.jsdelivr.net/uri.js/1.10.2/punycode.js',
+      'js/vendor/URI/IPv6.js': 'http://cdn.jsdelivr.net/uri.js/1.10.2/IPv6.js',
+      'js/vendor/URI/SecondLevelDomains.js': 'http://cdn.jsdelivr.net/uri.js/1.10.2/SecondLevelDomains.js'
     },
     watch: {
       files: '<%= lint.files %>',
