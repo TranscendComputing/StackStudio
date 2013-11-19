@@ -50,7 +50,9 @@ define([
             "focus #os_input": "openImageList",
             "focusout #os_input": "selectImageList",
             "click #delete_image_template_button":"deleteImage",
-            "click input[type='checkbox'][name='clouds_select']":"cloudSelect"
+            //"click input[type='checkbox'][name='clouds_select']":"cloudSelect",
+            "keyup":"keyUp",
+            "click .cloud-button":"cloudSelect"
         },
 
         initialize: function() {
@@ -330,7 +332,7 @@ define([
         },
         
         advTabSelect: function(event){
-            $("li").removeClass('active');
+            $(".active").removeClass('active');
             $("#"+event.target.id).closest('li').addClass('active');
             $(".adv_tab_panel").hide('slow');
             if(event.target.text === "AWS"){
@@ -700,7 +702,7 @@ define([
         getDefaultTemplate: function(){
             var mappings;
             $.ajax({
-              url: '/samples/packer-centos-6.json',
+              url: '/samples/packer-ubuntu-12.json',
               async: false,
               success: function(data) {
                 mappings = data;
@@ -748,9 +750,9 @@ define([
                 $("#image_template_name_input").css('border-color','red');
                 valid = false;
             }
-            var clouds = [];
-            $("input[name='clouds_select']:checkbox:checked").each(function(){  clouds.push($(this).val());   });
-            if(clouds.length <= 0){
+            //var clouds = [];
+            //$("input[name='clouds_select']:checkbox:checked").each(function(){  clouds.push($(this).val());   });
+            if(!$("#os_toggle").hasClass('active') && !$("#aws_toggle").hasClass('active')){
                 $("#clouds_select_msg").html("Must choose a cloud");
                 valid = false;
             }
@@ -758,16 +760,18 @@ define([
         },
         
         cloudSelect: function(e){
-            if(e.target.id === "clouds_select_openstack"){
+            //debugger
+            var aref = $(e.target).closest("a")[0];
+            if(aref.id === "os_toggle"){
                 $("#os_well").toggle('slow');
                 $("#os_toggle").toggleClass('active');
-                $("#openstack_type_select").prop('disabled', !$(e.target).prop('checked'));
-            }else if(e.target.id === "clouds_select_aws"){
+                $("#openstack_type_select").prop('disabled', !$("#os_toggle").hasClass('active'));
+            }else if(aref.id === "aws_toggle"){
                 $("#aws_well").toggle('slow');
                 $("#aws_toggle").toggleClass('active');
-                $("#image_type_select").prop('disabled', !$(e.target).prop('checked'));
-                $("#aws_cred_select").prop('disabled', !$(e.target).prop('checked'));
-                $("#aws_region_select").prop('disabled', !$(e.target).prop('checked'));
+                $("#image_type_select").prop('disabled', !$("#aws_toggle").hasClass('active'));
+                $("#aws_cred_select").prop('disabled', !$("#aws_toggle").hasClass('active'));
+                $("#aws_region_select").prop('disabled', !$("#aws_toggle").hasClass('active'));
             }
             this.toggleComponents();
             this.validate();
@@ -796,13 +800,17 @@ define([
         },
         
         toggleComponents: function(){
-            if(!$("#clouds_select_openstack").prop('checked') && !$("#clouds_select_aws").prop('checked')){
+            if(!$("#os_toggle").hasClass('active') && !$("#aws_toggle").hasClass('active')){
                 $("#instance_well").hide('fast');
                 $("#components_well").hide('fast');
             }else{
                 $("#instance_well").show('fast');
                 $("#components_well").show('fast');
             }
+        },
+        
+        keyUp: function(e){
+            this.validate();
         },
 
         closeImageTemplate: function() {

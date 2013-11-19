@@ -41,7 +41,7 @@
       "ssh_password": "vagrant",
       "ssh_port": 22,
       "ssh_wait_timeout": "10000s",
-      "shutdown_command": "echo 'shutdown -P now' > shutdown.sh; echo 'vagrant'|sudo -S sh 'shutdown.sh'",
+      "shutdown_command": "echo 'shutdown -P now' > shutdown.sh; echo 'vagrant' | sudo -S sh 'shutdown.sh'",
       "qemuargs":[
          [
             "-display",
