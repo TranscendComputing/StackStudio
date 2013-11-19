@@ -125,7 +125,7 @@ requirejs.config({
         'icanhaz': 'ICanHaz',
         'jquery.form': 'jquery.form',
         //'jquery.list': 'jquery.list.min',
-        'jquery.terminal': 'jquery.terminal-0.7.3',
+        'jquery.terminal': 'jquery.terminal',
         'jquery.mousewheel': 'jquery.mousewheel-min',
         'jquery.jstree': '//cachedcommons.org/cache/jquery-jstree/1.0.0/javascripts/jquery-jstree-min',
         'messenger': 'messenger.min',
