@@ -39,7 +39,6 @@
     "grunt-contrib-uglify": "~0.1.2"
   },
   "scripts": {
-    "prepublish": "grunt curl",
     "test": "grunt test"
   },
   "repository": {
