@@ -32,7 +32,7 @@ define([
             var createView = this;
             var compiledTemplate = _.template(managerCreateTemplate);
 
-            this.$el.html(compiledTemplate({ansible:window.ansible}));
+            this.$el.html(compiledTemplate);
             this.$el.dialog({
                 autoOpen: true,
                 title: "New Configuration Manager",

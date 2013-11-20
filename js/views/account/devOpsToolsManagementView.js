@@ -88,15 +88,10 @@ define([
             $('#config_managers_page').html(chefEndpoints);
             $('#config_managers_page').append(puppetEndpoints);
             $('#config_managers_page').append(saltEndpoints);
-            if (window.ansible){
-              var ansibleEndpoints = ich['config_managers_template']({"managers":this.configManagers.toJSON().ansible, "managerType": "Ansible"});
-              $('#config_managers_page').append(ansibleEndpoints);
-            }
-
+            var ansibleEndpoints = ich['config_managers_template']({"managers":this.configManagers.toJSON().ansible, "managerType": "Ansible"});
+            $('#config_managers_page').append(ansibleEndpoints);
             $('input').prop('disabled', true);
-            
             $('button').button();
-            
             this.adminCheck();
         },
         

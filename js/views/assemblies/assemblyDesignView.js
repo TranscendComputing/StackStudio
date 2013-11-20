@@ -48,7 +48,7 @@ define([
         initialize: function(options) {
             console.log("Initialize assembly design view.");
             $("#assemblyDesign").html(this.el);
-            this.$el.html(this.template({ansible:window.ansible}));
+            this.$el.html(this.template());
             this.listView = options.listView;
             this.assemblies = options.assemblies;
             this.currentAssembly = new Assembly();

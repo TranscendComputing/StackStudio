@@ -98,7 +98,7 @@ define([
         /** Add all of my own html elements */
         render: function () {
             //Render my template
-            this.$el.append(this.template({ansible:window.ansible}));
+            this.$el.append(this.template);
             //$("#update_auth_url_button").button();
             //$("ul#cloud_account_list").menu();
             //$("div#detail_tabs").tabs();

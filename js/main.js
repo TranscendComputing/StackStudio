@@ -11,9 +11,6 @@ if (DEBUG) {
     URL_ARGS = 'cb=' + Math.random();
 }
 
-// toggle Ansible support
-window.ansible = false;
-
 require(['./common'], function (common) {
     var dashboardView;
     dashboardView = "views/dashboardView";

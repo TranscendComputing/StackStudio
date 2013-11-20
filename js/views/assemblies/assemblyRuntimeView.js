@@ -65,7 +65,7 @@ define([
         chefIcon: "<img src='/images/CompanyLogos/chefLogo.jpg' class='chef_icon'/>",
         puppetIcon: "<img src='/images/CompanyLogos/puppet.png' class='puppet_icon'/>",
         saltIcon: "<img src='/images/CompanyLogos/saltLogo.jpg' class='salt_icon'/>",
-        ansibleIcon: "<img src='/images/CompanyLogos/ansible.jpg' class='ansible_icon'/>",
+        ansibleIcon: "<img src='/images/CompanyLogos/ansible.png' class='ansible_icon'/>",
 
         subViews: [],
 
@@ -165,9 +165,7 @@ define([
             menu.append('<option value="Chef">Chef</option>');
             menu.append('<option value="Puppet">Puppet</option>');
             menu.append('<option value="Salt">Salt</option>');
-            if (window.ansible){
-              menu.append('<option value="Ansible">Ansible</option>');
-            }
+            menu.append('<option value="Ansible">Ansible</option>');
             menu.get(0).value = "";
         },
 
