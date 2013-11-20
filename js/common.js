@@ -123,10 +123,11 @@ requirejs.config({
         'backbone.stickit': 'backbone.stickit.min',
         'backbone-validation': 'backbone-validation.min',
         'icanhaz': 'ICanHaz',
-        'jquery.form': 'jquery.form',
-        //'jquery.list': 'jquery.list.min',
+        'jquery.form': '//cdnjs.cloudflare.com/ajax/libs/jquery.form/3.45/jquery.form',
         'jquery.terminal': 'jquery.terminal',
         'jquery.mousewheel': 'jquery.mousewheel-min',
+        'jquery.multiselect': '//cdn.jsdelivr.net/jquery.multiselect/1.13/jquery.multiselect.min',
+        'jquery.multiselect.filter': '//cdn.jsdelivr.net/jquery.multiselect/1.13/jquery.multiselect.filter.min',
         'jquery.jstree': '//cdn.jsdelivr.net/jquery.jstree/pre1.0/jquery.jstree',
         'messenger': 'messenger.min',
         'raphael': 'raphael-min',
@@ -177,7 +178,7 @@ require(
                 console.log("Redirecting to local path.");
                 requirejs.config({
                     paths: {
-                        jquery: '../vendor/jquery-1.8.3.min'
+                        jquery: '../vendor/jquery'
                     }
                 });
 

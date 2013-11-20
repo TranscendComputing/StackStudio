@@ -37,7 +37,8 @@ backend.json
 *.swp
 # Vendor files (downloaded)
 js/vendor/backbone.js
-js/vendor/jquery-ui
+js/vendor/jquery.js
+js/vendor/jquery-ui.js
 js/vendor/lodash.js
 js/vendor/ace/*.js
 js/vendor/jquery.jstree.js

@@ -14,8 +14,8 @@ module.exports = function(grunt) {
     },
     source: {
       files: ['js/interpreters/**/*.js',
-      'js/models/**/*.js', 
-      'js/views/**/*.js', 
+      'js/models/**/*.js',
+      'js/views/**/*.js',
       'js/collections/**/*.js',
       'js/aws/**/*.js',
       'js/openstack/**/*.js']
@@ -52,12 +52,13 @@ module.exports = function(grunt) {
     // Download some CDN assets to serve as backups (served locally as last resort)
     curl: {
       'js/vendor/require.js': 'http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.5/require.min.js',
+      'js/vendor/jquery.js': 'http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js',
       'js/vendor/jquery.dataTables.js': 'http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.js',
       'js/vendor/ace/ace.js': 'https://github.com/ajaxorg/ace-builds/blob/master/src-min/ace.js',
       'js/vendor/backbone.js': 'http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min.js',
       'js/vendor/lodash.js': 'http://cdnjs.cloudflare.com/ajax/libs/lodash.js/1.1.0/lodash.min.js',
-      'js/vendor/jquery-ui': 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js',
-      'js/vendor/jquery.jstree.js': 'http://cachedcommons.org/cache/jquery-jstree/1.0.0/javascripts/jquery-jstree-min.js',
+      'js/vendor/jquery-ui.js': 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js',
+      'js/vendor/jquery.jstree.js': 'http://cdn.jsdelivr.net/jquery.jstree/pre1.0/jquery.jstree.js',
       'js/vendor/jquery.terminal.js': 'http://cdn.jsdelivr.net/jquery.terminal/0.7.8/jquery.terminal-min.js',
       'js/vendor/ICanHaz.js': 'https://raw.github.com/HenrikJoreteg/ICanHaz.js/master/ICanHaz.js',
       'js/vendor/twitter/typeahead.js': 'http://cdn.jsdelivr.net/typeahead.js/0.9.3/typeahead.min.js',
@@ -66,6 +67,22 @@ module.exports = function(grunt) {
       'js/vendor/URI/IPv6.js': 'http://cdn.jsdelivr.net/uri.js/1.10.2/IPv6.js',
       'js/vendor/URI/SecondLevelDomains.js': 'http://cdn.jsdelivr.net/uri.js/1.10.2/SecondLevelDomains.js'
     },
+    clean: ['js/vendor/require.js',
+      'js/vendor/jquery.js',
+      'js/vendor/jquery.dataTables.js',
+      'js/vendor/ace/ace.js',
+      'js/vendor/backbone.js',
+      'js/vendor/lodash.js',
+      'js/vendor/jquery-ui.js',
+      'js/vendor/jquery.jstree.js',
+      'js/vendor/jquery.terminal.js',
+      'js/vendor/ICanHaz.js',
+      'js/vendor/twitter/typeahead.js',
+      'js/vendor/URI/URI.js',
+      'js/vendor/URI/punycode.js',
+      'js/vendor/URI/IPv6.js',
+      'js/vendor/URI/SecondLevelDomains.js'
+    ],
     watch: {
       files: '<%= lint.files %>',
       tasks: 'default'
@@ -209,7 +226,7 @@ module.exports = function(grunt) {
                     "css/jquery.multiselect.filter.css": "css/jquery.multiselect.filter.less",
                     "css/jquery-ui.css": "css/jquery-ui.less",
                     "css/morris.css": "css/morris.less"
-                  }        
+                  }
                 }
               }
             });
@@ -223,11 +240,13 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-selenium');
   grunt.loadNpmTasks('grunt-curl');
+  grunt.loadNpmTasks('grunt-contrib-clean');
 
   // Default task.
   grunt.registerTask('test', ['jshint', 'less', 'curl', 'jasmine']);
   grunt.registerTask('default', ['jshint', 'less', 'curl', 'jasmine']);
   grunt.registerTask('run', ['jshint', 'less', 'curl', 'connect:sstudio', 'watch']);
   grunt.registerTask('build', ['jshint', 'curl', 'jasmine', 'concat', 'uglify']);
+  grunt.registerTask('uncurl', ['clean']);
 
 };
