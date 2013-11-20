@@ -127,7 +127,7 @@ requirejs.config({
         //'jquery.list': 'jquery.list.min',
         'jquery.terminal': 'jquery.terminal',
         'jquery.mousewheel': 'jquery.mousewheel-min',
-        'jquery.jstree': '//cachedcommons.org/cache/jquery-jstree/1.0.0/javascripts/jquery-jstree-min',
+        'jquery.jstree': '//cdn.jsdelivr.net/jquery.jstree/pre1.0/jquery.jstree',
         'messenger': 'messenger.min',
         'raphael': 'raphael-min',
         'spinner': 'spin.min',
