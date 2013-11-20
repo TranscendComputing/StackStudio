@@ -37,7 +37,8 @@ define([
             "click .jstree_custom_item": "treeFolderClick",
             "click .new_item_link": "addResource",
             "click #save_template_button": "saveTemplate",
-            'click #run_template_button': "runTemplate"
+            'click #run_template_button': "runTemplate",
+            'click .apply_assembly' : 'applyAssemblyHandler'
         },
 
         initialize: function() {
@@ -118,8 +119,43 @@ define([
         addAllAssemblies: function() {
             $("#assemblies_list").empty();
             this.assemblies.each(function(assembly) {
-                $("#assemblies_list").append("<li><a>"+assembly.attributes.name+"</a></li>");
+                var assemblyEl = $("<li><a>"+assembly.attributes.name+"</a></li>")
+                  .data('configuration', assembly.attributes)
+                  .addClass('apply_assembly');
+                $("#assemblies_list").append(assemblyEl);
             });
+        },
+
+        //[XXX] Currently using the template from #instance_container
+        //which is not ideal, as we might not always load the sample.json
+        //in the app
+        //
+        applyAssemblyHandler: function(e) {
+          var conf  = $(e.currentTarget).data()['configuration'];
+          var resource = $('#instance_container').data();
+          var t = resource.template;
+          //Reference:
+          //http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance.html
+          t.NewInstance.Properties['AvailabilityZone'] = 'us-east-1'; // defaults for now
+          t.NewInstance.Properties['ImageId'] = conf.image.region['ap-east-1'];
+          //[XXX] still need to set this in conf!
+          //t.NewInstance.Properties['InstanceType'] = conf.image.region['ap-east-1'];
+          var content = this.editor.getValue();
+          if (content.replace(/\s/g,"")!==''){
+            content = $.parseJSON(content);
+          } else {
+            content = {};
+          }
+          if (!content[resource.group]){
+            content[resource.group] = {};
+          }
+
+          $.extend(content[resource.group], t);
+          this.editor.setValue(JSON.stringify(content, null,'\t'));
+
+          var range = this.editor.find(resource.name);
+          this.editor.getSelection().setSelectionRange(range);
+
         },
 
         setStack: function(stack) {
@@ -141,6 +177,8 @@ define([
             }
         },
 
+        //[TODO] abstract the JSON processing, as we also do this in the 
+        //applyAssemblyHandler 
         addResource: function(event) {
             var resource = $(event.currentTarget.parentNode).data();
             var groupSelector = "#current_" + resource.group.toLowerCase();
