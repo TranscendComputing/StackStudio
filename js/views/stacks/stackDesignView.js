@@ -137,9 +137,9 @@ define([
           //Reference:
           //http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance.html
           t.NewInstance.Properties['AvailabilityZone'] = 'us-east-1'; // defaults for now
-          t.NewInstance.Properties['ImageId'] = conf.image.region['ap-east-1'];
-          //[XXX] still need to set this in conf!
-          //t.NewInstance.Properties['InstanceType'] = conf.image.region['ap-east-1'];
+          t.NewInstance.Properties['ImageId'] = conf.image.region['us-east-1'];
+          //[TODO] still need a way to define this in assemblies view
+          //t.NewInstance.Properties['InstanceType'] 
           var content = this.editor.getValue();
           if (content.replace(/\s/g,"")!==''){
             content = $.parseJSON(content);
