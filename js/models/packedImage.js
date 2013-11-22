@@ -6,10 +6,11 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
+        'jquery',
         'models/resource/resourceModel',
         'common',
         'spinner'
-], function( ResourceModel, Common, Spinner ) {
+], function( $,ResourceModel, Common, Spinner ) {
     'use strict';
 
     var PackedImage = ResourceModel.extend({
