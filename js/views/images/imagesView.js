@@ -332,7 +332,7 @@ define([
         },
         
         advTabSelect: function(event){
-            $(".active").removeClass('active');
+            $("li.active").removeClass('active');
             $("#"+event.target.id).closest('li').addClass('active');
             $(".adv_tab_panel").hide('slow');
             if(event.target.text === "AWS"){
