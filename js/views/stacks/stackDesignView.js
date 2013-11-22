@@ -35,7 +35,7 @@ define([
 
         events: {
             "click .jstree_custom_item": "treeFolderClick",
-            "click .new_item_link": "addResource",
+            "click .toggle_resource": "toggleResourceHandler",
             "click #save_template_button": "saveTemplate",
             'click #run_template_button': "runTemplate",
             'click .apply_assembly' : 'applyAssemblyHandler'
@@ -82,7 +82,7 @@ define([
                                          "title": d.label,
                                          "attr": {
                                              "id": itemId,
-                                             "class": "new_item_link"
+                                             "class": "toggle_resource"
                                          }
                                      },
                                      "attr": {"id": itemId + "_container"},
@@ -126,13 +126,20 @@ define([
             });
         },
 
-        //[XXX] Currently using the template from #instance_container
-        //which is not ideal, as we might not always load the sample.json
-        //in the app
+        removeAssemblyResources: function(){
+        },
+
+        addAssemblyResources: function(){
+        },
+
+        //[TODO] iterate through a list of assembly specific resources to toggle on or off
+        //i.e., Ansible would be Instance, Python, and Keypair
         //
-        applyAssemblyHandler: function(e) {
+        toggleAssemblyHandler: function(e) {
           var conf  = $(e.currentTarget).data()['configuration'];
-          var resource = $('#instance_container').data();
+          var resourceNode = $('#instance_container');
+          var resource = resourceNode.data();
+          var disable = resourceNode.has_class('ui-state-active');
           var t = resource.template;
           //Reference:
           //http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance.html
@@ -140,23 +147,25 @@ define([
           t.NewInstance.Properties['ImageId'] = conf.image.region['us-east-1'];
           //[TODO] still need a way to define this in assemblies view
           //t.NewInstance.Properties['InstanceType'] 
-          var content = this.editor.getValue();
-          if (content.replace(/\s/g,"")!==''){
-            content = $.parseJSON(content);
+          if (disable) {
+            this.removeResource(resource);
+            $(resourceNode).removeClass('ui-state-active');
           } else {
-            content = {};
+            this.addResource(resource);
+            $(resourceNode).addClass('ui-state-active');
           }
-          if (!content[resource.group]){
-            content[resource.group] = {};
-          }
-
-          $.extend(content[resource.group], t);
-          this.editor.setValue(JSON.stringify(content, null,'\t'));
-
-          var range = this.editor.find(resource.name);
-          this.editor.getSelection().setSelectionRange(range);
-
         },
+        
+        getContent: function(){
+          var content = this.editor.getValue();
+          if (content.replace(/\s/g,"") !== '') {
+              content = jQuery.parseJSON(content);
+          } else {
+              content = {};
+          }
+          return content;
+        },
+
 
         setStack: function(stack) {
             this.stack = stack;
@@ -177,30 +186,47 @@ define([
             }
         },
 
-        //[TODO] abstract the JSON processing, as we also do this in the 
-        //applyAssemblyHandler 
-        addResource: function(event) {
-            var resource = $(event.currentTarget.parentNode).data();
+        setContent: function(resource, content){
+          this.editor.setValue(JSON.stringify(content, null,'\t'));
+        },
+
+        removeResource:  function (resource, content) {
+          if (content[resource.group]) {
+              delete content[resource.group][resource.name];
+          }
+          this.setContent(resource, content);
+        },
+
+        addResource: function(resource, content, conf) {
             var groupSelector = "#current_" + resource.group.toLowerCase();
-            var content;
-
-            content = this.editor.getValue();
-            if (content.replace(/\s/g,"") !== '') {
-                content = jQuery.parseJSON(content);
-            } else {
-                content = {};
-            }
-
             if (!content[resource.group]) {
                 content[resource.group] = {};
             }
-
-            $.extend(content[resource.group], resource.template);
-            this.editor.setValue(JSON.stringify(content, null,'\t'));
-
+            if (!conf){
+              conf = resource.template;
+            }
+            $.extend(content[resource.group], conf);
+            this.setContent(resource, content);
             var range = this.editor.find(resource.name);
             this.editor.getSelection().setSelectionRange(range);
         },
+
+        //[TODO] abstract the JSON processing, as we also do this in the 
+        //applyAssemblyHandler 
+        toggleResourceHandler: function(event) {
+            var resourceNode = event.currentTarget.parentNode;
+            var resource = $(resourceNode).data();
+            var content = this.getContent();
+            var disable = $(resourceNode).hasClass('ui-state-active');
+            if (disable) {
+              this.removeResource(resource, content);
+              $(resourceNode).removeClass('ui-state-active');
+            } else {
+              this.addResource(resource, content);
+              $(resourceNode).addClass('ui-state-active');
+            }
+        },
+
 
         treeFolderClick: function(event) {
             if($(event.target.parentElement).hasClass("jstree-closed")) {
