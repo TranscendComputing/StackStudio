@@ -35,10 +35,10 @@ define([
 
         events: {
             "click .jstree_custom_item": "treeFolderClick",
-            "click .toggle_resource": "toggleResourceHandler",
             "click #save_template_button": "saveTemplate",
             'click #run_template_button': "runTemplate",
-            'click .apply_assembly' : 'applyAssemblyHandler'
+            "click .toggle_resource": "toggleResourceHandler",
+            'click .toggle_assembly' : 'toggleAssemblyHandler'
         },
 
         initialize: function() {
@@ -121,37 +121,42 @@ define([
             this.assemblies.each(function(assembly) {
                 var assemblyEl = $("<li><a>"+assembly.attributes.name+"</a></li>")
                   .data('configuration', assembly.attributes)
-                  .addClass('apply_assembly');
+                  .addClass('toggle_assembly');
                 $("#assemblies_list").append(assemblyEl);
             });
         },
 
+        //[TODO] iterate through a list of assembly specific resources to toggle on or off
+        //i.e., Ansible would be Instance KeyName, Python and SSH
+        //Right now we only manipulate Instance
+        //
         removeAssemblyResources: function(){
         },
 
         addAssemblyResources: function(){
         },
 
-        //[TODO] iterate through a list of assembly specific resources to toggle on or off
-        //i.e., Ansible would be Instance, Python, and Keypair
-        //
         toggleAssemblyHandler: function(e) {
           var conf  = $(e.currentTarget).data()['configuration'];
+          var content = this.getContent();
           var resourceNode = $('#instance_container');
           var resource = resourceNode.data();
-          var disable = resourceNode.has_class('ui-state-active');
+          var disable = resourceNode.hasClass('ui-state-active');
           var t = resource.template;
-          //Reference:
-          //http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance.html
+          // Common for all AWS assemblies
           t.NewInstance.Properties['AvailabilityZone'] = 'us-east-1'; // defaults for now
           t.NewInstance.Properties['ImageId'] = conf.image.region['us-east-1'];
-          //[TODO] still need a way to define this in assemblies view
-          //t.NewInstance.Properties['InstanceType'] 
+          switch(conf.tool){
+            case 'Ansible':
+            //[XXX]Python and SSH should be 'baked' into a CloudFormation - will verify later
+              t.NewInstance.Properties['KeyName'] = 'Selected_Key_Name'; //[TODO] this should be defined in assemblies
+            break;
+          }
           if (disable) {
-            this.removeResource(resource);
+            this.removeResource(resource, content);
             $(resourceNode).removeClass('ui-state-active');
           } else {
-            this.addResource(resource);
+            this.addResource(resource, content,t);
             $(resourceNode).addClass('ui-state-active');
           }
         },
@@ -211,8 +216,6 @@ define([
             this.editor.getSelection().setSelectionRange(range);
         },
 
-        //[TODO] abstract the JSON processing, as we also do this in the 
-        //applyAssemblyHandler 
         toggleResourceHandler: function(event) {
             var resourceNode = event.currentTarget.parentNode;
             var resource = $(resourceNode).data();
