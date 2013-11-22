@@ -653,17 +653,41 @@ define([
                 $("#content_os").hide("slow");  
                 $("#aws_tab_item").addClass("active");
             }
-
+            
         },
 
         clickCloudButton: function(event){
             if(event.target.id === "os_button" || event.target.id === "os_img"){
                 $("#os_button").toggleClass("active");
                 $("#os_tab_item").toggle();
+                if(! $("#os_button").hasClass("active")){
+                    $("#content_os").hide("slow");
+                    if($("#aws_button").hasClass("active")){
+                        $("#content").show("slow");
+                    }
+                }
+                if($("#os_tab_item").is(':visible') && $("#os_button").hasClass("active")){
+                    $("#os_tab_item").addClass("active");
+                    $("#aws_tab_item").removeClass("active");
+                    $("#content_os").show("slow");
+                    $("#content").hide("slow");
+                }
             }
             if(event.target.id === "aws_button" || event.target.id === "aws_img"){
                 $("#aws_button").toggleClass("active");
                 $("#aws_tab_item").toggle();
+                if(! $("#aws_button").hasClass("active")){
+                    $("#content").hide("slow");
+                    if($("#os_button").hasClass("active")){
+                        $("#content_os").show("slow");
+                    }
+                }
+                if($("#aws_tab_item").is(':visible') && $("#aws_button").hasClass("active")){
+                    $("#aws_tab_item").addClass("active");
+                    $("#os_tab_item").removeClass("active");
+                    $("#content").show("slow");
+                    $("#content_os").hide("slow");
+                }
             }
             if($("#aws_button").hasClass("active") || $("#os_button").hasClass("active")){
                 $("#clouds_select_msg").hide();
