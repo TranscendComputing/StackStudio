@@ -41,6 +41,7 @@ define([
             "change #dev_ops_select":"devopsSelect",
             "change #post_processor_select":"postProcessorSelect",
             "change #openstack_type_select":"openstackTypeSelect",
+            "change select":"selectChange",
             "click #adv_collapse_btn":"advCollapseBtn",
             "click .adv_tab": "advTabSelect",
             "click #save_image_template_button":"saveButton",
@@ -232,13 +233,27 @@ define([
             $("#packed_images_list").empty();
             collection.each(function(model) {
                 $("#packed_images_list").append("<li><a href='#images/"+model.attributes.doc_id+"' id='"+model.attributes.doc_id+"' class='img_item'>"+model.attributes.name+"</a></li>");
-            });
+                this.addListIcons(model.attributes.base_image,$("#"+model.attributes.doc_id));
+            },this);
             $("#packed_images_list").show('slow');
             if(this.currentImageTemplate === 'test'){
                 this.clearForm();
             }else if(this.currentImageTemplate){
                 this.popForm(this.currentImageTemplate);
             }
+        },
+        
+        addListIcons: function(base,e){
+            //debugger
+            // var iMap = {
+//                 
+//             };
+            // base.builder_type !== "None" && e.after(base.builder_type);
+//             $.each(clouds, function( index, value ) {
+//               base.os !== "None" && e.after(base.os);
+//             });
+//             base.os !== "None" && e.after(base.os);
+//             base.devops_tool !== "None" && e.after(base.devops_tool);
         },
         
         openImageList: function() {
@@ -782,6 +797,7 @@ define([
             $("#image_template_desc_input").val('');
             // $("#clouds_select_aws").prop('checked',false);
 //             $("#clouds_select_openstack").prop('checked',false);
+            $(".cloud-button").removeClass('active');
             $("#image_type_select").val('None');
             $("#openstack_type_select").val('None');
             $("#os_input").val('');
@@ -811,6 +827,26 @@ define([
         
         keyUp: function(e){
             this.validate();
+        },
+        
+        selectChange: function(e){
+            this.refreshTabs();
+        },
+        
+        refreshTabs: function(){
+            this.refTab($("#image_type_select").val(),$("#builder_tab"));
+            this.refTab($("#openstack_type_select").val(),$("#openstack_tab"));
+            this.refTab($("#image_config_management_select").val(),$("#provisioner_tab"));
+            this.refTab($("#dev_ops_select").val(),$("#devops_tab"));
+            this.refTab($("#post_processor_select").val(),$("#postprocessor_tab"));
+        },
+        
+        refTab: function(selector,tab){
+            if(selector==="None"){
+                tab.hide('fast');
+            }else{
+                tab.show('fast');
+            }
         },
 
         closeImageTemplate: function() {

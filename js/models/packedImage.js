@@ -9,8 +9,9 @@ define([
         'jquery',
         'models/resource/resourceModel',
         'common',
-        'spinner'
-], function( $,ResourceModel, Common, Spinner ) {
+        'spinner',
+        'messenger'
+], function( $,ResourceModel, Common, Spinner, Messenger ) {
     'use strict';
 
     var PackedImage = ResourceModel.extend({
@@ -25,7 +26,16 @@ define([
                 url = Common.apiUrl + "/stackstudio/v1/packed_images/save?uid=" + sessionStorage.org_id + "&docid=" + this.attributes.doc_id;
             }
             this.sendAjaxAction(url, "POST", {"packed_image": this.attributes.packed_image,"name":this.attributes.name,"base_image":this.attributes.base_image}, "packedImageAppRefresh", "Image Saved...");
-            
+            //this.deployIndicator();
+        },
+        
+        deploy: function() {
+            var url = Common.apiUrl + "/stackstudio/v1/packed_images/deploy?uid=" + sessionStorage.org_id + "&doc_id=" + this.attributes.doc_id;
+            this.sendAjaxAction(url, "POST", undefined, "packedImageAppRefresh", "Deploying "+this.attributes.name+"...");
+            this.deployIndicator();
+        },
+        
+        deployIndicator: function(){
             var spinnerOptions = {
                 //lines: 13, // The number of lines to draw
                 length: 4, // The length of each line
@@ -43,14 +53,11 @@ define([
                 top: 0, // Top position relative to parent in px
                 left: 0 // Left position relative to parent in px
             };
-            
             new Spinner(spinnerOptions).spin($("#navLoad").get(0));
-            $("#navLoad").show("fast").append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Deploying "+this.attributes.name);
-        },
-        
-        deploy: function() {
-            var url = Common.apiUrl + "/stackstudio/v1/packed_images/deploy?uid=" + sessionStorage.org_id + "&doc_id=" + this.attributes.doc_id;
-            this.sendAjaxAction(url, "POST", undefined, "packedImageAppRefresh", "Image Deployed...");
+            $("#navLoad").show("fast").append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Deploying "+this.attributes.name).click(function() {
+              $(this).hide('slow').empty();
+              new Messenger().post({type:"success", message:this.attributes.name+" Deployed..."});
+            });
         },
         
         destroy: function(){
