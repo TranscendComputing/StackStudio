@@ -9,6 +9,7 @@
 
                 </div>
         </div>
+
         <!--Check Box Cloud Selection-->
         <label class="control-label" for="clouds_select">
             Clouds
@@ -16,23 +17,24 @@
         </label>
         <div class="control-group">
             <div class="cloud-controls">
-                <a id="aws_button" class="btn primary cloud-button">
+                <a id="aws_button" class="btn primary cloud-button aws">
                     <img id = "aws_img" style="width:64px;" src="/images/CloudLogos/aws_transparent.png">
                 </a>
                 <!-- checkbox?-->
-                <a id="os_button" class="btn primary cloud-button">
+                <a id="os_button" class="btn primary cloud-button os">
                     <img  id = "os_img" src="/images/CloudLogos/openstack300_transparent.png" style="width:64px;">
                 </a>
                 <span id="clouds_select_msg" class="contro-label" for="clouds_select" style="color:red; display: none;">Must choose a cloud</span>
             </div>
         </div>
+
         <!-- Tab Menu-->
         <ul class="nav nav-tabs" id="policyTabs" role="tablist">
-        <li class="active tab-selector" id="aws_tab_item" style="display:none"><a  role="tab" class="cloud-tab" id="tab_aws">AWS</a></li>
-        <li class="active tab-selector" id="os_tab_item" style="display:none"><a  role="tab" class="cloud-tab" id="tab_os">OpenStack</a></li>
+        <li class="active tab-selector aws" id="aws_tab_item" data-cloud="aws" style="display:none"><a  role="tab" class="cloud-tab" id="tab_aws">AWS</a></li>
+        <li class="active tab-selector os" id="os_tab_item" data-cloud="os" style="display:none"><a  role="tab" class="cloud-tab" id="tab_os">OpenStack</a></li>
         </ul>
 
-        <div id="content" style="display:none;">
+        <div id="content" class ="cont aws" data-cloud="aws" style="display:none;">
                 <!-- Select Basic -->
             <div id = "cred_AWS" class="credentials">
                 <label class="control-label">Default Credentials:</label>
@@ -867,7 +869,7 @@
                 </form>
             </div>
         </div>
-        <div id="content_os" style="display:none;">
+        <div id="content_os" class="cont os" data-cloud="os" style="display:none;">
         </div>
     </div>
 </div>

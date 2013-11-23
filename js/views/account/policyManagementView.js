@@ -655,48 +655,44 @@ define([
             }
             
         },
+        buttonBehavior: function(nav)
+        {
+                var button = $("."+nav+".cloud-button");
+                var tab = $("."+nav+".tab-selector");
+                var content = $("."+nav+".cont");
+
+                button.toggleClass("active");
+                tab.toggle();
+                if(! button.hasClass("active")){
+                    content.hide("slow");
+                    if($(".cloud-button").hasClass("active")){
+                        $(".tab-selector:visible").first().addClass("active");
+                        tab.removeClass("active");
+                        var data_cloud = $(".tab-selector:visible").first().attr("data-cloud");
+                        $(".cont." + data_cloud).show("slow");
+                    }
+                }
+                if(tab.is(':visible') && button.hasClass("active")){
+                    $(".tab-selector").removeClass("active");
+                    $(".cont").hide("slow");
+                    tab.addClass("active");
+                    content.show("slow");
+                }
+                if($(".cloud-button").hasClass("active")){
+                    $("#clouds_select_msg").hide();
+                }
+                else{
+                    $("#clouds_select_msg").show();
+                    $(".content").hide("slow");
+                }
+        },
 
         clickCloudButton: function(event){
             if(event.target.id === "os_button" || event.target.id === "os_img"){
-                $("#os_button").toggleClass("active");
-                $("#os_tab_item").toggle();
-                if(! $("#os_button").hasClass("active")){
-                    $("#content_os").hide("slow");
-                    if($("#aws_button").hasClass("active")){
-                        $("#content").show("slow");
-                    }
-                }
-                if($("#os_tab_item").is(':visible') && $("#os_button").hasClass("active")){
-                    $("#os_tab_item").addClass("active");
-                    $("#aws_tab_item").removeClass("active");
-                    $("#content_os").show("slow");
-                    $("#content").hide("slow");
-                }
+                this.buttonBehavior("os");
             }
             if(event.target.id === "aws_button" || event.target.id === "aws_img"){
-                $("#aws_button").toggleClass("active");
-                $("#aws_tab_item").toggle();
-                if(! $("#aws_button").hasClass("active")){
-                    $("#content").hide("slow");
-                    if($("#os_button").hasClass("active")){
-                        $("#content_os").show("slow");
-                    }
-                }
-                if($("#aws_tab_item").is(':visible') && $("#aws_button").hasClass("active")){
-                    $("#aws_tab_item").addClass("active");
-                    $("#os_tab_item").removeClass("active");
-                    $("#content").show("slow");
-                    $("#content_os").hide("slow");
-                }
-            }
-            if($("#aws_button").hasClass("active") || $("#os_button").hasClass("active")){
-                $("#clouds_select_msg").hide();
-            }
-            else{
-                $("#clouds_select_msg").show();
-                $("#content").hide("slow");
-                $("#content_os").hide("slow");
-
+                this.buttonBehavior("aws");
             }
         },
 
