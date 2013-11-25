@@ -27,7 +27,7 @@ define([
         newTemplateResources: undefined,
         newResourceTree: undefined,
         assemblies: undefined,
-        config: undefined,
+        configManagers: undefined,
 
         events: {
             "click .jstree_custom_item": "treeFolderClick",
@@ -40,11 +40,10 @@ define([
         initialize: function() {
             $("#design_time_content").html(this.el);
             this.$el.html(this.template);
-            var configManagers = new ConfigManagers();
-            configManagers.fetch({
+            this.configManagers = new ConfigManagers();
+            this.configManagers.fetch({
               data: $.param({org_id: sessionStorage.org_id})
             });
-            this.config = configManagers.toJSON();
             this.assemblies = new Assemblies();
             this.assemblies.on( 'reset', this.addAllAssemblies, this );
         },
@@ -149,13 +148,13 @@ define([
           t.NewInstance.Properties['ImageId'] = conf.image.region['us-east-1'];
           switch(conf.tool){
             case 'Ansible':
-              var ansible_config; 
-              $.each(this.config['ansible'], function(index, config){
-                if (config.enabled){
-                  ansible_config = config;
+              var config; 
+              $.each(this.configManagers.toJSON()['ansible'], function(index, ansible){
+                if (ansible.enabled){
+                  config = ansible;
                 }
               });
-              var auth = ansible_config.auth_properties;
+              var auth = config.auth_properties;
               var user = auth.ansible_ssh_username;
 
               // t.NewInstance.Properties['KeyName'] = 'Selected_Key_Name'; 
