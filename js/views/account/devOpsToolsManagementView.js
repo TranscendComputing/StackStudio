@@ -35,6 +35,7 @@ define([
             "click button.edit-manager-button" : "editManager",
             "click #new_config_manager": "newConfigManager"
         },
+
         /** Constructor method for current view */
         initialize: function() {
             
@@ -82,13 +83,14 @@ define([
             if(typeof(ich['config_managers_template']) === 'undefined'){
                 ich.grabTemplates();
             }
-            var chefEndpoints = ich['config_managers_template']({"managers":this.configManagers.toJSON().chef, "managerType": "Chef"});
-            var puppetEndpoints = ich['config_managers_template']({"managers":this.configManagers.toJSON().puppet, "managerType": "Puppet"});
-            var saltEndpoints = ich['config_managers_template']({"managers":this.configManagers.toJSON().salt, "managerType": "Salt"});
+            var config = this.configManagers.toJSON();
+            var chefEndpoints = ich['config_managers_template']( {"managers":config['chef'], "managerType": "Chef", "icon": Common.icons.chef});
+            var puppetEndpoints = ich['config_managers_template']( {"managers":config['puppet'], "managerType": "Puppet", "icon":Common.icons.puppet});
+            var saltEndpoints = ich['config_managers_template']( {"managers":config['salt'], "managerType": "Salt", "icon":Common.icons.salt});
             $('#config_managers_page').html(chefEndpoints);
             $('#config_managers_page').append(puppetEndpoints);
             $('#config_managers_page').append(saltEndpoints);
-            var ansibleEndpoints = ich['config_managers_template']({"managers":this.configManagers.toJSON().ansible, "managerType": "Ansible"});
+            var ansibleEndpoints = ich['config_managers_template']( {"managers":config['ansible'], "managerType": "Ansible", "icon":Common.icons.ansible});
             $('#config_managers_page').append(ansibleEndpoints);
             $('input').prop('disabled', true);
             $('button').button();

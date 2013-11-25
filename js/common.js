@@ -281,6 +281,14 @@ define(
     // Initialize custom events object
     var vent = _.extend({}, Backbone.Events);
 
+    // Set up our icons
+    var icons = {
+      chef: "<img src='/images/CompanyLogos/chefLogo.jpg' class='chef_icon'/>",
+      puppet: "<img src='/images/CompanyLogos/puppet.png' class='puppet_icon'/>",
+      salt: "<img src='/images/CompanyLogos/saltLogo.jpg' class='salt_icon'/>",
+      ansible: "<img src='/images/CompanyLogos/ansible.png' class='ansible_icon'/>",
+    };
+
     // Initialize the command line, since that's global to all pages.
     new CommandLineView();
 
@@ -300,6 +308,7 @@ define(
 
         // The global variable to handle custom events
         vent: vent,
+        icons: icons,
 
         backbone: Backbone,
 

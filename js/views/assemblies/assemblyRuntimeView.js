@@ -62,11 +62,6 @@ define([
 
         appsApp: undefined,
 
-        chefIcon: "<img src='/images/CompanyLogos/chefLogo.jpg' class='chef_icon'/>",
-        puppetIcon: "<img src='/images/CompanyLogos/puppet.png' class='puppet_icon'/>",
-        saltIcon: "<img src='/images/CompanyLogos/saltLogo.jpg' class='salt_icon'/>",
-        ansibleIcon: "<img src='/images/CompanyLogos/ansible.png' class='ansible_icon'/>",
-
         subViews: [],
 
         events: {
@@ -285,10 +280,10 @@ define([
                 }
                 instanceInfo.push({"name": name, "ip_addresses": ipAddrs});
             }
-            this.matchInstancesAjax(instanceInfo, this.chefIcon, chefApiUrl, "node", "chef");
-            this.matchInstancesAjax(instanceInfo, this.puppetIcon, puppetApiUrl, "agent", "puppet");
-            this.matchInstancesAjax(instanceInfo, this.saltIcon, saltApiUrl, "minion", "salt");
-            this.matchInstancesAjax(instanceInfo, this.ansibleIcon, ansibleApiUrl, "host", "ansible");
+            this.matchInstancesAjax(instanceInfo, Common.icons.chef, chefApiUrl, "node", "chef");
+            this.matchInstancesAjax(instanceInfo, Common.icons.puppet, puppetApiUrl, "agent", "puppet");
+            this.matchInstancesAjax(instanceInfo, Common.icons.salt, saltApiUrl, "minion", "salt");
+            this.matchInstancesAjax(instanceInfo, Common.icons.ansible, ansibleApiUrl, "host", "ansible");
         },
         matchInstancesAjax: function(instances, icon, url, type, tool){
             $.ajax({
