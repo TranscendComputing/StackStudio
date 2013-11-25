@@ -14,24 +14,20 @@ define([
         'collections/assemblies',
         '/js/aws/views/cloud_formation/awsCloudFormationStackCreateView.js',
         'ace',
+        'collections/configManagers',
         'mode-json',
         'jquery.jstree'
-], function( $, _, Backbone, Common, stacksDesignTemplate, Assemblies, StackCreate, ace) {
+], function( $, _, Backbone, Common,  stackDesignTemplate, Assemblies, StackCreate, ace, ConfigManagers) {
     'use strict';
 
     var StackDesignView = Backbone.View.extend({
-
-        template: _.template( stacksDesignTemplate ),
-
+        template: _.template(stackDesignTemplate),
         editor: undefined,
-
         stack: undefined,
-
         newTemplateResources: undefined,
-
         newResourceTree: undefined,
-
         assemblies: undefined,
+        config: undefined,
 
         events: {
             "click .jstree_custom_item": "treeFolderClick",
@@ -44,6 +40,11 @@ define([
         initialize: function() {
             $("#design_time_content").html(this.el);
             this.$el.html(this.template);
+            var configManagers = new ConfigManagers();
+            configManagers.fetch({
+              data: $.param({org_id: sessionStorage.org_id})
+            });
+            this.config = configManagers.toJSON();
             this.assemblies = new Assemblies();
             this.assemblies.on( 'reset', this.addAllAssemblies, this );
         },
@@ -148,8 +149,26 @@ define([
           t.NewInstance.Properties['ImageId'] = conf.image.region['us-east-1'];
           switch(conf.tool){
             case 'Ansible':
-            //[XXX]Python and SSH should be 'baked' into a CloudFormation - will verify later
-              t.NewInstance.Properties['KeyName'] = 'Selected_Key_Name'; //[TODO] this should be defined in assemblies
+              var ansible_config; 
+              $.each(this.config['ansible'], function(index, config){
+                if (config.enabled){
+                  ansible_config = config;
+                }
+              });
+              var auth = ansible_config.auth_properties;
+              var user = auth.ansible_ssh_username;
+
+              // t.NewInstance.Properties['KeyName'] = 'Selected_Key_Name'; 
+              t.NewInstance.Properties['UserData']={"Fn::Base64":{"Fn::Join":["",[
+                "#!/bin/bash\n",
+                'useradd -m -p `perl -e '+ "‘print crypt("+'“'+auth.ansible_ssh_password +'”, “salt”),”\\n"'+"‘`"+user+'\n',
+                "echo '"+user +"    ALL=(ALL)       ALL' >> /etc/sudoers.d/ansible\n",
+                "HOME_DIR = `grep "+user+" /etc/passwd| cut -d ':' -f 6`\n",
+                "mkdir $HOME_DIR/.ssh\n",
+                "chown "+user+" $HOME_DIR/.ssh\n",
+                "chmod 700 $HOME_DIR/.ssh\n",
+                "echo '"+auth.ssh_key_data +"' > $HOME_DIR/.ssh/authorized_keys\n"  
+              ]]}};
             break;
           }
           if (disable) {
