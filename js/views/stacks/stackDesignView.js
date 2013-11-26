@@ -126,16 +126,15 @@ define([
             });
         },
 
-        //[TODO] iterate through a list of assembly specific resources to toggle on or off
-        //i.e., Ansible would be Instance KeyName, Python and SSH
-        //Right now we only manipulate Instance
-        //
         removeAssemblyResources: function(){
         },
 
         addAssemblyResources: function(){
         },
 
+
+        //  [XXX] The assembly specific logic needs to be moved out of here and into a library
+        //  either on the CM side or in a SS module 
         toggleAssemblyHandler: function(e) {
           var conf  = $(e.currentTarget).data()['configuration'];
           var content = this.getContent();
@@ -166,7 +165,7 @@ define([
                 "mkdir $HOME_DIR/.ssh\n",
                 "chown "+user+" $HOME_DIR/.ssh\n",
                 "chmod 700 $HOME_DIR/.ssh\n",
-                "echo '"+auth.ssh_key_data +"' > $HOME_DIR/.ssh/authorized_keys\n"  
+                "echo '"+auth.ansible_ssh_public_key_data +"' > $HOME_DIR/.ssh/authorized_keys\n"  
               ]]}};
             break;
           }
