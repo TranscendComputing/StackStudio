@@ -143,7 +143,8 @@ define([
           var disable = resourceNode.hasClass('ui-state-active');
           var t = resource.template;
           // Common for all AWS assemblies
-          t.NewInstance.Properties['AvailabilityZone'] = 'us-east-1'; // defaults for now
+          t.NewInstance.Properties['AvailabilityZone'] = 'us-east-1a'; // defaults for now
+          t.NewInstance.Properties['Tenancy'] = 'default'; // defaults for now
           t.NewInstance.Properties['ImageId'] = conf.image.region['us-east-1'];
           switch(conf.tool){
             case 'Ansible':
@@ -261,6 +262,15 @@ define([
 
         runTemplate: function() {
             var template = this.editor.getValue();
+            var t_data = $.parseJSON(template);
+            $.each (t_data.Resources, function(r_key, resource){
+              $.each(resource.Properties, function(p_key, prop){
+                if (prop.length === 0 ) {
+                  delete (t_data.Resources[r_key].Properties[p_key]);
+                }
+              });
+            });
+            template = $.json_stringify(t_data);
             this.newResourceDialog = new StackCreate({cred_id: this.credentialId, 
                 mode: "run",
                 stack: this.stack,
