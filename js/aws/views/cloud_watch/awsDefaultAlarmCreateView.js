@@ -237,8 +237,6 @@ define([
         }
 
     });
-
-    console.log("aws alarm create view defined");
     
     return AwsAlarmCreateView;
 });

@@ -245,15 +245,27 @@ define([
         
         addListIcons: function(base,e){
             //debugger
-            // var iMap = {
-//                 
-//             };
-            // base.builder_type !== "None" && e.after(base.builder_type);
-//             $.each(clouds, function( index, value ) {
-//               base.os !== "None" && e.after(base.os);
-//             });
-//             base.os !== "None" && e.after(base.os);
-//             base.devops_tool !== "None" && e.after(base.devops_tool);
+            var iMap = {
+                "aws":"/images/CloudLogos/amazon.png",
+                "openstack":"/images/CloudLogos/openstack.png",
+                "chef-solo":"/images/CompanyLogos/chef50.png",
+                "salt-masterless":"/images/CompanyLogos/salt50.jpg",
+                "Amazon":"/images/ImageLogos/amazon20.png",
+                "Ubuntu":"/images/ImageLogos/canonical20.gif",
+                "Fedora":"/images/ImageLogos/fedora36.png",
+                "CentOS":"/images/ImageLogos/centos.gif",
+                "Red":"/images/ImageLogos/redhat20.png"
+            };
+            if(base.devops_tool !== "None"){
+                e.after('<img src="'+iMap[base.devops_tool]+'" style="width:16px;"/>');
+            }
+            if(base.os !== "None"){
+                e.after('<img src="'+iMap[base.os.split(" ")[0]]+'" style="width:16px;"/>');
+            }
+            //base.os !== "None" && e.after(base.os);
+            $.each(base.clouds, function( index, value ) {
+              e.after('<img src="'+iMap[value]+'" />');
+            });
         },
         
         openImageList: function() {
@@ -476,7 +488,13 @@ define([
             var base_image = {};
             
             var clouds = [];
-            $("input[name='clouds_select']:checkbox:checked").each(function(){  clouds.push($(this).val());   });
+            if($("#os_toggle").hasClass('active')){
+                clouds.push('openstack');
+            }
+            if($("#aws_toggle").hasClass('active')){
+                clouds.push('aws');
+            }
+            //$("input[name='clouds_select']:checkbox:checked").each(function(){  clouds.push($(this).val());   });
             
             base_image.name = $('#image_template_name_input').val();
             base_image.description = $('#image_template_desc_input').val();
@@ -750,7 +768,7 @@ define([
             $("#clouds_select_msg").empty();
             $("#os_input").css('border-color','grey');
             $("#image_template_name_input").css('border-color','grey');
-            if($("#clouds_select_openstack").is(':checked')){
+            if($("#os_toggle").hasClass('active')){
                 if($("#os_input").val().indexOf("Amazon") !== -1){
                     $("#os_input").css('border-color','red');
                     $("#os_input_msg").html("Amazon Linux not compatible with OpenStack");
