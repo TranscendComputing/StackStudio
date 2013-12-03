@@ -112,6 +112,9 @@ define([
                         data = {"authPropName":"Ansible Username", tag:"input", inputType:"text",authProp:"ansible_user"};
                         otherData = {"authPropName":"Ansible Password", tag:"input", inputType:"password",authProp:"ansible_pass"};
                         additionalData.push(
+                          {"authPropName":"AWS Keypair Name", tag:"input", 
+                          inputType:"text", title:"optional", authProp:"ansible_aws_keypair"});
+                        additionalData.push(
                           {"authPropName":"SSH Public Key", tag:"textarea", 
                           inputType:"text", title:"optional", authProp:"ansible_ssh_public_key_data"});
                         additionalData.push(

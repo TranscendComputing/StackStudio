@@ -143,32 +143,27 @@ define([
           var disable = resourceNode.hasClass('ui-state-active');
           var t = resource.template;
           // Common for all AWS assemblies
-          t.NewInstance.Properties['AvailabilityZone'] = 'us-east-1a'; // defaults for now
-          t.NewInstance.Properties['Tenancy'] = 'default'; // defaults for now
-          t.NewInstance.Properties['ImageId'] = conf.image.region['us-east-1'];
+          var newInstance = t.NewInstance;
+          delete(t['NewInstance']);
+          newInstance.Properties['AvailabilityZone'] = 'us-east-1a'; // defaults for now
+          newInstance.Properties['Tenancy'] = 'default'; // defaults for now
+          newInstance.Properties['ImageId'] = conf.image.region['us-east-1'];
           switch(conf.tool){
             case 'Ansible':
               var config; 
               $.each(this.configManagers.toJSON()['ansible'], function(index, ansible){
                 if (ansible.enabled){
                   config = ansible;
-                }
+                } 
               });
-              var auth = config.auth_properties;
-              var user = auth.ansible_ssh_username;
-
-              // t.NewInstance.Properties['KeyName'] = 'Selected_Key_Name'; 
-              t.NewInstance.Properties['UserData']={"Fn::Base64":{"Fn::Join":["",[
-                "#!/bin/bash\n",
-                'useradd -m -p `perl -e '+ "‘print crypt("+'“'+auth.ansible_ssh_password +'”, “salt”),”\\n"'+"‘`"+user+'\n',
-                "echo '"+user +"    ALL=(ALL)       ALL' >> /etc/sudoers.d/ansible\n",
-                "HOME_DIR = `grep "+user+" /etc/passwd| cut -d ':' -f 6`\n",
-                "mkdir $HOME_DIR/.ssh\n",
-                "chown "+user+" $HOME_DIR/.ssh\n",
-                "chmod 700 $HOME_DIR/.ssh\n",
-                "echo '"+auth.ansible_ssh_public_key_data +"' > $HOME_DIR/.ssh/authorized_keys\n"  
-              ]]}};
-            break;
+              newInstance.Properties['KeyName'] = config.auth_properties.ansible_aws_keypair;
+              t['AnsibleInstance'] = newInstance;
+              break;
+            case 'Chef':
+              t['ChefInstance'] = newInstance;
+              break;
+            default:
+              t['NewInstance'] = newInstance;
           }
           if (disable) {
             this.removeResource(resource, content);
