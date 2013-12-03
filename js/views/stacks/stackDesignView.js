@@ -159,9 +159,6 @@ define([
               newInstance.Properties['KeyName'] = config.auth_properties.ansible_aws_keypair;
               t['AnsibleInstance'] = newInstance;
               break;
-            case 'Chef':
-              t['ChefInstance'] = newInstance;
-              break;
             default:
               t['NewInstance'] = newInstance;
           }
