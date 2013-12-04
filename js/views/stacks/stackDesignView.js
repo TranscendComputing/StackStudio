@@ -28,6 +28,7 @@ define([
         newResourceTree: undefined,
         assemblies: undefined,
         configManagers: undefined,
+        instances: [],
 
         events: {
             "click .jstree_custom_item": "treeFolderClick",
@@ -133,34 +134,34 @@ define([
         },
 
 
-        //  [XXX] The assembly specific logic needs to be moved out of here and into a library
-        //  either on the CM side or in a SS module 
+        // [TODO] Use an add/removeAssemblyHandler instead
         toggleAssemblyHandler: function(e) {
           var conf  = $(e.currentTarget).data()['configuration'];
           var content = this.getContent();
           var resourceNode = $('#instance_container');
           var resource = resourceNode.data();
           var disable = resourceNode.hasClass('ui-state-active');
-          var t = resource.template;
+          var t = $.extend({}, resource.template);
           // Common for all AWS assemblies
-          var newInstance = t.NewInstance;
-          delete(t['NewInstance']);
+          var newInstance =  t.NewInstance;
           newInstance.Properties['AvailabilityZone'] = 'us-east-1a'; // defaults for now
           newInstance.Properties['Tenancy'] = 'default'; // defaults for now
           newInstance.Properties['ImageId'] = conf.image.region['us-east-1'];
           switch(conf.tool){
             case 'Ansible':
+              var jobs =[];
               var config; 
+              $.each(conf.configurations.ansible.host_config, function(i,job){
+                jobs.push(job.id);
+              });
               $.each(this.configManagers.toJSON()['ansible'], function(index, ansible){
                 if (ansible.enabled){
                   config = ansible;
                 } 
               });
+              this.instances.push({'NewInstance':jobs});
               newInstance.Properties['KeyName'] = config.auth_properties.ansible_aws_keypair;
-              t['AnsibleInstance'] = newInstance;
               break;
-            default:
-              t['NewInstance'] = newInstance;
           }
           if (disable) {
             this.removeResource(resource, content);
@@ -266,7 +267,8 @@ define([
             this.newResourceDialog = new StackCreate({cred_id: this.credentialId, 
                 mode: "run",
                 stack: this.stack,
-                content: template
+                content: template,
+                instances: this.instances
             });
             this.newResourceDialog.render();
         }

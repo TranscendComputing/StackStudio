@@ -19,10 +19,11 @@ define([
         'common',
         'spinner',
         'messenger',
+        '/js/collections/ansibleQueueItems.js',
         'jquery.form'
         
 ], function( $, _, Backbone, DialogView, StackCreateTemplate, 
-    Stack, Topics, Topic, Subscription, CloudCredentials, Common, Spinner, Messenger ) {
+    Stack, Topics, Topic, Subscription, CloudCredentials, Common, Spinner, Messenger ,QueueAnsible) {
     
     var CloudFormationStackCreateView = DialogView.extend({
 
@@ -34,6 +35,8 @@ define([
 
         region: undefined,
         stack : undefined,
+        instances: undefined,
+        ansible_queue: undefined,
         mode : "create", // create or run; from cloud management or from stacks page
         currentViewIndex: 0,
         // Delegated events for creating new instances, etc.
@@ -78,6 +81,11 @@ define([
             }
             if (options.stack) {
                 this.stack.set("name", options.stack.get("name"));
+            }
+            // [XXX] Ansible logic that should not be in the aws library
+            if (options.instances){
+              this.ansible_queue = new QueueAnsible();
+              this.instances = options.instances;
             }
             this.stackContent = options.content;
             Common.vent.on("reloadTopics", this.fetchTopics);
@@ -150,7 +158,6 @@ define([
         },
 
         fetchTopics: function(){
-            var $this = this;
             this.topics.fetch(
                 {
                     data: $.param({ cred_id: this.credentialId, region: this.region }),
@@ -304,6 +311,11 @@ define([
                 always(function(xhr) {
                     $(".spinner").remove();
                 });
+            if (this.instances){
+              var stack_name = $("#cf_create_stack_name").val();
+              this.ansible_queue.create(stack_name, this.instances);
+            }
+
             Common.vent.once("cloudFormationStackCreated", _.bind(function(){
                 var messengerString = "Stack " + (this.mode === "create"? "creation":"run") +
                     " in progress.";
