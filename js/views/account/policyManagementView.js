@@ -16,6 +16,7 @@ define([
         'collections/users',
         '/js/aws/collections/notification/awsTopics.js',
         '/js/aws/collections/compute/awsDefaultImages.js',
+        '/js/openstack/collections/compute/openstackImages.js',
         '/js/aws/collections/vpc/awsVpcs.js',
         '/js/aws/collections/vpc/awsSubnets.js',
         'views/account/groupCreateView',
@@ -28,7 +29,7 @@ define([
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator',
         'bootstrap'
-], function( $, _, Backbone, Common, groupsManagementTemplate, groupsManagementTemplateOS, Policy, Users, Topics, Images, Vpcs, Subnets, CreateGroupView, ManageGroupUsers, CreateAlarmView, CreateTopicsView, CreateVpcsView, CreateSubnetView, Spinner ) {
+], function( $, _, Backbone, Common, groupsManagementTemplate, groupsManagementTemplateOS, Policy, Users, Topics, Images, ImagesOS, Vpcs, Subnets, CreateGroupView, ManageGroupUsers, CreateAlarmView, CreateTopicsView, CreateVpcsView, CreateSubnetView, Spinner ) {
 
     var GroupManagementView = Backbone.View.extend({
 
@@ -47,6 +48,8 @@ define([
         topics: undefined,
         
         images: undefined,
+
+        images_os: undefined,
         
         vpcs: undefined,
         
@@ -60,6 +63,8 @@ define([
         
         default_images: [],
 
+        default_images_os: [],
+
         events: {
             "click #manage_group_users_button" : "manageGroupUsers",
             "click #save_button" : "savePolicy",
@@ -67,7 +72,7 @@ define([
             "click #add_image_btn" : "addImage",
             "click .remove_alarm" : "removeAlarm",
             "click .remove_image" : "removeImage",
-            'click #images_table tr': 'selectImage',
+            'click .images-list tr': 'clickImage',
             "change .image_filter":"imageFilterSelect",
             "change .default_credentials":"changeCreds",
             "click .create_topic_btn":"topicCreate",
@@ -135,6 +140,9 @@ define([
             
             this.images = new Images();
             this.images.on('reset', this.addAllImages, this);
+
+            this.images_os = new ImagesOS();
+            this.images_os.on('reset', this.addAllImagesOS, this);
             
             this.vpcs = new Vpcs();
             this.vpcs.on('reset', this.addAllVpcs, this);
@@ -273,9 +281,8 @@ define([
                 }
             });
             oS["default_alarms"] = this.alarms;
-            oS["default_images"] = this.default_images;
+            oS["default_images"] = this.default_images_os;
             oS["button_press"] = $("#os_button").hasClass("active");
-
             newPolicy.save($("#policy_name").val(),o,oS,this.policy,sessionStorage.org_id);
         },
         populateFormOS: function(p){
@@ -303,10 +310,11 @@ define([
                 $("#alarm_table").append("<tr><td>"+this.alarms[j].namespace+"</td><td>"+this.alarms[j].metric_name+"</td><td>"+this.alarms[j].threshold+"</td><td>"+this.alarms[j].period+"</td><td><a class='btn btn-mini btn-danger remove_alarm'><i class='icon-minus-sign icon-white'></i></a></td></tr>");
             } 
 
-            this.default_images = this.model.attributes.aws_governance.default_images;
-            for(var k in this.default_images){
+            $("#default_images_table_os").dataTable().fnClearTable();
+            this.default_images_os = this.model.attributes.os_governance.default_images;
+            for(var k in this.default_images_os){
                 $('input[name=use_approved_images]').attr('checked', true);
-                $("#default_images_table").dataTable().fnAddData([this.default_images[k]["image_id"],this.default_images[k]["source"],"<a class='btn btn-mini btn-danger remove_image'><i class='icon-minus-sign icon-white'></i></a>"]);
+                $("#default_images_table_os").dataTable().fnAddData([this.default_images_os[k]["image_id"],this.default_images_os[k]["source"],"<a class='btn btn-mini btn-danger remove_image'><i class='icon-minus-sign icon-white'></i></a>"]);
             }
         },
         populateForm: function(model){
@@ -337,7 +345,7 @@ define([
             for (var j in this.alarms){
                 $("#alarm_table").append("<tr><td>"+this.alarms[j].namespace+"</td><td>"+this.alarms[j].metric_name+"</td><td>"+this.alarms[j].threshold+"</td><td>"+this.alarms[j].period+"</td><td><a class='btn btn-mini btn-danger remove_alarm'><i class='icon-minus-sign icon-white'></i></a></td></tr>");
             }
-
+            $("#default_images_table").dataTable().fnClearTable();
             this.default_images = this.model.attributes.aws_governance.default_images;
             for(var k in this.default_images){
                 $('input[name=use_approved_images]').attr('checked', true);
@@ -406,6 +414,7 @@ define([
             if($("#default_credentials_os").length > 0){
                 $("#whole_form_os").show("slow");
                 $("#cred_message_os").hide("slow");
+                this.images_os.fetch({ data: $.param({ cred_id: $("#default_credentials_os").val(), region: $("#default_region_os").val()}), reset: true });
             }
         },
 
@@ -416,6 +425,7 @@ define([
         addCredDependent: function(){
             this.topics.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
             this.images.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val(), platform: $("#filter_platform").val()}), reset: true });
+            this.images_os.fetch({ data: $.param({ cred_id: $("#default_credentials_os").val(), region: $("#default_region_os").val()}), reset: true });
             this.vpcs.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
             this.subnets.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
         },
@@ -437,13 +447,20 @@ define([
         },
         
         removeImage: function(event){
+            var defaults = [];
             var tr = $(event.target).closest('tr');
             tr.css("background-color","#FF3700");
             tr.fadeOut(400, function(){
                 tr.remove();
             });
             var trIndex = tr.prevAll().length;
-            this.default_images.splice(trIndex,1);
+            if($(event.target).parents('table').attr('id') === "default_images_table"){
+                defaults = this.default_images;
+            }
+            if($(event.target).parents('table').attr('id') === "default_images_table_os"){
+                defaults = this.default_images_os;
+            }
+            defaults.splice(trIndex,1);
             return false;
         },
         
@@ -477,6 +494,15 @@ define([
                 $("#images_table").dataTable().fnAddData(rowData);
             });
         },
+
+        addAllImagesOS: function(collection){
+            //$(".spinner").remove();
+            $("#images_table_os").dataTable().fnClearTable();
+            collection.each(function(model) {
+                var rowData = [model.attributes.name,model.attributes.status,model.attributes.updated_at];
+                $("#images_table_os").dataTable().fnAddData(rowData);
+            });
+        },      
         
         addAllVpcs: function(collection){
             $("#default_vpc").empty();
@@ -499,23 +525,29 @@ define([
                 $("#default_subnet").val(p.default_subnet);
             }    
         },
+
+        clickImage: function(event){
+            if($(event.target).parents('table').attr('id') === "images_table"){
+                this.selectImage("",event.currentTarget);
+            }
+            if($(event.target).parents('table').attr('id') === "images_table_os"){
+                this.selectImage("_os",event.currentTarget);
+            }
+        },
         
-        selectImage: function(event){
+        selectImage: function(provider,target){
             $(".row_selected").removeClass('row_selected');
-            $(event.currentTarget).addClass('row_selected');
+            $(target).addClass('row_selected');
             
-            var rowData = $("#images_table").dataTable().fnGetData(event.currentTarget);
+            var rowData = $("#images_table"+provider).dataTable().fnGetData(target);
             
             // $("#add_image").hide();
 //             $("#add_image_source").hide();
             
-            $("#add_image").html(rowData[0]);
-            $("#add_image_source").html(rowData[1]);
-            
             // $("#add_image").show(1000);
 //             $("#add_image_source").show(1000);
             
-            this.addImage();
+            this.addImage(provider,rowData[0],rowData[1]);
         },
         
         imageFilterSelect: function(event){
@@ -559,10 +591,17 @@ define([
             createSubnetDialog.render();
         },
         
-        addImage: function(){
-            this.default_images.push({"image_id" : $("#add_image").html(),"source": $("#add_image_source").html()});
-            $("#default_images_table").dataTable().fnAddData([$("#add_image").html(),$("#add_image_source").html(),"<a class='btn btn-mini btn-danger remove_image'><i class='icon-minus-sign icon-white'></i></a>"]);
-            $('input[name=use_approved_images]').attr('checked', true);
+        addImage: function(provider,image,source){
+            var defaults = [];
+            if(provider === ""){
+                defaults = this.default_images;
+            }
+            else if (provider === "_os"){
+                defaults = this.default_images_os;
+            }
+            defaults.push({"image_id": image ,"source": source});
+            $("#default_images_table"+provider).dataTable().fnAddData([image,source,"<a class='btn btn-mini btn-danger remove_image'><i class='icon-minus-sign icon-white'></i></a>"]);
+            $('input[name=use_approved_images'+provider+']').attr('checked', true);
         },
         
         saveImages: function(){
