@@ -351,7 +351,6 @@ define([
                 $('input[name=use_approved_images]').attr('checked', true);
                 $("#default_images_table").dataTable().fnAddData([this.default_images[k]["image_id"],this.default_images[k]["source"],"<a class='btn btn-mini btn-danger remove_image'><i class='icon-minus-sign icon-white'></i></a>"]);
             }
-            
             this.populateFormOS(model.attributes.os_governance);
         },
         
