@@ -6,34 +6,46 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'backbone'
-], function( $, Backbone ) {
-    'use strict';
+  'jquery',
+  'models/resource/resourceModel',
+  'common'
+], function( $, ResourceModel , Common) {
+  'use strict';
 
-    // Cloud Credential Model
-    // ----------
+  // Cloud Credential Model
+  // ----------
 
-    /**
-     *
-     * @name AnsibleQueueItem
-     * @constructor
-     * @category Account
-     * @param {Object} initialization object.
-     * @returns {Object} Returns a CloudCredential instance.
-     */
-    var AnsibleQueueItem = Backbone.Model.extend({
+  /**
+   *
+   * @name AnsibleQueueItem
+   * @constructor
+   * @category Account
+   * @param {Object} initialization object.
+   * @returns {Object} Returns a CloudCredential instance.
+   */
+  var AnsibleQueueItem = ResourceModel.extend({
 
-        /** Default attributes for cloud credential */
-        defaults: {
-            id: "",
-            stack_name: "MyCredentials",
-            jobs: "",
-            errors: '',
-            completed: false
-		}
+   idAttribute: "_id",
+   /** Default attributes for cloud credential */
+   defaults: {
+     id: "",
+     host_name: '',
+     jobs: "",
+     errors: '',
+     completed: false
+   },
 
-    });
+   create : function(host_name, jobs){
+    var url = Common.apiUrl + "/stackstudio/v1/queue/items/";
+    this.sendAjaxAction(url, "POST", {"host_name":host_name, "jobs": jobs});
+   },
 
-    return AnsibleQueueItem;
+   save : function(host_name, jobs){
+    var url = Common.apiUrl + "/stackstudio/v1/queue/items/";
+    this.sendAjaxAction(url, "POST", {"host_name":host_name, "jobs": jobs});
+   }
+
+  });
+
+  return AnsibleQueueItem;
 });

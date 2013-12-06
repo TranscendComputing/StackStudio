@@ -19,11 +19,11 @@ define([
         'common',
         'spinner',
         'messenger',
-        '/js/collections/ansibleQueueItems.js',
+        '/js/models/ansibleQueueItem.js',
         'jquery.form'
         
 ], function( $, _, Backbone, DialogView, StackCreateTemplate, 
-    Stack, Topics, Topic, Subscription, CloudCredentials, Common, Spinner, Messenger ,QueueAnsible) {
+    Stack, Topics, Topic, Subscription, CloudCredentials, Common, Spinner, Messenger ,QueueItem) {
     
     var CloudFormationStackCreateView = DialogView.extend({
 
@@ -36,7 +36,7 @@ define([
         region: undefined,
         stack : undefined,
         instances: undefined,
-        ansible_queue: undefined,
+        queueitem: new QueueItem(),
         mode : "create", // create or run; from cloud management or from stacks page
         currentViewIndex: 0,
         // Delegated events for creating new instances, etc.
@@ -84,7 +84,6 @@ define([
             }
             // [XXX] Ansible logic that should not be in the aws library
             if (options.instances){
-              this.ansible_queue = new QueueAnsible();
               this.instances = options.instances;
             }
             this.stackContent = options.content;
@@ -312,8 +311,14 @@ define([
                     $(".spinner").remove();
                 });
             if (this.instances){
-              var stack_name = $("#cf_create_stack_name").val();
-              this.ansible_queue.create(stack_name, this.instances);
+              var host_name;
+              var jobs;
+              // [XXX] note we should iter over this.instances 
+              $.each(this.instances[0], function(i,v){
+                host_name = i;
+                jobs = v;
+              });
+              this.queueitem.create(host_name, jobs);
             }
 
             Common.vent.once("cloudFormationStackCreated", _.bind(function(){
