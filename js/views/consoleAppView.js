@@ -90,6 +90,13 @@
       }).next().hide().menu( {trigger: $("#con_options")} );
       this.expanded = true; // set to expanded, then toggle, for cmd-only start.
       this.toggleFullSize();
+      console.log("AAHave a this of:", this);
+      require(['./common'], function (Common) {
+        console.log("AAHave a consoleAppView of:", Common.consoleAppView);
+        Common.vent.on('console:mode:docker', _.bind(Common.consoleAppView.changeMode,
+          Common.consoleAppView,
+          "docker"));
+      });
     },
 
     /** No rendering to do, presently; the elements are already on the page. */
@@ -221,8 +228,24 @@
       console.log("Export menu.");
       // TODO: send commands first, then navigate.
       document.location = "/projects/open";
-    }
+    },
 
+    changeMode: function(mode) {
+      console.log("Change mode to mode: ", mode);
+      if (mode !== 'cloud' && mode !== 'docker') {
+        return;
+      }
+      require(['common', 'interpreters/'+mode+'_interpreter'], function (Common, Interpreter) {
+        console.log("Have a this of:", this);
+        console.log("Have a consoleAppView of:", Common.consoleAppView);
+        Common.consoleAppView.setInterpreter(new Interpreter());
+      });
+    },
+
+    setInterpreter: function(interpreter) {
+      this.interpreter = interpreter;
+      this.$cmd.prompt(this.interpreter.tag+"> ");
+    }
   });
 
 return CommandLineView;
