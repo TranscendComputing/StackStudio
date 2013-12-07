@@ -17,9 +17,9 @@ define([
 
     var NavLogin = Backbone.View.extend({
         el: '#navLogin',
-        
+
         accountMenuVisible: false,
-        
+
         events: {
             'click #account_login': 'accountLogin',
             'click #account_logout': 'accountLogout'
@@ -34,12 +34,12 @@ define([
 
         render: function() {
             if(sessionStorage.login) {
-                this.$el.html("<li id='nav_account' class='main_nav'><a href='/#account/management/home'><i class='icon-large icon-user' style='padding-right:3px;'></i>"+sessionStorage.login+"</a></li><li><a id='account_logout'>Logout</a></li>");
+                this.$el.html("<li id='nav_account' class='main_nav'><a href='/#account/management/home'><i class='fa fa-user' style='padding-right:3px;'></i>"+sessionStorage.login+"</a></li><li><a id='account_logout'>Logout</a></li>");
             } else {
                 this.$el.html("<li><a id='account_login'>Login</a></li>");
             }
         },
-        
+
         accountLogin: function() {
             var accountLoginView = new AccountLoginView();
             accountLoginView.render();
