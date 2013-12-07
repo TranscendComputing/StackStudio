@@ -24,6 +24,8 @@ define([
      */
     var BaseInterpreter = function(options) {
         this.options = options || {};
+        this.tag = "base";
+        this.welcome = "Base Interpreter";
     };
 
     /**
