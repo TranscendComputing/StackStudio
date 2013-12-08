@@ -42,6 +42,7 @@ define([
             return result;
         },
         service: function(command_line) {
+            var result = {type: 'success'};
             // TODO: call backend
             result.message = "Service status.";
             return result;

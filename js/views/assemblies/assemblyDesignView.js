@@ -195,6 +195,7 @@ define([
         toolChangeHandler: function(evt){
             var tool = $(evt.target).val().toLowerCase();
             Common.vent.trigger('assembly:changeTool', tool);
+            // Docker has extra controls to display.
             if ( tool === "docker") {
                 this.enableDocker();
             } else {
