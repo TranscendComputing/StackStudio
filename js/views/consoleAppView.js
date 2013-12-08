@@ -155,11 +155,11 @@
         }
         this.$console =
         $('#cloud_console').terminal(this.handleCommand, {
-          greetings : 'Cloud Console',
+          greetings : this.interpreter.welcome,
           name : 'cloud_console',
           height : 200,
           //prompt : '[1;32mcloud[0m> ',
-          prompt : 'cloud> ',
+          prompt : this.interpreter.tag+"> ",
           keypress : this.onCommandKey
         });
 
@@ -174,11 +174,11 @@
         }
         this.$cmd = $('#cloud_cmd').cmd({
           enabled: false,
-          greetings : 'Cloud Console',
+          greetings : this.interpreter.welcome,
           name : 'cloud_console',
           width : '100%',
           //prompt : '[1;32mcloud[0m> ',
-          prompt : 'cloud> ',
+          prompt : this.interpreter.tag+"> ",
           tabcompletion: true,
           commands : this.handleCommand,
           keypress : this.onCommandKey
@@ -231,13 +231,10 @@
     },
 
     changeMode: function(mode) {
-      console.log("Change mode to mode: ", mode);
       if (mode !== 'cloud' && mode !== 'docker') {
         return;
       }
       require(['common', 'interpreters/'+mode+'_interpreter'], function (Common, Interpreter) {
-        console.log("Have a this of:", this);
-        console.log("Have a consoleAppView of:", Common.consoleAppView);
         Common.consoleAppView.setInterpreter(new Interpreter());
       });
     },

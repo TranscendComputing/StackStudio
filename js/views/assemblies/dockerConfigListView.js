@@ -12,8 +12,7 @@ define([
         'backbone',
         'icanhaz',
         'common',
-        //'text!templates/assemblies/configTreeTemplate.html',
-        'text!templates/assemblies/configTreeTemplate.html',
+        'text!templates/assemblies/dockerFileView.html',
         'collections/apps',
         'collections/cloudCredentials',
         'collections/cookbooks',
@@ -23,24 +22,23 @@ define([
         'collections/ansibleJobTemplates',
         'views/assemblies/appListView',
         'models/app',
-        /*'ace',
-        'mode-json',*/
+        'ace',
         'jquery-plugins',
         'jquery-ui-plugins',
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator',
         'jquery.sortable'
-],function( $, _, bootstrap, Backbone, ich, Common, appsTemplate, Apps,
+],function( $, _, bootstrap, Backbone, ich, Common, dockerFileView, Apps,
     CloudCredentials, Cookbooks, ChefEnvironments, PuppetClasses, SaltStates,
     AnsibleJobTemplates, AppListView,
-    App/*, ace*/ ) {
+    App, ace ) {
 
     var DockerConfigListView = Backbone.View.extend({
         id: 'config_list',
 
         //className: [''],
 
-        template: _.template(appsTemplate),
+        template: _.template(dockerFileView),
 
         cloudProvider: undefined,
 
@@ -53,15 +51,22 @@ define([
 
         initialize: function(){
             Common.vent.trigger("console:mode:docker");
+            Common.vent.on('docker:add', _.bind(this.addDocker, this));
         },
 
         render: function () {
-            /*
-            this.editor = ace.edit("dockerfile_editor");
+            $("#assemblyLeftNav").empty();
+            $("#assemblyLeftNav").html(this.el);
+            this.$el.html(this.template);
+            this.editor = window.ace.edit("dockerfile_editor");
             this.editor.setTheme("ace/theme/monokai");
             this.editor.getSession().setUseWorker(false);
-            this.editor.getSession().setMode("ace/mode/json");
-            */
+            this.editor.getSession().setMode("ace/mode/sh");
+        },
+
+        addDocker: function(command) {
+            var session = this.editor.getSession();
+            session.setValue(session.getValue()+"\nRUN "+command);
         },
 
         // Clean up view

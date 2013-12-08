@@ -7,8 +7,9 @@
 /*global define:true console:true */
 define([
         'underscore',
+        'common',
         'interpreters/base_interpreter'
-], function( _, BaseInterpreter ) {
+], function( _, Common, BaseInterpreter ) {
     'use strict';
 
     // Standard Class for Docker Interpreter
@@ -33,13 +34,14 @@ define([
     };
 
     _.extend(DockerInterpreter.prototype, BaseInterpreter.prototype, {
-        apt_get: function() {
+        apt_get: function(command_line) {
             var result = {type: 'success'};
             // TODO: call backend
             result.message = "Install a package.";
+            Common.vent.trigger('docker:add', command_line);
             return result;
         },
-        service: function() {
+        service: function(command_line) {
             // TODO: call backend
             result.message = "Service status.";
             return result;

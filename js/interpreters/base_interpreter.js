@@ -52,7 +52,7 @@ define([
         // hyphens are not legal in JS, but may be in command, so check both
         [command, command.replace(/-/g, '_')].map(function(cmd) {
             if (typeof self[cmd] === "function") {
-                result = self[cmd]();
+                result = self[cmd](command_line);
             }
         });
         if (result === undefined) {

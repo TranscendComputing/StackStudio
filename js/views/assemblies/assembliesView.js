@@ -313,6 +313,7 @@ define([
                     this.listView = new ConfigListView();
                     break;
             }
+            this.listView.render();
         }
 
     });
