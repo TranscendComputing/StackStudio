@@ -310,15 +310,18 @@ define([
                 always(function(xhr) {
                     $(".spinner").remove();
                 });
+
+            // Ansible specific 
             if (this.instances){
+              var stack_name = $("#cf_create_stack_name").val(); 
               var host_name;
               var jobs;
-              // [XXX] note we should iter over this.instances 
+              // [XXX] not the best way to get key and val
               $.each(this.instances[0], function(i,v){
                 host_name = i;
                 jobs = v;
               });
-              this.queueitem.create(host_name, jobs);
+              this.queueitem.create(this.credentialId, stack_name,host_name, jobs);
             }
 
             Common.vent.once("cloudFormationStackCreated", _.bind(function(){
