@@ -38,7 +38,7 @@ define([
         initialize: function() {
             $("#main").html(this.el);
             this.$el.html(this.template);
-            Common.vent.on('assembly:changeTool', _.bind(this.changeTool, this));
+            Common.vent.on('assembly:changeTool', this.changeTool, this);
             //this.currentAssembly = new Assembly();
         },
 
@@ -302,6 +302,7 @@ define([
         },
         changeTool: function(tool) {
             console.log("Got new tool:", tool);
+            Common.vent.trigger("console:mode", tool);
             if (this.listView) {
                 this.listView.close();
             }

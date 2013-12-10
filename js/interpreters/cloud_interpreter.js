@@ -28,6 +28,7 @@ define([
         this.options = options || {};
         this.tag = "cloud";
         this.welcome = "Cloud Console";
+        this.color = "#00ee11";
         this.commands = ['cloud-run-instances',
                          'cloud-describe-instances',
                          'cloud-allocate-address',

@@ -29,6 +29,7 @@ define([
         this.options = options || {};
         this.tag = "docker";
         this.welcome = "Dockerfile";
+        this.color = "#ee1100";
         this.commands = ['apt-get',
                          'service'];
     };

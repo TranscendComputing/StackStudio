@@ -93,9 +93,8 @@
       console.log("AAHave a this of:", this);
       require(['./common'], function (Common) {
         console.log("AAHave a consoleAppView of:", Common.consoleAppView);
-        Common.vent.on('console:mode:docker', _.bind(Common.consoleAppView.changeMode,
-          Common.consoleAppView,
-          "docker"));
+        Common.vent.on('console:mode', Common.consoleAppView.changeMode,
+          Common.consoleAppView);
       });
     },
 
@@ -158,8 +157,9 @@
           greetings : this.interpreter.welcome,
           name : 'cloud_console',
           height : 200,
+          prompt : "[[g;"+this.interpreter.color+";#000]"+this.interpreter.tag+"]> ",
           //prompt : '[1;32mcloud[0m> ',
-          prompt : this.interpreter.tag+"> ",
+          //prompt : this.interpreter.tag+"> ",
           keypress : this.onCommandKey
         });
 
@@ -178,7 +178,7 @@
           name : 'cloud_console',
           width : '100%',
           //prompt : '[1;32mcloud[0m> ',
-          prompt : this.interpreter.tag+"> ",
+          prompt : "[[g;"+this.interpreter.color+";#000]"+this.interpreter.tag+"]> ",
           tabcompletion: true,
           commands : this.handleCommand,
           keypress : this.onCommandKey
@@ -232,6 +232,7 @@
 
     changeMode: function(mode) {
       if (mode !== 'cloud' && mode !== 'docker') {
+        this.changeMode('cloud');
         return;
       }
       require(['common', 'interpreters/'+mode+'_interpreter'], function (Common, Interpreter) {
@@ -240,8 +241,14 @@
     },
 
     setInterpreter: function(interpreter) {
+      var prompt = "[[g;"+interpreter.color+";#000]"+interpreter.tag+"]> ";
       this.interpreter = interpreter;
-      this.$cmd.prompt(this.interpreter.tag+"> ");
+      if (this.$cmd) {
+        this.$cmd.prompt(prompt);
+      }
+      if (this.$console) {
+        this.$console.set_prompt(prompt);
+      }
     }
   });
 

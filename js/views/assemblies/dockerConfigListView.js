@@ -50,7 +50,6 @@ define([
         },
 
         initialize: function(){
-            Common.vent.trigger("console:mode:docker");
             Common.vent.on('docker:add', _.bind(this.addDocker, this));
         },
 
