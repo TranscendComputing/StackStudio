@@ -49,6 +49,10 @@ requirejs.config({
             deps: ['jquery.dataTables'],
             exports: 'fnReloadAjax'
         },
+        'dataTables.fnProcessingIndicator': {
+            deps: ['jquery.dataTables'],
+            exports: 'fnProcessingIndicator'
+        },
         'FeedEk': {
             deps: ['jquery']
         },
@@ -249,7 +253,9 @@ define(
          'text!/backend.json',
          'jquery-ui',
          'jquery-ui-plugins',
-         'backbone.stickit'
+         'backbone.stickit',
+         'jquery.dataTables',
+         'datatables.bootstrap'
          ], function ($, _, Backbone, CommandLineView, Router, ErrorDialog, backendTxt) {
 
     // Added custom handler for select

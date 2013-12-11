@@ -301,7 +301,6 @@ define([
             return confirmation;
         },
         changeTool: function(tool) {
-            console.log("Got new tool:", tool);
             Common.vent.trigger("console:mode", tool);
             if (this.listView) {
                 this.listView.close();
