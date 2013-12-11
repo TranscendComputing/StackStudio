@@ -35,7 +35,7 @@ define([
 
         region: undefined,
         stack : undefined,
-        instances: undefined,
+        assemblies: undefined,
         queueitem: new QueueItem(),
         mode : "create", // create or run; from cloud management or from stacks page
         currentViewIndex: 0,
@@ -84,7 +84,7 @@ define([
             }
             // [XXX] Ansible logic that should not be in the aws library
             if (options.instances){
-              this.instances = options.instances;
+              this.assemblies = options.instances;
             }
             this.stackContent = options.content;
             Common.vent.on("reloadTopics", this.fetchTopics);
@@ -312,12 +312,12 @@ define([
                 });
 
             // Ansible specific 
-            if (this.instances){
+            if (this.assemblies){
               var stack_name = $("#cf_create_stack_name").val(); 
               var host_name;
               var jobs;
-              // [XXX] not the best way to get key and val
-              $.each(this.instances[0], function(i,v){
+              // [XXX] just assuming this are ansible jobs
+              $.each(this.assemblies[0], function(i,v){
                 host_name = i;
                 jobs = v;
               });
