@@ -43,6 +43,7 @@ define([
 			'images': 'imagesRoute',
             'images/:id': 'imagesRoute',
             'assemblies': 'assembliesRoute',
+            'cookbooks': 'cookbooksRoute',
             'stacks': 'stacksRoute',
             'offerings': 'offeringsRoute',
 			'projects': 'projects',
@@ -90,6 +91,14 @@ define([
             $(".main_nav").removeClass("nav_selected");
             $("#assemblies_nav").addClass("nav_selected");
             this.trigger("route:assemblies");
+        },
+
+        cookbooksRoute: function(action) {
+            $("#sidebar").empty();
+            $("#sidebar").hide();
+            $(".main_nav").removeClass("nav_selected");
+            $("#cookbooks_nav").addClass("nav_selected");
+            this.trigger("route:cookbooks");
         },
 
         stacksRoute: function(action) {
