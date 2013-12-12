@@ -252,8 +252,16 @@ define([
         savePolicy: function(){
             var newPolicy = new Policy();
             
+            var o = this.populateSavedHash("#content form");
+            var oS = this.populateSavedHash("#content_os form");
+            var pW = this.populateSavedHash("#password_policy form");
+            //o["button_press"] = $("#aws_button").hasClass("active");
+            //oS["button_press"] = $("#os_button").hasClass("active");
+            newPolicy.save($("#policy_name").val(),o,oS,pW,this.policy,sessionStorage.org_id);
+        },
+        populateSavedHash: function(form_name){
             var o = {};
-            var a = $("#content form").serializeArray();
+            var a = $(form_name).serializeArray();
             $.each(a, function() {
                 if (o[this.name]) {
                     if (!o[this.name].push) {
@@ -264,26 +272,18 @@ define([
                     o[this.name] = this.value || '';
                 }
             });
-            o["default_alarms"] = this.alarms;
-            o["default_images"] = this.default_images;
-            o["button_press"] = $("#aws_button").hasClass("active");
-
-            var oS = {};
-            var aOS = $("#content_os form").serializeArray();
-            $.each(aOS, function() {
-                if (oS[this.name]) {
-                    if (!oS[this.name].push) {
-                        oS[this.name] = [oS[this.name]];
-                    }
-                    oS[this.name].push(this.value || '');
-                } else {
-                    oS[this.name] = this.value || '';
-                }
-            });
-            oS["default_alarms"] = this.alarms;
-            oS["default_images"] = this.default_images_os;
-            oS["button_press"] = $("#os_button").hasClass("active");
-            newPolicy.save($("#policy_name").val(),o,oS,this.policy,sessionStorage.org_id);
+            
+            if(form_name === "content form")
+            {
+                o["default_alarms"] = this.alarms;
+                o["default_images"] = this.default_images;
+            }
+            if(form_name === "content_os form")
+            {
+                o["default_alarms"] = this.alarms;
+                o["default_images"] = this.default_images_os;
+            }
+            return o;
         },
         populateFormOS: function(p){
             for (var key in p) {
