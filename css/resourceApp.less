@@ -132,8 +132,11 @@
 #resource_app {
     float:left;
 }
+
+@expander_width: 20px;
+
 #resource_app.full_width {
-    width: 100%;
+    width: calc(~'100% - @{expander_width}');
 }
 #resource_app.service_width {
     width: 80%;
