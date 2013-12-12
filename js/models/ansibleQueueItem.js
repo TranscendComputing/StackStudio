@@ -36,12 +36,12 @@ define([
    },
 
    create : function(cred_id, stack_name, host_name, jobs){
-    var url = Common.apiUrl + "/stackstudio/v1/queue/items/"+ "?account_id="+ sessionStorage.account_id;
+    var url = Common.apiUrl + "/stackstudio/v1/queue/item/"+ "?account_id="+ sessionStorage.account_id;
     this.sendAjaxAction(url, "POST", {"credential_id" : cred_id, "stack_name": stack_name, "host_name":host_name, "jobs": jobs});
    },
 
    save : function(cred_id, stack_name, host_name, jobs){
-    var url = Common.apiUrl + "/stackstudio/v1/queue/items/"+ "?account_id="+ sessionStorage.account_id;
+    var url = Common.apiUrl + "/stackstudio/v1/queue/item/"+ "?account_id="+ sessionStorage.account_id;
     this.sendAjaxAction(url, "POST", {"credential_id" : cred_id, "stack_name": stack_name, "host_name":host_name, "jobs": jobs});
    }
 
