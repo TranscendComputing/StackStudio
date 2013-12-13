@@ -254,7 +254,7 @@ define([
             
             var o = this.populateSavedHash("#content form");
             var oS = this.populateSavedHash("#content_os form");
-            var pW = this.populateSavedHash("#password_policy form");
+            var pW = this.populateSavedHash("#content_org form");
             //o["button_press"] = $("#aws_button").hasClass("active");
             //oS["button_press"] = $("#os_button").hasClass("active");
             newPolicy.save($("#policy_name").val(),o,oS,pW,this.policy,sessionStorage.org_id);
@@ -272,13 +272,13 @@ define([
                     o[this.name] = this.value || '';
                 }
             });
-            
-            if(form_name === "content form")
+        
+            if(form_name === "#content form")
             {
                 o["default_alarms"] = this.alarms;
                 o["default_images"] = this.default_images;
             }
-            if(form_name === "content_os form")
+            if(form_name === "#content_os form")
             {
                 o["default_alarms"] = this.alarms;
                 o["default_images"] = this.default_images_os;
@@ -309,12 +309,35 @@ define([
             for (var j in this.alarms){
                 $("#alarm_table").append("<tr><td>"+this.alarms[j].namespace+"</td><td>"+this.alarms[j].metric_name+"</td><td>"+this.alarms[j].threshold+"</td><td>"+this.alarms[j].period+"</td><td><a class='btn btn-mini btn-danger remove_alarm'><i class='icon-minus-sign icon-white'></i></a></td></tr>");
             } 
+            if(this.model.attributes.os_governance.default_images)
+            {
+                $("#default_images_table_os").dataTable().fnClearTable();
+                this.default_images_os = this.model.attributes.os_governance.default_images;
 
-            $("#default_images_table_os").dataTable().fnClearTable();
-            this.default_images_os = this.model.attributes.os_governance.default_images;
-            for(var k in this.default_images_os){
-                $('input[name=use_approved_images]').attr('checked', true);
-                $("#default_images_table_os").dataTable().fnAddData([this.default_images_os[k]["image_id"],this.default_images_os[k]["source"],"<a class='btn btn-mini btn-danger remove_image'><i class='icon-minus-sign icon-white'></i></a>"]);
+                for(var k in this.default_images_os){
+                    $('input[name=use_approved_images]').attr('checked', true);
+                    $("#default_images_table_os").dataTable().fnAddData([this.default_images_os[k]["image_id"],this.default_images_os[k]["source"],"<a class='btn btn-mini btn-danger remove_image'><i class='icon-minus-sign icon-white'></i></a>"]);
+                }
+            }
+        },
+        populateFormPW: function(p){
+            for (var key in p) {
+              if (p.hasOwnProperty(key)) {    
+                var typ = $( "input[name='"+key+"']" ).prop("type");
+                if(typ === "checkbox"){
+                    if(typeof p[key] === 'string'){
+                        $( "input[name='"+key+"'][value='"+p[key]+"']" ).attr('checked','checked');
+                    }else{
+                        for (var i in p[key]) {
+                          $( "input[name='"+key+"'][value='"+p[key][i]+"']" ).attr('checked','checked');
+                        }
+                    }
+                }else if(typ === "radio"){
+                    $( "input[name='"+key+"'][value='"+p[key]+"']" ).attr('checked','checked');
+                }else{
+                    $("#"+key+"_pw").val(p[key]);
+                }
+              }
             }
         },
         populateForm: function(model){
@@ -345,13 +368,17 @@ define([
             for (var j in this.alarms){
                 $("#alarm_table").append("<tr><td>"+this.alarms[j].namespace+"</td><td>"+this.alarms[j].metric_name+"</td><td>"+this.alarms[j].threshold+"</td><td>"+this.alarms[j].period+"</td><td><a class='btn btn-mini btn-danger remove_alarm'><i class='icon-minus-sign icon-white'></i></a></td></tr>");
             }
-            $("#default_images_table").dataTable().fnClearTable();
-            this.default_images = this.model.attributes.aws_governance.default_images;
-            for(var k in this.default_images){
-                $('input[name=use_approved_images]').attr('checked', true);
-                $("#default_images_table").dataTable().fnAddData([this.default_images[k]["image_id"],this.default_images[k]["source"],"<a class='btn btn-mini btn-danger remove_image'><i class='icon-minus-sign icon-white'></i></a>"]);
+            if(this.model.attributes.aws_governance.default_images)
+            {
+                $("#default_images_table").dataTable().fnClearTable();
+                this.default_images = this.model.attributes.aws_governance.default_images;
+                for(var k in this.default_images){
+                    $('input[name=use_approved_images]').attr('checked', true);
+                    $("#default_images_table").dataTable().fnAddData([this.default_images[k]["image_id"],this.default_images[k]["source"],"<a class='btn btn-mini btn-danger remove_image'><i class='icon-minus-sign icon-white'></i></a>"]);
+                }
             }
             this.populateFormOS(model.attributes.os_governance);
+            this.populateFormPW(model.attributes.org_governance);
         },
         
         refreshSession: function(){
@@ -545,7 +572,6 @@ define([
             
             // $("#add_image").show(1000);
 //             $("#add_image_source").show(1000);
-            
             this.addImage(provider,rowData[0],rowData[1]);
         },
         
