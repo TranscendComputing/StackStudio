@@ -52,7 +52,7 @@ define([
         },
         
         setUser: function(){
-            this.account.setUser({"rss_url":$("#rss_input").val()});
+            this.account.setUser({"rss_url":$("#rss_input").val(),"password":$("#password_input").val()});
         },
 
         close: function(){

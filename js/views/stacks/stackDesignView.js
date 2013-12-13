@@ -241,7 +241,6 @@ define([
             }
         },
 
-
         treeFolderClick: function(event) {
             if($(event.target.parentElement).hasClass("jstree-closed")) {
                 $(event.target.parentElement).removeClass("jstree-closed");
