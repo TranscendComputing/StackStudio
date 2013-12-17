@@ -10,7 +10,7 @@ define([
         'underscore',
         'backbone',
         'views/dialogView',
-        'text!templates/account/ciServerAddEditTemplate.html',
+        'text!templates/account/continuousIntegrationServerAddEditTemplate.html',
         '/js/models/continuousIntegrationServer.js',
         'common'
         
@@ -55,6 +55,7 @@ define([
         },
 
         render: function() {
+            debugger
             if(this.ciServer) {
                 $("#ci_name_input").val(this.ciServer.attributes["name"]);
                 $("#ci_host_input").val(this.ciServer.attributes["host"]);

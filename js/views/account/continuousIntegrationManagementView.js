@@ -13,7 +13,7 @@ define([
         'icanhaz',
         'text!templates/account/managementContinuousIntegrationTemplate.html',
         'collections/continuousIntegrationServers',
-        'views/account/ciServerAddEditView',
+        'views/account/continuousIntegrationServerAddEditView',
         'jquery-plugins',
         'jquery-ui-plugins'
 ], function( $, _, Backbone, Common, ich, managementContinuousIntegrationTemplate, CIServers, CIServerAddEditView ) {
