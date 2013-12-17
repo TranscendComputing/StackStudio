@@ -27,10 +27,11 @@ define([
         'views/account/groupsManagementView',
         'views/account/groupsManagementListView',
         'views/account/devOpsToolsManagementView',
+        'views/account/continuousIntegrationManagementView',
         'jquery-plugins',
         'jquery-ui-plugins',
         'jquery.jstree'
-], function( $, _, Backbone, Common, managementTemplate, Groups, CloudCredentials, CloudAccounts, Policies, NewLoginView, CloudAccountManagementView, CloudCredentialManagementView, CloudCredentialManagementListView, CloudAccountManagementListView, UsersManagementView, PoliciesManagementView, PolicyManagementView, HomeView, GroupsManagementView, GroupsManagementListView, DevOpsToolsManagementView ) {
+], function( $, _, Backbone, Common, managementTemplate, Groups, CloudCredentials, CloudAccounts, Policies, NewLoginView, CloudAccountManagementView, CloudCredentialManagementView, CloudCredentialManagementListView, CloudAccountManagementListView, UsersManagementView, PoliciesManagementView, PolicyManagementView, HomeView, GroupsManagementView, GroupsManagementListView, DevOpsToolsManagementView, ContinuousIntegrationManagementView ) {
     var AccountManagementView = Backbone.View.extend({
         /** @type {String} DOM element to attach view to */
         el: "#main",
@@ -128,6 +129,12 @@ define([
             }).on('loaded.jstree', function() {
                     $("#mdevOps_tree").jstree('open_all');
             });
+            $("#mContinuousIntegration_tree").jstree({
+                "themeroller":{"item": "jstree_custom_item"},
+                "plugins":[ "themeroller", "html_data", "crrm" ]
+            }).on('loaded.jstree', function() {
+                    $("#mContinuousIntegration_tree").jstree('open_all');
+            });
         },
         addAllGroups: function() {
             $('.group_item.tree_item').remove();
@@ -163,7 +170,6 @@ define([
             if(!this.treeCloudAccount){
                 this.treeCloudAccount = this.cloudAccounts.models[this.cloudAccounts.length-1].id;
             }
-            
             if(this.cloudAccounts.get(this.treeCloudAccount) && typeof(this.subApp.treeSelectCloudAccount) !== "undefined"){
                 this.subApp.treeSelectCloudAccount();
             }else if(typeof(this.subApp.treeSelectCloudAccount) !== "undefined"){
@@ -339,6 +345,16 @@ define([
                         accountManagementView.subApp.close();
                     }
                     accountManagementView.subApp = new DevOpsToolsManagementView({rootView: accountManagementView});
+                }
+                break;
+            case "continuous_integration":
+                if(accountManagementView.subApp instanceof ContinuousIntegrationManagementView){
+
+                }else{
+                    if(accountManagementView.subApp !== undefined){
+                        accountManagementView.subApp.close();
+                    }
+                    accountManagementView.subApp = new ContinuousIntegrationManagementView({rootView: accountManagementView});
                 }
                 break;
             case "home":
