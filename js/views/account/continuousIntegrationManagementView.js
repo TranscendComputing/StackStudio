@@ -38,7 +38,7 @@ define([
             this.rootView = options.rootView;
             this.ciServers = new CIServers();
             
-            ciManagementView = this;
+            var ciManagementView = this;
             Common.vent.off("CIServerCreated");
             Common.vent.on("CIServerCreated", function() {
                 ciManagementView.render();
