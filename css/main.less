@@ -145,103 +145,10 @@ textarea {
     width:100%;
 }
 
-body {
-    /* font-family: "Helvetica", "Arial", "Verdana"; */
-    margin: 0;
-    color: #222;
-    /* bootstrap-conflict font-size: .9em; */
-    /* line-height: 1.2; */
-}
 
-nav {
-    font-size: 1em;
-    overflow:hidden;
-    background-color: #CCC;
-    background: url('../css/../images/noise.png'), -webkit-linear-gradient(#E0E0E0, #CCC, #B0B0B0);
-    border-top: 1px solid #F2F2F2;
-    border-bottom: 1px solid #8C8C8C;
-    padding-left: 20px;
-    padding-right: 20px;
-    display: block;
+.navbar-brand {
+    padding: 5px;
 }
-
-nav a {
-    color: #6B6B6B;
-    text-shadow: #EBEBEB 0 1px;
-    float: left;
-    text-decoration: none;
-}
-
-nav ul.main {
-    position: relative;
-    background-color: #CCC;
-    background: url('../css/../images/noise.png');
-    display: block;
-}
-
-#navLogin {
-    float:right;
-    background-color: #CCC;
-    background: url('../css/../images/noise.png');
-    cursor: pointer;
-    display: block;
-}
-
-nav ul li:first-child {
-    padding-left: 0;
-}
-
-nav ul li:last-child {
-    padding-right: 0;
-}
-
-nav ul {
-    margin: 0;
-    overflow: hidden;
-    float: left;
-    display: block;
-    list-style-type: disc;
-    list-style: none;
-    font-size: 1.1em;
-    padding-top: .6em;
-    padding-left: 20px;
-    padding-right: 20px;
-}
-
-nav ul li {
-    color: #6B6B6B;
-    text-shadow: #EBEBEB 0 1px;
-    text-decoration: none;
-    font-weight:bold;
-    margin: 0;
-    list-style-image: none;
-    list-style-type: none;
-    white-space: nowrap;
-    display: inline;
-    float: left;
-    padding-left: 0;
-    padding-right: 0;
-}
-
-.nav_selected a{
-    color:#FFFFFF !important;
-    text-shadow:#000000 0.1em 0.1em .5em !important;
-}
-
-nav li + li {
-    border-left: 1px solid #B0B0B0;
-    margin-left: .8em;
-}
-
-nav li + li a {
-    padding-left: .8em;
-    border-left: 1px solid #DEDEDE;
-}
-/* not with bootstrap
-ul {
-    font-family: "Helvetica", "Arial", "Verdana";
-    list-style: none;
-} */
 
 /** Add content before footer, to ensure no real content is covered by fixed footer. */
 #foooter:before {
@@ -256,6 +163,7 @@ div#prefooter {
     background: white;
 }
 footer {
+    margin-left: 225px;
     color: #6B6B6B;
     text-shadow: #D9D9D9 0 1px;
     text-decoration: none;
@@ -289,11 +197,6 @@ footer a:visited {
 
 #app_container {
     font-family: "PT Sans", "Helvetica Neue", Arial, sans-serif;
-    background-color: #f7f7f7;
-}
-
-#main > div {
-    margin:5px 20px;
 }
 
 #entry_title {
@@ -315,7 +218,6 @@ footer a:visited {
     border-width:1px;
     border-color:#AAAAAA;
     list-style-type: none;
-    width:185px;
     margin-right:2px;
     padding:0px;
     background: -webkit-linear-gradient(top, #F2F2F2, #FFFFFF);
@@ -461,11 +363,6 @@ img {
 }
 #rightnav {
     height: 100%;
-}
-
-/* --- twitter bootstrap styles --- */
-.side-nav {
-    margin-top: 30px;
 }
 
 /* ==========================================================================

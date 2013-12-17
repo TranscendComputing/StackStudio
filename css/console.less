@@ -1,14 +1,20 @@
 /* --- cloud console --- */
 #console_area {
-    border-top: 5px solid gray;
+    background-image:
+        linear-gradient(#000, #555, #000)
+    ;
+    background-size:100% 5px;
+    background-position:0 0;
+    background-repeat:no-repeat;
     background-color: #000;
+    padding-top: 5px;
     position: fixed;
     bottom: 0px;
     left: 0px;
     min-width: 100%;
     min-height: 35px;
     overflow: visible;
-    z-index: 100;
+    z-index: 10000;
 }
 #command_area {
     position: relative;
@@ -18,7 +24,7 @@
 #console_controls {
     font-size: 11px;
     position: absolute;
-    top: 0px;
+    top: 5px;
     right: 10px;
     display: inline;
 }

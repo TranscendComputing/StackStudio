@@ -20,7 +20,8 @@
     <script src="js/plugins.js"></script>
     <!-- For local debug %{DEV -->
     <script>var DEBUG=true;</script>
-    <script data-main="js/main.js" src="js/vendor/require-2.1.2.js"></script>
+    <script data-main="js/main.js" src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.5/require.min.js
+"></script>
     <!-- For local debug }% -->
     <!-- For production -->
     <!-- %{PROD
@@ -46,9 +47,9 @@
 
     <div class="row" id="app_container">
         <!-- Sidebar content -->
-        <section id="sidebar" class="threecol"></section>
+        <section id="sidebar" class="col-lg-3"></section>
         <!-- Main content -->
-        <section id="main" class="ninecol last">
+        <section id="main" class="col-lg-9 last">
             <div id="loading_content"></div>
             <h3>Loading....</h3>
         </section>
@@ -97,7 +98,7 @@
     <script type="text/html">
         <div id="project_edit">
             <button class="info" title="Press 'Ctrl-Space' inside editor to open autocomplete input."></button>
-            <div id="tabs" class="twelvecol">
+            <div id="tabs" class="col-lg-12">
             <ul>
                 <li><a href="#tabs_design">NewTemplate</a></li>
             </ul>
