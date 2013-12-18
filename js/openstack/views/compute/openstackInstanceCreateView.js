@@ -111,13 +111,20 @@ define([
             
             new Spinner(spinnerOptions).spin($("#instance_create").get(0));
         },
-        
+
         addAllImages: function() {
+
             $(".spinner").remove();
-            
             var createView = this;
+
+            //Check if this user has a policy for images they can use if not use all images.
+            var default_images = JSON.parse(sessionStorage.group_policies)[0].group_policy.os_governance.default_images;
+            if(JSON.parse(sessionStorage.group_policies)[0] === null){
+                default_images = createView.images.toJSON();
+            }
+            
             $("#image_select").autocomplete({
-                source: createView.images.toJSON(),
+                source: default_images,
                 minLength: 0
             }).data("autocomplete")._renderItem = function (ul, item) {
                 item["label"] = item.name;
