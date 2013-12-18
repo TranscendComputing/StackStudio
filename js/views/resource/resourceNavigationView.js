@@ -195,7 +195,7 @@ define([
                 //Check Enabled Services
                 var addService = false;
                 var addServiceOS = false;
-                if(JSON.parse(sessionStorage.group_policies)[0] == null){
+                if(JSON.parse(sessionStorage.group_policies)[0] === null){
                     addService = true;
                     addServiceOS = true;
                 }else{

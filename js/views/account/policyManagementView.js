@@ -316,7 +316,7 @@ define([
 
                 for(var k in this.default_images_os){
                     $('input[name=use_approved_images]').attr('checked', true);
-                    $("#default_images_table_os").dataTable().fnAddData([this.default_images_os[k]["image_id"],this.default_images_os[k]["source"],"<a class='btn btn-mini btn-danger remove_image'><i class='icon-minus-sign icon-white'></i></a>"]);
+                    $("#default_images_table_os").dataTable().fnAddData([this.default_images_os[k]["name"],this.default_images_os[k]["id"],"<a class='btn btn-mini btn-danger remove_image'><i class='icon-minus-sign icon-white'></i></a>"]);
                 }
             }
         },
@@ -374,7 +374,7 @@ define([
                 this.default_images = this.model.attributes.aws_governance.default_images;
                 for(var k in this.default_images){
                     $('input[name=use_approved_images]').attr('checked', true);
-                    $("#default_images_table").dataTable().fnAddData([this.default_images[k]["image_id"],this.default_images[k]["source"],"<a class='btn btn-mini btn-danger remove_image'><i class='icon-minus-sign icon-white'></i></a>"]);
+                    $("#default_images_table").dataTable().fnAddData([this.default_images[k]["name"],this.default_images[k]["id"],"<a class='btn btn-mini btn-danger remove_image'><i class='icon-minus-sign icon-white'></i></a>"]);
                 }
             }
             this.populateFormOS(model.attributes.os_governance);
@@ -525,7 +525,7 @@ define([
             //$(".spinner").remove();
             $("#images_table_os").dataTable().fnClearTable();
             collection.each(function(model) {
-                var rowData = [model.attributes.name,model.attributes.status,model.attributes.updated_at];
+                var rowData = [model.attributes.name,model.attributes.id,model.attributes.status];
                 $("#images_table_os").dataTable().fnAddData(rowData);
             });
         },      
@@ -616,7 +616,7 @@ define([
             createSubnetDialog.render();
         },
         
-        addImage: function(provider,image,source){
+        addImage: function(provider,image,image_id){
             var defaults = [];
             if(provider === ""){
                 defaults = this.default_images;
@@ -624,8 +624,8 @@ define([
             else if (provider === "_os"){
                 defaults = this.default_images_os;
             }
-            defaults.push({"image_id": image ,"source": source});
-            $("#default_images_table"+provider).dataTable().fnAddData([image,source,"<a class='btn btn-mini btn-danger remove_image'><i class='icon-minus-sign icon-white'></i></a>"]);
+            defaults.push({"name": image ,"id": image_id});
+            $("#default_images_table"+provider).dataTable().fnAddData([image,image_id,"<a class='btn btn-mini btn-danger remove_image'><i class='icon-minus-sign icon-white'></i></a>"]);
             $('input[name=use_approved_images'+provider+']').attr('checked', true);
         },
         
@@ -634,7 +634,7 @@ define([
             var rows = $("#default_images_table").dataTable().fnGetNodes();
             for(var i=0;i<rows.length;i++)
             {
-                var row = {"image_id" : $(rows[i]).find("td:eq(0)").html(), "source" : $(rows[i]).find("td:eq(1)").html()};
+                var row = {"name" : $(rows[i]).find("td:eq(0)").html(), "id" : $(rows[i]).find("td:eq(1)").html()};
                 // Get HTML of 3rd column (for example)
                 cells.push(row); 
             }
