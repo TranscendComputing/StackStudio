@@ -255,7 +255,7 @@ define(
          'jquery-ui-plugins',
          'backbone.stickit',
          'jquery.dataTables',
-         'datatables.bootstrap'
+         'dataTables.bootstrap'
          ], function ($, _, Backbone, CommandLineView, Router, ErrorDialog, backendTxt) {
 
     // Added custom handler for select
