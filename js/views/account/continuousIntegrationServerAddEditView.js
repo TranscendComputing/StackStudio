@@ -40,7 +40,7 @@ define([
                 autoOpen: true,
                 title: title,
                 resizable: false,
-                width: 350,
+                width: 400,
                 modal: true,
                 buttons: {
                     Save: function () {
@@ -57,9 +57,7 @@ define([
         render: function() {
             if(this.ciServer) {
                 $("#ci_name_input").val(this.ciServer.attributes["name"]);
-                $("#ci_host_input").val(this.ciServer.attributes["host"]);
-                $("#ci_port_input").val(this.ciServer.attributes["port"]);
-                $("#ci_protocol_select").val(this.ciServer.attributes["protocol"]);
+                $("#ci_url_input").val(this.ciServer.attributes["url"]);
                 $("#ci_username_input").val(this.ciServer.attributes["username"]);
                 $("#ci_password_input").val(this.ciServer.attributes["password"]);
             }
@@ -85,24 +83,15 @@ define([
                 options["name"] = $("#ci_name_input").val();
             }
 
-            if($("#ci_host_input").val().trim() === "") {
-                this.displayValid(false, "#ci_host_input");
+            if($("#ci_url_input").val().trim() === "") {
+                this.displayValid(false, "#ci_url_input");
                 issue = true;
             }else {
-                this.displayValid(true, "#ci_host_input");
-                options["host"] = $("#ci_host_input").val();
-            }
-
-            if($("#ci_port_input").val().trim() === "") {
-                this.displayValid(false, "#ci_port_input");
-                issue = true;
-            }else {
-                this.displayValid(true, "#ci_port_input");
-                options["port"] = $("#ci_port_input").val();
+                this.displayValid(true, "#ci_url_input");
+                options["url"] = $("#ci_url_input").val();
             }
 
             options["type"] = $("#ci_type_select").val();
-            options["protocol"] = $("#ci_protocol_select").val();
             options["org_id"] = sessionStorage.org_id;
 
             if($("#ci_username_input").val().trim() !== "") {

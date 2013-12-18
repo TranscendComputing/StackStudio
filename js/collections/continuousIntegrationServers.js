@@ -17,7 +17,7 @@ define([
 
         model: ContinuousIntegrationServer,
 
-        url: function(options){return Common.apiUrl + '/stackstudio/v1/continuous_integration_servers/org/' + sessionStorage.org_id;}
+        url: function(options){return Common.apiUrl + '/api/v1/continuous_integration_servers/org/' + sessionStorage.org_id;}
     
     });
 
