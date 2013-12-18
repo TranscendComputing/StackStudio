@@ -26,8 +26,8 @@ define([
 
         events: {
             "click #new_ci_server": "newCI",
-            "click button.edit-ci-server-button" : "editCI",
-            "click button.delete-ci-server-button": "deleteCI"
+            "click button.ci_server_edit_button" : "editCI",
+            "click button.ci_server_delete_button": "deleteCI"
         },
 
         /** Constructor method for current view */
