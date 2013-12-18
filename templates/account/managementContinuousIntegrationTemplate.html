@@ -12,20 +12,20 @@
 </div>
 
 <script type="text/html" id="ci_template">
-    <form id="ci_form" action="" method="">
+    <div class="manager_list">
         <fieldset>
             <legend>{{{icon}}} {{ciType}} Endpoints</legend>
             {{#continuous_integration}}
             <p>
                 <label class="tabbed-field">{{name}}:</label>
                 <input data-id="{{_id}}" type="text" data-name="{{type}}" class="textbox-300" value="{{protocol}}://{{host}}:{{port}}"></input>
-                <button class="delete-ci-server-button">Delete</button>
-                <button class="edit-ci-server-button">Edit</button> 
+                <button class="ci_server_delete_button">Delete</button>
+                <button class="ci_server_edit_button">Edit</button> 
             </p>
             {{/continuous_integration}}
             {{^continuous_integration}}
             <p><label>No endpoints defined.</label></p>
             {{/continuous_integration}}
         </fieldset>
-    </form>
+    </div>
 </script>
