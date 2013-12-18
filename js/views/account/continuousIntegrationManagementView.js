@@ -19,8 +19,7 @@ define([
 ], function( $, _, Backbone, Common, ich, managementContinuousIntegrationTemplate, CIServers, CIServerAddEditView ) {
 
     var ContinuousIntegrationManagementView = Backbone.View.extend({
-        /** @type {String} DOM element to attach view to */
-        el: "#submanagement_app",
+        tagName: 'div',
         template: undefined,
         rootView: undefined,
         ciServers: undefined,
@@ -35,6 +34,7 @@ define([
         initialize: function(options) {
             this.template = _.template(managementContinuousIntegrationTemplate);
             this.$el.html(this.template);
+            $("#submanagement_app").html(this.$el);
             this.rootView = options.rootView;
             this.ciServers = new CIServers();
             
