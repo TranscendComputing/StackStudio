@@ -116,13 +116,17 @@ define([
 
             $(".spinner").remove();
             var createView = this;
-
+            var policies = JSON.parse(sessionStorage.group_policies);
+            var default_images = [];
+            var permissions = JSON.parse(sessionStorage.permissions);
             //Check if this user has a policy for images they can use if not use all images.
-            var default_images = JSON.parse(sessionStorage.group_policies)[0].group_policy.os_governance.default_images;
-            if(JSON.parse(sessionStorage.group_policies)[0] === null){
+            if(policies.length > 0 && permissions.length < 1){
+                default_images = policies[0].group_policy.os_governance.default_images;
+            }
+            else{
                 default_images = createView.images.toJSON();
             }
-            
+
             $("#image_select").autocomplete({
                 source: default_images,
                 minLength: 0

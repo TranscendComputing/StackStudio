@@ -188,6 +188,9 @@ define([
             var resourceNav = this;
             var enabled_services = [];
             var enabled_services_os = [];
+            var topstack_enabled = resourceNav.cloudDefinitions[this.cloudProvider].topstack_services;
+            var permissions = JSON.parse(sessionStorage.permissions);
+            var no_governance = JSON.parse(sessionStorage.group_policies);
             //Add the services of the cloud to the resource table
             var row = 1;
             $("#resource_table").empty();
@@ -195,16 +198,15 @@ define([
                 //Check Enabled Services
                 var addService = false;
                 var addServiceOS = false;
-                if(JSON.parse(sessionStorage.group_policies)[0] === null){
+                if(permissions.length > 0 || no_governance.length < 1){
                     addService = true;
                     addServiceOS = true;
+                    enabled_services_os = topstack_enabled;
                 }else{
                     $.each(JSON.parse(sessionStorage.group_policies), function(index,value){
                         if(value != null){
-                            //debugger
                             enabled_services = value.group_policy.aws_governance.enabled_services;
                             enabled_services_os = value.group_policy.os_governance.enabled_services;
-                            //debugger
                             if($.inArray(service.name, enabled_services) !== -1){
                                 addService = true;
                             }
@@ -249,13 +251,12 @@ define([
                 }
             });
             row = 1;
-            if(resourceNav.cloudDefinitions[this.cloudProvider].topstack_services !== undefined && resourceNav.cloudDefinitions[this.cloudProvider].topstack_services.length > 0) {
+            if(topstack_enabled !== undefined && topstack_enabled.length > 0) {
                 $("#topstack_services_table, #topstack_service_label").show();
                 $("#native_services_table").css("width", "30%");
-                $("#topstack_services_table").css("width", "42%");
-                $.each(resourceNav.cloudDefinitions[this.cloudProvider].topstack_services, function(index, service) {
-                    //debugger
-                    if($.inArray(service.name, enabled_services_os) !== -1){
+                $("#topstack_services_table").css("width", "42%"); 
+                $.each(topstack_enabled, function(index, service) {
+                    if($.inArray(service.name, enabled_services_os) !== -1 || permissions.length > 0 || no_governance.length < 1){
                         $("#topstack_row"+row).append($("<td></td>").attr({
                             "id": service.type,
                             "class": "resources selectable_item"
