@@ -1,0 +1,31 @@
+<div class="source_control_page">
+    <div id="detail_tabs">
+        <div class="row" style="padding: 5px 10px;">
+            <h3>Source Control Repositories</h3>
+        </div>
+        <div class="row" style="padding: 10px 10px;">
+            <button id="new_repository">Add Repository</button>
+        </div>
+        <div id="repositories_page">
+        </div>
+    </div>
+</div>
+
+<script type="text/html" id="repo_template">
+    <div class="manager_list">
+        <fieldset>
+            <legend>{{{icon}}} {{repoType}} Endpoints</legend>
+            {{#source_control}}
+            <p>
+                <label class="tabbed-field">{{name}}:</label>
+                <input data-id="{{_id}}" type="text" data-name="{{type}}" class="textbox-400" value="{{url}}"></input>
+                <button class="repo_delete_button">Delete</button>
+                <button class="repo_edit_button">Edit</button> 
+            </p>
+            {{/source_control}}
+            {{^source_control}}
+            <p><label>No repositories defined.</label></p>
+            {{/source_control}}
+        </fieldset>
+    </div>
+</script>

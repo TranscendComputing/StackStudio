@@ -28,10 +28,11 @@ define([
         'views/account/groupsManagementListView',
         'views/account/devOpsToolsManagementView',
         'views/account/continuousIntegrationManagementView',
+        'views/account/sourceControlRepositoryManagementListView',
         'jquery-plugins',
         'jquery-ui-plugins',
         'jquery.jstree'
-], function( $, _, Backbone, Common, managementTemplate, Groups, CloudCredentials, CloudAccounts, Policies, NewLoginView, CloudAccountManagementView, CloudCredentialManagementView, CloudCredentialManagementListView, CloudAccountManagementListView, UsersManagementView, PoliciesManagementView, PolicyManagementView, HomeView, GroupsManagementView, GroupsManagementListView, DevOpsToolsManagementView, ContinuousIntegrationManagementView ) {
+], function( $, _, Backbone, Common, managementTemplate, Groups, CloudCredentials, CloudAccounts, Policies, NewLoginView, CloudAccountManagementView, CloudCredentialManagementView, CloudCredentialManagementListView, CloudAccountManagementListView, UsersManagementView, PoliciesManagementView, PolicyManagementView, HomeView, GroupsManagementView, GroupsManagementListView, DevOpsToolsManagementView, ContinuousIntegrationManagementView, SourceControlRepositoryManagementListView ) {
     var AccountManagementView = Backbone.View.extend({
         /** @type {String} DOM element to attach view to */
         el: "#main",
@@ -123,17 +124,23 @@ define([
                     reset: true
                 });
             });
-            $("#mdevOps_tree").jstree({
+            $("#mSCRepos_tree").jstree({
                 "themeroller":{"item": "jstree_custom_item"},
                 "plugins":[ "themeroller", "html_data", "crrm" ]
             }).on('loaded.jstree', function() {
-                    $("#mdevOps_tree").jstree('open_all');
+                    $("#mSCRepos_tree").jstree('open_all');
             });
             $("#mContinuousIntegration_tree").jstree({
                 "themeroller":{"item": "jstree_custom_item"},
                 "plugins":[ "themeroller", "html_data", "crrm" ]
             }).on('loaded.jstree', function() {
                     $("#mContinuousIntegration_tree").jstree('open_all');
+            });
+            $("#mdevOps_tree").jstree({
+                "themeroller":{"item": "jstree_custom_item"},
+                "plugins":[ "themeroller", "html_data", "crrm" ]
+            }).on('loaded.jstree', function() {
+                    $("#mdevOps_tree").jstree('open_all');
             });
         },
         addAllGroups: function() {
@@ -355,6 +362,16 @@ define([
                         accountManagementView.subApp.close();
                     }
                     accountManagementView.subApp = new ContinuousIntegrationManagementView({rootView: accountManagementView});
+                }
+                break;
+            case "source_control_repositories":
+                if(accountManagementView.subApp instanceof SourceControlRepositoryManagementListView){
+
+                }else{
+                    if(accountManagementView.subApp !== undefined){
+                        accountManagementView.subApp.close();
+                    }
+                    accountManagementView.subApp = new SourceControlRepositoryManagementListView({rootView: accountManagementView});
                 }
                 break;
             case "home":
