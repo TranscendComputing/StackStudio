@@ -136,7 +136,7 @@
                                     <thead>
                                         <tr>
                                             <th>Image Name</th>
-                                            <th>Status</th>
+                                            <th>Image ID</th>
                                             <th></th>
                                         </tr>
                                     </thead>
@@ -150,8 +150,8 @@
                                         <thead>
                                             <tr>
                                                 <th>Image Name</th>
+                                                <th>Image ID</th>
                                                 <th>Status</th>
-                                                <th>Last Update</th>
                                             </tr>
                                         </thead>
                                     </table>
@@ -166,7 +166,7 @@
                                 <div class="input-append">
                                     <input id="max_on_demand_os" name="max_on_demand" class="span5 OS" type="text" placeholder="# Instances">
                                     <span class="add-on">
-                                        <input type="checkbox" id="check_max_on_demand" class="OS"> Unlimited</input>
+                                        <input type="checkbox" id="check_max_on_demand_os" class="OS"> Unlimited</input>
                                     </span>
                                 </div>
                             </div>
@@ -180,12 +180,25 @@
                                 <div class="input-append">
                                     <input id="max_in_autoscale_os" name="max_in_autoscale" class="span5 OS" type="text" placeholder="# Instances">
                                     <span class="add-on">
-                                        <input type="checkbox" id="check_max_in_autoscale" class="OS"> Unlimited</input>
+                                        <input type="checkbox" id="check_max_in_autoscale_os" class="OS"> Unlimited</input>
                                     </span>
                                 </div>
                             </div>
                         </div>
-        
+                        
+                        <!-- Appended checkbox -->
+                        <div class="control-group" style="display:none;">
+                            <label class="control-label">Max Volumes:</label>
+                            <div class="controls">
+                                <div class="input-append">
+                                    <input id="max_volumes_os" name="max_volumes" class="span5 OS" type="text" placeholder="# Volumes">
+                                    <span class="add-on">
+                                        <input type="checkbox" id="check_max_volumes_os" class="OS"> Unlimited</input>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Appended checkbox -->
                         <div class="control-group" style="display:none;">
                             <label class="control-label">Max Cores:</label>
