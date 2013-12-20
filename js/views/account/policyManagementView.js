@@ -255,8 +255,6 @@ define([
             var o = this.populateSavedHash("#content form");
             var oS = this.populateSavedHash("#content_os form");
             var pW = this.populateSavedHash("#content_org form");
-            //o["button_press"] = $("#aws_button").hasClass("active");
-            //oS["button_press"] = $("#os_button").hasClass("active");
             newPolicy.save($("#policy_name").val(),o,oS,pW,this.policy,sessionStorage.org_id);
         },
         populateSavedHash: function(form_name){
@@ -670,6 +668,12 @@ define([
                 break;
             case "check_max_in_autoscale_os":
                 this.disableInput($("#max_in_autoscale_os"),$("#"+lambda.target.id).is(':checked'));
+                break;
+            case "check_rds_os":
+                this.disableInput($("#max_rds_os"),$("#"+lambda.target.id).is(':checked'));
+                break;
+            case "check_max_volumes_os":
+                this.disableInput($("#max_volumes_os"),$("#"+lambda.target.id).is(':checked'));
                 break;
             }
         },
