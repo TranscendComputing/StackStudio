@@ -40,8 +40,8 @@ define([
             return resp.cloud_account;
         },
         
-        create: function(options, org_id, cloud_id) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_accounts?org_id=" + org_id + "&cloud_id=" + cloud_id;
+        create: function(options, org_id, login, cloud_id) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_accounts?org_id=" + org_id + "&cloud_id=" + cloud_id + "&login=" + login;
             var cloud_account = {"cloud_account":options};
             
             $.ajax({
@@ -60,9 +60,8 @@ define([
             
         },
         
-        destroy: function() {
-            
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_accounts/" + this.id + "?_method=DELETE";
+        destroy: function(login) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_accounts/" + this.id + "?_method=DELETE" + "&login=" + login;
             
             $.ajax({
                 url: url,
