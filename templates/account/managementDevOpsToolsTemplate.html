@@ -11,16 +11,16 @@
     </div>
 </div>
 
-<script type="text/html" id="config_managers_template">
+<script type="text/html" id="config_manager_template">
     <div class="manager_list">
         <fieldset>
             <legend>{{{icon}}} {{managerType}} Endpoints</legend>
             {{#managers}}
             <p>
                 <label class="tabbed-field">{{name}}:</label>
-                <input data-id="{{_id}}" type="text" data-name="{{type}}" class="textbox-300" value="{{protocol}}://{{host}}:{{port}}{{path}}"></input>
-                <button class="delete-manager-button">Delete</button>
-                <button class="edit-manager-button">Edit</button> 
+                <input data-id="{{_id}}" type="text" data-name="{{type}}" class="textbox-400" value="{{url}}"></input>
+                <button class="delete_manager_button">Delete</button>
+                <button class="edit_manager_button">Edit</button> 
             </p>
             {{/managers}}
             {{^managers}}

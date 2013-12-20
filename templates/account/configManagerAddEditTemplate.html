@@ -1,0 +1,39 @@
+<div id="config_manager_add_edit">
+    <table>
+        <tbody>
+            <tr>
+                <td>Name:</td>
+                <td>
+                    <input id="manager_name_input" name="name" type="text" style="width:200px"/>
+                </td>
+            </tr>
+            <tr>
+                <td>URL:</td>
+                <td>
+                    <input id="manager_url_input" name="url" type="text" style="width:300px"/>
+                </td>
+            </tr>
+            <tr id="manager_type_row">
+                <td>Service Type:</td>
+                <td>
+                    <select id="manager_type_select" name="type">
+                        <option value="chef">Chef</option>
+                        <option value="puppet">Puppet</option>
+                        <option value="salt">Salt</option>
+                        <option value="ansible">Ansible</option>
+                    </select>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table id="manger_type_specifics"></table>
+</div>
+
+<script type="text/html" id="manager_type_specifics_template">
+    <tr>
+        <td>{{propertyLabel}}:</td>
+        <td>
+            <{{tag}} id="manager_{{property}}" title="{{title}}" name="auth_properties.{{property}}" type="{{inputType}}"/>
+        </td>
+    <tr>
+</script>
