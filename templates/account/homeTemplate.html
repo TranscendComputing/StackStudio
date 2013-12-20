@@ -17,6 +17,12 @@
                     <label class="control-label">New Password:</label>
                     <div class="controls">
                         <input id="password_input" name="password_input" type="text" class="input-xlarge">
+                        <div class="password-messenger">
+                            <span id="password_policy" class="contro-label" for="clouds_select" style="color:red;">Password must have:</span>
+                            <span id="password_policy_digit" class="contro-label" for="clouds_select" style="color:red; display: none;">a digit,</span>
+                            <span id="password_policy_special" class="contro-label" for="clouds_select" style="color:red; display: none;">a special character,</span>
+                            <span id="password_policy_length" class="contro-label" for="clouds_select" style="color:red;">a length of <b id="password_length"></b></span>
+                        </div>
                     </div>
                     <a id="updateUserB" style="float:right;" class="btn">Update<a>
                 </div>

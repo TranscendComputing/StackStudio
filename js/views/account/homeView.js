@@ -42,7 +42,40 @@ define([
         },
 
         render: function () {
+            this.displayPasswordRules();
             $("#username_label").html(sessionStorage.login);
+        },
+
+        displayPasswordRules: function (){
+            var password_rules = JSON.parse(sessionStorage.group_policies)[0].group_policy.org_governance;
+            if(password_rules.usable_characters !== undefined)
+            {
+                if(password_rules.usable_characters.length === 2){
+                    $.each(password_rules.usable_characters, function(index,value){
+                        if(value === "Digit"){
+                            $("#password_policy_digit").show();
+                        }
+                        else if(value === "Special"){
+                            $("#password_policy_special").show();
+                        }
+                        else{
+                            $("#password_policy_digit").hide();
+                            $("#password_policy_special").hide();
+                        }
+                    });
+                }
+                else if(password_rules.usable_characters === "Digit"){
+                    $("#password_policy_digit").show();
+                }
+                else if(password_rules.usable_characters === "Special"){
+                    $("#password_policy_special").show();
+                }
+                else{
+                    $("#password_policy_digit").hide();
+                    $("#password_policy_special").hide();
+                }
+            }
+            $("#password_length").html(password_rules.min_password_length);
         },
         
         setAccountFields: function(account){
