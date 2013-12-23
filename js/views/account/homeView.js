@@ -47,9 +47,10 @@ define([
         },
 
         displayPasswordRules: function (){
-            var password_rules = JSON.parse(sessionStorage.group_policies)[0].group_policy.org_governance;
-            if(password_rules.usable_characters !== undefined)
+            var password_rules = [];
+            if(JSON.parse(sessionStorage.group_policies)[0] !== undefined && JSON.parse(sessionStorage.permissions).length < 1)
             {
+                password_rules = JSON.parse(sessionStorage.group_policies)[0].group_policy.org_governance;
                 if(password_rules.usable_characters.length === 2){
                     $.each(password_rules.usable_characters, function(index,value){
                         if(value === "Digit"){
@@ -74,8 +75,16 @@ define([
                     $("#password_policy_digit").hide();
                     $("#password_policy_special").hide();
                 }
+                $("#password_policy_must").show();
+                $("#password_policy_none").hide();
+                $("#password_policy_length").show();
+                $("#password_length").html(password_rules.min_password_length);
             }
-            $("#password_length").html(password_rules.min_password_length);
+            else{
+                $("#password_policy_must").hide();
+                $("#password_policy_length").hide();
+                $("#password_policy_none").show();
+            }
         },
         
         setAccountFields: function(account){
