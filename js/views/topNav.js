@@ -25,27 +25,11 @@ define([
     },
 
     render: function() {
-      /*
-              nav_toggler.on(click_event, function() {
-      if (nav_open()) {
-        $(document).trigger("nav-close");
-      } else {
-        $(document).trigger("nav-open");
-      }
-      return false;
-    });
-    $(document).bind("nav-close", function(event, params) {
-      var nav_open;
-      return nav_open = false;
-    });
-    return $(document).bind("nav-open", function(event, params) {
-      var nav_open;
-      return nav_open = true;
-    });
-      */
+      this.nav_toggler.button('toggle');
       return this;
     },
     toggleNav: function() {
+      this.nav_toggler.button('toggle');
       if (!this.nav_open) {
         $("body").addClass("main-nav-opened").removeClass("main-nav-closed");
       } else {

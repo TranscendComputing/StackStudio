@@ -144,18 +144,52 @@ table.tablesorter thead tr th:hover {
    border-top: 1px solid #e7e7e7; /* new */
  }
 
+/* copied theme button color here, to override nav */
+ .nav li a.btn-info:hover,
+ .nav li a.btn-info:focus {
+  background-color: #269abc;
+}
+
+ .nav li a.btn-success:hover,
+ .nav li a.btn-success:focus {
+  background-color: #47a447;
+}
+
+ .nav li a.btn-primary:hover,
+ .nav li a.btn-primary:focus {
+  background-color: #4a2e83;
+  background-image: none;
+}
+
+ .navbar-header a.btn-default {
+  background-color: #f4f4f4;
+  color: black;
+}
+ .navbar-header a.btn-default:hover,
+ .navbar-header a.btn-default:focus {
+  background-color: #eeeeee;
+}
+/* end theme duplication */
+
+ .navbar .btn {
+  margin: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  color: white ;
+}
+
  .navbar .navbar-nav>li>a,
  .navbar .navbar-nav>li>a {
   color: #3c3c3c;
 }
 
- .navbar .btn {
-  margin: 5px;
+ .navbar .navbar-nav>li>a.btn {
+  color: white ;
 }
 
- .navbar .navbar-nav>li>a:hover,
- .navbar .navbar-nav>li>a:focus {
-  background-color: #fefefe;
+ .navbar .side-nav>li>a.btn:hover,
+ .navbar .side-nav>li>a.btn:focus, {
+  background-color: #000000;
 }
 
  .navbar .side-nav>li:hover > a [class^="fa-"], .navbar .side-nav>li:hover > a [class*=" fa-"], .navbar .side-nav>li:focus > a [class^="fa-"], .navbar .side-nav>li:focus > a [class*=" fa-"], .navbar .side-nav>li.active > a [class^="fa-"], .navbar .side-nav>li.active > a [class*=" fa-"] {
@@ -185,6 +219,7 @@ table.tablesorter thead tr th:hover {
     background: url('../css/../images/noise.png');
     background: linear-gradient(#e0e0e0, #cccccc, #b0b0b0);
   }
+
 
   #main-nav .navigation > .nav > li:hover > a, #main-nav .navigation > .nav > li:focus > a, #main-nav .navigation > .nav > li.active > a {
     background-color: #fefefe;
