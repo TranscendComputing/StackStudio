@@ -132,7 +132,7 @@ define([
 
         deleteGroup: function() {
             if(this.selectedGroup) {
-                this.selectedGroup.destroy();
+                this.selectedGroup.destroy(sessionStorage.login);
             }
         },
 

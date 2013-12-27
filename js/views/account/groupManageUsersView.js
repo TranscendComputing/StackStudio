@@ -125,13 +125,13 @@ define([
 
         addUser: function() {
             if(this.group) {
-                this.group.addUser(this.selectedNonGroupUserId);
+                this.group.addUser(this.selectedNonGroupUserId,sessionStorage.login);
             }
         },
 
         removeUser: function() {
             if(this.group) {
-                this.group.removeUser(this.selectedGroupUserId);
+                this.group.removeUser(this.selectedGroupUserId,sessionStorage.login);
             }
         },
 
