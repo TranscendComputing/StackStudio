@@ -171,8 +171,19 @@ table.tablesorter thead tr th:hover {
 }
 /* end theme duplication */
 
+ .navbar-modes {
+  margin-left: 100px;
+ }
+
+ .navbar label.btn.active {
+  filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale"); /* Firefox 3.5+ */
+  filter: gray; /* IE6-9 */
+  /* -webkit-filter: brightness(85%);  Chrome 19+ & Safari 6+ */
+  -webkit-filter: grayscale(85%); /* Chrome 19+ & Safari 6+ */
+}
+
  .navbar .btn {
-  margin: 5px;
+  margin: 8px 0px;
   padding-top: 5px;
   padding-bottom: 5px;
   color: white ;
@@ -199,6 +210,9 @@ table.tablesorter thead tr th:hover {
     color: #222222;
     padding-left: 2px;
   }
+ .navbar .side-nav>li> a.nav_selected [class^="fa-"], .navbar .side-nav>li> a.nav_selected [class*=" fa-"] {
+  color: #c04541 !important;
+ }
 
   .main-nav-closed .side-nav {
     width: 50px;

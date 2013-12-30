@@ -45,6 +45,9 @@ requirejs.config({
         'base64': {
             exports: 'Base64'
         },
+        'dataTables.bootstrap': {
+            deps: ['jquery.dataTables']
+        },
         'dataTables.fnReloadAjax': {
             deps: ['jquery.dataTables'],
             exports: 'fnReloadAjax'
