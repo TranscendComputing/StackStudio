@@ -287,7 +287,8 @@ define(
       puppet: "<img src='/images/CompanyLogos/puppet.png' class='puppet_icon'/>",
       salt: "<img src='/images/CompanyLogos/saltLogo.jpg' class='salt_icon'/>",
       ansible: "<img src='/images/CompanyLogos/ansible.png' class='ansible_icon'/>",
-      jenkins: "<img src='/images/CompanyLogos/jenkins.jpg' class='jenkins_icon'/>"
+      jenkins: "<img src='/images/CompanyLogos/jenkins.jpg' class='jenkins_icon'/>",
+      git: "<img src='/images/CompanyLogos/git.png' class='git_icon'/>"
     };
 
     // Initialize the command line, since that's global to all pages.

@@ -83,7 +83,7 @@ define([
                     otherEndpoints.push(repo);
                 }
             });
-            var gitEndpointsTemplate = ich['repo_template']({"source_control": gitEndpoints, "repoType": "Git", "icon": ""});
+            var gitEndpointsTemplate = ich['repo_template']({"source_control": gitEndpoints, "repoType": "Git", "icon": Common.icons.git});
             var otherEndpointsTemplate = ich['repo_template']({"source_control": otherEndpoints, "repoType": "Other", "icon": ""});
             $('#repositories_page').html(gitEndpointsTemplate);
             $('#repositories_page').append(otherEndpointsTemplate);
