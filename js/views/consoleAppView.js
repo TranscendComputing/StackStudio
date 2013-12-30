@@ -90,9 +90,7 @@
       }).next().hide().menu( {trigger: $("#con_options")} );
       this.expanded = true; // set to expanded, then toggle, for cmd-only start.
       this.toggleFullSize();
-      console.log("AAHave a this of:", this);
       require(['./common'], function (Common) {
-        console.log("AAHave a consoleAppView of:", Common.consoleAppView);
         Common.vent.on('console:mode', Common.consoleAppView.changeMode,
           Common.consoleAppView);
       });
