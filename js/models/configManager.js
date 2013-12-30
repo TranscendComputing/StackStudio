@@ -26,7 +26,7 @@ define([
             continuous_integration_servers: [],
             source_control_repositories: [],
             branch: '',
-            source_control_paths: [],
+            source_control_paths: []
         },
 
         parse: function(resp) {
