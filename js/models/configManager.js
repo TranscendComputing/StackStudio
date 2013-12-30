@@ -22,12 +22,11 @@ define([
             url: '',
             enabled: true,
             auth_properties: {},
-            source_control_url: '',
-            branch: '',
-            source_control_paths: [],
             cloud_accounts: [],
             continuous_integration_servers: [],
-            source_control_credential: {}
+            source_control_repositories: [],
+            branch: '',
+            source_control_paths: [],
         },
 
         parse: function(resp) {

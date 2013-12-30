@@ -26,7 +26,42 @@
             </tr>
         </tbody>
     </table>
+    <hr />
     <table id="manger_type_specifics"></table>
+    <hr />
+    <table>
+        <tbody>
+            <tr>
+                <td>Continuous Integration:</td>
+                <td>
+                    <select id="manager_continuous_integration_select" name="continuous_integration_id">
+                        <option value="none">None</option>
+                    </select>
+                </td>
+            </tr>
+            <tr class="source_control_row">
+                <td>Source Control Repository:</td>
+                <td>
+                    <select id="manager_source_control_repo_select" name="source_control_repository_id" class="source_control_property">
+                        <option value="none">Select Repository</option>
+                    </select>
+                </td>
+            </tr>
+            <tr class="source_control_row">
+                <td>Branch Name:</td>
+                <td>
+                    <input id="manager_source_control_branch_input" name="source_control_branch" class="source_control_property" type="text" style="width:200px" />
+                </td>
+            </tr>
+            <tr class="source_control_row">
+                <td id="source_control_paths_label"></td>
+                <td>
+                    <textarea id="manager_source_control_paths_input" class="source_control_property" type="text" style="width:200px" placeholder="Separate multiple paths by new line."></textarea>
+                </td>
+                <td><img src="/images/IconPNGs/HelpIcon16x16.png" title="Examples: &#013;cookbooks/&#013;&#013;or&#013;&#013;cookbooks/components/&#013;cookbooks/profiles/"/></td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 
 <script type="text/html" id="manager_type_specifics_template">
