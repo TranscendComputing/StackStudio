@@ -77,9 +77,8 @@ define([
             
         },
         
-        addService: function(options) {
-            
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_accounts/" + this.id + "/services?_method=POST";
+        addService: function(options,login) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_accounts/" + this.id + "/services?_method=POST" + "&login=" + login;
             
             var cloud_service = {"cloud_service":options};
             
@@ -104,7 +103,7 @@ define([
          * @param  {[type]} service
          * @return {[type]}
          */
-        updateService: function(serviceModel) {
+        updateService: function(serviceModel,login) {
             Messenger.options = {
                 extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-left',
                 theme: 'future'
@@ -112,13 +111,13 @@ define([
             var model = this;
             var cloudService = {"cloud_service": serviceModel.toJSON()};
             new Messenger().run({
-                errorMessage: "Unable to save " + serviceModel.get("service_type") + " service.",
+                errorMessage: "Unauthorized: Only admin can update services.",
                 successMessage: serviceModel.get("service_type") + " service saved.",
                 showCloseButton: true,
-                hideAfter: 2,
+                hideAfter: 4,
                 hideOnNavigate: true
             },{
-                url: this.url() + "/services/" + serviceModel.id + "?_method=PUT",
+                url: this.url() + "/services/" + serviceModel.id + "?_method=PUT" + "&login=" + login,
                 type: 'POST',
                 contentType: 'application/x-www-form-urlencoded',
                 dataType: 'json',
@@ -156,20 +155,20 @@ define([
             
 		},
 
-        deleteService: function(service) {
+        deleteService: function(service,login) {
             Messenger.options = {
                 extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-left',
                 theme: 'future'
             };
             var model = this;
             new Messenger().run({
-                errorMessage: "Unable to delete " + service.name + " service.",
+                errorMessage: "Unauthorized: Only admin can delete services.",
                 successMessage: service.name + " service deleted.",
                 showCloseButton: true,
-                hideAfter: 2,
+                hideAfter: 4,
                 hideOnNavigate: true
             },{
-                url: this.url() + "/services/" + service.id + "?_method=DELETE",
+                url: this.url() + "/services/" + service.id + "?_method=DELETE" + "&login=" + login,
                 type: 'POST',
                 contentType: 'application/x-www-form-urlencoded',
                 dataType: 'json',

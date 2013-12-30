@@ -57,7 +57,7 @@ define([
             if($("#group_name_input").val() !== "") {
                 options.name = $("#group_name_input").val();
                 options.description = $("#group_description_input").val();
-                newGroup.create(options);
+                newGroup.create(options,sessionStorage.login);
                 this.$el.dialog('close');
             }else {
                 Common.errorDialog("Invalid Request", "Please supply all required fields.");

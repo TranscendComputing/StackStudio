@@ -224,7 +224,7 @@ define([
             });
             service.unset("password");
             service.unset("username");
-            this.selectedCloudAccount.updateService(service);
+            this.selectedCloudAccount.updateService(service,sessionStorage.login);
             return false;
         },
         saveManager: function(event){
@@ -243,7 +243,7 @@ define([
 
         deleteService: function(event) {
             var serviceData = $(event.currentTarget.parentElement).find("input").data();
-            this.selectedCloudAccount.deleteService(serviceData);
+            this.selectedCloudAccount.deleteService(serviceData, sessionStorage.login);
             
             this.refreshServices();
             

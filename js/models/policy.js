@@ -35,9 +35,9 @@ define([
             this.sendAjaxAction(url, "POST", {"policy": options,"policy_os" : oS,"policy_pw" : pW ,"name":name}, "policyAppRefresh", "Policy Saved");
         },
         
-        addToGroup: function(options,orgId) {
+        addToGroup: function(options,orgId,login) {
             //var url = Common.apiUrl + "/identity/v1/policies/groups?&org_id=" + orgId;
-            var url = Common.apiUrl + "/identity/v1/policies/groups";
+            var url = Common.apiUrl + "/identity/v1/policies/groups?&login=" + login;
             this.sendAjaxAction(url, "POST", {"policy": options}, "groupRefresh");
         },
         
