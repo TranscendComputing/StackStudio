@@ -28,35 +28,33 @@ define([
         portfoliosView: undefined,
 
         events: {
-            
+            "click #offerings_portfolios a": "changeTabs"
         },
 
         initialize: function() {
             $("#main").html(this.el);
             this.$el.html(this.template);
-            //Add event when tabs change
-            $('a[data-toggle="tab"]').off('shown');
             var offeringsView = this;
-            $('a[data-toggle="tab"]').on('shown', function (e) {
-                offeringsView.changeTabs();
-            });
         },
 
         render: function(){
             this.changeTabs();
         },
 
-        changeTabs: function() {
-            if($("#design_offerings_tab").hasClass("active")) {
-                if(!this.offeringDesignView) {
-                    this.offeringDesignView = new OfferingDesignView();
-                }
-                this.offeringDesignView.render();
-            }else {
+        changeTabs: function(evt) {
+            console.log("changing Tabs");
+            if (evt && $(evt.target).attr("href") === '#portfolios_tab') {
+                console.log("Switching to portfoliosView");
                 if(!this.portfoliosView) {
                     this.portfoliosView = new PortfoliosView();
                 }
                 this.portfoliosView.render();
+            }else {
+                console.log("Switching to OfferingDesignView");
+                if(!this.offeringDesignView) {
+                    this.offeringDesignView = new OfferingDesignView();
+                }
+                this.offeringDesignView.render();
             }
         },
 

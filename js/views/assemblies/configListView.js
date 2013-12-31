@@ -33,13 +33,18 @@ define([
         'collections/saltStates',
         'collections/ansibleJobTemplates',
         'views/assemblies/appListView',
+        'views/assemblies/dockerConfigListView',
         'models/app',
         'jquery-plugins',
         'jquery-ui-plugins',
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator',
         'jquery.sortable'
-],function( $, _, bootstrap, Backbone, ich, Common, typeahead, appsTemplate, Apps, CloudCredentials, Cookbooks, ChefEnvironments, PuppetClasses, SaltStates, AnsibleJobTemplates, AppListView, App ) {
+],function( $, _, bootstrap, Backbone, ich, Common, typeahead, appsTemplate, Apps,
+    CloudCredentials, Cookbooks, ChefEnvironments, PuppetClasses, SaltStates,
+    AnsibleJobTemplates, AppListView,
+    DockerConfigListView,
+    App ) {
 
     var ConfigListView = Backbone.View.extend({
         id: 'config_list',
@@ -74,7 +79,7 @@ define([
             $("#assemblyLeftNav").html(this.el);
             this.$el.html(this.template);
 
-            
+
         },
         environmentSelectHandler: function(evt){
             var $this = this;
@@ -117,7 +122,7 @@ define([
                         console.error("Unknown checkbox level: " + level);
                     }
                 }
-           
+
             } else {
                 switch(level){
                     case "cookbook": {
@@ -197,7 +202,7 @@ define([
                     .prepend(
                         $("<input type='checkbox' class='cookbookSelector'>").data("level", "cookbook")
                     );
-                elem.appendTo(cb); //TODO: if this doesn't perform well, try appending to a list first, then adding to doc. 
+                elem.appendTo(cb); //TODO: if this doesn't perform well, try appending to a list first, then adding to doc.
             });
             Common.vent.trigger("cookbooksLoaded");
         },
@@ -395,7 +400,7 @@ define([
             });
             return d.promise();
         },
-        
+
         recipeChangeHandler: function(evt){
             this.recalculateChefBadges();
         },
@@ -480,7 +485,7 @@ define([
                 $(this).closest('.accordion-body').css('overflow','hidden').parent().closest('.accordion-body').css('overflow','hidden');
                 console.log("typeahed:closed");
             });
-            
+
             console.log("Typeahead initialized.");
         },
 
@@ -676,7 +681,7 @@ define([
             .find(".accordion-inner:first");
           ver.find(".ansibleJobTemplateSelector").first().click();
         },
-        
+
         fetchAnsibleJobTemplates: function(evt) {
           var $this = this;
           var destination = $("#collapseAnsible").find(".accordion-inner");
@@ -692,7 +697,7 @@ define([
             }
           });
         },
-        
+
         populateAnsibleJobTemplates: function(jobtemplates) {
           var $this = this;
           var jobtemplateEl = $("#ansible-selection");
@@ -700,7 +705,7 @@ define([
           for (var i in jobtemplates) {
             var jobtemplate = jobtemplates[i];
             var el = $($this.renderAnsibleGroup("ansible-selection",
-              jobtemplate.name, "jobtemplate")) 
+              jobtemplate.name, "jobtemplate"))
               .data('jobtemplate', jobtemplate);
             el.find(".accordion-heading")
               .prepend($("<input type=\"checkbox\" class=\"jobtemplateSelector\">"));
@@ -720,7 +725,7 @@ define([
           var checked = (selected.indexOf(jobtemplate.id) !== -1) ? "checked=\"true\"": "";
           $("<li></li>")
             .data("ansibleJobTemplate", jobtemplate)
-            .append("<input type=\"checkbox\" " + checked + 
+            .append("<input type=\"checkbox\" " + checked +
               " class=\"ansibleJobTemplateSelector\" />")
             .append("<span class=\"ansibleJobTemplate\">" + jobtemplate.name + "</span>")
             .appendTo(ul);
@@ -733,7 +738,7 @@ define([
 
           var allChecked = ansibleContainer.find("input[type=\"checkbox\"]:checked")
             .filter(function() {
-              return !$(this).parent().hasClass("accordion-heading");  
+              return !$(this).parent().hasClass("accordion-heading");
             });
 
           ansibleContainer.closest(".accordion-group")
@@ -746,7 +751,7 @@ define([
             var badge = jobtemplate.find(".accordion-toggle:first span.badge:first");
             allChecked = jobtemplate.find("input[type=\"checkbox\"]:checked")
               .filter(function(){
-                return !$(this).parent().hasClass("accordion-heading"); 
+                return !$(this).parent().hasClass("accordion-heading");
               });
             jobtemplate.find(".accordion-toggle:first span.badge:first")
               .text(allChecked.length ? allChecked.length : "");

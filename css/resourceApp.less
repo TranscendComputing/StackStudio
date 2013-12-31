@@ -1,10 +1,9 @@
 /* ==========================================================================
    Resource App CSS
    ========================================================================== */
-   
+
 #resource_summary {
     margin-bottom:5px;
-    padding: 5px;
     border-radius: 5px;
     font-weight: normal;
 }
@@ -12,7 +11,7 @@
 #resource_summary_icon {
     background-image: url(/images/jqueryUI/ui-icons_ffffff_256x240.png);
 }
-   
+
 .services_table {
     float:left;
     width:36%;
@@ -32,9 +31,9 @@
 }
 
 #native_service_label {
-    -webkit-transform-origin: 200% 200%; 
+    -webkit-transform-origin: 200% 200%;
     -webkit-transform: rotate(-90deg); /* Safari Chrome */
-    -moz-transform-origin: 200% 200%; 
+    -moz-transform-origin: 200% 200%;
     -moz-transform: rotate(-90deg); /* Firefox */
     -ms-transform: rotate(-90deg); /* IE */
     -o-transform-origin: 200% 200%;
@@ -44,9 +43,9 @@
 }
 
 #topstack_service_label {
-    -webkit-transform-origin: 220% 220%; 
+    -webkit-transform-origin: 220% 220%;
     -webkit-transform: rotate(-90deg); /* Safari Chrome */
-    -moz-transform-origin: 220% 220%; 
+    -moz-transform-origin: 220% 220%;
     -moz-transform: rotate(-90deg); /* Firefox */
     -ms-transform: rotate(-90deg); /* IE */
     -o-transform-origin: 220% 220%;
@@ -133,6 +132,15 @@
     float:left;
 }
 
+@expander_width: 20px;
+
+#resource_app.full_width {
+    width: calc(~'100% - @{expander_width}px');
+}
+#resource_app.service_width {
+    width: 80%;
+}
+
 #subservice_menu_title {
     text-align:center;
 }
@@ -154,9 +162,17 @@
     margin-top:10px;
 }
 
+#subservice_menu {
+    min-height:300px;
+}
+
 #subservice_menu ul {
     margin:0px;
     padding:0px;
+}
+
+li.subservice {
+    list-style-type: none;
 }
 
 #menu_title {
@@ -186,7 +202,7 @@
     font-weight:bold;
 }
 
-.monitor_graph { 
+.monitor_graph {
     width:420px;
     height:200px;
 }

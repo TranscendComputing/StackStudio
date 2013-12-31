@@ -49,6 +49,7 @@ define([
             console.log("Initialize assembly design view.");
             $("#assemblyDesign").html(this.el);
             this.$el.html(this.template());
+            this.disableDocker();
             this.listView = options.listView;
             this.assemblies = options.assemblies;
             this.currentAssembly = new Assembly();
@@ -96,6 +97,7 @@ define([
         },
 
         populateCredentials: function() {
+            console.log("Populate credentials...");
             var list = this.cloudCredentials;
             var select = $("#assemblyDesignCloudCreds")
                 .empty()
@@ -108,6 +110,7 @@ define([
             });
         },
         credentialChangeHandler: function(evt) {
+            console.log("Changing credentials...");
             var $this = this;
             var optionSelected = $("option:selected", evt.target);
             var credential = this.credential = optionSelected.data("cloudCredentials");
@@ -190,7 +193,21 @@ define([
                 .change();
         },
         toolChangeHandler: function(evt){
+            var tool = $(evt.target).val().toLowerCase();
+            Common.vent.trigger('assembly:changeTool', tool);
+            // Docker has extra controls to display.
+            if ( tool === "docker") {
+                this.enableDocker();
+            } else {
+                this.disableDocker();
+            }
             this.listView.toolChangeHandler(evt);
+        },
+        enableDocker: function() {
+            $(".docker-only").show();
+        },
+        disableDocker: function() {
+            $(".docker-only").hide();
         }
     });
 

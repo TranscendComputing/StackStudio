@@ -45,9 +45,16 @@ requirejs.config({
         'base64': {
             exports: 'Base64'
         },
+        'dataTables.bootstrap': {
+            deps: ['jquery.dataTables']
+        },
         'dataTables.fnReloadAjax': {
             deps: ['jquery.dataTables'],
             exports: 'fnReloadAjax'
+        },
+        'dataTables.fnProcessingIndicator': {
+            deps: ['jquery.dataTables'],
+            exports: 'fnProcessingIndicator'
         },
         'FeedEk': {
             deps: ['jquery']
@@ -133,7 +140,7 @@ requirejs.config({
         'raphael': 'raphael-min',
         'spinner': 'spin.min',
          URIjs: 'URI',
-        'bootstrap': '//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min',
+        'bootstrap': '//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min',
         'typeahead': '../vendor/twitter/typeahead',
         'ace': '//cdnjs.cloudflare.com/ajax/libs/ace/1.1.01/ace',
         'mode-json': '//cdnjs.cloudflare.com/ajax/libs/ace/1.1.01/mode-json'
@@ -249,7 +256,9 @@ define(
          'text!/backend.json',
          'jquery-ui',
          'jquery-ui-plugins',
-         'backbone.stickit'
+         'backbone.stickit',
+         'jquery.dataTables',
+         'dataTables.bootstrap'
          ], function ($, _, Backbone, CommandLineView, Router, ErrorDialog, backendTxt) {
 
     // Added custom handler for select
@@ -290,7 +299,7 @@ define(
     };
 
     // Initialize the command line, since that's global to all pages.
-    new CommandLineView();
+    var consoleAppView = new CommandLineView();
 
     // Return some "globals".
     return {
@@ -308,6 +317,9 @@ define(
 
         // The global variable to handle custom events
         vent: vent,
+
+        consoleAppView: consoleAppView,
+
         icons: icons,
 
         backbone: Backbone,

@@ -170,7 +170,7 @@ define([
         addAllClouds: function() {
             this.cloudCredentials.each(this.addCloud, this);
         },
-        
+
         cloudChange: function(event) {
             if(!event.isTrigger) {
                 $(".resources").remove();
@@ -181,7 +181,7 @@ define([
                 $("#resource_not_opened").show();
             }
         },
-        
+
         cloudSelection: function (cloudProvider) {
             this.cloudProvider = cloudProvider;
             sessionStorage['selected_cloud'] = this.cloudProvider;
@@ -254,7 +254,7 @@ define([
             if(topstack_enabled !== undefined && topstack_enabled.length > 0) {
                 $("#topstack_services_table, #topstack_service_label").show();
                 $("#native_services_table").css("width", "30%");
-                $("#topstack_services_table").css("width", "42%"); 
+                $("#topstack_services_table").css("width", "42%");
                 $.each(topstack_enabled, function(index, service) {
                     if($.inArray(service.name, enabled_services_os) !== -1 || permissions.length > 0 || no_governance.length < 1){
                         $("#topstack_row"+row).append($("<td></td>").attr({
@@ -276,7 +276,7 @@ define([
                 $("#topstack_services_table, #topstack_service_label").hide();
                 $("#native_services_table").css("width", "73%");
             }
-            
+
             $("#cloud_nav").html(this.crumbTemplate({pathElt: this.cloudDefinitions[this.cloudProvider].name}));
 
             this.refreshCloudSpecs();
@@ -284,13 +284,13 @@ define([
 
         credentialChange: function(event) {
             this.selectedCredential = event.target.value;
-            
+
             sessionStorage['selected_cred_'+this.cloudProvider] = this.selectedCredential;
-            
+
             $("#service_menu").hide();
             $("#resource_app").hide();
             $("#resource_not_opened").show();
-            
+
             this.refreshCloudSpecs();
         },
 
@@ -322,7 +322,7 @@ define([
                 $("#credential_nav").html($("#credential_select option:first").text());
                 this.selectedCredential = $("#credential_select option:first").val();
             }
-            
+
             if(sessionStorage['selected_cred_'+this.cloudProvider] !== undefined){
                 $("#credential_select").val(sessionStorage['selected_cred_'+this.cloudProvider]);
                 $("#credential_nav").html($("#credential_select option:selected").text());
@@ -355,7 +355,7 @@ define([
                     }
                     var cname = location.href.split("#resources/")[1].split("/")[0];
                     if(!addRegion && cname === "aws"){
-                        
+
                     }
                     else if(resourceNav.selectedRegion === region.zone) {
                         $('#region_select').append($("<option value='" + region.zone + "' selected></option>").text(region.name));
@@ -418,7 +418,7 @@ define([
                     try {
                         this.selectedRegion = this.cloudDefinitions[this.cloudProvider].regions[0].zone;
                     }catch(error) {
-                        
+
                     }
                 }
                 if (!this.type) {
@@ -440,11 +440,14 @@ define([
                 //Load SubServiceMenu if applies
                 if(serviceObject && serviceObject.hasOwnProperty("subServices") && serviceObject.subServices.length > 0) {
                     this.subServiceMenu.render({service: serviceObject, cloudProvider: this.cloudProvider, region: this.selectedRegion, selectedSubtype: this.subtype});
+                    $("#resource_app").addClass("service_width");
+                    $("#resource_app").removeClass("full_width");
                     $("#service_menu").show();
                 }else {
                     $("#service_menu").hide();
                     //$("#resource_app").width("1100px");
                     $("#resource_app").addClass("full_width");
+                    $("#resource_app").removeClass("service_width");
                 }
 
                 //Camelcase the subtype for the file name
@@ -456,9 +459,9 @@ define([
                     camelCase = s.charAt(0).toUpperCase() + s.slice(1);
                     subType = subType ? (subType + camelCase) : camelCase;
                 });
-                
+
                 var appPath;
-                
+
                 if(this.type === "admin") {
                     appPath = "../topstack/views/"+this.type+"/topstack"+subType+"AppView";
                 }else {

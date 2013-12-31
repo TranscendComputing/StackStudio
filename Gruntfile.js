@@ -54,6 +54,8 @@ module.exports = function(grunt) {
       'js/vendor/require.js': 'http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.5/require.min.js',
       'js/vendor/jquery.js': 'http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js',
       'js/vendor/jquery.dataTables.js': 'http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.js',
+      'js/vendor/dataTables.bootstrap.js': 'https://raw.github.com/DataTables/Plugins/master/integration/bootstrap/3/dataTables.bootstrap.js',
+      'css/dataTables.bootstrap.css': 'https://raw.github.com/DataTables/Plugins/master/integration/bootstrap/3/dataTables.bootstrap.css',
       'js/vendor/ace/ace.js': 'https://github.com/ajaxorg/ace-builds/blob/master/src-min/ace.js',
       'js/vendor/backbone.js': 'http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min.js',
       'js/vendor/lodash.js': 'http://cdnjs.cloudflare.com/ajax/libs/lodash.js/1.1.0/lodash.min.js',
