@@ -39,14 +39,46 @@ define([
             $("#main").html(this.el);
             this.$el.html(this.template);
             Common.vent.on('assembly:changeTool', this.changeTool, this);
+            Common.vent.on('global:modeChange', this.changeMode, this);
             //this.currentAssembly = new Assembly();
+        },
+
+        changeMode: function(mode) {
+            if (this.tabView instanceof DesignView) {
+                if($("#assemblyDesignTool").val() && $("#assemblyDesignTool").val() !== ""){
+                    this.currentAssembly.set(this.listView.getConfigs("#assemblyDesignTool"));
+                }
+            }
+            //$(this).tab('show');
+            this.listView.close();
+            this.tabView.close();
+            this.listView = new ConfigListView();
+            if (mode === "prod") {
+                this.tabView = new RuntimeView({el: '#assemblyWork', listView:this.listView});
+            } else if(mode ==="dev") {
+                this.tabView = new DesignView({el: '#assemblyWork', assemblies:this.assemblies, listView:this.listView});
+                if(this.currentAssembly.id){
+                    this.openAssembly(this.currentAssembly);
+                }
+            }
+        },
+
+        render: function(){
+            var $this = this;
+            this.configureTabs();
+
+            Common.vent.on("assembliesViewRefresh", this.fetchAssemblies, this);
+            this.newAssemblyForm();
+            this.assemblies = new Assemblies();
+            this.fetchAssemblies();
+
         },
 
         configureTabs: function(){
             var $this = this;
             $("#assembliesTabs a:first").tab("show");
             this.listView = new ConfigListView();
-            this.tabView = new DesignView({el:"#assemblyDesign", assemblies:$this.assemblies,listView:this.listView});
+            this.tabView = new DesignView({el:"#assemblyWork", assemblies:this.assemblies,listView:this.listView});
             //this.listView.render();
             $("#assembliesTabs a").click(function(e){
                 e.preventDefault();
@@ -71,17 +103,6 @@ define([
                     }
                 }
             });
-        },
-
-        render: function(){
-            var $this = this;
-            this.configureTabs();
-
-            Common.vent.on("assembliesViewRefresh", this.fetchAssemblies, this);
-            this.newAssemblyForm();
-            this.assemblies = new Assemblies();
-            this.fetchAssemblies();
-
         },
 
         close: function(){

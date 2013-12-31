@@ -106,6 +106,8 @@ define([
         modeControl.parent().removeClass("active");
       }
       this.selectedMode = newMode;
+      console.log("Firing..."+newMode);
+      Common.vent.trigger('global:modeChange', newMode);
     }
   });
 
