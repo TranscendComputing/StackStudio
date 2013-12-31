@@ -38,29 +38,29 @@ define([
         template_os: _.template(groupsManagementTemplateOS),
 
         template: _.template(groupsManagementTemplate),
-        
+
         rootView: undefined,
 
         policy: undefined,
-        
+
         users: undefined,
-        
+
         topics: undefined,
-        
+
         images: undefined,
 
         images_os: undefined,
-        
+
         vpcs: undefined,
-        
+
         subnets: undefined,
 
         selectedGroup: undefined,
-        
+
         model: undefined,
-        
+
         alarms: [],
-        
+
         default_images: [],
 
         default_images_os: [],
@@ -88,7 +88,7 @@ define([
             this.$el.html(this.template);
             this.rootView = this.options.rootView;
             $("#submanagement_app").html(this.$el);
-            $("#content_os").html(this.template_os);            
+            $("#content_os").html(this.template_os);
             $("#images_table").dataTable({
                 "aoColumns": [
                         { "sWidth": "25%" },
@@ -107,7 +107,7 @@ define([
                         "sEmptyTable": "No images have been added."
                       }
             });
-            
+
             var groupsView = this;
             Common.vent.off("policyAppRefresh");
             Common.vent.on("policyAppRefresh", function() {
@@ -119,7 +119,7 @@ define([
                 });
                 groupsView.refreshSession();
             });
-            
+
             Common.vent.off("topicAppRefresh");
             Common.vent.on("topicAppRefresh", function() {
                 groupsView.topics.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
@@ -132,24 +132,24 @@ define([
             Common.vent.on("subnetAppRefresh", function() {
                 groupsView.subnets.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
             });
-            
+
             this.users = new Users();
-            
+
             this.topics = new Topics();
             this.topics.on( 'reset', this.addAllTopics, this );
-            
+
             this.images = new Images();
             this.images.on('reset', this.addAllImages, this);
 
             this.images_os = new ImagesOS();
             this.images_os.on('reset', this.addAllImagesOS, this);
-            
+
             this.vpcs = new Vpcs();
             this.vpcs.on('reset', this.addAllVpcs, this);
-            
+
             this.subnets = new Subnets();
             this.subnets.on('reset', this.addAllSubnets, this);
-            
+
             this.selectedGroup = undefined;
             this.render();
         },
@@ -165,7 +165,7 @@ define([
                 this.prePopForm();
             }
             this.disableSelectionRequiredButtons(false);
-            
+
             var spinnerOptions = {
                 //lines: 13, // The number of lines to draw
                 length: 10, // The length of each line
@@ -183,10 +183,10 @@ define([
                 //top: 150, // Top position relative to parent in px
                 //left: 211 // Left position relative to parent in px
             };
-            
+
             new Spinner(spinnerOptions).spin($("#images_table").get(0));
         },
-        
+
         treeSelect: function() {
             this.clearSelection();
             this.render();
@@ -200,7 +200,7 @@ define([
         },
 
         disableSelectionRequiredButtons: function(toggle) {
-            
+
             if(toggle) {
                 $("#delete_group_button").attr("disabled", true);
                 $("#delete_group_button").addClass("ui-state-disabled");
@@ -213,12 +213,12 @@ define([
                 $("#manage_group_users_button").removeAttr("disabled");
                 $("#manage_group_users_button").removeClass("ui-state-disabled");
             }
-            
+
             //check admin
             this.adminCheck();
-            
+
         },
-        
+
         adminCheck: function(){
             var groupsView = this;
             groupsView.users.fetch({success: function(){
@@ -235,7 +235,7 @@ define([
                 }
             }});
         },
-        
+
         manageGroupUsers: function() {
             if(this.selectedGroup) {
                 new ManageGroupUsers({group_id: this.selectedGroup.attributes.id});
@@ -248,10 +248,10 @@ define([
             this.selectedGroup = undefined;
             $(".group_item").removeClass("selected_item");
         },
-        
+
         savePolicy: function(){
             var newPolicy = new Policy();
-            
+
             var o = {};
             var a = $("#content form").serializeArray();
             $.each(a, function() {
@@ -287,7 +287,7 @@ define([
         },
         populateFormOS: function(p){
             for (var key in p) {
-              if (p.hasOwnProperty(key)) {    
+              if (p.hasOwnProperty(key)) {
                 var typ = $( "input[name='"+key+"']" ).prop("type");
                 if(typ === "checkbox"){
                     if(typeof p[key] === 'string'){
@@ -307,14 +307,14 @@ define([
 
             this.alarms = p.default_alarms;
             for (var j in this.alarms){
-                $("#alarm_table").append("<tr><td>"+this.alarms[j].namespace+"</td><td>"+this.alarms[j].metric_name+"</td><td>"+this.alarms[j].threshold+"</td><td>"+this.alarms[j].period+"</td><td><a class='btn btn-mini btn-danger remove_alarm'><i class='icon-minus-sign icon-white'></i></a></td></tr>");
-            } 
+                $("#alarm_table").append("<tr><td>"+this.alarms[j].namespace+"</td><td>"+this.alarms[j].metric_name+"</td><td>"+this.alarms[j].threshold+"</td><td>"+this.alarms[j].period+"</td><td><a class='btn btn-mini btn-danger remove_alarm'><i class='fa fa-minus-circle icon-white'></i></a></td></tr>");
+            }
 
             $("#default_images_table_os").dataTable().fnClearTable();
             this.default_images_os = this.model.attributes.os_governance.default_images;
             for(var k in this.default_images_os){
                 $('input[name=use_approved_images]').attr('checked', true);
-                $("#default_images_table_os").dataTable().fnAddData([this.default_images_os[k]["image_id"],this.default_images_os[k]["source"],"<a class='btn btn-mini btn-danger remove_image'><i class='icon-minus-sign icon-white'></i></a>"]);
+                $("#default_images_table_os").dataTable().fnAddData([this.default_images_os[k]["image_id"],this.default_images_os[k]["source"],"<a class='btn btn-mini btn-danger remove_image'><i class='fa fa-minus-circle icon-white'></i></a>"]);
             }
         },
         populateForm: function(model){
@@ -343,21 +343,21 @@ define([
 
             this.alarms = p.default_alarms;
             for (var j in this.alarms){
-                $("#alarm_table").append("<tr><td>"+this.alarms[j].namespace+"</td><td>"+this.alarms[j].metric_name+"</td><td>"+this.alarms[j].threshold+"</td><td>"+this.alarms[j].period+"</td><td><a class='btn btn-mini btn-danger remove_alarm'><i class='icon-minus-sign icon-white'></i></a></td></tr>");
+                $("#alarm_table").append("<tr><td>"+this.alarms[j].namespace+"</td><td>"+this.alarms[j].metric_name+"</td><td>"+this.alarms[j].threshold+"</td><td>"+this.alarms[j].period+"</td><td><a class='btn btn-mini btn-danger remove_alarm'><i class='fa fa-minus-circle icon-white'></i></a></td></tr>");
             }
             $("#default_images_table").dataTable().fnClearTable();
             this.default_images = this.model.attributes.aws_governance.default_images;
             for(var k in this.default_images){
                 $('input[name=use_approved_images]').attr('checked', true);
-                $("#default_images_table").dataTable().fnAddData([this.default_images[k]["image_id"],this.default_images[k]["source"],"<a class='btn btn-mini btn-danger remove_image'><i class='icon-minus-sign icon-white'></i></a>"]);
+                $("#default_images_table").dataTable().fnAddData([this.default_images[k]["image_id"],this.default_images[k]["source"],"<a class='btn btn-mini btn-danger remove_image'><i class='fa fa-minus-circle icon-white'></i></a>"]);
             }
-            
+
             this.populateFormOS(model.attributes.os_governance);
         },
-        
+
         refreshSession: function(){
             var url = Common.apiUrl + "/identity/v1/accounts/auth/" + sessionStorage.account_id;
-            
+
             $.ajax({
                 url: url,
                 type: 'GET',
@@ -370,19 +370,19 @@ define([
                 }
             });
         },
-        
+
         createAlarm: function(){
             var pView = this;
-            
+
             var topicsList = [];
             if($("#default_informational").val() !== "None"){topicsList.push($("#default_informational").val());}
             if($("#default_warning").val() !== "None"){topicsList.push($("#default_warning").val());}
             if($("#default_error").val() !== "None"){topicsList.push($("#default_error").val());}
-            
+
             var newAlarmDialog = new CreateAlarmView({cred_id: $("#default_credentials").val(), region: $("#default_region").val(), policy_view: pView,tList: topicsList});
             newAlarmDialog.render();
         },
-        
+
         addCreds: function(){
             var creds = JSON.parse(sessionStorage.cloud_credentials);
             $("#default_credentials").empty();
@@ -429,12 +429,12 @@ define([
             this.vpcs.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
             this.subnets.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
         },
-        
+
         addAlarm: function(options){
             this.alarms.push(options);
-            $("#alarm_table").append("<tr><td>"+options.namespace+"</td><td>"+options.metric_name+"</td><td>"+options.threshold+"</td><td>"+options.period+"</td><td><a class='btn btn-mini btn-danger remove_alarm'><i class='icon-minus-sign icon-white'></i></a></td></tr>");
+            $("#alarm_table").append("<tr><td>"+options.namespace+"</td><td>"+options.metric_name+"</td><td>"+options.threshold+"</td><td>"+options.period+"</td><td><a class='btn btn-mini btn-danger remove_alarm'><i class='fa fa-minus-circle icon-white'></i></a></td></tr>");
         },
-        
+
         removeAlarm: function(event){
             var tr = $(event.target).closest('tr');
             tr.css("background-color","#FF3700");
@@ -445,7 +445,7 @@ define([
             this.alarms.splice(trIndex,1);
             return false;
         },
-        
+
         removeImage: function(event){
             var defaults = [];
             var tr = $(event.target).closest('tr');
@@ -463,7 +463,7 @@ define([
             defaults.splice(trIndex,1);
             return false;
         },
-        
+
         addAllTopics: function(collection){
             $("#default_informational").empty();
             $("#default_warning").empty();
@@ -473,11 +473,11 @@ define([
                 $("#default_warning").append("<option>"+model.attributes.id+"</option>");
                 $("#default_error").append("<option>"+model.attributes.id+"</option>");
             });
-            
+
             $("#default_informational").append("<option>None</option>");
             $("#default_warning").append("<option>None</option>");
             $("#default_error").append("<option>None</option>");
-            
+
             if(typeof this.rootView !== 'undefined' && typeof this.rootView.treePolicy !== 'undefined'){
                 var p = this.model.attributes.aws_governance;
                 $("#default_informational").val(p.default_informational);
@@ -485,7 +485,7 @@ define([
                 $("#default_error").val(p.default_error);
             }
         },
-        
+
         addAllImages: function(collection){
             $(".spinner").remove();
             $("#images_table").dataTable().fnClearTable();
@@ -502,8 +502,8 @@ define([
                 var rowData = [model.attributes.name,model.attributes.status,model.attributes.updated_at];
                 $("#images_table_os").dataTable().fnAddData(rowData);
             });
-        },      
-        
+        },
+
         addAllVpcs: function(collection){
             $("#default_vpc").empty();
             collection.each(function(model) {
@@ -514,7 +514,7 @@ define([
                 $("#default_vpc").val(p.default_vpc);
             }
         },
-        
+
         addAllSubnets: function(collection){
             $("#default_subnet").empty();
             collection.each(function(model) {
@@ -523,7 +523,7 @@ define([
             if(typeof this.rootView !== 'undefined' && typeof this.rootView.treePolicy !== 'undefined'){
                 var p = this.model.attributes.aws_governance;
                 $("#default_subnet").val(p.default_subnet);
-            }    
+            }
         },
 
         clickImage: function(event){
@@ -534,25 +534,25 @@ define([
                 this.selectImage("_os",event.currentTarget);
             }
         },
-        
+
         selectImage: function(provider,target){
             $(".row_selected").removeClass('row_selected');
             $(target).addClass('row_selected');
-            
+
             var rowData = $("#images_table"+provider).dataTable().fnGetData(target);
-            
+
             // $("#add_image").hide();
 //             $("#add_image_source").hide();
-            
+
             // $("#add_image").show(1000);
 //             $("#add_image_source").show(1000);
-            
+
             this.addImage(provider,rowData[0],rowData[1]);
         },
-        
+
         imageFilterSelect: function(event){
             //$("#images_table").dataTable().fnClearTable();
-            
+
             var spinnerOptions = {
                 //lines: 13, // The number of lines to draw
                 length: 50, // The length of each line
@@ -570,27 +570,27 @@ define([
                 //top: 150, Top position relative to parent in px
                 //left: 211 Left position relative to parent in px
             };
-            
+
             new Spinner(spinnerOptions).spin($("#images_table").get(0));
-            
+
             this.images.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val(), platform: $("#filter_platform").val()}), reset: true });
         },
-        
+
         topicCreate: function(event){
             var createTopicsDialog = new CreateTopicsView({cred_id: $("#default_credentials").val(), region: $("#default_region").val()});
             createTopicsDialog.render();
         },
-        
+
         vpcCreate: function(event){
             var createVPCsDialog = new CreateVpcsView({cred_id: $("#default_credentials").val(), region: $("#default_region").val()});
             createVPCsDialog.render();
         },
-        
+
         subnetCreate: function(event){
             var createSubnetDialog = new CreateSubnetView({cred_id: $("#default_credentials").val(), region: $("#default_region").val()});
             createSubnetDialog.render();
         },
-        
+
         addImage: function(provider,image,source){
             var defaults = [];
             if(provider === ""){
@@ -600,10 +600,10 @@ define([
                 defaults = this.default_images_os;
             }
             defaults.push({"image_id": image ,"source": source});
-            $("#default_images_table"+provider).dataTable().fnAddData([image,source,"<a class='btn btn-mini btn-danger remove_image'><i class='icon-minus-sign icon-white'></i></a>"]);
+            $("#default_images_table"+provider).dataTable().fnAddData([image,source,"<a class='btn btn-mini btn-danger remove_image'><i class='fa fa-minus-circle icon-white'></i></a>"]);
             $('input[name=use_approved_images'+provider+']').attr('checked', true);
         },
-        
+
         saveImages: function(){
             var cells = [];
             var rows = $("#default_images_table").dataTable().fnGetNodes();
@@ -611,11 +611,11 @@ define([
             {
                 var row = {"image_id" : $(rows[i]).find("td:eq(0)").html(), "source" : $(rows[i]).find("td:eq(1)").html()};
                 // Get HTML of 3rd column (for example)
-                cells.push(row); 
+                cells.push(row);
             }
             return cells;
         },
-        
+
         checkboxChanged: function(lambda){
             switch(lambda.target.id)
             {
@@ -648,7 +648,7 @@ define([
                 break;
             }
         },
-        
+
         disableInput: function(target,toggle){
             if(toggle === true){
                 target.attr("disabled", true);
@@ -659,7 +659,7 @@ define([
                 target.removeClass("ui-state-disabled");
             }
         },
-        
+
         disablePNInput: function(target,toggle){
             if(toggle === true && !target.is(":focus")){
                 //$("#project_name_toggle").prop('checked', false);
@@ -672,7 +672,7 @@ define([
                 target.removeClass("ui-state-disabled");
             }
         },
-        
+
         pnFocus: function(event){
             if(event.target.id === "project_name"){
                 $("#project_name_toggle").prop("checked", false);//.prop('checked', true);
@@ -689,10 +689,10 @@ define([
             }
             if(event.target.id === "tab_aws"){
                 $("#content").show("slow");
-                $("#content_os").hide("slow");  
+                $("#content_os").hide("slow");
                 $("#aws_tab_item").addClass("active");
             }
-            
+
         },
         buttonBehavior: function(nav)
         {
@@ -743,10 +743,10 @@ define([
                 $(this).prop('checked', true);
             });
         },
-        
+
         close: function(){
             this.$el.remove();
-        }  
+        }
     });
 
     return GroupManagementView;
