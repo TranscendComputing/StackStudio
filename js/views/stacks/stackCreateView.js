@@ -16,7 +16,7 @@ define([
 ], function( $, _, Backbone, Common, stackCreateTemplate, Stack ) {
 
     var StackCreateView = Backbone.View.extend({
-        
+
         template: _.template(stackCreateTemplate),
 
         events: {
@@ -26,11 +26,11 @@ define([
 
         initialize: function(options) {
             this.$el.html(this.template);
-            this.$el.modal();
+            this.$el.modal('show');
         },
-        
+
         render: function() {
-            
+
         },
 
         save: function() {
@@ -70,6 +70,6 @@ define([
         }
 
     });
-    
+
     return StackCreateView;
 });
