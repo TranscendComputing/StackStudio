@@ -80,6 +80,7 @@ define([
             "click .create_subnet_btn":"subnetCreate",
             'change input[type=checkbox]': 'checkboxChanged',
             'click #project_name': 'pnFocus',
+            'click .enabled-cloud': 'clickCloudEnable',
             'click .cloud-button' : 'clickCloudButton',
             'click .cloud-tab' : 'clickCloudTab'
         },
@@ -161,6 +162,7 @@ define([
                 this.policy = this.rootView.treePolicy;
                 this.model = this.rootView.policies.get(this.policy);
                 this.populateForm(this.model);
+                //this.renderButtons();
             }else{
                 this.prePopForm();
             }
@@ -190,15 +192,37 @@ define([
         treeSelect: function() {
             this.clearSelection();
             this.render();
-            $("#aws_button").removeClass("active");
-            $("#os_button").removeClass("active");
-            $("#content").hide("fast");
-            $("#content_os").hide("fast");
-            $("#os_tab_item").hide("fast");
-            $("#aws_tab_item").hide("fast");
-
+            this.unselectCloudButtons();
         },
 
+        // renderButtons: function(){
+        //     if(this.model.attributes.org_governance["saved_os_cloud"] === true){
+        //         this.buttonBehavior("os",false);
+        //     }
+        //     else{
+        //         $("#os_button").removeClass("active");
+        //         $("#content_os").hide("fast");
+        //         $("#os_tab_item").hide("fast");
+        //     }
+        //     if(this.model.attributes.org_governance["saved_aws_cloud"] === true ){
+        //         this.buttonBehavior("aws",false);
+        //     }
+        //     else{
+        //         $("#aws_button").removeClass("active");
+        //         $("#content").hide("fast");
+        //         $("#aws_tab_item").hide("fast");
+        //     }
+        // },
+
+        unselectCloudButtons: function(){
+            $("#os_button").removeClass("active");
+            $("#content_os").hide("fast");
+            $("#os_tab_item").hide("fast");
+            $("#aws_button").removeClass("active");
+            $("#aws_button").removeClass("active");
+            $("#content").hide("fast");
+            $("#aws_tab_item").hide("fast");
+        },
         disableSelectionRequiredButtons: function(toggle) {
 
             if(toggle) {
@@ -213,12 +237,46 @@ define([
                 $("#manage_group_users_button").removeAttr("disabled");
                 $("#manage_group_users_button").removeClass("ui-state-disabled");
             }
-
+            //enable cloud
+            this.cloudEnable();
             //check admin
             this.adminCheck();
 
         },
 
+        clickCloudEnable: function(event){
+            //debugger
+            if($(event.target).attr('checked') === "checked"){
+                if($(event.target).attr('id') === "enabled_cloud"){
+                    $(".AWS").show("slow");
+                }
+                if($(event.target).attr('id') === "enabled_cloud_os"){
+                    $(".OS").show("slow");
+                }
+            }else{
+                if($(event.target).attr('id') === "enabled_cloud"){
+                    $(".AWS").hide("slow");
+                }
+                if($(event.target).attr('id') === "enabled_cloud_os"){
+                    $(".OS").hide("slow");
+                }
+            }
+        },
+
+        cloudEnable: function(){
+            if($("#enabled_cloud").attr('checked') === "checked"){
+                $(".AWS").show("slow");
+            }
+            else{
+                $(".AWS").hide("slow");
+            }
+            if($("#enabled_cloud_os").attr('checked') === "checked"){
+                $(".OS").show("slow");
+            }
+            else{
+                $(".OS").hide("slow");
+            }
+        },
         adminCheck: function(){
             var groupsView = this;
             groupsView.users.fetch({success: function(){
@@ -280,6 +338,16 @@ define([
             {
                 o["default_alarms"] = this.alarms;
                 o["default_images"] = this.default_images_os;
+            }
+            if(form_name === "#content_org form")
+            {
+                if( $(".os.cloud-button").hasClass("active")){
+                    o["saved_os_cloud"] = true;
+                }
+                if( $(".aws.cloud-button").hasClass("active")){
+                    o["saved_aws_cloud"] = true;
+                }
+
             }
             return o;
         },
@@ -723,44 +791,51 @@ define([
             }
 
         },
-        buttonBehavior: function(nav)
+        buttonBehavior: function(nav,user_select)
         {
                 var button = $("."+nav+".cloud-button");
                 var tab = $("."+nav+".tab-selector");
                 var content = $("."+nav+".cont");
-
-                button.toggleClass("active");
-                tab.toggle();
-                if(! button.hasClass("active")){
-                    content.hide("slow");
-                    if($(".cloud-button").hasClass("active")){
-                        $(".tab-selector:visible").first().addClass("active");
-                        tab.removeClass("active");
-                        var data_cloud = $(".tab-selector:visible").first().attr("data-cloud");
-                        $(".cont." + data_cloud).show("slow");
+                if(user_select){
+                    button.toggleClass("active");
+                    tab.toggle();
+                    if(! button.hasClass("active")){
+                        content.hide("slow");
+                        if($(".cloud-button").hasClass("active")){
+                            $(".tab-selector:visible").first().addClass("active");
+                            tab.removeClass("active");
+                            var data_cloud = $(".tab-selector:visible").first().attr("data-cloud");
+                            $(".cont." + data_cloud).show("slow");
+                        }
                     }
-                }
-                if(tab.is(':visible') && button.hasClass("active")){
+                    if(tab.is(':visible') && button.hasClass("active")){
+                        $(".tab-selector").removeClass("active");
+                        $(".cont").hide("slow");
+                        tab.addClass("active");
+                        content.show("slow");
+                    }
+                    if($(".cloud-button").hasClass("active")){
+                        $("#clouds_select_msg").hide();
+                    }
+                    else{
+                        $("#clouds_select_msg").show();
+                        $(".content").hide("slow");
+                    }
+                }else if(!user_select){
+                    button.addClass("active");
                     $(".tab-selector").removeClass("active");
-                    $(".cont").hide("slow");
+                    tab.show("fast");
                     tab.addClass("active");
-                    content.show("slow");
-                }
-                if($(".cloud-button").hasClass("active")){
-                    $("#clouds_select_msg").hide();
-                }
-                else{
-                    $("#clouds_select_msg").show();
-                    $(".content").hide("slow");
+                    content.show("fast");
                 }
         },
 
         clickCloudButton: function(event){
             if(event.target.id === "os_button" || event.target.id === "os_img"){
-                this.buttonBehavior("os");
+                this.buttonBehavior("os",true);
             }
             if(event.target.id === "aws_button" || event.target.id === "aws_img"){
-                this.buttonBehavior("aws");
+                this.buttonBehavior("aws",true);
             }
         },
 
