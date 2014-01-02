@@ -11,16 +11,16 @@ define([
         'bootstrap',
         'backbone',
         'common',
-        'text!templates/cookbooks/cookbooksTemplate.html',
+        'text!templates/platform_components/platformComponentsTemplate.html',
         'collections/configManagers'
-], function( $, _, bootstrap, Backbone, Common, cookbooksTemplate, ConfigManagers ) {
+], function( $, _, bootstrap, Backbone, Common, platformComponentsTemplate, ConfigManagers ) {
 
-    var CookbooksView = Backbone.View.extend({
+    var PlatformComponentsView = Backbone.View.extend({
 
         tagName: 'div',
-        id: 'cookbooks_view',
+        id: 'platform_components_view',
 
-        template: _.template(cookbooksTemplate),
+        template: _.template(platformComponentsTemplate),
 
         events: {
             "click .configurationManager": "openConfigManager"
@@ -60,6 +60,7 @@ define([
         addAllConfigManagers: function() {
             $("#config_managers_list").empty();
             this.configManagers.each(function(configManager) {
+                // Only Chef is currently supported
                 if(configManager.attributes.type === "chef") {
                     $("#config_managers_list").append("<li><a id='"+configManager.id+"' class='configurationManager selectable_item'>"+configManager.attributes.name+"</a></li>");
                 }
@@ -81,21 +82,21 @@ define([
 
     });
 
-    var cookbooksView;
+    var platformComponentsView;
 
-    Common.router.on('route:cookbooks', function () {
+    Common.router.on('route:platformComponents', function () {
         if(sessionStorage.account_id) {
-            if (this.previousView !== cookbooksView) {
+            if (this.previousView !== platformComponentsView) {
                 this.unloadPreviousState();
-                cookbooksView = new CookbooksView();
-                this.setPreviousState(cookbooksView);
+                platformComponentsView = new PlatformComponentsView();
+                this.setPreviousState(platformComponentsView);
             }
-            cookbooksView.render();
+            platformComponentsView.render();
         }else {
             Common.router.navigate("", {trigger: true});
             Common.errorDialog("Login Error", "You must login.");
         }
     }, Common);
 
-    return CookbooksView;
+    return PlatformComponentsView;
 });

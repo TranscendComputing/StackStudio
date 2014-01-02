@@ -54,7 +54,7 @@ require(['./common'], function (common) {
              'views/resource/resourceNavigationView',
              'views/images/imagesView',
              'views/assemblies/assembliesView',
-             'views/cookbooks/cookbooksView',
+             'views/platform_components/platformComponentsView',
              'views/stacks/stacksView',
              'views/offerings/offeringsView'
             ], function(TopNavView, NavLogin, DashboardView) {
