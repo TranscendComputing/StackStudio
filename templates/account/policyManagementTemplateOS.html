@@ -17,9 +17,19 @@
                 <legend style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;border-radius: 5px 5px 0px 0px;">&nbsp;OpenStack Governance Policy</legend>
                 <div class="well">
         
-                                    
-                    <!-- Multiple Checkboxes (inline) -->
+                   <hr>
+                    <!-- Cloud enabling checkbox -->
                     <div class="control-group">
+                        <label class="control-label">Enabled Cloud:</label>
+                        <div class="controls">
+                            <label class="checkbox">
+                                <input id="enabled_cloud_os"type="checkbox" name="enabled_cloud" class="enabled-cloud" value="OpenStack Enabled">OpenStack
+                            </label>
+                        </div>
+                    </div>      
+                    <hr>   
+                    <!-- Multiple Checkboxes (inline) -->
+                    <div class="control-group OS">
                         <label class="control-label">Usable Regions:</label>
                         <div class="controls">
                             <label class="checkbox">
@@ -31,7 +41,7 @@
                     </div>
 
                     <!-- Select Basic -->
-                    <div class="control-group">
+                    <div class="control-group OS">
                         <label class="control-label">Default Region:</label>
                         <div class="controls">
                             <select id="default_region_os" name="default_region" class="input-xlarge OS">
@@ -43,7 +53,7 @@
                     <hr>
                     
                     <!-- Multiple Checkboxes (inline) -->
-                    <div class="control-group">
+                    <div class="control-group OS">
                         <label class="control-label">Enabled Services:</label>
                         <div class="controls">
                             <label class="checkbox">
@@ -69,7 +79,7 @@
                         </div>
                     </div>
                     <!-- TopStack Enabled services -->
-                    <div class="top-stack-services" > 
+                    <div class="top-stack-services OS" > 
                         <label class="top-stack-services-label">Enabled TopStack Services:</label>
                             <div class="controls">
                                 <label class="checkbox">
@@ -112,7 +122,7 @@
             </fieldset>
         </form>
         
-        <form id="instance_policies" class="form-horizontal">
+        <form id="instance_policies" class="form-horizontal OS">
             <fieldset>
 
                 <!-- Form Name -->
@@ -247,7 +257,7 @@
             </fieldset>
         </form>
         
-        <form class="form-horizontal">
+        <form class="form-horizontal OS">
             <fieldset>
 
                 <!-- Form Name -->
@@ -360,7 +370,7 @@
             </fieldset>
         </form>
         
-        <form class="form-horizontal">
+        <form class="form-horizontal OS">
             <fieldset>
                 <!-- Form Name -->
                 <legend style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;border-radius: 5px 5px 0px 0px;">&nbsp;CloudWatch Alarms</legend>

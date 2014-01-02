@@ -26,7 +26,7 @@ define([
         currentOffering: undefined,
 
         stacks: undefined,
-        
+
         events: {
             "click #new_offering_button": "newOffering",
             "click #offering_save_button": "saveOffering",
@@ -125,7 +125,7 @@ define([
                 });
             }
         },
-        
+
         newOffering: function() {
             if(this.currentOffering) {
                 var confirmation = confirm("Are you sure you want to open a new offering? Any unsaved changes to the current offering will be lost.");

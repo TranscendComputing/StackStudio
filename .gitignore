@@ -42,7 +42,9 @@ js/vendor/jquery-ui.js
 js/vendor/lodash.js
 js/vendor/ace/*.js
 js/vendor/jquery.jstree.js
-js/vendor/jquery.dataTables.js
+js/vendor/jquery.dataTables*.js
+js/vendor/dataTables*.js
+js/vendor/bootstrap*.js
 js/vendor/jquery.terminal*js
 js/vendor/ICanHaz.js
 js/vendor/require.js

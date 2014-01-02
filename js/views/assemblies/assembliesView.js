@@ -16,8 +16,11 @@ define([
         'text!templates/assemblies/assembliesTemplate.html',
         'models/assembly',
         'collections/assemblies',
-        'views/assemblies/configListView'
-], function( $, _, bootstrap, Backbone,DesignView, RuntimeView, Common,  assembliesTemplate, Assembly, Assemblies, ConfigListView) {
+        'views/assemblies/configListView',
+        'views/assemblies/dockerConfigListView'
+], function( $, _, bootstrap, Backbone,DesignView, RuntimeView, Common,  assembliesTemplate,
+    Assembly, Assemblies, ConfigListView,
+    DockerConfigListView) {
 
     var AssembliesView = Backbone.View.extend({
 
@@ -35,14 +38,47 @@ define([
         initialize: function() {
             $("#main").html(this.el);
             this.$el.html(this.template);
+            Common.vent.on('assembly:changeTool', this.changeTool, this);
+            Common.vent.on('global:modeChange', this.changeMode, this);
             //this.currentAssembly = new Assembly();
+        },
+
+        changeMode: function(mode) {
+            if (this.tabView instanceof DesignView) {
+                if($("#assemblyDesignTool").val() && $("#assemblyDesignTool").val() !== ""){
+                    this.currentAssembly.set(this.listView.getConfigs("#assemblyDesignTool"));
+                }
+            }
+            //$(this).tab('show');
+            this.listView.close();
+            this.tabView.close();
+            this.listView = new ConfigListView();
+            if (mode === "prod") {
+                this.tabView = new RuntimeView({el: '#assemblyWork', listView:this.listView});
+            } else if(mode ==="dev") {
+                this.tabView = new DesignView({el: '#assemblyWork', assemblies:this.assemblies, listView:this.listView});
+                if(this.currentAssembly.id){
+                    this.openAssembly(this.currentAssembly);
+                }
+            }
+        },
+
+        render: function(){
+            var $this = this;
+            this.configureTabs();
+
+            Common.vent.on("assembliesViewRefresh", this.fetchAssemblies, this);
+            this.newAssemblyForm();
+            this.assemblies = new Assemblies();
+            this.fetchAssemblies();
+
         },
 
         configureTabs: function(){
             var $this = this;
             $("#assembliesTabs a:first").tab("show");
             this.listView = new ConfigListView();
-            this.tabView = new DesignView({el:"#assemblyDesign", assemblies:$this.assemblies,listView:this.listView});
+            this.tabView = new DesignView({el:"#assemblyWork", assemblies:this.assemblies,listView:this.listView});
             //this.listView.render();
             $("#assembliesTabs a").click(function(e){
                 e.preventDefault();
@@ -67,17 +103,6 @@ define([
                     }
                 }
             });
-        },
-
-        render: function(){
-            var $this = this;
-            this.configureTabs();
-
-            Common.vent.on("assembliesViewRefresh", this.fetchAssemblies, this);
-            this.newAssemblyForm();
-            this.assemblies = new Assemblies();
-            this.fetchAssemblies();
-            
         },
 
         close: function(){
@@ -116,7 +141,7 @@ define([
         clickAssemblyHandler: function(evt){
             var id = evt.currentTarget.id;
             this.openAssembly(this.assemblies.get(id));
-            
+
         },
         openAssembly: function(assembly){
             var $this = this;
@@ -244,9 +269,9 @@ define([
                     .appendTo(ul);
                 ver.append(ul);
             }
-            
-            
-            
+
+
+
         },
         newAssemblyForm: function(){
             var $this =this;
@@ -260,7 +285,7 @@ define([
             }
             this.currentAssembly = new Assembly();
             this.tabView.currentAssembly = this.currentAssembly;
-            
+
             this.tabView.listView.close();
             this.tabView.listView = new ConfigListView();
             this.tabView.listView.render();
@@ -295,6 +320,21 @@ define([
                 }
             }
             return confirmation;
+        },
+        changeTool: function(tool) {
+            Common.vent.trigger("console:mode", tool);
+            if (this.listView) {
+                this.listView.close();
+            }
+            switch(tool){
+                case "docker":
+                    this.listView = new DockerConfigListView();
+                    break;
+                default:
+                    this.listView = new ConfigListView();
+                    break;
+            }
+            this.listView.render();
         }
 
     });

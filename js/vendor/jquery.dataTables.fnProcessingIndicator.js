@@ -7,15 +7,15 @@
 /*global define:true console:true */
 define([
         'jquery',
-        'common',
+        'underscore',
         'jquery.dataTables'
-], function( $, _, Backbone, ich, Common , ResourceRowView ) {
+], function( $, dataTables ) {
     'use strict';
 
     /**
      * Plug-in to programmatically show/hide processing indicator.
      */
-    jQuery.fn.dataTableExt.oApi.fnProcessingIndicator = function ( oSettings, onoff )
+    $.fn.dataTableExt.oApi.fnProcessingIndicator = function ( oSettings, onoff )
     {
         if( typeof(onoff) == 'undefined' )
         {
@@ -23,5 +23,4 @@ define([
         }
         this.oApi._fnProcessingDisplay( oSettings, onoff );
     };
-
 });

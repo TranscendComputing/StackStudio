@@ -15,7 +15,6 @@ define([
         '/js/aws/views/cloud_formation/awsCloudFormationStackCreateView.js',
         'ace',
         'collections/configManagers',
-        'mode-json',
         'jquery.jstree'
 ], function( $, _, Backbone, Common,  stackDesignTemplate, Assemblies, StackCreate, ace, ConfigManagers) {
     'use strict';
@@ -150,14 +149,14 @@ define([
           switch(conf.tool){
             case 'Ansible':
               var jobs =[];
-              var config; 
+              var config;
               $.each(conf.configurations.ansible.host_config, function(i,job){
                 jobs.push(job.id);
               });
               $.each(this.configManagers.toJSON()['ansible'], function(index, ansible){
                 if (ansible.enabled){
                   config = ansible;
-                } 
+                }
               });
               this.instances.push({'NewInstance':jobs});
               newInstance.Properties['KeyName'] = config.auth_properties.ansible_aws_keypair;
@@ -171,7 +170,7 @@ define([
             $(resourceNode).addClass('ui-state-active');
           }
         },
-        
+
         getContent: function(){
           var content = this.editor.getValue();
           if (content.replace(/\s/g,"") !== '') {
@@ -263,7 +262,7 @@ define([
               });
             });
             template = $.json_stringify(t_data);
-            this.newResourceDialog = new StackCreate({cred_id: this.credentialId, 
+            this.newResourceDialog = new StackCreate({cred_id: this.credentialId,
                 mode: "run",
                 stack: this.stack,
                 content: template,
