@@ -211,7 +211,7 @@ define([
         populateConfigMenus: function(){
             var thisView = this;
             $(".config-manager-select").empty();
-            $(".config-manager-select").append("<option value='none'>None</option>")
+            $(".config-manager-select").append("<option value='none'>None</option>");
             this.configManagers.each(function(configManager) {
                 var select = $("#"+configManager.attributes.type+"_select");
                 select.append("<option value="+configManager.id+">"+configManager.attributes.name+"</option>");
