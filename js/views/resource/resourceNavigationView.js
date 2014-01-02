@@ -254,7 +254,7 @@ define([
             if(topstack_enabled !== undefined && topstack_enabled.length > 0) {
                 $("#topstack_services_table, #topstack_service_label").show();
                 $("#native_services_table").css("width", "30%");
-                $("#topstack_services_table").css("width", "42%");
+                $("#topstack_services_table").css("width", "60%");
                 $.each(topstack_enabled, function(index, service) {
                     if($.inArray(service.name, enabled_services_os) !== -1 || permissions.length > 0 || no_governance.length < 1){
                         $("#topstack_row"+row).append($("<td></td>").attr({
@@ -274,7 +274,7 @@ define([
                 });
             }else {
                 $("#topstack_services_table, #topstack_service_label").hide();
-                $("#native_services_table").css("width", "73%");
+                $("#native_services_table").css("width", "90%");
             }
 
             $("#cloud_nav").html(this.crumbTemplate({pathElt: this.cloudDefinitions[this.cloudProvider].name}));
@@ -304,7 +304,7 @@ define([
             var credentialFound = false;
             //Remove previous credentials
             $("#credentials").remove();
-            $("#cloud_specs").append('<span id="credentials">Credentials: <select id="credential_select" class="cloud_spec_select"></select></span>');
+            $("#cloud_specs").append('<div id="credentials" class="col-lg-4 spec_select">Credentials: <select id="credential_select" class="cloud_spec_select form-control"></select></div>');
             //Add credentials for this cloud
             this.cloudCredentials.each(function (credential) {
                 if(credential.get("cloud_provider").toLowerCase() === resourceNav.cloudProvider) {
@@ -337,7 +337,7 @@ define([
             $("#regions").remove();
             //Add regions if cloud has regions
             if(resourceNav.cloudDefinitions[this.cloudProvider].regions.length) {
-                $("#cloud_specs").append('<span id="regions">Region: <select id="region_select" class="cloud_spec_select"></select></span>');
+                $("#cloud_specs").append('<div id="regions" class="col-lg-4 spec_select">Region: <select id="region_select" class="cloud_spec_select form-control"></select></div>');
                 $.each(resourceNav.cloudDefinitions[this.cloudProvider].regions, function(index, region) {
                     //regions check
                     var addRegion = false;
