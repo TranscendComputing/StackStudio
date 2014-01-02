@@ -22,7 +22,7 @@ define([
             url: '',
             enabled: true,
             auth_properties: {},
-            cloud_accounts: [],
+            cloud_account_ids: [],
             continuous_integration_servers: [],
             source_control_repositories: [],
             branch: '',

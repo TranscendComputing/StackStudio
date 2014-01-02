@@ -179,12 +179,16 @@ define([
             });
         },
 
-        updateConfigManager: function(managerId){
-            var url = Common.apiUrl + "/stackstudio/v1/orchestration/managers/" + managerId + "/account?account_id=" + this.get("id");
-            var options = {};
+        updateConfigManagers: function(managerIds){
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_accounts/"+this.attributes.id+"/managers?_method=PUT";
+            var options = {"config_manager_ids":managerIds};
+
             $.ajax({
                 url: url,
                 type: "POST",
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: JSON.stringify(options),
                 error: function(jqXHR) {
                     Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
                 }
