@@ -348,6 +348,10 @@ define([
                     o["saved_aws_cloud"] = true;
                 }
 
+            }else{
+                if(o["enabled_cloud"] === undefined){
+                    o["enabled_cloud"] = "";
+                }
             }
             return o;
         },
