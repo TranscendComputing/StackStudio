@@ -344,7 +344,7 @@ define([
                     accountManagementView.subApp = new CloudAccountManagementListView({rootView: accountManagementView});
                 }
                 break;
-            case "devops":
+            case "configuration_managers":
                 if(accountManagementView.subApp instanceof DevOpsToolsManagementView){
 
                 }else{
