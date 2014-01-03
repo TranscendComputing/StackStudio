@@ -102,6 +102,7 @@ define([
             //$("#update_auth_url_button").button();
             //$("ul#cloud_account_list").menu();
             //$("div#detail_tabs").tabs();
+            $("input").addClass("form-control");
         },
 
         renderAccountAttributes: function() {
