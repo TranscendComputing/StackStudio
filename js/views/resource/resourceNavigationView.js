@@ -124,7 +124,7 @@ define([
         },
 
         enableCloudMessage: function(){
-            $("#cloud_enabled").hide();
+            $("#services_table").hide();
             $("#service_menu").hide();
             $("#clouds_disabled").show();
         },
