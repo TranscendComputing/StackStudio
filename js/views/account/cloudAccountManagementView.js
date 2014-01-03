@@ -59,7 +59,7 @@ define([
             Common.vent.on("cloudAccountUpdated", function() {
                 thisView.render();
             });
-
+            $("input").addClass("form-control");
             this.render();
         },
 

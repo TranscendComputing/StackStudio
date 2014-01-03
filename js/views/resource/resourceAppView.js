@@ -48,6 +48,7 @@ define([
             this.delegateEvents(this.events);
             ich.refresh();
             $('button').button();
+            $('button').addClass("btn btn-primary");
             $("#action_menu").menu();
 
             this.$table = $('#resource_table').dataTable({
@@ -56,6 +57,7 @@ define([
                 "bDestroy": true
             });
             this.$table.fnProcessingIndicator(true);
+            //$('input').addClass("form-control");
 
             var CollectionType = this.collectionType;
             this.collection = new CollectionType();

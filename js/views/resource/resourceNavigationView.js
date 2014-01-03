@@ -93,38 +93,71 @@ define([
         },
 
         render: function () {
-            if(this.resourceApp) {
-                this.resourceApp.remove();
-            } else {
-                var firstCloudProvider = this.cloudCredentials.first().attributes.cloud_provider;
-                firstCloudProvider = firstCloudProvider.toLowerCase();
-                if(this.cloudProvider) {
-                    if($("#"+this.cloudProvider).length) {
-                        this.cloudSelection(this.cloudProvider);
-                        Common.router.navigate("#resources/"+this.cloudProvider, {trigger: false});
-                    }else {
+            if($("#cloud_coverflow").children().length > 0){
+                if(this.resourceApp) {
+                    this.resourceApp.remove();
+                } else {
+
+                    // var firstCloudProvider = this.cloudCredentials.first().attributes.cloud_provider;
+                    // firstCloudProvider = firstCloudProvider.toLowerCase();
+                    var firstCloudProvider = $("#cloud_coverflow").children()[0].id;
+                    if(this.cloudProvider) {
+                        if($("#"+this.cloudProvider).length) {
+                            this.cloudSelection(this.cloudProvider);
+                            Common.router.navigate("#resources/"+this.cloudProvider, {trigger: false});
+                        }else {
+                            Common.router.navigate("#resources/"+firstCloudProvider, {trigger: false});
+                            this.cloudSelection(firstCloudProvider);
+                        }
+                    }else if(sessionStorage['selected_cloud'] !== undefined){
+                        Common.router.navigate("#resources/"+sessionStorage['selected_cloud'], {trigger: false});
+                        this.cloudSelection(sessionStorage['selected_cloud']);
+                    }else{
                         Common.router.navigate("#resources/"+firstCloudProvider, {trigger: false});
                         this.cloudSelection(firstCloudProvider);
                     }
-                }else if(sessionStorage['selected_cloud'] !== undefined){
-                    Common.router.navigate("#resources/"+sessionStorage['selected_cloud'], {trigger: false});
-                    this.cloudSelection(sessionStorage['selected_cloud']);
-                }else{
-                    Common.router.navigate("#resources/"+firstCloudProvider, {trigger: false});
-                    this.cloudSelection(firstCloudProvider);
+                }
+                this.loadResourceApp();
+            }else{
+                this.enableCloudMessage();
+            }
+        },
+
+        enableCloudMessage: function(){
+            $("#services_table").hide();
+            $("#service_menu").hide();
+            $("#clouds_disabled").show();
+        },
+
+        enableCloud: function(cloudPolicies, provider){
+            var check = false;
+            if(cloudPolicies.length < 1 || JSON.parse(sessionStorage.permissions).length > 0){
+                check = false;
+            }else{
+                if(cloudPolicies[0].group_policy.aws_governance.enabled_cloud.toLowerCase() === provider){
+                    check = false;
+                } else if(cloudPolicies[0].group_policy.os_governance.enabled_cloud.toLowerCase() === provider){
+                    check = false;
+                } else{
+                    check = true;
                 }
             }
-            this.loadResourceApp();
+            return check;
         },
 
         addCloud: function( cloudCredential ) {
             var cloudProvider = cloudCredential.get("cloud_provider");
             var resourceNav = this;
+            var cloudPolicies = JSON.parse(sessionStorage.group_policies);
             if(cloudProvider) {
                 cloudProvider = cloudProvider.toLowerCase();
                 var found = false;
+                // debugger
+                //check if cloud is enabled.
+                found = this.enableCloud(cloudPolicies, cloudProvider);
+                // debugger
                 $.each($("#cloud_coverflow").children(), function (index, coverFlowCloud) {
-                    if(coverFlowCloud.id === cloudProvider) {
+                    if(coverFlowCloud.id === cloudProvider ) {
                         found = true;
                     }
                 });
