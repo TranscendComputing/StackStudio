@@ -80,7 +80,7 @@ define([
             $.each(scmInputs, function(index, value) {
                 var jQuerySelector = "#" + value.id;
                 //If input title is not optional, check it is not blank
-                if(value.title !== "optional") {
+                if(value.title !== "optional" && $(jQuerySelector).is(":visible")) {
                     if($(jQuerySelector).val().trim() === "") {
                         addEditView.displayValid(false, jQuerySelector);
                         issue = true;
