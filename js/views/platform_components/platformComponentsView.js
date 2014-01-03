@@ -126,7 +126,7 @@ define([
                                     "vagrant_centos-6.4_status": "NONE",
                                     "sync_status": "NOT_FOUND_IN_REPO"
                                 }
-                            },
+                            }
                         ];
                         componentName = "Cookbook Name";
                         components = this.currentConfigManager.cookbooks;
@@ -144,9 +144,9 @@ define([
                     });
                     $("#continuous_integration_table").append("<thead><tr>"+headerColumns+"</tr></thead>");
                     // Build Body of Table
-                    ignored_components = []
+                    var ignored_components = [];
                     $.each(components, function(index, value) {
-                        rowContents = "<td>"+value["name"]+"</td>";
+                        var rowContents = "<td>"+value["name"]+"</td>";
                         $.each(value["status"], function( key, statusValue) {
                             rowContents += "<td>"+statusValue+"</td>";
                         });
