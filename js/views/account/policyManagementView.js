@@ -90,14 +90,14 @@ define([
             this.rootView = this.options.rootView;
             $("#submanagement_app").html(this.$el);
             $("#content_os").html(this.template_os);
-            $("#images_table").dataTable({
+            $("#images_table_aws").dataTable({
                 "aoColumns": [
                         { "sWidth": "25%" },
                         { "sWidth": "50%" },
                         { "sWidth": "25%" }
                     ]
             });
-            $("#default_images_table").dataTable({
+            $("#default_images_table_aws").dataTable({
                 "sDom": 't',
                 "aoColumns": [
                         { "sWidth": "20%" },
@@ -123,15 +123,15 @@ define([
 
             Common.vent.off("topicAppRefresh");
             Common.vent.on("topicAppRefresh", function() {
-                groupsView.topics.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
+                groupsView.topics.fetch({ data: $.param({ cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val()}), reset: true });
             });
             Common.vent.off("vpcAppRefresh");
             Common.vent.on("vpcAppRefresh", function() {
-                groupsView.vpcs.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
+                groupsView.vpcs.fetch({ data: $.param({ cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val()}), reset: true });
             });
             Common.vent.off("subnetAppRefresh");
             Common.vent.on("subnetAppRefresh", function() {
-                groupsView.subnets.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
+                groupsView.subnets.fetch({ data: $.param({ cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val()}), reset: true });
             });
 
             this.users = new Users();
@@ -186,7 +186,7 @@ define([
                 //left: 211 // Left position relative to parent in px
             };
 
-            new Spinner(spinnerOptions).spin($("#images_table").get(0));
+            new Spinner(spinnerOptions).spin($("#images_table_aws").get(0));
         },
 
         treeSelect: function() {
@@ -220,7 +220,7 @@ define([
             $("#os_tab_item").hide("fast");
             $("#aws_button").removeClass("active");
             $("#aws_button").removeClass("active");
-            $("#content").hide("fast");
+            $("#content_aws").hide("fast");
             $("#aws_tab_item").hide("fast");
         },
         disableSelectionRequiredButtons: function(toggle) {
@@ -247,14 +247,14 @@ define([
         clickCloudEnable: function(event){
             //debugger
             if($(event.target).attr('checked') === "checked"){
-                if($(event.target).attr('id') === "enabled_cloud"){
+                if($(event.target).attr('id') === "enabled_cloud_aws"){
                     $(".AWS").show("slow");
                 }
                 if($(event.target).attr('id') === "enabled_cloud_os"){
                     $(".OS").show("slow");
                 }
             }else{
-                if($(event.target).attr('id') === "enabled_cloud"){
+                if($(event.target).attr('id') === "enabled_cloud_aws"){
                     $(".AWS").hide("slow");
                 }
                 if($(event.target).attr('id') === "enabled_cloud_os"){
@@ -264,7 +264,7 @@ define([
         },
 
         cloudEnable: function(){
-            if($("#enabled_cloud").attr('checked') === "checked"){
+            if($("#enabled_cloud_aws").attr('checked') === "checked"){
                 $(".AWS").show("slow");
             }
             else{
@@ -310,7 +310,7 @@ define([
         savePolicy: function(){
             var newPolicy = new Policy();
 
-            var o = this.populateSavedHash("#content form");
+            var o = this.populateSavedHash("#content_aws form");
             var oS = this.populateSavedHash("#content_os form");
             var pW = this.populateSavedHash("#content_org form");
             newPolicy.save($("#policy_name").val(),o,oS,pW,this.policy,sessionStorage.org_id);
@@ -329,7 +329,7 @@ define([
                 }
             });
 
-            if(form_name === "#content form")
+            if(form_name === "#content_aws form")
             {
                 o["default_alarms"] = this.alarms;
                 o["default_images"] = this.default_images;
@@ -355,7 +355,9 @@ define([
             }
             return o;
         },
-        populateFormOS: function(p){
+        
+        populateFormHelper: function(indicator,p){
+            var governance = indicator + "_governance";
             for (var key in p) {
               if (p.hasOwnProperty(key)) {
                 var typ = $( "input[name='"+key+"']" ).prop("type");
@@ -370,85 +372,34 @@ define([
                 }else if(typ === "radio"){
                     $( "input[name='"+key+"'][value='"+p[key]+"']" ).attr('checked','checked');
                 }else{
-                    $("#"+key+"_os").val(p[key]);
+                    $("#"+key+"_"+ indicator).val(p[key]);
                 }
               }
             }
-
-            this.alarms = p.default_alarms;
-            for (var j in this.alarms){
-                $("#alarm_table").append("<tr><td>"+this.alarms[j].namespace+"</td><td>"+this.alarms[j].metric_name+"</td><td>"+this.alarms[j].threshold+"</td><td>"+this.alarms[j].period+"</td><td><a class='btn btn-mini btn-danger remove_alarm'><i class='icon-minus-sign icon-white'></i></a></td></tr>");
-            }
-            if(this.model.attributes.os_governance.default_images)
-            {
-                $("#default_images_table_os").dataTable().fnClearTable();
-                this.default_images_os = this.model.attributes.os_governance.default_images;
-
-                for(var k in this.default_images_os){
-                    $('input[name=use_approved_images]').attr('checked', true);
-                    $("#default_images_table_os").dataTable().fnAddData([this.default_images_os[k]["name"],this.default_images_os[k]["id"],"<a class='btn btn-mini btn-danger remove_image'><i class='icon-minus-sign icon-white'></i></a>"]);
+            if(indicator !== "org"){
+                this.alarms = p.default_alarms;
+                for (var j in this.alarms){
+                    $("#alarm_table_"+ indicator).append("<tr><td>"+this.alarms[j].namespace+"</td><td>"+this.alarms[j].metric_name+"</td><td>"+this.alarms[j].threshold+"</td><td>"+this.alarms[j].period+"</td><td><a class='btn btn-mini btn-danger remove_alarm'><i class='fa fa-minus-circle icon-white'></i></a></td></tr>");
                 }
-            }
-        },
-        populateFormPW: function(p){
-            for (var key in p) {
-              if (p.hasOwnProperty(key)) {
-                var typ = $( "input[name='"+key+"']" ).prop("type");
-                if(typ === "checkbox"){
-                    if(typeof p[key] === 'string'){
-                        $( "input[name='"+key+"'][value='"+p[key]+"']" ).attr('checked','checked');
-                    }else{
-                        for (var i in p[key]) {
-                          $( "input[name='"+key+"'][value='"+p[key][i]+"']" ).attr('checked','checked');
-                        }
+
+                if(this.model.attributes[governance].default_images)
+                {
+                    $("#default_images_table_" + indicator).dataTable().fnClearTable();
+                    this.default_images = this.model.attributes[governance].default_images;
+                    for(var k in this.default_images){
+                        $('input[name=use_approved_images_'+indicator+']').attr('checked', true);
+                        $("#default_images_table_" + indicator).dataTable().fnAddData([this.default_images[k]["name"],this.default_images[k]["id"],"<a class='btn btn-mini btn-danger remove_image'><i class='fa fa-minus-circle icon-white'></i></a>"]);
                     }
-                }else if(typ === "radio"){
-                    $( "input[name='"+key+"'][value='"+p[key]+"']" ).attr('checked','checked');
-                }else{
-                    $("#"+key+"_pw").val(p[key]);
                 }
-              }
             }
         },
         populateForm: function(model){
             $('input:checkbox').removeAttr('checked');
             $("#policy_name").val(model.attributes.name);
-            var p = model.attributes.aws_governance;
-
-            for (var key in p) {
-              if (p.hasOwnProperty(key)) {
-                var typ = $( "input[name='"+key+"']" ).prop("type");
-                if(typ === "checkbox"){
-                    if(typeof p[key] === 'string'){
-                        $( "input[name='"+key+"'][value='"+p[key]+"']" ).attr('checked','checked');
-                    }else{
-                        for (var i in p[key]) {
-                          $( "input[name='"+key+"'][value='"+p[key][i]+"']" ).attr('checked','checked');
-                        }
-                    }
-                }else if(typ === "radio"){
-                    $( "input[name='"+key+"'][value='"+p[key]+"']" ).attr('checked','checked');
-                }else{
-                    $("#"+key).val(p[key]);
-                }
-              }
-            }
-
-            this.alarms = p.default_alarms;
-            for (var j in this.alarms){
-                $("#alarm_table").append("<tr><td>"+this.alarms[j].namespace+"</td><td>"+this.alarms[j].metric_name+"</td><td>"+this.alarms[j].threshold+"</td><td>"+this.alarms[j].period+"</td><td><a class='btn btn-mini btn-danger remove_alarm'><i class='fa fa-minus-circle icon-white'></i></a></td></tr>");
-            }
-            if(this.model.attributes.aws_governance.default_images)
-            {
-                $("#default_images_table").dataTable().fnClearTable();
-                this.default_images = this.model.attributes.aws_governance.default_images;
-                for(var k in this.default_images){
-                    $('input[name=use_approved_images]').attr('checked', true);
-                    $("#default_images_table").dataTable().fnAddData([this.default_images[k]["name"],this.default_images[k]["id"],"<a class='btn btn-mini btn-danger remove_image'><i class='fa fa-minus-circle icon-white'></i></a>"]);
-                }
-            }
-            this.populateFormOS(model.attributes.os_governance);
-            this.populateFormPW(model.attributes.org_governance);
+            var p = model.attributes;
+            this.populateFormHelper("aws",p["aws_governance"]);
+            this.populateFormHelper("os",p["os_governance"]);
+            this.populateFormHelper("org",p["org_governance"]);
         },
 
         refreshSession: function(){
@@ -471,22 +422,22 @@ define([
             var pView = this;
 
             var topicsList = [];
-            if($("#default_informational").val() !== "None"){topicsList.push($("#default_informational").val());}
-            if($("#default_warning").val() !== "None"){topicsList.push($("#default_warning").val());}
-            if($("#default_error").val() !== "None"){topicsList.push($("#default_error").val());}
+            if($("#default_informational_aws").val() !== "None"){topicsList.push($("#default_informational_aws").val());}
+            if($("#default_warning_aws").val() !== "None"){topicsList.push($("#default_warning_aws").val());}
+            if($("#default_error_aws").val() !== "None"){topicsList.push($("#default_error_aws").val());}
 
-            var newAlarmDialog = new CreateAlarmView({cred_id: $("#default_credentials").val(), region: $("#default_region").val(), policy_view: pView,tList: topicsList});
+            var newAlarmDialog = new CreateAlarmView({cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val(), policy_view: pView,tList: topicsList});
             newAlarmDialog.render();
         },
 
         addCreds: function(){
             var creds = JSON.parse(sessionStorage.cloud_credentials);
-            $("#default_credentials").empty();
+            $("#default_credentials_aws").empty();
             $("#default_credentials_os").empty();
 
             for (var i in creds) {
                 if(creds[i].cloud_credential.cloud_provider === "AWS"){
-                    $("#default_credentials").append("<option value='"+creds[i].cloud_credential.id+"'>"+creds[i].cloud_credential.name+"</option>");
+                    $("#default_credentials_aws").append("<option value='"+creds[i].cloud_credential.id+"'>"+creds[i].cloud_credential.name+"</option>");
                 }
                 else if(creds[i].cloud_credential.cloud_provider === "OpenStack"){
                     $("#default_credentials_os").append("<option value='"+creds[i].cloud_credential.id+"'>"+creds[i].cloud_credential.name+"</option>");
@@ -496,16 +447,16 @@ define([
 
             if(typeof this.rootView !== 'undefined' && typeof this.rootView.treePolicy !== 'undefined'){
                 var tp = this.rootView.policies.get(this.rootView.treePolicy);
-                $("#default_credentials").val(tp.attributes.aws_governance.default_credentials);
+                $("#default_credentials_aws").val(tp.attributes.aws_governance.default_credentials);
                 $("#default_credentials_os").val(tp.attributes.os_governance.default_credentials);
             }
-            if($("#default_credentials").length > 0){
-                $("#whole_form").show("slow");
-                $("#cred_message").hide("slow");
-                this.topics.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
-                this.images.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val(), platform: $("#filter_platform").val()}), reset: true });
-                this.vpcs.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
-                this.subnets.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
+            if($("#default_credentials_aws").length > 0){
+                $("#whole_form_aws").show("slow");
+                $("#cred_message_aws").hide("slow");
+                this.topics.fetch({ data: $.param({ cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val()}), reset: true });
+                this.images.fetch({ data: $.param({ cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val(), platform: $("#filter_platform_aws").val()}), reset: true });
+                this.vpcs.fetch({ data: $.param({ cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val()}), reset: true });
+                this.subnets.fetch({ data: $.param({ cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val()}), reset: true });
             }
             if($("#default_credentials_os").length > 0){
                 $("#whole_form_os").show("slow");
@@ -519,16 +470,16 @@ define([
         },
 
         addCredDependent: function(){
-            this.topics.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
-            this.images.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val(), platform: $("#filter_platform").val()}), reset: true });
+            this.topics.fetch({ data: $.param({ cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val()}), reset: true });
+            this.images.fetch({ data: $.param({ cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val(), platform: $("#filter_platform_aws").val()}), reset: true });
             this.images_os.fetch({ data: $.param({ cred_id: $("#default_credentials_os").val(), region: $("#default_region_os").val()}), reset: true });
-            this.vpcs.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
-            this.subnets.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
+            this.vpcs.fetch({ data: $.param({ cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val()}), reset: true });
+            this.subnets.fetch({ data: $.param({ cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val()}), reset: true });
         },
 
-        addAlarm: function(options){
+        addAlarm: function(options,indicator){
             this.alarms.push(options);
-            $("#alarm_table").append("<tr><td>"+options.namespace+"</td><td>"+options.metric_name+"</td><td>"+options.threshold+"</td><td>"+options.period+"</td><td><a class='btn btn-mini btn-danger remove_alarm'><i class='fa fa-minus-circle icon-white'></i></a></td></tr>");
+            $("#alarm_table_" + indicator).append("<tr><td>"+options.namespace+"</td><td>"+options.metric_name+"</td><td>"+options.threshold+"</td><td>"+options.period+"</td><td><a class='btn btn-mini btn-danger remove_alarm'><i class='fa fa-minus-circle icon-white'></i></a></td></tr>");
         },
 
         removeAlarm: function(event){
@@ -550,7 +501,7 @@ define([
                 tr.remove();
             });
             var trIndex = tr.prevAll().length;
-            if($(event.target).parents('table').attr('id') === "default_images_table"){
+            if($(event.target).parents('table').attr('id') === "default_images_table_aws"){
                 defaults = this.default_images;
             }
             if($(event.target).parents('table').attr('id') === "default_images_table_os"){
@@ -561,33 +512,33 @@ define([
         },
 
         addAllTopics: function(collection){
-            $("#default_informational").empty();
-            $("#default_warning").empty();
-            $("#default_error").empty();
+            $("#default_informational_aws").empty();
+            $("#default_warning_aws").empty();
+            $("#default_error_aws").empty();
             collection.each(function(model){
-                $("#default_informational").append("<option>"+model.attributes.id+"</option>");
-                $("#default_warning").append("<option>"+model.attributes.id+"</option>");
-                $("#default_error").append("<option>"+model.attributes.id+"</option>");
+                $("#default_informational_aws").append("<option>"+model.attributes.id+"</option>");
+                $("#default_warning_aws").append("<option>"+model.attributes.id+"</option>");
+                $("#default_error_aws").append("<option>"+model.attributes.id+"</option>");
             });
 
-            $("#default_informational").append("<option>None</option>");
-            $("#default_warning").append("<option>None</option>");
-            $("#default_error").append("<option>None</option>");
+            $("#default_informational_aws").append("<option>None</option>");
+            $("#default_warning_aws").append("<option>None</option>");
+            $("#default_error_aws").append("<option>None</option>");
 
             if(typeof this.rootView !== 'undefined' && typeof this.rootView.treePolicy !== 'undefined'){
                 var p = this.model.attributes.aws_governance;
-                $("#default_informational").val(p.default_informational);
-                $("#default_warning").val(p.default_warning);
-                $("#default_error").val(p.default_error);
+                $("#default_informational_aws").val(p.default_informational);
+                $("#default_warning_aws").val(p.default_warning);
+                $("#default_error_aws").val(p.default_error);
             }
         },
 
         addAllImages: function(collection){
             $(".spinner").remove();
-            $("#images_table").dataTable().fnClearTable();
+            $("#images_table_aws").dataTable().fnClearTable();
             collection.each(function(model) {
                 var rowData = [model.attributes.imageId,model.attributes.imageLocation,model.attributes.architecture];
-                $("#images_table").dataTable().fnAddData(rowData);
+                $("#images_table_aws").dataTable().fnAddData(rowData);
             });
         },
 
@@ -601,33 +552,33 @@ define([
         },
 
         addAllVpcs: function(collection){
-            $("#default_vpc").empty();
+            $("#default_vpc_aws").empty();
             collection.each(function(model) {
-                $("#default_vpc").append("<option>"+model.attributes.id+"</option>");
+                $("#default_vpc_aws").append("<option>"+model.attributes.id+"</option>");
             });
             if(typeof this.rootView !== 'undefined' && typeof this.rootView.treePolicy !== 'undefined'){
                 var p = this.model.attributes.aws_governance;
-                $("#default_vpc").val(p.default_vpc);
+                $("#default_vpc_aws").val(p.default_vpc);
             }
         },
 
         addAllSubnets: function(collection){
-            $("#default_subnet").empty();
+            $("#default_subnet_aws").empty();
             collection.each(function(model) {
-                $("#default_subnet").append("<option>"+model.attributes.subnet_id+"</option>");
+                $("#default_subnet_aws").append("<option>"+model.attributes.subnet_id+"</option>");
             });
             if(typeof this.rootView !== 'undefined' && typeof this.rootView.treePolicy !== 'undefined'){
                 var p = this.model.attributes.aws_governance;
-                $("#default_subnet").val(p.default_subnet);
+                $("#default_subnet_aws").val(p.default_subnet);
             }
         },
 
         clickImage: function(event){
-            if($(event.target).parents('table').attr('id') === "images_table"){
-                this.selectImage("",event.currentTarget);
+            if($(event.target).parents('table').attr('id') === "images_table_aws"){
+                this.selectImage("aws",event.currentTarget);
             }
             if($(event.target).parents('table').attr('id') === "images_table_os"){
-                this.selectImage("_os",event.currentTarget);
+                this.selectImage("os",event.currentTarget);
             }
         },
 
@@ -635,7 +586,7 @@ define([
             $(".row_selected").removeClass('row_selected');
             $(target).addClass('row_selected');
 
-            var rowData = $("#images_table"+provider).dataTable().fnGetData(target);
+            var rowData = $("#images_table_"+provider).dataTable().fnGetData(target);
 
             // $("#add_image").hide();
 //             $("#add_image_source").hide();
@@ -666,74 +617,74 @@ define([
                 //left: 211 Left position relative to parent in px
             };
 
-            new Spinner(spinnerOptions).spin($("#images_table").get(0));
+            new Spinner(spinnerOptions).spin($("#images_table_aws").get(0));
 
-            this.images.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val(), platform: $("#filter_platform").val()}), reset: true });
+            this.images.fetch({ data: $.param({ cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val(), platform: $("#filter_platform_aws").val()}), reset: true });
         },
 
         topicCreate: function(event){
-            var createTopicsDialog = new CreateTopicsView({cred_id: $("#default_credentials").val(), region: $("#default_region").val()});
+            var createTopicsDialog = new CreateTopicsView({cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val()});
             createTopicsDialog.render();
         },
 
         vpcCreate: function(event){
-            var createVPCsDialog = new CreateVpcsView({cred_id: $("#default_credentials").val(), region: $("#default_region").val()});
+            var createVPCsDialog = new CreateVpcsView({cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val()});
             createVPCsDialog.render();
         },
 
         subnetCreate: function(event){
-            var createSubnetDialog = new CreateSubnetView({cred_id: $("#default_credentials").val(), region: $("#default_region").val()});
+            var createSubnetDialog = new CreateSubnetView({cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val()});
             createSubnetDialog.render();
         },
 
         addImage: function(provider,image,image_id){
             var defaults = [];
-            if(provider === ""){
+            if(provider === "aws"){
                 defaults = this.default_images;
             }
-            else if (provider === "_os"){
+            else if (provider === "os"){
                 defaults = this.default_images_os;
             }
             defaults.push({"name": image ,"id": image_id});
-            $("#default_images_table"+provider).dataTable().fnAddData([image,image_id,"<a class='btn btn-mini btn-danger remove_image'><i class='fa fa-minus-circle icon-white'></i></a>"]);
-            $('input[name=use_approved_images'+provider+']').attr('checked', true);
+            $("#default_images_table_"+provider).dataTable().fnAddData([image,image_id,"<a class='btn btn-mini btn-danger remove_image'><i class='fa fa-minus-circle icon-white'></i></a>"]);
+            $('input[name=use_approved_images_'+provider+']').attr('checked', true);
         },
 
-        saveImages: function(){
-            var cells = [];
-            var rows = $("#default_images_table").dataTable().fnGetNodes();
-            for(var i=0;i<rows.length;i++)
-            {
-                var row = {"name" : $(rows[i]).find("td:eq(0)").html(), "id" : $(rows[i]).find("td:eq(1)").html()};
-                // Get HTML of 3rd column (for example)
-                cells.push(row);
-            }
-            return cells;
-        },
+        // saveImages: function(){
+        //     var cells = [];
+        //     var rows = $("#default_images_table").dataTable().fnGetNodes();
+        //     for(var i=0;i<rows.length;i++)
+        //     {
+        //         var row = {"name" : $(rows[i]).find("td:eq(0)").html(), "id" : $(rows[i]).find("td:eq(1)").html()};
+        //         // Get HTML of 3rd column (for example)
+        //         cells.push(row);
+        //     }
+        //     return cells;
+        // },
 
         checkboxChanged: function(lambda){
             switch(lambda.target.id)
             {
             case "check_rds":
-                this.disableInput($("#max_rds"),$("#"+lambda.target.id).is(':checked'));
+                this.disableInput($("#max_rds_aws"),$("#"+lambda.target.id).is(':checked'));
                 break;
             case "check_max_on_demand":
-                this.disableInput($("#max_on_demand"),$("#"+lambda.target.id).is(':checked'));
+                this.disableInput($("#max_on_demand_aws"),$("#"+lambda.target.id).is(':checked'));
                 break;
             case "check_max_reserved":
-                this.disableInput($("#max_reserved"),$("#"+lambda.target.id).is(':checked'));
+                this.disableInput($("#max_reserved_aws"),$("#"+lambda.target.id).is(':checked'));
                 break;
             case "check_max_dedicated":
-                this.disableInput($("#max_dedicated"),$("#"+lambda.target.id).is(':checked'));
+                this.disableInput($("#max_dedicated_aws"),$("#"+lambda.target.id).is(':checked'));
                 break;
             case "check_max_spot":
-                this.disableInput($("#max_spot"),$("#"+lambda.target.id).is(':checked'));
+                this.disableInput($("#max_spot_aws"),$("#"+lambda.target.id).is(':checked'));
                 break;
             case "check_max_in_autoscale":
-                this.disableInput($("#max_in_autoscale"),$("#"+lambda.target.id).is(':checked'));
+                this.disableInput($("#max_in_autoscale_aws"),$("#"+lambda.target.id).is(':checked'));
                 break;
             case "project_name_toggle":
-                this.disablePNInput($("#project_name"),!$("#"+lambda.target.id).is(':checked'));
+                this.disablePNInput($("#project_name_aws"),!$("#"+lambda.target.id).is(':checked'));
                 break;
             case "check_max_on_demand_os":
                 this.disableInput($("#max_on_demand_os"),$("#"+lambda.target.id).is(':checked'));
@@ -776,20 +727,20 @@ define([
 
         pnFocus: function(event){
             if(event.target.id === "project_name"){
-                $("#project_name_toggle").prop("checked", false);//.prop('checked', true);
+                $("#project_name_toggle_aws").prop("checked", false);//.prop('checked', true);
             }
         },
 
         clickCloudTab: function(event){
             $(".tab-selector.active").removeClass("active");
             if(event.target.id === "tab_os"){
-                $("#content").hide("slow");
+                $("#content_aws").hide("slow");
                 $("#content_os").show("slow");
                 $("#os_tab_item").addClass("active");
 
             }
             if(event.target.id === "tab_aws"){
-                $("#content").show("slow");
+                $("#content_aws").show("slow");
                 $("#content_os").hide("slow");
                 $("#aws_tab_item").addClass("active");
             }
