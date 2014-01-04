@@ -5,7 +5,7 @@
         <div class="control-group">
                 <label class="control-label">Policy Name:</label>
                 <div class="controls">
-                    <input id="policy_name" name="policy_name" type="text" placeholder="Policy Name" class="input-xlarge">
+                    <input id="policy_name" name="policy_name" type="text" placeholder="Policy Name" class="input-xlarge form-control">
 
                 </div>
         </div>
@@ -37,7 +37,7 @@
                                     <label class="control-label">Min Password Length:</label>
                                     <div class="controls">
                                         <div class="input-append">
-                                            <input id="min_password_length_pw" name="min_password_length" class="span5 password" type="text" placeholder="Length">
+                                            <input id="min_password_length_pw" name="min_password_length" class="span5 password form-control" type="text" placeholder="Length">
                                         </div>
                                     </div>
                                 </div>
@@ -481,7 +481,7 @@
                                 <label class="control-label">Max On-Demand Instances:</label>
                                 <div class="controls">
                                     <div class="input-append">
-                                        <input id="max_on_demand" name="max_on_demand" class="span5 AWS" type="text" placeholder="# Instances">
+                                        <input id="max_on_demand" name="max_on_demand" class="span5 AWS form-control" type="text" placeholder="# Instances">
                                         <span class="add-on">
                                             <input type="checkbox" id="check_max_on_demand" class="AWS"> Unlimited</input>
                                         </span>
@@ -494,7 +494,7 @@
                                 <label class="control-label">Max Reserved Instances:</label>
                                 <div class="controls">
                                     <div class="input-append">
-                                        <input id="max_reserved" name="max_reserved" class="span5 AWS" type="text" placeholder="# Instances">
+                                        <input id="max_reserved" name="max_reserved" class="span5 AWS form-control" type="text" placeholder="# Instances">
                                         <span class="add-on">
                                             <input type="checkbox" id="check_max_reserved" class="AWS"> Unlimited</input>
                                         </span>
@@ -507,7 +507,7 @@
                                 <label class="control-label">Max Dedicated Instances:</label>
                                 <div class="controls">
                                     <div class="input-append">
-                                        <input id="max_dedicated" name="max_dedicated" class="span5 AWS" type="text" placeholder="# Instances">
+                                        <input id="max_dedicated" name="max_dedicated" class="span5 AWS form-control" type="text" placeholder="# Instances">
                                         <span class="add-on">
                                             <input type="checkbox" id="check_max_dedicated" class="AWS"> Unlimited</input>
                                         </span>
@@ -520,7 +520,7 @@
                                 <label class="control-label">Max Spot Instances:</label>
                                 <div class="controls">
                                     <div class="input-append">
-                                        <input id="max_spot" name="max_spot" class="span5 AWS" type="text" placeholder="# Instances">
+                                        <input id="max_spot" name="max_spot" class="span5 AWS form-control" type="text" placeholder="# Instances">
                                         <span class="add-on">
                                             <input type="checkbox" id="check_max_spot" class="AWS"> Unlimited</input>
                                         </span>
@@ -533,7 +533,7 @@
                                 <label class="control-label">Max # in Auto Scale Group:</label>
                                 <div class="controls">
                                     <div class="input-append">
-                                        <input id="max_in_autoscale" name="max_in_autoscale" class="span5 AWS" type="text" placeholder="# Instances">
+                                        <input id="max_in_autoscale" name="max_in_autoscale" class="span5 AWS form-control" type="text" placeholder="# Instances">
                                         <span class="add-on">
                                             <input type="checkbox" id="check_max_in_autoscale" class="AWS"> Unlimited</input>
                                         </span>
@@ -717,7 +717,7 @@
                                         <label class="control-label">Max # of RDS Databases:</label>
                                         <div class="controls">
                                             <div class="input-append">
-                                                <input id="max_rds" name="max_rds" class="span3 AWS" type="text" placeholder="# DB's">
+                                                <input id="max_rds" name="max_rds" class="span3 AWS form-control" type="text" placeholder="# DB's">
                                                 <span class="add-on">
                                                     <input type="checkbox" id="check_rds" class="AWS"> Unlimited</input>
                                                 </span>
@@ -737,7 +737,7 @@
                                             <label class="checkbox">
                                                 <input id="project_name_toggle" type="checkbox" name="auto_tags" value="ProjectName" class="AWS"/>
                                                     ProjectName:
-                                                <input id="project_name" style="margin-left:10px" name="project_name" type="text" placeholder="Project Name" class="input-medium AWS"/>
+                                                <input id="project_name" style="margin-left:10px" name="project_name" type="text" placeholder="Project Name" class="input-medium AWS form-control"/>
                                             </label>
 
                                             <label class="checkbox">

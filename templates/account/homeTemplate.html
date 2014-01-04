@@ -4,19 +4,19 @@
 
             <!-- Form Name -->
             <legend style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;border-radius: 5px 5px 0px 0px;">&nbsp;Account Management:&nbsp;<b id="username_label"></b></legend>
-            <div class="well">
+            <div id="home_container" class="well">
     
                 <!-- Text input-->
                 <div class="control-group">
                     <label class="control-label">RSS Feed URL:</label>
                     <div class="controls">
-                        <input id="rss_input" name="rss_input" type="text" placeholder="http://www.transcendcomputing.com/feed/" class="input-xlarge">
+                        <input id="rss_input" name="rss_input" type="text" placeholder="http://www.transcendcomputing.com/feed/" class="input-xlarge form-control">
 
                     </div>
                     <br/>
                     <label class="control-label">New Password:</label>
                     <div class="controls">
-                        <input id="password_input" name="password_input" type="text" class="input-xlarge">
+                        <input id="password_input" name="password_input" type="text" class="input-xlarge form-control">
                         <div class="password-messenger">
                             <span id="password_policy" class="contro-label" for="clouds_select" style="color:red;">Password: </span>
                             <span id="password_policy_must" class="contro-label" for="clouds_select" style="color:red; display: none;"> must have </span>
@@ -26,7 +26,7 @@
                             <span id="password_policy_none" class="contro-label" for="clouds_select" style="color:red; display: none;"> has no restrictions</span>
                         </div>
                     </div>
-                    <a id="updateUserB" style="float:right;" class="btn">Update<a>
+                    <a id="updateUserB" style="float:right;" class="btn btn-primary">Update<a>
                 </div>
             </div>
         </fieldset>
