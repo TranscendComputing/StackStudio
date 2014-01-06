@@ -117,7 +117,9 @@ define([
                         this.cloudSelection(firstCloudProvider);
                     }
                 }
+                
                 this.loadResourceApp();
+    
             }else{
                 this.enableCloudMessage();
             }
@@ -204,14 +206,18 @@ define([
             this.cloudCredentials.each(this.addCloud, this);
         },
 
+        displayCloudChangeMessage: function(){
+            $("#service_menu").hide();
+            $("#resource_app").hide();
+            $("#resource_not_opened").show();
+        },
+
         cloudChange: function(event) {
             if(!event.isTrigger) {
                 $(".resources").remove();
                 Common.router.navigate("#resources/"+event.target.id, {trigger: false});
                 this.cloudSelection(event.target.id);
-                $("#service_menu").hide();
-                $("#resource_app").hide();
-                $("#resource_not_opened").show();
+                this.displayCloudChangeMessage();
             }
         },
 
@@ -455,8 +461,9 @@ define([
                     }
                 }
                 if (!this.type) {
-                    this.type = "compute";
-                    this.subtype = "instances";
+                    this.type = $(".resources").find(":first").attr("id").split("L")[0];
+                    //this.type = "compute";
+                    //this.subtype = "instances";
                 }
                 var completeServices = this.cloudDefinitions[this.cloudProvider].native_services;
                 if(resourceNav.cloudDefinitions[this.cloudProvider].topstack_services !== undefined && resourceNav.cloudDefinitions[this.cloudProvider].topstack_services.length > 0) {

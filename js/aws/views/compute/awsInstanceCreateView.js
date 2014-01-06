@@ -263,6 +263,7 @@ define([
             options.groups = $("#security_group_select").val();
             options.monitoring = $("#detailed_monitoring").is(":checked");
             options.instance_initiated_shutdown_behavior = $("#shutdown_behavior_select").val().toLowerCase();
+            options.user_data = $("#user_data").val();
             newInstance.create(options, this.credentialId, this.region);
             this.$el.dialog('close');
         }

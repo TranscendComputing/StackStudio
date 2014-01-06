@@ -5,7 +5,7 @@
         <div class="control-group">
                 <label class="control-label">Policy Name:</label>
                 <div class="controls">
-                    <input id="policy_name" name="policy_name" type="text" placeholder="Policy Name" class="input-xlarge">
+                    <input id="policy_name" name="policy_name" type="text" placeholder="Policy Name" class="input-xlarge form-control">
 
                 </div>
         </div>
@@ -37,7 +37,7 @@
                                     <label class="control-label">Min Password Length:</label>
                                     <div class="controls">
                                         <div class="input-append">
-                                            <input id="min_password_length_pw" name="min_password_length" class="span5 password" type="text" placeholder="Length">
+                                            <input id="min_password_length_org" name="min_password_length" class="span5 password form-control" type="text" placeholder="Length">
                                         </div>
                                     </div>
                                 </div>
@@ -88,18 +88,18 @@
         <li class="active tab-selector os" id="os_tab_item" data-cloud="os" style="display:none"><a  role="tab" class="cloud-tab" id="tab_os">OpenStack</a></li>
         </ul>
 
-        <div id="content" class ="cont aws" data-cloud="aws" style="display:none;">
+        <div id="content_aws" class ="cont aws" data-cloud="aws" style="display:none;">
                 <!-- Select Basic -->
-            <div id = "cred_AWS" class="credentials">
+            <div id = "cred_aws" class="credentials">
                 <label class="control-label">Default Credentials:</label>
                 <div class="controls">
-                    <select id="default_credentials" name="default_credentials" class="input-xlarge default_credentials">
+                    <select id="default_credentials_aws" name="default_credentials" class="input-xlarge default_credentials">
                         <option>Select Credentials</option>
                     </select>
-                    <div id="cred_message">Create an AWS credential before creating a policy.</div>
+                    <div id="cred_message_aws">Create an AWS credential before creating a policy.</div>
                 </div>
             </div>
-            <div id="whole_form" hidden>
+            <div id="whole_form_aws" hidden>
                 <form id="aws_gov_policy" class="form-horizontal">
                     <fieldset>
                             <!-- Form Name -->
@@ -111,7 +111,7 @@
                                     <label class="control-label">Enabled Cloud:</label>
                                     <div class="controls">
                                         <label class="checkbox">
-                                            <input id="enabled_cloud" type="checkbox" name="enabled_cloud" class="enabled-cloud" value="AWS">AWS
+                                            <input id="enabled_cloud_aws" type="checkbox" name="enabled_cloud" class="enabled-cloud" value="AWS">AWS
                                         </label>
                                     </div>
                                 </div>
@@ -184,7 +184,7 @@
                                 <div class="control-group AWS">
                                     <label class="control-label">Default Region:</label>
                                     <div class="controls">
-                                        <select id="default_region" name="default_region" class="input-xlarge AWS">
+                                        <select id="default_region_aws" name="default_region" class="input-xlarge AWS">
                                             <option value="us-east-1">US East (Northern Virginia)</option>
                                             <option value="us-west-2">US West (Oregon)</option>
                                             <option value="us-west-1">US West (Northern California)   EU (Ireland)</option>
@@ -202,7 +202,7 @@
                                 <div class="control-group"  style="display: none;">
                                     <label class="control-label">Secondary Region:</label>
                                     <div class="controls">
-                                        <select id="secondary_region" name="secondary_region" class="input-xlarge">
+                                        <select id="secondary_region_aws" name="secondary_region" class="input-xlarge">
                                             <option>US East (Northern Virginia)</option>
                                             <option>US West (Oregon)</option>
                                             <option>US West (Northern California)   EU (Ireland)</option>
@@ -301,7 +301,7 @@
                                     <label class="control-label">Credential Rotation:</label>
                                     <div class="controls">
                                         <div class="input-append">
-                                            <input id="credential_rotation" name="credential_rotation" class="span5" placeholder="# Periods" type="text">
+                                            <input id="credential_rotation_aws" name="credential_rotation" class="span5" placeholder="# Periods" type="text">
                                             <div class="btn-group">
                                                 <button class="btn dropdown-toggle" data-toggle="dropdown">
                                                     Period
@@ -426,18 +426,18 @@
                             <div class="well" style="margin-top:40px;">
                                 <legend>Available Images</legend>
                                 <div class="row">
-                                    <label class="checkbox"><input type="checkbox" name="use_approved_images" value="use_approved_images" class="AWS"/>
+                                    <label class="checkbox"><input type="checkbox" name="use_approved_images_aws" value="use_approved_images" class="AWS"/>
                                         Constrain images to the following:
                                     </label>
                                 </div>
                                 <div class="row" style="margin:0px;display:none;">
-                                    <div class="span3"><b>Selected Image:</b><div class="image AWS" id="add_image"></div></div>
-                                    <div class="span7"><b>Source:</b><div class= "sources AWS" id="add_image_source"></div></div>
-                                    <div class="span2"><a id="add_image_btn" class="btn btn-primary AWS" style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;margin-bottom:8px;"><i class="icon-plus-sign icon-white AWS"></i>&nbsp;Add</a>
+                                    <div class="span3"><b>Selected Image:</b><div class="image AWS" id="add_image_aws"></div></div>
+                                    <div class="span7"><b>Source:</b><div class= "sources AWS" id="add_image_source_aws"></div></div>
+                                    <div class="span2"><a id="add_image_btn_aws" class="btn btn-primary AWS" style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;margin-bottom:8px;"><i class="icon-plus-sign icon-white AWS"></i>&nbsp;Add</a>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <table id="default_images_table" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered AWS">
+                                    <table id="default_images_table_aws" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered AWS">
                                         <thead>
                                             <tr>
                                                 <th>Image ID</th>
@@ -452,7 +452,7 @@
                                 <div class="row" style="margin-bottom: 5px;">
                                     <div class="span4">
                                         <b>Platform:</b>
-                                        <select class="input-medium image_filter AWS" id="filter_platform">
+                                        <select class="input-medium image_filter AWS" id="filter_platform_aws">
                                             <option>internal</option>
                                             <option>amazon</option>
                                             <option>debian</option>
@@ -463,7 +463,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="span12">
-                                        <table id="images_table" cellpadding="0" cellspacing="0" border="0" class="images-list table table-striped table-bordered AWS">
+                                        <table id="images_table_aws" cellpadding="0" cellspacing="0" border="0" class="images-list table table-striped table-bordered AWS">
                                             <thead>
                                                 <tr>
                                                     <th>Image ID</th>
@@ -481,9 +481,9 @@
                                 <label class="control-label">Max On-Demand Instances:</label>
                                 <div class="controls">
                                     <div class="input-append">
-                                        <input id="max_on_demand" name="max_on_demand" class="span5 AWS" type="text" placeholder="# Instances">
+                                        <input id="max_on_demand_aws" name="max_on_demand" class="span5 AWS form-control" type="text" placeholder="# Instances">
                                         <span class="add-on">
-                                            <input type="checkbox" id="check_max_on_demand" class="AWS"> Unlimited</input>
+                                            <input type="checkbox" id="check_max_on_demand_aws" class="AWS"> Unlimited</input>
                                         </span>
                                     </div>
                                 </div>
@@ -494,9 +494,9 @@
                                 <label class="control-label">Max Reserved Instances:</label>
                                 <div class="controls">
                                     <div class="input-append">
-                                        <input id="max_reserved" name="max_reserved" class="span5 AWS" type="text" placeholder="# Instances">
+                                        <input id="max_reserved_aws" name="max_reserved" class="span5 AWS form-control" type="text" placeholder="# Instances">
                                         <span class="add-on">
-                                            <input type="checkbox" id="check_max_reserved" class="AWS"> Unlimited</input>
+                                            <input type="checkbox" id="check_max_reserved_aws" class="AWS"> Unlimited</input>
                                         </span>
                                     </div>
                                 </div>
@@ -507,9 +507,9 @@
                                 <label class="control-label">Max Dedicated Instances:</label>
                                 <div class="controls">
                                     <div class="input-append">
-                                        <input id="max_dedicated" name="max_dedicated" class="span5 AWS" type="text" placeholder="# Instances">
+                                        <input id="max_dedicated_aws" name="max_dedicated" class="span5 AWS form-control" type="text" placeholder="# Instances">
                                         <span class="add-on">
-                                            <input type="checkbox" id="check_max_dedicated" class="AWS"> Unlimited</input>
+                                            <input type="checkbox" id="check_max_dedicated_aws" class="AWS"> Unlimited</input>
                                         </span>
                                     </div>
                                 </div>
@@ -520,9 +520,9 @@
                                 <label class="control-label">Max Spot Instances:</label>
                                 <div class="controls">
                                     <div class="input-append">
-                                        <input id="max_spot" name="max_spot" class="span5 AWS" type="text" placeholder="# Instances">
+                                        <input id="max_spot_aws" name="max_spot" class="span5 AWS form-control" type="text" placeholder="# Instances">
                                         <span class="add-on">
-                                            <input type="checkbox" id="check_max_spot" class="AWS"> Unlimited</input>
+                                            <input type="checkbox" id="check_max_spot_aws" class="AWS"> Unlimited</input>
                                         </span>
                                     </div>
                                 </div>
@@ -533,9 +533,9 @@
                                 <label class="control-label">Max # in Auto Scale Group:</label>
                                 <div class="controls">
                                     <div class="input-append">
-                                        <input id="max_in_autoscale" name="max_in_autoscale" class="span5 AWS" type="text" placeholder="# Instances">
+                                        <input id="max_in_autoscale_aws" name="max_in_autoscale" class="span5 AWS form-control" type="text" placeholder="# Instances">
                                         <span class="add-on">
-                                            <input type="checkbox" id="check_max_in_autoscale" class="AWS"> Unlimited</input>
+                                            <input type="checkbox" id="check_max_in_autoscale_aws" class="AWS"> Unlimited</input>
                                         </span>
                                     </div>
                                 </div>
@@ -546,7 +546,7 @@
                                 <label class="control-label">Max Cores:</label>
                                 <div class="controls">
                                     <div class="input-append">
-                                        <input id="max_cores" name="max_cores" class="span5 AWS" type="text" placeholder="# Cores">
+                                        <input id="max_cores_aws" name="max_cores" class="span5 AWS" type="text" placeholder="# Cores">
                                         <span class="add-on">
                                             <input type="checkbox" class="AWS"> Unlimited</input>
                                         </span>
@@ -622,7 +622,7 @@
                                     <div class="control-group">
                                         <label class="control-label">Default VPC:</label>
                                         <div class="controls AWS">
-                                            <select id="default_vpc" name="default_vpc" class="input-xlarge AWS">
+                                            <select id="default_vpc_aws" name="default_vpc" class="input-xlarge AWS">
                                                 <option>Select VPC</option>
                                             </select>
                                             <a class="btn create_vpc_btn AWS">Create VPC</a>
@@ -633,7 +633,7 @@
                                     <div class="control-group">
                                         <label class="control-label">Default Subnet:</label>
                                             <div class="controls AWS">
-                                                <select id="default_subnet" name="default_subnet" class="input-xlarge AWS">
+                                                <select id="default_subnet_aws" name="default_subnet" class="input-xlarge AWS">
                                                     <option>Select Subnet</option>
                                                 </select>
                                                 <a class="btn create_subnet_btn AWS">Create Subnet</a>
@@ -680,7 +680,7 @@
                                     <div class="control-group">
                                         <label class="control-label">Default Informational:</label>
                                         <div class="controls">
-                                            <select id="default_informational" style="width:365px;" name="default_informational" class="input-xlarge topic_select AWS">
+                                            <select id="default_informational_aws" style="width:365px;" name="default_informational" class="input-xlarge topic_select AWS">
                                                 <option>Select Default Informational</option>
                                             </select>
                                             <a class="btn create_topic_btn AWS">Create Topic</a>
@@ -691,7 +691,7 @@
                                     <div class="control-group">
                                         <label class="control-label">Default Warning:</label>
                                         <div class="controls">
-                                            <select id="default_warning" style="width:365px;" name="default_warning" class="input-xlarge topic_select AWS">
+                                            <select id="default_warning_aws" style="width:365px;" name="default_warning" class="input-xlarge topic_select AWS">
                                                 <option>Select Default Warning</option>
                                             </select>
                                             <a class="btn create_topic_btn AWS">Create Topic</a>
@@ -702,7 +702,7 @@
                                     <div class="control-group">
                                         <label class="control-label">Default Error:</label>
                                         <div class="controls">
-                                            <select id="default_error" style="width:365px;" name="default_error" class="input-xlarge topic_select AWS">
+                                            <select id="default_error_aws" style="width:365px;" name="default_error" class="input-xlarge topic_select AWS">
                                                 <option>Select Default Error</option>
                                             </select>
                                             <a class="btn create_topic_btn AWS">Create Topic</a>
@@ -717,9 +717,9 @@
                                         <label class="control-label">Max # of RDS Databases:</label>
                                         <div class="controls">
                                             <div class="input-append">
-                                                <input id="max_rds" name="max_rds" class="span3 AWS" type="text" placeholder="# DB's">
+                                                <input id="max_rds_aws" name="max_rds" class="span3 AWS form-control" type="text" placeholder="# DB's">
                                                 <span class="add-on">
-                                                    <input type="checkbox" id="check_rds" class="AWS"> Unlimited</input>
+                                                    <input type="checkbox" id="check_rds_aws" class="AWS"> Unlimited</input>
                                                 </span>
                                             </div>
                                             <p class="help-block">*Read replica counts as additional database.</p>
@@ -735,9 +735,9 @@
                                         <label class="control-label">Auto Tags:</label>
                                         <div class="controls">
                                             <label class="checkbox">
-                                                <input id="project_name_toggle" type="checkbox" name="auto_tags" value="ProjectName" class="AWS"/>
+                                                <input id="project_name_toggle_aws" type="checkbox" name="auto_tags" value="ProjectName" class="AWS"/>
                                                     ProjectName:
-                                                <input id="project_name" style="margin-left:10px" name="project_name" type="text" placeholder="Project Name" class="input-medium AWS"/>
+                                                <input id="project_name_aws" style="margin-left:10px" name="project_name" type="text" placeholder="Project Name" class="input-medium AWS form-control"/>
                                             </label>
 
                                             <label class="checkbox">
@@ -781,9 +781,9 @@
                                         <label class="control-label">CPUUtilization</label>
                                         <div class="controls">
                                             <span>></span>
-                                            <input id="cpu_util_value" name="cpu_util_value" type="text" placeholder="#" class="input-mini">
+                                            <input id="cpu_util_value_aws" name="cpu_util_value" type="text" placeholder="#" class="input-mini">
                                             <span>for</span>
-                                            <input id="cpu_util_duration" name="cpu_util_duration" type="text" placeholder="#" class="input-mini">
+                                            <input id="cpu_util_duration_aws" name="cpu_util_duration" type="text" placeholder="#" class="input-mini">
                                             <span>minutes</span>
                                             &nbsp;
                                             <label class="radio inline">
@@ -802,9 +802,9 @@
                                         <label class="control-label">StatusCheckFailed</label>
                                         <div class="controls">
                                             <span>></span>
-                                            <input id="status_failed_value" name="status_failed_value" type="text" placeholder="#" class="input-mini">
+                                            <input id="status_failed_value_aws" name="status_failed_value" type="text" placeholder="#" class="input-mini">
                                             <span>for</span>
-                                            <input id="status_failed_duration" name="status_failed_duration" type="text" placeholder="#" class="input-mini">
+                                            <input id="status_failed_duration_aws" name="status_failed_duration" type="text" placeholder="#" class="input-mini">
                                             <span>minutes</span>
                                             &nbsp;
                                             <label class="radio inline">
@@ -828,9 +828,9 @@
                                         <label class="control-label">Latency</label>
                                         <div class="controls">
                                             <span>></span>
-                                            <input id="latency_value" name="latency_value" type="text" placeholder="#" class="input-mini">
+                                            <input id="latency_value_aws" name="latency_value" type="text" placeholder="#" class="input-mini">
                                             <span>for</span>
-                                            <input id="latency_duration" name="latency_duration" type="text" placeholder="#" class="input-mini">
+                                            <input id="latency_duration_aws" name="latency_duration" type="text" placeholder="#" class="input-mini">
                                             <span>minutes</span>
                                             &nbsp;
                                             <label class="radio inline">
@@ -849,9 +849,9 @@
                                         <label class="control-label">UnhealthyHostCount</label>
                                         <div class="controls">
                                             <span>></span>
-                                            <input id="unhealthy_host_value" name="unhealthy_host_value" type="text" placeholder="#" class="input-mini">
+                                            <input id="unhealthy_host_value_aws" name="unhealthy_host_value" type="text" placeholder="#" class="input-mini">
                                             <span>for</span>
-                                            <input id="unhealthy_host_duration" name="unhealthy_host_duration" type="text" placeholder="#" class="input-mini">
+                                            <input id="unhealthy_host_duration_aws" name="unhealthy_host_duration" type="text" placeholder="#" class="input-mini">
                                             <span>minutes</span>
                                             &nbsp;
                                             <label class="radio inline">
@@ -870,9 +870,9 @@
                                         <label class="control-label">FailedHealthChecks</label>
                                         <div class="controls">
                                             <span>></span>
-                                            <input id="failed_healthcheck_value" name="failed_healthcheck_value" type="text" placeholder="#" class="input-mini">
+                                            <input id="failed_healthcheck_value_aws" name="failed_healthcheck_value" type="text" placeholder="#" class="input-mini">
                                             <span>for</span>
-                                            <input id="failed_healthcheck_duration" name="failed_healthcheck_duration" type="text" placeholder="#" class="input-mini">
+                                            <input id="failed_healthcheck_duration_aws" name="failed_healthcheck_duration" type="text" placeholder="#" class="input-mini">
                                             <span>minutes</span>
                                             &nbsp;
                                             <label class="radio inline">
@@ -891,7 +891,7 @@
                                     </div>
                                     <div class="control-group well" style="margin-top: 40px;">
                                         <legend>Add Default Alarms</legend>
-                                        <a id="create_alarm_btn" class="btn btn-primary AWS" style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;margin-bottom:8px;"><i class="icon-plus-sign icon-white AWS"></i>&nbsp;Add</a>
+                                        <a id="create_alarm_btn_aws" class="btn btn-primary AWS" style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;margin-bottom:8px;"><i class="icon-plus-sign icon-white AWS"></i>&nbsp;Add</a>
                                         <table class="table AWS">  
                                             <thead>  
                                                 <tr>  
@@ -902,7 +902,7 @@
                                                 <!-- <th>Remove<th> -->  
                                                 </tr>  
                                             </thead>  
-                                            <tbody id="alarm_table">  
+                                            <tbody id="alarm_table_aws">  
                                             </tbody>  
                                         </table>  
                                     </div>

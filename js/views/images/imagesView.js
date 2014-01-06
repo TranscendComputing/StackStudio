@@ -59,10 +59,10 @@ define([
         initialize: function() {
             $("#main").html(this.el);
             this.$el.html(this.template);
-            $("#packed_images").accordion({
-                collapsible: true,
-                heightStyle: "content"
-            });
+            // $("#packed_images").accordion({
+//                 collapsible: true,
+//                 heightStyle: "content"
+//             });
 
             var creds = JSON.parse(sessionStorage.cloud_credentials);
             $("#aws_cred_select").empty();
@@ -233,13 +233,11 @@ define([
         },
 
         addAllPackedImages: function(collection){
-            $("#packed_images_list").hide('slow');
             $("#packed_images_list").empty();
             collection.each(function(model) {
                 $("#packed_images_list").append("<li><a href='#images/"+model.attributes.doc_id+"' id='"+model.attributes.doc_id+"' class='img_item'>"+model.attributes.name+"</a></li>");
                 this.addListIcons(model.attributes.base_image,$("#"+model.attributes.doc_id));
             },this);
-            $("#packed_images_list").show('slow');
             if(this.currentImageTemplate === 'test'){
                 this.clearForm();
             }else if(this.currentImageTemplate){
