@@ -226,6 +226,7 @@ define([
             if($("#security_group_select").val()) {
                 options.security_groups = $("#security_group_select").val();
             }
+            options.user_data = $("#customization_script").val();
             newInstance.create(options, this.credentialId, this.region);
             this.$el.dialog('close');
         }
