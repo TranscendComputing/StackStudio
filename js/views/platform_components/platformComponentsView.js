@@ -19,11 +19,14 @@ define([
 
         tagName: 'div',
         id: 'platform_components_view',
+        legendVisible: true,
 
         template: _.template(platformComponentsTemplate),
 
         events: {
-            "click .configurationManager": "openConfigManager"
+            "click .configurationManager": "openConfigManager",
+            "click #refresh_button": "fetchConfigManagers",
+            "click #view_legend_toggle": "toggleLegend"
         },
 
         initialize: function() {
@@ -31,11 +34,10 @@ define([
             this.$el.html(this.template);
             this.configManagers = new ConfigManagers();
             this.configManagers.on( 'reset', this.addAllConfigManagers, this );
-            this.render();
+            this.fetchConfigManagers();
         },
 
         render: function(){
-            this.configManagers.fetch({reset:true});
             if(this.currentConfigManager) {
                 var configManagerName = this.currentConfigManager.attributes.name;
                 $("#select_button_label").html("Selected Chef: " + configManagerName);
@@ -43,28 +45,41 @@ define([
                 if(this.currentConfigManager.attributes["continuous_integration_servers"].length > 0) {
                     $("#continuous_integration_setup_landing_view").hide();
                     $("#continuous_integration_table_view").show();
+                    this.displayConfigurationManagerContent(true);
                     this.renderContinuousIntegration();
                 } else {
                     $("#continuous_integration_table_view").hide();
                     $("#selected_cm_label").html(configManagerName);
                     $("#continuous_integration_setup_landing_view").show();
+                    this.displayConfigurationManagerContent(false);
                 }
             } else {
                 $("#continuous_integration_table_view").hide();
                 $("#continuous_integration_setup_landing_view").hide();
                 $("#default_landing_view").show();
+                this.displayConfigurationManagerContent(false);
                 $("#select_button_label").html("Select Chef");
             }
         },
 
+        fetchConfigManagers: function() {
+            this.configManagers.fetch({reset:true});
+        },
+
         addAllConfigManagers: function() {
+            var thisView = this;
             $("#config_managers_list").empty();
             this.configManagers.each(function(configManager) {
                 // Only Chef is currently supported
                 if(configManager.attributes.type === "chef") {
                     $("#config_managers_list").append("<li><a id='"+configManager.id+"' class='configurationManager selectable_item'>"+configManager.attributes.name+"</a></li>");
                 }
+                // If selected, refresh
+                if(thisView.currentConfigManager && thisView.currentConfigManager.id == configManager.id) {
+                    thisView.currentConfigManager = configManager;
+                }
             });
+            this.render();
         },
 
         renderContinuousIntegration: function() {
@@ -74,66 +89,12 @@ define([
                 var components = [];
                 switch(this.currentConfigManager.attributes.type) {
                     case "chef":
-                        this.currentConfigManager.cookbooks = [
-                            {
-                                "name": "apigee",
-                                "community": false,
-                                "ci_presence": true,
-                                "status": {
-                                    "rspec_status": "NONE",
-                                    "foodcritic_status": "PASSING",
-                                    "syntax_status": "NONE",
-                                    "vagrant_ubuntu-12.04_status": "NONE",
-                                    "vagrant_centos-6.4_status": "NONE",
-                                    "sync_status": "VERSION_NOT_FOUND_IN_REPO"
-                                }
-                            },
-                            {
-                                "name": "att_postgresql",
-                                "community": false,
-                                "ci_presence": true,
-                                "status": {
-                                    "rspec_status": "PASSING",
-                                    "foodcritic_status": "PASSING",
-                                    "syntax_status": "PASSING",
-                                    "vagrant_ubuntu-12.04_status": "PASSING",
-                                    "vagrant_centos-6.4_status": "PASSING",
-                                    "sync_status": "IN_SYNC"
-                                }
-                            },
-                            {
-                                "name": "oauth_baseos",
-                                "community": false,
-                                "ci_presence": true,
-                                "status": {
-                                    "rspec_status": "NONE",
-                                    "foodcritic_status": "PASSING",
-                                    "syntax_status": "PASSING",
-                                    "vagrant_ubuntu-12.04_status": "FAILING",
-                                    "vagrant_centos-6.4_status": "FAILING",
-                                    "sync_status": "IN_SYNC"
-                                }
-                            },
-                            {
-                                "name": "postgresql",
-                                "community": true,
-                                "ci_presence": false,
-                                "status": {
-                                    "rspec_status": "NONE",
-                                    "foodcritic_status": "NONE",
-                                    "syntax_status": "NONE",
-                                    "vagrant_ubuntu-12.04_status": "NONE",
-                                    "vagrant_centos-6.4_status": "NONE",
-                                    "sync_status": "NOT_FOUND_IN_REPO"
-                                }
-                            }
-                        ];
                         componentName = "Cookbook Name";
-                        components = this.currentConfigManager.cookbooks;
+                        components = this.currentConfigManager.attributes.cookbooks;
                         break;
                 }
 
-                if(components.length > 0) {
+                if(components && components.length > 0) {
                     var thisView = this;
                     $("#continuous_integration_table").empty();
                     // Build Header of Table
@@ -147,9 +108,16 @@ define([
                     var ignored_components = [];
                     $.each(components, function(index, value) {
                         var rowContents = "<td>"+value["name"]+"</td>";
-                        $.each(value["status"], function( key, statusValue) {
-                            rowContents += "<td>"+statusValue+"</td>";
-                        });
+                        if(value["status"]) {
+                            $.each(value["status"], function( key, statusValue) {
+                                var icon = thisView.determineIcon(statusValue);
+                                rowContents += "<td>"+icon+"</td>";
+                            });
+                        } else {
+                            for(var i=0; i<Object.keys(components[0]["status"]).length; i++) {
+                                rowContents += "<td><img src='/images/statusTerminated.gif'/></td>";
+                            }
+                        }
                         $("#continuous_integration_table").append("<tr>"+rowContents+"</tr>");
                     });
                 }
@@ -164,9 +132,71 @@ define([
             return stringSplit.join(" ");
         },
 
+        determineIcon: function(statusString) {
+            var htmlString;
+            switch(statusString) {
+                case "VERSION_NOT_FOUND_IN_REPO":
+                case "NOT_FOUND_IN_REPO":
+                case "OUT_OF_SYNC":
+                case "FAILING":
+                    // Red Light
+                    htmlString = "<img src='/images/statusTerminated.gif'/>";
+                    break;
+                case "TBD":
+                    // Yellow Light
+                    htmlString = "<img src='/images/statusChanging.gif'/>";
+                    break;
+                case "PASSING":
+                case "IN_SYNC":
+                    // Green Light
+                    htmlString = "<img src='/images/statusRunning.gif'/>";
+                    break;
+                case "NONE":
+                    // Grey Light
+                    htmlString = "<img src='/images/statusNone.png' width='16px'/>";
+                    break;
+                default:
+                    // Grey Light
+                    htmlString = "<img src='/images/statusNone.png' width='16px'/>";
+                    break;
+            }
+            return htmlString;
+        },
+
         openConfigManager: function(event) {
             this.currentConfigManager = this.configManagers.get(event.currentTarget.id);
             this.render();
+        },
+
+        displayConfigurationManagerContent: function(boolean) {
+            if(boolean) {
+                $("#refresh_button").show();
+                $("#view_legend_toggle").show();
+                this.renderLegend();
+            } else {
+                $("#refresh_button").hide();
+                $("#view_legend_toggle").hide();
+                $("#table_legend").hide();
+            }
+        },
+
+        toggleLegend: function() {
+            if(this.legendVisible) {
+                this.legendVisible = false;
+            } else {
+                this.legendVisible = true;
+            }
+            this.renderLegend();
+        },
+
+        renderLegend: function() {
+            if(this.legendVisible) {
+                $("#table_legend").show();
+                $("#view_legend_toggle").html("Hide Legend");
+            } else {
+                $("#table_legend").hide();
+                $("#view_legend_toggle").html("Show Legend");
+            }
         },
 
         close: function(){
