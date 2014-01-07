@@ -251,17 +251,28 @@ define([
             if($(event.target).attr('checked') === "checked"){
                 if($(event.target).attr('id') === "enabled_cloud_aws"){
                     $(".AWS").show("slow");
+                    $("#default_cloud").append("<option value=AWS>Amazon Cloud</option>");
+
                 }
                 if($(event.target).attr('id') === "enabled_cloud_os"){
                     $(".OS").show("slow");
+                    $("#default_cloud").append("<option value=OpenStack>OpenStack Cloud</option>");
                 }
             }else{
                 if($(event.target).attr('id') === "enabled_cloud_aws"){
                     $(".AWS").hide("slow");
+                    $("#default_cloud option[value='AWS']").remove();
                 }
                 if($(event.target).attr('id') === "enabled_cloud_os"){
                     $(".OS").hide("slow");
+                    $("#default_cloud option[value='OpenStack']").remove();
                 }
+            }
+            if($("#default_cloud option").length < 1){
+                $("#default_cloud").empty();
+                $("#default_cloud").append("<option value=None>No Cloud Enabled</option>");
+            }else{
+                $("#default_cloud option[value='None']").remove();
             }
         },
 
@@ -445,16 +456,22 @@ define([
         },
 
         addEnabledClouds: function(){
-            var clouds = this.model.attributes;
-            $("#default_cloud").empty();
-            if(clouds.aws_governance.enabled_cloud === "AWS"){
+            var clouds;
+            if(this.model !== undefined){
+                clouds = this.model.attributes;
+                $("#default_cloud").empty();
+                if(clouds.aws_governance.enabled_cloud === "AWS"){
+                    $("#default_cloud").append("<option value=AWS>Amazon Cloud</option>");
+                }
+                if(clouds.os_governance.enabled_cloud === "OpenStack"){
+                    $("#default_cloud").append("<option value=OpenStack>OpenStack Cloud</option>");
+                }
+                if(clouds.os_governance.enabled_cloud === "" && clouds.aws_governance.enabled_cloud === ""){
+                    $("#default_cloud").append("<option value=None>No Cloud Enabled</option>");
+                }
+            }else{
                 $("#default_cloud").append("<option value=AWS>Amazon Cloud</option>");
-            }
-            if(clouds.os_governance.enabled_cloud === "OpenStack"){
                 $("#default_cloud").append("<option value=OpenStack>OpenStack Cloud</option>");
-            }
-            if(clouds.os_governance.enabled_cloud === "" && clouds.aws_governance.enabled_cloud === ""){
-                $("#default_cloud").append("<option value=None>No Cloud Enabled</option>");
             }
         },
         addCreds: function(){
@@ -824,6 +841,7 @@ define([
         },
 
         prePopForm: function(){
+            this.addEnabledClouds();
             $("input:checkbox[name='usable_regions']").each(function(){
                 $(this).prop('checked', true);
             });
