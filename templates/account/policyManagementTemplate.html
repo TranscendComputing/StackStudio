@@ -64,6 +64,19 @@
                 </div>
             </p>
         </div>
+
+        <!-- <div id="content_cld" class ="cont-org" data-cloud="org" >
+            <p>
+                <div id="whole_form_cld">
+                    <form id="cld_gov_policy" class="form-horizontal">
+                        <fieldset>
+                            <legend style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;border-radius: 5px 5px 0px 0px;">&nbsp;StackStudio Password Policy</legend>
+                            </fieldset>
+                    </form>
+                </div>
+            </p>
+        </div> -->
+
         <!--Check Box Cloud Selection-->
         <label class="control-label" for="clouds_select">
             Clouds
@@ -79,6 +92,16 @@
                     <img  id = "os_img" src="/images/CloudLogos/openstack300_transparent.png" style="width:64px;">
                 </a>
                 <span id="clouds_select_msg" class="contro-label" for="clouds_select" style="color:red; display: none;">Must choose a cloud</span>
+            </div>
+        </div>
+        <!-- Choose Default Cloud -->
+        <div id = "defaults" class="control-group" style="display:none" >
+            <label class="control-label">Default Cloud:</label>
+            <div class="controls">
+                <select id="default_cloud" name="default_cloud" class="input-xlarge default-cloud">
+                    <option>Select Cloud</option>
+                </select>
+                <div id="default_cloud_message" style="display:none">Create an AWS credential before creating a policy.</div>
             </div>
         </div>
 

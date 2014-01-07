@@ -161,6 +161,7 @@ define([
             if(typeof this.rootView !== 'undefined' && typeof this.rootView.treePolicy !== 'undefined'){
                 this.policy = this.rootView.treePolicy;
                 this.model = this.rootView.policies.get(this.policy);
+                this.addEnabledClouds();
                 this.populateForm(this.model);
                 //this.renderButtons();
             }else{
@@ -222,6 +223,7 @@ define([
             $("#aws_button").removeClass("active");
             $("#content_aws").hide("fast");
             $("#aws_tab_item").hide("fast");
+            $("#defaults").hide("fast");
         },
         disableSelectionRequiredButtons: function(toggle) {
 
@@ -347,7 +349,7 @@ define([
                 if( $(".aws.cloud-button").hasClass("active")){
                     o["saved_aws_cloud"] = true;
                 }
-
+                o["default_cloud"] = $("#default_cloud").val();
             }else{
                 if(o["enabled_cloud"] === undefined){
                     o["enabled_cloud"] = "";
@@ -384,13 +386,25 @@ define([
 
                 if(this.model.attributes[governance].default_images)
                 {
+                    var k;
                     $("#default_images_table_" + indicator).dataTable().fnClearTable();
-                    this.default_images = this.model.attributes[governance].default_images;
-                    for(var k in this.default_images){
-                        $('input[name=use_approved_images_'+indicator+']').attr('checked', true);
-                        $("#default_images_table_" + indicator).dataTable().fnAddData([this.default_images[k]["name"],this.default_images[k]["id"],"<a class='btn btn-mini btn-danger remove_image'><i class='fa fa-minus-circle icon-white'></i></a>"]);
+                    if(indicator === "aws"){
+                        this.default_images = this.model.attributes[governance].default_images;
+                        for( k in this.default_images){
+                            $('input[name=use_approved_images_'+indicator+']').attr('checked', true);
+                            $("#default_images_table_" + indicator).dataTable().fnAddData([this.default_images[k]["name"],this.default_images[k]["id"],"<a class='btn btn-mini btn-danger remove_image'><i class='fa fa-minus-circle icon-white'></i></a>"]);
+                        }
+                    }
+                    if(indicator === "os"){
+                        this.default_images_os = this.model.attributes[governance].default_images;
+                        for( k in this.default_images_os){
+                            $('input[name=use_approved_images_'+indicator+']').attr('checked', true);
+                            $("#default_images_table_" + indicator).dataTable().fnAddData([this.default_images_os[k]["name"],this.default_images_os[k]["id"],"<a class='btn btn-mini btn-danger remove_image'><i class='fa fa-minus-circle icon-white'></i></a>"]);
+                        }
                     }
                 }
+            }else{
+                $("#default_cloud").val(this.model.attributes[governance].default_cloud);
             }
         },
         populateForm: function(model){
@@ -430,6 +444,19 @@ define([
             newAlarmDialog.render();
         },
 
+        addEnabledClouds: function(){
+            var clouds = this.model.attributes;
+            $("#default_cloud").empty();
+            if(clouds.aws_governance.enabled_cloud === "AWS"){
+                $("#default_cloud").append("<option value=AWS>Amazon Cloud</option>");
+            }
+            if(clouds.os_governance.enabled_cloud === "OpenStack"){
+                $("#default_cloud").append("<option value=OpenStack>OpenStack Cloud</option>");
+            }
+            if(clouds.os_governance.enabled_cloud === "" && clouds.aws_governance.enabled_cloud === ""){
+                $("#default_cloud").append("<option value=None>No Cloud Enabled</option>");
+            }
+        },
         addCreds: function(){
             var creds = JSON.parse(sessionStorage.cloud_credentials);
             $("#default_credentials_aws").empty();
@@ -770,9 +797,11 @@ define([
                         content.show("slow");
                     }
                     if($(".cloud-button").hasClass("active")){
+                        $("#defaults").show("slow");
                         $("#clouds_select_msg").hide();
                     }
                     else{
+                        $("#defaults").hide("slow");
                         $("#clouds_select_msg").show();
                         $(".content").hide("slow");
                     }
