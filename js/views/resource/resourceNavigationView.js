@@ -87,6 +87,7 @@ define([
 
             this.cloudCredentials = new CloudCredentials();
             this.cloudCredentials.on('reset', this.addAllClouds, this );
+            
 
             //load user's cloud selections
             this.cloudCredentials.fetch({reset: true});
@@ -97,10 +98,16 @@ define([
                 if(this.resourceApp) {
                     this.resourceApp.remove();
                 } else {
-
+                    var policy;
+                    var firstCloudProvider;
                     // var firstCloudProvider = this.cloudCredentials.first().attributes.cloud_provider;
                     // firstCloudProvider = firstCloudProvider.toLowerCase();
-                    var firstCloudProvider = $("#cloud_coverflow").children()[0].id;
+                    policy = JSON.parse(sessionStorage.group_policies);
+                    if (policy.length > 0){
+                        firstCloudProvider = policy[0].group_policy.org_governance.default_cloud.toLowerCase();
+                    }else{
+                        firstCloudProvider = $("#cloud_coverflow").children()[0].id;
+                    }
                     if(this.cloudProvider) {
                         if($("#"+this.cloudProvider).length) {
                             this.cloudSelection(this.cloudProvider);
@@ -151,13 +158,34 @@ define([
             var cloudProvider = cloudCredential.get("cloud_provider");
             var resourceNav = this;
             var cloudPolicies = JSON.parse(sessionStorage.group_policies);
+            var default_cloud = "";
             if(cloudProvider) {
                 cloudProvider = cloudProvider.toLowerCase();
                 var found = false;
-                // debugger
                 //check if cloud is enabled.
-                found = this.enableCloud(cloudPolicies, cloudProvider);
+                if(cloudPolicies.length > 0){
+                    found = this.enableCloud(cloudPolicies, cloudProvider);
+                    default_cloud = cloudPolicies[0].group_policy.org_governance.default_cloud.toLowerCase();
+                }
                 // debugger
+                if($("#cloud_coverflow").children().length === 0 && default_cloud !== ""){
+                    if( sessionStorage['selected_cloud'] === undefined){
+                        $('#cloud_coverflow').append($("<img></img>")
+                            .attr({
+                                "id": default_cloud,
+                                "class" : "cover_flow_cloud",
+                                "src": resourceNav.cloudDefinitions[default_cloud].logo
+                        }));
+                    } 
+                    if( sessionStorage['selected_cloud'] !== undefined){
+                        $('#cloud_coverflow').append($("<img></img>")
+                            .attr({
+                                "id": sessionStorage['selected_cloud'],
+                                "class" : "cover_flow_cloud",
+                                "src": resourceNav.cloudDefinitions[sessionStorage['selected_cloud']].logo
+                        }));
+                    }
+                }
                 $.each($("#cloud_coverflow").children(), function (index, coverFlowCloud) {
                     if(coverFlowCloud.id === cloudProvider ) {
                         found = true;
@@ -317,7 +345,7 @@ define([
             }
 
             $("#cloud_nav").html(this.crumbTemplate({pathElt: this.cloudDefinitions[this.cloudProvider].name}));
-
+            //debugger
             this.refreshCloudSpecs();
         },
 
