@@ -18,7 +18,7 @@ define([
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, ResourceAppView, awsKeyPairAppTemplate, Keypair, Keypairs, AwsKeyPairCreate, AwsKeyPairUpload, ich, Common ) {
+], function( $, _, Backbone, ResourceAppView, awsKeyPairAppTemplate, Keypair, Keypairs, AwsKeyPairCreate, AwsKeyPairImport, ich, Common ) {
     'use strict';
 
     // Aws Security Group Application View
@@ -51,11 +51,11 @@ define([
         subtype: "keypairs",
         
         CreateView: AwsKeyPairCreate,
-        UploadView: AwsKeyPairUpload,
+        ImportView: AwsKeyPairImport,
         
         events: {
             'click .create_button': 'createNew',
-            'click .import_button' : 'uploadKey',
+            'click .import_button' : 'importKey',
             'click #action_menu ul li': 'performAction',
             'click #resource_table tr': "clickOne"
         },
@@ -84,14 +84,14 @@ define([
             //Disable any needed actions
         },
 
-        uploadKey: function(e) {
-            var UploadView = this.UploadView;
+        importKey: function(e) {
+            var ImportView = this.ImportView;
             if(this.region) {
-                this.uploadKeyDialog = new UploadView({cred_id: this.credentialId, region: this.region});
+                this.importKeyDialog = new ImportView({cred_id: this.credentialId, region: this.region});
             }else {
-                this.uploadKeyDialog = new UploadView({cred_id: this.credentialId});
+                this.importKeyDialog = new ImportView({cred_id: this.credentialId});
             }
-            this.uploadKeyDialog.render();
+            this.importKeyDialog.render();
         },
         
         performAction: function(event) {
