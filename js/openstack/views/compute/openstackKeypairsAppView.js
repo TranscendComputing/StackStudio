@@ -14,10 +14,11 @@ define([
         '/js/openstack/models/compute/openstackKeyPair.js',
         '/js/openstack/collections/compute/openstackKeyPairs.js',
         '/js/openstack/views/compute/openstackKeyPairCreateView.js',
+        '/js/openstack/views/compute/openstackKeyPairImportView.js',
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, ResourceAppView, openstackKeyPairAppTemplate, Keypair, Keypairs, OpenstackKeyPairCreate, ich, Common ) {
+], function( $, _, Backbone, ResourceAppView, openstackKeyPairAppTemplate, Keypair, Keypairs, OpenstackKeyPairCreate, OpenstackKeyPairImport, ich, Common ) {
     'use strict';
 
     // Openstack Security Group Application View
@@ -50,9 +51,11 @@ define([
         subtype: "keypairs",
         
         CreateView: OpenstackKeyPairCreate,
+        ImportView: OpenstackKeyPairImport,
         
         events: {
             'click .create_button': 'createNew',
+            'click .import_button': 'importKey',
             'click #action_menu ul li': 'performAction',
             'click #resource_table tr': "clickOne"
         },
@@ -79,6 +82,15 @@ define([
         
         toggleActions: function(e) {
             //Disable any needed actions
+        },
+        importKey: function(e) {
+            var ImportView = this.ImportView;
+            if(this.region) {
+                this.importKeyDialog = new ImportView({cred_id: this.credentialId, region: this.region});
+            }else {
+                this.importKeyDialog = new ImportView({cred_id: this.credentialId});
+            }
+            this.importKeyDialog.render();
         },
         
         performAction: function(event) {
