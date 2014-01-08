@@ -14,7 +14,7 @@ define([
         '/js/aws/models/compute/awsKeyPair.js',
         '/js/aws/collections/compute/awsKeyPairs.js',
         '/js/aws/views/compute/awsKeyPairCreateView.js',
-        '/js/aws/views/compute/awsKeyPairUploadView.js',
+        '/js/aws/views/compute/awsKeyPairImportView.js',
         'icanhaz',
         'common',
         'jquery.dataTables'
@@ -55,7 +55,7 @@ define([
         
         events: {
             'click .create_button': 'createNew',
-            'click .upload_button' : 'uploadKey',
+            'click .import_button' : 'uploadKey',
             'click #action_menu ul li': 'performAction',
             'click #resource_table tr': "clickOne"
         },
