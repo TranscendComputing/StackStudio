@@ -16,6 +16,7 @@ define([
         'collections/users',
         '/js/aws/collections/notification/awsTopics.js',
         '/js/aws/collections/compute/awsDefaultImages.js',
+        '/js/openstack/collections/compute/openstackImages.js',
         '/js/aws/collections/vpc/awsVpcs.js',
         '/js/aws/collections/vpc/awsSubnets.js',
         'views/account/groupCreateView',
@@ -28,7 +29,7 @@ define([
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator',
         'bootstrap'
-], function( $, _, Backbone, Common, groupsManagementTemplate, groupsManagementTemplateOS, Policy, Users, Topics, Images, Vpcs, Subnets, CreateGroupView, ManageGroupUsers, CreateAlarmView, CreateTopicsView, CreateVpcsView, CreateSubnetView, Spinner ) {
+], function( $, _, Backbone, Common, groupsManagementTemplate, groupsManagementTemplateOS, Policy, Users, Topics, Images, ImagesOS, Vpcs, Subnets, CreateGroupView, ManageGroupUsers, CreateAlarmView, CreateTopicsView, CreateVpcsView, CreateSubnetView, Spinner ) {
 
     var GroupManagementView = Backbone.View.extend({
 
@@ -37,28 +38,32 @@ define([
         template_os: _.template(groupsManagementTemplateOS),
 
         template: _.template(groupsManagementTemplate),
-        
+
         rootView: undefined,
 
         policy: undefined,
-        
+
         users: undefined,
-        
+
         topics: undefined,
-        
+
         images: undefined,
-        
+
+        images_os: undefined,
+
         vpcs: undefined,
-        
+
         subnets: undefined,
 
         selectedGroup: undefined,
-        
+
         model: undefined,
-        
+
         alarms: [],
-        
+
         default_images: [],
+
+        default_images_os: [],
 
         events: {
             "click #manage_group_users_button" : "manageGroupUsers",
@@ -67,7 +72,7 @@ define([
             "click #add_image_btn" : "addImage",
             "click .remove_alarm" : "removeAlarm",
             "click .remove_image" : "removeImage",
-            'click #images_table tr': 'selectImage',
+            'click .images-list tr': 'clickImage',
             "change .image_filter":"imageFilterSelect",
             "change .default_credentials":"changeCreds",
             "click .create_topic_btn":"topicCreate",
@@ -75,6 +80,7 @@ define([
             "click .create_subnet_btn":"subnetCreate",
             'change input[type=checkbox]': 'checkboxChanged',
             'click #project_name': 'pnFocus',
+            'click .enabled-cloud': 'clickCloudEnable',
             'click .cloud-button' : 'clickCloudButton',
             'click .cloud-tab' : 'clickCloudTab'
         },
@@ -83,15 +89,15 @@ define([
             this.$el.html(this.template);
             this.rootView = this.options.rootView;
             $("#submanagement_app").html(this.$el);
-            $("#content_os").html(this.template_os);            
-            $("#images_table").dataTable({
+            $("#content_os").html(this.template_os);
+            $("#images_table_aws").dataTable({
                 "aoColumns": [
                         { "sWidth": "25%" },
                         { "sWidth": "50%" },
                         { "sWidth": "25%" }
                     ]
             });
-            $("#default_images_table").dataTable({
+            $("#default_images_table_aws").dataTable({
                 "sDom": 't',
                 "aoColumns": [
                         { "sWidth": "20%" },
@@ -102,7 +108,7 @@ define([
                         "sEmptyTable": "No images have been added."
                       }
             });
-            
+
             var groupsView = this;
             Common.vent.off("policyAppRefresh");
             Common.vent.on("policyAppRefresh", function() {
@@ -114,34 +120,37 @@ define([
                 });
                 groupsView.refreshSession();
             });
-            
+
             Common.vent.off("topicAppRefresh");
             Common.vent.on("topicAppRefresh", function() {
-                groupsView.topics.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
+                groupsView.topics.fetch({ data: $.param({ cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val()}), reset: true });
             });
             Common.vent.off("vpcAppRefresh");
             Common.vent.on("vpcAppRefresh", function() {
-                groupsView.vpcs.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
+                groupsView.vpcs.fetch({ data: $.param({ cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val()}), reset: true });
             });
             Common.vent.off("subnetAppRefresh");
             Common.vent.on("subnetAppRefresh", function() {
-                groupsView.subnets.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
+                groupsView.subnets.fetch({ data: $.param({ cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val()}), reset: true });
             });
-            
+
             this.users = new Users();
-            
+
             this.topics = new Topics();
             this.topics.on( 'reset', this.addAllTopics, this );
-            
+
             this.images = new Images();
             this.images.on('reset', this.addAllImages, this);
-            
+
+            this.images_os = new ImagesOS();
+            this.images_os.on('reset', this.addAllImagesOS, this);
+
             this.vpcs = new Vpcs();
             this.vpcs.on('reset', this.addAllVpcs, this);
-            
+
             this.subnets = new Subnets();
             this.subnets.on('reset', this.addAllSubnets, this);
-            
+
             this.selectedGroup = undefined;
             this.render();
         },
@@ -152,12 +161,14 @@ define([
             if(typeof this.rootView !== 'undefined' && typeof this.rootView.treePolicy !== 'undefined'){
                 this.policy = this.rootView.treePolicy;
                 this.model = this.rootView.policies.get(this.policy);
+                this.addEnabledClouds();
                 this.populateForm(this.model);
+                //this.renderButtons();
             }else{
                 this.prePopForm();
             }
             this.disableSelectionRequiredButtons(false);
-            
+
             var spinnerOptions = {
                 //lines: 13, // The number of lines to draw
                 length: 10, // The length of each line
@@ -175,24 +186,47 @@ define([
                 //top: 150, // Top position relative to parent in px
                 //left: 211 // Left position relative to parent in px
             };
-            
-            new Spinner(spinnerOptions).spin($("#images_table").get(0));
+
+            new Spinner(spinnerOptions).spin($("#images_table_aws").get(0));
         },
-        
+
         treeSelect: function() {
             this.clearSelection();
             this.render();
-            $("#aws_button").removeClass("active");
-            $("#os_button").removeClass("active");
-            $("#content").hide("fast");
-            $("#content_os").hide("fast");
-            $("#os_tab_item").hide("fast");
-            $("#aws_tab_item").hide("fast");
-
+            this.unselectCloudButtons();
         },
 
+        // renderButtons: function(){
+        //     if(this.model.attributes.org_governance["saved_os_cloud"] === true){
+        //         this.buttonBehavior("os",false);
+        //     }
+        //     else{
+        //         $("#os_button").removeClass("active");
+        //         $("#content_os").hide("fast");
+        //         $("#os_tab_item").hide("fast");
+        //     }
+        //     if(this.model.attributes.org_governance["saved_aws_cloud"] === true ){
+        //         this.buttonBehavior("aws",false);
+        //     }
+        //     else{
+        //         $("#aws_button").removeClass("active");
+        //         $("#content").hide("fast");
+        //         $("#aws_tab_item").hide("fast");
+        //     }
+        // },
+
+        unselectCloudButtons: function(){
+            $("#os_button").removeClass("active");
+            $("#content_os").hide("fast");
+            $("#os_tab_item").hide("fast");
+            $("#aws_button").removeClass("active");
+            $("#aws_button").removeClass("active");
+            $("#content_aws").hide("fast");
+            $("#aws_tab_item").hide("fast");
+            $("#defaults").hide("fast");
+        },
         disableSelectionRequiredButtons: function(toggle) {
-            
+
             if(toggle) {
                 $("#delete_group_button").attr("disabled", true);
                 $("#delete_group_button").addClass("ui-state-disabled");
@@ -205,12 +239,57 @@ define([
                 $("#manage_group_users_button").removeAttr("disabled");
                 $("#manage_group_users_button").removeClass("ui-state-disabled");
             }
-            
+            //enable cloud
+            this.cloudEnable();
             //check admin
             this.adminCheck();
-            
+
         },
-        
+
+        clickCloudEnable: function(event){
+            //debugger
+            if($(event.target).attr('checked') === "checked"){
+                if($(event.target).attr('id') === "enabled_cloud_aws"){
+                    $(".AWS").show("slow");
+                    $("#default_cloud").append("<option value=AWS>Amazon Cloud</option>");
+
+                }
+                if($(event.target).attr('id') === "enabled_cloud_os"){
+                    $(".OS").show("slow");
+                    $("#default_cloud").append("<option value=OpenStack>OpenStack Cloud</option>");
+                }
+            }else{
+                if($(event.target).attr('id') === "enabled_cloud_aws"){
+                    $(".AWS").hide("slow");
+                    $("#default_cloud option[value='AWS']").remove();
+                }
+                if($(event.target).attr('id') === "enabled_cloud_os"){
+                    $(".OS").hide("slow");
+                    $("#default_cloud option[value='OpenStack']").remove();
+                }
+            }
+            if($("#default_cloud option").length < 1){
+                $("#default_cloud").empty();
+                $("#default_cloud").append("<option value=None>No Cloud Enabled</option>");
+            }else{
+                $("#default_cloud option[value='None']").remove();
+            }
+        },
+
+        cloudEnable: function(){
+            if($("#enabled_cloud_aws").attr('checked') === "checked"){
+                $(".AWS").show("slow");
+            }
+            else{
+                $(".AWS").hide("slow");
+            }
+            if($("#enabled_cloud_os").attr('checked') === "checked"){
+                $(".OS").show("slow");
+            }
+            else{
+                $(".OS").hide("slow");
+            }
+        },
         adminCheck: function(){
             var groupsView = this;
             groupsView.users.fetch({success: function(){
@@ -227,7 +306,7 @@ define([
                 }
             }});
         },
-        
+
         manageGroupUsers: function() {
             if(this.selectedGroup) {
                 new ManageGroupUsers({group_id: this.selectedGroup.attributes.id});
@@ -240,12 +319,18 @@ define([
             this.selectedGroup = undefined;
             $(".group_item").removeClass("selected_item");
         },
-        
+
         savePolicy: function(){
             var newPolicy = new Policy();
-            
+
+            var o = this.populateSavedHash("#content_aws form");
+            var oS = this.populateSavedHash("#content_os form");
+            var pW = this.populateSavedHash("#content_org form");
+            newPolicy.save($("#policy_name").val(),o,oS,pW,this.policy,sessionStorage.org_id);
+        },
+        populateSavedHash: function(form_name){
             var o = {};
-            var a = $("#content form").serializeArray();
+            var a = $(form_name).serializeArray();
             $.each(a, function() {
                 if (o[this.name]) {
                     if (!o[this.name].push) {
@@ -256,62 +341,36 @@ define([
                     o[this.name] = this.value || '';
                 }
             });
-            
-            o["default_alarms"] = this.alarms;
-            o["default_images"] = this.default_images;
-            o["button_press"] = $("#aws_button").hasClass("active");
-            //debugger
-            var oS = {};
-            var aOS = $("#content_os form").serializeArray();
-            $.each(aOS, function() {
-                if (oS[this.name]) {
-                    if (!oS[this.name].push) {
-                        oS[this.name] = [oS[this.name]];
-                    }
-                    oS[this.name].push(this.value || '');
-                } else {
-                    oS[this.name] = this.value || '';
-                }
-            });
-            oS["default_alarms"] = this.alarms;
-            oS["default_images"] = this.default_images;
-            oS["button_press"] = $("#os_button").hasClass("active");
 
-            newPolicy.save($("#policy_name").val(),o,oS,this.policy,sessionStorage.org_id);
-        },
-        populateFormOS: function(p){
-            for (var key in p) {
-              if (p.hasOwnProperty(key)) {    
-                var typ = $( "input[name='"+key+"']" ).prop("type");
-                if(typ === "checkbox"){
-                    if(typeof p[key] === 'string'){
-                        $( "input[name='"+key+"'][value='"+p[key]+"']" ).attr('checked','checked');
-                    }else{
-                        for (var i in p[key]) {
-                          $( "input[name='"+key+"'][value='"+p[key][i]+"']" ).attr('checked','checked');
-                        }
-                    }
-                }else if(typ === "radio"){
-                    $( "input[name='"+key+"'][value='"+p[key]+"']" ).attr('checked','checked');
-                }else{
-                    $("#"+key).val(p[key]);
+            if(form_name === "#content_aws form")
+            {
+                o["default_alarms"] = this.alarms;
+                o["default_images"] = this.default_images;
+            }
+            if(form_name === "#content_os form")
+            {
+                o["default_alarms"] = this.alarms;
+                o["default_images"] = this.default_images_os;
+            }
+            if(form_name === "#content_org form")
+            {
+                if( $(".os.cloud-button").hasClass("active")){
+                    o["saved_os_cloud"] = true;
                 }
-              }
+                if( $(".aws.cloud-button").hasClass("active")){
+                    o["saved_aws_cloud"] = true;
+                }
+                o["default_cloud"] = $("#default_cloud").val();
+            }else{
+                if(o["enabled_cloud"] === undefined){
+                    o["enabled_cloud"] = "";
+                }
             }
-            this.alarms = p.default_alarms;
-            for (var j in this.alarms){
-                $("#alarm_table").append("<tr><td>"+this.alarms[j].namespace+"</td><td>"+this.alarms[j].metric_name+"</td><td>"+this.alarms[j].threshold+"</td><td>"+this.alarms[j].period+"</td><td><a class='btn btn-mini btn-danger remove_alarm'><i class='icon-minus-sign icon-white'></i></a></td></tr>");
-            }       
-            this.default_images = this.model.attributes.aws_governance.default_images;
-            for(var k in this.default_images){
-                $('input[name=use_approved_images]').attr('checked', true);
-                $("#default_images_table").dataTable().fnAddData([this.default_images[k]["image_id"],this.default_images[k]["source"],"<a class='btn btn-mini btn-danger remove_image'><i class='icon-minus-sign icon-white'></i></a>"]);
-            }
+            return o;
         },
-        populateForm: function(model){
-            $('input:checkbox').removeAttr('checked');
-            $("#policy_name").val(model.attributes.name);
-            var p = model.attributes.aws_governance;
+        
+        populateFormHelper: function(indicator,p){
+            var governance = indicator + "_governance";
             for (var key in p) {
               if (p.hasOwnProperty(key)) {
                 var typ = $( "input[name='"+key+"']" ).prop("type");
@@ -326,25 +385,51 @@ define([
                 }else if(typ === "radio"){
                     $( "input[name='"+key+"'][value='"+p[key]+"']" ).attr('checked','checked');
                 }else{
-                    $("#"+key).val(p[key]);
+                    $("#"+key+"_"+ indicator).val(p[key]);
                 }
               }
             }
-            this.alarms = p.default_alarms;
-            for (var j in this.alarms){
-                $("#alarm_table").append("<tr><td>"+this.alarms[j].namespace+"</td><td>"+this.alarms[j].metric_name+"</td><td>"+this.alarms[j].threshold+"</td><td>"+this.alarms[j].period+"</td><td><a class='btn btn-mini btn-danger remove_alarm'><i class='icon-minus-sign icon-white'></i></a></td></tr>");
+            if(indicator !== "org"){
+                this.alarms = p.default_alarms;
+                for (var j in this.alarms){
+                    $("#alarm_table_"+ indicator).append("<tr><td>"+this.alarms[j].namespace+"</td><td>"+this.alarms[j].metric_name+"</td><td>"+this.alarms[j].threshold+"</td><td>"+this.alarms[j].period+"</td><td><a class='btn btn-mini btn-danger remove_alarm'><i class='fa fa-minus-circle icon-white'></i></a></td></tr>");
+                }
+
+                if(this.model.attributes[governance].default_images)
+                {
+                    var k;
+                    $("#default_images_table_" + indicator).dataTable().fnClearTable();
+                    if(indicator === "aws"){
+                        this.default_images = this.model.attributes[governance].default_images;
+                        for( k in this.default_images){
+                            $('input[name=use_approved_images_'+indicator+']').attr('checked', true);
+                            $("#default_images_table_" + indicator).dataTable().fnAddData([this.default_images[k]["name"],this.default_images[k]["id"],"<a class='btn btn-mini btn-danger remove_image'><i class='fa fa-minus-circle icon-white'></i></a>"]);
+                        }
+                    }
+                    if(indicator === "os"){
+                        this.default_images_os = this.model.attributes[governance].default_images;
+                        for( k in this.default_images_os){
+                            $('input[name=use_approved_images_'+indicator+']').attr('checked', true);
+                            $("#default_images_table_" + indicator).dataTable().fnAddData([this.default_images_os[k]["name"],this.default_images_os[k]["id"],"<a class='btn btn-mini btn-danger remove_image'><i class='fa fa-minus-circle icon-white'></i></a>"]);
+                        }
+                    }
+                }
+            }else{
+                $("#default_cloud").val(this.model.attributes[governance].default_cloud);
             }
-            this.default_images = this.model.attributes.aws_governance.default_images;
-            for(var k in this.default_images){
-                $('input[name=use_approved_images]').attr('checked', true);
-                $("#default_images_table").dataTable().fnAddData([this.default_images[k]["image_id"],this.default_images[k]["source"],"<a class='btn btn-mini btn-danger remove_image'><i class='icon-minus-sign icon-white'></i></a>"]);
-            }
-            this.populateFormOS(model.attributes.os_governance);
         },
-        
+        populateForm: function(model){
+            $('input:checkbox').removeAttr('checked');
+            $("#policy_name").val(model.attributes.name);
+            var p = model.attributes;
+            this.populateFormHelper("aws",p["aws_governance"]);
+            this.populateFormHelper("os",p["os_governance"]);
+            this.populateFormHelper("org",p["org_governance"]);
+        },
+
         refreshSession: function(){
             var url = Common.apiUrl + "/identity/v1/accounts/auth/" + sessionStorage.account_id;
-            
+
             $.ajax({
                 url: url,
                 type: 'GET',
@@ -357,39 +442,70 @@ define([
                 }
             });
         },
-        
+
         createAlarm: function(){
             var pView = this;
-            
+
             var topicsList = [];
-            if($("#default_informational").val() !== "None"){topicsList.push($("#default_informational").val());}
-            if($("#default_warning").val() !== "None"){topicsList.push($("#default_warning").val());}
-            if($("#default_error").val() !== "None"){topicsList.push($("#default_error").val());}
-            
-            var newAlarmDialog = new CreateAlarmView({cred_id: $("#default_credentials").val(), region: $("#default_region").val(), policy_view: pView,tList: topicsList});
+            if($("#default_informational_aws").val() !== "None"){topicsList.push($("#default_informational_aws").val());}
+            if($("#default_warning_aws").val() !== "None"){topicsList.push($("#default_warning_aws").val());}
+            if($("#default_error_aws").val() !== "None"){topicsList.push($("#default_error_aws").val());}
+
+            var newAlarmDialog = new CreateAlarmView({cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val(), policy_view: pView,tList: topicsList});
             newAlarmDialog.render();
         },
-        
+
+        addEnabledClouds: function(){
+            var clouds;
+            if(this.model !== undefined){
+                clouds = this.model.attributes;
+                $("#default_cloud").empty();
+                if(clouds.aws_governance.enabled_cloud === "AWS"){
+                    $("#default_cloud").append("<option value=AWS>Amazon Cloud</option>");
+                }
+                if(clouds.os_governance.enabled_cloud === "OpenStack"){
+                    $("#default_cloud").append("<option value=OpenStack>OpenStack Cloud</option>");
+                }
+                if(clouds.os_governance.enabled_cloud === "" && clouds.aws_governance.enabled_cloud === ""){
+                    $("#default_cloud").append("<option value=None>No Cloud Enabled</option>");
+                }
+            }else{
+                $("#default_cloud").append("<option value=AWS>Amazon Cloud</option>");
+                $("#default_cloud").append("<option value=OpenStack>OpenStack Cloud</option>");
+            }
+        },
         addCreds: function(){
             var creds = JSON.parse(sessionStorage.cloud_credentials);
-            $("#default_credentials").empty();
+            $("#default_credentials_aws").empty();
+            $("#default_credentials_os").empty();
+
             for (var i in creds) {
                 if(creds[i].cloud_credential.cloud_provider === "AWS"){
-                    $("#default_credentials").append("<option value='"+creds[i].cloud_credential.id+"'>"+creds[i].cloud_credential.name+"</option>");
+                    $("#default_credentials_aws").append("<option value='"+creds[i].cloud_credential.id+"'>"+creds[i].cloud_credential.name+"</option>");
                 }
+                else if(creds[i].cloud_credential.cloud_provider === "OpenStack"){
+                    $("#default_credentials_os").append("<option value='"+creds[i].cloud_credential.id+"'>"+creds[i].cloud_credential.name+"</option>");
+                }
+
             }
 
             if(typeof this.rootView !== 'undefined' && typeof this.rootView.treePolicy !== 'undefined'){
                 var tp = this.rootView.policies.get(this.rootView.treePolicy);
-                $("#default_credentials").val(tp.attributes.aws_governance.default_credentials);
+                $("#default_credentials_aws").val(tp.attributes.aws_governance.default_credentials);
+                $("#default_credentials_os").val(tp.attributes.os_governance.default_credentials);
             }
-            if(creds.length > 0){
-                $("#whole_form").show("slow");
-                $("#cred_message").hide("slow");
-                this.topics.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
-                this.images.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val(), platform: $("#filter_platform").val()}), reset: true });
-                this.vpcs.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
-                this.subnets.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
+            if($("#default_credentials_aws").length > 0){
+                $("#whole_form_aws").show("slow");
+                $("#cred_message_aws").hide("slow");
+                this.topics.fetch({ data: $.param({ cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val()}), reset: true });
+                this.images.fetch({ data: $.param({ cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val(), platform: $("#filter_platform_aws").val()}), reset: true });
+                this.vpcs.fetch({ data: $.param({ cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val()}), reset: true });
+                this.subnets.fetch({ data: $.param({ cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val()}), reset: true });
+            }
+            if($("#default_credentials_os").length > 0){
+                $("#whole_form_os").show("slow");
+                $("#cred_message_os").hide("slow");
+                this.images_os.fetch({ data: $.param({ cred_id: $("#default_credentials_os").val(), region: $("#default_region_os").val()}), reset: true });
             }
         },
 
@@ -398,19 +514,18 @@ define([
         },
 
         addCredDependent: function(){
-            //debugger
-            this.topics.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
-            this.images.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val(), platform: $("#filter_platform").val()}), reset: true });
-            this.vpcs.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
-            this.subnets.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val()}), reset: true });
+            this.topics.fetch({ data: $.param({ cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val()}), reset: true });
+            this.images.fetch({ data: $.param({ cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val(), platform: $("#filter_platform_aws").val()}), reset: true });
+            this.images_os.fetch({ data: $.param({ cred_id: $("#default_credentials_os").val(), region: $("#default_region_os").val()}), reset: true });
+            this.vpcs.fetch({ data: $.param({ cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val()}), reset: true });
+            this.subnets.fetch({ data: $.param({ cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val()}), reset: true });
         },
-        
-        addAlarm: function(options){
-            //debugger
+
+        addAlarm: function(options,indicator){
             this.alarms.push(options);
-            $("#alarm_table").append("<tr><td>"+options.namespace+"</td><td>"+options.metric_name+"</td><td>"+options.threshold+"</td><td>"+options.period+"</td><td><a class='btn btn-mini btn-danger remove_alarm'><i class='icon-minus-sign icon-white'></i></a></td></tr>");
+            $("#alarm_table_" + indicator).append("<tr><td>"+options.namespace+"</td><td>"+options.metric_name+"</td><td>"+options.threshold+"</td><td>"+options.period+"</td><td><a class='btn btn-mini btn-danger remove_alarm'><i class='fa fa-minus-circle icon-white'></i></a></td></tr>");
         },
-        
+
         removeAlarm: function(event){
             var tr = $(event.target).closest('tr');
             tr.css("background-color","#FF3700");
@@ -421,92 +536,113 @@ define([
             this.alarms.splice(trIndex,1);
             return false;
         },
-        
+
         removeImage: function(event){
+            var defaults = [];
             var tr = $(event.target).closest('tr');
             tr.css("background-color","#FF3700");
             tr.fadeOut(400, function(){
                 tr.remove();
             });
             var trIndex = tr.prevAll().length;
-            this.default_images.splice(trIndex,1);
+            if($(event.target).parents('table').attr('id') === "default_images_table_aws"){
+                defaults = this.default_images;
+            }
+            if($(event.target).parents('table').attr('id') === "default_images_table_os"){
+                defaults = this.default_images_os;
+            }
+            defaults.splice(trIndex,1);
             return false;
         },
-        
+
         addAllTopics: function(collection){
-            $("#default_informational").empty();
-            $("#default_warning").empty();
-            $("#default_error").empty();
+            $("#default_informational_aws").empty();
+            $("#default_warning_aws").empty();
+            $("#default_error_aws").empty();
             collection.each(function(model){
-                $("#default_informational").append("<option>"+model.attributes.id+"</option>");
-                $("#default_warning").append("<option>"+model.attributes.id+"</option>");
-                $("#default_error").append("<option>"+model.attributes.id+"</option>");
+                $("#default_informational_aws").append("<option>"+model.attributes.id+"</option>");
+                $("#default_warning_aws").append("<option>"+model.attributes.id+"</option>");
+                $("#default_error_aws").append("<option>"+model.attributes.id+"</option>");
             });
-            
-            $("#default_informational").append("<option>None</option>");
-            $("#default_warning").append("<option>None</option>");
-            $("#default_error").append("<option>None</option>");
-            
+
+            $("#default_informational_aws").append("<option>None</option>");
+            $("#default_warning_aws").append("<option>None</option>");
+            $("#default_error_aws").append("<option>None</option>");
+
             if(typeof this.rootView !== 'undefined' && typeof this.rootView.treePolicy !== 'undefined'){
                 var p = this.model.attributes.aws_governance;
-                $("#default_informational").val(p.default_informational);
-                $("#default_warning").val(p.default_warning);
-                $("#default_error").val(p.default_error);
+                $("#default_informational_aws").val(p.default_informational);
+                $("#default_warning_aws").val(p.default_warning);
+                $("#default_error_aws").val(p.default_error);
             }
         },
-        
+
         addAllImages: function(collection){
             $(".spinner").remove();
-            $("#images_table").dataTable().fnClearTable();
+            $("#images_table_aws").dataTable().fnClearTable();
             collection.each(function(model) {
                 var rowData = [model.attributes.imageId,model.attributes.imageLocation,model.attributes.architecture];
-                $("#images_table").dataTable().fnAddData(rowData);
+                $("#images_table_aws").dataTable().fnAddData(rowData);
             });
         },
-        
-        addAllVpcs: function(collection){
-            $("#default_vpc").empty();
+
+        addAllImagesOS: function(collection){
+            //$(".spinner").remove();
+            $("#images_table_os").dataTable().fnClearTable();
             collection.each(function(model) {
-                $("#default_vpc").append("<option>"+model.attributes.id+"</option>");
+                var rowData = [model.attributes.name,model.attributes.id,model.attributes.status];
+                $("#images_table_os").dataTable().fnAddData(rowData);
+            });
+        },
+
+        addAllVpcs: function(collection){
+            $("#default_vpc_aws").empty();
+            collection.each(function(model) {
+                $("#default_vpc_aws").append("<option>"+model.attributes.id+"</option>");
             });
             if(typeof this.rootView !== 'undefined' && typeof this.rootView.treePolicy !== 'undefined'){
                 var p = this.model.attributes.aws_governance;
-                $("#default_vpc").val(p.default_vpc);
+                $("#default_vpc_aws").val(p.default_vpc);
             }
         },
-        
+
         addAllSubnets: function(collection){
-            $("#default_subnet").empty();
+            $("#default_subnet_aws").empty();
             collection.each(function(model) {
-                $("#default_subnet").append("<option>"+model.attributes.subnet_id+"</option>");
+                $("#default_subnet_aws").append("<option>"+model.attributes.subnet_id+"</option>");
             });
             if(typeof this.rootView !== 'undefined' && typeof this.rootView.treePolicy !== 'undefined'){
                 var p = this.model.attributes.aws_governance;
-                $("#default_subnet").val(p.default_subnet);
-            }    
+                $("#default_subnet_aws").val(p.default_subnet);
+            }
         },
-        
-        selectImage: function(event){
+
+        clickImage: function(event){
+            if($(event.target).parents('table').attr('id') === "images_table_aws"){
+                this.selectImage("aws",event.currentTarget);
+            }
+            if($(event.target).parents('table').attr('id') === "images_table_os"){
+                this.selectImage("os",event.currentTarget);
+            }
+        },
+
+        selectImage: function(provider,target){
             $(".row_selected").removeClass('row_selected');
-            $(event.currentTarget).addClass('row_selected');
-            
-            var rowData = $("#images_table").dataTable().fnGetData(event.currentTarget);
-            
+            $(target).addClass('row_selected');
+
+            var rowData = $("#images_table_"+provider).dataTable().fnGetData(target);
+
             // $("#add_image").hide();
 //             $("#add_image_source").hide();
-            
-            $("#add_image").html(rowData[0]);
-            $("#add_image_source").html(rowData[1]);
-            
+
             // $("#add_image").show(1000);
 //             $("#add_image_source").show(1000);
-            
-            this.addImage();
+            this.addImage(provider,rowData[0],rowData[1]);
         },
-        
+
         imageFilterSelect: function(event){
             //$("#images_table").dataTable().fnClearTable();
-            
+
             var spinnerOptions = {
                 //lines: 13, // The number of lines to draw
                 length: 50, // The length of each line
@@ -524,68 +660,75 @@ define([
                 //top: 150, Top position relative to parent in px
                 //left: 211 Left position relative to parent in px
             };
-            
-            new Spinner(spinnerOptions).spin($("#images_table").get(0));
-            
-            this.images.fetch({ data: $.param({ cred_id: $("#default_credentials").val(), region: $("#default_region").val(), platform: $("#filter_platform").val()}), reset: true });
+
+            new Spinner(spinnerOptions).spin($("#images_table_aws").get(0));
+
+            this.images.fetch({ data: $.param({ cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val(), platform: $("#filter_platform_aws").val()}), reset: true });
         },
-        
+
         topicCreate: function(event){
-            var createTopicsDialog = new CreateTopicsView({cred_id: $("#default_credentials").val(), region: $("#default_region").val()});
+            var createTopicsDialog = new CreateTopicsView({cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val()});
             createTopicsDialog.render();
         },
-        
+
         vpcCreate: function(event){
-            var createVPCsDialog = new CreateVpcsView({cred_id: $("#default_credentials").val(), region: $("#default_region").val()});
+            var createVPCsDialog = new CreateVpcsView({cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val()});
             createVPCsDialog.render();
         },
-        
+
         subnetCreate: function(event){
-            var createSubnetDialog = new CreateSubnetView({cred_id: $("#default_credentials").val(), region: $("#default_region").val()});
+            var createSubnetDialog = new CreateSubnetView({cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val()});
             createSubnetDialog.render();
         },
-        
-        addImage: function(){
-            this.default_images.push({"image_id" : $("#add_image").html(),"source": $("#add_image_source").html()});
-            $("#default_images_table").dataTable().fnAddData([$("#add_image").html(),$("#add_image_source").html(),"<a class='btn btn-mini btn-danger remove_image'><i class='icon-minus-sign icon-white'></i></a>"]);
-            $('input[name=use_approved_images]').attr('checked', true);
-        },
-        
-        saveImages: function(){
-            var cells = [];
-            var rows = $("#default_images_table").dataTable().fnGetNodes();
-            for(var i=0;i<rows.length;i++)
-            {
-                var row = {"image_id" : $(rows[i]).find("td:eq(0)").html(), "source" : $(rows[i]).find("td:eq(1)").html()};
-                // Get HTML of 3rd column (for example)
-                cells.push(row); 
+
+        addImage: function(provider,image,image_id){
+            var defaults = [];
+            if(provider === "aws"){
+                defaults = this.default_images;
             }
-            return cells;
+            else if (provider === "os"){
+                defaults = this.default_images_os;
+            }
+            defaults.push({"name": image ,"id": image_id});
+            $("#default_images_table_"+provider).dataTable().fnAddData([image,image_id,"<a class='btn btn-mini btn-danger remove_image'><i class='fa fa-minus-circle icon-white'></i></a>"]);
+            $('input[name=use_approved_images_'+provider+']').attr('checked', true);
         },
-        
+
+        // saveImages: function(){
+        //     var cells = [];
+        //     var rows = $("#default_images_table").dataTable().fnGetNodes();
+        //     for(var i=0;i<rows.length;i++)
+        //     {
+        //         var row = {"name" : $(rows[i]).find("td:eq(0)").html(), "id" : $(rows[i]).find("td:eq(1)").html()};
+        //         // Get HTML of 3rd column (for example)
+        //         cells.push(row);
+        //     }
+        //     return cells;
+        // },
+
         checkboxChanged: function(lambda){
             switch(lambda.target.id)
             {
             case "check_rds":
-                this.disableInput($("#max_rds"),$("#"+lambda.target.id).is(':checked'));
+                this.disableInput($("#max_rds_aws"),$("#"+lambda.target.id).is(':checked'));
                 break;
             case "check_max_on_demand":
-                this.disableInput($("#max_on_demand"),$("#"+lambda.target.id).is(':checked'));
+                this.disableInput($("#max_on_demand_aws"),$("#"+lambda.target.id).is(':checked'));
                 break;
             case "check_max_reserved":
-                this.disableInput($("#max_reserved"),$("#"+lambda.target.id).is(':checked'));
+                this.disableInput($("#max_reserved_aws"),$("#"+lambda.target.id).is(':checked'));
                 break;
             case "check_max_dedicated":
-                this.disableInput($("#max_dedicated"),$("#"+lambda.target.id).is(':checked'));
+                this.disableInput($("#max_dedicated_aws"),$("#"+lambda.target.id).is(':checked'));
                 break;
             case "check_max_spot":
-                this.disableInput($("#max_spot"),$("#"+lambda.target.id).is(':checked'));
+                this.disableInput($("#max_spot_aws"),$("#"+lambda.target.id).is(':checked'));
                 break;
             case "check_max_in_autoscale":
-                this.disableInput($("#max_in_autoscale"),$("#"+lambda.target.id).is(':checked'));
+                this.disableInput($("#max_in_autoscale_aws"),$("#"+lambda.target.id).is(':checked'));
                 break;
             case "project_name_toggle":
-                this.disablePNInput($("#project_name"),!$("#"+lambda.target.id).is(':checked'));
+                this.disablePNInput($("#project_name_aws"),!$("#"+lambda.target.id).is(':checked'));
                 break;
             case "check_max_on_demand_os":
                 this.disableInput($("#max_on_demand_os"),$("#"+lambda.target.id).is(':checked'));
@@ -593,9 +736,15 @@ define([
             case "check_max_in_autoscale_os":
                 this.disableInput($("#max_in_autoscale_os"),$("#"+lambda.target.id).is(':checked'));
                 break;
+            case "check_rds_os":
+                this.disableInput($("#max_rds_os"),$("#"+lambda.target.id).is(':checked'));
+                break;
+            case "check_max_volumes_os":
+                this.disableInput($("#max_volumes_os"),$("#"+lambda.target.id).is(':checked'));
+                break;
             }
         },
-        
+
         disableInput: function(target,toggle){
             if(toggle === true){
                 target.attr("disabled", true);
@@ -606,7 +755,7 @@ define([
                 target.removeClass("ui-state-disabled");
             }
         },
-        
+
         disablePNInput: function(target,toggle){
             if(toggle === true && !target.is(":focus")){
                 //$("#project_name_toggle").prop('checked', false);
@@ -619,50 +768,80 @@ define([
                 target.removeClass("ui-state-disabled");
             }
         },
-        
+
         pnFocus: function(event){
             if(event.target.id === "project_name"){
-                $("#project_name_toggle").prop("checked", false);//.prop('checked', true);
+                $("#project_name_toggle_aws").prop("checked", false);//.prop('checked', true);
             }
         },
-        
+
         clickCloudTab: function(event){
             $(".tab-selector.active").removeClass("active");
             if(event.target.id === "tab_os"){
-                $("#content").hide("slow");
+                $("#content_aws").hide("slow");
                 $("#content_os").show("slow");
                 $("#os_tab_item").addClass("active");
 
             }
             if(event.target.id === "tab_aws"){
-                $("#content").show("slow");
-                $("#content_os").hide("slow");  
+                $("#content_aws").show("slow");
+                $("#content_os").hide("slow");
                 $("#aws_tab_item").addClass("active");
             }
 
         },
+        buttonBehavior: function(nav,user_select)
+        {
+                var button = $("."+nav+".cloud-button");
+                var tab = $("."+nav+".tab-selector");
+                var content = $("."+nav+".cont");
+                if(user_select){
+                    button.toggleClass("active");
+                    tab.toggle();
+                    if(! button.hasClass("active")){
+                        content.hide("slow");
+                        if($(".cloud-button").hasClass("active")){
+                            $(".tab-selector:visible").first().addClass("active");
+                            tab.removeClass("active");
+                            var data_cloud = $(".tab-selector:visible").first().attr("data-cloud");
+                            $(".cont." + data_cloud).show("slow");
+                        }
+                    }
+                    if(tab.is(':visible') && button.hasClass("active")){
+                        $(".tab-selector").removeClass("active");
+                        $(".cont").hide("slow");
+                        tab.addClass("active");
+                        content.show("slow");
+                    }
+                    if($(".cloud-button").hasClass("active")){
+                        $("#defaults").show("slow");
+                        $("#clouds_select_msg").hide();
+                    }
+                    else{
+                        $("#defaults").hide("slow");
+                        $("#clouds_select_msg").show();
+                        $(".content").hide("slow");
+                    }
+                }else if(!user_select){
+                    button.addClass("active");
+                    $(".tab-selector").removeClass("active");
+                    tab.show("fast");
+                    tab.addClass("active");
+                    content.show("fast");
+                }
+        },
 
         clickCloudButton: function(event){
             if(event.target.id === "os_button" || event.target.id === "os_img"){
-                $("#os_button").toggleClass("active");
-                $("#os_tab_item").toggle();
+                this.buttonBehavior("os",true);
             }
             if(event.target.id === "aws_button" || event.target.id === "aws_img"){
-                $("#aws_button").toggleClass("active");
-                $("#aws_tab_item").toggle();
-            }
-            if($("#aws_button").hasClass("active") || $("#os_button").hasClass("active")){
-                $("#clouds_select_msg").hide();
-            }
-            else{
-                $("#clouds_select_msg").show();
-                $("#content").hide("slow");
-                $("#content_os").hide("slow");
-
+                this.buttonBehavior("aws",true);
             }
         },
 
         prePopForm: function(){
+            this.addEnabledClouds();
             $("input:checkbox[name='usable_regions']").each(function(){
                 $(this).prop('checked', true);
             });
@@ -670,10 +849,10 @@ define([
                 $(this).prop('checked', true);
             });
         },
-        
+
         close: function(){
             this.$el.remove();
-        }  
+        }
     });
 
     return GroupManagementView;

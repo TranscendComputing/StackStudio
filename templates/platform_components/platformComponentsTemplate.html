@@ -1,0 +1,33 @@
+<div>
+    <div class="control-group">
+        <div class="controls">
+            <div class="btn-group">
+                <button type="button" class="btn dropdown-toggle btn-success" data-toggle="dropdown">
+                    <span id="select_button_label"></span>&nbsp;<span class="caret"></span>
+                </button>
+                <ul id="config_managers_list" class="dropdown-menu" role="menu"></ul>
+            </div>
+            <a id="refresh_button" class="btn btn-primary">Refresh</a>
+            <a id="view_legend_toggle" style="float:right" class="selectable_item">Hide Legend</a>
+            <div id="table_legend" style="float:right; margin: 0px 20px; border:1px solid grey; border-radius:5px; padding:5px;">
+                Pass:&nbsp;<img src="/images/statusRunning.gif" />&nbsp;&nbsp;
+                In Progress:&nbsp;<img src="/images/statusChanging.gif" />&nbsp;&nbsp;
+                Fail:&nbsp;<img src="/images/statusTerminated.gif" />&nbsp;&nbsp;
+                N/A:&nbsp;<img src="/images/statusNone.png" width="16px"/>
+            </div>
+        </div>
+    </div>
+    <div id="continuous_integration_table_view">
+        <table id="continuous_integration_table" class="table table-striped"></table>
+    </div>
+    <div id="continuous_integration_setup_landing_view">
+        <div class="jumbotron" style="margin-top:10px;"> 
+            <h3>Setup continuous integration with <span id="selected_cm_label"></span> for rapid validation. Visit the Account Management section to get set up!</h3>
+        </div>
+    </div>
+    <div id="default_landing_view">
+        <div class="jumbotron" style="margin-top:10px;"> 
+            <h3>Select a configuration manager above, or begin by setting up a configuration manager in the Account Management section!</h3>
+        </div>
+    </div>
+</div>

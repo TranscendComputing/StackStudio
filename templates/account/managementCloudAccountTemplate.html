@@ -8,16 +8,16 @@
             <br/>
             <div id="auth_url_div">
                 Auth URL: &nbsp;<input id="auth_url_input" style="width:300px;"></input>
-                <button id="update_auth_url_button">Update</button>
+                <button id="update_auth_url_button" class="btn btn-success">Update</button>
             </div>
             <br/>
             <div id="default_region_div">
                 Default Region: &nbsp;<input id="default_region_input" style="width:300px;"></input>
-                <button id="default_region_button">Update</button>
+                <button id="default_region_button" class="btn btn-success">Update</button>
             </div>
         </div>
         <div class="row" style="padding: 10px 10px;">
-            <button id="new_cloud_service">Add Service</button>
+            <button id="new_cloud_service" class="btn btn-primary">Add Service</button>
         </div>
         <div id="services_page">
         </div>
@@ -25,26 +25,24 @@
             <legend>Configuration Manager Endpoints</legend>
             <p>
                 <label class="tabbed-field">Chef:</label>
-                <select id="chef_select"/>
-                <button class="save-manager">Save</button>
+                <select id="chef_select" class="config-manager-select" style="width:200px"/>
+                <button class="save-manager btn btn-success">Save</button>
             </p>
             <p>
                 <label class="tabbed-field">Puppet:</label>
-                <select id="puppet_select"/>
-                <button class="save-manager">Save</button>
+                <select id="puppet_select" class="config-manager-select" style="width:200px"/>
+                <button class="save-manager btn btn-success">Save</button>
             </p>
             <p>
                 <label class="tabbed-field">Salt:</label>
-                <select id="salt_select"/>
-                <button class="save-manager">Save</button>
+                <select id="salt_select" class="config-manager-select" style="width:200px"/>
+                <button class="save-manager btn btn-success">Save</button>
             </p>
-<% if (ansible) { %>
             <p>
                 <label class="tabbed-field">Ansible:</label>
-                <select id="ansible_select"/>
-                <button class="save-manager">Save</button>
+                <select id="ansible_select" class="config-manager-select" style="width:200px"/>
+                <button class="save-manager btn btn-success">Save</button>
             </p>
-<% } %>
         </div>
         <!--
         <div id="mappings_page" class="tab">
@@ -62,9 +60,9 @@
             {{#cloud_services}}
             <p>
                 <label class="tabbed-field">{{cloud_service.service_type}} Endpoint URL:</label>
-                <input data-id="{{cloud_service.id}}" type="text" data-name="{{cloud_service.service_type}}" class="textbox-300" value="{{cloud_service.protocol}}://{{cloud_service.host}}:{{cloud_service.port}}{{cloud_service.path}}"></input>
-                <button class="delete-button">Delete</button>
-                <button class="save-button">Save</button>
+                <input data-id="{{cloud_service.id}}" type="text" data-name="{{cloud_service.service_type}}" class="textbox-300 form-control" value="{{cloud_service.protocol}}://{{cloud_service.host}}:{{cloud_service.port}}{{cloud_service.path}}"></input>
+                <button class="delete-button btn btn-danger">Delete</button>
+                <button class="save-button btn btn-success">Save</button>
             </p>
             {{/cloud_services}}
             {{^cloud_services}}

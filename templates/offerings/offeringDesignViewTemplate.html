@@ -1,7 +1,6 @@
-<div>
-	<div class="control-group">
-		<div class="controls">
-			<div class="btn-group">
+<div class="row well well-lg">
+	<div class="button_bar">
+		<div class="btn-group">
 				<button type="button" class="btn dropdown-toggle btn-success" data-toggle="dropdown">
 	    			Select Offering&nbsp;<span class="caret"></span>
 	  			</button>
@@ -13,78 +12,72 @@
 	    			Delete Offering&nbsp;<span class="caret"></span>
 	  			</button>
 	  			<ul id="offerings_delete_menu" class="dropdown-menu" role="menu"></ul>
-			</div>
 		</div>
 	</div>
-	<div id="offering_opened" hidden>
+	<div id="offering_opened" class="col-lg-12">
 		<form id="offering_form" class="form-horizontal">
-			<div class="container-fluid span6">
-				<div class="row-fluid">
-					<div class="span12">
+			<div class="col-lg-6">
+				<div class="row">
+					<div class="col-lg-12">
 						<div class="control-group">
 							<label class="control-label" for="offering_name_input">Name</label>
 							<div class="controls">
-							  	<input type="text" id="offering_name_input" placeholder="Offering Name">
+							  	<input type="text" id="offering_name_input" class="form-control"placeholder="Offering Name">
 							</div>
 						</div>
 					</div>
 				</div>
-				<div class="row-fluid">
-					<div class="span12">
+				<div class="row">
+					<div class="col-lg-12">
 						<div class="control-group">
 							<label class="control-label" for="offering_version_input">Version</label>
 							<div class="controls">
-							  	<input type="text" id="offering_version_input" placeholder="Offering Version">
+							  	<input type="text" id="offering_version_input" class="form-control"placeholder="Offering Version">
 							</div>
 						</div>
 					</div>
 				</div>
-				<div class="row-fluid">
-					<div class="span12">
+				<div class="row">
+					<div class="col-lg-12">
 						<div class="control-group">
 							<label class="control-label" for="offering_url_input">Url</label>
 							<div class="controls">
-						  		<input type="url" id="offering_url_input" placeholder="Url for more information">
+						  		<input type="url" id="offering_url_input" class="form-control" placeholder="Url for more information">
 							</div>
 						</div>
 					</div>
 				</div>
-				<div class="row-fluid">
-					<div class="span12">
+				<div class="row">
+					<div class="col-lg-12">
 						<div class="control-group">
 							<label class="control-label" for="offering_sku_input">SKU</label>
 							<div class="controls">
-						  		<input type="text" id="offering_sku_input" placeholder="Billing SKU">
+						  		<input type="text" id="offering_sku_input" class="form-control" placeholder="Billing SKU">
 							</div>
 						</div>
 					</div>
 				</div>
-				<div class="row-fluid">
-					<div class="span12">
+				<div class="row">
+					<div class="col-lg-12">
 						<div class="control-group">
 							<label class="control-label" for="offering_brief_description_input">Brief Description</label>
-							<div class="controls">
-						 		<textarea id="offering_brief_description_input" class="span12" rows="2" placeholder="Brief Description"></textarea>
-							</div>
+						 		<textarea id="offering_brief_description_input" class="form-control" rows="2" class="" placeholder="Brief Description"></textarea>
 						</div>
 					</div>
 				</div>
-				<div class="row-fluid">
-					<div class="span12">
+				<div class="row">
+					<div class="col-lg-12">
 						<div class="control-group">
 							<label class="control-label" for="offering_detailed_description_input">Detailed Description</label>
-							<div class="controls">
-							 	<textarea id="offering_detailed_description_input" class="span12" rows="4" placeholder="Detailed Description"></textarea>
-							</div>
+							 	<textarea id="offering_detailed_description_input" class="form-control" rows="4" placeholder="Detailed Description"></textarea>
 						</div>
 					</div>
 				</div>
-				<div class="row-fluid">
-					<div class="span12">
+				<div class="row">
+					<div class="col-lg-12">
 						<div class="control-group">
 							<label class="control-label" for="offering_eula_select">EULA</label>
-							<div class="controls">
-								<select id="offering_eula_select" class="span12">
+								<select id="offering_eula_select" class="form-control">
 									<optgroup label="GPL 2-compatible">
 							 			<option>Artistic License 2.0</option>
 										<option>Berkeley Database License (aka the Sleepycat License or Sleepycat Software Product License)</option>
@@ -149,54 +142,51 @@
 										<option>Custom</option>
 									</optgroup>
 								</select>
-							</div>
 						</div>
 					</div>
 				</div>
-				<div class="row-fluid">
-					<div class="span12">
+				<div class="row">
+					<div class="col-lg-12">
 						<div class="control-group">
 							<label class="control-label" for="offering_custom_eula_input">Custom EULA</label>
-							<div class="controls">
-							 	<textarea id="offering_custom_eula_input" class="span12" rows="4" placeholder="Custom EULA"></textarea>
-							</div>
+							 	<textarea id="offering_custom_eula_input" class="form-control" rows="4" class="form-control" placeholder="Custom EULA"></textarea>
 						</div>
 					</div>
 				</div>
-				<div class="row-fluid">
-					<div class="span12">
+				<div class="row">
+					<div class="col-lg-12">
 						<div class="control-group">
 							<label class="control-label" for="offering_support_input">Support</label>
 							<div class="controls">
-							 	<textarea id="offering_support_input" class="span12" rows="4" placeholder="Support"></textarea>
+							 	<textarea id="offering_support_input" class="form-control" rows="4" class="form-control" placeholder="Support"></textarea>
 							</div>
 						</div>
 					</div>
 				</div>
-				<div class="row-fluid">
-					<div class="span12">
+				<div class="row">
+					<div class="col-lg-12">
 						<div class="control-group">
 							<label class="control-label" for="offering_pricing_input">Pricing</label>
 							<div class="controls">
-							 	<textarea id="offering_pricing_input" class="span12" rows="4" placeholder="Pricing"></textarea>
+							 	<textarea id="offering_pricing_input" class="form-control" rows="4" class="form-control" placeholder="Pricing"></textarea>
 							</div>
 						</div>
 					</div>
 				</div>
-				<div class="row-fluid">
-					<div class="span12">
+				<div class="row">
+					<div class="col-lg-12">
 						<div class="control-group">
 							<label class="control-label" for="offering_category_input">Category</label>
 							<div class="controls">
-							 	<textarea id="offering_category_input" class="span12" rows="4" placeholder="List of related topics"></textarea>
+							 	<textarea id="offering_category_input" class="form-control" rows="4" class="form-control" placeholder="List of related topics"></textarea>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-			<div class="container-fluid span6">
-				<!-- <div class="row-fluid">
-                    <div class="span12">
+			<div class="col-lg-6">
+				<!-- <div class="row">
+                    <div class="col-lg-12">
                         <div class="control-group">
                             <label class="control-label" >Icon</label>
                             <div class="controls" style="min-height:64px;">
@@ -207,8 +197,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="row-fluid">
-                    <div class="span12">
+                <div class="row">
+                    <div class="col-lg-12">
                         <div class="control-group">
                             <label class="control-label" >Illustration</label>
                             <div class="controls" style="min-height:74px;">
@@ -219,8 +209,8 @@
                         </div>
                     </div>
                 </div> -->
-				<div class="row-fluid">
-					<div class="span12">
+				<div class="row">
+					<div class="col-lg-12">
 						<div class="control-group">
 							<label class="control-label" for="offering_stacks_list">Stacks to Include</label>
 							<div class="controls" style="overflow-y:auto;">
@@ -231,15 +221,15 @@
 				</div>
 			</div>
 		</form>
-		<div class="control-group span10">
+		<div class="button_bar col-lg-10">
 			<div class="controls">
 				<a id="offering_save_button" class="btn btn-primary">Save Offering</a>
 				<a id="offering_close_button" class="btn btn-default">Close</a>
 			</div>
 		</div>
 	</div>
-	<div id="offering_not_opened" hidden>
-		<div class="hero-unit"> 
+	<div id="offering_not_opened">
+		<div class="jumbotron">
 		    <h3>Select an offering above, or begin by creating a new offering!</h3>
 		</div>
 	</div>

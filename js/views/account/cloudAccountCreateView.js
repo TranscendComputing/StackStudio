@@ -95,7 +95,7 @@ define([
             }
             
             if(!issue){
-                newCloudAccount.create(options,sessionStorage.org_id,$("#cloud_select").val());
+                newCloudAccount.create(options,sessionStorage.org_id,sessionStorage.login,$("#cloud_select").val());
                 this.$el.dialog('close');
             }else{
                 Common.errorDialog("Invalid Request", "Please supply all required fields.");

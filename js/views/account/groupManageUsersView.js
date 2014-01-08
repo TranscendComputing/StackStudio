@@ -14,7 +14,7 @@ define([
         '/js/models/group.js',
         'common'
 ], function( $, _, Backbone, DialogView, groupManageUsersTemplate, Group, Common ) {
-    
+
     var GroupManageUsersView = DialogView.extend({
 
         groupId: undefined,
@@ -45,7 +45,7 @@ define([
                 autoOpen: true,
                 title: "Manage Group Users",
                 resizable: false,
-                width: 465,
+                width: 500,
                 modal: true,
                 buttons: {
                     Close: function() {
@@ -71,12 +71,12 @@ define([
                     contentType: 'application/x-www-form-urlencoded',
                     success: function(data) {
                         view.org = data.org;
-                        view.refresh();   
+                        view.refresh();
                     },
                     error: function(jqXHR) {
                         Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
                     }
-                });  
+                });
             }
         },
 
@@ -125,13 +125,13 @@ define([
 
         addUser: function() {
             if(this.group) {
-                this.group.addUser(this.selectedNonGroupUserId);
+                this.group.addUser(this.selectedNonGroupUserId,sessionStorage.login);
             }
         },
 
         removeUser: function() {
             if(this.group) {
-                this.group.removeUser(this.selectedGroupUserId);
+                this.group.removeUser(this.selectedGroupUserId,sessionStorage.login);
             }
         },
 
@@ -140,6 +140,6 @@ define([
             this.$el.dialog('close');
         }
     });
-    
+
     return GroupManageUsersView;
 });

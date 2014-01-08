@@ -13,7 +13,7 @@
                                 <li><a>Start</a></li>
                                 <li><a>Stop</a></li>
                                 <li><a>Reboot</a></li>
-                                <li><a>Terminate</a></li>           
+                                <li><a>Terminate</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -45,17 +45,17 @@
             <li><a id="monitoring" href="#tabs-2">Monitoring</a></li>
         </ul>
         <div id="tabs-1" class="tab row">
-            <table class="sixcol">
+            <table class="col-lg-6">
                 <tbody>
-                    <tr><td><b>Name:</b></td>                  <td>{{ name }}</td>                     
-                    <tr><td><b>ID:</b></td>                    <td>{{ id }}</td>                       
-                    <tr><td><b>Image ID:</b></td>              <td>{{ image.id }}</td>                 
-                    <tr><td><b>Instance ID:</b></td>           <td>{{ os_ext_srv_attr_instance_name }}</td></tr>        
+                    <tr><td><b>Name:</b></td>                  <td>{{ name }}</td>
+                    <tr><td><b>ID:</b></td>                    <td>{{ id }}</td>
+                    <tr><td><b>Image ID:</b></td>              <td>{{ image.id }}</td>
+                    <tr><td><b>Instance ID:</b></td>           <td>{{ os_ext_srv_attr_instance_name }}</td></tr>
                     <tr><td><b>Type:</b></td>                  <td>{{ flavor.id }}</td></tr>
                     <tr><td><b>Key Name:</b></td>              <td>{{ key_name }}</td></tr>
                 </tbody>
             </table>
-            <table class="fivecol">
+            <table class="col-lg-6">
                 <tbody>
                     <tr><td><b>Host:</b></td>                  <td>{{ os_ext_srv_attr_host }}</td></tr>
                     <tr><td><b>State:</b></td>                 <td>{{ state }}</td></tr>
@@ -90,5 +90,5 @@
             </div>
         </div>
     </div>
-    
+
 </script>

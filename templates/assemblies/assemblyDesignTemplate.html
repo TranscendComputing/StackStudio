@@ -1,37 +1,73 @@
-<div id="assemblyLeftNav" class="span5">
+<div class="row col-lg-12">
+  <h2>Assembly</h2>
 </div>
 
-<div id="assemblyRightNav" class="span7">
-  <h2>Assembly Details</h2>
-  <form class="form-horizontal" id="designForm">
+<form class="form-horizontal" id="designForm">
+<div class="row">
+<div id="assemblyCommon" class="col-lg-5">
     <div class="control-group">
       <label class="control-label" for="assemblyDesignName">Name</label>
       <div class="controls">
-        <input type="text" name="name" id="assemblyDesignName" placeholder="Assembly">
+        <input type="text" name="name" id="assemblyDesignName" placeholder="Assembly" class="form-control">
       </div>
     </div>
     <div class="control-group">
       <label class="control-label" for="inputAssembly">Configuration Tool</label>
       <div class="controls">
-        <select id="assemblyDesignTool" name="tool" placeholder="Cloud">
+        <select id="assemblyDesignTool" name="tool" placeholder="Cloud" class="form-control">
+          <option>No Selection</option>
           <option>Chef</option>
           <option>Puppet</option>
           <option>Salt</option>
-<% if (ansible) {%>
           <option>Ansible</option>
-<% } %>
+          <option>Docker</option>
         </select>
       </div>
     </div>
     <div class="control-group">
       <label class="control-label" for="assemblyDesignCloudCreds">Cloud Credential</label>
       <div class="controls">
-        <select id="assemblyDesignCloudCreds" name="cloud_credential" placeholder="Cloud Credential">
+        <select id="assemblyDesignCloudCreds" name="cloud_credential" placeholder="Cloud Credential" class="form-control">
         </select>
       </div>
     </div>
+</div>
+
+<div id="assemblyDetails" class="col-lg-7">
+    <div class="control-group docker-only">
+      <label class="control-label" for="z">Docker Base Image</label>
+      <div class="controls">
+        <select id="z" name="cloud_credential" placeholder="Cloud Credential" class="form-control">
+          <option>base / latest</option>
+          <option>base / ubuntu-12.10</option>
+          <option>base / ubuntu-quantal</option>
+          <option>base / ubuntu-quantl</option>
+          <option>ubuntu / latest</option>
+          <option>ubuntu / latest</option>
+          <option>ubuntu / latest</option>
+        </select>
+      </div>
+    </div>
+    <div class="control-group docker-only">
+      <div class="controls">
+        <div class="radio">
+          <label><input type="radio" name="docker" id="useDocker"> Image has Docker already</label>
+        </div>
+        <div class="radio">
+          <label><input type="radio" name="docker" id="useDocker"> Install Docker on Boot</label>
+        </div>
+      </div>
+    </div>
+</div>
+</div>
+
+<div class="row">
+<div id="assemblyLeftNav" class="col-lg-5">
+</div>
+
+<div id="assemblyRightNav" class="col-lg-7">
+<h2>Base Image</h2>
     <div class="control-group">
-      <label class="control-label" for="assemblyDesignImagesTable">Image</label>
       <div class="controls">
         <div class="row-fluid">
         <table id="assemblyDesignImagesTable" class="table table-striped table-bordered">
@@ -43,7 +79,7 @@
             </tr>
           </thead>
           <tbody id="image-container">
-           
+
           </tbody>
         </table>
       </div>
@@ -55,5 +91,6 @@
       </div>
     </div>
     <input type="hidden" name="image" id="assemblyDesignImage"/>
-  </form>
 </div>
+</div>
+</form>

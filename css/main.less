@@ -10,6 +10,10 @@
 
 @import "console.less";
 
+@import "docker.less";
+
+@import "packed.less";
+
 @import "resourceApp.less";
 
 @import "cloudCredentialApp.less";
@@ -31,6 +35,8 @@
 @import "messenger.less";
 
 @import "resource.reserved-instance.less";
+
+@import "stacks.less";
 
 /* ==========================================================================
    Base styles: opinionated defaults
@@ -141,105 +147,25 @@ textarea {
     width:100%;
 }
 
-body {
-    font-family: "Helvetica", "Arial", "Verdana";
-    margin: 0;
-    color: #222;
-    font-size: .9em;
-    line-height: 1.2;
+
+.navbar-brand {
+    padding: 5px;
 }
 
-nav {
-    font-size: 1em;
-    overflow:hidden;
-    background-color: #CCC;
-    background: url('../css/../images/noise.png'), -webkit-linear-gradient(#E0E0E0, #CCC, #B0B0B0);
-    border-top: 1px solid #F2F2F2;
-    border-bottom: 1px solid #8C8C8C;
-    padding-left: 20px;
-    padding-right: 20px;
+/** Add content before footer, to ensure no real content is covered by fixed footer. */
+#foooter:before {
+    content: "&npsp;";
     display: block;
+    width: 0;
+    height:60px;
+    background: black;
 }
-
-nav a {
-    color: #6B6B6B;
-    text-shadow: #EBEBEB 0 1px;
-    float: left;
-    text-decoration: none;
+div#prefooter {
+    height:60px;
+    background: white;
 }
-
-nav ul.main {
-    position: relative;
-    background-color: #CCC;
-    background: url('../css/../images/noise.png');
-    display: block;
-}
-
-#navLogin {
-    float:right;
-    background-color: #CCC;
-    background: url('../css/../images/noise.png');
-    cursor: pointer;
-    display: block;
-}
-
-nav ul li:first-child {
-    padding-left: 0;
-}
-
-nav ul li:last-child {
-    padding-right: 0;
-}
-
-nav ul {
-    margin: 0;
-    overflow: hidden;
-    float: left;
-    display: block;
-    list-style-type: disc;
-    list-style: none;
-    font-size: 1.1em;
-    padding-top: .6em;
-    padding-left: 20px;
-    padding-right: 20px;
-}
-
-nav ul li {
-    color: #6B6B6B;
-    text-shadow: #EBEBEB 0 1px;
-    text-decoration: none;
-    font-weight:bold;
-    margin: 0;
-    list-style-image: none;
-    list-style-type: none;
-    white-space: nowrap;
-    display: inline;
-    float: left;
-    padding-left: 0;
-    padding-right: 0;
-}
-
-.nav_selected a{
-    color:#FFFFFF !important;
-    text-shadow:#000000 0.1em 0.1em .5em !important;
-}
-
-nav li + li {
-    border-left: 1px solid #B0B0B0;
-    margin-left: .8em;
-}
-
-nav li + li a {
-    padding-left: .8em;
-    border-left: 1px solid #DEDEDE;
-}
-
-ul {
-    font-family: "Helvetica", "Arial", "Verdana";
-    list-style: none;
-}
-
 footer {
+    margin-left: 225px;
     color: #6B6B6B;
     text-shadow: #D9D9D9 0 1px;
     text-decoration: none;
@@ -249,12 +175,16 @@ footer {
     background-color: #CCC;
     background: url('../css/../images/noise.png'), -webkit-linear-gradient(#E0E0E0, #CCC, #B0B0B0);
     border-top: 1px solid #F2F2F2;
-    position: relative;
+    position: fixed;
+    left:0px;
+    bottom:0px;
+    height:30px;
+    width:100%;
     margin-bottom: 3em;
     display: block;
     border-bottom-right-radius: 0.4em;
     border-bottom-left-radius: 0.4em;
-    z-index: 1;
+    z-index: 100;
     padding: 10px;
 }
 
@@ -269,11 +199,6 @@ footer a:visited {
 
 #app_container {
     font-family: "PT Sans", "Helvetica Neue", Arial, sans-serif;
-    background-color: #f7f7f7;
-}
-
-#main > div {
-    margin:5px 20px;
 }
 
 #entry_title {
@@ -295,7 +220,6 @@ footer a:visited {
     border-width:1px;
     border-color:#AAAAAA;
     list-style-type: none;
-    width:185px;
     margin-right:2px;
     padding:0px;
     background: -webkit-linear-gradient(top, #F2F2F2, #FFFFFF);
@@ -409,117 +333,6 @@ div.button_bar {
     min-width:9em;
 }
 
-/*
-   Grid CSS styles
-*/
-@columnWidth: 75px;
-@gutter: 10px;
-
-@allColumns: @columnWidth * 12;
-@allGutters: (@gutter * 12) * 2;
-@totalWidth: @allColumns + @allGutters;
-
-.theWidth (@theColumn: 1, @theGutter: 0) {
-  width: (@columnWidth * @theColumn) + (@gutter * @theGutter);
-}
-
-.grid_1 { .theWidth(1,0); }
-.grid_2 { .theWidth(2,2); }
-.grid_3 { .theWidth(3,4); }
-.grid_4 { .theWidth(4,6); }
-.grid_5 { .theWidth(5,8); }
-.grid_6 { .theWidth(6,10); }
-.grid_7 { .theWidth(7,12); }
-.grid_8 { .theWidth(8,14); }
-.grid_9 { .theWidth(9,16); }
-.grid_10 { .theWidth(10,18); }
-.grid_11 { .theWidth(11,20); }
-.grid_12 { .theWidth(12,22); }
-
-.column {
-    margin: 0 @gutter;
-    overflow: hidden;
-    float: left;
-    display: inline;
-}
-.row {
-    width: @totalWidth;
-    margin: 0 auto;
-    overflow: hidden;
-}
-.row .row {
-    margin: 0 (@gutter * -1);
-    width: auto;
-    display: inline-block;
-}
-
-.row {
-width: 100%;
-max-width: 1140px;
-min-width: 755px;
-margin: 0 auto;
-overflow: hidden;
-}
-
-.onecol, .twocol, .threecol, .fourcol, .fivecol, .sixcol, .sevencol, .eightcol, .ninecol, .tencol, .elevencol {
-margin-right: 0.5%;
-float: left;
-min-height: 1px;
-}
-
-.row .onecol {
-width: 4.85%;
-}
-
-.row .twocol {
-width: 13.45%;
-}
-
-.row .threecol {
-width: 22.05%;
-}
-
-.row .fourcol {
-width: 30.75%;
-}
-
-.row .fivecol {
-width: 39.45%;
-}
-
-.row .sixcol {
-width: 48%;
-}
-
-.row .sevencol {
-width: 56.75%;
-}
-
-.row .eightcol {
-width: 65.4%;
-}
-
-.row .ninecol {
-width: 74.05%;
-}
-
-.row .tencol {
-width: 82.7%;
-}
-
-.row .elevencol {
-width: 91.35%;
-}
-
-.row .twelvecol {
-width: 100%;
-float: left;
-}
-
-.last {
-margin-right: 0px;
-}
-
 img, object, embed {
 max-width: 100%;
 }
@@ -552,11 +365,6 @@ img {
 }
 #rightnav {
     height: 100%;
-}
-
-/* --- twitter bootstrap styles --- */
-.side-nav {
-    margin-top: 30px;
 }
 
 /* ==========================================================================
@@ -788,6 +596,9 @@ img {
 
 #loading_content {
     min-height: 200px;
+}
+
+footer {
 }
 
 .btn-primary{

@@ -27,15 +27,15 @@ define([
             return resp.group;
         },
 
-        create: function(options) {
-            var url = Common.apiUrl + "/identity/v1/orgs/" + sessionStorage.org_id + "/groups";
+        create: function(options,login) {
+            var url = Common.apiUrl + "/identity/v1/orgs/" + sessionStorage.org_id + "/groups?&login=" + login;
             var group = {group: options};
             this.sendPostAction(url, group);
         },
 
-        addUser: function(accountId) {
+        addUser: function(accountId, login) {
             $.ajax({
-                url: Common.apiUrl + "/identity/v1/orgs/" + sessionStorage.org_id + "/groups/" + this.attributes.id + "/accounts/" + accountId,
+                url: Common.apiUrl + "/identity/v1/orgs/" + sessionStorage.org_id + "/groups/" + this.attributes.id + "/accounts/" + accountId + "?&login=" + login,
                 type: 'POST',
                 contentType: 'application/x-www-form-urlencoded',
                 success: function(data) {
@@ -47,9 +47,9 @@ define([
             }); 
         },
 
-        removeUser: function(accountId) {
+        removeUser: function(accountId, login) {
             $.ajax({
-                url: Common.apiUrl + "/identity/v1/orgs/" + sessionStorage.org_id + "/groups/" + this.attributes.id + "/accounts/" + accountId + "?_method=DELETE",
+                url: Common.apiUrl + "/identity/v1/orgs/" + sessionStorage.org_id + "/groups/" + this.attributes.id + "/accounts/" + accountId + "?_method=DELETE" + "&login=" + login,
                 type: 'POST',
                 contentType: 'application/x-www-form-urlencoded',
                 success: function(data) {
@@ -71,9 +71,9 @@ define([
             return hasUser;
         },
 
-        destroy: function() {
+        destroy: function(login) {
             $.ajax({
-                url: Common.apiUrl + "/identity/v1/orgs/" + this.attributes.org_id + "/groups/" + this.attributes.id + "?_method=DELETE",
+                url: Common.apiUrl + "/identity/v1/orgs/" + this.attributes.org_id + "/groups/" + this.attributes.id + "?_method=DELETE" + "&login=" + login,
                 type: 'POST',
                 contentType: 'application/x-www-form-urlencoded',
                 success: function(data) {

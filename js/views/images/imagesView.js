@@ -28,9 +28,9 @@ define([
         template: _.template(imagesTemplate),
 
         currentImageTemplate: undefined,
-        
+
         images: undefined,
-        
+
         packed_images: undefined,
 
         events: {
@@ -41,6 +41,7 @@ define([
             "change #dev_ops_select":"devopsSelect",
             "change #post_processor_select":"postProcessorSelect",
             "change #openstack_type_select":"openstackTypeSelect",
+            "change select":"selectChange",
             "click #adv_collapse_btn":"advCollapseBtn",
             "click .adv_tab": "advTabSelect",
             "click #save_image_template_button":"saveButton",
@@ -50,13 +51,19 @@ define([
             "focus #os_input": "openImageList",
             "focusout #os_input": "selectImageList",
             "click #delete_image_template_button":"deleteImage",
-            "click input[type='checkbox'][name='clouds_select']":"cloudSelect"
+            //"click input[type='checkbox'][name='clouds_select']":"cloudSelect",
+            "keyup":"keyUp",
+            "click .cloud-button":"cloudSelect"
         },
 
         initialize: function() {
             $("#main").html(this.el);
             this.$el.html(this.template);
-            
+            // $("#packed_images").accordion({
+//                 collapsible: true,
+//                 heightStyle: "content"
+//             });
+
             var creds = JSON.parse(sessionStorage.cloud_credentials);
             $("#aws_cred_select").empty();
             for (var i in creds) {
@@ -64,10 +71,10 @@ define([
                     $("#aws_cred_select").append("<option value='"+creds[i].cloud_credential.id+"' data-ak='"+creds[i].cloud_credential.access_key+"' data-sk='"+creds[i].cloud_credential.secret_key+"'>"+creds[i].cloud_credential.name+"</option>");
                 }
             }
-            
+
             this.packed_images = new PackedImages();
             this.packed_images.on( 'reset', this.addAllPackedImages, this );
-            
+
             this.images = new Images();
             this.images.on( 'reset', this.addAllImages, this );
 
@@ -86,7 +93,7 @@ define([
             this.fetchDropDowns();
             this.images.fetch({reset: true});
             this.packed_images.fetch({reset: true});
-            
+
             $('#upForm').ajaxForm({
                 success: function(data) {
                     new Messenger().post({type:"success", message:"File Uploaded..."});
@@ -126,7 +133,7 @@ define([
                 this.render();
             }
         },
-        
+
         fetchDropDowns: function(){
             $("#builder_settings").empty();
             $.getJSON( Common.apiUrl + "/stackstudio/v1/packed_images/builders", function( builders ) {
@@ -184,7 +191,7 @@ define([
 //                 });
             });
         },
-        
+
         addAllImages: function() {
             var createView = this;
             $("#os_input").autocomplete({
@@ -224,27 +231,51 @@ define([
                 return $("<li>").data("item.autocomplete", item).append(imageItem).appendTo(ul);
             };
         },
-        
+
         addAllPackedImages: function(collection){
-            $("#packed_images_list").hide('slow');
             $("#packed_images_list").empty();
             collection.each(function(model) {
                 $("#packed_images_list").append("<li><a href='#images/"+model.attributes.doc_id+"' id='"+model.attributes.doc_id+"' class='img_item'>"+model.attributes.name+"</a></li>");
-            });
-            $("#packed_images_list").show('slow');
+                this.addListIcons(model.attributes.base_image,$("#"+model.attributes.doc_id));
+            },this);
             if(this.currentImageTemplate === 'test'){
                 this.clearForm();
             }else if(this.currentImageTemplate){
                 this.popForm(this.currentImageTemplate);
             }
         },
-        
+
+        addListIcons: function(base,e){
+            //debugger
+            var iMap = {
+                "aws":"/images/CloudLogos/amazon.png",
+                "openstack":"/images/CloudLogos/openstack.png",
+                "chef-solo":"/images/CompanyLogos/chef50.png",
+                "salt-masterless":"/images/CompanyLogos/salt50.jpg",
+                "Amazon":"/images/ImageLogos/amazon20.png",
+                "Ubuntu":"/images/ImageLogos/canonical20.gif",
+                "Fedora":"/images/ImageLogos/fedora36.png",
+                "CentOS":"/images/ImageLogos/centos.gif",
+                "Red":"/images/ImageLogos/redhat20.png"
+            };
+            if(base.devops_tool !== "None"){
+                e.after('<img src="'+iMap[base.devops_tool]+'" style="width:16px;"/>');
+            }
+            if(base.os !== "None"){
+                e.after('<img src="'+iMap[base.os.split(" ")[0]]+'" style="width:16px;"/>');
+            }
+            //base.os !== "None" && e.after(base.os);
+            $.each(base.clouds, function( index, value ) {
+              e.after('<img src="'+iMap[value]+'" />');
+            });
+        },
+
         openImageList: function() {
             if($("ul.ui-autocomplete").is(":hidden")) {
                 $("#os_input").autocomplete("search", "");
             }
         },
-        
+
         selectImageList: function() {
             $("#os_input_msg").empty();
             $("#os_input").css('border-color','grey');
@@ -258,7 +289,7 @@ define([
                 }
             }
         },
-        
+
         builderSelect: function(){
             var me = this;
             if($("#image_type_select").val() !== "None"){
@@ -271,7 +302,7 @@ define([
                 $("#builder_settings").hide('slow').html('');
             }
         },
-        
+
         provisionerSelect: function(){
             var me = this;
             if($("#image_config_management_select").val() !== "None"){
@@ -300,7 +331,7 @@ define([
                 $("#devops_settings").hide('slow').html('');
             }
         },
-        
+
         postProcessorSelect: function(){
             var me = this;
             if($("#post_processor_select").val() !== "None"){
@@ -315,7 +346,7 @@ define([
                 $("#postprocessor_settings").hide('slow').html('');
             }
         },
-        
+
         openstackTypeSelect: function(){
             var me = this;
             if($("#openstack_type_select").val() !== "None"){
@@ -328,9 +359,9 @@ define([
                 $("#openstack_settings").hide('slow').html('');
             }
         },
-        
+
         advTabSelect: function(event){
-            $(".active").removeClass('active');
+            $("li.active").removeClass('active');
             $("#"+event.target.id).closest('li').addClass('active');
             $(".adv_tab_panel").hide('slow');
             if(event.target.text === "AWS"){
@@ -345,15 +376,15 @@ define([
                 $("#postprocessor_settings").show('slow');
             }
         },
-        
+
         advCollapseBtn: function(e){
             $(".adv_tab")[0].click();
         },
-        
+
         loadPackedImage: function(event){
             this.popForm(event.target.id);
         },
-        
+
         popForm: function(doc_id){
            var pi = this.packed_images.find(function(model) { return model.get('doc_id') === doc_id; });
            var base_image = pi.attributes.base_image;
@@ -376,16 +407,16 @@ define([
                }
            }
            $('#os_input').hide().show('slow').val(base_image.os);
-           
+
            $("#instance_type_select").hide().show('slow').val(base_image.machine_type);
            $("#image_type_select").hide().show('slow').val(base_image.builder_type);
            $("#image_config_management_select").hide().show('slow').val(base_image.provisioner);
            $("#dev_ops_select").hide().show('slow').val(base_image.devops_tool);
            $("#post_processor_select").hide().show('slow').val(base_image.post_processor);
            $("#openstack_type_select").hide().show('slow').val(base_image.builder_type_os);
-           
+
            this.toggleComponents();
-           
+
            $.ajax({
              url: Common.apiUrl + "/stackstudio/v1/packed_images/templates/" + sessionStorage.org_id + "/" + doc_id,
              async: false,
@@ -393,14 +424,14 @@ define([
                  pi.attributes.packed_image = data;
              }
            });
-           
+
            this.builderSelect();
            this.provisionerSelect();
            this.devopsSelect();
            this.postProcessorSelect();
            this.openstackTypeSelect();
         },
-        
+
         mapAdvanced: function(key,doc_id){
             //debugger
             var pi = this.packed_images.find(function(model) { return model.get('doc_id') === doc_id; });
@@ -447,34 +478,40 @@ define([
                 }
             }
         },
-        
+
         saveButton: function(e){
             if(this.validate()){
                 this.packImage();
             }
         },
-        
+
         packImage: function(){
             //base_image
             var base_image = {};
-            
+
             var clouds = [];
-            $("input[name='clouds_select']:checkbox:checked").each(function(){  clouds.push($(this).val());   });
-            
+            if($("#os_toggle").hasClass('active')){
+                clouds.push('openstack');
+            }
+            if($("#aws_toggle").hasClass('active')){
+                clouds.push('aws');
+            }
+            //$("input[name='clouds_select']:checkbox:checked").each(function(){  clouds.push($(this).val());   });
+
             base_image.name = $('#image_template_name_input').val();
             base_image.description = $('#image_template_desc_input').val();
             base_image.clouds = clouds;
             base_image.os = $('#os_input').val();
-            
+
             base_image.machine_type = $("#instance_type_select").val();
             base_image.builder_type = $("#image_type_select").val();
             base_image.provisioner = $("#image_config_management_select").val();
             base_image.devops_tool = $("#dev_ops_select").val();
             base_image.post_processor = $("#post_processor_select").val();
             base_image.builder_type_os = $("#openstack_type_select").val();
-            
+
             var packed_image = this.map_base(base_image);
-            
+
             var builder = {};
             $("#builder_settings :input").each(function() {
                 if($( this ).val().length === 0){
@@ -493,7 +530,7 @@ define([
                     builder[$(this).attr('name')] = $( this ).val();
                 }
             });
-            
+
             var builderOS = {};
             $("#openstack_settings :input").each(function() {
                 if($( this ).val().length === 0){
@@ -512,7 +549,7 @@ define([
                     builderOS[$(this).attr('name')] = $( this ).val();
                 }
             });
-            
+
             var provisioner = {};
             if($("#image_config_management_select").val() !== "None"){
                 provisioner['type'] = $("#image_config_management_select").val();
@@ -534,7 +571,7 @@ define([
                     }
                 });
             }
-            
+
             var devopsP = {};
             if($("#dev_ops_select").val() !== "None"){
                 devopsP['type'] = $("#dev_ops_select").val();
@@ -556,7 +593,7 @@ define([
                     }
                 });
             }
-            
+
             var postProcessor = {};
             if($("#post_processor_select").val() !== "None"){
                 $("#postprocessor_settings :input").not("#qemu-well :input").each(function() {
@@ -596,7 +633,7 @@ define([
                     }
                 });
             }
-            
+
             if(!$.isEmptyObject(builder)){
                 for(var awsI in packed_image.builders){
                     if(packed_image.builders[awsI].type === "amazon-ebs" || packed_image.builders[awsI].type === "amazon-ami"){
@@ -620,32 +657,32 @@ define([
             if(!$.isEmptyObject(postProcessor)){
                 packed_image['post-processors'].push(postProcessor);
             }
-            
+
             //packed_image = this.getDefaultTemplate();
             // p = this.getDefaultTemplate();
 //             p.builders.push(packed_image.builders[0]);
 //             packed_image = p;
 //             delete packed_image.builders[1]['tags'];
 //             debugger
-            
+
             var id = this.currentImageTemplate;
-            
+
             this.currentImageTemplate = new PackedImage({'packed_image':packed_image,'name':base_image.name,'base_image':base_image,'doc_id':id});
             this.currentImageTemplate.save();
         },
-        
+
         deployImage: function(){
             var doc_id = this.currentImageTemplate;
             var pi = this.packed_images.find(function(model) { return model.get('doc_id') === doc_id; });
             pi.deploy();
         },
-        
+
         deleteImage: function(){
             var doc_id = this.currentImageTemplate;
             var pi = this.packed_images.find(function(model) { return model.get('doc_id') === doc_id; });
             pi.destroy();
         },
-        
+
         map_base: function(base){
             var builders = [];
             var provisioners = [];
@@ -693,10 +730,10 @@ define([
                     builders.push(qHash);
                 }
             }
-            
+
             return {'builders':builders,'provisioners':provisioners, 'post-processors':postProcessors};
         },
-        
+
         getDefaultTemplate: function(){
             var mappings;
             $.ajax({
@@ -708,16 +745,16 @@ define([
             });
             return mappings;
         },
-        
+
         uploadAsync: function(){
             var d_id = this.currentImageTemplate;
             var upUrl = Common.apiUrl + "/stackstudio/v1/packed_images/save?uid=" + sessionStorage.org_id + "&docid=" + d_id;
             $("#upForm").attr('action',upUrl);
             if($("#mciaas_files").val() !== ""){
                 $("#upSub").click();
-            }            
+            }
         },
-        
+
         appendButton: function(e){
             var id = e.target.getAttribute('data-name');
             var placeholder = $("#"+id).attr('placeholder');
@@ -726,14 +763,14 @@ define([
             $( "<br/><input name='"+id+"' placeholder='"+placeholder+"' title='"+title+"' data-type='"+dataType+"' style='margin-top: 4px;' type='text' class='input-xlarge'></input>" ).insertAfter( e.target ).hide().show('fast');
             //debugger
         },
-        
+
         validate: function(){
             var valid = true;
             $("#os_input_msg").empty();
             $("#clouds_select_msg").empty();
             $("#os_input").css('border-color','grey');
             $("#image_template_name_input").css('border-color','grey');
-            if($("#clouds_select_openstack").is(':checked')){
+            if($("#os_toggle").hasClass('active')){
                 if($("#os_input").val().indexOf("Amazon") !== -1){
                     $("#os_input").css('border-color','red');
                     $("#os_input_msg").html("Amazon Linux not compatible with OpenStack");
@@ -748,60 +785,87 @@ define([
                 $("#image_template_name_input").css('border-color','red');
                 valid = false;
             }
-            var clouds = [];
-            $("input[name='clouds_select']:checkbox:checked").each(function(){  clouds.push($(this).val());   });
-            if(clouds.length <= 0){
+            //var clouds = [];
+            //$("input[name='clouds_select']:checkbox:checked").each(function(){  clouds.push($(this).val());   });
+            if(!$("#os_toggle").hasClass('active') && !$("#aws_toggle").hasClass('active')){
                 $("#clouds_select_msg").html("Must choose a cloud");
                 valid = false;
             }
             return valid;
         },
-        
+
         cloudSelect: function(e){
-            if(e.target.id === "clouds_select_openstack"){
+            //debugger
+            var aref = $(e.target).closest("a")[0];
+            if(aref.id === "os_toggle"){
                 $("#os_well").toggle('slow');
                 $("#os_toggle").toggleClass('active');
-                $("#openstack_type_select").prop('disabled', !$(e.target).prop('checked'));
-            }else if(e.target.id === "clouds_select_aws"){
+                $("#openstack_type_select").prop('disabled', !$("#os_toggle").hasClass('active'));
+            }else if(aref.id === "aws_toggle"){
                 $("#aws_well").toggle('slow');
                 $("#aws_toggle").toggleClass('active');
-                $("#image_type_select").prop('disabled', !$(e.target).prop('checked'));
-                $("#aws_cred_select").prop('disabled', !$(e.target).prop('checked'));
-                $("#aws_region_select").prop('disabled', !$(e.target).prop('checked'));
+                $("#image_type_select").prop('disabled', !$("#aws_toggle").hasClass('active'));
+                $("#aws_cred_select").prop('disabled', !$("#aws_toggle").hasClass('active'));
+                $("#aws_region_select").prop('disabled', !$("#aws_toggle").hasClass('active'));
             }
             this.toggleComponents();
             this.validate();
         },
-        
+
         clearForm: function(){
             $("#image_template_name_input").val('');
             $("#image_template_desc_input").val('');
             // $("#clouds_select_aws").prop('checked',false);
 //             $("#clouds_select_openstack").prop('checked',false);
+            $(".cloud-button").removeClass('active');
             $("#image_type_select").val('None');
             $("#openstack_type_select").val('None');
             $("#os_input").val('');
-            
+
             $("#image_config_management_select").val('None');
             $("#dev_ops_select").val('None');
             $("#post_processor_select").val('None');
-            
+
             $("#builder_settings").empty();
             $("#openstack_settings").empty();
             $("#provisioner_settings").empty();
             $("#devops_settings").empty();
             $("#postprocessor_settings").empty();
-            
+
             //this.toggleComponents();
         },
-        
+
         toggleComponents: function(){
-            if(!$("#clouds_select_openstack").prop('checked') && !$("#clouds_select_aws").prop('checked')){
+            if(!$("#os_toggle").hasClass('active') && !$("#aws_toggle").hasClass('active')){
                 $("#instance_well").hide('fast');
                 $("#components_well").hide('fast');
             }else{
                 $("#instance_well").show('fast');
                 $("#components_well").show('fast');
+            }
+        },
+
+        keyUp: function(e){
+            this.validate();
+        },
+
+        selectChange: function(e){
+            this.refreshTabs();
+        },
+
+        refreshTabs: function(){
+            this.refTab($("#image_type_select").val(),$("#builder_tab"));
+            this.refTab($("#openstack_type_select").val(),$("#openstack_tab"));
+            this.refTab($("#image_config_management_select").val(),$("#provisioner_tab"));
+            this.refTab($("#dev_ops_select").val(),$("#devops_tab"));
+            this.refTab($("#post_processor_select").val(),$("#postprocessor_tab"));
+        },
+
+        refTab: function(selector,tab){
+            if(selector==="None"){
+                tab.hide('fast');
+            }else{
+                tab.show('fast');
             }
         },
 

@@ -27,10 +27,12 @@ define([
         'views/account/groupsManagementView',
         'views/account/groupsManagementListView',
         'views/account/devOpsToolsManagementView',
+        'views/account/continuousIntegrationManagementView',
+        'views/account/sourceControlRepositoryManagementListView',
         'jquery-plugins',
         'jquery-ui-plugins',
         'jquery.jstree'
-], function( $, _, Backbone, Common, managementTemplate, Groups, CloudCredentials, CloudAccounts, Policies, NewLoginView, CloudAccountManagementView, CloudCredentialManagementView, CloudCredentialManagementListView, CloudAccountManagementListView, UsersManagementView, PoliciesManagementView, PolicyManagementView, HomeView, GroupsManagementView, GroupsManagementListView, DevOpsToolsManagementView ) {
+], function( $, _, Backbone, Common, managementTemplate, Groups, CloudCredentials, CloudAccounts, Policies, NewLoginView, CloudAccountManagementView, CloudCredentialManagementView, CloudCredentialManagementListView, CloudAccountManagementListView, UsersManagementView, PoliciesManagementView, PolicyManagementView, HomeView, GroupsManagementView, GroupsManagementListView, DevOpsToolsManagementView, ContinuousIntegrationManagementView, SourceControlRepositoryManagementListView ) {
     var AccountManagementView = Backbone.View.extend({
         /** @type {String} DOM element to attach view to */
         el: "#main",
@@ -122,6 +124,18 @@ define([
                     reset: true
                 });
             });
+            $("#mSCRepos_tree").jstree({
+                "themeroller":{"item": "jstree_custom_item"},
+                "plugins":[ "themeroller", "html_data", "crrm" ]
+            }).on('loaded.jstree', function() {
+                    $("#mSCRepos_tree").jstree('open_all');
+            });
+            $("#mContinuousIntegration_tree").jstree({
+                "themeroller":{"item": "jstree_custom_item"},
+                "plugins":[ "themeroller", "html_data", "crrm" ]
+            }).on('loaded.jstree', function() {
+                    $("#mContinuousIntegration_tree").jstree('open_all');
+            });
             $("#mdevOps_tree").jstree({
                 "themeroller":{"item": "jstree_custom_item"},
                 "plugins":[ "themeroller", "html_data", "crrm" ]
@@ -163,7 +177,6 @@ define([
             if(!this.treeCloudAccount){
                 this.treeCloudAccount = this.cloudAccounts.models[this.cloudAccounts.length-1].id;
             }
-            
             if(this.cloudAccounts.get(this.treeCloudAccount) && typeof(this.subApp.treeSelectCloudAccount) !== "undefined"){
                 this.subApp.treeSelectCloudAccount();
             }else if(typeof(this.subApp.treeSelectCloudAccount) !== "undefined"){
@@ -331,7 +344,7 @@ define([
                     accountManagementView.subApp = new CloudAccountManagementListView({rootView: accountManagementView});
                 }
                 break;
-            case "devops":
+            case "configuration_managers":
                 if(accountManagementView.subApp instanceof DevOpsToolsManagementView){
 
                 }else{
@@ -339,6 +352,26 @@ define([
                         accountManagementView.subApp.close();
                     }
                     accountManagementView.subApp = new DevOpsToolsManagementView({rootView: accountManagementView});
+                }
+                break;
+            case "continuous_integration":
+                if(accountManagementView.subApp instanceof ContinuousIntegrationManagementView){
+
+                }else{
+                    if(accountManagementView.subApp !== undefined){
+                        accountManagementView.subApp.close();
+                    }
+                    accountManagementView.subApp = new ContinuousIntegrationManagementView({rootView: accountManagementView});
+                }
+                break;
+            case "source_control_repositories":
+                if(accountManagementView.subApp instanceof SourceControlRepositoryManagementListView){
+
+                }else{
+                    if(accountManagementView.subApp !== undefined){
+                        accountManagementView.subApp.close();
+                    }
+                    accountManagementView.subApp = new SourceControlRepositoryManagementListView({rootView: accountManagementView});
                 }
                 break;
             case "home":

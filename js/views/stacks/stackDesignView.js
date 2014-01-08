@@ -14,35 +14,36 @@ define([
         'collections/assemblies',
         '/js/aws/views/cloud_formation/awsCloudFormationStackCreateView.js',
         'ace',
-        'mode-json',
+        'collections/configManagers',
         'jquery.jstree'
-], function( $, _, Backbone, Common, stacksDesignTemplate, Assemblies, StackCreate, ace) {
+], function( $, _, Backbone, Common,  stackDesignTemplate, Assemblies, StackCreate, ace, ConfigManagers) {
     'use strict';
 
     var StackDesignView = Backbone.View.extend({
-
-        template: _.template( stacksDesignTemplate ),
-
+        template: _.template(stackDesignTemplate),
         editor: undefined,
-
         stack: undefined,
-
         newTemplateResources: undefined,
-
         newResourceTree: undefined,
-
         assemblies: undefined,
+        configManagers: undefined,
+        instances: [],
 
         events: {
             "click .jstree_custom_item": "treeFolderClick",
-            "click .new_item_link": "addResource",
             "click #save_template_button": "saveTemplate",
-            'click #run_template_button': "runTemplate"
+            'click #run_template_button': "runTemplate",
+            "click .toggle_resource": "toggleResourceHandler",
+            'click .toggle_assembly' : 'toggleAssemblyHandler'
         },
 
         initialize: function() {
             $("#design_time_content").html(this.el);
             this.$el.html(this.template);
+            this.configManagers = new ConfigManagers();
+            this.configManagers.fetch({
+              data: $.param({org_id: sessionStorage.org_id})
+            });
             this.assemblies = new Assemblies();
             this.assemblies.on( 'reset', this.addAllAssemblies, this );
         },
@@ -81,7 +82,7 @@ define([
                                          "title": d.label,
                                          "attr": {
                                              "id": itemId,
-                                             "class": "new_item_link"
+                                             "class": "toggle_resource"
                                          }
                                      },
                                      "attr": {"id": itemId + "_container"},
@@ -118,9 +119,68 @@ define([
         addAllAssemblies: function() {
             $("#assemblies_list").empty();
             this.assemblies.each(function(assembly) {
-                $("#assemblies_list").append("<li><a>"+assembly.attributes.name+"</a></li>");
+                var assemblyEl = $("<li><a>"+assembly.attributes.name+"</a></li>")
+                  .data('configuration', assembly.attributes)
+                  .addClass('toggle_assembly');
+                $("#assemblies_list").append(assemblyEl);
             });
         },
+
+        removeAssemblyResources: function(){
+        },
+
+        addAssemblyResources: function(){
+        },
+
+
+        // [TODO] Use an add/removeAssemblyHandler instead
+        toggleAssemblyHandler: function(e) {
+          var conf  = $(e.currentTarget).data()['configuration'];
+          var content = this.getContent();
+          var resourceNode = $('#instance_container');
+          var resource = resourceNode.data();
+          var disable = resourceNode.hasClass('ui-state-active');
+          var t = $.extend({}, resource.template);
+          // Common for all AWS assemblies
+          var newInstance =  t.NewInstance;
+          newInstance.Properties['AvailabilityZone'] = 'us-east-1a'; // defaults for now
+          newInstance.Properties['Tenancy'] = 'default'; // defaults for now
+          newInstance.Properties['ImageId'] = conf.image.region['us-east-1'];
+          switch(conf.tool){
+            case 'Ansible':
+              var jobs =[];
+              var config;
+              $.each(conf.configurations.ansible.host_config, function(i,job){
+                jobs.push(job.id);
+              });
+              $.each(this.configManagers.toJSON()['ansible'], function(index, ansible){
+                if (ansible.enabled){
+                  config = ansible;
+                }
+              });
+              this.instances.push({'NewInstance':jobs});
+              newInstance.Properties['KeyName'] = config.auth_properties.ansible_aws_keypair;
+              break;
+          }
+          if (disable) {
+            this.removeResource(resource, content);
+            $(resourceNode).removeClass('ui-state-active');
+          } else {
+            this.addResource(resource, content,t);
+            $(resourceNode).addClass('ui-state-active');
+          }
+        },
+
+        getContent: function(){
+          var content = this.editor.getValue();
+          if (content.replace(/\s/g,"") !== '') {
+              content = jQuery.parseJSON(content);
+          } else {
+              content = {};
+          }
+          return content;
+        },
+
 
         setStack: function(stack) {
             this.stack = stack;
@@ -141,27 +201,43 @@ define([
             }
         },
 
-        addResource: function(event) {
-            var resource = $(event.currentTarget.parentNode).data();
+        setContent: function(resource, content){
+          this.editor.setValue(JSON.stringify(content, null,'\t'));
+        },
+
+        removeResource:  function (resource, content) {
+          if (content[resource.group]) {
+              delete content[resource.group][resource.name];
+          }
+          this.setContent(resource, content);
+        },
+
+        addResource: function(resource, content, conf) {
             var groupSelector = "#current_" + resource.group.toLowerCase();
-            var content;
-
-            content = this.editor.getValue();
-            if (content.replace(/\s/g,"") !== '') {
-                content = jQuery.parseJSON(content);
-            } else {
-                content = {};
-            }
-
             if (!content[resource.group]) {
                 content[resource.group] = {};
             }
-
-            $.extend(content[resource.group], resource.template);
-            this.editor.setValue(JSON.stringify(content, null,'\t'));
-
+            if (!conf){
+              conf = resource.template;
+            }
+            $.extend(content[resource.group], conf);
+            this.setContent(resource, content);
             var range = this.editor.find(resource.name);
             this.editor.getSelection().setSelectionRange(range);
+        },
+
+        toggleResourceHandler: function(event) {
+            var resourceNode = event.currentTarget.parentNode;
+            var resource = $(resourceNode).data();
+            var content = this.getContent();
+            var disable = $(resourceNode).hasClass('ui-state-active');
+            if (disable) {
+              this.removeResource(resource, content);
+              $(resourceNode).removeClass('ui-state-active');
+            } else {
+              this.addResource(resource, content);
+              $(resourceNode).addClass('ui-state-active');
+            }
         },
 
         treeFolderClick: function(event) {
@@ -177,10 +253,20 @@ define([
 
         runTemplate: function() {
             var template = this.editor.getValue();
-            this.newResourceDialog = new StackCreate({cred_id: this.credentialId, 
+            var t_data = $.parseJSON(template);
+            $.each (t_data.Resources, function(r_key, resource){
+              $.each(resource.Properties, function(p_key, prop){
+                if (prop.length === 0 ) {
+                  delete (t_data.Resources[r_key].Properties[p_key]);
+                }
+              });
+            });
+            template = $.json_stringify(t_data);
+            this.newResourceDialog = new StackCreate({cred_id: this.credentialId,
                 mode: "run",
                 stack: this.stack,
-                content: template
+                content: template,
+                instances: this.instances
             });
             this.newResourceDialog.render();
         }

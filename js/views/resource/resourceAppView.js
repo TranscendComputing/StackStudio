@@ -48,6 +48,7 @@ define([
             this.delegateEvents(this.events);
             ich.refresh();
             $('button').button();
+            $('button').addClass("btn btn-primary");
             $("#action_menu").menu();
 
             this.$table = $('#resource_table').dataTable({
@@ -56,6 +57,7 @@ define([
                 "bDestroy": true
             });
             this.$table.fnProcessingIndicator(true);
+            //$('input').addClass("form-control");
 
             var CollectionType = this.collectionType;
             this.collection = new CollectionType();
@@ -64,7 +66,7 @@ define([
             $("#action_menu li").addClass("ui-state-disabled");
 
             var view = this;
-            // Fetch error callback function is defined here to 
+            // Fetch error callback function is defined here to
             // ensure variable scopes
             var fetchErrorFunction = function(collection, response, options) {
                 view.$table.fnProcessingIndicator(false);
@@ -84,21 +86,21 @@ define([
                 }
                 Common.errorDialog(status, message);
             };
-            
+
             if(view.credentialId && view.region) {
-                view.collection.fetch({ 
+                view.collection.fetch({
                     error: fetchErrorFunction,
                     data: $.param({ cred_id: view.credentialId, region: view.region }),
                     reset: true
                 });
             }else if(view.credentialId) {
-                view.collection.fetch({  
+                view.collection.fetch({
                     error: fetchErrorFunction,
                     data: $.param({ cred_id: view.credentialId }),
-                    reset: true 
+                    reset: true
                 });
             }else {
-                view.collection.fetch({ 
+                view.collection.fetch({
                     error: fetchErrorFunction,
                     reset: true
                 });
@@ -198,7 +200,7 @@ define([
                     $(".resource_app_heightify").height($("#resource_app").height()-30);
                 }else {
                     $(".resource_app_heightify").height($("#resource_app").height()-50);
-                }      
+                }
             }
         },
 

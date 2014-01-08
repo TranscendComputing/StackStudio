@@ -1,0 +1,31 @@
+<div class="continuous_integration_page">
+    <div id="detail_tabs">
+        <div class="row" style="padding: 5px 10px;">
+            <h3>Continuous Integration</h3>
+        </div>
+        <div class="row" style="padding: 10px 10px;">
+            <button id="new_ci_server" class="btn btn-primary">Add CI Server</button>
+        </div>
+        <div id="ci_page">
+        </div>
+    </div>
+</div>
+
+<script type="text/html" id="ci_template">
+    <div class="manager_list">
+        <fieldset>
+            <legend>{{{icon}}} {{ciType}} Endpoints</legend>
+            {{#continuous_integration}}
+            <p>
+                <label class="tabbed-field">{{name}}:</label>
+                <input data-id="{{_id}}" type="text" data-name="{{type}}" class="textbox-400" value="{{url}}"></input>
+                <button class="ci_server_delete_button">Delete</button>
+                <button class="ci_server_edit_button">Edit</button> 
+            </p>
+            {{/continuous_integration}}
+            {{^continuous_integration}}
+            <p><label>No endpoints defined.</label></p>
+            {{/continuous_integration}}
+        </fieldset>
+    </div>
+</script>

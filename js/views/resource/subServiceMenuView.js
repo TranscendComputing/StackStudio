@@ -16,17 +16,17 @@ define([
 
     var SubServiceMenu = Backbone.View.extend({
         tagName: 'div',
-        
+
         template: _.template(subServiceMenuTemplate),
-        
+
         cloudProvider: undefined,
 
         region: undefined,
-        
+
         service: undefined,
-        
+
         menuOpen: true,
-        
+
         events: {
             "click #menu_toggle_button": "toggleMenu",
             "click .subservice": "selectSubService"
@@ -36,7 +36,7 @@ define([
             this.$el.html(this.template);
             $("#service_menu").html(this.$el);
         },
-        
+
         render: function(options) {
             $("#subservice_menu_list").empty();
             if(options) {
@@ -54,22 +54,22 @@ define([
                 });
             }
             this.openMenu();
-            
+
         },
-        
+
         selectSubService: function( click ) {
             this.clearSelection();
             $(click.target).addClass("selected_item");
-            
+
             Common.router.navigate("#resources/"+this.cloudProvider+"/"+this.region+"/"+this.service.type+"/"+click.target.id, {trigger: true});
         },
-        
+
         clearSelection: function() {
             $("#subservice_menu_list li").each(function() {
                $(this).removeClass("selected_item");
             });
         },
-        
+
         toggleMenu: function() {
             if(this.menuOpen) {
                 this.closeMenu();
@@ -79,25 +79,27 @@ define([
                 this.menuOpen = true;
             }
         },
-        
+
         openMenu: function() {
             //$("#resource_app").width("890px");
 
-            $("#resource_app").width("80%");
+            $("#resource_app").addClass("service_width");
+            $("#resource_app").removeClass("full_width");
             $("#subservice_menu").show();
             $("#menu_toggle_button a span").removeClass("ui-icon-arrowthick-1-e");
             $("#menu_toggle_button a span").addClass("ui-icon-arrowthick-1-w");
         },
-        
+
         closeMenu: function() {
             $("#subservice_menu").hide();
             //$("#service_menu").addClass("span1");
             //$("#resource_app").width("1079px");
-            $("#resource_app").width("20%");
+            $("#resource_app").removeClass("service_width");
+            $("#resource_app").addClass("full_width");
             $("#menu_toggle_button a span").removeClass("ui-icon-arrowthick-1-w");
             $("#menu_toggle_button a span").addClass("ui-icon-arrowthick-1-e");
         }
     });
-    
+
     return SubServiceMenu;
 });

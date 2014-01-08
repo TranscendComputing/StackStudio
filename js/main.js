@@ -11,9 +11,6 @@ if (DEBUG) {
     URL_ARGS = 'cb=' + Math.random();
 }
 
-// toggle Ansible support
-window.ansible = false;
-
 require(['./common'], function (common) {
     var dashboardView;
     dashboardView = "views/dashboardView";
@@ -44,6 +41,7 @@ require(['./common'], function (common) {
     }
     */
     require([
+            'views/topNav',
             'views/account/navLogin',
              dashboardView,
             'views/projectSidebarView',
@@ -56,10 +54,13 @@ require(['./common'], function (common) {
              'views/resource/resourceNavigationView',
              'views/images/imagesView',
              'views/assemblies/assembliesView',
+             'views/platform_components/platformComponentsView',
              'views/stacks/stacksView',
              'views/offerings/offeringsView'
-            ], function(NavLogin, DashboardView) {
-        var navLogin = new NavLogin();
+            ], function(TopNavView, NavLogin, DashboardView) {
+        var topNav = new TopNavView(),
+         navLogin = new NavLogin();
+        topNav.render();
         navLogin.render();
         common.backbone.history.start();
     });

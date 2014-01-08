@@ -224,10 +224,11 @@ define([
         },
         
         addPolicyImages: function(gps){
+            //debugger
             for(var i in gps){
                 var imgz = gps[i].group_policy.aws_governance.default_images;
                 for(var j in imgz){
-                    $("#image_select_default").append("<option value='"+imgz[j].image_id+"'>"+imgz[j].source+"</option>");
+                    $("#image_select_default").append("<option value='"+imgz[j].name+"'>"+imgz[j].id+"</option>");
                 }
             }
         },
@@ -263,6 +264,7 @@ define([
             options.groups = $("#security_group_select").val();
             options.monitoring = $("#detailed_monitoring").is(":checked");
             options.instance_initiated_shutdown_behavior = $("#shutdown_behavior_select").val().toLowerCase();
+            options.user_data = $("#user_data").val();
             newInstance.create(options, this.credentialId, this.region);
             this.$el.dialog('close');
         }

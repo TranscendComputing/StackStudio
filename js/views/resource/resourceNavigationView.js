@@ -87,54 +87,111 @@ define([
 
             this.cloudCredentials = new CloudCredentials();
             this.cloudCredentials.on('reset', this.addAllClouds, this );
+            
 
             //load user's cloud selections
             this.cloudCredentials.fetch({reset: true});
         },
 
         render: function () {
-            if(this.resourceApp) {
-                this.resourceApp.remove();
-            } else {
-                var firstCloudProvider = this.cloudCredentials.first().attributes.cloud_provider;
-                firstCloudProvider = firstCloudProvider.toLowerCase();
-                if(this.cloudProvider) {
-                    if($("#"+this.cloudProvider).length) {
-                        this.cloudSelection(this.cloudProvider);
-                        Common.router.navigate("#resources/"+this.cloudProvider, {trigger: false});
-                    }else {
+            if($("#cloud_coverflow").children().length > 0){
+                if(this.resourceApp) {
+                    this.resourceApp.remove();
+                } else {
+                    var policy;
+                    var firstCloudProvider;
+                    // var firstCloudProvider = this.cloudCredentials.first().attributes.cloud_provider;
+                    // firstCloudProvider = firstCloudProvider.toLowerCase();
+                    policy = JSON.parse(sessionStorage.group_policies);
+                    if (policy.length > 0){
+                        firstCloudProvider = policy[0].group_policy.org_governance.default_cloud.toLowerCase();
+                    }else{
+                        firstCloudProvider = $("#cloud_coverflow").children()[0].id;
+                    }
+                    if(this.cloudProvider) {
+                        if($("#"+this.cloudProvider).length) {
+                            this.cloudSelection(this.cloudProvider);
+                            Common.router.navigate("#resources/"+this.cloudProvider, {trigger: false});
+                        }else {
+                            Common.router.navigate("#resources/"+firstCloudProvider, {trigger: false});
+                            this.cloudSelection(firstCloudProvider);
+                        }
+                    }else if(sessionStorage['selected_cloud'] !== undefined){
+                        Common.router.navigate("#resources/"+sessionStorage['selected_cloud'], {trigger: false});
+                        this.cloudSelection(sessionStorage['selected_cloud']);
+                    }else{
                         Common.router.navigate("#resources/"+firstCloudProvider, {trigger: false});
                         this.cloudSelection(firstCloudProvider);
                     }
-                }else if(sessionStorage['selected_cloud'] !== undefined){
-                    Common.router.navigate("#resources/"+sessionStorage['selected_cloud'], {trigger: false});
-                    this.cloudSelection(sessionStorage['selected_cloud']);
-                }else{
-                    Common.router.navigate("#resources/"+firstCloudProvider, {trigger: false});
-                    this.cloudSelection(firstCloudProvider);
                 }
+                
+                this.loadResourceApp();
+    
+            }else{
+                this.enableCloudMessage();
             }
-            this.loadResourceApp();
         },
 
+        enableCloudMessage: function(){
+            $("#services_table").hide();
+            $("#service_menu").hide();
+            $("#clouds_disabled").show();
+        },
+
+        enableCloud: function(cloudPolicies, provider){
+            var check = false;
+            //Admin check
+            if(JSON.parse(sessionStorage.permissions).length > 0){
+                check = false;
+            }else{
+                if(cloudPolicies[0].group_policy.aws_governance.enabled_cloud.toLowerCase() === provider){
+                    check = false;
+                } else if(cloudPolicies[0].group_policy.os_governance.enabled_cloud.toLowerCase() === provider){
+                    check = false;
+                } else{
+                    check = true;
+                }
+            }
+            return check;
+        },
+
+        addToCarousel: function(provider){
+            $('#cloud_coverflow').append($("<img></img>")
+                .attr({
+                    "id": provider,
+                    "class" : "cover_flow_cloud",
+                    "src": this.cloudDefinitions[provider].logo
+            }));
+        },
         addCloud: function( cloudCredential ) {
             var cloudProvider = cloudCredential.get("cloud_provider");
             var resourceNav = this;
+            var cloudPolicies = JSON.parse(sessionStorage.group_policies);
+            var default_cloud = "";
             if(cloudProvider) {
                 cloudProvider = cloudProvider.toLowerCase();
                 var found = false;
+                var selected_cloud = sessionStorage['selected_cloud'];
+                //check if cloud is enabled.
+                if(cloudPolicies.length > 0){
+                    found = this.enableCloud(cloudPolicies, cloudProvider);
+                    default_cloud = cloudPolicies[0].group_policy.org_governance.default_cloud.toLowerCase();
+                }
+                if($("#cloud_coverflow").children().length === 0 ){
+                    if( selected_cloud === undefined && default_cloud !== "" && default_cloud !== "none"){
+                        this.addToCarousel(default_cloud);
+                    } 
+                    if( selected_cloud !== undefined){
+                        this.addToCarousel(selected_cloud);
+                    }
+                }
                 $.each($("#cloud_coverflow").children(), function (index, coverFlowCloud) {
-                    if(coverFlowCloud.id === cloudProvider) {
+                    if(coverFlowCloud.id === cloudProvider ) {
                         found = true;
                     }
                 });
                 if(!found) {
-                    $('#cloud_coverflow').append($("<img></img>")
-                        .attr({
-                            "id": cloudProvider,
-                            "class" : "cover_flow_cloud",
-                            "src": resourceNav.cloudDefinitions[cloudProvider].logo
-                    }));
+                    this.addToCarousel(cloudProvider);
                 }
             }
 
@@ -170,46 +227,60 @@ define([
         addAllClouds: function() {
             this.cloudCredentials.each(this.addCloud, this);
         },
-        
+
+        displayCloudChangeMessage: function(){
+            $("#service_menu").hide();
+            $("#resource_app").hide();
+            $("#resource_not_opened").show();
+        },
+
         cloudChange: function(event) {
             if(!event.isTrigger) {
                 $(".resources").remove();
                 Common.router.navigate("#resources/"+event.target.id, {trigger: false});
                 this.cloudSelection(event.target.id);
-                $("#service_menu").hide();
-                $("#resource_app").hide();
-                $("#resource_not_opened").show();
+                this.displayCloudChangeMessage();
             }
         },
-        
+
         cloudSelection: function (cloudProvider) {
             this.cloudProvider = cloudProvider;
-
             sessionStorage['selected_cloud'] = this.cloudProvider;
-
             var resourceNav = this;
+            var enabled_services = [];
+            var enabled_services_os = [];
+            var topstack_enabled = resourceNav.cloudDefinitions[this.cloudProvider].topstack_services;
+            var permissions = JSON.parse(sessionStorage.permissions);
+            var no_governance = JSON.parse(sessionStorage.group_policies);
             //Add the services of the cloud to the resource table
             var row = 1;
             $("#resource_table").empty();
             $.each(resourceNav.cloudDefinitions[this.cloudProvider].native_services, function(index, service) {
-                
                 //Check Enabled Services
                 var addService = false;
-                if(JSON.parse(sessionStorage.group_policies)[0] == null){
+                var addServiceOS = false;
+                if(permissions.length > 0 || no_governance.length < 1){
                     addService = true;
+                    addServiceOS = true;
+                    enabled_services_os = topstack_enabled;
                 }else{
                     $.each(JSON.parse(sessionStorage.group_policies), function(index,value){
                         if(value != null){
-                            var enabled_services = value.group_policy.aws_governance.enabled_services;
+                            enabled_services = value.group_policy.aws_governance.enabled_services;
+                            enabled_services_os = value.group_policy.os_governance.enabled_services;
                             if($.inArray(service.name, enabled_services) !== -1){
                                 addService = true;
+                            }
+                            if($.inArray(service.name, enabled_services_os) !== -1){
+                                addServiceOS = true;
                             }
                         }
                     });
                 }
                 //hack
                 var cname = location.href.split("#resources/")[1].split("/")[0];
-                if(addService || cname !== 'aws'){
+                // debugger
+                if(addService && cname === 'aws'){
                     $("#native_row"+row).append($("<td></td>").attr({
                         "id": service.type,
                         "class": "resources selectable_item"
@@ -224,17 +295,10 @@ define([
                         row = 1;
                     }
                 }
-                
-            });
-            row = 1;
-            if(resourceNav.cloudDefinitions[this.cloudProvider].topstack_services !== undefined && resourceNav.cloudDefinitions[this.cloudProvider].topstack_services.length > 0) {
-                $("#topstack_services_table, #topstack_service_label").show();
-                $("#native_services_table").css("width", "30%");
-                $("#topstack_services_table").css("width", "42%");
-                $.each(resourceNav.cloudDefinitions[this.cloudProvider].topstack_services, function(index, service) {
-                $("#topstack_row"+row).append($("<td></td>").attr({
-                    "id": service.type,
-                    "class": "resources selectable_item"
+                if(addServiceOS && cname === 'openstack'){
+                    $("#native_row"+row).append($("<td></td>").attr({
+                        "id": service.type,
+                        "class": "resources selectable_item"
                     }));
                     $("#"+service.type).append($("<a></a>").attr({
                         "id": service.type+"Link",
@@ -245,26 +309,49 @@ define([
                     if(row > 3) {
                         row = 1;
                     }
+                }
+            });
+            row = 1;
+            if(topstack_enabled !== undefined && topstack_enabled.length > 0) {
+                $("#topstack_services_table, #topstack_service_label").show();
+                $("#native_services_table").css("width", "30%");
+                $("#topstack_services_table").css("width", "60%");
+                $.each(topstack_enabled, function(index, service) {
+                    if($.inArray(service.name, enabled_services_os) !== -1 || permissions.length > 0 || no_governance.length < 1){
+                        $("#topstack_row"+row).append($("<td></td>").attr({
+                            "id": service.type,
+                            "class": "resources selectable_item"
+                            }));
+                            $("#"+service.type).append($("<a></a>").attr({
+                                "id": service.type+"Link",
+                                "class": "resource_link"
+                            }).text(service.name));
+                            row++;
+                            //reset row if greater than 3
+                            if(row > 3) {
+                                row = 1;
+                            }
+                    }
                 });
             }else {
                 $("#topstack_services_table, #topstack_service_label").hide();
-                $("#native_services_table").css("width", "73%");
+                $("#native_services_table").css("width", "90%");
             }
-            
-            $("#cloud_nav").html(this.crumbTemplate({pathElt: this.cloudDefinitions[this.cloudProvider].name}));
 
+            $("#cloud_nav").html(this.crumbTemplate({pathElt: this.cloudDefinitions[this.cloudProvider].name}));
+            //debugger
             this.refreshCloudSpecs();
         },
 
         credentialChange: function(event) {
             this.selectedCredential = event.target.value;
-            
+
             sessionStorage['selected_cred_'+this.cloudProvider] = this.selectedCredential;
-            
+
             $("#service_menu").hide();
             $("#resource_app").hide();
             $("#resource_not_opened").show();
-            
+
             this.refreshCloudSpecs();
         },
 
@@ -278,7 +365,7 @@ define([
             var credentialFound = false;
             //Remove previous credentials
             $("#credentials").remove();
-            $("#cloud_specs").append('<span id="credentials">Credentials: <select id="credential_select" class="cloud_spec_select"></select></span>');
+            $("#cloud_specs").append('<div id="credentials" class="col-lg-4 spec_select">Credentials: <select id="credential_select" class="cloud_spec_select form-control"></select></div>');
             //Add credentials for this cloud
             this.cloudCredentials.each(function (credential) {
                 if(credential.get("cloud_provider").toLowerCase() === resourceNav.cloudProvider) {
@@ -296,7 +383,7 @@ define([
                 $("#credential_nav").html($("#credential_select option:first").text());
                 this.selectedCredential = $("#credential_select option:first").val();
             }
-            
+
             if(sessionStorage['selected_cred_'+this.cloudProvider] !== undefined){
                 $("#credential_select").val(sessionStorage['selected_cred_'+this.cloudProvider]);
                 $("#credential_nav").html($("#credential_select option:selected").text());
@@ -311,7 +398,7 @@ define([
             $("#regions").remove();
             //Add regions if cloud has regions
             if(resourceNav.cloudDefinitions[this.cloudProvider].regions.length) {
-                $("#cloud_specs").append('<span id="regions">Region: <select id="region_select" class="cloud_spec_select"></select></span>');
+                $("#cloud_specs").append('<div id="regions" class="col-lg-4 spec_select">Region: <select id="region_select" class="cloud_spec_select form-control"></select></div>');
                 $.each(resourceNav.cloudDefinitions[this.cloudProvider].regions, function(index, region) {
                     //regions check
                     var addRegion = false;
@@ -329,7 +416,7 @@ define([
                     }
                     var cname = location.href.split("#resources/")[1].split("/")[0];
                     if(!addRegion && cname === "aws"){
-                        
+
                     }
                     else if(resourceNav.selectedRegion === region.zone) {
                         $('#region_select').append($("<option value='" + region.zone + "' selected></option>").text(region.name));
@@ -360,6 +447,7 @@ define([
         },
 
         resourceClick: function(id) {
+            //debugger
             $("#resource_not_opened").hide();
             $("#resource_app").show();
             var selectionId = id.target.id.split("Link")[0];
@@ -391,12 +479,13 @@ define([
                     try {
                         this.selectedRegion = this.cloudDefinitions[this.cloudProvider].regions[0].zone;
                     }catch(error) {
-                        
+
                     }
                 }
                 if (!this.type) {
-                    this.type = "compute";
-                    this.subtype = "instances";
+                    this.type = $(".resources").find(":first").attr("id").split("L")[0];
+                    //this.type = "compute";
+                    //this.subtype = "instances";
                 }
                 var completeServices = this.cloudDefinitions[this.cloudProvider].native_services;
                 if(resourceNav.cloudDefinitions[this.cloudProvider].topstack_services !== undefined && resourceNav.cloudDefinitions[this.cloudProvider].topstack_services.length > 0) {
@@ -413,11 +502,14 @@ define([
                 //Load SubServiceMenu if applies
                 if(serviceObject && serviceObject.hasOwnProperty("subServices") && serviceObject.subServices.length > 0) {
                     this.subServiceMenu.render({service: serviceObject, cloudProvider: this.cloudProvider, region: this.selectedRegion, selectedSubtype: this.subtype});
+                    $("#resource_app").addClass("service_width");
+                    $("#resource_app").removeClass("full_width");
                     $("#service_menu").show();
                 }else {
                     $("#service_menu").hide();
                     //$("#resource_app").width("1100px");
                     $("#resource_app").addClass("full_width");
+                    $("#resource_app").removeClass("service_width");
                 }
 
                 //Camelcase the subtype for the file name
@@ -429,9 +521,9 @@ define([
                     camelCase = s.charAt(0).toUpperCase() + s.slice(1);
                     subType = subType ? (subType + camelCase) : camelCase;
                 });
-                
+
                 var appPath;
-                
+
                 if(this.type === "admin") {
                     appPath = "../topstack/views/"+this.type+"/topstack"+subType+"AppView";
                 }else {

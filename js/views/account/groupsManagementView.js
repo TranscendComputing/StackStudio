@@ -134,6 +134,8 @@ define([
                     $("#delete_group_button").removeClass("ui-state-hover");
                     $("#manage_group_users_button").attr("disabled", true);
                     $("#manage_group_users_button").addClass("ui-state-disabled");
+                    $("#policy_select").attr("disabled",true);
+                    $("#policy_select").addClass("ui-state-disabled");
                 }
             }});
         },
@@ -167,7 +169,7 @@ define([
                 options.group_policy_id = event.target.value;
                 options.group_id = this.selectedGroup.id;
                 var newPolicy = new Policy();
-                newPolicy.addToGroup(options,sessionStorage.org_id);
+                newPolicy.addToGroup(options,sessionStorage.org_id,sessionStorage.login);
                 //}
         },
         

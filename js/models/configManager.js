@@ -6,35 +6,49 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'underscore',
-        'backbone'
-], function( $, _, Backbone ) {
+        'models/resource/resourceModel',
+        'common'
+], function( ResourceModel, Common ) {
     'use strict';
 
-    // Configuration Manager Model
-    // ----------
+    var ConfigManager = ResourceModel.extend({
+        idAttribute: '_id',
 
-    /**
-     *
-     * @name ConfigManager
-     * @constructor
-     * @category Manager
-     * @param {Object} initialization object.
-     * @returns {Object} Returns a ConfigManager instance.
-     */
-    var ConfigManager = Backbone.Model.extend({
-
-        /** Default attributes for cloud service */
         defaults: {
+            _id: '',
+            org_id: '',
+            name: 'New Config Manager',
+            type: '',
+            url: '',
             enabled: true,
-            auth_properties: {}
+            auth_properties: {},
+            cloud_account_ids: [],
+            continuous_integration_servers: [],
+            source_control_repositories: [],
+            branch: '',
+            source_control_paths: []
         },
-        idAttribute: "_id",
-        url: function() {
-            var base = _.result(this, 'urlRoot') || _.result(this.collection, 'url') || this.urlError();
-            if (this.isNew()) { return base; }
-            return base + (base.charAt(base.length - 1) === '/' ? '' : '/') + encodeURIComponent(this.id) + "?org_id=" + sessionStorage.org_id;
+
+        parse: function(resp) {
+            return resp.config_manager;
+        },
+
+        create: function(options) {
+            var url = Common.apiUrl + "/api/v1/orchestration/managers";
+            var successMessage = options.name + " created";
+            this.sendAjaxAction(url, "POST", options, "ConfigManagerCreated", successMessage);
+        },
+
+        update: function(options) {
+            var url = Common.apiUrl + "/api/v1/orchestration/managers/" + this.id +"?_method=PUT";
+            var successMessage = this.get("name") + " updated";
+            this.sendAjaxAction(url, "POST", options, "ConfigManagerUpdated", successMessage);
+        },
+
+        destroy:function() {
+            var url = Common.apiUrl + "/api/v1/orchestration/managers/" + this.id +"?_method=DELETE";
+            var successMessage = this.get("name") + " deleted";
+            this.sendAjaxAction(url, "POST", undefined, "ConfigManagerDeleted", successMessage);
         }
 
     });

@@ -11,92 +11,117 @@ define([
         'backbone',
         'common',
         'icanhaz',
-        'URIjs/URI',
         'collections/users',
         'collections/configManagers',
-        'views/account/configManagerCreateView',
-        'views/account/configManagerUpdateView',
+        'views/account/configManagerAddEditView',
         'text!templates/account/managementDevOpsToolsTemplate.html',
         'jquery-plugins',
         'jquery-ui-plugins'
-], function( $, _, Backbone, Common, ich, URI, Users, ConfigManagers, ConfigManagerCreateView,ConfigManagerUpdateView, managementDevOpsToolsTemplate) {
+], function( $, _, Backbone, Common, ich, Users, ConfigManagers, ConfigManagerAddEditView, managementDevOpsToolsTemplate) {
 
     var DevOpsToolsManagementView = Backbone.View.extend({
-        /** @type {String} DOM element to attach view to */
-        el: "#submanagement_app",
-        cloudAccounts: undefined,
+        tagName: 'div',
         configManagers: undefined,
         users: undefined,
         template: undefined,
         rootView: undefined,
         events: {
-            "click button.save-manager-button": "saveManager",
-            "click button.delete-manager-button": "deleteManager",
-            "click button.edit-manager-button" : "editManager",
+            "click button.delete_manager_button": "deleteManager",
+            "click button.edit_manager_button" : "editManager",
             "click #new_config_manager": "newConfigManager"
         },
+
         /** Constructor method for current view */
-        initialize: function() {
-            
-            var thisView = this;
+        initialize: function(options) {
             this.template = _.template(managementDevOpsToolsTemplate);
-            this.rootView = this.options.rootView;
-            this.childViews = [];
-            
-            this.cloudAccounts = this.rootView.cloudAccounts;
+            this.$el.html(this.template);
+            $("#submanagement_app").html(this.$el);
+            this.rootView = options.rootView;
             this.configManagers = new ConfigManagers();
             this.users = new Users();
 
-            this.cloudAccounts.fetch({
-                data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id}),
-                reset: true
+            var cmManagementView = this;
+            Common.vent.off("ConfigManagerCreated");
+            Common.vent.on("ConfigManagerCreated", function() {
+                cmManagementView.render();
             });
-
-
-
-            this.configManagers.fetch({
-                data: $.param({org_id: sessionStorage.org_id}),
-                success:function(collection, response, data){
-                    thisView.renderConfigManagers();
-                },
-                error:function(collection,response, data){
-                    Common.errorDialog("Server Error", "Couldn't fetch configuration manager data.");
-                },
-                reset:true
+            Common.vent.off("ConfigManagerUpdated");
+            Common.vent.on("ConfigManagerUpdated", function() {
+                cmManagementView.render();
             });
-            ich.clearAll();
-            ich.refresh();
+            Common.vent.off("ConfigManagerDeleted");
+            Common.vent.on("ConfigManagerDeleted", function() {
+                cmManagementView.render();
+            });
 
             this.render();
-            
-            Common.vent.on("devOpsViewRefresh", function() {
-                thisView.refreshManagers();
-            });
         },
 
         render: function () {
-            this.$el.html(this.template);
+            var thisView = this;
+            this.configManagers.fetch({
+                success:function(collection, response, data){
+                    thisView.renderConfigManagers();
+                },
+                error:function(collection, response, data){
+                    Common.errorDialog("Server Error", "Couldn't fetch config manager data.");
+                },
+                reset: true
+            });
         },
 
         renderConfigManagers: function() {
-            if(typeof(ich['config_managers_template']) === 'undefined'){
-                ich.grabTemplates();
+            if(typeof(ich['config_manager_template']) === 'undefined'){
+                // This because for whatever reason, ich keeps forggeting this template
+                ich.addTemplate("config_manager_template", 
+                    "<div class='manager_list'>" +
+                        "<fieldset>" +
+                            "<legend>{{{icon}}} {{managerType}} Endpoints</legend>" +
+                            "{{#managers}}" +
+                            "<p>" +
+                                "<label class='tabbed-field'>{{name}}:</label>" +
+                                "<input data-id='{{_id}}' type='text' data-name='{{type}}'' class='textbox-400' value='{{url}}'></input>" +
+                                "<button class='delete_manager_button'>Delete</button>" +
+                                "<button class='edit_manager_button'>Edit</button>" +
+                            "</p>" +
+                            "{{/managers}}" +
+                            "{{^managers}}" +
+                            "<p><label>No endpoints defined.</label></p>" +
+                            "{{/managers}}" +
+                        "</fieldset>" +
+                    "</div>");
             }
-            var chefEndpoints = ich['config_managers_template']({"managers":this.configManagers.toJSON().chef, "managerType": "Chef"});
-            var puppetEndpoints = ich['config_managers_template']({"managers":this.configManagers.toJSON().puppet, "managerType": "Puppet"});
-            var saltEndpoints = ich['config_managers_template']({"managers":this.configManagers.toJSON().salt, "managerType": "Salt"});
-            $('#config_managers_page').html(chefEndpoints);
-            $('#config_managers_page').append(puppetEndpoints);
-            $('#config_managers_page').append(saltEndpoints);
-            if (window.ansible){
-              var ansibleEndpoints = ich['config_managers_template']({"managers":this.configManagers.toJSON().ansible, "managerType": "Ansible"});
-              $('#config_managers_page').append(ansibleEndpoints);
-            }
-
+            var chefEndpoints = [];
+            var puppetEndpoints = [];
+            var saltEndpoints = [];
+            var ansibleEndpoints = [];
+            this.configManagers.each(function(cm) {
+                cm = cm.attributes;
+                switch(cm["type"]) {
+                    case "chef":
+                        chefEndpoints.push(cm);
+                        break;
+                    case "puppet":
+                        puppetEndpoints.push(cm);
+                        break;
+                    case "salt":
+                        saltEndpoints.push(cm);
+                        break;
+                    case "ansible":
+                        ansibleEndpoints.push(cm);
+                        break;
+                }
+            });
+            var chefEndpointsTemplate = ich['config_manager_template']({"managers": chefEndpoints, "managerType": "Chef", "icon": Common.icons.chef});
+            var puppetEndpointsTemplate = ich['config_manager_template']({"managers": puppetEndpoints, "managerType": "Puppet", "icon": Common.icons.puppet});
+            var saltEndpointsTemplate = ich['config_manager_template']({"managers": saltEndpoints, "managerType": "Salt", "icon": Common.icons.salt});
+            var ansibleEndpointsTemplate = ich['config_manager_template']({"managers": ansibleEndpoints, "managerType": "Ansible", "icon": Common.icons.ansible});
+            $('#config_managers_page').html(chefEndpointsTemplate);
+            $('#config_managers_page').append(puppetEndpointsTemplate);
+            $('#config_managers_page').append(saltEndpointsTemplate);
+            $('#config_managers_page').append(ansibleEndpointsTemplate);
             $('input').prop('disabled', true);
-            
             $('button').button();
-            
             this.adminCheck();
         },
         
@@ -111,8 +136,6 @@ define([
                     $(".delete-button").attr("disabled", true);
                     $(".delete-button").addClass("ui-state-disabled");
                     $(".delete-button").removeClass("ui-state-hover");
-                    $(".save-button").attr("disabled", true);
-                    $(".save-button").addClass("ui-state-disabled");
                     $("#new_config_manager").attr("disabled", true);
                     $("#new_config_manager").addClass("ui-state-disabled");
                 }
@@ -120,41 +143,23 @@ define([
         },
         
         newConfigManager: function(){
-            this.newResourceDialog = new ConfigManagerCreateView({ configManagers: this.configManagers});
-            this.newResourceDialog.render();
-            
+            new ConfigManagerAddEditView({configManagers: this.configManagers});
         },
 
-        editManager: function(evt){
-            var managerId = $(evt.currentTarget).parent().find("input").data("id");
-            var editView = new ConfigManagerUpdateView({configManager: this.configManagers.get(managerId)});
-            editView.render();
+        editManager: function(event){
+            var managerId = $(event.currentTarget).parent().find("input").data("id");
+            var manager = this.configManagers.get(managerId);
+            new ConfigManagerAddEditView({configManagers: this.configManagers, configManager: manager});
         },
 
         deleteManager: function(event) {
-            var serviceData = $(event.currentTarget.parentElement).find("input").data();
-            this.configManagers.deleteManager(serviceData);
-            return false;
+            var managerId = $(event.currentTarget).parent().find("input").data("id");
+            var manager = this.configManagers.get(managerId);
+            manager.destroy();
         },
 
         close: function(){
-            this.$el.empty();
-            this.undelegateEvents();
-            this.stopListening();
-            this.unbind();
-            // handle other unbinding needs, here
-            _.each(this.childViews, function(childView){
-              if (childView.close){
-                childView.close();
-              }
-            });
-        },
-        
-        refreshManagers: function(){
-            this.configManagers.fetch({
-                data: $.param({ org_id: sessionStorage.org_id}),
-                success: _.bind(this.renderConfigManagers, this)
-            });
+            this.$el.remove();
         }
         
     });

@@ -64,6 +64,7 @@ define([
             Common.vent.on("stackDeleted", function() {
                 stackApp.stacks.fetch({reset: true});
             });
+            Common.vent.on('global:modeChange', this.changeMode, this);
         },
 
         render: function() {
@@ -74,9 +75,9 @@ define([
                 $('a[data-toggle="tab"]').off('shown');
                 var stacksView = this;
                 $('a[data-toggle="tab"]').on('shown', function (e) {
-                    stacksView.changeTabs();
+                    stacksView.changeMode("dev");
                 });
-                this.changeTabs();
+                this.changeMode("dev");
             } else {
                 $("#stack_opened").hide();
                 $("#stack_not_opened").show();
@@ -84,13 +85,15 @@ define([
 
             this.stacks.fetch({reset: true});
         },
-
-        changeTabs: function() {
-            if($("#design-tab").hasClass("active")) {
+        
+        changeMode: function(mode){
+            if(mode === "dev") {
                 if(!this.stackDesignView) {
                     this.stackDesignView = new StackDesignView();
                 }
                 this.stackDesignView.render();
+                $("#tabs-design").show();
+                $("#tabs-run").hide();
             }else {
                 if(!this.stackRunView) {
                     this.stackRunView = new StackRunView();
@@ -100,6 +103,8 @@ define([
                     this.stackRunView.setStack(this.stacks.get(sessionStorage.stack_id));
                 }
                 this.stackRunView.render();
+                $("#tabs-design").hide();
+                $("#tabs-run").show();
             }
         },
 
