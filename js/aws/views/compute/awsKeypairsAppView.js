@@ -14,10 +14,11 @@ define([
         '/js/aws/models/compute/awsKeyPair.js',
         '/js/aws/collections/compute/awsKeyPairs.js',
         '/js/aws/views/compute/awsKeyPairCreateView.js',
+        '/js/aws/views/compute/awsKeyPairUploadView.js',
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, ResourceAppView, awsKeyPairAppTemplate, Keypair, Keypairs, AwsKeyPairCreate, ich, Common ) {
+], function( $, _, Backbone, ResourceAppView, awsKeyPairAppTemplate, Keypair, Keypairs, AwsKeyPairCreate, AwsKeyPairUpload, ich, Common ) {
     'use strict';
 
     // Aws Security Group Application View
@@ -50,9 +51,11 @@ define([
         subtype: "keypairs",
         
         CreateView: AwsKeyPairCreate,
+        UploadView: AwsKeyPairUpload,
         
         events: {
             'click .create_button': 'createNew',
+            'click .upload_button' : 'uploadKey',
             'click #action_menu ul li': 'performAction',
             'click #resource_table tr': "clickOne"
         },
@@ -79,6 +82,16 @@ define([
         
         toggleActions: function(e) {
             //Disable any needed actions
+        },
+
+        uploadKey: function(e) {
+            var UploadView = this.UploadView;
+            if(this.region) {
+                this.uploadKeyDialog = new UploadView({cred_id: this.credentialId, region: this.region});
+            }else {
+                this.uploadKeyDialog = new UploadView({cred_id: this.credentialId});
+            }
+            this.uploadKeyDialog.render();
         },
         
         performAction: function(event) {
