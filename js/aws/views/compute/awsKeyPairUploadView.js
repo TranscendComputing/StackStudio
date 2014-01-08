@@ -63,7 +63,7 @@ define([
               // Closure to capture the file information.
               reader.onload = (function(theFile) {
                 return function(e) {
-                  $("#public_key").val(e.target.result)
+                  $("#public_key").val(e.target.result);
                 };
               })(file);
               reader.readAsText(file);
