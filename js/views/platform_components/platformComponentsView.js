@@ -75,7 +75,7 @@ define([
                     $("#config_managers_list").append("<li><a id='"+configManager.id+"' class='configurationManager selectable_item'>"+configManager.attributes.name+"</a></li>");
                 }
                 // If selected, refresh
-                if(thisView.currentConfigManager && thisView.currentConfigManager.id == configManager.id) {
+                if(thisView.currentConfigManager && thisView.currentConfigManager.id === configManager.id) {
                     thisView.currentConfigManager = configManager;
                 }
             });
@@ -168,8 +168,8 @@ define([
             this.render();
         },
 
-        displayConfigurationManagerContent: function(boolean) {
-            if(boolean) {
+        displayConfigurationManagerContent: function(value) {
+            if(value) {
                 $("#refresh_button").show();
                 $("#view_legend_toggle").show();
                 this.renderLegend();
