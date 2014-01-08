@@ -140,7 +140,8 @@ define([
 
         enableCloud: function(cloudPolicies, provider){
             var check = false;
-            if(cloudPolicies.length < 1 || JSON.parse(sessionStorage.permissions).length > 0){
+            //Admin check
+            if(JSON.parse(sessionStorage.permissions).length > 0){
                 check = false;
             }else{
                 if(cloudPolicies[0].group_policy.aws_governance.enabled_cloud.toLowerCase() === provider){
@@ -154,6 +155,14 @@ define([
             return check;
         },
 
+        addToCarousel: function(provider){
+            $('#cloud_coverflow').append($("<img></img>")
+                .attr({
+                    "id": provider,
+                    "class" : "cover_flow_cloud",
+                    "src": this.cloudDefinitions[provider].logo
+            }));
+        },
         addCloud: function( cloudCredential ) {
             var cloudProvider = cloudCredential.get("cloud_provider");
             var resourceNav = this;
@@ -162,28 +171,18 @@ define([
             if(cloudProvider) {
                 cloudProvider = cloudProvider.toLowerCase();
                 var found = false;
+                var selected_cloud = sessionStorage['selected_cloud'];
                 //check if cloud is enabled.
                 if(cloudPolicies.length > 0){
                     found = this.enableCloud(cloudPolicies, cloudProvider);
                     default_cloud = cloudPolicies[0].group_policy.org_governance.default_cloud.toLowerCase();
                 }
-                // debugger
-                if($("#cloud_coverflow").children().length === 0 && default_cloud !== ""){
-                    if( sessionStorage['selected_cloud'] === undefined){
-                        $('#cloud_coverflow').append($("<img></img>")
-                            .attr({
-                                "id": default_cloud,
-                                "class" : "cover_flow_cloud",
-                                "src": resourceNav.cloudDefinitions[default_cloud].logo
-                        }));
+                if($("#cloud_coverflow").children().length === 0 ){
+                    if( selected_cloud === undefined && default_cloud !== "" && default_cloud !== "none"){
+                        this.addToCarousel(default_cloud);
                     } 
-                    if( sessionStorage['selected_cloud'] !== undefined){
-                        $('#cloud_coverflow').append($("<img></img>")
-                            .attr({
-                                "id": sessionStorage['selected_cloud'],
-                                "class" : "cover_flow_cloud",
-                                "src": resourceNav.cloudDefinitions[sessionStorage['selected_cloud']].logo
-                        }));
+                    if( selected_cloud !== undefined){
+                        this.addToCarousel(selected_cloud);
                     }
                 }
                 $.each($("#cloud_coverflow").children(), function (index, coverFlowCloud) {
@@ -192,12 +191,7 @@ define([
                     }
                 });
                 if(!found) {
-                    $('#cloud_coverflow').append($("<img></img>")
-                        .attr({
-                            "id": cloudProvider,
-                            "class" : "cover_flow_cloud",
-                            "src": resourceNav.cloudDefinitions[cloudProvider].logo
-                    }));
+                    this.addToCarousel(cloudProvider);
                 }
             }
 
