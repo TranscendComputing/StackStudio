@@ -1,3 +1,11 @@
+[![Build Status](https://secure.travis-ci.org/TranscendComputing/StackStudio.png?branch=master)][travis]
+[![Code Climate](https://codeclimate.com/github/TranscendComputing/StackStudio.png)][codeclimate]
+<!---[![Dependency Status](https://gemnasium.com/TranscendComputing/harp-runtime.png?travis)][gemnasium] -->
+
+<!--- [gem]: https://rubygems.org/gems/harp-runtime -->
+[travis]: http://travis-ci.org/TranscendComputing/StackStudio
+[codeclimate]: https://codeclimate.com/github/TranscendComputing/StackStudio
+
 StackStudio
 ===========
 
