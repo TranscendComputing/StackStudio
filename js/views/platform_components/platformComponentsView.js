@@ -124,17 +124,19 @@ define([
                         if(value["community"]) {
                             ignored_components.push(value);
                         } else {
-                            rowContents += "<td><input id='"+value["_id"]+"' type='checkbox' class='component-checkbox'/></td>"
+                            rowContents += "<td><input id='"+value["_id"]+"' type='checkbox' class='component-checkbox'/></td>";
                             $("#continuous_integration_table").append("<tr>"+rowContents+"</tr>");
                         }
                     });
 
-                    $("#ignored_components_table").empty()
-                    //Build Header of Ignored Components (Community) Table
+                    $("#ignored_components_table").empty();
                     if(ignored_components.length > 0) {
+                        // Setup Label for Ignored Components (Community)
                         $("#community_components_label").html(ignoredComponentsLabel);
                         $("#community_components_label").show();
+                        // Build Header of Ignored Components (Community) Table
                         $("#ignored_components_table").append("<thead><tr><th>"+componentName+"</th><th style='width:100px;'>Community</th></tr></thead>");
+                        // Build Body of Ignored Components (Community) Table
                         $.each(ignored_components, function(index, value) {
                             $("#ignored_components_table").append("<tr><td>"+value["name"]+"</td><td><input id='"+value["_id"]+"' type='checkbox' class='component-checkbox' checked/></td></tr>");
                         });
