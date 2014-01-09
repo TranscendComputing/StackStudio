@@ -20,13 +20,14 @@ define([
         tagName: 'div',
         id: 'platform_components_view',
         legendVisible: true,
-
+        components: [],
         template: _.template(platformComponentsTemplate),
 
         events: {
-            "click .configurationManager": "openConfigManager",
+            "click .configuration-manager": "openConfigManager",
             "click #refresh_button": "fetchConfigManagers",
-            "click #view_legend_toggle": "toggleLegend"
+            "click #view_legend_toggle": "toggleLegend",
+            "click .component-checkbox": "toggleCommunity"
         },
 
         initialize: function() {
@@ -72,7 +73,7 @@ define([
             this.configManagers.each(function(configManager) {
                 // Only Chef is currently supported
                 if(configManager.attributes.type === "chef") {
-                    $("#config_managers_list").append("<li><a id='"+configManager.id+"' class='configurationManager selectable_item'>"+configManager.attributes.name+"</a></li>");
+                    $("#config_managers_list").append("<li><a id='"+configManager.id+"' class='configuration-manager selectable_item'>"+configManager.attributes.name+"</a></li>");
                 }
                 // If selected, refresh
                 if(thisView.currentConfigManager && thisView.currentConfigManager.id === configManager.id) {
@@ -86,27 +87,29 @@ define([
             if(this.currentConfigManager) {
                 // Set default values
                 var componentName = "Name";
-                var components = [];
+                var ignoredComponentsLabel = "Community";
                 switch(this.currentConfigManager.attributes.type) {
                     case "chef":
                         componentName = "Cookbook Name";
-                        components = this.currentConfigManager.attributes.cookbooks;
+                        this.components = this.currentConfigManager.attributes.cookbooks;
+                        ignoredComponentsLabel = "Community Cookbooks";
                         break;
                 }
 
-                if(components && components.length > 0) {
+                if(this.components && this.components.length > 0) {
                     var thisView = this;
                     $("#continuous_integration_table").empty();
-                    // Build Header of Table
+                    // Build Header of CI Table
                     var headerColumns = "<th>"+componentName+"</th>";
-                    $.each(components[0]["status"], function(key, value) {
+                    $.each(this.components[0]["status"], function(key, value) {
                         var columnName = thisView.readify(key);
-                        headerColumns += "<th>" + columnName + "</th>";
+                        headerColumns += "<th width='150px;'>" + columnName + "</th>";
                     });
+                    headerColumns += "<th style='width:100px;'>Community</th>";
                     $("#continuous_integration_table").append("<thead><tr>"+headerColumns+"</tr></thead>");
-                    // Build Body of Table
+                    // Build Body of CI Table
                     var ignored_components = [];
-                    $.each(components, function(index, value) {
+                    $.each(this.components, function(index, value) {
                         var rowContents = "<td>"+value["name"]+"</td>";
                         if(value["status"]) {
                             $.each(value["status"], function( key, statusValue) {
@@ -114,12 +117,30 @@ define([
                                 rowContents += "<td>"+icon+"</td>";
                             });
                         } else {
-                            for(var i=0; i<Object.keys(components[0]["status"]).length; i++) {
+                            for(var i=0; i<Object.keys(thisView.components[0]["status"]).length; i++) {
                                 rowContents += "<td><img src='/images/statusTerminated.gif'/></td>";
                             }
                         }
-                        $("#continuous_integration_table").append("<tr>"+rowContents+"</tr>");
+                        if(value["community"]) {
+                            ignored_components.push(value);
+                        } else {
+                            rowContents += "<td><input id='"+value["_id"]+"' type='checkbox' class='component-checkbox'/></td>"
+                            $("#continuous_integration_table").append("<tr>"+rowContents+"</tr>");
+                        }
                     });
+
+                    $("#ignored_components_table").empty()
+                    //Build Header of Ignored Components (Community) Table
+                    if(ignored_components.length > 0) {
+                        $("#community_components_label").html(ignoredComponentsLabel);
+                        $("#community_components_label").show();
+                        $("#ignored_components_table").append("<thead><tr><th>"+componentName+"</th><th style='width:100px;'>Community</th></tr></thead>");
+                        $.each(ignored_components, function(index, value) {
+                            $("#ignored_components_table").append("<tr><td>"+value["name"]+"</td><td><input id='"+value["_id"]+"' type='checkbox' class='component-checkbox' checked/></td></tr>");
+                        });
+                    } else {
+                        $("#community_components_label").hide();
+                    }
                 }
             } 
         },
@@ -196,6 +217,39 @@ define([
             } else {
                 $("#table_legend").hide();
                 $("#view_legend_toggle").html("Show Legend");
+            }
+        },
+
+        toggleCommunity: function(event) {
+            if(event.currentTarget) {
+                // Find clicked component
+                var selectedComponent;
+                $.each(this.components, function(index, value) {
+                    if(event.currentTarget.id === value["_id"]) {
+                        selectedComponent = value;
+                    }
+                });
+                if(selectedComponent) {
+                    var thisView = this;
+                    if($(event.currentTarget).is(":checked")) {
+                        selectedComponent["community"] = true;
+                    } else {
+                        selectedComponent["community"] = false;
+                    }
+                    $.ajax({
+                        url: Common.apiUrl + "/api/v1/orchestration/managers/"+thisView.currentConfigManager.id+"/components/"+selectedComponent["_id"]+"?_method=PUT",
+                        type: "POST",
+                        contentType: 'application/x-www-form-urlencoded',
+                        dataType: 'json',
+                        data: JSON.stringify(selectedComponent),
+                        success: function(data) {
+                            thisView.fetchConfigManagers();
+                        },
+                        error: function(jqXHR) {
+                            Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                        }
+                    });
+                }
             }
         },
 
