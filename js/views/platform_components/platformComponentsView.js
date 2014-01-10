@@ -92,20 +92,20 @@ define([
                     case "chef":
                         componentName = "Cookbook Name";
                         this.components = this.currentConfigManager.attributes.cookbooks;
-                        ignoredComponentsLabel = "Community Cookbooks";
+                        ignoredComponentsLabel = "Ignored Cookbooks";
                         break;
                 }
 
                 if(this.components && this.components.length > 0) {
                     var thisView = this;
+                    $("#continuous_integration_table_label").html("Continuous Integration Tests - " + this.currentConfigManager.attributes.name);
                     $("#continuous_integration_table").empty();
                     // Build Header of CI Table
-                    var headerColumns = "<th>"+componentName+"</th>";
+                    var headerColumns = "<th style='width:100px;'>Community</th><th>"+componentName+"</th>";
                     $.each(this.components[0]["status"], function(key, value) {
                         var columnName = thisView.readify(key);
                         headerColumns += "<th width='150px;'>" + columnName + "</th>";
                     });
-                    headerColumns += "<th style='width:100px;'>Community</th>";
                     $("#continuous_integration_table").append("<thead><tr>"+headerColumns+"</tr></thead>");
                     // Build Body of CI Table
                     var ignored_components = [];
@@ -118,14 +118,13 @@ define([
                             });
                         } else {
                             for(var i=0; i<Object.keys(thisView.components[0]["status"]).length; i++) {
-                                rowContents += "<td><img src='/images/statusTerminated.gif'/></td>";
+                                rowContents += "<td><img src='/images/disrupted.gif'/></td>";
                             }
                         }
                         if(value["community"]) {
                             ignored_components.push(value);
                         } else {
-                            rowContents += "<td><input id='"+value["_id"]+"' type='checkbox' class='component-checkbox'/></td>";
-                            $("#continuous_integration_table").append("<tr>"+rowContents+"</tr>");
+                            $("#continuous_integration_table").append("<tr><td><input id='"+value["_id"]+"' type='checkbox' class='component-checkbox'/></td>"+rowContents+"</tr>");
                         }
                     });
 
@@ -135,14 +134,16 @@ define([
                         $("#community_components_label").html(ignoredComponentsLabel);
                         $("#community_components_label").show();
                         // Build Header of Ignored Components (Community) Table
-                        $("#ignored_components_table").append("<thead><tr><th>"+componentName+"</th><th style='width:100px;'>Community</th></tr></thead>");
+                        $("#ignored_components_table").append("<thead><tr><th style='width:100px;'>Community</th><th>"+componentName+"</th></tr></thead>");
                         // Build Body of Ignored Components (Community) Table
                         $.each(ignored_components, function(index, value) {
-                            $("#ignored_components_table").append("<tr><td>"+value["name"]+"</td><td><input id='"+value["_id"]+"' type='checkbox' class='component-checkbox' checked/></td></tr>");
+                            $("#ignored_components_table").append("<tr><td><input id='"+value["_id"]+"' type='checkbox' class='component-checkbox' checked/></td><td>"+value["name"]+"</td></tr>");
                         });
                     } else {
                         $("#community_components_label").hide();
                     }
+                } else {
+                    $("#continuous_integration_table_label").html("Continuous Integration Tests Not Available.");   
                 }
             } 
         },
@@ -163,24 +164,24 @@ define([
                 case "OUT_OF_SYNC":
                 case "FAILING":
                     // Red Light
-                    htmlString = "<img src='/images/statusTerminated.gif'/>";
+                    htmlString = "<img src='/images/disrupted.gif' width='20px'/>";
                     break;
                 case "TBD":
                     // Yellow Light
-                    htmlString = "<img src='/images/statusChanging.gif'/>";
+                    htmlString = "<img src='/images/issues.gif' width='20px'/>";
                     break;
                 case "PASSING":
                 case "IN_SYNC":
                     // Green Light
-                    htmlString = "<img src='/images/statusRunning.gif'/>";
+                    htmlString = "<img src='/images/healthy.gif' width='20px'/>";
                     break;
                 case "NONE":
                     // Grey Light
-                    htmlString = "<img src='/images/statusNone.png' width='16px'/>";
+                    htmlString = "<img src='/images/grey.png' width='20px'/>";
                     break;
                 default:
                     // Grey Light
-                    htmlString = "<img src='/images/statusNone.png' width='16px'/>";
+                    htmlString = "<img src='/images/grey.png' width='20px'/>";
                     break;
             }
             return htmlString;
