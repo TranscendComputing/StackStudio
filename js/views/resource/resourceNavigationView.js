@@ -243,6 +243,24 @@ define([
             }
         },
 
+        populateResourceTable: function(row, service, table){
+            // debugger
+            $(table+row).append($("<td></td>").attr({
+                "id": service.type,
+                "class": "resources selectable_item"
+            }));
+            $("#"+service.type).append($("<a></a>").attr({
+                "id": service.type+"Link",
+                "class": "resource_link"
+            }).text(service.name));
+            row++;
+            //reset row if greater than 3
+            if(row > 3) {
+                row = 1;
+            }
+            return row;
+        },
+
         cloudSelection: function (cloudProvider) {
             this.cloudProvider = cloudProvider;
             sessionStorage['selected_cloud'] = this.cloudProvider;
@@ -256,84 +274,49 @@ define([
             var row = 1;
             $("#resource_table").empty();
             $.each(resourceNav.cloudDefinitions[this.cloudProvider].native_services, function(index, service) {
-                //Check Enabled Services
-                var addService = false;
-                var addServiceOS = false;
                 if(permissions.length > 0 || no_governance.length < 1){
-                    addService = true;
-                    addServiceOS = true;
-                    enabled_services_os = topstack_enabled;
-                }else{
-                    $.each(JSON.parse(sessionStorage.group_policies), function(index,value){
-                        if(value != null){
-                            enabled_services = value.group_policy.aws_governance.enabled_services;
-                            enabled_services_os = value.group_policy.os_governance.enabled_services;
+                    row = resourceNav.populateResourceTable(row,service, "#native_row" );
+                }
+                $.each(JSON.parse(sessionStorage.group_policies), function(index,value){
+                    if(value != null){
+                        enabled_services = value.group_policy.aws_governance.enabled_services;
+                        enabled_services_os = value.group_policy.os_governance.enabled_services;
+                        if(resourceNav.cloudProvider === "aws"){
                             if($.inArray(service.name, enabled_services) !== -1){
-                                addService = true;
-                            }
-                            if($.inArray(service.name, enabled_services_os) !== -1){
-                                addServiceOS = true;
+                                row = resourceNav.populateResourceTable(row,service, "#native_row" );
+                            }else if(!(enabled_services instanceof Array)){
+                                if(service.name === enabled_services){
+                                   row = resourceNav.populateResourceTable(row,service, "#native_row" ); 
+                                }
                             }
                         }
-                    });
-                }
-                //hack
-                var cname = location.href.split("#resources/")[1].split("/")[0];
-                // debugger
-                if(addService && cname === 'aws'){
-                    $("#native_row"+row).append($("<td></td>").attr({
-                        "id": service.type,
-                        "class": "resources selectable_item"
-                    }));
-                    $("#"+service.type).append($("<a></a>").attr({
-                        "id": service.type+"Link",
-                        "class": "resource_link"
-                    }).text(service.name));
-                    row++;
-                    //reset row if greater than 3
-                    if(row > 3) {
-                        row = 1;
+                        if(resourceNav.cloudProvider === "openstack"){
+                            if($.inArray(service.name, enabled_services_os) !== -1){
+                                row = resourceNav.populateResourceTable(row,service, "#native_row" );
+                            }else if(!(enabled_services_os instanceof Array)){
+                                if(service.name === enabled_services_os){
+                                   row = resourceNav.populateResourceTable(row,service, "#native_row" ); 
+                                }
+                            }
+                        }
                     }
-                }
-                if(addServiceOS && cname === 'openstack'){
-                    $("#native_row"+row).append($("<td></td>").attr({
-                        "id": service.type,
-                        "class": "resources selectable_item"
-                    }));
-                    $("#"+service.type).append($("<a></a>").attr({
-                        "id": service.type+"Link",
-                        "class": "resource_link"
-                    }).text(service.name));
-                    row++;
-                    //reset row if greater than 3
-                    if(row > 3) {
-                        row = 1;
-                    }
-                }
-            });
+                });
+            });           
             row = 1;
+            var count = 0;
+            //debugger
             if(topstack_enabled !== undefined && topstack_enabled.length > 0) {
                 $("#topstack_services_table, #topstack_service_label").show();
                 $("#native_services_table").css("width", "30%");
                 $("#topstack_services_table").css("width", "60%");
                 $.each(topstack_enabled, function(index, service) {
                     if($.inArray(service.name, enabled_services_os) !== -1 || permissions.length > 0 || no_governance.length < 1){
-                        $("#topstack_row"+row).append($("<td></td>").attr({
-                            "id": service.type,
-                            "class": "resources selectable_item"
-                            }));
-                            $("#"+service.type).append($("<a></a>").attr({
-                                "id": service.type+"Link",
-                                "class": "resource_link"
-                            }).text(service.name));
-                            row++;
-                            //reset row if greater than 3
-                            if(row > 3) {
-                                row = 1;
-                            }
+                        row = resourceNav.populateResourceTable(row,service, "#topstack_row" );
+                        count++;
                     }
                 });
-            }else {
+            }
+            if(count < 1) {
                 $("#topstack_services_table, #topstack_service_label").hide();
                 $("#native_services_table").css("width", "90%");
             }
