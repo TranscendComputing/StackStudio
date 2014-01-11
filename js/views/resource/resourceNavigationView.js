@@ -164,6 +164,7 @@ define([
             }));
         },
         addCloud: function( cloudCredential ) {
+            //debugger
             var cloudProvider = cloudCredential.get("cloud_provider");
             var resourceNav = this;
             var cloudPolicies = JSON.parse(sessionStorage.group_policies);
@@ -243,8 +244,20 @@ define([
             }
         },
 
-        populateResourceTable: function(row, service, table){
-            // debugger
+        populateResourceTable: function(row, service, enabled_services, table){
+            //debugger
+            if(enabled_services){
+                if(enabled_services instanceof Array){
+                    if($.inArray(service.name, enabled_services) === -1){
+                        return row;
+                    }
+                }else if(service.name !== enabled_services){
+                   return row; 
+                }
+            }
+            if(enabled_services === undefined){
+                return row;
+            }        
             $(table+row).append($("<td></td>").attr({
                 "id": service.type,
                 "class": "resources selectable_item"
@@ -260,69 +273,60 @@ define([
             }
             return row;
         },
+        cloudSelectionIterator: function(collection,formElement){
+            //debugger
+            var resourceNav = this;
+            var provider = resourceNav.cloudProvider;
+            var permissions = JSON.parse(sessionStorage.permissions);
+            var governance = JSON.parse(sessionStorage.group_policies);      
+            var row = 1;
+            $.each(collection, function(index, service) {
+                if(permissions.length > 0 || governance.length < 1){
+                    row = resourceNav.populateResourceTable(row,service,false, formElement );
+                }else if(formElement === "#topstack_row" && governance.length > 0){
+                    var topstack_enabled_services = governance[0].group_policy.os_governance.enabled_services;
+                    row = resourceNav.populateResourceTable(row,service,topstack_enabled_services,formElement);
+                }
+                else{
+                    $.each(governance, function(index,value){
+                        if(value != null){
+                            $.each(value.group_policy, function(i,policy){
+                                if(policy.hasOwnProperty('enabled_cloud')){
+                                    if(policy.enabled_cloud.toLowerCase() === resourceNav.cloudProvider){
+                                            row = resourceNav.populateResourceTable(row,service,policy.enabled_services, formElement );
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            });           
+        },
 
         cloudSelection: function (cloudProvider) {
             this.cloudProvider = cloudProvider;
             sessionStorage['selected_cloud'] = this.cloudProvider;
             var resourceNav = this;
-            var enabled_services = [];
-            var enabled_services_os = [];
             var topstack_enabled = resourceNav.cloudDefinitions[this.cloudProvider].topstack_services;
-            var permissions = JSON.parse(sessionStorage.permissions);
-            var no_governance = JSON.parse(sessionStorage.group_policies);
             //Add the services of the cloud to the resource table
-            var row = 1;
             $("#resource_table").empty();
-            $.each(resourceNav.cloudDefinitions[this.cloudProvider].native_services, function(index, service) {
-                if(permissions.length > 0 || no_governance.length < 1){
-                    row = resourceNav.populateResourceTable(row,service, "#native_row" );
-                }
-                $.each(JSON.parse(sessionStorage.group_policies), function(index,value){
-                    if(value != null){
-                        enabled_services = value.group_policy.aws_governance.enabled_services;
-                        enabled_services_os = value.group_policy.os_governance.enabled_services;
-                        if(resourceNav.cloudProvider === "aws"){
-                            if($.inArray(service.name, enabled_services) !== -1){
-                                row = resourceNav.populateResourceTable(row,service, "#native_row" );
-                            }else if(!(enabled_services instanceof Array)){
-                                if(service.name === enabled_services){
-                                   row = resourceNav.populateResourceTable(row,service, "#native_row" ); 
-                                }
-                            }
-                        }
-                        if(resourceNav.cloudProvider === "openstack"){
-                            if($.inArray(service.name, enabled_services_os) !== -1){
-                                row = resourceNav.populateResourceTable(row,service, "#native_row" );
-                            }else if(!(enabled_services_os instanceof Array)){
-                                if(service.name === enabled_services_os){
-                                   row = resourceNav.populateResourceTable(row,service, "#native_row" ); 
-                                }
-                            }
-                        }
-                    }
-                });
-            });           
-            row = 1;
-            var count = 0;
+            this.cloudSelectionIterator(resourceNav.cloudDefinitions[this.cloudProvider].native_services,"#native_row");
             //debugger
-            if(topstack_enabled !== undefined && topstack_enabled.length > 0) {
+            if(topstack_enabled !== undefined) {
                 $("#topstack_services_table, #topstack_service_label").show();
                 $("#native_services_table").css("width", "30%");
                 $("#topstack_services_table").css("width", "60%");
-                $.each(topstack_enabled, function(index, service) {
-                    if($.inArray(service.name, enabled_services_os) !== -1 || permissions.length > 0 || no_governance.length < 1){
-                        row = resourceNav.populateResourceTable(row,service, "#topstack_row" );
-                        count++;
-                    }
-                });
+                this.cloudSelectionIterator(topstack_enabled,"#topstack_row");
             }
-            if(count < 1) {
-                $("#topstack_services_table, #topstack_service_label").hide();
-                $("#native_services_table").css("width", "90%");
+            if( $("#topstack_row1").children().length < 1) {
+                 $("#topstack_services_table, #topstack_service_label").hide();
+                 $("#native_services_table").css("width", "90%");
             }
-
+            if($("#native_row1").children().length < 1){
+                $("#native_services_table, #native_service_label").hide();
+                $("#topstack_services_table").css("width", "90%");
+            }
             $("#cloud_nav").html(this.crumbTemplate({pathElt: this.cloudDefinitions[this.cloudProvider].name}));
-            //debugger
             this.refreshCloudSpecs();
         },
 
