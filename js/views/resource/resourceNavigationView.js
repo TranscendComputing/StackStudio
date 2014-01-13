@@ -166,26 +166,11 @@ define([
         addCloud: function( cloudCredential ) {
             //debugger
             var cloudProvider = cloudCredential.get("cloud_provider");
-            var resourceNav = this;
-            var cloudPolicies = JSON.parse(sessionStorage.group_policies);
-            var default_cloud = "";
+            var resourceNav = this;      
             if(cloudProvider) {
                 cloudProvider = cloudProvider.toLowerCase();
                 var found = false;
                 var selected_cloud = sessionStorage['selected_cloud'];
-                //check if cloud is enabled.
-                if(cloudPolicies.length > 0){
-                    found = this.enableCloud(cloudPolicies, cloudProvider);
-                    default_cloud = cloudPolicies[0].group_policy.org_governance.default_cloud.toLowerCase();
-                }
-                if($("#cloud_coverflow").children().length === 0 ){
-                    if( selected_cloud === undefined && default_cloud !== "" && default_cloud !== "none"){
-                        this.addToCarousel(default_cloud);
-                    } 
-                    if( selected_cloud !== undefined){
-                        this.addToCarousel(selected_cloud);
-                    }
-                }
                 $.each($("#cloud_coverflow").children(), function (index, coverFlowCloud) {
                     if(coverFlowCloud.id === cloudProvider ) {
                         found = true;
@@ -214,12 +199,28 @@ define([
                 'movecallback':function(item) {
                     if( $(item).attr("id") !== resourceNav.cloudProvider )
                     {
-                        if(resourceNav.cloudProvider === "aws"){
-                            $("#cloud_coverflow").coverscroll("prev");
-                        }else if(resourceNav.cloudProvider === "google"){
-                            $("#cloud_coverflow").coverscroll("next");
+                        var select = resourceNav.cloudProvider;
+                        if($(".selectedItem").attr('id') === "aws"){
+                            if(select === "google"){
+                                $("#cloud_coverflow").coverscroll("next");
+                            }else if(select === "openstack"){
+                                $("#cloud_coverflow").coverscroll("prev");
+                            }
+                        }else if($(".selectedItem").attr('id') === "openstack"){
+                            if(select === "aws"){
+                                $("#cloud_coverflow").coverscroll("next");
+                            }else if(select === "google"){
+                                $("#cloud_coverflow").coverscroll("next");
+                                $("#cloud_coverflow").coverscroll("next");
+                            }
+                        }else if($(".selectedItem").attr('id') === "google"){
+                            if(select === "aws"){
+                                $("#cloud_coverflow").coverscroll("prev");
+                            }else if(select === "openstack"){
+                                $("#cloud_coverflow").coverscroll("prev");
+                                $("#cloud_coverflow").coverscroll("prev");
+                            }
                         }
-                        //$("#cloud_coverflow").coverscroll("prev");
                     }
                 } // callback function triggered after click on an item - parameter is the item's jQuery object
             });
