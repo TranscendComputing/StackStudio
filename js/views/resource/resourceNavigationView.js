@@ -95,17 +95,20 @@ define([
 
         render: function () {
             if($("#cloud_coverflow").children().length > 0){
+                //debugger
                 if(this.resourceApp) {
                     this.resourceApp.remove();
                 } else {
                     var policy;
                     var firstCloudProvider;
-                    // var firstCloudProvider = this.cloudCredentials.first().attributes.cloud_provider;
-                    // firstCloudProvider = firstCloudProvider.toLowerCase();
                     policy = JSON.parse(sessionStorage.group_policies);
                     if (policy.length > 0){
                         firstCloudProvider = policy[0].group_policy.org_governance.default_cloud.toLowerCase();
                     }else{
+                        firstCloudProvider = $("#cloud_coverflow").children()[0].id;
+                    }
+                    //Google Cloud Hack until we get governance setup. Remove when we get governance.
+                    if($("#cloud_coverflow").children().first().attr('id') === "google" && $("#cloud_coverflow").children().length === 1 ){
                         firstCloudProvider = $("#cloud_coverflow").children()[0].id;
                     }
                     if(this.cloudProvider) {
@@ -139,6 +142,7 @@ define([
         },
 
         enableCloud: function(cloudPolicies, provider){
+            //debugger
             var check = false;
             //Admin check
             if(JSON.parse(sessionStorage.permissions).length > 0){
@@ -166,11 +170,20 @@ define([
         addCloud: function( cloudCredential ) {
             //debugger
             var cloudProvider = cloudCredential.get("cloud_provider");
-            var resourceNav = this;      
+            var resourceNav = this;
+            var cloudPolicies = JSON.parse(sessionStorage.group_policies);      
             if(cloudProvider) {
                 cloudProvider = cloudProvider.toLowerCase();
                 var found = false;
                 var selected_cloud = sessionStorage['selected_cloud'];
+                //Check if cloud is enabled before adding to coverflow
+                if(cloudPolicies.length > 0){
+                    found = this.enableCloud(cloudPolicies,cloudProvider);
+                }
+                //Google Hack until google policy feature is added. Remove after.
+                if(cloudProvider === "google"){
+                    found = false;
+                }
                 $.each($("#cloud_coverflow").children(), function (index, coverFlowCloud) {
                     if(coverFlowCloud.id === cloudProvider ) {
                         found = true;
@@ -199,27 +212,14 @@ define([
                 'movecallback':function(item) {
                     if( $(item).attr("id") !== resourceNav.cloudProvider )
                     {
+                        //debugger
                         var select = resourceNav.cloudProvider;
-                        if($(".selectedItem").attr('id') === "aws"){
-                            if(select === "google"){
-                                $("#cloud_coverflow").coverscroll("next");
-                            }else if(select === "openstack"){
-                                $("#cloud_coverflow").coverscroll("prev");
-                            }
-                        }else if($(".selectedItem").attr('id') === "openstack"){
-                            if(select === "aws"){
-                                $("#cloud_coverflow").coverscroll("next");
-                            }else if(select === "google"){
-                                $("#cloud_coverflow").coverscroll("next");
-                                $("#cloud_coverflow").coverscroll("next");
-                            }
-                        }else if($(".selectedItem").attr('id') === "google"){
-                            if(select === "aws"){
-                                $("#cloud_coverflow").coverscroll("prev");
-                            }else if(select === "openstack"){
-                                $("#cloud_coverflow").coverscroll("prev");
-                                $("#cloud_coverflow").coverscroll("prev");
-                            }
+                        var leftAttr = $("#cloud_coverflow").children().first().attr('id');
+                        var rightAttr = $("#cloud_coverflow").children().last().attr('id');
+                        if(select === leftAttr){
+                            $("#cloud_coverflow").coverscroll("prev");
+                        }else if(select === rightAttr){
+                            $("#cloud_coverflow").coverscroll("next");
                         }
                     }
                 } // callback function triggered after click on an item - parameter is the item's jQuery object
@@ -279,17 +279,23 @@ define([
             var resourceNav = this;
             var provider = resourceNav.cloudProvider;
             var permissions = JSON.parse(sessionStorage.permissions);
-            var governance = JSON.parse(sessionStorage.group_policies);      
+            var governance = JSON.parse(sessionStorage.group_policies);
+            //Google Hack until Google governance is added.
+            var googleHack = collection;      
             var row = 1;
             $.each(collection, function(index, service) {
+                //debugger
                 if(permissions.length > 0 || governance.length < 1){
                     row = resourceNav.populateResourceTable(row,service,false, formElement );
                 }else if(formElement === "#topstack_row" && governance.length > 0){
                     var topstack_enabled_services = governance[0].group_policy.os_governance.enabled_services;
                     row = resourceNav.populateResourceTable(row,service,topstack_enabled_services,formElement);
+                }else if(googleHack.length === 4){
+                    row = resourceNav.populateResourceTable(row,service,false,formElement);
                 }
                 else{
                     $.each(governance, function(index,value){
+                        //debugger
                         if(value != null){
                             $.each(value.group_policy, function(i,policy){
                                 if(policy.hasOwnProperty('enabled_cloud')){
@@ -305,6 +311,7 @@ define([
         },
 
         cloudSelection: function (cloudProvider) {
+            //debugger
             this.cloudProvider = cloudProvider;
             sessionStorage['selected_cloud'] = this.cloudProvider;
             var resourceNav = this;
