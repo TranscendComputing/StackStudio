@@ -113,7 +113,12 @@ define([
                         var rowContents = "<td>"+value["name"]+"</td>";
                         if(value["status"]) {
                             $.each(value["status"], function( key, statusValue) {
-                                var icon = thisView.determineIcon(statusValue);
+                                var icon;
+                                if(key === 'timestamp') {
+                                    icon = statusValue;
+                                } else {
+                                    icon = thisView.determineIcon(statusValue);
+                                }
                                 rowContents += "<td>"+icon+"</td>";
                             });
                         } else {
@@ -153,7 +158,7 @@ define([
             $.each(stringSplit, function(index, value) {
                 stringSplit[index] = value.charAt(0).toUpperCase() + value.slice(1);
             });
-            return stringSplit.join(" ");
+            return stringSplit.join(" ").replace('--', '.');
         },
 
         determineIcon: function(statusString) {
@@ -162,6 +167,7 @@ define([
                 case "VERSION_NOT_FOUND_IN_REPO":
                 case "NOT_FOUND_IN_REPO":
                 case "OUT_OF_SYNC":
+                case "FAILURE":
                 case "FAILING":
                     // Red Light
                     htmlString = "<img src='/images/disrupted.gif' width='20px'/>";
@@ -171,6 +177,7 @@ define([
                     htmlString = "<img src='/images/issues.gif' width='20px'/>";
                     break;
                 case "PASSING":
+                case "PASSED":
                 case "IN_SYNC":
                     // Green Light
                     htmlString = "<img src='/images/healthy.gif' width='20px'/>";
