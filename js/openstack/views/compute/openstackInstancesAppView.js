@@ -14,13 +14,14 @@ define([
         '/js/openstack/models/compute/openstackInstance.js',
         '/js/openstack/collections/compute/openstackInstances.js',
         '/js/openstack/views/compute/openstackInstanceCreateView.js',
+        '/js/openstack/views/compute/openstackInstanceChangeGroupsView.js',
         '/js/topstack/collections/cloud_watch/topstackMetricStatistics.js',
         'icanhaz',
         'common',
         'morris',
         'spinner',
         'jquery.dataTables'
-], function( $, _, Backbone, ResourceAppView, openstackInstanceAppTemplate, Instance, Instances, OpenstackInstanceCreate, MetricStatistics, ich, Common, Morris, Spinner ) {
+], function( $, _, Backbone, ResourceAppView, openstackInstanceAppTemplate, Instance, Instances, OpenstackInstanceCreate, OpenstackInstanceChangeGroups, MetricStatistics, ich, Common, Morris, Spinner ) {
     'use strict';
 
     // Openstack Instance Application View
@@ -54,6 +55,8 @@ define([
         subtype: "instances",
         
         CreateView: OpenstackInstanceCreate,
+
+        ChangeGroupsView: OpenstackInstanceChangeGroups,
         
         initialMonitorLoad: false,
         
@@ -175,6 +178,9 @@ define([
                 break;
             case "Terminate":
                 instance.terminate(this.credentialId);
+                break;
+            case "Change Security Groups":
+                this.changeGroups();
                 break;
             /*
             case "Disassociate Address":
@@ -338,7 +344,19 @@ define([
                 labels: ['Network Out Bytes'],
                 lineColors: ["#FF0066"]
             });
+        },
+
+        changeGroups: function(){
+            var ChangeGroupsView = this.ChangeGroupsView;
+            if(this.region) {
+                this.changeGroupsDialog = new ChangeGroupsView({instance: this.collection.get(this.selectedId), cred_id: this.credentialId, region: this.region});
+            }else {
+                this.changeGroupsDialog = new ChangeGroupsView({instance: this.collection.get(this.selectedId), cred_id: this.credentialId});
+            }
+            this.changeGroupsDialog.render();
+
         }
+
     });
 
     return OpenstackInstancesAppView;
