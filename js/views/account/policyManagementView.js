@@ -706,6 +706,10 @@ define([
         //     return cells;
         // },
 
+        /**
+        *   Determines the behavior of the textbox next to a checkbox in the form. It disables the
+        *   text box if the checkbox is checked.
+        */
         checkboxChanged: function(lambda){
             switch(lambda.target.id)
             {
