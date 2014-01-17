@@ -746,6 +746,9 @@ define([
             case "check_max_volumes_os":
                 this.disableInput($("#max_volumes_os"),$("#"+lambda.target.id).is(':checked'));
                 break;
+            case "check_max_load_balancers_os":
+                this.disableInput($("#max_load_balancers_os"),$("#"+lambda.target.id).is(':checked'));
+                break;
             }
         },
 
