@@ -752,6 +752,9 @@ define([
             case "check_max_security_groups_os":
                 this.disableInput($("#max_security_groups_os"),$("#"+lambda.target.id).is(':checked'));
                 break;
+            case "check_max_security_group_rules_os":
+                this.disableInput($("#max_security_group_rules_os"),$("#"+lambda.target.id).is(':checked'));
+                break;
             case "check_max_ips_os":
                 this.disableInput($("#max_ips_os"),$("#"+lambda.target.id).is(':checked'));
                 break;
