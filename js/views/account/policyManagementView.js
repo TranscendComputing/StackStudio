@@ -250,7 +250,6 @@ define([
         disableTextboxInputs: function(nav){
             var textbox = "";
             $('.input-append input[type=text]').each(function(i, obj){
-                //debugger
                 textbox = $("#"+obj.id);
                 if (textbox.val() === ""){
                     nav.disableInput(textbox,true);
@@ -264,7 +263,6 @@ define([
             }
         },
         clickCloudEnable: function(event){
-            //debugger
             if($(event.target).attr('checked') === "checked"){
                 if($(event.target).attr('id') === "enabled_cloud_aws"){
                     $(".AWS").show("slow");
@@ -407,11 +405,13 @@ define([
               }
             }
             if(indicator !== "org"){
-                this.alarms = p.default_alarms;
+                if(p.default_alarms){
+                    this.alarms = p.default_alarms;
+                }
                 for (var j in this.alarms){
                     $("#alarm_table_"+ indicator).append("<tr><td>"+this.alarms[j].namespace+"</td><td>"+this.alarms[j].metric_name+"</td><td>"+this.alarms[j].threshold+"</td><td>"+this.alarms[j].period+"</td><td><a class='btn btn-mini btn-danger remove_alarm'><i class='fa fa-minus-circle icon-white'></i></a></td></tr>");
                 }
-
+                
                 if(this.model.attributes[governance].default_images)
                 {
                     var k;
