@@ -163,6 +163,7 @@ define([
                 this.model = this.rootView.policies.get(this.policy);
                 this.addEnabledClouds();
                 this.populateForm(this.model);
+                this.disableTextboxInputs(this);
                 //this.renderButtons();
             }else{
                 this.prePopForm();
@@ -246,8 +247,22 @@ define([
 
         },
 
+        disableTextboxInputs: function(nav){
+            var textbox = "";
+            $('.input-append input[type=text]').each(function(i, obj){
+                textbox = $("#"+obj.id);
+                if (textbox.val() === ""){
+                    nav.disableInput(textbox,true);
+                }
+            });
+            if( $("#project_name_toggle_aws").is(':checked') ){
+                nav.disableInput($("#project_name_aws"),false);
+            }
+            if( $("#project_name_toggle_os").is(':checked')){
+                nav.disableInput($("#project_name_os"),false);
+            }
+        },
         clickCloudEnable: function(event){
-            //debugger
             if($(event.target).attr('checked') === "checked"){
                 if($(event.target).attr('id') === "enabled_cloud_aws"){
                     $(".AWS").show("slow");
@@ -369,32 +384,34 @@ define([
             return o;
         },
         
-        populateFormHelper: function(indicator,p){
+        populateFormHelper: function(indicator,p,form){
             var governance = indicator + "_governance";
             for (var key in p) {
               if (p.hasOwnProperty(key)) {
-                var typ = $( "input[name='"+key+"']" ).prop("type");
+                var typ = $( form + " input[name='"+key+"']" ).prop("type");
                 if(typ === "checkbox"){
                     if(typeof p[key] === 'string'){
-                        $( "input[name='"+key+"'][value='"+p[key]+"']" ).attr('checked','checked');
+                        $( form + " input[name='"+key+"'][value='"+p[key]+"']" ).attr('checked','checked');
                     }else{
                         for (var i in p[key]) {
-                          $( "input[name='"+key+"'][value='"+p[key][i]+"']" ).attr('checked','checked');
+                          $( form + " input[name='"+key+"'][value='"+p[key][i]+"']" ).attr('checked','checked');
                         }
                     }
                 }else if(typ === "radio"){
-                    $( "input[name='"+key+"'][value='"+p[key]+"']" ).attr('checked','checked');
+                    $( form + " input[name='"+key+"'][value='"+p[key]+"']" ).attr('checked','checked');
                 }else{
                     $("#"+key+"_"+ indicator).val(p[key]);
                 }
               }
             }
             if(indicator !== "org"){
-                this.alarms = p.default_alarms;
+                if(p.default_alarms){
+                    this.alarms = p.default_alarms;
+                }
                 for (var j in this.alarms){
                     $("#alarm_table_"+ indicator).append("<tr><td>"+this.alarms[j].namespace+"</td><td>"+this.alarms[j].metric_name+"</td><td>"+this.alarms[j].threshold+"</td><td>"+this.alarms[j].period+"</td><td><a class='btn btn-mini btn-danger remove_alarm'><i class='fa fa-minus-circle icon-white'></i></a></td></tr>");
                 }
-
+                
                 if(this.model.attributes[governance].default_images)
                 {
                     var k;
@@ -422,9 +439,9 @@ define([
             $('input:checkbox').removeAttr('checked');
             $("#policy_name").val(model.attributes.name);
             var p = model.attributes;
-            this.populateFormHelper("aws",p["aws_governance"]);
-            this.populateFormHelper("os",p["os_governance"]);
-            this.populateFormHelper("org",p["org_governance"]);
+            this.populateFormHelper("aws",p["aws_governance"],"#content_aws form");
+            this.populateFormHelper("os",p["os_governance"], "#content_os form");
+            this.populateFormHelper("org",p["org_governance"], "#content_org form");
         },
 
         refreshSession: function(){
@@ -706,29 +723,36 @@ define([
         //     return cells;
         // },
 
+        /**
+        *   Determines the behavior of the textbox next to a checkbox in the form. It disables the
+        *   text box if the checkbox is checked.
+        */
         checkboxChanged: function(lambda){
             switch(lambda.target.id)
             {
-            case "check_rds":
+            case "check_rds_aws":
                 this.disableInput($("#max_rds_aws"),$("#"+lambda.target.id).is(':checked'));
                 break;
-            case "check_max_on_demand":
+            case "check_max_on_demand_aws":
                 this.disableInput($("#max_on_demand_aws"),$("#"+lambda.target.id).is(':checked'));
                 break;
-            case "check_max_reserved":
+            case "check_max_reserved_aws":
                 this.disableInput($("#max_reserved_aws"),$("#"+lambda.target.id).is(':checked'));
                 break;
-            case "check_max_dedicated":
+            case "check_max_dedicated_aws":
                 this.disableInput($("#max_dedicated_aws"),$("#"+lambda.target.id).is(':checked'));
                 break;
-            case "check_max_spot":
+            case "check_max_spot_aws":
                 this.disableInput($("#max_spot_aws"),$("#"+lambda.target.id).is(':checked'));
                 break;
-            case "check_max_in_autoscale":
+            case "check_max_in_autoscale_aws":
                 this.disableInput($("#max_in_autoscale_aws"),$("#"+lambda.target.id).is(':checked'));
                 break;
-            case "project_name_toggle":
-                this.disablePNInput($("#project_name_aws"),!$("#"+lambda.target.id).is(':checked'));
+            case "project_name_toggle_aws":
+                this.disableInput($("#project_name_aws"),!$("#"+lambda.target.id).is(':checked'));
+                break;
+            case "project_name_toggle_os":
+                this.disableInput($("#project_name_os"),!$("#"+lambda.target.id).is(':checked'));
                 break;
             case "check_max_on_demand_os":
                 this.disableInput($("#max_on_demand_os"),$("#"+lambda.target.id).is(':checked'));
@@ -742,6 +766,21 @@ define([
             case "check_max_volumes_os":
                 this.disableInput($("#max_volumes_os"),$("#"+lambda.target.id).is(':checked'));
                 break;
+            case "check_max_volumes_size_os":
+                this.disableInput($("#max_volumes_size_os"),$("#"+lambda.target.id).is(':checked'));
+                break;
+            case "check_max_load_balancers_os":
+                this.disableInput($("#max_load_balancers_os"),$("#"+lambda.target.id).is(':checked'));
+                break;
+            case "check_max_security_groups_os":
+                this.disableInput($("#max_security_groups_os"),$("#"+lambda.target.id).is(':checked'));
+                break;
+            case "check_max_security_group_rules_os":
+                this.disableInput($("#max_security_group_rules_os"),$("#"+lambda.target.id).is(':checked'));
+                break;
+            case "check_max_ips_os":
+                this.disableInput($("#max_ips_os"),$("#"+lambda.target.id).is(':checked'));
+                break;
             }
         },
 
@@ -751,19 +790,6 @@ define([
                 target.addClass("ui-state-disabled");
                 target.val("");
             }else{
-                target.removeAttr("disabled");
-                target.removeClass("ui-state-disabled");
-            }
-        },
-
-        disablePNInput: function(target,toggle){
-            if(toggle === true && !target.is(":focus")){
-                //$("#project_name_toggle").prop('checked', false);
-                target.attr("disabled", true);
-                target.addClass("ui-state-disabled");
-                target.val("");
-            }else{
-                //$("#project_name_toggle").prop('checked', false);
                 target.removeAttr("disabled");
                 target.removeClass("ui-state-disabled");
             }
