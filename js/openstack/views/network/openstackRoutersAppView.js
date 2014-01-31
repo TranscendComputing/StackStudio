@@ -14,9 +14,10 @@ define([
         '/js/openstack/models/network/openstackRouter.js',
         '/js/openstack/collections/network/openstackRouters.js',
         '/js/openstack/views/network/openstackRouterCreateView.js',
+        '/js/openstack/views/network/openstackRouterInterfaceCreateView.js',
         'icanhaz',
         'common'
-], function( $, _, Backbone, AppView, openstackRouterAppTemplate, Router, Routers, OpenstackRouterCreateView, ich, Common ) {
+], function( $, _, Backbone, AppView, openstackRouterAppTemplate, Router, Routers, OpenstackRouterCreateView, OpenstackRouterInterfaceCreateView, ich, Common ) {
 	'use strict';
 
 	// Openstack Application View
@@ -36,7 +37,7 @@ define([
 	    
         modelStringIdentifier: "id",
         
-        columns: ["name", "id", "external_gateway_info:network_id", "status"],
+        columns: ["name", "id", "status"],
         
         idColumnNumber: 1,
         
@@ -74,6 +75,16 @@ define([
         toggleActions: function(e) {
             //Disable any needed actions
         },
+
+        removeInterface: function(router) {
+            var options = {};
+            var issue = false;
+            debugger
+            options.subnet_id = router.subnet_id;
+            if(!issue) {
+                router.removeInterface(options, this.credentialId, this.region); 
+            }
+        },
         
         performAction: function(event) {
             var router = this.collection.get(this.selectedId);
@@ -83,7 +94,13 @@ define([
             case "Delete Router":
                 router.destroy(this.credentialId);
                 break;
+            case "Add Router Interface":
+                new OpenstackRouterInterfaceCreateView({cred_id: this.credentialId, router: router});
+                break;
+            case "Remove Router Interface":
+                this.removeInterface(router);
             }
+
         }
 	});
     

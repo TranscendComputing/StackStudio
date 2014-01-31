@@ -34,8 +34,8 @@ define([
             this.credentialId = options.cred_id;
             this.region = options.region;
             this.networks = new Networks();
-            // this.networks.on("reset", this.addAllNetworks, this);
-            // this.networks.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region}), reset: true });
+            this.networks.on("reset", this.addAllNetworks, this);
+            this.networks.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region}), reset: true });
             this.render();
         },
         
@@ -63,16 +63,19 @@ define([
         addAllNetworks: function() {
             $("#network_select").empty();
             this.networks.each(function(network) {
-                $("#network_select").append($("<option value="+network.attributes.id+">"+network.attributes.name+"</option>"));
+                if(network.attributes["router:external"]){
+                    $("#network_select").append($("<option value="+network.attributes.id+">"+network.attributes.name+"</option>"));
+                }
             });
         },
 
         create: function() {
             var newRouter = this.model;
             var options = {};
+            options.external_gateway_info = {};
             var issue = false;
 
-            // options.network_id = $("#network_select").val();
+            options.external_gateway_info.network_id = $("#network_select").val();
             if($("#name_input").val() !== "") {
                 options.name = $("#name_input").val();
             }

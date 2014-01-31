@@ -10,6 +10,8 @@
                         <li style="z-index: 1000">
                             <a id="action_button">Actions</a>
                             <ul>
+                                <li><a>Add Router Interface</a></li>
+                                <li><a>Remove Router Interface</a></li>
                                 <li><a>Delete Router</a></li>                 
                             </ul>
                         </li>
@@ -33,7 +35,6 @@
     </table>
     <div id="details" class="detail_panel"></div>
 </div>
-
 <script type="text/html" id="resource_detail">
     <div id="detail_tabs">
         <ul>
@@ -45,16 +46,16 @@
                     <tr><td><b>Name:</b></td>                 <td>{{ name }}</td></tr>
                     <tr><td><b>ID:</b></td>                   <td>{{ id }}</td></tr>
                     <tr><td><b>Tenant ID:</b></td>            <td><a href="#resources/openstack/{{region}}/identity/tenants/{{tenant_id}}">{{ tenant_id }}</a></td></tr>
-                    // <tr><td><b>Network ID:</b></td>           <td>{{ network_id }}</td></tr>
+                    <tr><td><b>Network ID:</b></td>           <td>{{ external_gateway_info.network_id }}</td></tr>
                     <tr><td><b>Admin State Up:</b></td>              <td>{{ admin_state_up }}</td></tr>
-                    // <tr><td><b>Device Owner:</b></td>              <td>{{ device_owner }}</td></tr>
-                    <tr><td><b>External Gateway:</b></td>              <td>{{ external_gateway_info }}</td></tr>
-                    // <tr><td><b>Fixed IPs:</b></td>
-                    // {{#fixed_ips}}
-                    // <tr><td><b>Subnet ID:</b></td>              <td><a href="#resources/openstack/{{region}}/network/networks/{{subnet_id}}">{{ subnet_id }}</a></td></tr>
-                    // <tr><td><b>IP Address:</b></td>              <td>{{ ip_address }}</td></tr>
-                    // {{/fixed_ips}}
-                    // <tr><td><b>Device ID:</b></td>                   <td>{{ device_id }}</td></tr>
+                    <tr><td><b>Device Owner:</b></td>              <td>{{ device_owner }}</td></tr>
+                    <tr><td><b>External Gateway:</b></td>              <td>{{ external_gateway_info.network_id }}</td></tr>
+                    <tr><td><b>Fixed IPs:</b></td>
+                    {{#fixed_ips}}
+                    <tr><td><b>Subnet ID:</b></td>              <td><a href="#resources/openstack/{{region}}/network/networks/{{subnet_id}}">{{ subnet_id }}</a></td></tr>
+                    <tr><td><b>IP Address:</b></td>              <td>{{ ip_address }}</td></tr>
+                    {{/fixed_ips}}
+                    <tr><td><b>Device ID:</b></td>                   <td>{{ device_id }}</td></tr>
                 </tbody>
             </table>
         </div>
