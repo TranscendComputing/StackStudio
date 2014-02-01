@@ -75,20 +75,9 @@ define([
         toggleActions: function(e) {
             //Disable any needed actions
         },
-
-        removeInterface: function(router) {
-            var options = {};
-            var issue = false;
-            //debugger
-            options.subnet_id = router.subnet_id;
-            if(!issue) {
-                router.removeInterface(options, this.credentialId, this.region); 
-            }
-        },
         
         performAction: function(event) {
             var router = this.collection.get(this.selectedId);
-            var routerApp = this;
             
             switch(event.target.text)
             {
@@ -99,7 +88,8 @@ define([
                 new OpenstackRouterInterfaceCreateView({cred_id: this.credentialId, router: router});
                 break;
             case "Remove Router Interface":
-                routerApp.removeInterface(router);
+                router.removeInterface(this.credentialId);
+                break;
             }
 
         }
