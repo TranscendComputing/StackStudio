@@ -35,9 +35,9 @@ define([
             this.sendAjaxAction(url, "POST", {"router": options}, "routerAppRefresh");
         },
 
-        removeInterface: function(credentialId) {
+        removeInterface: function(options,credentialId) {
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/network/routers/" + this.attributes.id + "/remove_router_interface?_method=PUT&cred_id=" + credentialId;
-            this.sendAjaxAction(url, "POST", undefined, "routerAppRefresh");
+            this.sendAjaxAction(url, "POST", {"router": options}, "routerAppRefresh");
         }
 
     });

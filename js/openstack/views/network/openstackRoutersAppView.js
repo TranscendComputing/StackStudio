@@ -58,7 +58,9 @@ define([
             'click #action_menu ul li': 'performAction',
             'click #resource_table tr': "clickOne",
             'click #add_interface_button': "clickAddInterface",
-            'click #interfaces_click': "clickInterfacesTab"
+            'click #interfaces_table tr': 'clickInterface',
+            'click #remove_interface_button': "clickRemoveInterface"
+            
         },
 
         initialize: function(options) {
@@ -81,6 +83,8 @@ define([
         
         toggleActions: function(e) {
             //Disable any needed actions
+            this.addAllInterfaces();
+            $("#remove_interface_button").hide();
         },
         addAllInterfaces: function(collection){
             if($("#interfaces_table").length !== 0){
@@ -89,7 +93,7 @@ define([
                 $("#interfaces_table").dataTable().fnClearTable();
                 this.ports.each(function(port) {
                     if(port.attributes.device_id === routerID){
-                        var rowData = [port.attributes.fixed_ips[0].ip_address,port.attributes.fixed_ips[0].subnet_id];
+                        var rowData = [port.attributes.fixed_ips[0].ip_address,port.attributes.id,port.attributes.fixed_ips[0].subnet_id];
                         $("#interfaces_table").dataTable().fnAddData(rowData);
                     }
                 });
@@ -106,12 +110,28 @@ define([
             });
             return check;
         },
-        clickInterfacesTab: function(){
-            this.addAllInterfaces();
-        },
         clickAddInterface: function(){
             var router = this.collection.get(this.selectedId);
             new OpenstackRouterInterfaceCreateView({cred_id: this.credentialId, router: router});
+        },
+        clickRemoveInterface: function(target){
+            var router = this.collection.get(this.selectedId);
+            var options = {};
+            options.subnet_id = this.selectedInterface[2];
+            router.removeInterface(options, this.credentialId);
+        },
+        clickInterface: function(event){
+            if($(event.target).parents('table').attr('id') === "interfaces_table" && ! $(event.target).hasClass("dataTables_empty") ){
+                this.selectInterface(event.currentTarget);
+            }
+        },
+
+        selectInterface: function(target){
+            $(".row_selected").removeClass('row_selected');
+            $(target).addClass('row_selected');
+            $("#remove_interface_button").show("slow");
+            this.selectedInterface = $("#interfaces_table").dataTable().fnGetData(target);
+            //this.removeInterfaceEntry();
         },
 
         performAction: function(event) {
@@ -121,9 +141,6 @@ define([
             {
             case "Delete Router":
                 router.destroy(this.credentialId);
-                break;
-            case "Remove Router Interface":
-                router.removeInterface(this.credentialId);
                 break;
             }
 
