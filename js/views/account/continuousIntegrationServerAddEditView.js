@@ -81,7 +81,6 @@ define([
         },
 
         save: function(urlValidation) {
-            var thisView = this;
             if(urlValidation) {
                 var options = {};
                 var issue = false;
@@ -117,7 +116,7 @@ define([
                     Common.errorDialog("Invalid Request", "Please supply all required fields.");
                 }
             } else {
-                thisView.displayValid(false, "#ci_url_input");
+                this.displayValid(false, "#ci_url_input");
                 Common.errorDialog("Invalid Request", "Unable to connect to the provided URL.");
             }
 
