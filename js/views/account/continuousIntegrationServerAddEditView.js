@@ -12,15 +12,16 @@ define([
         'views/dialogView',
         'text!templates/account/continuousIntegrationServerAddEditTemplate.html',
         '/js/models/continuousIntegrationServer.js',
-        'common'
-        
-], function( $, _, Backbone, DialogView, ciServerAddEditTemplate, CIServer, Common ) {
-    
+        'common',
+        '/js/util/url.js'
+
+], function( $, _, Backbone, DialogView, ciServerAddEditTemplate, CIServer, Common, URL ) {
+
     var CIServerAddEditView = DialogView.extend({
 
         template: undefined,
         ciServer: undefined,
-        
+
         events: {
             "dialogclose": "close"
         },
@@ -44,13 +45,15 @@ define([
                 modal: true,
                 buttons: {
                     Save: function () {
-                        createView.save();
+                        createView.validate();
                     },
                     Cancel: function() {
                         createView.cancel();
                     }
                 }
             });
+            // Bind save function to keep scope from the callback of URL.validate
+            _.bindAll(this, 'save');
             this.render();
         },
 
@@ -71,50 +74,55 @@ define([
             }
         },
 
-        save: function() {
-            var options = {};
-            var issue = false;
-            
-            if($("#ci_name_input").val().trim() === "") {
-                this.displayValid(false, "#ci_name_input");
-                issue = true;
-            }else {
-                this.displayValid(true, "#ci_name_input");
-                options["name"] = $("#ci_name_input").val();
-            }
+        validate: function() {
+            // This checks for valid URL, and returns true or false in the callback
+            // The second parameter is the callback
+            URL.validate($("#ci_url_input").val(), this.save);
+        },
 
-            if($("#ci_url_input").val().trim() === "") {
-                this.displayValid(false, "#ci_url_input");
-                issue = true;
-            }else {
-                this.displayValid(true, "#ci_url_input");
-                options["url"] = $("#ci_url_input").val();
-            }
+        save: function(urlValidation) {
+            var thisView = this;
+            if(urlValidation) {
+                var options = {};
+                var issue = false;
 
-            options["type"] = $("#ci_type_select").val();
-            options["org_id"] = sessionStorage.org_id;
-
-            if($("#ci_username_input").val().trim() !== "") {
-                options["username"] = $("#ci_username_input").val();
-            }
-            if($("#ci_password_input").val().trim() !== "") {
-                options["password"] = $("#ci_password_input").val();
-            }
-
-            if(!issue) {
-               if(this.ciServer) {
-                    this.ciServer.update(options);
+                if($("#ci_name_input").val().trim() === "") {
+                    this.displayValid(false, "#ci_name_input");
+                    issue = true;
                 }else {
-                    this.ciServer = new CIServer();
-                    this.ciServer.create(options);
+                    this.displayValid(true, "#ci_name_input");
+                    options["name"] = $("#ci_name_input").val();
                 }
-                this.close();
-            }else {
-                Common.errorDialog("Invalid Request", "Please supply all required fields.");
-            }
-        }
 
+                options["url"] = $("#ci_url_input").val();
+                options["type"] = $("#ci_type_select").val();
+                options["org_id"] = sessionStorage.org_id;
+
+                if($("#ci_username_input").val().trim() !== "") {
+                    options["username"] = $("#ci_username_input").val();
+                }
+                if($("#ci_password_input").val().trim() !== "") {
+                    options["password"] = $("#ci_password_input").val();
+                }
+
+                if(!issue) {
+                   if(this.ciServer) {
+                        this.ciServer.update(options);
+                    }else {
+                        this.ciServer = new CIServer();
+                        this.ciServer.create(options);
+                    }
+                    this.close();
+                }else {
+                    Common.errorDialog("Invalid Request", "Please supply all required fields.");
+                }
+            } else {
+                thisView.displayValid(false, "#ci_url_input");
+                Common.errorDialog("Invalid Request", "Unable to connect to the provided URL.");
+            }
+
+        }
     });
-    
+
     return CIServerAddEditView;
 });
