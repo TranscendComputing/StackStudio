@@ -17,7 +17,8 @@ define([
         '/js/openstack/views/network/openstackRouterCreateView.js',
         '/js/openstack/views/network/openstackRouterInterfaceCreateView.js',
         'icanhaz',
-        'common'
+        'common',
+        'jquery.dataTables'
 ], function( $, _, Backbone, AppView, openstackRouterAppTemplate, Router, Routers, Ports, OpenstackRouterCreateView, OpenstackRouterInterfaceCreateView, ich, Common ) {
 	'use strict';
 
@@ -55,7 +56,9 @@ define([
         events: {
             'click .create_button': 'createNew',
             'click #action_menu ul li': 'performAction',
-            'click #resource_table tr': "clickOne"
+            'click #resource_table tr': "clickOne",
+            'click #add_interface_button': "clickAddInterface",
+            'click #interfaces_click': "clickInterfacesTab"
         },
 
         initialize: function(options) {
@@ -66,9 +69,9 @@ define([
                 this.region = options.region;
             }
             this.ports = new Ports();
-            if(this.region && this.credentialId){
-                this.ports.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region}), reset: true });
-            }
+            this.ports.on("reset", this.addAllInterfaces, this);
+            this.ports.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region}), reset: true });
+            
             this.render();
             var routerApp = this;
             Common.vent.on("routerAppRefresh", function() {
@@ -78,32 +81,39 @@ define([
         
         toggleActions: function(e) {
             //Disable any needed actions
-            var actionsMenu = $("#action_menu").menu("option", "menus");
-            _.each($("#action_menu").find(actionsMenu).find("li"), function(item){
-                var actionItem = $(item);
-                if(actionItem.text() === "Add Router Interface" )
-                {
-                    this.toggleActionItem(actionItem, this.hasInterface() !== null);
-                }
-                if(actionItem.text() === "Remove Router Interface")
-                {
-                    this.toggleActionItem(actionItem, this.hasInterface() === null);
-                }
-            }, this);
+        },
+        addAllInterfaces: function(collection){
+            if($("#interfaces_table").length !== 0){
+                var router = this.collection.get(this.selectedId);
+                var routerID = router.id;
+                $("#interfaces_table").dataTable().fnClearTable();
+                this.ports.each(function(port) {
+                    if(port.attributes.device_id === routerID){
+                        var rowData = [port.attributes.fixed_ips[0].ip_address,port.attributes.fixed_ips[0].subnet_id];
+                        $("#interfaces_table").dataTable().fnAddData(rowData);
+                    }
+                });
+            }
         },
         hasInterface: function() {
-            // debugger
             var router = this.collection.get(this.selectedId);
             var routerID = router.id;
             var check = null;
             this.ports.each(function(port) {
-                // debugger
                 if(port.attributes.device_id === routerID){
                     check = port;
                 }
             });
             return check;
         },
+        clickInterfacesTab: function(){
+            this.addAllInterfaces();
+        },
+        clickAddInterface: function(){
+            var router = this.collection.get(this.selectedId);
+            new OpenstackRouterInterfaceCreateView({cred_id: this.credentialId, router: router});
+        },
+
         performAction: function(event) {
             var router = this.collection.get(this.selectedId);
             
@@ -111,9 +121,6 @@ define([
             {
             case "Delete Router":
                 router.destroy(this.credentialId);
-                break;
-            case "Add Router Interface":
-                new OpenstackRouterInterfaceCreateView({cred_id: this.credentialId, router: router});
                 break;
             case "Remove Router Interface":
                 router.removeInterface(this.credentialId);
