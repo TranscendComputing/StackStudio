@@ -32,12 +32,12 @@ define([
 
         addInterface: function(options, credentialId, region) {
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/network/routers/" + this.attributes.id + "/add_router_interface?_method=PUT&cred_id=" + credentialId;
-            this.sendAjaxAction(url, "POST", {"router": options}, "routerAppRefresh");
+            this.sendAjaxAction(url, "POST", {"router": options}, "router:interfaceRefresh");
         },
 
         removeInterface: function(options,credentialId) {
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/network/routers/" + this.attributes.id + "/remove_router_interface?_method=PUT&cred_id=" + credentialId;
-            this.sendAjaxAction(url, "POST", {"router": options}, "routerAppRefresh");
+            this.sendAjaxAction(url, "POST", {"router": options}, "router:interfaceRefresh");
         }
 
     });

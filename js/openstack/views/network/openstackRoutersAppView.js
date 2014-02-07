@@ -71,15 +71,23 @@ define([
             if(options.region) {
                 this.region = options.region;
             }
+            var routerApp = this;
             this.ports = new Ports();
             this.ports.on("reset", this.addAllInterfaces, this);
             this.ports.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region}), reset: true });
-            
-            this.render();
-            var routerApp = this;
+            Common.vent.off("router:interfaceRefresh");
+            Common.vent.on("router:interfaceRefresh", function() {
+                //refetch ports
+                routerApp.ports.fetch({
+                    data: $.param({ cred_id: routerApp.credentialId, region: routerApp.region}),
+                    reset: true
+                });
+                routerApp.render();
+            });
             Common.vent.on("routerAppRefresh", function() {
                 routerApp.render();
             });
+            this.render();
         },
         
         toggleActions: function(e) {
@@ -137,7 +145,7 @@ define([
         },
 
         selectInterface: function(target){
-            $(".row_selected").removeClass('row_selected');
+            $("#interfaces_table").removeClass('row_selected');
             $(target).addClass('row_selected');
             this.toggleButton($("#remove_interface_button"),false);
             this.selectedInterface = $("#interfaces_table").dataTable().fnGetData(target);
@@ -146,12 +154,14 @@ define([
 
         performAction: function(event) {
             var router = this.collection.get(this.selectedId);
-            
             switch(event.target.text)
             {
             case "Delete Router":
-                //new OpenstackRouterDestroyView({cred_id: this.credentialId, router: router});
-                router.destroy(this.credentialId);
+                if($("#interfaces_table").dataTable().fnGetData().length > 0){
+                    new OpenstackRouterDestroyView({cred_id: this.credentialId, router: router});
+                }else{
+                    router.destroy(this.credentialId);
+                }
                 break;
             }
 
