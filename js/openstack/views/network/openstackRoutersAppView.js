@@ -145,7 +145,7 @@ define([
         },
 
         selectInterface: function(target){
-            $("#interfaces_table").removeClass('row_selected');
+            $(".row_selected").removeClass('row_selected');
             $(target).addClass('row_selected');
             this.toggleButton($("#remove_interface_button"),false);
             this.selectedInterface = $("#interfaces_table").dataTable().fnGetData(target);
