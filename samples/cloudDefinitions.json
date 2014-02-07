@@ -294,6 +294,10 @@
                     {
                         "name": "Ports",
                         "type": "ports"
+                    },
+                    {
+                        "name": "Routers",
+                        "type": "routers"
                     }
                 ]
             },

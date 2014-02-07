@@ -1,0 +1,78 @@
+<div>
+    <div class="button_bar">
+        <table>
+            <tr>
+                <td>
+                    <button class="create_button">Create Router</button>
+                </td>
+                <td>                    
+                    <ul id="action_menu">
+                        <li style="z-index: 1000">
+                            <a id="action_button">Actions</a>
+                            <ul>
+                                <li><a>Delete Router</a></li>                 
+                            </ul>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </table>        
+    </div>
+    <table id="resource_table" class="full_width">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>ID</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    <div id="details" class="detail_panel"></div>
+</div>
+<script type="text/html" id="resource_detail">
+    <div id="detail_tabs">
+        <ul>
+            <li><a href="#properties_tab">Details</a></li>
+            <li id="interfaces_click"><a href="#interfaces_tab">Interfaces</a></li>
+        </ul>
+        <div id="properties_tab" class="tab row">
+            <table>
+                <tbody>
+                    <tr><td><b>Name:</b></td>           <td>{{ name }}</td></tr>
+                    <tr><td><b>ID:</b></td>       <td>{{ id }}</td></tr>
+                    <tr><td><b>Tenant ID:</b></td>            <td><a href="#resources/openstack/{{region}}/identity/tenants/{{tenant_id}}">{{ tenant_id }}</a></td></tr>
+                    <tr><td><b>Network ID:</b></td>           <td>{{ external_gateway_info.network_id }}</td></tr>
+                    <tr><td><b>Admin State Up:</b></td>              <td>{{ admin_state_up }}</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="interfaces_tab">
+            <div class="row">
+                <div class="col-lg-5">
+                    <form>
+                        <fieldset>
+                            <legend>Router Interface Ingress</legend>
+                            <button id="add_interface_button">Add Router Interface</button>
+                            <button id="remove_interface_button">Remove Router Interface</button>
+                        </fieldset>
+                    </form>
+                </div>
+                <div class="col-lg-7">
+                    <table id="interfaces_table" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered AWS">
+                        <thead>
+                            <tr>
+                                <th>Subnet ID</th>
+                                <th>IP Address</th>
+                                <th>Port ID</th>
+                                </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
