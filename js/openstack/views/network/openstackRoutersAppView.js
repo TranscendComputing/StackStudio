@@ -149,7 +149,6 @@ define([
             $(target).addClass('row_selected');
             this.toggleButton($("#remove_interface_button"),false);
             this.selectedInterface = $("#interfaces_table").dataTable().fnGetData(target);
-            //this.removeInterfaceEntry();
         },
 
         performAction: function(event) {
