@@ -15,11 +15,12 @@ define([
         '/js/openstack/collections/network/openstackRouters.js',
         '/js/openstack/collections/network/openstackPorts.js',
         '/js/openstack/views/network/openstackRouterCreateView.js',
+        '/js/openstack/views/network/openstackRouterDestroyView.js',
         '/js/openstack/views/network/openstackRouterInterfaceCreateView.js',
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, AppView, openstackRouterAppTemplate, Router, Routers, Ports, OpenstackRouterCreateView, OpenstackRouterInterfaceCreateView, ich, Common ) {
+], function( $, _, Backbone, AppView, openstackRouterAppTemplate, Router, Routers, Ports, OpenstackRouterCreateView, OpenstackRouterDestroyView, OpenstackRouterInterfaceCreateView, ich, Common ) {
 	'use strict';
 
 	// Openstack Application View
@@ -84,7 +85,16 @@ define([
         toggleActions: function(e) {
             //Disable any needed actions
             this.addAllInterfaces();
-            $("#remove_interface_button").hide();
+            this.toggleButton($("#remove_interface_button"),true);
+        },
+        toggleButton: function(target, toggle){
+            if(toggle === true){
+                target.attr("disabled", true);
+                target.addClass("ui-state-disabled");
+            }else{
+                target.removeAttr("disabled");
+                target.removeClass("ui-state-disabled");
+            }
         },
         addAllInterfaces: function(collection){
             if($("#interfaces_table").length !== 0){
@@ -93,7 +103,7 @@ define([
                 $("#interfaces_table").dataTable().fnClearTable();
                 this.ports.each(function(port) {
                     if(port.attributes.device_id === routerID){
-                        var rowData = [port.attributes.fixed_ips[0].ip_address,port.attributes.id,port.attributes.fixed_ips[0].subnet_id];
+                        var rowData = [port.attributes.fixed_ips[0].subnet_id,port.attributes.fixed_ips[0].ip_address,port.attributes.id];
                         $("#interfaces_table").dataTable().fnAddData(rowData);
                     }
                 });
@@ -117,7 +127,7 @@ define([
         clickRemoveInterface: function(target){
             var router = this.collection.get(this.selectedId);
             var options = {};
-            options.subnet_id = this.selectedInterface[2];
+            options.subnet_id = this.selectedInterface[0];
             router.removeInterface(options, this.credentialId);
         },
         clickInterface: function(event){
@@ -129,7 +139,7 @@ define([
         selectInterface: function(target){
             $(".row_selected").removeClass('row_selected');
             $(target).addClass('row_selected');
-            $("#remove_interface_button").show("slow");
+            this.toggleButton($("#remove_interface_button"),false);
             this.selectedInterface = $("#interfaces_table").dataTable().fnGetData(target);
             //this.removeInterfaceEntry();
         },
@@ -140,6 +150,7 @@ define([
             switch(event.target.text)
             {
             case "Delete Router":
+                //new OpenstackRouterDestroyView({cred_id: this.credentialId, router: router});
                 router.destroy(this.credentialId);
                 break;
             }
