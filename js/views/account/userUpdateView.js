@@ -144,7 +144,7 @@ define([
                 var userUpdate;
                 if(this.orgId) {
                     userUpdate = {
-                        "account": {
+                        "account":{
                             "login": $("#login").val(),
                             "first_name": $("#first_name").val(),
                             "last_name": $("#last_name").val(),
@@ -153,11 +153,15 @@ define([
                             "password": $("#new_password").val(),
                             "password_confirmation": $("#confirm_password").val(),
                             "country_code": $("#country_id").val()
+                        },
+                        "permissions":{
+                            "admin_login": sessionStorage.login
                         }
+
                     };
                 }else {
                    userUpdate = {
-                        "account": {
+                        "account":{
                             "login": $("#login").val(),
                             "first_name": $("#first_name").val(),
                             "last_name": $("#last_name").val(),
@@ -165,7 +169,11 @@ define([
                             "password": $("#new_password").val(),
                             "password_confirmation": $("#confirm_password").val(),
                             "country_code": $("#country_id").val()
+                        },
+                        "permissions":{
+                            "admin_login": sessionStorage.login
                         }
+
                     }; 
                 }
                 // debugger
@@ -197,6 +205,7 @@ define([
                 if($("#admin_checkbox").is(":checked")) {
                     userUpdate.addPermission("admin", "transcend");
                 }else{
+                    // debugger
                     //userUpdate.removePermission();
                 }
             }else {
