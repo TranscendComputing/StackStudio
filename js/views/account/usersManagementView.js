@@ -13,9 +13,10 @@ define([
         'text!templates/account/usersManagementTemplate.html',
         'collections/users',
         'views/account/newLoginView',
+        'views/account/userUpdateView',
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator'
-], function( $, _, Backbone, Common, usersManagementTemplate, Users, NewLoginView) {
+], function( $, _, Backbone, Common, usersManagementTemplate, Users, NewLoginView, UserUpdateView) {
 
     var UserManagementView = Backbone.View.extend({
 
@@ -30,6 +31,7 @@ define([
         events: {
             "click #users_table tr": "selectUser",
             "click #create_user_button": "createUser",
+            "click #update_user_button": "updateUser",
             "click #delete_user_button": "deleteUser"
         },
 
@@ -119,7 +121,10 @@ define([
         createUser: function() {
             new NewLoginView({org_id: sessionStorage.org_id});
         },
-
+        updateUser: function(){
+            var usersView = this;
+            new UserUpdateView({org_id: sessionStorage.org_id, user: usersView.selectedUser});
+        },
         deleteUser: function() {
             if(this.selectedUser) {
                 this.selectedUser.destroy();
