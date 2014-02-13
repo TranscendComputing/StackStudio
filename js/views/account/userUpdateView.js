@@ -70,7 +70,6 @@ define([
         },
 
         populateFormHelper: function(p,form){
-            //debugger
             for (var key in p) {
               if (p.hasOwnProperty(key)) {
                 var typ = $( form + " input[name='"+key+"']" ).prop("type");
@@ -176,44 +175,13 @@ define([
 
                     }; 
                 }
-                // debugger
-                var newUserUpdateView = this;
-                var url = Common.apiUrl + "/identity/v1/accounts/" + this.userSelected.attributes.id + "/update?_method=PUT";
-                $.ajax({
-                    url: url,
-                    type: 'POST',
-                    contentType: 'application/x-www-form-urlencoded',
-                    dataType: 'json',
-                    data: JSON.stringify(userUpdate),
-                    success: function(data) {
-                        newUserUpdateView.finishUp(data.account.id);
-                        //new Messenger().post({type:"success", message:"User Updated..."});
-                    },
-                    error: function(jqXHR) {
-                        Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
-                    }
-                });
+                //debugger
+                var adminPermissions = $("#admin_checkbox").is(":checked");
+                this.userSelected.updateAttributes(userUpdate, adminPermissions);
+                this.$el.dialog('close');
             }else {
                 Common.errorDialog("Invalid Request", "Please supply all required fields.");
             }
-        },
-
-        finishUp: function(updateAccountId) {
-            var userUpdate = new User();
-            userUpdate.attributes.id = updateAccountId;
-            if(this.orgId) {
-                if($("#admin_checkbox").is(":checked")) {
-                    userUpdate.addPermission("admin", "transcend");
-                }else{
-                    // debugger
-                    //userUpdate.removePermission();
-                }
-            }else {
-                userUpdate.addPermission("admin", "transcend");
-            }
-            
-            Common.vent.trigger("userRefresh");
-            this.$el.dialog('close');
         }
     });
     

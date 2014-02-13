@@ -8,8 +8,9 @@
 define([
         'jquery',
         'backbone',
-        'common'
-], function( $, Backbone, Common ) {
+        'common',
+        'messenger'
+], function( $, Backbone, Common, Messenger ) {
     'use strict';
 
     var User = Backbone.Model.extend({
@@ -70,6 +71,42 @@ define([
                 contentType: 'application/x-www-form-urlencoded',
                 dataType: 'json',
                 data: JSON.stringify(permission),
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            });
+        },
+
+        removePermission: function(permissionID) {
+            $.ajax({
+                url: Common.apiUrl + "/identity/v1/accounts/" + this.attributes.id + "/permissions/" + permissionID + "?_method=DELETE",
+                type: 'POST',
+                contentType: 'application/x-www-form-urlencoded',
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            });
+        },
+
+        updateAttributes: function(options, addAdmin){
+            var userUpdate = this;
+            var url = Common.apiUrl + "/identity/v1/accounts/" + this.attributes.id + "/update?_method=PUT";
+            $.ajax({
+                url: url,
+                type: 'POST',
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: JSON.stringify(options),
+                success: function(data) {
+                    // debugger
+                    if(addAdmin){
+                        userUpdate.addPermission("admin","transcend");
+                    }else{
+                        // userUpdate.removePermission(userUpdate.attributes.permissions[0].permission.id);
+                    }
+                    Common.vent.trigger("userRefresh");
+                    new Messenger().post({type:"success", message:"User Updated..."});
+                },
                 error: function(jqXHR) {
                     Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
                 }
