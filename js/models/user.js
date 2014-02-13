@@ -99,10 +99,15 @@ define([
                 data: JSON.stringify(options),
                 success: function(data) {
                     // debugger
-                    if(addAdmin){
+                    var adminInfo = userUpdate.attributes.permissions;
+                    if(addAdmin && adminInfo.length > 0){
+                        if(!(adminInfo[0].permission.name === "admin" && adminInfo[0].permission.environment === "transcend")){
+                            userUpdate.addPermission("admin","transcend");
+                        }
+                    }else if(addAdmin && adminInfo.length === 0){
                         userUpdate.addPermission("admin","transcend");
-                    }else{
-                        // userUpdate.removePermission(userUpdate.attributes.permissions[0].permission.id);
+                    }else if(!addAdmin && adminInfo.length > 0) {
+                        userUpdate.removePermission(adminInfo[0].permission.id);
                     }
                     Common.vent.trigger("userRefresh");
                     new Messenger().post({type:"success", message:"User Updated..."});

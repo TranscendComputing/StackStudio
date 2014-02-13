@@ -26,7 +26,8 @@ define([
         countries: undefined,
 
         events: {
-            "dialogclose": "close"
+            "dialogclose": "close",
+            "click #change_password": "clickChangePassword"
         },
 
         initialize: function(options) {
@@ -67,6 +68,8 @@ define([
         render: function() {
             var userUpdateView = this;
             this.populateForm(userUpdateView.userSelected);
+            this.disableInput(".password",true);
+            this.update_password = false;
         },
 
         populateFormHelper: function(p,form){
@@ -105,9 +108,7 @@ define([
             if(toggle) {
                 $(id).attr("disabled", true);
                 $(id).addClass("ui-state-disabled");
-                $(id).hide();
             }else {
-                $(id).show();
                 $(id).removeAttr("disabled");
                 $(id).removeClass("ui-state-disabled");
             }
@@ -119,6 +120,15 @@ define([
             });
         },
         
+        clickChangePassword: function(event){
+            if($(event.target).is(":checked")){
+                this.disableInput(".password",false);
+                this.update_password = true;
+            }else{
+                this.disableInput(".password",true);
+                this.update_password = false;
+            }
+        },
         update: function() {
             // Validation Process
             var issue = false;
@@ -130,12 +140,13 @@ define([
             if($("#email").val() === "") {
                 issue = true;
             }
-            
-            if($("#new_password").val() === "" || $("#confirm_password").val() === "") {
-                issue = true;
-            }else {
-                if($("#new_password").val() !== $("#confirm_password").val()) {
+            if(this.update_password){
+                if($("#new_password").val() === "" || $("#confirm_password").val() === "") {
                     issue = true;
+                }else {
+                    if($("#new_password").val() !== $("#confirm_password").val()) {
+                        issue = true;
+                    }
                 }
             }
 
@@ -149,8 +160,6 @@ define([
                             "last_name": $("#last_name").val(),
                             "org_id": this.orgId,
                             "email": $("#email").val(),
-                            "password": $("#new_password").val(),
-                            "password_confirmation": $("#confirm_password").val(),
                             "country_code": $("#country_id").val()
                         },
                         "permissions":{
@@ -165,8 +174,6 @@ define([
                             "first_name": $("#first_name").val(),
                             "last_name": $("#last_name").val(),
                             "email": $("#email").val(),
-                            "password": $("#new_password").val(),
-                            "password_confirmation": $("#confirm_password").val(),
                             "country_code": $("#country_id").val()
                         },
                         "permissions":{
@@ -175,7 +182,10 @@ define([
 
                     }; 
                 }
-                //debugger
+                if(this.update_password){
+                    userUpdate.account.password = $("#new_password").val();
+                    userUpdate.account.password_confirmation = $("#confirm_password").val();
+                }
                 var adminPermissions = $("#admin_checkbox").is(":checked");
                 this.userSelected.updateAttributes(userUpdate, adminPermissions);
                 this.$el.dialog('close');
