@@ -23,26 +23,33 @@ define([
         template: _.template(myAccountManagementTemplate),
 
         events: {
-            "click #updateUserB":"updateUser"
+            "click #updateUserB":"updateUser",
+            "click #change_password_input": "clickChangePassword"
         },
 
         initialize: function() {
             this.$el.html(this.template);
             $("#submanagement_app").html(this.$el);
-            this.render();
             
             this.account = new Account();
             var x = this;
             Common.vent.on("accountUpdate", function(data) {
                 x.render();
-                x.setAccountFields(data.account);
             });
             this.account.getUser();
+            this.render();
         },
 
         render: function () {
             this.displayPasswordRules();
+            this.populateForm();
+            this.disableInput(".password", true);
+            this.update_password = false;
+        },
+
+        populateForm: function(){
             $("#username_label").html(sessionStorage.login);
+            $("#email_input").val(sessionStorage.email);
         },
 
         displayPasswordRules: function (){
@@ -87,10 +94,58 @@ define([
                 $("#password_policy_none").show();
             }
         },
-        
+        disableInput: function(id,toggle) {
+            if(toggle) {
+                $(id).attr("disabled", true);
+                $(id).addClass("ui-state-disabled");
+            }else {
+                $(id).removeAttr("disabled");
+                $(id).removeClass("ui-state-disabled");
+            }
+        },
+        clickChangePassword: function(event){
+            if($(event.target).is(":checked")){
+                this.disableInput(".password",false);
+                this.update_password = true;
+            }else{
+                this.disableInput(".password",true);
+                this.update_password = false;
+            }
+        },
         updateUser: function(){
-            // debugger
-            this.account.setUser({"account":{"email":$("#email_input").val(),"password":$("#password_input").val()},"permissions": {"admin_login":sessionStorage.login}});
+            var issue = false;
+
+            if($("#email").val() === "") {
+                issue = true;
+            }
+            if(this.update_password){
+                if($("#password_input").val() === "" || $("#confirm_password_input").val() === "") {
+                    issue = true;
+                }else {
+                    if($("#password_input").val() !== $("#password_input").val()) {
+                        issue = true;
+                    }
+                }
+            }
+            if(!issue) {
+                var accountUpdate = {
+                    "account":{
+                        "email": $("#email_input").val(),
+                        "password": $("#password_input").val()
+                    },
+                    "permissions":{
+                        "admin_login": sessionStorage.login
+                    }
+
+                };
+                if(this.update_password){
+                    accountUpdate.account.password = $("#password_input").val();
+                    accountUpdate.account.password_confirmation = $("#confirm_password_input").val();
+                }
+                this.account.setUser(accountUpdate);
+            }else {
+                Common.errorDialog("Invalid Request", "No fields can be empty and passwords must match.");
+            }
         },
 
         close: function(){

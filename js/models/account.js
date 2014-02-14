@@ -94,6 +94,7 @@ define([
                 data: JSON.stringify(options),
                 success: function(data) {
                     sessionStorage.rss_url = data.rss_url;
+                    sessionStorage.email = data.email;
                     new Messenger().post({type:"success", message:"User Updated..."});
                 },
                 error: function(jqXHR) {
