@@ -29,11 +29,10 @@ define([
         'views/account/devOpsToolsManagementView',
         'views/account/continuousIntegrationManagementView',
         'views/account/sourceControlRepositoryManagementListView',
-        'views/account/myAccountManagementView',
         'jquery-plugins',
         'jquery-ui-plugins',
         'jquery.jstree'
-], function( $, _, Backbone, Common, managementTemplate, Groups, CloudCredentials, CloudAccounts, Policies, NewLoginView, CloudAccountManagementView, CloudCredentialManagementView, CloudCredentialManagementListView, CloudAccountManagementListView, UsersManagementView, PoliciesManagementView, PolicyManagementView, HomeView, GroupsManagementView, GroupsManagementListView, DevOpsToolsManagementView, ContinuousIntegrationManagementView, SourceControlRepositoryManagementListView, MyAccountManagementView ) {
+], function( $, _, Backbone, Common, managementTemplate, Groups, CloudCredentials, CloudAccounts, Policies, NewLoginView, CloudAccountManagementView, CloudCredentialManagementView, CloudCredentialManagementListView, CloudAccountManagementListView, UsersManagementView, PoliciesManagementView, PolicyManagementView, HomeView, GroupsManagementView, GroupsManagementListView, DevOpsToolsManagementView, ContinuousIntegrationManagementView, SourceControlRepositoryManagementListView) {
     var AccountManagementView = Backbone.View.extend({
         /** @type {String} DOM element to attach view to */
         el: "#main",
@@ -390,17 +389,6 @@ define([
                         accountManagementView.subApp.close();
                     }
                     accountManagementView.subApp = new HomeView({rootView: accountManagementView});
-                }
-                break;
-            case "my_account":
-                if(accountManagementView.subApp instanceof MyAccountManagementView)
-                {
-                    //do nothing
-                }else{
-                    if(accountManagementView.subApp !== undefined){
-                        accountManagementView.subApp.close();
-                    }
-                    accountManagementView.subApp = new MyAccountManagementView();
                 }
                 break;
         }

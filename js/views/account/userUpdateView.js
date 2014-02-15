@@ -26,8 +26,7 @@ define([
         countries: undefined,
 
         events: {
-            "dialogclose": "close",
-            "click #change_password": "clickChangePassword"
+            "dialogclose": "close"
         },
 
         initialize: function(options) {
@@ -68,8 +67,6 @@ define([
         render: function() {
             var userUpdateView = this;
             this.populateForm(userUpdateView.userSelected);
-            this.disableInput(".password",true);
-            this.update_password = false;
         },
 
         populateFormHelper: function(p,form){
@@ -120,15 +117,6 @@ define([
             });
         },
         
-        clickChangePassword: function(event){
-            if($(event.target).is(":checked")){
-                this.disableInput(".password",false);
-                this.update_password = true;
-            }else{
-                this.disableInput(".password",true);
-                this.update_password = false;
-            }
-        },
         update: function() {
             // Validation Process
             var issue = false;
@@ -140,14 +128,9 @@ define([
             if($("#email").val() === "") {
                 issue = true;
             }
-            if(this.update_password){
-                if($("#new_password").val() === "" || $("#confirm_password").val() === "") {
-                    issue = true;
-                }else {
-                    if($("#new_password").val() !== $("#confirm_password").val()) {
-                        issue = true;
-                    }
-                }
+
+            if($("#new_password").val() !== $("#confirm_password").val()) {
+                issue = true;
             }
 
             if(!issue) {
@@ -182,7 +165,7 @@ define([
 
                     }; 
                 }
-                if(this.update_password){
+                if($("#new_password").val() !== "" ){
                     userUpdate.account.password = $("#new_password").val();
                     userUpdate.account.password_confirmation = $("#confirm_password").val();
                 }
@@ -190,7 +173,7 @@ define([
                 this.userSelected.updateAttributes(userUpdate, adminPermissions);
                 this.$el.dialog('close');
             }else {
-                Common.errorDialog("Invalid Request", "Please supply all required fields.");
+                Common.errorDialog("Invalid Request", "Please supply all required fields and passwords must match.");
             }
         }
     });
