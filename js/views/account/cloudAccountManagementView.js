@@ -53,10 +53,12 @@ define([
             Common.vent.on("managementRefresh", function() {
                 thisView.render();
             });
-            Common.vent.on("servicesRefresh", function() {
+            Common.vent.on("servicesRefresh", function(data) {
+                thisView.selectedCloudAccount.attributes.cloud_services = data.cloud_account.cloud_services;
                 thisView.render();
             });
-            Common.vent.on("cloudAccountUpdated", function() {
+            Common.vent.on("cloudAccountUpdated", function(data) {
+                thisView.saveServiceHelper(thisView.selectedCloudAccount.attributes.cloud_services,data);
                 thisView.render();
             });
             $("input").addClass("form-control");
@@ -159,6 +161,15 @@ define([
             this.render();
         },
 
+        saveServiceHelper: function(services, updateService){
+            var thisView = this;
+            $.each(services, function(i,service){
+                if(service.cloud_service.id === updateService.cloud_service.id){
+                    thisView.selectedCloudAccount.attributes.cloud_services[i] = updateService;
+                }
+            });
+        },
+
         saveService: function(event) {
             var uri, service;
             var endpointValue = $(event.currentTarget.parentElement).find("input").val();
@@ -189,7 +200,7 @@ define([
         newCloudService: function(){
             var CloudServiceCreateView = this.CloudServiceCreateView;
             
-            this.newResourceDialog = new CloudServiceCreateView({ cloud_account: this.selectedCloudAccount});
+            this.newResourceDialog = new CloudServiceCreate({ cloud_account: this.selectedCloudAccount});
             
             this.newResourceDialog.render();
             
@@ -198,8 +209,6 @@ define([
         deleteService: function(event) {
             var serviceData = $(event.currentTarget.parentElement).find("input").data();
             this.selectedCloudAccount.deleteService(serviceData, sessionStorage.login);
-            
-            this.refreshServices();
             
             return false;
         },
