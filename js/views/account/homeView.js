@@ -42,7 +42,7 @@ define([
         },
 
         render: function () {
-            //this.displayPasswordRules();
+            this.displayPasswordRules();
             var userUpdateView = this;
             $("#username_label").html(sessionStorage.login);
         },
