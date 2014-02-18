@@ -123,7 +123,8 @@ define([
                 dataType: 'json',
                 data: JSON.stringify(cloudService),
                 success: function(data) {
-                    Common.vent.trigger("cloudAccountUpdated",data);
+                    model.attributes = model.parse(data);
+                    Common.vent.trigger("cloudAccountUpdated");
                 }
             });
         },

@@ -54,11 +54,10 @@ define([
                 thisView.render();
             });
             Common.vent.on("servicesRefresh", function(data) {
-                thisView.selectedCloudAccount.attributes.cloud_services = data.cloud_account.cloud_services;
+                thisView.selectedCloudAccount.attributes = data.cloud_account;
                 thisView.render();
             });
-            Common.vent.on("cloudAccountUpdated", function(data) {
-                thisView.saveServiceHelper(thisView.selectedCloudAccount.attributes.cloud_services,data);
+            Common.vent.on("cloudAccountUpdated", function() {
                 thisView.render();
             });
             $("input").addClass("form-control");
@@ -159,15 +158,6 @@ define([
             }
             
             this.render();
-        },
-
-        saveServiceHelper: function(services, updateService){
-            var thisView = this;
-            $.each(services, function(i,service){
-                if(service.cloud_service.id === updateService.cloud_service.id){
-                    thisView.selectedCloudAccount.attributes.cloud_services[i] = updateService;
-                }
-            });
         },
 
         saveService: function(event) {
