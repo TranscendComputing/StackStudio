@@ -98,24 +98,28 @@ define([
                 dataType: 'json',
                 data: JSON.stringify(options),
                 success: function(data) {
-                    // debugger
-                    var adminInfo = userUpdate.attributes.permissions;
-                    if(addAdmin && adminInfo.length > 0){
-                        if(!(adminInfo[0].permission.name === "admin" && adminInfo[0].permission.environment === "transcend")){
-                            userUpdate.addPermission("admin","transcend");
-                        }
-                    }else if(addAdmin && adminInfo.length === 0){
-                        userUpdate.addPermission("admin","transcend");
-                    }else if(!addAdmin && adminInfo.length > 0) {
-                        userUpdate.removePermission(adminInfo[0].permission.id);
-                    }
+                    userUpdate.updatePermissions(addAdmin);
                     Common.vent.trigger("userRefresh");
-                    new Messenger().post({type:"success", message:"User Updated..."});
+                    new Messenger().post({type:"success", message:"User " + userUpdate.attributes.login + " Updated..."});
                 },
                 error: function(jqXHR) {
                     Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
                 }
             });
+        },
+
+        updatePermissions: function(addAdmin){
+            var userUpdate = this;
+            var adminInfo = userUpdate.attributes.permissions;
+            if(addAdmin && adminInfo.length > 0){
+                if(!(adminInfo[0].permission.name === "admin" && adminInfo[0].permission.environment === "transcend")){
+                    userUpdate.addPermission("admin","transcend");
+                }
+            }else if(addAdmin && adminInfo.length === 0){
+                userUpdate.addPermission("admin","transcend");
+            }else if(!addAdmin && adminInfo.length > 0) {
+                userUpdate.removePermission(adminInfo[0].permission.id);
+            }
         },
 
         destroy: function() {
