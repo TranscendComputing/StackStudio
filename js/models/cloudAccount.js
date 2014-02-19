@@ -89,7 +89,7 @@ define([
                 dataType: 'json',
                 data: JSON.stringify(cloud_service),
                 success: function(data) {
-                    Common.vent.trigger("servicesRefresh");
+                    Common.vent.trigger("servicesRefresh",data);
                 },
                 error: function(jqXHR) {
                     Common.errorDialog(jqXHR.statusText, jqXHR.responseText);

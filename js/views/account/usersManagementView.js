@@ -13,9 +13,10 @@ define([
         'text!templates/account/usersManagementTemplate.html',
         'collections/users',
         'views/account/newLoginView',
+        'views/account/userUpdateView',
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator'
-], function( $, _, Backbone, Common, usersManagementTemplate, Users, NewLoginView) {
+], function( $, _, Backbone, Common, usersManagementTemplate, Users, NewLoginView, UserUpdateView) {
 
     var UserManagementView = Backbone.View.extend({
 
@@ -30,6 +31,7 @@ define([
         events: {
             "click #users_table tr": "selectUser",
             "click #create_user_button": "createUser",
+            "click #update_user_button": "updateUser",
             "click #delete_user_button": "deleteUser"
         },
 
@@ -54,7 +56,8 @@ define([
         render: function () {
             $("#users_table").dataTable().fnProcessingIndicator(true);
             this.users.fetch({reset: true});
-            this.disableDeleteButton(true);
+            this.disableButton("#delete_user_button",true);
+            this.disableButton("#update_user_button",true);
         },
 
         addAllUsers: function() {
@@ -84,21 +87,23 @@ define([
                     }
                     
                     if(sessionStorage.account_id === user.attributes.id || !isAdmin) {
-                        usersView.disableDeleteButton(true);
+                        usersView.disableButton("#delete_user_button",true);
+                        usersView.disableButton("#update_user_button",true);
                     }else {
-                        usersView.disableDeleteButton(false);
+                        usersView.disableButton("#delete_user_button",false);
+                        usersView.disableButton("#update_user_button",false);
                     }
                 }
             });
         },
 
-        disableDeleteButton: function(toggle) {
+        disableButton: function(id,toggle) {
             if(toggle) {
-                $("#delete_user_button").attr("disabled", true);
-                $("#delete_user_button").addClass("ui-state-disabled");
+                $(id).attr("disabled", true);
+                $(id).addClass("ui-state-disabled");
             }else {
-                $("#delete_user_button").removeAttr("disabled");
-                $("#delete_user_button").removeClass("ui-state-disabled");
+                $(id).removeAttr("disabled");
+                $(id).removeClass("ui-state-disabled");
             }
         },
         
@@ -116,7 +121,10 @@ define([
         createUser: function() {
             new NewLoginView({org_id: sessionStorage.org_id});
         },
-
+        updateUser: function(){
+            var usersView = this;
+            new UserUpdateView({org_id: sessionStorage.org_id, user: usersView.selectedUser});
+        },
         deleteUser: function() {
             if(this.selectedUser) {
                 this.selectedUser.destroy();

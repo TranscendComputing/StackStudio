@@ -32,7 +32,7 @@ define([
         'jquery-plugins',
         'jquery-ui-plugins',
         'jquery.jstree'
-], function( $, _, Backbone, Common, managementTemplate, Groups, CloudCredentials, CloudAccounts, Policies, NewLoginView, CloudAccountManagementView, CloudCredentialManagementView, CloudCredentialManagementListView, CloudAccountManagementListView, UsersManagementView, PoliciesManagementView, PolicyManagementView, HomeView, GroupsManagementView, GroupsManagementListView, DevOpsToolsManagementView, ContinuousIntegrationManagementView, SourceControlRepositoryManagementListView ) {
+], function( $, _, Backbone, Common, managementTemplate, Groups, CloudCredentials, CloudAccounts, Policies, NewLoginView, CloudAccountManagementView, CloudCredentialManagementView, CloudCredentialManagementListView, CloudAccountManagementListView, UsersManagementView, PoliciesManagementView, PolicyManagementView, HomeView, GroupsManagementView, GroupsManagementListView, DevOpsToolsManagementView, ContinuousIntegrationManagementView, SourceControlRepositoryManagementListView) {
     var AccountManagementView = Backbone.View.extend({
         /** @type {String} DOM element to attach view to */
         el: "#main",
@@ -141,6 +141,12 @@ define([
                 "plugins":[ "themeroller", "html_data", "crrm" ]
             }).on('loaded.jstree', function() {
                     $("#mdevOps_tree").jstree('open_all');
+            });
+            $("#mMyAccount_tree").jstree({
+                "themeroller":{"item": "jstree_custom_item"},
+                "plugins":[ "themeroller", "html_data", "crrm" ]
+            }).on('loaded.jstree', function() {
+                $("#mMyAccount_tree").jstree('open_all');
             });
         },
         addAllGroups: function() {
