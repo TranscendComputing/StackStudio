@@ -9,7 +9,6 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'views/featureNotImplementedView',
         'views/resource/resourceAppView',
         'text!templates/aws/vpc/awsRouteTableAppTemplate.html',
         '/js/aws/models/vpc/awsRouteTable.js',
@@ -18,7 +17,7 @@ define([
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, FeatureNotImplementedView, ResourceAppView, awsRouteTableAppTemplate, RouteTable, RouteTables, AwsRouteTableCreate, ich, Common ) {
+], function( $, _, Backbone, AppView, awsRouteTableAppTemplate, RouteTable, RouteTables, awsRouteTableCreateView, ich, Common ) {
     'use strict';
 
     // Aws RouteTable Application View
@@ -33,16 +32,16 @@ define([
      * @param {Object} initialization object.
      * @returns {Object} Returns a AwsRouteTablesAppView instance.
      */
-    var AwsRouteTablesAppView = ResourceAppView.extend({
+    var AwsRouteTablesAppView = AppView.extend({
         template: _.template(awsRouteTableAppTemplate),
         
-        modelStringIdentifier: "route_table_id",
-        
-        columns: ["vpc_id", "route_table_id"],
-        
-        idColumnNumber: 1,
-        
+        modelStringIdentifier: "id",
+
         model: RouteTable,
+
+        idColumnNumber: 0,
+        
+        columns: ["id", "vpc_id"],
         
         collectionType: RouteTables,
         
@@ -50,24 +49,42 @@ define([
         
         subtype: "routetables",
         
-        CreateView: AwsRouteTableCreate,
+        CreateView: awsRouteTableCreateView,
         
         events: {
             'click .create_button': 'createNew',
+            'click #action_menu ul li': 'performAction',
             'click #resource_table tr': 'clickOne'
         },
 
-        initialize: function() {
+        initialize: function(options) {
+            if(options.cred_id) {
+                this.credentialId = options.cred_id;
+            }
+            if(options.region) {
+                this.region = options.region;
+            }
             this.render();
-        },
-
-        render: function() {
-            var featureNotImplemented = new FeatureNotImplementedView({feature_url: "https://github.com/TranscendComputing/StackStudio/issues/8", element: "#resource_app"});
-            featureNotImplemented.render();
+            
+            var routeTableApp = this;
+            Common.vent.on("routeTableAppRefresh", function() {
+                routeTableApp.render();
+            });
         },
         
         toggleActions: function(e) {
             //Disable any needed actions
+        },
+
+        performAction: function(event) {
+            var routeTable = this.collection.get(this.selectedId);
+            
+            switch(event.target.text)
+            {
+            case "Delete":
+                routeTable.destroy(this.credentialId, this.region);
+                break;
+            }
         }
     });
     

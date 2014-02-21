@@ -6,12 +6,12 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'backbone'
-], function( $, Backbone ) {
+        'models/resource/resourceModel',
+        'common'
+], function( ResourceModel, Common ) {
     'use strict';
 
-    // Base RouteTable Model
+    // RouteTable Model
     // ----------
 
     /**
@@ -22,41 +22,19 @@ define([
      * @param {Object} initialization object.
      * @returns {Object} Returns a RouteTable instance.
      */
-    var RouteTable = Backbone.Model.extend({
+    var RouteTable = ResourceModel.extend({
 
-        idAttribute: "routeTableId",
+        idAttribute: "id",
         
         /** Default attributes for compute */
         defaults: {
-            routeTableId: '',
-            vpcId: '',
-            routeSet: [],
-            associationSet: [],
-            propagatingVgwSet: [],
-            tagSet: []
-		},
-
-	    /**
-	     * Override the base Backbone set method, for debugging.
-	     *
-	     * @memberOf RouteTable
-	     * @category Internal
-	     * @param {Object} hash of attribute values to set.
-	     * @param {Object} (optional) options to tweak (see Backbone docs).
-	     */
-		set: function(attributes, options) {
-		    Backbone.Model.prototype.set.apply(this, arguments);
+            id: '',
+            vpc_id: '',
+            routes: [],
+            associations: [],
+            propagating_vpn: [],
+            tags: []
 		}
-		
-		/*
-		get: function(attr) {
-		    if (typeof this[attr] == 'function') {
-		        return this[attr]();
-		    }
-		    
-		    return Backbone.Model.prototype.get.call(this, attr);
-		}
-		*/
     });
 
     return RouteTable;
