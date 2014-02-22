@@ -36,20 +36,28 @@
 <script type="text/html" id="resource_detail">
     <div id="detail_tabs">
         <ul>
+            <li><a href="#details_tabs">Details</li>
             <li><a href="#routes_tab">Routes</a></li>
             <li><a href="#associations_tab">Associations</a></li>
             <li><a href="#route_propagation_tab">Route Propagation</a></li>
         </ul>
+        <div id="details_tab" class="tab">
+            <table class="display_table">
+                <thead>
+                    <tbody>
+                    <tr><td><b>Route Table ID:</b></td>         <td>{{ id }}</td></tr>
+                    <tr><td><b>VPC ID:</b></td>                 <td>{{ vpc_id }}</td></tr>
+                    <tr><td><b>Main:</b></td>                   <td id="main_route_table_info"></td></tr>
+                    <tr><td><b>Subnet Associations:</b></td>    <td id="subnet_association_info"></td></tr>
+                </tbody>
+                </thead>            
+                <tbody></tbody>
+                <tfoot></tfoot>
+            </table>        
+        </div>
         <div id="routes_tab" class="tab">
             <table class="display_table">
                 <thead>
-                    <tr>
-                        <th>Destination</th>
-                        <th>Target</th>
-                        <th>Status</th>
-                        <th>Propagated</th>
-                        <th>Actions</th>
-                    </tr>
                 </thead>            
                 <tbody></tbody>
                 <tfoot></tfoot>
@@ -58,10 +66,6 @@
         <div id="associations_tab">
             <table class="display_table">
                 <thead>
-                    <tr>
-                        <th>Subnet</th>
-                        <th>Actions</th>
-                    </tr>
                 </thead>            
                 <tbody></tbody>
                 <tfoot></tfoot>
@@ -70,10 +74,6 @@
         <div id="route_propagation_tab">
             <table class="display_table">
                 <thead>
-                    <tr>
-                        <th>Virtual Private Gateways</th>
-                        <th>Actions</th>
-                    </tr>
                 </thead>            
                 <tbody></tbody>
                 <tfoot></tfoot>

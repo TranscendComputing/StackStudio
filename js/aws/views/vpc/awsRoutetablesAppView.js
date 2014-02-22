@@ -64,21 +64,45 @@ define([
             if(options.region) {
                 this.region = options.region;
             }
-            this.render();
+            
             
             var routeTableApp = this;
             Common.vent.on("routeTableAppRefresh", function() {
                 routeTableApp.render();
             });
+            this.render();
         },
         
+        addTableDetails: function(){
+            var model = this.collection.get(this.selectedId);
+                if(model.attributes.associations.length > 0){
+                    var count = 0;
+                    var totalsubnets = 0;
+                    $.each(model.attributes.associations, function(j,association){
+                        if(association.main === true){
+                            count++;
+                        }
+                        if(association.subnetId){
+                            totalsubnets++;
+                        }
+                    });
+                    if(count > 0){
+                        $("#main_route_table_info").text("True");
+                    }else{
+                        $("#main_route_table_info").text("False");
+                    }
+                    $("#subnet_association_info").text(totalsubnets.toString());
+                }
+            // });
+        },
+
         toggleActions: function(e) {
             //Disable any needed actions
+            this.addTableDetails();
         },
 
         performAction: function(event) {
             var routeTable = this.collection.get(this.selectedId);
-            
             switch(event.target.text)
             {
             case "Delete":

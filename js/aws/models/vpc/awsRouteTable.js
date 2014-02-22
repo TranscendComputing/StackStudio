@@ -34,7 +34,17 @@ define([
             associations: [],
             propagating_vpn: [],
             tags: []
-		}
+		},
+
+        create: function(options, credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/route_tables?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", {"route_table": options}, "routeTableAppRefresh");
+        },
+
+        destroy: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/route_tables/" + this.attributes.id + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "routeTableAppRefresh");
+        }
     });
 
     return RouteTable;
