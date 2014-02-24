@@ -36,48 +36,89 @@
 <script type="text/html" id="resource_detail">
     <div id="detail_tabs">
         <ul>
-            <li><a href="#details_tabs">Details</li>
+            <li><a href="#details_tab">Details</a></li>
             <li><a href="#routes_tab">Routes</a></li>
             <li><a href="#associations_tab">Associations</a></li>
             <li><a href="#route_propagation_tab">Route Propagation</a></li>
         </ul>
         <div id="details_tab" class="tab">
             <table class="display_table">
-                <thead>
-                    <tbody>
+                <tbody>
                     <tr><td><b>Route Table ID:</b></td>         <td>{{ id }}</td></tr>
                     <tr><td><b>VPC ID:</b></td>                 <td>{{ vpc_id }}</td></tr>
                     <tr><td><b>Main:</b></td>                   <td id="main_route_table_info"></td></tr>
                     <tr><td><b>Subnet Associations:</b></td>    <td id="subnet_association_info"></td></tr>
-                </tbody>
-                </thead>            
-                <tbody></tbody>
-                <tfoot></tfoot>
+                </tbody>            
             </table>        
         </div>
         <div id="routes_tab" class="tab">
-            <table class="display_table">
-                <thead>
-                </thead>            
-                <tbody></tbody>
-                <tfoot></tfoot>
-            </table>        
+            <div class="row">
+                <div class="col-lg-5">
+                    <form>
+                        <fieldset>
+                            <legend>Routes Ingress</legend>
+                            <button id="add_route_button">Add Route</button>
+                            <button id="remove_route_button" class="remove-button">Remove Route</button>
+                        </fieldset>
+                    </form>
+                </div>
+                <div class="col-lg-7">
+                    <table id="routes_table" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered AWS">
+                        <thead>
+                            <tr>
+                                <th>Destination</th>
+                                <th>Target</th>
+                                <th>Status</th>
+                                <th>Propagation</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>  
         </div>
-        <div id="associations_tab">
-            <table class="display_table">
-                <thead>
-                </thead>            
-                <tbody></tbody>
-                <tfoot></tfoot>
-            </table>
+        <div id="associations_tab" class="tab">
+            <div class="row">
+                <div class="col-lg-5">
+                    <form>
+                        <fieldset>
+                            <legend> Associations Ingress</legend>
+                            <button id="add_association_button">Associate</button>
+                            <button id="remove_association_button" class="remove-button">Disassociate</button>
+                        </fieldset>
+                    </form>
+                </div>
+                <div class="col-lg-7">
+                    <table id="associations_table" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered AWS">
+                        <thead>
+                            <tr>
+                                <th>Subnet ID</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>  
         </div>
-        <div id="route_propagation_tab">
-            <table class="display_table">
-                <thead>
-                </thead>            
-                <tbody></tbody>
-                <tfoot></tfoot>
-            </table>          
+        <div id="route_propagation_tab" class="tab">
+            <div class="row">
+                <div class="col-lg-5">
+                    <form>
+                        <fieldset>
+                            <legend> Route Propagation Ingress</legend>
+                            <button id="add_route_propagation_button">Associate</button>
+                            <button id="remove_route_propagation_button" class="remove-button">Disassociate</button>
+                        </fieldset>
+                    </form>
+                </div>
+                <div class="col-lg-7">
+                    <table id="route_popagation_table" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered AWS">
+                        <thead>
+                            <tr>
+                                <th>VPC ID</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>      
         </div>
     </div>
 </script>

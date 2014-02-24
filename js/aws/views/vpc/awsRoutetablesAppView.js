@@ -99,10 +99,36 @@ define([
         toggleActions: function(e) {
             //Disable any needed actions
             this.addTableDetails();
+            this.addAllTableElements($("#routes_table"));
+            this.toggleButton($(".remove-button"),true);
+        },
+
+        toggleButton: function(target, toggle){
+            if(toggle === true){
+                target.attr("disabled", true);
+                target.addClass("ui-state-disabled");
+            }else{
+                target.removeAttr("disabled");
+                target.removeClass("ui-state-disabled");
+            }
+        },
+
+        addAllTableElements: function(table){
+            // debugger
+            if(table.length !== 0){
+                var routeTable = this.collection.get(this.selectedId);
+                table.dataTable().fnClearTable();
+                $.each(routeTable.attributes.routes, function(i,route) {
+                    // debugger
+                    var rowData = [route.destinationCidrBlock,route.gatewayId,route.state,""];
+                    table.dataTable().fnAddData(rowData);
+                });
+            }
         },
 
         performAction: function(event) {
             var routeTable = this.collection.get(this.selectedId);
+            // debugger
             switch(event.target.text)
             {
             case "Delete":
