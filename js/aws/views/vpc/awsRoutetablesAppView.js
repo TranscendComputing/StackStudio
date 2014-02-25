@@ -99,7 +99,7 @@ define([
         toggleActions: function(e) {
             //Disable any needed actions
             this.addTableDetails();
-            this.addAllTableElements($("#routes_table"));
+            this.addAllTableElements();
             this.toggleButton($(".remove-button"),true);
         },
 
@@ -113,22 +113,39 @@ define([
             }
         },
 
-        addAllTableElements: function(table){
-            // debugger
-            if(table.length !== 0){
-                var routeTable = this.collection.get(this.selectedId);
-                table.dataTable().fnClearTable();
-                $.each(routeTable.attributes.routes, function(i,route) {
-                    // debugger
-                    var rowData = [route.destinationCidrBlock,route.gatewayId,route.state,""];
-                    table.dataTable().fnAddData(rowData);
+        addAllTableElements: function(){
+            var model = this.collection.get(this.selectedId);
+            if(model.attributes.length !== 0){
+                $(".sub-route-table").dataTable().fnClearTable();
+                $.each(model.attributes, function(attribute,value) {
+                    if(attribute === "routes"){
+                        $.each(value,function(i,route){
+                            var rowData = [route.destinationCidrBlock,route.gatewayId,route.state];
+                            $("#routes_table").dataTable().fnAddData(rowData);
+                        });
+                    }
+                    else if(attribute === "associations"){
+                        $.each(value,function(i,association){
+                            var hasSubnet = "none";
+                            if(association.subnetId){
+                                hasSubnet = association.subnetId;
+                            }
+                            var rowData = [association.routeTableAssociationId,association.routeTableId,hasSubnet,association.main];
+                            $("#associations_table").dataTable().fnAddData(rowData);
+                        });
+                    }
+                    else if(attribute === "propagating_vpn"){
+                        $.each(value,function(i,propagation){
+                            var rowData = [propagation.vpc_id];
+                            $("#route_propagation_table").dataTable().fnAddData(rowData);
+                        });
+                    }
                 });
             }
         },
 
         performAction: function(event) {
             var routeTable = this.collection.get(this.selectedId);
-            // debugger
             switch(event.target.text)
             {
             case "Delete":
