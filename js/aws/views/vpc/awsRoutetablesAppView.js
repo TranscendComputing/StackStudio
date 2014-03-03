@@ -14,10 +14,11 @@ define([
         '/js/aws/models/vpc/awsRouteTable.js',
         '/js/aws/collections/vpc/awsRouteTables.js',
         '/js/aws/views/vpc/awsRouteTableCreateView.js',
+        '/js/views/featureNotImplementedDialogView.js',
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, AppView, awsRouteTableAppTemplate, RouteTable, RouteTables, awsRouteTableCreateView, ich, Common ) {
+], function( $, _, Backbone, AppView, awsRouteTableAppTemplate, RouteTable, RouteTables, awsRouteTableCreateView, FeatureNotImplementedDialogView, ich, Common ) {
     'use strict';
 
     // Aws RouteTable Application View
@@ -54,6 +55,7 @@ define([
         events: {
             'click .create_button': 'createNew',
             'click #action_menu ul li': 'performAction',
+            'click .add-button': 'featureNotImplemented', //Remove when feture is implemented.
             'click #resource_table tr': 'clickOne'
         },
 
@@ -146,12 +148,19 @@ define([
 
         performAction: function(event) {
             var routeTable = this.collection.get(this.selectedId);
+            
             switch(event.target.text)
             {
             case "Delete":
                 routeTable.destroy(this.credentialId, this.region);
                 break;
             }
+        },
+
+        //Remove once features have been implemented.
+        featureNotImplemented: function(){
+            var thisView = this;
+            new FeatureNotImplementedDialogView({feature_url: "https://github.com/TranscendComputing/StackStudio/issues/11"});
         }
     });
     
