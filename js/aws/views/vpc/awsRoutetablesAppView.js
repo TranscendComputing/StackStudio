@@ -9,16 +9,16 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'views/featureNotImplementedView',
         'views/resource/resourceAppView',
         'text!templates/aws/vpc/awsRouteTableAppTemplate.html',
         '/js/aws/models/vpc/awsRouteTable.js',
         '/js/aws/collections/vpc/awsRouteTables.js',
         '/js/aws/views/vpc/awsRouteTableCreateView.js',
+        '/js/views/featureNotImplementedDialogView.js',
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, FeatureNotImplementedView, ResourceAppView, awsRouteTableAppTemplate, RouteTable, RouteTables, AwsRouteTableCreate, ich, Common ) {
+], function( $, _, Backbone, AppView, awsRouteTableAppTemplate, RouteTable, RouteTables, awsRouteTableCreateView, FeatureNotImplementedDialogView, ich, Common ) {
     'use strict';
 
     // Aws RouteTable Application View
@@ -33,16 +33,16 @@ define([
      * @param {Object} initialization object.
      * @returns {Object} Returns a AwsRouteTablesAppView instance.
      */
-    var AwsRouteTablesAppView = ResourceAppView.extend({
+    var AwsRouteTablesAppView = AppView.extend({
         template: _.template(awsRouteTableAppTemplate),
         
-        modelStringIdentifier: "route_table_id",
-        
-        columns: ["vpc_id", "route_table_id"],
-        
-        idColumnNumber: 1,
-        
+        modelStringIdentifier: "id",
+
         model: RouteTable,
+
+        idColumnNumber: 0,
+        
+        columns: ["id", "vpc_id"],
         
         collectionType: RouteTables,
         
@@ -50,24 +50,117 @@ define([
         
         subtype: "routetables",
         
-        CreateView: AwsRouteTableCreate,
+        CreateView: awsRouteTableCreateView,
         
         events: {
             'click .create_button': 'createNew',
+            'click #action_menu ul li': 'performAction',
+            'click .add-button': 'featureNotImplemented', //Remove when feture is implemented.
             'click #resource_table tr': 'clickOne'
         },
 
-        initialize: function() {
+        initialize: function(options) {
+            if(options.cred_id) {
+                this.credentialId = options.cred_id;
+            }
+            if(options.region) {
+                this.region = options.region;
+            }
+            
+            
+            var routeTableApp = this;
+            Common.vent.on("routeTableAppRefresh", function() {
+                routeTableApp.render();
+            });
             this.render();
         },
-
-        render: function() {
-            var featureNotImplemented = new FeatureNotImplementedView({feature_url: "https://github.com/TranscendComputing/StackStudio/issues/8", element: "#resource_app"});
-            featureNotImplemented.render();
-        },
         
+        addTableDetails: function(){
+            var model = this.collection.get(this.selectedId);
+                if(model.attributes.associations.length > 0){
+                    var count = 0;
+                    var totalsubnets = 0;
+                    $.each(model.attributes.associations, function(j,association){
+                        if(association.main === true){
+                            count++;
+                        }
+                        if(association.subnetId){
+                            totalsubnets++;
+                        }
+                    });
+                    if(count > 0){
+                        $("#main_route_table_info").text("True");
+                    }else{
+                        $("#main_route_table_info").text("False");
+                    }
+                    $("#subnet_association_info").text(totalsubnets.toString());
+                }
+            // });
+        },
+
         toggleActions: function(e) {
             //Disable any needed actions
+            this.addTableDetails();
+            this.addAllTableElements();
+            this.toggleButton($(".remove-button"),true);
+        },
+
+        toggleButton: function(target, toggle){
+            if(toggle === true){
+                target.attr("disabled", true);
+                target.addClass("ui-state-disabled");
+            }else{
+                target.removeAttr("disabled");
+                target.removeClass("ui-state-disabled");
+            }
+        },
+
+        addAllTableElements: function(){
+            var model = this.collection.get(this.selectedId);
+            if(model.attributes.length !== 0){
+                $(".sub-route-table").dataTable().fnClearTable();
+                $.each(model.attributes, function(attribute,value) {
+                    if(attribute === "routes"){
+                        $.each(value,function(i,route){
+                            var rowData = [route.destinationCidrBlock,route.gatewayId,route.state];
+                            $("#routes_table").dataTable().fnAddData(rowData);
+                        });
+                    }
+                    else if(attribute === "associations"){
+                        $.each(value,function(i,association){
+                            var hasSubnet = "none";
+                            if(association.subnetId){
+                                hasSubnet = association.subnetId;
+                            }
+                            var rowData = [association.routeTableAssociationId,association.routeTableId,hasSubnet,association.main];
+                            $("#associations_table").dataTable().fnAddData(rowData);
+                        });
+                    }
+                    else if(attribute === "propagating_vpn"){
+                        $.each(value,function(i,propagation){
+                            var rowData = [propagation.vpc_id];
+                            $("#route_propagation_table").dataTable().fnAddData(rowData);
+                        });
+                    }
+                });
+            }
+        },
+
+        performAction: function(event) {
+            var routeTable = this.collection.get(this.selectedId);
+            
+            switch(event.target.text)
+            {
+            case "Delete":
+                routeTable.destroy(this.credentialId, this.region);
+                break;
+            }
+        },
+
+        //Remove once features have been implemented.
+        featureNotImplemented: function(){
+            var thisView = this;
+            new FeatureNotImplementedDialogView({feature_url: "https://github.com/TranscendComputing/StackStudio/issues/11"});
         }
     });
     
