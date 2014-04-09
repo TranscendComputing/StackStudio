@@ -13,7 +13,6 @@ define([
         'text!templates/account/groupCreateTemplate.html',
         '/js/models/group.js',
         'common'
-        
 ], function( $, _, Backbone, DialogView, groupCreateTemplate, Group, Common ) {
     
     var GroupCreateView = DialogView.extend({

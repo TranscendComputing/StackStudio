@@ -27,9 +27,10 @@ define([
             "change #manager_continuous_integration_select": "continuousIntegrationChanged"
         },
 
-        initialize: function(options) {
+        initialize: function ( options ) {
             var createView = this;
             this.template = _.template(managerAddEditTemplate);
+            this.rootView = options.rootView;
             this.$el.html(this.template);
             this.configManagers = options.configManagers;
             this.ciServers = new ContinuousIntegrationServers();
@@ -49,6 +50,10 @@ define([
                 buttons: {
                     Save: function () {
                         createView.save();
+
+                        if(createView.onCreated) {
+                            createView.onCreated();
+                        }
                     },
                     Cancel: function() {
                         createView.cancel();
@@ -57,6 +62,13 @@ define([
             });
             ich.refresh();
             this.render();
+
+            var thisView = this;
+            setTimeout(function () {
+                if(thisView.rootView.afterSubAppRender) {
+                    thisView.rootView.afterSubAppRender(thisView);
+                }
+            }, 5);
         },
 
         render: function() {

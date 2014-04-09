@@ -29,10 +29,11 @@ define([
         'views/account/devOpsToolsManagementView',
         'views/account/continuousIntegrationManagementView',
         'views/account/sourceControlRepositoryManagementListView',
+        'views/firstTimeTutorialView',
         'jquery-plugins',
         'jquery-ui-plugins',
         'jquery.jstree'
-], function( $, _, Backbone, Common, managementTemplate, Groups, CloudCredentials, CloudAccounts, Policies, NewLoginView, CloudAccountManagementView, CloudCredentialManagementView, CloudCredentialManagementListView, CloudAccountManagementListView, UsersManagementView, PoliciesManagementView, PolicyManagementView, HomeView, GroupsManagementView, GroupsManagementListView, DevOpsToolsManagementView, ContinuousIntegrationManagementView, SourceControlRepositoryManagementListView ) {
+], function( $, _, Backbone, Common, managementTemplate, Groups, CloudCredentials, CloudAccounts, Policies, NewLoginView, CloudAccountManagementView, CloudCredentialManagementView, CloudCredentialManagementListView, CloudAccountManagementListView, UsersManagementView, PoliciesManagementView, PolicyManagementView, HomeView, GroupsManagementView, GroupsManagementListView, DevOpsToolsManagementView, ContinuousIntegrationManagementView, SourceControlRepositoryManagementListView, TutorialView ) {
     var AccountManagementView = Backbone.View.extend({
         /** @type {String} DOM element to attach view to */
         el: "#main",
@@ -57,10 +58,9 @@ define([
         treeCloudAccount: undefined,
         treeCloudCred: undefined,
         treePolicy: undefined,
+        afterSubAppRender: undefined,
         /** Constructor method for current view */
         initialize: function() {
-            
-            this.subViews = [];
             //Render my template
             this.$el.html(this.template);
             
@@ -76,8 +76,20 @@ define([
             this.policies = new Policies();
             this.policies.on( 'reset', this.addAllPolicies, this );
             
-            //Render my own view
+            //Render my own views
             this.render();
+
+            if(sessionStorage && parseInt(sessionStorage.num_logins, 10) < 100)  {//todo: change this to 0 
+                this.tutorial = new TutorialView({ rootView: this });
+                
+                this.afterSubAppRender = function () {
+                    this.tutorial.update();
+                }.bind(this);
+
+                this.tutorial.render();
+            }
+            window.jQuery = $;
+            window.$ = $;
         },
         /** Add all of my own html elements */
         render: function () {
@@ -142,6 +154,11 @@ define([
             }).on('loaded.jstree', function() {
                     $("#mdevOps_tree").jstree('open_all');
             });
+
+            if(parseInt(sessionStorage.num_logins, 10) < 20) {
+                //todo: init instructor
+                // $('#instructor').instructor('nextTip');
+            }
         },
         addAllGroups: function() {
             $('.group_item.tree_item').remove();
@@ -186,9 +203,31 @@ define([
         },
         
         selectManagement: function(event){
+            var self = this;
             if(event.target.attributes.href){
                 if($("#"+event.target.id).hasClass('policy_item')){
                     this.treePolicy = event.target.id;
+                }
+
+                //if no hash change, go ahead and run the after render logic anyway
+                var currentHash = location.href.split('#');
+                if(currentHash.length > 1) {
+                    currentHash = currentHash[1];
+                    var newHash = event.target.attributes.href.nodeValue.split('#');
+
+                    if(newHash.length > 1) {
+                        newHash = newHash[1];
+
+                        if(currentHash === newHash) {
+                            if(this.afterSubAppRender) {
+                                //make sure other event handlers are registered first
+                                setTimeout(function () {
+                                    self.afterSubAppRender();
+                                }, 5);
+                                return;
+                            }
+                        }
+                    }
                 }
                 location.href = event.target.attributes.href.nodeValue;
             }
@@ -236,7 +275,7 @@ define([
 
     /** Variable to track whether view has been initialized or not */
     var accountManagementView;
-    
+    var self = this;
     Common.router.on("route:accountManagement", function (action) {
         if (this.previousView !== accountManagementView) {
             this.unloadPreviousState();
@@ -385,6 +424,10 @@ define([
                     accountManagementView.subApp = new HomeView({rootView: accountManagementView});
                 }
                 break;
+        }
+
+        if(accountManagementView.afterSubAppRender) {
+            accountManagementView.afterSubAppRender.call(accountManagementView);
         }
     }, Common);
 

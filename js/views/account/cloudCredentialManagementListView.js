@@ -68,6 +68,7 @@ define([
         },
 
         render: function () {
+            var self = this;
             this.disableSelectionRequiredButtons(true);
             $("#group_users_table").dataTable().fnClearTable();
             
@@ -114,7 +115,7 @@ define([
         },
 
         createGroup: function() {
-            new CreateCloudCredentialView();
+            new CreateCloudCredentialView({rootView: this.rootView});
             //alert("Create Cloud Credential");
         },
 

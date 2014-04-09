@@ -61,6 +61,10 @@ define([
             this.ciServers.fetch({
                 success:function(collection, response, data){
                     thisView.renderCIs();
+
+                    if(thisView.rootView.afterSubAppRender) {
+                        thisView.rootView.afterSubAppRender(thisView);
+                    }
                 },
                 error:function(collection, response, data){
                     Common.errorDialog("Server Error", "Couldn't fetch continuous integration data.");
@@ -92,7 +96,7 @@ define([
         },
         
         newCI: function(){
-            new CIServerAddEditView();
+            new CIServerAddEditView({ rootView : this.rootView });
         },
 
         editCI: function(event){

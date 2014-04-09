@@ -14,7 +14,7 @@ define([
         'text!templates/account/managementCloudCredentialsTemplate.html',
         'models/cloudCredential',
         'collections/cloudAccounts',
-        'collections/cloudCredentials',        
+        'collections/cloudCredentials',
         'views/account/cloudCredentialFormView',
         'views/notificationDialogView',
         'jquery-plugins',
@@ -75,7 +75,11 @@ define([
             $("button#save_credential").hide();
             
             if(this.rootView.treeCloudCred){
-            this.treeSelectCloudCred();
+                this.treeSelectCloudCred();
+            }
+
+            if(this.rootView.afterSubAppRender) {
+                this.rootView.afterSubAppRender.call(this.rootView);
             }
         },
 

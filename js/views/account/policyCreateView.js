@@ -15,7 +15,6 @@ define([
         'icanhaz',
         'common',
         'jquery.multiselect'
-        
 ], function( $, _, Backbone, DialogView, networkCreateTemplate, Policy, ich, Common ) {
     
     /**
@@ -35,6 +34,8 @@ define([
         region: undefined,
         
         policy: new Policy(),
+
+        onCreated: undefined,
         
         // Delegated events for creating new networks, etc.
         events: {
@@ -46,6 +47,11 @@ define([
             //this.credentialId = options.cred_id;
             //this.region = options.region;
             var createView = this;
+            
+            if(options) {
+                this.parentView = options.rootView;
+            }
+
             var compiledTemplate = _.template(networkCreateTemplate);
             this.$el.html(compiledTemplate);
 
@@ -77,6 +83,13 @@ define([
                 selectedList: 3,
                 noneSelectedText: "Select Allowed Service(s)"
             });
+
+            if(this.parentView.afterSubAppRender) {
+                //make sure other events have been bound first
+                setTimeout(function () {
+                    createView.parentView.afterSubAppRender(createView);
+                }, 5);
+            }
         },
 
         render: function() {
@@ -142,6 +155,10 @@ define([
                 this.$el.dialog('close');
             } else {
                 Common.errorDialog("Invalid Request", "Please supply all required fields.");
+            }
+
+            if(this.onCreated) {
+                this.onCreated();
             }
         }
     });

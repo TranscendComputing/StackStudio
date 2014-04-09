@@ -26,6 +26,10 @@ define([
         cloudAccounts: new CloudAccounts(),
         
         cloudCredentials: new CloudCredentials(),
+
+        onCreated: undefined,
+
+        parentView: null,
         
         events: {
             "dialogclose": "close",
@@ -33,6 +37,10 @@ define([
         },
 
         initialize: function(options) {
+
+            if(options) {
+                this.parentView = options.rootView;
+            }
             
             this.subViews = [];
             
@@ -58,6 +66,14 @@ define([
                 }
             });
             this.render();
+            var self = this;
+
+            if(this.parentView.afterSubAppRender) {
+                //make sure other events have been bound first
+                setTimeout(function () {
+                    self.parentView.afterSubAppRender(self);
+                }, 5);
+            }
         },
 
         render: function() {
@@ -96,6 +112,9 @@ define([
             if(this.selectedCloudCredential.id === ""){
                 this.cloudCredentials.create(this.selectedCloudCredential, {cloud_account_id: this.selectedCloudAccount.id});
                 this.$el.dialog('close');
+                if(this.onCreated) {
+                    this.onCreated();
+                }
             }
         },
         

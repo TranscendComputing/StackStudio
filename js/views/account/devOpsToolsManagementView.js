@@ -62,6 +62,10 @@ define([
             this.configManagers.fetch({
                 success:function(collection, response, data){
                     thisView.renderConfigManagers();
+
+                    if(thisView.rootView.afterSubAppRender) {
+                        thisView.rootView.afterSubAppRender(thisView);
+                    }
                 },
                 error:function(collection, response, data){
                     Common.errorDialog("Server Error", "Couldn't fetch config manager data.");
@@ -143,7 +147,7 @@ define([
         },
         
         newConfigManager: function(){
-            new ConfigManagerAddEditView({configManagers: this.configManagers});
+            new ConfigManagerAddEditView({configManagers: this.configManagers, rootView : this.rootView });
         },
 
         editManager: function(event){

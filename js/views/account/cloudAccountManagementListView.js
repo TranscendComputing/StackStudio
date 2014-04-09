@@ -41,9 +41,9 @@ define([
             'click #group_users_table tr': 'selectGroup'
         },
 
-        initialize: function() {
+        initialize: function( options ) {
             this.$el.html(this.template);
-            this.rootView = this.options.rootView;
+            this.rootView = options.rootView;
             $("#submanagement_app").html(this.$el);
             $("button").button();
             $("#group_users_table").dataTable({
@@ -138,7 +138,7 @@ define([
         createGroup: function() {
             var CloudAccountCreateView = this.CloudAccountCreateView;
             
-            this.newResourceDialog = new CloudAccountCreateView({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id});
+            this.newResourceDialog = new CloudAccountCreateView({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id, rootView: this.rootView });
             
             this.newResourceDialog.render();
         },

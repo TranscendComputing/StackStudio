@@ -153,6 +153,10 @@ define([
 
             this.selectedGroup = undefined;
             this.render();
+
+            if(this.rootView.afterSubAppRender) {
+                this.rootView.afterSubAppRender(this);
+            }
         },
 
         render: function () {
@@ -327,6 +331,10 @@ define([
             var oS = this.populateSavedHash("#content_os form");
             var pW = this.populateSavedHash("#content_org form");
             newPolicy.save($("#policy_name").val(),o,oS,pW,this.policy,sessionStorage.org_id);
+
+            if(this.onCreated) {
+                this.onCreated();
+            }
         },
         populateSavedHash: function(form_name){
             var o = {};

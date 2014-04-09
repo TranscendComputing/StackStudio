@@ -29,6 +29,7 @@ define([
             var createView = this;
             this.template = _.template(ciServerAddEditTemplate);
             this.$el.html(this.template);
+            this.rootView = options.rootView;
 
             var title = "Add CI Server";
             if(options && options.ci_server) {
@@ -45,6 +46,11 @@ define([
                 buttons: {
                     Save: function () {
                         createView.save();
+
+                        if(createView.onCreated) {
+                            createView.onCreated();
+                        }
+
                     },
                     Cancel: function() {
                         createView.cancel();
@@ -52,6 +58,13 @@ define([
                 }
             });
             this.render();
+
+            var thisView = this;
+            setTimeout(function () {
+                if(thisView.rootView.afterSubAppRender) {
+                    thisView.rootView.afterSubAppRender(thisView);
+                }
+            }, 5);
         },
 
         render: function() {

@@ -9,13 +9,14 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'opentip',
         'views/dialogView',
         'models/account',
         'text!templates/account/stackplaceLoginTemplate.html',
         'text!templates/account/stackstudioLoginTemplate.html',
         'views/account/newLoginView',
         'common'      
-], function( $, _, Backbone, DialogView, Account, stackplaceLoginTemplate, stackstudioLoginTemplate, NewLoginView, Common ) {
+], function( $, _, Backbone, OpenTip, DialogView, Account, stackplaceLoginTemplate, stackstudioLoginTemplate, NewLoginView, Common ) {
     
     var AccountLoginView = DialogView.extend({
 
@@ -119,6 +120,7 @@ define([
                 sessionStorage.permissions = JSON.stringify(data.account.permissions);
                 sessionStorage.project_memeberships = JSON.stringify(data.account.project_memberships);
                 sessionStorage.group_policies = JSON.stringify(data.account.group_policies);
+                sessionStorage.num_logins = data.account.num_logins;
                 
                 sessionStorage.rss_url = data.account.rss_url;
                 

@@ -24,14 +24,20 @@ define([
         org_id: undefined,
         
         clouds: Clouds,
+
+        parentView : undefined,
+
+        onCreated: undefined,
         
         events: {
             "dialogclose": "close",
             "change #cloud_select": "cloudSelect"
         },
 
-        initialize: function(options) {
+        initialize: function ( options ) {
+            this.parentView = options.rootView;
             this.org_id = options.org_id;
+            var self = this;
             
             var createView = this;
             var compiledTemplate = _.template(cloudAccountCreateTemplate);
@@ -52,6 +58,13 @@ define([
                     }
                 }
             });
+
+            //make sure other events have been bound first
+            setTimeout(function () {
+                if(self.parentView.afterSubAppRender) {
+                    self.parentView.afterSubAppRender(self);
+                }
+            }, 5);
         },
 
         render: function() {
@@ -97,8 +110,13 @@ define([
             if(!issue){
                 newCloudAccount.create(options,sessionStorage.org_id,sessionStorage.login,$("#cloud_select").val());
                 this.$el.dialog('close');
+
             }else{
                 Common.errorDialog("Invalid Request", "Please supply all required fields.");
+            }
+
+            if(this.onCreated) {
+                this.onCreated();
             }
         },
         

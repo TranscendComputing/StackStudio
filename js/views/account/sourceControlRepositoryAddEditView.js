@@ -13,7 +13,6 @@ define([
         'text!templates/account/sourceControlRepositoryAddEditTemplate.html',
         '/js/models/sourceControlRepository.js',
         'common'
-        
 ], function( $, _, Backbone, DialogView, scRepoAddEditTemplate, SCRepo, Common ) {
     
     var SCRepositoryAddEditView = DialogView.extend({
