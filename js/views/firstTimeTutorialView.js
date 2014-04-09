@@ -30,7 +30,7 @@ define([
 		initialize : function () {
 			var self = this;
 			self.rootView = self.options.rootView;
-      if(parseInt(sessionStorage.num_logins, 10) < 20) {
+      if(parseInt(sessionStorage.num_logins, 10) < 40) {
 				this.steps = [
 					{
 						title: 'Cloud Accounts',
