@@ -30,95 +30,93 @@ define([
 		initialize : function () {
 			var self = this;
 			self.rootView = self.options.rootView;
-      if(parseInt(sessionStorage.num_logins, 10) < 40) {
-				this.steps = [
-					{
-						title: 'Cloud Accounts',
-						messageElement : $('#tutorialMessage'),
-						message: 'You can set up a cloud account to manage it through StackStudio. Currently, StackStudio supports AWS, OpenStack, and Google cloud accounts.',
-						tips: [
-							{
-								element: $('#mCloudAccount_tree #c_account_list>a'),
-								message: 'Click here to add a cloud account',
-								onClicked: this.initNextTip.bind(this, true, true)
-							},
-							{
-								element: $('.account_list_page #create_group_button'),
-								message: 'Now click here',
-								onClicked: this.bindSubAppEvents.bind(this)
-							}
-						]
-					},
-					{
-						title: 'Cloud Credentials',
-						messageElement : $('#tutorialMessage'),
-						message: 'Before you can manage your cloud account, you need to add your cloud credentials. Click the link indicated above to view your saved credentials as well as add new ones.',
-						tips: [
-							{
-								element: $('#mCloudCredential_tree #cred_list>a'),
-								message: 'Click here to add cloud credentials',
-								onClicked: this.initNextTip.bind(this, true, true)
-							},
-							{
-								element: $('.credential_list_page #create_group_button'),
-								message: 'Now click here',
-								onClicked: this.bindSubAppEvents.bind(this)
-							}
-						]
-					},
-					{
-						title: 'Policies',
-						messageElement : $('#tutorialMessage'),
-						message: 'Policies allow you to alter the security features of your cloud server. To create a policy, click the indictated link above and then click "Create Policy".',
-						tips: [
-							{
-								element: $('#mPolicy_tree #policy_list>a'),
-								message: 'Click here to add a policy',
-								onClicked: this.initNextTip.bind(this, true, true)
-							},
-							{
-								element: $('.policies_list_page #create_user_button'),
-								message: 'Now click here',
-								onClicked: this.bindSubAppEvents.bind(this)
-							}
-						]
-					},
-					{
-						title: 'Configuration Managers',
-						messageElement : $('#tutorialMessage'),
-						message: 'Configuration managers ease the process of managing scaling, deployment, and general configuration of your cloud server. StackStudio currently supports Chef, Puppet, Salt, and Ansible. If you have one of these accounts, you can link it by clicking the indicated link above.',
-						tips: [
-							{
-								element: $('#mdevOps_tree #devops_list>a'),
-								message: 'Click here to add a configuration manager',
-								onClicked: this.initNextTip.bind(this, true, true)
-							},
-							{
-								element : $('#new_config_manager'),
-								message: 'Now click here',
-								onClicked: this.bindSubAppEvents.bind(this)
-							}
-						]
-					},
-					{
-						title: 'Continuous Integration',
-						messageElement : $('#tutorialMessage'),
-						message: 'Continuous integration servers help manage scheduled builds, deployments, source control, and more. Click the link above view/manage your continuous integration server(s).',
-						tips: [
-							{
-								element: $('#mContinuousIntegration_tree #ci_list>a'),
-								message: 'Click here to set up a continuous integration server',
-								onClicked: this.initNextTip.bind(this, true, true)
-							},
-							{
-								element: $('#new_ci_server'),
-								message: 'Now click here',
-								onClicked: this.bindSubAppEvents.bind(this)
-							}
-						]
-					}
-				];
-			}
+			this.steps = [
+				{
+					title: 'Cloud Accounts',
+					messageElement : $('#tutorialMessage'),
+					message: 'You can set up a cloud account to manage it through StackStudio. Currently, StackStudio supports AWS, OpenStack, and Google cloud accounts.',
+					tips: [
+						{
+							element: $('#mCloudAccount_tree #c_account_list>a'),
+							message: 'Click here to add a cloud account',
+							onClicked: this.initNextTip.bind(this, true, true)
+						},
+						{
+							element: $('.account_list_page #create_group_button'),
+							message: 'Now click here',
+							onClicked: this.bindSubAppEvents.bind(this)
+						}
+					]
+				},
+				{
+					title: 'Cloud Credentials',
+					messageElement : $('#tutorialMessage'),
+					message: 'Before you can manage your cloud account, you need to add your cloud credentials. Click the link indicated above to view your saved credentials as well as add new ones.',
+					tips: [
+						{
+							element: $('#mCloudCredential_tree #cred_list>a'),
+							message: 'Click here to add cloud credentials',
+							onClicked: this.initNextTip.bind(this, true, true)
+						},
+						{
+							element: $('.credential_list_page #create_group_button'),
+							message: 'Now click here',
+							onClicked: this.bindSubAppEvents.bind(this)
+						}
+					]
+				},
+				{
+					title: 'Policies',
+					messageElement : $('#tutorialMessage'),
+					message: 'Policies allow you to alter the security features of your cloud server. To create a policy, click the indictated link above and then click "Create Policy".',
+					tips: [
+						{
+							element: $('#mPolicy_tree #policy_list>a'),
+							message: 'Click here to add a policy',
+							onClicked: this.initNextTip.bind(this, true, true)
+						},
+						{
+							element: $('.policies_list_page #create_user_button'),
+							message: 'Now click here',
+							onClicked: this.bindSubAppEvents.bind(this)
+						}
+					]
+				},
+				{
+					title: 'Configuration Managers',
+					messageElement : $('#tutorialMessage'),
+					message: 'Configuration managers ease the process of managing scaling, deployment, and general configuration of your cloud server. StackStudio currently supports Chef, Puppet, Salt, and Ansible. If you have one of these accounts, you can link it by clicking the indicated link above.',
+					tips: [
+						{
+							element: $('#mdevOps_tree #devops_list>a'),
+							message: 'Click here to add a configuration manager',
+							onClicked: this.initNextTip.bind(this, true, true)
+						},
+						{
+							element : $('#new_config_manager'),
+							message: 'Now click here',
+							onClicked: this.bindSubAppEvents.bind(this)
+						}
+					]
+				},
+				{
+					title: 'Continuous Integration',
+					messageElement : $('#tutorialMessage'),
+					message: 'Continuous integration servers help manage scheduled builds, deployments, source control, and more. Click the link above view/manage your continuous integration server(s).',
+					tips: [
+						{
+							element: $('#mContinuousIntegration_tree #ci_list>a'),
+							message: 'Click here to set up a continuous integration server',
+							onClicked: this.initNextTip.bind(this, true, true)
+						},
+						{
+							element: $('#new_ci_server'),
+							message: 'Now click here',
+							onClicked: this.bindSubAppEvents.bind(this)
+						}
+					]
+				}
+			];
 		},
 
 		render: function () {
