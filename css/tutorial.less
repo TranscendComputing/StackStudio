@@ -1,0 +1,35 @@
+.instructor {
+  position: fixed;
+  z-index: 100000;
+  background-color: rgba(255,255,255,0.8);
+  bottom: 35px;
+  left: 0;
+  width: 100%;
+  height: auto !important;
+
+  .panel-heading {
+    position: relative;
+  }
+
+  .instructor-step-label {
+
+    a {
+      font-size: 1.3rem;
+    }
+
+    .completed-icon {
+      visibility: hidden;
+      display:inline-block;
+      height: 100%;
+      font-size: 20px;
+      color: green;
+      padding-left: 10px;
+    }
+
+    &.completed {
+      .completed-icon {
+        visibility: visible;
+      }
+    }
+  }
+}

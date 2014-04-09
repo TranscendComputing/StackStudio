@@ -1,0 +1,42 @@
+@main-bg-color: #f2f2f2;
+
+.purple-ui-header {
+	border-bottom-style:none;
+	background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;
+	color: #ffffff;
+	text-align: center;
+	box-shadow: 0 0 5px #888;
+}
+
+.ui-content-area {
+	background-color: @main-bg-color;
+}
+
+.section-close-button {
+	position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0.3em;
+  display: block;
+  margin: auto;
+  width: 21px;
+  height: 20px;
+  padding: 1px;
+  border-radius: 5px;
+
+  span {
+	  height: 17px;
+	  width: 17px;
+  	background-image: url(/images/jqueryUI/ui-icons_f2f2f2_256x240.png);
+  }
+
+  &:hover {
+		background: #8c8c8c url(/images/jqueryUI/ui-bg_highlight-soft_75_8C8C8C_1x100.png) 50% 50% repeat-x;
+		border: 1px solid #8C8C8C;
+
+		span {
+			font-weight: normal;
+			color: #fff;
+		}
+  }
+}
