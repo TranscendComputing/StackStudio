@@ -113,6 +113,9 @@ requirejs.config({
         },
         'URIjs': {
 
+        },
+        'instructor': {
+            deps: ['jquery', 'jquery-ui']
         }
     },
     paths: {
@@ -299,6 +302,10 @@ define(
       jenkins: "<img src='/images/CompanyLogos/jenkins.jpg' class='jenkins_icon'/>",
       git: "<img src='/images/CompanyLogos/gitIcon.png' class='git_icon'/>"
     };
+
+    $(document).on('click', '.no-default', function ( e ) {
+        e.preventDefault();
+    });
 
     // Initialize the command line, since that's global to all pages.
     var consoleAppView = new CommandLineView();
