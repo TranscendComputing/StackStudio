@@ -468,7 +468,13 @@
     "vcloud" : {
         "name" : "VCloud",
         "logo": "/images/CloudLogos/vmware.png",
-        "native_services" : [],
+        "native_services" : [
+            {
+                "name" : "Organizations",
+                "type" : "compute",
+                "defaultSubtype": "organizations"
+            }
+        ],
         "regions" : []
     }
 }
