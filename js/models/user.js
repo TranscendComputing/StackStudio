@@ -8,8 +8,9 @@
 define([
         'jquery',
         'backbone',
-        'common'
-], function( $, Backbone, Common ) {
+        'common',
+        'messenger'
+], function( $, Backbone, Common, Messenger ) {
     'use strict';
 
     var User = Backbone.Model.extend({
@@ -74,6 +75,51 @@ define([
                     Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
                 }
             });
+        },
+
+        removePermission: function(permissionID) {
+            $.ajax({
+                url: Common.apiUrl + "/identity/v1/accounts/" + this.attributes.id + "/permissions/" + permissionID + "?_method=DELETE",
+                type: 'POST',
+                contentType: 'application/x-www-form-urlencoded',
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            });
+        },
+
+        updateAttributes: function(options, addAdmin){
+            var userUpdate = this;
+            var url = Common.apiUrl + "/identity/v1/accounts/" + this.attributes.id + "/update?_method=PUT";
+            $.ajax({
+                url: url,
+                type: 'POST',
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: JSON.stringify(options),
+                success: function(data) {
+                    userUpdate.updatePermissions(addAdmin);
+                    Common.vent.trigger("userRefresh");
+                    new Messenger().post({type:"success", message:"User " + userUpdate.attributes.login + " Updated..."});
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            });
+        },
+
+        updatePermissions: function(addAdmin){
+            var userUpdate = this;
+            var adminInfo = userUpdate.attributes.permissions;
+            if(addAdmin && adminInfo.length > 0){
+                if(!(adminInfo[0].permission.name === "admin" && adminInfo[0].permission.environment === "transcend")){
+                    userUpdate.addPermission("admin","transcend");
+                }
+            }else if(addAdmin && adminInfo.length === 0){
+                userUpdate.addPermission("admin","transcend");
+            }else if(!addAdmin && adminInfo.length > 0) {
+                userUpdate.removePermission(adminInfo[0].permission.id);
+            }
         },
 
         destroy: function() {

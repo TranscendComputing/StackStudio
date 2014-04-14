@@ -6,12 +6,12 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'backbone'
-], function( $, Backbone ) {
+        'models/resource/resourceModel',
+        'common'
+], function( ResourceModel, Common ) {
     'use strict';
 
-    // Base RouteTable Model
+    // RouteTable Model
     // ----------
 
     /**
@@ -22,41 +22,29 @@ define([
      * @param {Object} initialization object.
      * @returns {Object} Returns a RouteTable instance.
      */
-    var RouteTable = Backbone.Model.extend({
+    var RouteTable = ResourceModel.extend({
 
-        idAttribute: "routeTableId",
+        idAttribute: "id",
         
         /** Default attributes for compute */
         defaults: {
-            routeTableId: '',
-            vpcId: '',
-            routeSet: [],
-            associationSet: [],
-            propagatingVgwSet: [],
-            tagSet: []
+            id: '',
+            vpc_id: '',
+            routes: [],
+            associations: [],
+            propagating_vpn: [],
+            tags: []
 		},
 
-	    /**
-	     * Override the base Backbone set method, for debugging.
-	     *
-	     * @memberOf RouteTable
-	     * @category Internal
-	     * @param {Object} hash of attribute values to set.
-	     * @param {Object} (optional) options to tweak (see Backbone docs).
-	     */
-		set: function(attributes, options) {
-		    Backbone.Model.prototype.set.apply(this, arguments);
-		}
-		
-		/*
-		get: function(attr) {
-		    if (typeof this[attr] == 'function') {
-		        return this[attr]();
-		    }
-		    
-		    return Backbone.Model.prototype.get.call(this, attr);
-		}
-		*/
+        create: function(options, credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/route_tables?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", {"route_table": options}, "routeTableAppRefresh");
+        },
+
+        destroy: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/route_tables/" + this.attributes.id + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "routeTableAppRefresh");
+        }
     });
 
     return RouteTable;

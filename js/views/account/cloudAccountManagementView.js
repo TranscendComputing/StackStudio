@@ -53,7 +53,8 @@ define([
             Common.vent.on("managementRefresh", function() {
                 thisView.render();
             });
-            Common.vent.on("servicesRefresh", function() {
+            Common.vent.on("servicesRefresh", function(data) {
+                thisView.selectedCloudAccount.attributes = data.cloud_account;
                 thisView.render();
             });
             Common.vent.on("cloudAccountUpdated", function() {
@@ -196,8 +197,6 @@ define([
         deleteService: function(event) {
             var serviceData = $(event.currentTarget.parentElement).find("input").data();
             this.selectedCloudAccount.deleteService(serviceData, sessionStorage.login);
-            
-            this.refreshServices();
             
             return false;
         },

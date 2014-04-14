@@ -95,17 +95,20 @@ define([
 
         render: function () {
             if($("#cloud_coverflow").children().length > 0){
+                //debugger
                 if(this.resourceApp) {
                     this.resourceApp.remove();
                 } else {
                     var policy;
                     var firstCloudProvider;
-                    // var firstCloudProvider = this.cloudCredentials.first().attributes.cloud_provider;
-                    // firstCloudProvider = firstCloudProvider.toLowerCase();
                     policy = JSON.parse(sessionStorage.group_policies);
                     if (policy.length > 0){
                         firstCloudProvider = policy[0].group_policy.org_governance.default_cloud.toLowerCase();
                     }else{
+                        firstCloudProvider = $("#cloud_coverflow").children()[0].id;
+                    }
+                    //Google Cloud Hack until we get governance setup. Remove when we get governance.
+                    if($("#cloud_coverflow").children().first().attr('id') === "google" && $("#cloud_coverflow").children().length === 1 ){
                         firstCloudProvider = $("#cloud_coverflow").children()[0].id;
                     }
                     if(this.cloudProvider) {
@@ -139,6 +142,7 @@ define([
         },
 
         enableCloud: function(cloudPolicies, provider){
+            //debugger
             var check = false;
             //Admin check
             if(JSON.parse(sessionStorage.permissions).length > 0){
@@ -164,26 +168,21 @@ define([
             }));
         },
         addCloud: function( cloudCredential ) {
+            //debugger
             var cloudProvider = cloudCredential.get("cloud_provider");
             var resourceNav = this;
-            var cloudPolicies = JSON.parse(sessionStorage.group_policies);
-            var default_cloud = "";
+            var cloudPolicies = JSON.parse(sessionStorage.group_policies);      
             if(cloudProvider) {
                 cloudProvider = cloudProvider.toLowerCase();
                 var found = false;
                 var selected_cloud = sessionStorage['selected_cloud'];
-                //check if cloud is enabled.
+                //Check if cloud is enabled before adding to coverflow
                 if(cloudPolicies.length > 0){
-                    found = this.enableCloud(cloudPolicies, cloudProvider);
-                    default_cloud = cloudPolicies[0].group_policy.org_governance.default_cloud.toLowerCase();
+                    found = this.enableCloud(cloudPolicies,cloudProvider);
                 }
-                if($("#cloud_coverflow").children().length === 0 ){
-                    if( selected_cloud === undefined && default_cloud !== "" && default_cloud !== "none"){
-                        this.addToCarousel(default_cloud);
-                    } 
-                    if( selected_cloud !== undefined){
-                        this.addToCarousel(selected_cloud);
-                    }
+                //Google Hack until google policy feature is added. Remove after.
+                if(cloudProvider === "google"){
+                    found = false;
                 }
                 $.each($("#cloud_coverflow").children(), function (index, coverFlowCloud) {
                     if(coverFlowCloud.id === cloudProvider ) {
@@ -213,12 +212,15 @@ define([
                 'movecallback':function(item) {
                     if( $(item).attr("id") !== resourceNav.cloudProvider )
                     {
-                        if(resourceNav.cloudProvider === "aws"){
+                        //debugger
+                        var select = resourceNav.cloudProvider;
+                        var leftAttr = $("#cloud_coverflow").children().first().attr('id');
+                        var rightAttr = $("#cloud_coverflow").children().last().attr('id');
+                        if(select === leftAttr){
                             $("#cloud_coverflow").coverscroll("prev");
-                        }else if(resourceNav.cloudProvider === "google"){
+                        }else if(select === rightAttr){
                             $("#cloud_coverflow").coverscroll("next");
                         }
-                        //$("#cloud_coverflow").coverscroll("prev");
                     }
                 } // callback function triggered after click on an item - parameter is the item's jQuery object
             });
@@ -243,103 +245,96 @@ define([
             }
         },
 
-        cloudSelection: function (cloudProvider) {
-            this.cloudProvider = cloudProvider;
-            sessionStorage['selected_cloud'] = this.cloudProvider;
+        populateResourceTable: function(row, service, enabled_services, table){
+            //debugger
+            if(enabled_services){
+                if(enabled_services instanceof Array){
+                    if($.inArray(service.name, enabled_services) === -1){
+                        return row;
+                    }
+                }else if(service.name !== enabled_services){
+                   return row; 
+                }
+            }
+            if(enabled_services === undefined){
+                return row;
+            }        
+            $(table+row).append($("<td></td>").attr({
+                "id": service.type,
+                "class": "resources selectable_item"
+            }));
+            $("#"+service.type).append($("<a></a>").attr({
+                "id": service.type+"Link",
+                "class": "resource_link"
+            }).text(service.name));
+            row++;
+            //reset row if greater than 3
+            if(row > 3) {
+                row = 1;
+            }
+            return row;
+        },
+        cloudSelectionIterator: function(collection,formElement){
+            //debugger
             var resourceNav = this;
-            var enabled_services = [];
-            var enabled_services_os = [];
-            var topstack_enabled = resourceNav.cloudDefinitions[this.cloudProvider].topstack_services;
+            var provider = resourceNav.cloudProvider;
             var permissions = JSON.parse(sessionStorage.permissions);
-            var no_governance = JSON.parse(sessionStorage.group_policies);
-            //Add the services of the cloud to the resource table
+            var governance = JSON.parse(sessionStorage.group_policies);
+            //Google Hack until Google governance is added.
+            var googleHack = collection;      
             var row = 1;
-            $("#resource_table").empty();
-            $.each(resourceNav.cloudDefinitions[this.cloudProvider].native_services, function(index, service) {
-                //Check Enabled Services
-                var addService = false;
-                var addServiceOS = false;
-                if(permissions.length > 0 || no_governance.length < 1){
-                    addService = true;
-                    addServiceOS = true;
-                    enabled_services_os = topstack_enabled;
-                }else{
-                    $.each(JSON.parse(sessionStorage.group_policies), function(index,value){
+            $.each(collection, function(index, service) {
+                //debugger
+                if(permissions.length > 0 || governance.length < 1){
+                    row = resourceNav.populateResourceTable(row,service,false, formElement );
+                }else if(formElement === "#topstack_row" && governance.length > 0){
+                    var topstack_enabled_services = governance[0].group_policy.os_governance.enabled_services;
+                    row = resourceNav.populateResourceTable(row,service,topstack_enabled_services,formElement);
+                }else if(googleHack.length === 4){
+                    row = resourceNav.populateResourceTable(row,service,false,formElement);
+                }
+                else{
+                    $.each(governance, function(index,value){
+                        //debugger
                         if(value != null){
-                            enabled_services = value.group_policy.aws_governance.enabled_services;
-                            enabled_services_os = value.group_policy.os_governance.enabled_services;
-                            if($.inArray(service.name, enabled_services) !== -1){
-                                addService = true;
-                            }
-                            if($.inArray(service.name, enabled_services_os) !== -1){
-                                addServiceOS = true;
-                            }
+                            $.each(value.group_policy, function(i,policy){
+                                if(policy.hasOwnProperty('enabled_cloud')){
+                                    if(policy.enabled_cloud.toLowerCase() === resourceNav.cloudProvider){
+                                            row = resourceNav.populateResourceTable(row,service,policy.enabled_services, formElement );
+                                    }
+                                }
+                            });
                         }
                     });
                 }
-                //hack
-                var cname = location.href.split("#resources/")[1].split("/")[0];
-                // debugger
-                if(addService && cname === 'aws'){
-                    $("#native_row"+row).append($("<td></td>").attr({
-                        "id": service.type,
-                        "class": "resources selectable_item"
-                    }));
-                    $("#"+service.type).append($("<a></a>").attr({
-                        "id": service.type+"Link",
-                        "class": "resource_link"
-                    }).text(service.name));
-                    row++;
-                    //reset row if greater than 3
-                    if(row > 3) {
-                        row = 1;
-                    }
-                }
-                if(addServiceOS && cname === 'openstack'){
-                    $("#native_row"+row).append($("<td></td>").attr({
-                        "id": service.type,
-                        "class": "resources selectable_item"
-                    }));
-                    $("#"+service.type).append($("<a></a>").attr({
-                        "id": service.type+"Link",
-                        "class": "resource_link"
-                    }).text(service.name));
-                    row++;
-                    //reset row if greater than 3
-                    if(row > 3) {
-                        row = 1;
-                    }
-                }
-            });
-            row = 1;
-            if(topstack_enabled !== undefined && topstack_enabled.length > 0) {
+            });           
+        },
+
+        cloudSelection: function (cloudProvider) {
+            //debugger
+            this.cloudProvider = cloudProvider;
+            sessionStorage['selected_cloud'] = this.cloudProvider;
+            var resourceNav = this;
+            var topstack_enabled = resourceNav.cloudDefinitions[this.cloudProvider].topstack_services;
+            //Add the services of the cloud to the resource table
+            $("#resource_table").empty();
+            this.cloudSelectionIterator(resourceNav.cloudDefinitions[this.cloudProvider].native_services,"#native_row");
+            //debugger
+            if(topstack_enabled !== undefined) {
                 $("#topstack_services_table, #topstack_service_label").show();
                 $("#native_services_table").css("width", "30%");
                 $("#topstack_services_table").css("width", "60%");
-                $.each(topstack_enabled, function(index, service) {
-                    if($.inArray(service.name, enabled_services_os) !== -1 || permissions.length > 0 || no_governance.length < 1){
-                        $("#topstack_row"+row).append($("<td></td>").attr({
-                            "id": service.type,
-                            "class": "resources selectable_item"
-                            }));
-                            $("#"+service.type).append($("<a></a>").attr({
-                                "id": service.type+"Link",
-                                "class": "resource_link"
-                            }).text(service.name));
-                            row++;
-                            //reset row if greater than 3
-                            if(row > 3) {
-                                row = 1;
-                            }
-                    }
-                });
-            }else {
-                $("#topstack_services_table, #topstack_service_label").hide();
-                $("#native_services_table").css("width", "90%");
+                this.cloudSelectionIterator(topstack_enabled,"#topstack_row");
             }
-
+            if( $("#topstack_row1").children().length < 1) {
+                 $("#topstack_services_table, #topstack_service_label").hide();
+                 $("#native_services_table").css("width", "90%");
+            }
+            if($("#native_row1").children().length < 1){
+                $("#native_services_table, #native_service_label").hide();
+                $("#topstack_services_table").css("width", "90%");
+            }
             $("#cloud_nav").html(this.crumbTemplate({pathElt: this.cloudDefinitions[this.cloudProvider].name}));
-            //debugger
             this.refreshCloudSpecs();
         },
 

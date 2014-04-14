@@ -41,6 +41,7 @@ js/vendor/jquery.js
 js/vendor/jquery-ui.js
 js/vendor/lodash.js
 js/vendor/ace/*.js
+js/vendor/jasmine*.js
 js/vendor/jquery.jstree.js
 js/vendor/jquery.dataTables*.js
 js/vendor/dataTables*.js

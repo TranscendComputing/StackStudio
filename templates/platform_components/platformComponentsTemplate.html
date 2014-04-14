@@ -10,15 +10,22 @@
             <a id="refresh_button" class="btn btn-primary">Refresh</a>
             <a id="view_legend_toggle" style="float:right" class="selectable_item">Hide Legend</a>
             <div id="table_legend" style="float:right; margin: 0px 20px; border:1px solid grey; border-radius:5px; padding:5px;">
-                Pass:&nbsp;<img src="/images/statusRunning.gif" />&nbsp;&nbsp;
-                In Progress:&nbsp;<img src="/images/statusChanging.gif" />&nbsp;&nbsp;
-                Fail:&nbsp;<img src="/images/statusTerminated.gif" />&nbsp;&nbsp;
-                N/A:&nbsp;<img src="/images/statusNone.png" width="16px"/>
+                Pass:&nbsp;<img src="/images/healthy.gif" width="20px"/>&nbsp;&nbsp;
+                In Progress:&nbsp;<img src="/images/issues.gif" width="20px"/>&nbsp;&nbsp;
+                Fail:&nbsp;<img src="/images/disrupted.gif" width="20px"/>&nbsp;&nbsp;
+                N/A:&nbsp;<img src="/images/grey.png" width="20px"/>
             </div>
         </div>
     </div>
     <div id="continuous_integration_table_view">
+        <div>
+            <h3 id="continuous_integration_table_label"></h3>
+        </div>
         <table id="continuous_integration_table" class="table table-striped"></table>
+        <div>
+            <h3 id="community_components_label"></h3>
+        </div>
+        <table id="ignored_components_table" class="table table-striped"></table>
     </div>
     <div id="continuous_integration_setup_landing_view">
         <div class="jumbotron" style="margin-top:10px;"> 

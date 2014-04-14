@@ -154,6 +154,12 @@ define([
             }).on('loaded.jstree', function() {
                     $("#mdevOps_tree").jstree('open_all');
             });
+            $("#mMyAccount_tree").jstree({
+                "themeroller":{"item": "jstree_custom_item"},
+                "plugins":[ "themeroller", "html_data", "crrm" ]
+            }).on('loaded.jstree', function() {
+                $("#mMyAccount_tree").jstree('open_all');
+            });
 
             if(parseInt(sessionStorage.num_logins, 10) < 20) {
                 //todo: init instructor
