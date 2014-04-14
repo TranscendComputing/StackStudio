@@ -464,5 +464,11 @@
         "logo": "/images/CloudLogos/joyent200.jpg",
         "native_services": [],
         "regions": []
+    },
+    "vcloud" : {
+        "name" : "VCloud",
+        "logo": "/images/CloudLogos/vmware.png",
+        "native_services" : [],
+        "regions" : []
     }
 }
