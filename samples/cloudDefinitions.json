@@ -470,9 +470,19 @@
         "logo": "/images/CloudLogos/vmware.png",
         "native_services" : [
             {
-                "name" : "Organizations",
+                "name" : "Compute Engine",
                 "type" : "compute",
-                "defaultSubtype": "organizations"
+                "defaultSubtype": "dataCenters",
+                "subServices" : [
+                    {
+                        "name" : "Data centers",
+                        "type" : "dataCenters"
+                    },
+                    {
+                        "name" : "Organizations",
+                        "type" : "organizations"
+                    }
+                ]
             }
         ],
         "regions" : []
