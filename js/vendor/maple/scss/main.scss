@@ -1,0 +1,99 @@
+@import 'variables';
+
+.maple-wrapper {
+	border: 1px solid #a8a8a8;
+	border-radius: 5px;
+	display: inline-block;
+	padding: 10px;
+	min-width: 100px;
+
+	ul, li {
+		list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .maple-tree {
+    padding: 0;
+
+    li {
+      padding-top: 5px;
+      padding-bottom: 5px;
+    }
+
+    .maple-subtree {
+      margin-left: $indentWidth;
+    }
+  }
+
+	li {
+		position: relative;
+
+    &>span {
+      display: inline-block;
+      height: $iconHeight;
+      line-height: $iconHeight;
+      vertical-align: middle;
+
+      &.maple-selected {
+        background-color: #2e2e2e;
+        color: white;
+      }
+    }
+
+    &>img {
+      display: inline-block;
+      height: $iconHeight;
+      width: $iconWidth;
+      padding: 0;
+      margin: 0;
+      width: auto;
+      margin-right: 5px;
+      vertical-align: middle;
+      cursor: pointer;
+    }
+
+		&.maple-folder {
+
+      &>.maple-subtree {
+        margin-left: $iconWidth + $indentWidth;
+      }
+
+			&:not(.loading) {
+				&>img {
+					content: url(#{$imagesDir}/folder.png);
+				}
+
+				&.expanded {
+					
+					&>img {
+						content: url(#{$imagesDir}/expand-icon.png);
+            -webkit-transform: rotate(-180deg);
+               -moz-transform: rotate(-180deg);
+                -ms-transform: rotate(-180deg);
+                 -o-transform: rotate(-180deg);
+                    transform: rotate(-180deg);
+					}			
+				}
+			}
+
+			&.loading {
+        &>img {
+          content: url(#{$imagesDir}/ajax-loader.gif)    
+        }
+			}
+		}
+
+    &.maple-item {
+      &>span {
+        &:before {
+          content: "-";
+          font-size: 24px;
+          text-align: center;
+          margin-right: 5px;
+          cursor: pointer;
+        }
+      }
+    }
+	}
+}
