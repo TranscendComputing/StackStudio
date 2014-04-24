@@ -8,7 +8,7 @@
 define([
 	'jquery',
 	'underscore',
-	'Backbone',
+	'backbone',
 	'common',
 	'models/resource/resourceModel'
 ], function ( $, _, Backbone, Common, ResourceModel ) {
@@ -27,11 +27,7 @@ define([
 				"organization" : options
 			};
 			this.sendAjaxAction(this.apiUrl, "POST", ajaxOptions);
-		},
-
-		delete: function ( credentialId, region ) {
-			this.sendAjaxAction(this.apiUrl, "POST", { cred_id : credentialId }, "instanceAppRefresh");
-		} 
+		}
 	});
 
 	return VCloudOrganization;

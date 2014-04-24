@@ -18,7 +18,8 @@ module.exports = function(grunt) {
       'js/views/**/*.js',
       'js/collections/**/*.js',
       'js/aws/**/*.js',
-      'js/openstack/**/*.js']
+      'js/openstack/**/*.js',
+      'js/vcloud/**/*.js']
     },
     spec: {
       files: ['spec/**/*.js']
@@ -132,7 +133,8 @@ module.exports = function(grunt) {
       sstudio: {
         options: {
           port: 9001,
-          hostname: "*"
+          hostname: "*",
+          keepalive: true
         }
       },
       test : {

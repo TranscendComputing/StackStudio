@@ -11,7 +11,7 @@ define([
         'backbone',
         'icanhaz',
         'common',
-        'text!templates/vcloud/account/vCloudCredentialForm.html',
+        'text!templates/vcloud/account/vcloudCredentialForm.html',
         'models/cloudCredential',
         'collections/cloudCredentials'
 ], function ( $, _ , Backbone, ich, Common, Template, CloudCredential, CloudCredentials ) {

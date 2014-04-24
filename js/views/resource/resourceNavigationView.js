@@ -81,6 +81,8 @@ define([
                 async: false
             }).responseText;
 
+
+
             this.subServiceMenu = new SubServiceMenuView();
 
             this.cloudDefinitions = $.parseJSON(response);
@@ -507,43 +509,74 @@ define([
                     $("#resource_app").removeClass("service_width");
                 }
 
-                //Camelcase the subtype for the file name
-                var split = this.subtype.split("_"),
-                    subType,
-                    camelCase;
+                if(serviceObject.view) {
+                    this.loadTreeView(serviceObject.view);
+                } else {
+                    var appPath;
+                    //Camelcase the subtype for the file name
+                    var split = this.subtype.split("_"),
+                        subType,
+                        camelCase;
 
-                _.each(split, function(s) {
-                    camelCase = s.charAt(0).toUpperCase() + s.slice(1);
-                    subType = subType ? (subType + camelCase) : camelCase;
-                });
+                    _.each(split, function(s) {
+                        camelCase = s.charAt(0).toUpperCase() + s.slice(1);
+                        subType = subType ? (subType + camelCase) : camelCase;
+                    });
 
-                var appPath;
-
-                if(this.type === "admin") {
-                    appPath = "../topstack/views/"+this.type+"/topstack"+subType+"AppView";
-                }else {
-                    appPath = "../"+this.cloudProvider+"/views/"+this.type+"/"+this.cloudProvider+subType+"AppView";
-                }
-
-                require([appPath], function (AppView) {
-                    if (resourceNav.resourceApp instanceof AppView) {
-                        resourceNav.resourceApp.credentialId = resourceNav.selectedCredential;
-                        if(resourceNav.selectedRegion) {
-                            resourceNav.resourceApp.region = resourceNav.selectedRegion;
-                        }else {
-                            resourceNav.resourceApp.region = undefined;
-                        }
-                        resourceNav.resourceApp.render();
-                        return;
+                    if(this.type === "admin") {
+                        appPath = "../topstack/views/"+this.type+"/topstack"+subType+"AppView";
+                    }else {
+                        appPath = "../"+this.cloudProvider+"/views/"+this.type+"/"+this.cloudProvider+subType+"AppView";
                     }
 
-                    var resourceAppView = new AppView({cred_id: resourceNav.selectedCredential, region: resourceNav.selectedRegion});
-                    resourceAppView.cloudProvider = resourceNav.cloudProvider;
-                    resourceNav.resourceApp = resourceAppView;
-                    resourceNav.resourceSelect(resourceNav.type);
-                    resourceNav.refreshPath();
-                });
+                    this.loadAppView(appPath);
+                }
+
+                
             }
+        },
+
+        loadTreeView : function ( view ) {
+            var resourceNav = this;
+
+            require([view], function ( TreeView ) {
+                if (resourceNav.resourceApp instanceof TreeView) {
+                    //refresh
+                    return;
+                }
+
+                var resourceTreeView = new TreeView({
+                    cred_id : resourceNav.selectedCredential,
+                    region : resourceNav.selectedRegion,
+                    cloudProvider : resourceNav.cloudProvider
+                });
+
+                resourceNav.resourceApp = resourceTreeView;
+                resourceNav.resourceSelect(resourceNav.type);
+                resourceNav.refreshPath();
+            });
+        },
+
+        loadAppView : function ( view ) {
+            var resourceNav = this;
+            require([view], function ( AppView ) {
+                if (resourceNav.resourceApp instanceof AppView) {
+                    resourceNav.resourceApp.credentialId = resourceNav.selectedCredential;
+                    if(resourceNav.selectedRegion) {
+                        resourceNav.resourceApp.region = resourceNav.selectedRegion;
+                    }else {
+                        resourceNav.resourceApp.region = undefined;
+                    }
+                    resourceNav.resourceApp.render();
+                    return;
+                }
+
+                var resourceAppView = new AppView({cred_id: resourceNav.selectedCredential, region: resourceNav.selectedRegion});
+                resourceAppView.cloudProvider = resourceNav.cloudProvider;
+                resourceNav.resourceApp = resourceAppView;
+                resourceNav.resourceSelect(resourceNav.type);
+                resourceNav.refreshPath();
+            });
         },
 
         refreshPath: function() {

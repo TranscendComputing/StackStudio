@@ -6,18 +6,19 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
+	'jquery',
+	'underscore',
 	'backbone',
-	'/js/vcloud/models/compute/vCloudDataCenter.js'
-], function ( Backbone, VCloudDataCenter ) {
-	'use strict';
-
-	var Organizations = Backbone.Collection.extend({
+	'common',
+	'models/resource/resourceModel'
+], function ( $, _, Backbone, Common, ResourceModel ) {
+	var VCloudVapp = ResourceModel.extend({
 		
-		model : VCloudDataCenter,
-
-		url : Common.apiUrl + '/stackstudio/v1/cloud_management/vcloud/compute/data_centers'
-
+		defaults : {
+			id : '',
+			name : ''
+		}
 	});
 
-	return Organizations;
+	return VCloudVapp;
 });

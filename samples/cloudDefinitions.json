@@ -472,17 +472,8 @@
             {
                 "name" : "Compute Engine",
                 "type" : "compute",
-                "defaultSubtype": "dataCenters",
-                "subServices" : [
-                    {
-                        "name" : "Data centers",
-                        "type" : "dataCenters"
-                    },
-                    {
-                        "name" : "Organizations",
-                        "type" : "organizations"
-                    }
-                ]
+                "view" : "/js/vcloud/views/compute/vcloudTreeView.js",
+                "defaultSubtype": "dataCenters"
             }
         ],
         "regions" : []

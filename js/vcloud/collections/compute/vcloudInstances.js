@@ -9,7 +9,7 @@ define([
 	'jquery',
 	'backbone',
 	'common',
-	'vcloud/models/compute/vCloudInstance'
+	'vcloud/models/compute/vcloudInstance'
 ], function ( $, Backbone, Common, VCloudInstance ) {
 	'use strict';
 

@@ -44,7 +44,11 @@ define([
 
         render: function() {
             this.$el.html(this.template);
-            $("#resource_app").html(this.$el);
+
+            if(!this.$container) {
+                this.$container = $("resource_app");
+            }
+            this.$container.html(this.$el);
             this.delegateEvents(this.events);
             ich.refresh();
             $('button').button();
@@ -87,24 +91,25 @@ define([
                 Common.errorDialog(status, message);
             };
 
-            if(view.credentialId && view.region) {
-                view.collection.fetch({
-                    error: fetchErrorFunction,
-                    data: $.param({ cred_id: view.credentialId, region: view.region }),
-                    reset: true
-                });
-            }else if(view.credentialId) {
-                view.collection.fetch({
-                    error: fetchErrorFunction,
-                    data: $.param({ cred_id: view.credentialId }),
-                    reset: true
-                });
-            }else {
-                view.collection.fetch({
-                    error: fetchErrorFunction,
-                    reset: true
-                });
+            
+
+            var data = {};
+
+            if(view.region) { data.region = view.region; }
+            if(view.credentialId) { data.cred_id = view.credentialId; }
+
+            if(view.collectionData) {
+                data = _.extend(data, view.collectionData);
             }
+
+            var parameters = {
+                error : fetchErrorFunction,
+                reset : true,
+                data : data
+            };
+
+            view.collection.fetch(parameters);
+            
             view.setResourceAppHeightify();
         },
 

@@ -1,0 +1,87 @@
+<div>
+    <div id="details" class="detail_panel"></div>
+</div>
+
+<script type="text/html" id="resource_detail">
+    <div id="detail_tabs">
+        <ul>
+            <li><a id="vm_details" href="#tabs-1">Details</a></li>
+            <li><a id="vm_details" href="#tabs-2">Power</a></li>
+            <li><a id="vm_details" href="#tabs-3">CPU/Memory</a></li>
+            <li><a id="vm_details" href="#tabs-4">Network</a></li>
+        </ul>
+        <div id="tabs-1" class="tab">
+            <table>
+                <tbody>
+                    <tr><td><b>Status:</b></td><td>{{status}}</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="tabs-2" class="tab">
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            <button id="power_on_vm">Power on</button>
+                            <button id="power_off_vm">Power off</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="tabs-3" class="tab">
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            <label>CPUs</label>
+                        </td>
+                        <td>
+                            <input type="number" id="number_of_cpus" value="{{cpu}}" />
+                        </td>
+                        <td>
+                            <button id="modify_cpu">Save</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>Memory</label>
+                        </td>
+                        <td>
+                            <input type="number" id="memory" value="{{memory}}" />
+                        </td>
+                        <td>
+                            <button id="modify_memory">Save</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="tabs-4" class="tab">
+
+        </div>
+    </div>
+</script>
+
+<script id="vm_network" type="text/html">
+    <table>
+        <tbody>
+            <tr>
+                <td>Network:</td>
+                <td>{{network}}</td>
+            </tr>
+            <tr>
+                <td>Connected:</td>
+                <td>{{#is_connected}}Yes{{/is_connected}}{{^is_connected}}No{{/is_connected}}</td>
+            </tr>
+            <tr>
+                <td>MAC Address:</td>
+                <td><input type="text" id="vm_mac_address" value="{{mac_address}}" /></td>
+            </tr>
+            <tr>
+                <td>Allocation Mode:</td>
+                <td><input type="text" id="vm_ip_allocation_mode" value="{{ip_address_allocation_mode}}" /></td>
+            </tr>
+        </tbody>
+    </table>
+</script>

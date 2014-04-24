@@ -9,36 +9,37 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'views/resource/resourceAppView',
-        'text!templates/vcloud/compute/vCloudDataCentersTemplate.html',
-        '/js/vcloud/models/compute/vCloudDataCenter.js',
-        '/js/vcloud/collections/compute/vCloudDataCenters.js',
+        '/js/vcloud/views/compute/vcloudTreeView.js',
+        'text!templates/vcloud/compute/vcloudOrganizationsTemplate.html',
+        '/js/vcloud/models/compute/vcloudOrganization.js',
+        '/js/vcloud/collections/compute/vcloudOrganizations.js',
         'text!templates/emptyGraphTemplate.html',
         'icanhaz',
         'common',
         'morris',
         'spinner',
         'jquery.dataTables'
-], function( $, _, Backbone, ResourceAppView, VCloudDataCentersAppTemplate, DataCenter, DataCenters, emptyGraph, ich, Common, Morris, Spinner ) {
+], function( $, _, Backbone, VCloudTreeView, VCloudOrganizationsAppTemplate, Organization, Organizations, emptyGraph, ich, Common, Morris, Spinner ) {
     'use strict';
 
-    var VCloudDataCentersAppView = ResourceAppView.extend({
+    var VCloudOrganizationsAppView = VCloudTreeView.extend({
         
-        template : _.template(VCloudDataCentersAppTemplate),
+        template : _.template(VCloudOrganizationsAppTemplate),
 
-        emptyGraphTemplate : _.template(emptyGraph),
+        // emptyGraphTemplate : _.template(emptyGraph),
 
-        columns : ["name", "id"],
+        // columns : ["name", "id"],
 
-        idColumnNumber : 1,
+        // idColumnNumber : 1,
 
-        model : DataCenter,
+        model : Organization,
 
-        collectionType : DataCenters,
+        collectionType : Organizations,
 
-        subtype : "dataCenters",
+        subtype : "organizations",
 
         events: {
+            'click #action_menu ul li': 'performAction',
             'click #resource_table tr': "clickOne",
             'click #monitoring': 'refreshMonitors',
             'click #refresh_monitors_button': 'refreshMonitors'
@@ -54,11 +55,11 @@ define([
             this.render();
             
             var orgsApp = this;
-            Common.vent.on("dataCenterAppRefresh", function() {
+            Common.vent.on("snapshotAppRefresh", function() {
                 orgsApp.render();
             });
         }
     });
 
-    return VCloudDataCentersAppView;
+    return VCloudOrganizationsAppView;
 });

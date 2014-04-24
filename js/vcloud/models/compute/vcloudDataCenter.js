@@ -8,10 +8,10 @@
 define([
 	'jquery',
 	'underscore',
-	'Backbone',
+	'backbone',
 	'common',
 	'models/resource/resourceModel'
-], function ( $, _, Backbone, common, ResourceModel ) {
+], function ( $, _, Backbone, Common, ResourceModel ) {
 	var VCloudDataCenter = ResourceModel.extend({
 		
 		defaults : {

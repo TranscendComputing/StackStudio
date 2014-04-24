@@ -1,0 +1,51 @@
+<div>
+    <div id="details" class="detail_panel"></div>
+</div>
+
+<script type="text/html" id="resource_detail">
+    <div id="detail_tabs">
+        <ul>
+            <li><a id="network_details" href="#tabs-1">Details</a></li>
+        </ul>
+        <div id="tabs-1" class="tab">
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            <b>Name:</b>
+                        </td>
+                        <td>{{name}}</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <b>Description:</b>
+                        </td>
+                        <td>{{description}}</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <b>Gateway:</b>
+                        </td>
+                        <td>{{gateway}}</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <b>Subnet Mask:</b>
+                        </td>
+                        <td>{{netmask}}</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <b>IP Ranges:</b>
+                        </td>
+                        <td>
+                            {{#ip_ranges}}
+                                {{start_address}} - {{end_address}} <br />
+                            {{/ip_ranges}}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</script>

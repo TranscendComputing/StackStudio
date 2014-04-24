@@ -1,0 +1,97 @@
+/*!
+ * StackStudio 2.0.0-rc.1 <http://stackstudio.transcendcomputing.com>
+ * (c) 2012 Transcend Computing <http://www.transcendcomputing.com/>
+ * Available under ASL2 license <http://www.apache.org/licenses/LICENSE-2.0.html>
+ */
+/*jshint smarttabs:true */
+/*global define:true console:true */
+define([
+	'jquery',
+	'underscore',
+	'backbone',
+	'common',
+	'models/resource/resourceModel'
+], function ( $, _, Backbone, Common, ResourceModel ) {
+	var VCloudVm = ResourceModel.extend({
+		
+		defaults : {
+			id : '',
+			name : '',
+			network : '',
+			vdc : '',
+			vapp : '',
+			cred_id : ''
+		},
+
+		initialize : function ( options ) {
+			this.id = options.id;
+			if(options.vdc) {
+				this.vdc = options.vdc;
+			}
+
+			if(options.vapp) {
+				this.vapp = options.vapp;
+			}
+		},
+
+		apiUrl : Common.apiUrl + "/stackstudio/v1/cloud_management/vcloud/compute/vms",
+
+		powerOff : function () {
+			var ajaxOptions = {
+				"cred_id" : this.cred_id,
+				"id" : this.id,
+				"vdc" : this.vdc,
+				"vapp" : this.vapp
+			};
+			this.sendAjaxAction(this.apiUrl + "/power_off", "POST", ajaxOptions, "vmAppRefresh");
+		},
+
+		powerOn : function () {
+			var ajaxOptions = {
+				"cred_id" : this.cred_id,
+				"id" : this.id,
+				"vdc" : this.vdc,
+				"vapp" : this.vapp
+			};
+			this.sendAjaxAction(this.apiUrl + "/power_on", "POST", ajaxOptions, "vmAppRefresh");
+		},
+
+		modifyCpu : function ( cpuValue ) {
+			var ajaxOptions = {
+				"cred_id" : this.cred_id,
+				"id" : this.id,
+				"vdc" : this.vdc,
+				"vapp" : this.vapp,
+				"cpu" : cpuValue
+			};
+
+			this.sendAjaxAction(this.apiUrl + "/modify_cpu", "POST", ajaxOptions, "vmAppRefresh");
+		},
+
+		modifyMemory : function ( memValue ) {
+			var ajaxOptions = {
+				"cred_id" : this.cred_id,
+				"id" : this.id,
+				"vdc" : this.vdc,
+				"vapp" : this.vapp,
+				"memory" : memValue
+			};
+			this.sendAjaxAction(this.apiUrl + "/modify_memory", "POST", ajaxOptions, "vmAppRefresh");
+		},
+
+		loadNetwork : function () {
+			var ajaxOptions = {
+				"cred_id" : this.cred_id,
+				"id" : this.id,
+				"vdc" : this.vdc,
+				"vapp" : this.vapp
+			};
+
+			this.sendAjaxAction(this.apiUrl + "/network", "GET", ajaxOptions, "networkLoaded");
+		}
+
+
+	});
+
+	return VCloudVm;
+});
