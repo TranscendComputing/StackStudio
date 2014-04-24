@@ -45,12 +45,13 @@ define([
         render: function() {
             this.$el.html(this.template);
 
-            if(!this.$container) {
-                this.$container = $("resource_app");
-            }
-            this.$container.html(this.$el);
+            $('#resource_app').html(this.$el);
+
             this.delegateEvents(this.events);
             ich.refresh();
+
+
+
             $('button').button();
             $('button').addClass("btn btn-primary");
             $("#action_menu").menu();
