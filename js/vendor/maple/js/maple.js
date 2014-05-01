@@ -32,7 +32,6 @@ $(function () {
 
 
 function Branch ( options ) {
-  var branch = this;
   this.name = options.name;
   this.branches = options.branches;
   this.type = options.type;
@@ -40,7 +39,11 @@ function Branch ( options ) {
   this.preload = options.preload;
   this.parent = options.parent;
   this.tree = options.tree || this.parent.tree;
-  var tree = this.tree;
+  this.onLoaded = options.onLoaded;
+  this.onChildrenLoaded = options.onChildrenLoaded;
+
+  var branch = this
+    , tree = this.tree;
   
   if(options.url ) {
     this.url = options.url;
@@ -90,51 +93,46 @@ function Branch ( options ) {
       return;
     }
 
-    if(!this.url) {
-      if(this.branches) {
-        this.children = this.branches.map(function ( childBranch ) {
-          childBranch.parent = branch;
-          var newBranch = _makeBranch(childBranch);
-          newBranch.loaded = true;
-          return newBranch;
-        });
-      }
-      if(typeof(cb) !== 'undefined') {
-        cb(this.children);
-      }
-      return;
+    var fetchMethod;
+    if(this.url) {
+      fetchMethod = "url";
+      this.loading = true;
+    } else if (this.getData && isFunction(this.getData)) {
+      fetchMethod = "function";
+      this.loading = true;
+    } else {
+      fetchMethod = "json";
     }
 
-    branch.loading = true;
-
-    $.ajax({
-      type : 'GET',
-      url : branch.url,
-      data: branch.data,
-      success: function ( result ) {
-        
-        branch.$el.removeClass('loading');
-        if(options.onLoaded) {
-          result = options.onLoaded(result, branch.$el);
-        }
-          
-        branch.children = result.map(function ( child ) {
-          child.parent = branch;
-          return _makeBranch(child);
+    switch(fetchMethod) {
+      case "url":
+        loadFromUrl(branch, cb);
+        break;
+      case "function":
+        branch.getData(function ( children ) {
+          this.children = children.map(branch.assignParent);
+          if (typeof(cb) !== 'undefined') {
+            cb(this.children);
+          }
         });
-
-        branch.loading = false;
-        branch.loaded = true;
+        break;
+      case "json":
+        if(this.branches) {
+          this.children = this.branches.map(function ( childBranch ) {
+            childBranch.parent = branch;
+            var newBranch = _makeBranch(childBranch);
+            return newBranch;
+          });
+        } else {
+          this.children = [];
+        }
 
         if(typeof(cb) !== 'undefined') {
-          cb(branch.children);
+          cb(this.children);
         }
+        break;
+    }
 
-        if(branch.onChildrenLoaded) {
-          branch.onChildrenLoaded(branch.children);
-        }
-      }
-    });
   }.bind(this);
 
   this.renderChildren = function () {
@@ -185,6 +183,11 @@ function Branch ( options ) {
     this.loadChildren(this.renderChildren);
   }.bind(this);
 
+  this.assignParent = function ( child ) {
+    child.parent = this;
+    return child;
+  };
+
   if(this.url) {
     if(this.$icon) {
       this.$icon.on('click', this.populateChildren);
@@ -216,6 +219,37 @@ function Branch ( options ) {
   return this;
 }
 
+function loadFromUrl ( branch, cb ) {
+  $.ajax({
+    type : 'GET',
+    url : branch.url,
+    data: branch.data,
+    success: function ( result ) {
+      
+      branch.$el.removeClass('loading');
+      if(branch.onLoaded) {
+        result = branch.onLoaded(result, branch.$el);
+      }
+        
+      branch.children = result.map(function ( child ) {
+        child.parent = branch;
+        return _makeBranch(child);
+      });
+
+      branch.loading = false;
+      branch.loaded = true;
+
+      if(typeof(cb) !== 'undefined') {
+        cb(branch.children);
+      }
+
+      if(branch.onChildrenLoaded) {
+        branch.onChildrenLoaded(branch.children);
+      }
+    }
+  });
+}
+
 function _makeBranch ( options, root ) {
   var branchTemplate = '<li class="maple-branch' + (root ? ' maple-root-branch' : '') + '" data-branch="' + options.name + '"><span>' + options.name + '</span><ul class="maple-subtree"></ul></li>';
   
@@ -223,4 +257,9 @@ function _makeBranch ( options, root ) {
   var branch = new Branch(options);
 
   return branch;
+}
+
+/* Borrowed from underscore.js */
+function isFunction ( obj ) {
+  return !!(obj && obj.constructor && obj.call && obj.apply);
 }
