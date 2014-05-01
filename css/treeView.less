@@ -1,27 +1,15 @@
 .maple-wrapper {
-	.maple-branch {
-		&.vdc-item {
-			&>span {
-				&:before {
-					content: url(../images/vdc-item.png);			
-				}
-			}
-		}
 
-		&.vapp-item {
-			&>span {
-				&:before {
-					content: url(../images/vapp-item.png);
-				}	
-			}
-		}
+	float: left;
+	width: 25%;
+	min-width: 200px;
+	max-width: 300px;
+	overflow-x: auto;
+}
 
-		&.vms-folder {
-			span {
-				&:before {
-					content: url(../images/vm-item.png);
-				}
-			}
-		}
-	}
+.tree-subview {
+	float: left;
+	width: 75%;
+	max-width: 75%;
+	padding-left: 30px;
 }
