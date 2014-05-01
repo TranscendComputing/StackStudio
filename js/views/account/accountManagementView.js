@@ -160,6 +160,11 @@ define([
             }).on('loaded.jstree', function() {
                 $("#mMyAccount_tree").jstree('open_all');
             });
+
+            if(parseInt(sessionStorage.num_logins, 10) < 20) {
+                //todo: init instructor
+                // $('#instructor').instructor('nextTip');
+            }
         },
         addAllGroups: function() {
             $('.group_item.tree_item').remove();

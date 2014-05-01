@@ -464,5 +464,18 @@
         "logo": "/images/CloudLogos/joyent200.jpg",
         "native_services": [],
         "regions": []
+    },
+    "vcloud" : {
+        "name" : "VCloud",
+        "logo": "/images/CloudLogos/vmware.png",
+        "native_services" : [
+            {
+                "name" : "Compute Engine",
+                "type" : "compute",
+                "view" : "/js/vcloud/views/compute/vcloudTreeView.js",
+                "defaultSubtype": "dataCenters"
+            }
+        ],
+        "regions" : []
     }
 }

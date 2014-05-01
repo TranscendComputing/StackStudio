@@ -46,7 +46,7 @@ define([
                     type: type,
                     contentType: 'application/x-www-form-urlencoded',
                     dataType: 'json',
-                    data: JSON.stringify(options),
+                    data: options,
                     success: function(data) {
                         if(messengerString){
                             new Messenger().post({type:"success", message:messengerString});

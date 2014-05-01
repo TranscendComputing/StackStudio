@@ -1,0 +1,60 @@
+<div id="tree"></div>
+
+<script>
+	$(function () {
+		var mapleTree = $('#tree').maple({
+			tree : {
+				branches : [
+					{
+						name : 'animals',
+						url : '/animals',
+            type: 'folder',
+						onLoaded : animalsLoaded
+					}
+				]
+			}
+		});
+	});
+
+	function animalsLoaded ( animals ) {
+		return animals.map(function ( animal ) {
+			return {
+				name: animal,
+        type: 'folder',
+				url : "/" + animal,
+				onLoaded : speciesLoaded
+			}
+		});
+	}
+
+
+	function speciesLoaded ( species ) {
+		return species.map( function ( speciesName ) {
+      var type;
+
+      if(speciesName[speciesName.length -1] !== 's') {
+        type = 'item';
+      } else {
+        type = 'folder';
+      }
+
+			return {	
+				name: speciesName,
+				url : "/" + speciesName,
+        type : type,
+				onLoaded : specificAnimalsLoaded
+			}
+		});
+	}
+
+	function specificAnimalsLoaded ( animals ) {
+		return animals.map(function ( animal ) {
+			return {
+				name: animal.name,
+				onClicked : function () {
+					window.location.href= "/animal/" + animal.name;
+				}
+			}
+		});
+	}
+</script>

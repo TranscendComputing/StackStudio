@@ -43,9 +43,9 @@
 			this._initTutorialView();
 
 			if(this.options.fromExisting) {
-				this.goToStep(currentStep.title, true);
+				this.goToStep(currentStep.title, false, true);
 			} else {
-				this.goToStep(firstStep.title, true);
+				this.goToStep(firstStep.title, false, true);
 			}
 
 			this.onClose = this.options.onClose;
@@ -93,7 +93,7 @@
 			});
 
 			tutView.find('.tutorial-steps').append('<br class="instructor-clearfix" />');
-			this.element.find('.close-tutorial').click(function () {
+			this.element.find('.close-tutorial-button').click(function () {
 				self.close();
 			});
 
@@ -287,7 +287,7 @@
 		goToTip : function ( id, show ) {
 			var tip = this._findTip(id);
 			if(tip) {
-				this.goToStep(tip.step.title, false, false);
+				this.goToStep(tip.step.title, false, false, false);
 				this.currentTip = tip.tip;
 				if(this.onProgressChange) {
 					this.onProgressChange(this._getProgress());

@@ -131,7 +131,6 @@ define([
                 }else {
                     Common.router.navigate("#account/management/home", {trigger: true});
                 }
-
             }else {
                 Common.errorDialog("Browser Issue", "Your browser does not support web storage.");
             }

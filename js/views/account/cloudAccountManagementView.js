@@ -188,8 +188,6 @@ define([
         },
         
         newCloudService: function(){
-            var CloudServiceCreateView = this.CloudServiceCreateView;
-            
             this.newResourceDialog = new CloudServiceCreate({ cloud_account: this.selectedCloudAccount});
             
             this.newResourceDialog.render();

@@ -1,0 +1,122 @@
+<div>
+    <div id="details" class="detail_panel"></div>
+</div>
+
+<script type="text/html" id="resource_detail">
+    <div id="detail_tabs">
+        <ul>
+            <li><a id="vm_details" href="#tabs-1">Details</a></li>
+            <li><a id="vm_details" href="#tabs-2">Power</a></li>
+            <li><a id="vm_details" href="#tabs-3">CPU/Memory</a></li>
+            <li><a id="vm_details" href="#tabs-4">Network</a></li>
+            <li><a id="vm_details" href="#tabs-5">Disks</a></li>
+        </ul>
+        <div id="tabs-1" class="tab">
+            <table>
+                <tbody>
+                    <tr><td><b>Status:</b></td><td>{{status}}</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="tabs-2" class="tab">
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            <button id="power_on_vm">Power on</button>
+                            <button id="power_off_vm">Power off</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="tabs-3" class="tab">
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            <label>CPUs</label>
+                        </td>
+                        <td>
+                            <input type="number" id="number_of_cpus" value="{{cpu}}" />
+                        </td>
+                        <td>
+                            <button id="modify_cpu">Save</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>Memory</label>
+                        </td>
+                        <td>
+                            <input type="number" id="memory" value="{{memory}}" />
+                        </td>
+                        <td>
+                            <button id="modify_memory">Save</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="tabs-4" class="tab"></div>
+        <div id="tabs-5" class="tab"></div>
+    </div>
+</script>
+
+<script id="vm_network" type="text/html">
+    <table>
+        <tbody>
+            <tr>
+                <td>Network:</td>
+                <td>{{network}}</td>
+            </tr>
+            <tr>
+                <td>Connected:</td>
+                <td>
+                    <select name="is_connected" id="network_is_connected">
+                        <option value="true" {{#is_connected}}selected{{/is_connected}}>Yes</option>
+                        <option value="false" {{^is_connected}}selected{{/is_connected}}>No</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>MAC Address:</td>
+                <td><input type="text" id="network_mac_address" name="mac_address" value="{{mac_address}}" /></td>
+            </tr>
+            <tr>
+                <td>Allocation Mode:</td>
+                <td>
+                    <select name="ip_address_allocation_mode" id="network_ip_address_allocation_mode">
+                        <option value="POOL">Pool</option>
+                        <option value="DHCP">DHCP</option>
+                        <option value="MANUAL">Manual</option>
+                        <option value="NONE">None</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><button id="update_network">Save</button></td>
+            </tr>
+        </tbody>
+    </table>
+</script>
+
+
+<script id="vm_disks" type="text/html">
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Capacity</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#disks}}
+                <tr>
+                    <td>{{name}}</td>
+                    <td>{{capacity}}</td>
+                </tr>
+            {{/disks}}
+        </tbody>
+    </table>
+</script>
