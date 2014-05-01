@@ -148,6 +148,13 @@ define([
 
         finishUp: function(newAccountId) {
             var newUser = new User();
+
+            newAccountId = newAccountId || {};
+
+            if(newAccountId.$oid) {
+                newAccountId = newAccountId.$oid;
+            }
+
             newUser.attributes.id = newAccountId;
             if(this.orgId) {
                 if($("#admin_checkbox").is(":checked")) {

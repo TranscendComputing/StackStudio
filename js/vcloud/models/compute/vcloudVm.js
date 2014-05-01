@@ -10,7 +10,8 @@ define([
 	'underscore',
 	'backbone',
 	'common',
-	'models/resource/resourceModel'
+	'models/resource/resourceModel',
+	'mixins'
 ], function ( $, _, Backbone, Common, ResourceModel ) {
 	var VCloudVm = ResourceModel.extend({
 		
@@ -21,17 +22,6 @@ define([
 			vdc : '',
 			vapp : '',
 			cred_id : ''
-		},
-
-		initialize : function ( options ) {
-			this.id = options.id;
-			if(options.vdc) {
-				this.vdc = options.vdc;
-			}
-
-			if(options.vapp) {
-				this.vapp = options.vapp;
-			}
 		},
 
 		apiUrl : Common.apiUrl + "/stackstudio/v1/cloud_management/vcloud/compute/vms",
@@ -88,9 +78,29 @@ define([
 			};
 
 			this.sendAjaxAction(this.apiUrl + "/network", "GET", ajaxOptions, "networkLoaded");
+		},
+
+		updateNetwork : function ( options ) {
+			var refinedOptions = _.refine(options);
+			var ajaxOptions = _.extend(refinedOptions, {
+				cred_id : this.cred_id,
+				vdc : this.vdc,
+				vapp : this.vapp,
+				id : this.id
+			});
+
+			this.sendAjaxAction(this.apiUrl + "/network", "POST", ajaxOptions, "networkRefresh");
+		},
+
+		loadDisks : function () {
+			var ajaxOptions = {
+				"cred_id" : this.cred_id,
+				"id" : this.id,
+				"vdc" : this.vdc,
+				"vapp" : this.vapp
+			};
+			this.sendAjaxAction(this.apiUrl + "/disks", "GET", ajaxOptions, "disksLoaded");
 		}
-
-
 	});
 
 	return VCloudVm;

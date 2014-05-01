@@ -45,13 +45,13 @@ define([
 			});
 		},
 	
-	template : _.template(VCloudNetworkTemplate),
+		template : _.template(VCloudNetworkTemplate),
 
-	makeModel : function ( network ) {
-		return _.extend(network, {
-			cred_id : this.credentialId
-		});
-	}
+		makeModel : function ( network ) {
+			return _.extend(network, {
+				cred_id : this.credentialId
+			});
+		}
 	});
 
 	return VCloudNetworkAppView;

@@ -55,6 +55,16 @@ define([
               },
               preload: true,
               onLoaded: treeView.onNetworksLoaded.bind(treeView)
+            },
+            {
+              name: 'Catalogs',
+              type: 'folder',
+              url : Common.apiUrl + '/stackstudio/v1/cloud_management/vcloud/catalogs',
+              data : {
+                cred_id : treeView.credentialId
+              },
+              preload : true,
+              onLoaded: treeView.onCatalogsLoaded.bind(treeView)
             }
           ]
         }
@@ -63,6 +73,7 @@ define([
 
     onVdcsLoaded : function ( vdcs ) {
       var treeView = this;
+
       return vdcs.map(function ( vdc ) {
         return {
           name : vdc.name,
@@ -97,8 +108,8 @@ define([
     },
 
     onVappsLoaded : function ( vapps, $parent ) {
+
       var treeView = this;
-      var vdc = $parent.parents('[data-object-type="vdc"]').attr('data-branch');
       return vapps.map(function ( vapp ) {
         return {
           name : vapp.name,
@@ -116,7 +127,7 @@ define([
               url: Common.apiUrl + '/stackstudio/v1/cloud_management/vcloud/compute/vms',
               data : {
                 cred_id : treeView.credentialId,
-                vdc : vdc,
+                vdc : vapp.vdc,
                 vapp : vapp.name
               },
               preload : true,
@@ -140,9 +151,7 @@ define([
     },
 
     onVmsLoaded : function ( vms, $parent ) {
-      var treeView = this
-        , vapp = $parent.parents('[data-object-type="vapp"]').attr('data-branch')
-        , vdc = $parent.parents('[data-object-type="vdc"]').attr('data-branch');
+      var treeView = this;
 
       return vms.map(function ( vm ) {
         return {
@@ -152,14 +161,14 @@ define([
 
           attributes : { 
             "object-type" : "vm",
-            "vapp" : vapp,
-            "vdc" : vdc
+            "vapp" : vm.vapp,
+            "vdc" : vm.vdc
           },
 
           onClicked: function ( $vm ) {
             var view = '/js/vcloud/views/compute/vcloudVmsAppView.js'
-              , vapp = $parent.parents('[data-object-type="vapp"]').attr('data-branch')
-              , vdc = $parent.parents('[data-object-type="vdc"]').attr('data-branch');
+              , vapp = vm.vapp
+              , vdc = vm.vdc;
               
             treeView.loadChildView(view, { model: vm, parentView : treeView, vdc : vdc, vapp : vapp });
           }
@@ -168,6 +177,7 @@ define([
     },
 
     onNetworksLoaded : function ( networks, $parent ) {
+
       var treeView = this;
 
       return networks.map(function ( network ) {
@@ -175,7 +185,7 @@ define([
           name : network.name,
           cssClass : 'network-item',
           attributes : {
-            "object-type" : network
+            "object-type" : 'network'
           },
           onClicked : function ( $network ) {
             var view = "/js/vcloud/views/network/vcloudNetworkAppView.js";
@@ -188,7 +198,27 @@ define([
       });
     },
 
+    onCatalogsLoaded : function ( catalogs, $parent ) {
 
+      var treeView = this;
+
+      return catalogs.map(function ( catalog ) {
+        return {
+          name: catalog.name,
+          cssClass : 'catalog-item',
+          attributes : {
+            'object-type' : 'catalog'
+          },
+          onClicked: function ( $catalog ) {
+            var view = '/js/vcloud/views/catalog/vcloudCatalogAppView.js';
+            treeView.loadChildView(view, { model : catalog, parentView : treeView });
+
+            $('.maple-selected').removeClass('maple-selected');
+            $(this).find('span').addClass('maple-selected');
+          }
+        };
+      });
+    },
 
     loadChildView : function ( view, options ) {
       var treeView = this;

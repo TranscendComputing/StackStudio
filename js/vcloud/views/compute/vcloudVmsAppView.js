@@ -20,16 +20,19 @@ define([
 
 	var VCloudVmsAppView = ResourceDetailView.extend({
 
+		template : _.template(VCloudVmTemplate),
+
 		initialize : function ( options ) {
 			var appView = this;
 			this.credentialId = options.cred_id;
 			this.vapp = options.vapp;
 			this.vdc = options.vdc;
+			this.model = options.model;
 
 			Vms.fetch({
 				data : $.param({
 					cred_id : options.cred_id,
-					id : options.model.id,
+					id : options.model.name,
 					vdc : options.vdc,
 					vapp : options.vapp
 				}),
@@ -37,7 +40,13 @@ define([
 				success: function ( collection ) {
 					appView.vm = appView.makeModel(collection.models[0]);
 
+					appView.vm.id = appView.model.name;
+					appView.vm.cred_id = appView.credentialId;
+					appView.vm.vdc = appView.vdc;
+					appView.vm.vapp = appView.vapp;
+
 					appView.vm.loadNetwork();
+					appView.vm.loadDisks();
 
 					appView.render();
 				},
@@ -47,55 +56,84 @@ define([
 				}
 			});
 
-
-			Common.vent.on('vmAppRefresh', function ( vm	) {
-				appView.vm = appView.makeModel(vm);
-				appView.render();
-			});
-
-			Common.vent.on('networkLoaded', function ( network ) {
+			function refreshNetwork ( network ) {
 				if(!ich.templates.vm_network) {
 					ich.grabTemplates();
 				}
 
-				$('#tabs-4').append(ich.vm_network(network));
+				$('#tabs-4').html(ich.vm_network(network));
+			}
 
+			function refreshDisks ( disks ) {
+				if(!ich.templates.vm_disks) {
+					ich.grabTemplates();
+				}
+
+				$('#tabs-5').html(ich.vm_disks({ disks : disks }));
+			}
+
+
+			Common.vent.on('vmAppRefresh', function ( vm ) {
+				appView.vm = appView.makeModel(vm);
+				appView.render();
 			});
+
+
+			Common.vent.on('networkLoaded', refreshNetwork);
+			Common.vent.on('networkRefresh', refreshNetwork);
+
+			Common.vent.on('disksLoaded', refreshDisks);
+			Common.vent.on('disksRefresh', refreshDisks);
+
 		},
 
 		events: {
-	"click #power_off_vm": "powerOff",
-	"click #power_on_vm": "powerOn"
-	},
-	
-	template : _.template(VCloudVmTemplate),
+			"click #power_off_vm": "powerOff",
+			"click #power_on_vm": "powerOn",
+			"click #modify_memory" : "modifyMemory",
+			"click #modify_cpu" : "modifyCpu",
+			"click #update_network" : "updateNetwork"
+		},
+		
 
-	powerOff : function () {
-		this.vm.powerOff();
-	},
+		powerOff : function () {
+			this.vm.powerOff();
+		},
 
-	powerOn : function () {
-		this.vm.powerOn();
-	},
+		powerOn : function () {
+			this.vm.powerOn();
+		},
 
-	modifyCpu : function () {
-		var numCpus = parseInt($('#number_of_cpus').val(), 10);
-		this.vm.modifyCpu(numCpus);
-	},
+		modifyCpu : function () {
+			var numCpus = parseInt($('#number_of_cpus').val(), 10);
+			this.vm.modifyCpu(numCpus);
+		},
 
-	modifyMemory : function () {
-		var memory = parseInt($('#memory').val(), 10);
-		this.vm.modifyMemory(memory);
-	},
+		modifyMemory : function () {
+			var memory = parseInt($('#memory').val(), 10);
+			this.vm.modifyMemory(memory);
+		},
 
-	makeModel : function ( vm ) {
-		return _.extend(vm, {
-			cred_id : this.credentialId,
-			vdc : this.vdc,
-			vapp : this.vapp,
-			id : this.model.name
-		});
-	}
+		updateNetwork : function () {
+			var options = {};
+			$('[id^="network_"]').each(function () {
+				var prop = $(this).attr('name')
+					, val = $(this).val();
+
+				options[prop] = $(this).val();
+			});
+
+			this.vm.updateNetwork(options);
+		},
+
+		makeModel : function ( vm ) {
+			return _.extend(vm, {
+				cred_id : this.credentialId,
+				vdc : this.vdc,
+				vapp : this.vapp,
+				id : this.model.name
+			});
+		}
 	});
 
 	return VCloudVmsAppView;

@@ -16,15 +16,13 @@ define([
 		
 		defaults : {
 			id : '',
-			name : '',
 			cred_id : ''
 		},
 
 		initialize : function ( options ) {
+			options = options || {};
 			
-			if(options.id) {
-				this.id = options.id;
-			}
+			this.id = options.id;
 		},
 
 		apiUrl : Common.apiUrl + "/stackstudio/v1/cloud_management/vcloud/networks"
