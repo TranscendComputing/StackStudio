@@ -224,27 +224,3 @@ function _makeBranch ( options, root ) {
 
   return branch;
 }
-
-// function _preload ( branch ) {
-//   if(!branch.branches) { return; }
-
-//   if(branch.type == 'folder') {
-//     branch.loadChildren(function ( children ) {
-//       $.each(children, function ( index, child ) {
-        
-//         if(branch.type !== 'folder' || child.preload) {
-//           _preload(child);
-//         }
-
-//       });
-//     });
-//   } else {
-//     $.each(branch.branches, function ( index, jsonBranch ) {
-//       jsonBranch.parent = branch;
-//       var childBranch = _makeBranch(jsonBranch, false);
-//       if(childBranch.type !== 'folder' || childBranch.preload) {
-//         _preload(childBranch);
-//       }
-//     });
-//   }
-// }
