@@ -176,7 +176,7 @@
                                 <div class="input-append">
                                     <input id="max_on_demand_os" name="max_on_demand" class="span5 OS form-control" type="text" placeholder="# Instances">
                                     <span class="add-on">
-                                        <input type="checkbox" id="check_max_on_demand_os" class="OS"> Unlimited</input>
+                                        <input type="checkbox" id="check_max_on_demand_os" name="unlimited" value="Check On-Demand Instances" class="OS"> Unlimited</input>
                                     </span>
                                 </div>
                             </div>
@@ -190,20 +190,85 @@
                                 <div class="input-append">
                                     <input id="max_in_autoscale_os" name="max_in_autoscale" class="span5 OS form-control" type="text" placeholder="# Instances">
                                     <span class="add-on">
-                                        <input type="checkbox" id="check_max_in_autoscale_os" class="OS"> Unlimited</input>
+                                        <input type="checkbox" id="check_max_in_autoscale_os" name="unlimited" value="Check Auto Scale"class="OS"> Unlimited</input>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Appended checkbox -->
+                        <div class="control-group">
+                            <label class="control-label">Max Elastic IPs:</label>
+                            <div class="controls">
+                                <div class="input-append">
+                                    <input id="max_ips_os" name="max_ips" class="span5 OS form-control" type="text" placeholder="# IPs">
+                                    <span class="add-on">
+                                        <input type="checkbox" id="check_max_ips_os" name="unlimited" value="Check Elastic IPs" class="OS"> Unlimited</input>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Appended checkbox -->
+                        <div class="control-group">
+                            <label class="control-label">Max Load Balancers:</label>
+                            <div class="controls">
+                                <div class="input-append">
+                                    <input id="max_load_balancers_os" name="max_load_balancers" class="span5 OS form-control" type="text" placeholder="# Balancers">
+                                    <span class="add-on">
+                                        <input type="checkbox" id="check_max_load_balancers_os" name="unlimited" value="Check Load Balancers" class="OS"> Unlimited</input>
                                     </span>
                                 </div>
                             </div>
                         </div>
                         
                         <!-- Appended checkbox -->
-                        <div class="control-group" style="display:none;">
+                        <div class="control-group">
+                            <label class="control-label">Max Security Groups:</label>
+                            <div class="controls">
+                                <div class="input-append">
+                                    <input id="max_security_groups_os" name="max_security_groups" class="span5 OS form-control" type="text" placeholder="# Groups">
+                                    <span class="add-on">
+                                        <input type="checkbox" id="check_max_security_groups_os" name="unlimited" value="Check Security Groups" class="OS"> Unlimited</input>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Appended checkbox -->
+                        <div class="control-group">
+                            <label class="control-label">Max Security Group Rules:</label>
+                            <div class="controls">
+                                <div class="input-append">
+                                    <input id="max_security_group_rules_os" name="max_security_group_rules" class="span5 OS form-control" type="text" placeholder="# Rules">
+                                    <span class="add-on">
+                                        <input type="checkbox" id="check_max_security_group_rules_os" name="unlimited" value="Check Group Rules" class="OS"> Unlimited</input>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Appended checkbox -->
+                        <div class="control-group">
                             <label class="control-label">Max Volumes:</label>
                             <div class="controls">
                                 <div class="input-append">
-                                    <input id="max_volumes_os" name="max_volumes" class="span5 OS" type="text" placeholder="# Volumes">
+                                    <input id="max_volumes_os" name="max_volumes" class="span5 OS form-control" type="text" placeholder="# Volumes">
                                     <span class="add-on">
-                                        <input type="checkbox" id="check_max_volumes_os" class="OS"> Unlimited</input>
+                                        <input type="checkbox" id="check_max_volumes_os" name="unlimited" value="Check Volumes" class="OS"> Unlimited</input>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Appended checkbox -->
+                        <div class="control-group">
+                            <label class="control-label">Total GB of Volumes:</label>
+                            <div class="controls">
+                                <div class="input-append">
+                                    <input id="max_volumes_size_os" name="max_volumes_size" class="span5 OS form-control" type="text" placeholder="# of GB">
+                                    <span class="add-on">
+                                        <input type="checkbox" id="check_max_volumes_size_os" name="unlimited" value="Check GB of Volumes" class="OS"> Unlimited</input>
                                     </span>
                                 </div>
                             </div>
@@ -318,23 +383,23 @@
                             <a class="btn create_topic_btn">Create Topic</a>
                         </div>
                     </div>
-                    </div>
+                </div>
                     
                     <div class="well">
                         <legend>RDS</legend>
                         <!-- Appended checkbox -->
                         <div class="control-group">
-                        <label class="control-label">Max # of RDS Databases:</label>
-                        <div class="controls">
-                            <div class="input-append">
-                                <input id="max_rds_os" name="max_rds" class="span3 OS form-control" type="text" placeholder="# DB's">
-                                <span class="add-on">
-                                    <input type="checkbox" id="check_rds_os" class="OS"> Unlimited</input>
-                                </span>
+                            <label class="control-label">Max # of RDS Databases:</label>
+                            <div class="controls">
+                                <div class="input-append">
+                                    <input id="max_rds_os" name="max_rds" class="span3 OS form-control" type="text" placeholder="# DB's">
+                                    <span class="add-on">
+                                        <input type="checkbox" id="check_rds_os" name="unlimited" value="Check RDS Databases" class="OS"> Unlimited</input>
+                                    </span>
+                                </div>
+                                <p class="help-block">*Read replica counts as additional database.</p>
                             </div>
-                            <p class="help-block">*Read replica counts as additional database.</p>
                         </div>
-                    </div>
                     </div>
                     
                     <div class="well">
@@ -344,27 +409,26 @@
                         <div class="control-group">
                           <label class="control-label">Auto Tags:</label>
                           <div class="controls">
-                            <label class="checkbox">
-                              <input id="project_name_toggle_os" type="checkbox" name="auto_tags" value="ProjectName" class="OS"/>
-                              ProjectName:
-                              <input id="project_name_os" style="margin-left:10px" name="project_name" type="text" placeholder="Project Name" class="input-medium OS form-control"/>
-                            </label>
-                            
-                            <label class="checkbox">
-                              <input type="checkbox" name="auto_tags" value="UserName" class="OS">
-                              UserName
-                            </label>
-                            <label class="checkbox">
-                              <input type="checkbox" name="auto_tags" value="GroupName" class="OS">
-                              GroupName
-                            </label>
-                            <label class="checkbox">
-                              <input type="checkbox" name="auto_tags" value="Modifiable" class="OS">
-                              Modifiable
-                            </label>
+                                <label class="checkbox input-append">
+                                  <input id="project_name_toggle_os" type="checkbox" name="auto_tags" value="ProjectName" class="OS"/>
+                                  ProjectName:
+                                  <input id="project_name_os" style="margin-left:10px" name="project_name" type="text" placeholder="Project Name" class="input-medium OS form-control"/>
+                                </label>
+                                
+                                <label class="checkbox">
+                                  <input type="checkbox" name="auto_tags" value="UserName" class="OS">
+                                  UserName
+                                </label>
+                                <label class="checkbox">
+                                  <input type="checkbox" name="auto_tags" value="GroupName" class="OS">
+                                  GroupName
+                                </label>
+                                <label class="checkbox">
+                                  <input type="checkbox" name="auto_tags" value="Modifiable" class="OS">
+                                  Modifiable
+                                </label>
                           </div>
                         </div>
-                       </div>
                     </div>
                 </div>
             </fieldset>
@@ -378,7 +442,7 @@
                     <div class="control-group well" style="margin-top: 40px;">
                         <legend>Add Default Alarms</legend>
                         <a id="create_alarm_btn_os" class="btn btn-primary" style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;margin-bottom:8px;"><i class="icon-plus-sign icon-white"></i>&nbsp;Add</a>
-                        <table class="table">  
+                        <table class="table OS">  
                                 <thead>  
                                   <tr>  
                                     <th>Metric</th>

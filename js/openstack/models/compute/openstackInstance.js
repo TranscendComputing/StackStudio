@@ -67,6 +67,15 @@ define([
         terminate: function(credentialId, region) {
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/compute/instances/" + this.attributes.id + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
             this.sendAjaxAction(url, "POST", undefined, "instanceAppRefresh");
+        },
+        getSecurityGroups: function(credentialId, region){
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/compute/instances/" + this.attributes.id + "/security_groups?_method=GET&cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "GET", undefined, "instanceGroupsFetched");
+        },
+
+        changeSecurityGroups: function(changes, credentialId, region){
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/openstack/compute/instances/" + this.attributes.id + "/change_groups?_method=POST&cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", changes, "securityGroupsChanged");
         }
 
     });

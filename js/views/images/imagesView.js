@@ -107,6 +107,7 @@ define([
             if(this.currentImageTemplate) {
                 $("#image_template_not_opened").hide();
                 $("#image_template_open").show();
+                this.showAvailableClouds();
                 if(this.currentImageTemplate === "") {
                     // Set image template fields to defaults
                 }else {
@@ -114,8 +115,38 @@ define([
                     // this.popForm(this.currentImageTemplate);
                 }
             }else {
+                $("#save_image_template_button").attr("disabled",true);
                 $("#image_template_open").hide();
                 $("#image_template_not_opened").show();
+            }
+        },
+
+        showAvailableClouds: function(){
+            var policy = JSON.parse(sessionStorage.group_policies);
+            var permissions = JSON.parse(sessionStorage.permissions);
+            if(policy.length > 0 && permissions.length < 1){
+                policy = policy[0].group_policy;
+                var count = 0;
+                if(policy.aws_governance.enabled_cloud.toLowerCase() === "aws"){
+                    count++;
+                    $("#save_image_template_button").attr("disabled",false);
+                    $("#aws_toggle").show();
+                }
+                if(policy.os_governance.enabled_cloud.toLowerCase() === "openstack"){
+                    count++;
+                    $("#save_image_template_button").attr("disabled",false);
+                    $("#os_toggle").show();
+                }
+                if(count === 0){
+                    $(".cloud-button").hide();
+                    $("#image_settings_accordion").hide();
+                    $("#clouds_select_msg").html("No cloud providers available");
+                    $("#image_template_open :input").attr("disabled",true);
+                    $("#save_image_template_button").attr("disabled",true);
+                }
+            }else{
+                $("#save_image_template_button").attr("disabled",false);
+                $(".cloud-button").show();
             }
         },
 

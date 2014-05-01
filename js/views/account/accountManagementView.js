@@ -63,25 +63,25 @@ define([
         initialize: function() {
             //Render my template
             this.$el.html(this.template);
-            
+
             this.groups = new Groups();
             this.groups.on('reset', this.addAllGroups, this);
-            
+
             this.cloudCredentials = new CloudCredentials();
             this.cloudCredentials.on( 'reset', this.addAllCreds, this );
-            
+
             this.cloudAccounts = new CloudAccounts();
             this.cloudAccounts.on( 'reset', this.addAllCloudAccounts, this );
-            
+
             this.policies = new Policies();
             this.policies.on( 'reset', this.addAllPolicies, this );
-            
+
             //Render my own views
             this.render();
 
-            if(sessionStorage && parseInt(sessionStorage.num_logins, 10) < 5)  {//todo: change this to 0 
+            if(sessionStorage && parseInt(sessionStorage.num_logins, 10) < 5)  {//todo: change this to 0
                 this.tutorial = new TutorialView({ rootView: this });
-                
+
                 this.afterSubAppRender = function () {
                     this.tutorial.update();
                 }.bind(this);
@@ -154,18 +154,19 @@ define([
             }).on('loaded.jstree', function() {
                     $("#mdevOps_tree").jstree('open_all');
             });
-
-            if(parseInt(sessionStorage.num_logins, 10) < 20) {
-                //todo: init instructor
-                // $('#instructor').instructor('nextTip');
-            }
+            $("#mMyAccount_tree").jstree({
+                "themeroller":{"item": "jstree_custom_item"},
+                "plugins":[ "themeroller", "html_data", "crrm" ]
+            }).on('loaded.jstree', function() {
+                $("#mMyAccount_tree").jstree('open_all');
+            });
         },
         addAllGroups: function() {
             $('.group_item.tree_item').remove();
             this.groups.each(function(group) {
                 $("#mGroup_tree").jstree("create","#group_list","first",{ attr : {class : "group_item tree_item"} , data : { title: group.attributes.name, attr : { id : group.attributes.id, href : "#account/management/groups", class : "group_item tree_item" }} },false, true);
             });
-            
+
             if(this.groups.get(this.treeGroup) && typeof(this.subApp.treeSelect) !== "undefined"){
                 this.subApp.treeSelect();
             }else{
@@ -186,11 +187,11 @@ define([
         },
         addAllCloudAccounts: function(){
             $('.cloud_account_item.tree_item').remove();
-            
+
             this.cloudAccounts.each(function(c_account) {
                 $("#mCloudAccount_tree").jstree("create","#c_account_list","first",{ attr : {class : "cloud_account_item tree_item"} , data : { title: c_account.attributes.name, attr : { id : c_account.attributes.id, href : "#account/management/cloud-accounts", class : "cloud_account_item tree_item" }} },false, true);
             });
-            
+
             if(!this.treeCloudAccount){
                 this.treeCloudAccount = this.cloudAccounts.models[this.cloudAccounts.length-1].id;
             }
@@ -201,7 +202,7 @@ define([
                 this.subApp.treeSelectCloudAccount();
             }
         },
-        
+
         selectManagement: function(event){
             var self = this;
             if(event.target.attributes.href){

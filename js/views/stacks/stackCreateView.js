@@ -27,12 +27,36 @@ define([
         initialize: function(options) {
             this.$el.html(this.template);
             this.$el.modal('show');
+            this.render();
         },
 
         render: function() {
-
+            this.addEnabledClouds();
         },
 
+        addEnabledClouds: function(){
+            //debugger
+            var policy = JSON.parse(sessionStorage.group_policies);
+            var permissions = JSON.parse(sessionStorage.permissions);
+            if( policy.length > 0 && permissions < 1){
+                policy = policy[0].group_policy;
+                $("#stack_compatible_clouds_select").empty();
+                if(policy.aws_governance.enabled_cloud === "AWS"){
+                    $("#stack_compatible_clouds_select").append("<option value=aws>Amazon Web Services</option>");
+                }
+                if(policy.os_governance.enabled_cloud === "OpenStack"){
+                    $("#stack_compatible_clouds_select").append("<option value=openstack>OpenStack</option>");
+                }
+                // if(policy.os_governance.enabled_cloud === "" && clouds.aws_governance.enabled_cloud === ""){
+                //     $("#stack_compatible_clouds_select").append("<option value=none>No Cloud Enabled</option>");
+                // }
+                $("#stack_compatible_clouds_select").append("<option value=google>Google  </option>");
+            }else{
+                $("#stack_compatible_clouds_select").append("<option value=aws>Amazon Web Services</option>");
+                $("#stack_compatible_clouds_select").append("<option value=openstack>OpenStack</option>");
+                $("#stack_compatible_clouds_select").append("<option value=google>Google  </option>");
+            }
+        },
         save: function() {
             var stack = new Stack();
             var valid = true;

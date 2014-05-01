@@ -53,7 +53,8 @@ define([
             Common.vent.on("managementRefresh", function() {
                 thisView.render();
             });
-            Common.vent.on("servicesRefresh", function() {
+            Common.vent.on("servicesRefresh", function(data) {
+                thisView.selectedCloudAccount.attributes = data.cloud_account;
                 thisView.render();
             });
             Common.vent.on("cloudAccountUpdated", function() {
@@ -189,7 +190,7 @@ define([
         newCloudService: function(){
             var CloudServiceCreateView = this.CloudServiceCreateView;
             
-            this.newResourceDialog = new CloudServiceCreateView({ cloud_account: this.selectedCloudAccount});
+            this.newResourceDialog = new CloudServiceCreate({ cloud_account: this.selectedCloudAccount});
             
             this.newResourceDialog.render();
             
@@ -198,8 +199,6 @@ define([
         deleteService: function(event) {
             var serviceData = $(event.currentTarget.parentElement).find("input").data();
             this.selectedCloudAccount.deleteService(serviceData, sessionStorage.login);
-            
-            this.refreshServices();
             
             return false;
         },

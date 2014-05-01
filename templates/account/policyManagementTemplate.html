@@ -6,7 +6,6 @@
                 <label class="control-label">Policy Name:</label>
                 <div class="controls">
                     <input id="policy_name" name="policy_name" type="text" placeholder="Policy Name" class="input-xlarge form-control">
-
                 </div>
         </div>
         <div id="content_org" class ="cont-org" data-cloud="org" >
@@ -36,27 +35,11 @@
                                 <div class="control-group">
                                     <label class="control-label">Min Password Length:</label>
                                     <div class="controls">
-                                        <div class="input-append">
+                                        <div class="input-append-org">
                                             <input id="min_password_length_org" name="min_password_length" class="span5 password form-control" type="text" placeholder="Length">
                                         </div>
                                     </div>
                                 </div>
-
-
-
-                                <!-- Appended checkbox -->
-                                <!-- <div class="control-group">
-                                    <label class="control-label">Password Length:</label>
-                                    <div class="controls">
-                                        <div class="input-append">
-                                            <input id="password_rules" name="password_rules" class="span4 AWS" type="text" placeholder="# characters">
-                                            <span class="add-on">
-                                            <input type="checkbox" class="AWS"> digits required</input>
-                                            </span>
-                                        </div>
-
-                                    </div>
-                                </div> -->
                                 <hr>
                             </div>
                         </fieldset>
@@ -64,18 +47,6 @@
                 </div>
             </p>
         </div>
-
-        <!-- <div id="content_cld" class ="cont-org" data-cloud="org" >
-            <p>
-                <div id="whole_form_cld">
-                    <form id="cld_gov_policy" class="form-horizontal">
-                        <fieldset>
-                            <legend style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;border-radius: 5px 5px 0px 0px;">&nbsp;StackStudio Password Policy</legend>
-                            </fieldset>
-                    </form>
-                </div>
-            </p>
-        </div> -->
 
         <!--Check Box Cloud Selection-->
         <label class="control-label" for="clouds_select">
@@ -504,7 +475,7 @@
                                     <div class="input-append">
                                         <input id="max_on_demand_aws" name="max_on_demand" class="span5 AWS form-control" type="text" placeholder="# Instances">
                                         <span class="add-on">
-                                            <input type="checkbox" id="check_max_on_demand_aws" class="AWS"> Unlimited</input>
+                                            <input type="checkbox" id="check_max_on_demand_aws" name="unlimited" value="Check On-Demand Instances" class="AWS"> Unlimited</input>
                                         </span>
                                     </div>
                                 </div>
@@ -517,7 +488,7 @@
                                     <div class="input-append">
                                         <input id="max_reserved_aws" name="max_reserved" class="span5 AWS form-control" type="text" placeholder="# Instances">
                                         <span class="add-on">
-                                            <input type="checkbox" id="check_max_reserved_aws" class="AWS"> Unlimited</input>
+                                            <input type="checkbox" id="check_max_reserved_aws" name="unlimited" value="Check Reserved Instances" class="AWS"> Unlimited</input>
                                         </span>
                                     </div>
                                 </div>
@@ -530,7 +501,7 @@
                                     <div class="input-append">
                                         <input id="max_dedicated_aws" name="max_dedicated" class="span5 AWS form-control" type="text" placeholder="# Instances">
                                         <span class="add-on">
-                                            <input type="checkbox" id="check_max_dedicated_aws" class="AWS"> Unlimited</input>
+                                            <input type="checkbox" id="check_max_dedicated_aws" name="unlimited" value="Check Dedicated Instances" class="AWS"> Unlimited</input>
                                         </span>
                                     </div>
                                 </div>
@@ -543,7 +514,7 @@
                                     <div class="input-append">
                                         <input id="max_spot_aws" name="max_spot" class="span5 AWS form-control" type="text" placeholder="# Instances">
                                         <span class="add-on">
-                                            <input type="checkbox" id="check_max_spot_aws" class="AWS"> Unlimited</input>
+                                            <input type="checkbox" id="check_max_spot_aws" name="unlimited" value="Check Spot Instances" class="AWS"> Unlimited</input>
                                         </span>
                                     </div>
                                 </div>
@@ -556,7 +527,7 @@
                                     <div class="input-append">
                                         <input id="max_in_autoscale_aws" name="max_in_autoscale" class="span5 AWS form-control" type="text" placeholder="# Instances">
                                         <span class="add-on">
-                                            <input type="checkbox" id="check_max_in_autoscale_aws" class="AWS"> Unlimited</input>
+                                            <input type="checkbox" id="check_max_in_autoscale_aws" name="unlimited" value="Check Auto Scale" class="AWS"> Unlimited</input>
                                         </span>
                                     </div>
                                 </div>
@@ -609,186 +580,186 @@
                         </div>
 
                         <form class="form-horizontal">
-                        <fieldset>
+                            <fieldset>
 
-                            <!-- Form Name -->
-                            <legend style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;border-radius: 5px 5px 0px 0px;">&nbsp;Service Policies</legend>
-                            <div class="well">
-                                <div class="well" style="margin-top:40px;">
-                                    <legend>VPC</legend>
-                                    <!-- Multiple Checkboxes -->
-                                    <div class="control-group">
-                                        <label class="control-label">VPC:</label>
-                                        <div class="controls">
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="vpc_rules" value="admin_internet_gateway" class="AWS">
-                                                    Only Admin can create, update, delete Internet Gateways for VPC
-                                            </label>
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="vpc_rules" value="admin_private_gateway" class="AWS">
-                                                    Only Admin can create, update, delete Virtual Private Gateways for VPC
-                                            </label>
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="vpc_rules" value="admin_customer_gateway" class="AWS">
-                                                    Only Admin can create, update, delete Customer Gateways for VPC
-                                            </label>
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="vpc_rules" value="require_vpc" class="AWS">
-                                                    Users must create all resources in a VPC
-                                            </label>
+                                <!-- Form Name -->
+                                <legend style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;border-radius: 5px 5px 0px 0px;">&nbsp;Service Policies</legend>
+                                <div class="well">
+                                    <div class="well" style="margin-top:40px;">
+                                        <legend>VPC</legend>
+                                        <!-- Multiple Checkboxes -->
+                                        <div class="control-group">
+                                            <label class="control-label">VPC:</label>
+                                            <div class="controls">
+                                                <label class="checkbox">
+                                                    <input type="checkbox" name="vpc_rules" value="admin_internet_gateway" class="AWS">
+                                                        Only Admin can create, update, delete Internet Gateways for VPC
+                                                </label>
+                                                <label class="checkbox">
+                                                    <input type="checkbox" name="vpc_rules" value="admin_private_gateway" class="AWS">
+                                                        Only Admin can create, update, delete Virtual Private Gateways for VPC
+                                                </label>
+                                                <label class="checkbox">
+                                                    <input type="checkbox" name="vpc_rules" value="admin_customer_gateway" class="AWS">
+                                                        Only Admin can create, update, delete Customer Gateways for VPC
+                                                </label>
+                                                <label class="checkbox">
+                                                    <input type="checkbox" name="vpc_rules" value="require_vpc" class="AWS">
+                                                        Users must create all resources in a VPC
+                                                </label>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <!-- Select Basic -->
-                                    <div class="control-group">
-                                        <label class="control-label">Default VPC:</label>
-                                        <div class="controls AWS">
-                                            <select id="default_vpc_aws" name="default_vpc" class="input-xlarge AWS">
-                                                <option>Select VPC</option>
-                                            </select>
-                                            <a class="btn create_vpc_btn AWS">Create VPC</a>
-                                        </div>
-                                    </div>
-
-                                    <!-- Select Basic -->
-                                    <div class="control-group">
-                                        <label class="control-label">Default Subnet:</label>
+                                        <!-- Select Basic -->
+                                        <div class="control-group">
+                                            <label class="control-label">Default VPC:</label>
                                             <div class="controls AWS">
-                                                <select id="default_subnet_aws" name="default_subnet" class="input-xlarge AWS">
-                                                    <option>Select Subnet</option>
+                                                <select id="default_vpc_aws" name="default_vpc" class="input-xlarge AWS">
+                                                    <option>Select VPC</option>
                                                 </select>
-                                                <a class="btn create_subnet_btn AWS">Create Subnet</a>
+                                                <a class="btn create_vpc_btn AWS">Create VPC</a>
                                             </div>
-                                    </div>
-                                </div>
-
-                                <div class="well" style="display: none;">
-                                    <legend>Configuration Management</legend>
-                                    <!-- Multiple Checkboxes -->
-                                    <div class="control-group">
-                                        <label class="control-label">Configuration Management:</label>
-                                        <div class="controls">
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="config_management" value="Only Admin can add a configuration management endpoint (Puppet / Chef)">
-                                                Only Admin can add a configuration management endpoint (Puppet / Chef)
-                                            </label>
                                         </div>
-                                    </div>
-                                </div>
 
-                                <div class="well">
-                                    <legend>SNS Notifications</legend>
-                                    <!-- Multiple Checkboxes -->
-                                    <div class="control-group" style="display:none;">
-                                        <label class="control-label">SNS Notifications:</label>
-                                        <div class="controls">
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="sns_notifications" value="All users are automatically setup as SNS users">
-                                                    All users are automatically setup as SNS users
-                                            </label>
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="sns_notifications" value="Users are email notified when an instance is started">
-                                                    Users are email notified when an instance is started
-                                            </label>
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="sns_notifications" value="Users are email notified when a CloudFormation has 'completed' or 'failed'">
-                                                    Users are email notified when a CloudFormation has 'completed' or 'failed'
-                                            </label>
+                                        <!-- Select Basic -->
+                                        <div class="control-group">
+                                            <label class="control-label">Default Subnet:</label>
+                                                <div class="controls AWS">
+                                                    <select id="default_subnet_aws" name="default_subnet" class="input-xlarge AWS">
+                                                        <option>Select Subnet</option>
+                                                    </select>
+                                                    <a class="btn create_subnet_btn AWS">Create Subnet</a>
+                                                </div>
                                         </div>
                                     </div>
 
-                                    <!-- Select Basic -->
-                                    <div class="control-group">
-                                        <label class="control-label">Default Informational:</label>
-                                        <div class="controls">
-                                            <select id="default_informational_aws" style="width:365px;" name="default_informational" class="input-xlarge topic_select AWS">
-                                                <option>Select Default Informational</option>
-                                            </select>
-                                            <a class="btn create_topic_btn AWS">Create Topic</a>
-                                        </div>
-                                    </div>
-
-                                    <!-- Select Basic -->
-                                    <div class="control-group">
-                                        <label class="control-label">Default Warning:</label>
-                                        <div class="controls">
-                                            <select id="default_warning_aws" style="width:365px;" name="default_warning" class="input-xlarge topic_select AWS">
-                                                <option>Select Default Warning</option>
-                                            </select>
-                                            <a class="btn create_topic_btn AWS">Create Topic</a>
-                                        </div>
-                                    </div>
-
-                                    <!-- Select Basic -->
-                                    <div class="control-group">
-                                        <label class="control-label">Default Error:</label>
-                                        <div class="controls">
-                                            <select id="default_error_aws" style="width:365px;" name="default_error" class="input-xlarge topic_select AWS">
-                                                <option>Select Default Error</option>
-                                            </select>
-                                            <a class="btn create_topic_btn AWS">Create Topic</a>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="well">
-                                    <legend>RDS</legend>
-                                    <!-- Appended checkbox -->
-                                    <div class="control-group">
-                                        <label class="control-label">Max # of RDS Databases:</label>
-                                        <div class="controls">
-                                            <div class="input-append">
-                                                <input id="max_rds_aws" name="max_rds" class="span3 AWS form-control" type="text" placeholder="# DB's">
-                                                <span class="add-on">
-                                                    <input type="checkbox" id="check_rds_aws" class="AWS"> Unlimited</input>
-                                                </span>
+                                    <div class="well" style="display: none;">
+                                        <legend>Configuration Management</legend>
+                                        <!-- Multiple Checkboxes -->
+                                        <div class="control-group">
+                                            <label class="control-label">Configuration Management:</label>
+                                            <div class="controls">
+                                                <label class="checkbox">
+                                                    <input type="checkbox" name="config_management" value="Only Admin can add a configuration management endpoint (Puppet / Chef)">
+                                                    Only Admin can add a configuration management endpoint (Puppet / Chef)
+                                                </label>
                                             </div>
-                                            <p class="help-block">*Read replica counts as additional database.</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="well">
+                                        <legend>SNS Notifications</legend>
+                                        <!-- Multiple Checkboxes -->
+                                        <div class="control-group" style="display:none;">
+                                            <label class="control-label">SNS Notifications:</label>
+                                            <div class="controls">
+                                                <label class="checkbox">
+                                                    <input type="checkbox" name="sns_notifications" value="All users are automatically setup as SNS users">
+                                                        All users are automatically setup as SNS users
+                                                </label>
+                                                <label class="checkbox">
+                                                    <input type="checkbox" name="sns_notifications" value="Users are email notified when an instance is started">
+                                                        Users are email notified when an instance is started
+                                                </label>
+                                                <label class="checkbox">
+                                                    <input type="checkbox" name="sns_notifications" value="Users are email notified when a CloudFormation has 'completed' or 'failed'">
+                                                        Users are email notified when a CloudFormation has 'completed' or 'failed'
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <!-- Select Basic -->
+                                        <div class="control-group">
+                                            <label class="control-label">Default Informational:</label>
+                                            <div class="controls">
+                                                <select id="default_informational_aws" style="width:365px;" name="default_informational" class="input-xlarge topic_select AWS">
+                                                    <option>Select Default Informational</option>
+                                                </select>
+                                                <a class="btn create_topic_btn AWS">Create Topic</a>
+                                            </div>
+                                        </div>
+
+                                        <!-- Select Basic -->
+                                        <div class="control-group">
+                                            <label class="control-label">Default Warning:</label>
+                                            <div class="controls">
+                                                <select id="default_warning_aws" style="width:365px;" name="default_warning" class="input-xlarge topic_select AWS">
+                                                    <option>Select Default Warning</option>
+                                                </select>
+                                                <a class="btn create_topic_btn AWS">Create Topic</a>
+                                            </div>
+                                        </div>
+
+                                        <!-- Select Basic -->
+                                        <div class="control-group">
+                                            <label class="control-label">Default Error:</label>
+                                            <div class="controls">
+                                                <select id="default_error_aws" style="width:365px;" name="default_error" class="input-xlarge topic_select AWS">
+                                                    <option>Select Default Error</option>
+                                                </select>
+                                                <a class="btn create_topic_btn AWS">Create Topic</a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="well">
+                                        <legend>RDS</legend>
+                                        <!-- Appended checkbox -->
+                                        <div class="control-group">
+                                            <label class="control-label">Max # of RDS Databases:</label>
+                                            <div class="controls">
+                                                <div class="input-append">
+                                                    <input id="max_rds_aws" name="max_rds" class="span3 AWS form-control" type="text" placeholder="# DB's">
+                                                    <span class="add-on">
+                                                        <input type="checkbox" id="check_rds_aws" name="unlimited" value="Check RDS Databases" class="AWS"> Unlimited</input>
+                                                    </span>
+                                                </div>
+                                                <p class="help-block">*Read replica counts as additional database.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="well">
+                                        <legend>Miscellaneous</legend>
+
+                                        <!-- Multiple Checkboxes -->
+                                        <div class="control-group">
+                                            <label class="control-label">Auto Tags:</label>
+                                            <div class="controls">
+                                                <label class="checkbox input-append">
+                                                    <input id="project_name_toggle_aws" type="checkbox" name="auto_tags" value="ProjectName" class="AWS"/>
+                                                        ProjectName:
+                                                    <input id="project_name_aws" style="margin-left:10px" name="project_name" type="text" placeholder="Project Name" class="input-medium AWS form-control"/>
+                                                </label>
+
+                                                <label class="checkbox">
+                                                    <input type="checkbox" name="auto_tags" value="UserName" class="AWS">
+                                                        UserName
+                                                </label>
+                                                <label class="checkbox">
+                                                    <input type="checkbox" name="auto_tags" value="GroupName" class="AWS">
+                                                        GroupName
+                                                </label>
+                                                <label class="checkbox">
+                                                    <input type="checkbox" name="auto_tags" value="Modifiable" class="AWS">
+                                                        Modifiable
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <!-- Multiple Checkboxes -->
+                                        <div class="control-group" style="display: none;">
+                                            <label class="control-label">AWS Console:</label>
+                                            <div class="controls">
+                                                <label class="checkbox">
+                                                    <input type="checkbox" name="disable_aws_console" value="Disable access to AWS Console">
+                                                        Disable access to AWS Console
+                                                </label>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-
-                                <div class="well">
-                                    <legend>Miscellaneous</legend>
-
-                                    <!-- Multiple Checkboxes -->
-                                    <div class="control-group">
-                                        <label class="control-label">Auto Tags:</label>
-                                        <div class="controls">
-                                            <label class="checkbox">
-                                                <input id="project_name_toggle_aws" type="checkbox" name="auto_tags" value="ProjectName" class="AWS"/>
-                                                    ProjectName:
-                                                <input id="project_name_aws" style="margin-left:10px" name="project_name" type="text" placeholder="Project Name" class="input-medium AWS form-control"/>
-                                            </label>
-
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="auto_tags" value="UserName" class="AWS">
-                                                    UserName
-                                            </label>
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="auto_tags" value="GroupName" class="AWS">
-                                                    GroupName
-                                            </label>
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="auto_tags" value="Modifiable" class="AWS">
-                                                    Modifiable
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <!-- Multiple Checkboxes -->
-                                    <div class="control-group" style="display: none;">
-                                        <label class="control-label">AWS Console:</label>
-                                        <div class="controls">
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="disable_aws_console" value="Disable access to AWS Console">
-                                                    Disable access to AWS Console
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </fieldset>
+                            </fieldset>
                         </form>
 
                         <form class="form-horizontal">
@@ -858,14 +829,14 @@
                                                 <input type="radio" name="latency_topic" value="arn:aws:sns:us-east-1:983391187112:Informational">
                                                     Informational
                                             </label>
-                                        <label class="radio inline">
-                                            <input type="radio" name="latency_topic" value="arn:aws:sns:us-east-1:983391187112:Warning">
-                                                Warning
-                                        </label>
-                                        <label class="radio inline">
-                                            <input type="radio" name="latency_topic" value="arn:aws:sns:us-east-1:983391187112:Error">
-                                                Error
-                                        </label>
+                                            <label class="radio inline">
+                                                <input type="radio" name="latency_topic" value="arn:aws:sns:us-east-1:983391187112:Warning">
+                                                    Warning
+                                            </label>
+                                            <label class="radio inline">
+                                                <input type="radio" name="latency_topic" value="arn:aws:sns:us-east-1:983391187112:Error">
+                                                    Error
+                                            </label>
                                         </div>
                                         <label class="control-label">UnhealthyHostCount</label>
                                         <div class="controls">
@@ -876,12 +847,12 @@
                                             <span>minutes</span>
                                             &nbsp;
                                             <label class="radio inline">
-                                            <input type="radio" name="unhealthy_host_topic" value="arn:aws:sns:us-east-1:983391187112:Informational">
-                                                Informational
+                                                <input type="radio" name="unhealthy_host_topic" value="arn:aws:sns:us-east-1:983391187112:Informational">
+                                                    Informational
                                             </label>
                                             <label class="radio inline">
-                                            <input type="radio" name="unhealthy_host_topic" value="arn:aws:sns:us-east-1:983391187112:Warning">
-                                                Warning
+                                                <input type="radio" name="unhealthy_host_topic" value="arn:aws:sns:us-east-1:983391187112:Warning">
+                                                    Warning
                                             </label>
                                             <label class="radio inline">
                                                 <input type="radio" name="unhealthy_host_topic" value="arn:aws:sns:us-east-1:983391187112:Error">
@@ -930,13 +901,12 @@
                                 </div>
                             </fieldset>
                         </form>
-
-                        </div>
                     </fieldset>
                 </form>
                 <a id="save_button" class="btn" style="float:right;margin-bottom:1cm;background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;">Save Policy <i class="icon-file icon-white"></i></a>
-                        <div id="save_alert" class="alert" style="width:90px;display:none;">
+                <div id="save_alert" class="alert" style="width:90px;display:none;">
                             Policy <strong>Saved...</strong>
+                </div>
             </div>
         </div>
         <div id="content_os" class="cont os" data-cloud="os" style="display:none;">

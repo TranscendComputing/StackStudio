@@ -10,11 +10,11 @@ EXTRA_PATHS = {};
 // Add the following to allow tests to force a reload of JS every time.
 var URL_ARGS = 'cb=' + Math.random();
 
-require(['./common'], function (common) {
+require(['./common', './main'], function (common) {
 	require({
 		paths: {
-		    'jasmine-html': 'jasmine-1.3.1/jasmine-html',
-			'jasmine': 'jasmine-1.3.1/jasmine'
+		    'jasmine': '../../node_modules/grunt-contrib-jasmine/vendor/jasmine-1.3.0/jasmine',
+		    'jasmine-html': '../../node_modules/grunt-contrib-jasmine/vendor/jasmine-1.3.0/jasmine-html',
 		},
 		shim: {
 			jasmine: {

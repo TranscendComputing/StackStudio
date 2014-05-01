@@ -88,7 +88,9 @@ define([
                 this.displayValid(false, "#cidr_input");
                 issue = true;
             }
-
+            if($("#subnet_name_input").val() !== "") {
+                options.name = $("#subnet_name_input").val();
+            }
             options.ip_version = $("#ip_version_select").val();
             if($("#gateway_ip_input").val() !== "") {
                 options.gateway_ip = $("#gateway_ip_input").val();

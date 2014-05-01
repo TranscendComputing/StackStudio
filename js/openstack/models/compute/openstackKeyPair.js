@@ -24,7 +24,11 @@ define([
         idAttribute: "name",
         
         create: function(options, credentialId) {
-            var url = "?cred_id=" + credentialId;
+            var url = "";
+            if(options["public_key"]){
+                url = "/import";
+            }
+            url += "?cred_id=" + credentialId;
             this.sendPostAction(url, {key_pair: options});
         },
         
