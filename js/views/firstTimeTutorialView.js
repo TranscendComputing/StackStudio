@@ -34,7 +34,7 @@ define([
 				{
 					title: 'Cloud Accounts',
 					messageElement : $('#tutorialMessage'),
-					message: 'You can set up a cloud account to manage it through StackStudio. Currently, StackStudio supports AWS, OpenStack, and Google cloud accounts.',
+					message: 'You can set up a cloud account to manage it through StackStudio. Currently, StackStudio supports AWS, OpenStack, VMware, and Google cloud accounts.',
 					tips: [
 						{
 							element: $('#mCloudAccount_tree #c_account_list>a'),
@@ -73,7 +73,7 @@ define([
 						{
 							element: $('#mPolicy_tree #policy_list>a'),
 							message: 'Click here to add a policy',
-							onClicked: this.initNextTip.bind(this, true, true)
+							onClicked: this.initNextTip.bind(this, true)
 						},
 						{
 							element: $('.policies_list_page #create_user_button'),
@@ -90,7 +90,7 @@ define([
 						{
 							element: $('#mdevOps_tree #devops_list>a'),
 							message: 'Click here to add a configuration manager',
-							onClicked: this.initNextTip.bind(this, true, true)
+							onClicked: this.initNextTip.bind(this, true)
 						},
 						{
 							element : $('#new_config_manager'),
@@ -107,7 +107,7 @@ define([
 						{
 							element: $('#mContinuousIntegration_tree #ci_list>a'),
 							message: 'Click here to set up a continuous integration server',
-							onClicked: this.initNextTip.bind(this, true, true)
+							onClicked: this.initNextTip.bind(this, true)
 						},
 						{
 							element: $('#new_ci_server'),
@@ -157,8 +157,8 @@ define([
 					},
 					afterRender : function () {
 						$('.instructor-step-label').addClass('col-lg-6')
-																			 .addClass('col-md-6')
-																			 .addClass('col-sm-12');
+													.addClass('col-md-6')
+													.addClass('col-sm-12');
 						$('#wrapper').css('margin-bottom', $('#instructor').height() * 1.5);
 					},
 					afterTipRender : function ( tip ) {
@@ -166,10 +166,35 @@ define([
 					}
 				});
 
-
 				setTimeout(function () {
-					$instructor.instructor('showTip');
+
+					$instructor.removeClass('hiding');
+
+					setTimeout(function () {
+						$instructor.instructor('showTip');
+					}, 500);
 				}, 500);
+
+				$instructor.find('.toggle-tutorial').click(function () {
+					var $panel = $instructor.find('.panel-body');
+					
+					if($panel.hasClass('minimized')) {
+						$instructor.find('.toggle-tutorial').html('&ndash;');
+					} else {
+						$instructor.find('.toggle-tutorial').html('+');
+					}
+					$panel.toggleClass('minimized');
+
+					$instructor.toggleClass('minimized');
+					
+					if(!$instructor.hasClass('minimized-tab')) {
+						setTimeout(function () {
+							$instructor.addClass('minimized-tab');
+						}, 250);
+					} else {
+						$instructor.removeClass('minimized-tab');
+					}
+				});
 			});
 		},
 
@@ -196,6 +221,11 @@ define([
 			var self = this;
 			var afterRender = self.rootView.afterSubAppRender;
 			self.rootView.afterSubAppRender = function ( subApp ) {
+
+				//render tooltips again to update position
+				var $instructor = $('#instructor');
+				$instructor.instructor('showTip');
+
 				if(subApp) {
 					subApp.onCreated = function () {
 						self.initNextTip(true, true);
