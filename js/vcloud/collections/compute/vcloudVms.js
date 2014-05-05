@@ -8,17 +8,17 @@
 define([
 	'backbone',
 	'common',
+	'/js/vcloud/collections/vcloudCollection.js',
 	'/js/vcloud/models/compute/vcloudVm.js'
-], function ( Backbone, Common, VCloudVm ) {
+], function ( Backbone, Common, VCloudCollection, VCloudVm ) {
 	'use strict';
 
-	var Vms = Backbone.Collection.extend({
+	var Vms = VCloudCollection.extend({
 		
 		model : VCloudVm,
 
 		url : Common.apiUrl + '/stackstudio/v1/cloud_management/vcloud/compute/vms'
-
 	});
 
-	return new Vms();
+	return Vms;
 });

@@ -41,6 +41,7 @@ function Branch ( options ) {
   this.tree = options.tree || this.parent.tree;
   this.onLoaded = options.onLoaded;
   this.onChildrenLoaded = options.onChildrenLoaded;
+  this.getData = options.getData;
 
   var branch = this
     , tree = this.tree;
@@ -109,10 +110,23 @@ function Branch ( options ) {
         loadFromUrl(branch, cb);
         break;
       case "function":
-        branch.getData(function ( children ) {
-          this.children = children.map(branch.assignParent);
+        var children = branch.getData(function ( children ) {
+          branch.$el.removeClass('loading');
+          branch.children = children.map(function ( child ) {
+            child.parent = branch;
+            var newBranch = _makeBranch(child);
+            return newBranch;
+          });
+
+          branch.loading = false;
+          branch.loaded = true;
+
           if (typeof(cb) !== 'undefined') {
-            cb(this.children);
+            cb(branch.children);
+          }
+
+          if(branch.onChildrenLoaded) {
+            branch.onChildrenLoaded(branch.children);
           }
         });
         break;
@@ -188,7 +202,7 @@ function Branch ( options ) {
     return child;
   };
 
-  if(this.url) {
+  if(this.url || (this.getData && isFunction(this.getData))) {
     if(this.$icon) {
       this.$icon.on('click', this.populateChildren);
     } else {

@@ -35,7 +35,8 @@ define([
             this.credentialId = options.cred_id;
             this.region = options.region || "none";
             this.cloudProvider = options.cloudProvider;
-
+            this.vdc = options.data_center;
+            
             this.render();
         }
     });

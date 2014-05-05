@@ -36,10 +36,25 @@ define([
                 this.$container = options.$container;
             }
 
-            Common.router.navigate("#resources/" + options.parentView.cloudProvider + "/"+options.parentView.region+"/"+options.parentView.type+"/"+options.parentView.subtype+"/"+ this.model.id, {trigger: false});
+            var route = '#resources/';
+            if(options.parentView.cloudProvider) {
+                route += options.parentView.cloudProvider + '/';
+            }
+            if(options.parentView.region) {
+                route += options.parentView.region + '/';
+            }
+            if(options.parentView.type) {
+                route += options.parentView.type + '/';
+            }
+            if(options.parentView.subtype) {
+                route += options.parentView.subtype + '/';
+            }
+            route += this.model.id;
+
+            Common.router.navigate(route, {trigger: false});
         },
 
-        render: function() {
+        render: function () {
             var detailApp = this;
             this.$el.html(this.template);
 
@@ -54,7 +69,7 @@ define([
             this.model.region = this.region;
 
 
-            $('#details').html(ich.resource_detail(this.model));
+            $('#details').html(ich.resource_detail(this.model.attributes));
 
             $("#detail_tabs").tabs({
                 select: function(event, ui) {
@@ -63,11 +78,7 @@ define([
             });
         },
 
-        close: function(){
-            //if(this.$table)
-            //{
-            //    this.$table.fnDestroy();
-            //}
+        close: function () {
             this.$el.empty();
             this.undelegateEvents();
             this.stopListening();

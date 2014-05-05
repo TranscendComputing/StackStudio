@@ -16,10 +16,11 @@ define([
         'models/cloudCredential',
         'collections/cloudCredentials',
         'views/resource/subServiceMenuView',
+        '/js/vcloud/collections/compute/vcloudDataCenters.js',
         'jquery-plugins',
         'jquery-ui-plugins'
 ], function( $, _, Backbone, ich, Common, resourcesTemplate, breadcrumbTemplate,
-        cloudCredential, CloudCredentials, SubServiceMenuView ) {
+        cloudCredential, CloudCredentials, SubServiceMenuView, DataCenters ) {
     // The Resources Navigation View
     // ------------------------------
 
@@ -57,6 +58,10 @@ define([
         selectedCredential: undefined,
 
         selectedRegion: undefined,
+
+        selectedDataCenter: undefined,
+
+        DataCenters: DataCenters,
 
         subServiceMenu: undefined,
 
@@ -336,8 +341,13 @@ define([
                 $("#native_services_table, #native_service_label").hide();
                 $("#topstack_services_table").css("width", "90%");
             }
+
             $("#cloud_nav").html(this.crumbTemplate({pathElt: this.cloudDefinitions[this.cloudProvider].name}));
             this.refreshCloudSpecs();
+
+            if(this.cloudProvider === "vcloud") {
+                this.loadDataCenters();
+            }
         },
 
         credentialChange: function(event) {
@@ -443,6 +453,39 @@ define([
             }
         },
 
+        loadDataCenters : function () {
+            var View = this;
+            var DataCenters = this.DataCenters;
+            DataCenters = new DataCenters({
+                cred_id : this.selectedCredential
+            });
+
+            DataCenters.fetch({
+                success : function ( vdcs ) {
+
+                    var vcloudPath = '/js/vcloud/views/compute/vcloudTreeView.js';
+
+                    var $centers = $('<div id="dataCenters" class="col-lg-4 spec_select">Data Center: </div>')
+                        , $select = $('<select id="data_center_select" class="cloud_spec_select form-control"></select>');
+
+                    $select.change(function () {
+                        View.selectedDataCenter = $(this).val();
+                        View.loadTreeView(vcloudPath);
+                    });
+
+                    $.each(vdcs.models, function ( index, vdc ) {
+                        $select.append('<option value="' + vdc.attributes.name + '">' + vdc.attributes.name + '</option>');
+                    });
+
+                    $centers.append($select);
+                    $("#cloud_specs").append($centers);
+
+                    View.selectedDataCenter = $select.val();
+                    View.loadTreeView(vcloudPath);
+                }
+            });
+        },
+
         resourceClick: function(id) {
             //debugger
             $("#resource_not_opened").hide();
@@ -509,9 +552,7 @@ define([
                     $("#resource_app").removeClass("service_width");
                 }
 
-                if(serviceObject.view) {
-                    this.loadTreeView(serviceObject.view);
-                } else {
+                if(!serviceObject.view) {
                     var appPath;
                     //Camelcase the subtype for the file name
                     var split = this.subtype.split("_"),
@@ -547,7 +588,7 @@ define([
 
                 var resourceTreeView = new TreeView({
                     cred_id : resourceNav.selectedCredential,
-                    region : resourceNav.selectedRegion,
+                    data_center : resourceNav.selectedDataCenter,
                     cloudProvider : resourceNav.cloudProvider
                 });
 
