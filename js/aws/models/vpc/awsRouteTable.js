@@ -37,6 +37,7 @@ define([
 		},
 
         create: function(options, credentialId, region) {
+            // debugger
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/route_tables?cred_id=" + credentialId + "&region=" + region;
             this.sendAjaxAction(url, "POST", {"route_table": options}, "routeTableAppRefresh");
         },
@@ -44,7 +45,13 @@ define([
         destroy: function(credentialId, region) {
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/route_tables/" + this.attributes.id + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
             this.sendAjaxAction(url, "POST", undefined, "routeTableAppRefresh");
-        }
+        },
+
+        associate: function(options, credentialId, region) {
+            // debugger
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/route_tables/" + this.attributes.id + "/associate?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", {"subnet_id": options.subnet_id}, "routeTableAppRefresh");
+        },
     });
 
     return RouteTable;
