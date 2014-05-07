@@ -86,7 +86,6 @@ define([
         },
 
 		associate: function() {
-            // debugger
 			var routeTable = this.routeTable;
             var options = {};
             var issue = false;

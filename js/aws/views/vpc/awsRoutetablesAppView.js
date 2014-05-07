@@ -59,7 +59,8 @@ define([
             'click .add-button': 'featureNotImplemented', //Remove when feture is implemented.
             'click #resource_table tr': 'clickOne',
             'click #add_association_button' : 'addAssociation',
-            'click #associations_table tr': 'clickTableItem'
+            'click #associations_table tr': 'selectTableRow',
+            'click #remove_association_button' : 'removeAssociation'
         },
 
         initialize: function(options) {
@@ -80,7 +81,6 @@ define([
 
         toggleActions: function(e) {
             //Disable any needed actions
-            // debugger
             this.routeTable = this.collection.get(this.selectedId);
             this.addTableDetails();
             this.addAllTableElements();
@@ -164,18 +164,25 @@ define([
 
         addAssociation: function(event) {
             var thisView = this;
-            // debugger
+
             new RouteTableAssociateView({routeTable: thisView.routeTable, cred_id: thisView.credentialId , region: thisView.region});
         },
 
-        clickTableItem: function(event){
-                this.selectTableItem(event.currentTarget);
+        removeAssociation: function(event) {
+            var thisView = this;
+            var selectedRow = $(".sub-route-table .row_selected");
+            var associationsTable = selectedRow.parents("table").dataTable();
+            var associationId = associationsTable.fnGetData(selectedRow[0])[0];
+
+            this.routeTable.disassociate({association_id: associationId}, thisView.credentialId, thisView.region );
         },
 
-        selectTableItem: function(target){
+        selectTableRow: function(event){
+            var target = event.currentTarget;
+
             $(".sub-route-table tr").removeClass('row_selected');
-            // debugger
             $(target).addClass('row_selected');
+            this.toggleButton($("#remove_association_button"),false);
         },
 
         //Remove once features have been implemented.
