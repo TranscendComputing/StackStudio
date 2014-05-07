@@ -16,15 +16,17 @@ define([
 	var VCloudVm = ResourceModel.extend({
 		
 		defaults : {
-			id : '',
-			name : '',
-			network : '',
-			vdc : '',
-			vapp : '',
 			cred_id : ''
 		},
 
 		apiUrl : Common.apiUrl + "/stackstudio/v1/cloud_management/vcloud/compute/vms",
+
+		initialize : function ( options ) {
+			this.id = this.attributes.name;
+			this.vdc = this.attributes.vdc;
+			this.vapp = this.attributes.vapp;
+			this.cred_id = this.collection.options.cred_id;
+		},
 
 		powerOff : function () {
 			var ajaxOptions = {

@@ -14,13 +14,29 @@ define([
   '/js/vendor/maple/js/maple.js',
   'views/resource/resourceTreeView',
   'views/resource/resourceAppView',
-  'text!templates/vcloud/vcloudTreeViewTemplate.html'
-], function ( $, _, Backbone, ich, Common, maple, ResourceTreeView, ResourceAppView, vcloudTreeViewTemplate ) {
+  'text!templates/vcloud/vcloudTreeViewTemplate.html',
+  '/js/vcloud/collections/compute/vcloudDataCenters.js',
+  '/js/vcloud/collections/network/vcloudNetworks.js',
+  '/js/vcloud/collections/catalog/vcloudCatalogs.js',
+  '/js/vcloud/collections/catalog/vcloudCatalogItems.js',
+  '/js/vcloud/collections/compute/vcloudVapps.js',
+  '/js/vcloud/collections/compute/vcloudVms.js'
+], function ( $, _, Backbone, ich, Common, maple, ResourceTreeView, ResourceAppView, vcloudTreeViewTemplate, DataCenters, Networks, Catalogs, CatalogItems, Vapps, Vms ) {
 	'use strict';
 
   var vcloudTree = ResourceTreeView.extend({
 
     template: _.template(vcloudTreeViewTemplate),
+
+    Networks : Networks,
+
+    Catalogs : Catalogs,
+
+    Vapps : Vapps,
+
+    Vms : Vms,
+
+    vdc : undefined,
 
     render : function () {
       this.$el.html(this.template);
@@ -35,189 +51,192 @@ define([
         tree : {
           branches : [
             {
-              name: 'vDCs',
+              name: 'vApps',
               type: 'folder',
-              cssClass : 'vdc-item',
-              url : Common.apiUrl + '/stackstudio/v1/cloud_management/vcloud/compute/data_centers',
-              data : {
-                cred_id : treeView.credentialId
-              },
+              cssClass : 'vapp-item',
               preload : true,
-              //formats tree data before displaying it
-              onLoaded: treeView.onVdcsLoaded.bind(treeView)
+              getData : treeView.getFetchFunction(treeView.Vapps, treeView.formatVapp, { vdc : treeView.vdc })
             },
             {
               name : 'Networks',
               type: 'folder',
-              url : Common.apiUrl + '/stackstudio/v1/cloud_management/vcloud/networks',
-              data : {
-                cred_id : treeView.credentialId
-              },
               preload: true,
-              onLoaded: treeView.onNetworksLoaded.bind(treeView)
+              getData : treeView.getFetchFunction(treeView.Networks, treeView.formatNetwork)
             },
             {
               name: 'Catalogs',
               type: 'folder',
-              url : Common.apiUrl + '/stackstudio/v1/cloud_management/vcloud/catalogs',
-              data : {
-                cred_id : treeView.credentialId
-              },
               preload : true,
-              onLoaded: treeView.onCatalogsLoaded.bind(treeView)
+              getData : treeView.getFetchFunction(treeView.Catalogs, treeView.formatCatalog)
             }
           ]
         }
       });
     },
 
-    onVdcsLoaded : function ( vdcs ) {
+    getFetchFunction : function ( Collection, format, data ) {
+      var treeView = this;
+      
+      return function ( cb ) {
+        var collection = new Collection({
+          cred_id : treeView.credentialId
+        });
+
+        var options = {
+          success : function ( models ) {
+            models = models.models.map(format.bind(treeView));
+            cb(models);
+          }
+        };
+
+        if(data) {
+          options.data = data;
+        }
+
+        collection.fetch(options);
+      };
+    },
+
+    formatNetwork : function ( network ) {
+      var treeView = this;
+      
+      return {
+        name : network.attributes.name,
+        cssClass : 'network-item',
+        attributes : {
+          "object-type" : 'network'
+        },
+        onClicked : function ( $network ) {
+          var view = "/js/vcloud/views/network/vcloudNetworkAppView.js";
+          treeView.loadChildView(view, { model : network, parentView : treeView });
+
+          $('.maple-selected').removeClass('maple-selected');
+          $(this).find('span').addClass('maple-selected');
+        }
+      };
+    },
+
+    formatCatalog : function ( catalog ) {
       var treeView = this;
 
-      return vdcs.map(function ( vdc ) {
-        return {
-          name : vdc.name,
-          cssClass : 'vdc-item',
-          
-          attributes : {
-            "object-type" : "vdc"
-          },
+      return {
+        name: catalog.attributes.name,
+        cssClass : 'catalog-item',
+        attributes : {
+          'object-type' : 'catalog'
+        },
+        type : 'folder',
+        getData : function ( cb ) {
+          catalog.attributes.items = catalog.attributes.items.map(function ( item ) {
+            return _.extend(item, {
+              catalog : catalog.attributes.name
+            })
+          });
+          var items = catalog.attributes.items.map(treeView.formatCatalogItem.bind(treeView));
+          cb(items);
+        }//,
 
-          branches : [
-            {
-              name : 'vApps',
-              type: 'folder',
-              url : Common.apiUrl + '/stackstudio/v1/cloud_management/vcloud/compute/vapps?vdc=' + encodeURIComponent(vdc.name),
-              data : {
+        // onClicked: function ( $catalog ) {
+        //   var view = '/js/vcloud/views/catalog/vcloudCatalogAppView.js';
+        //   treeView.loadChildView(view, { model : catalog, parentView : treeView });
+
+        //   $('.maple-selected').removeClass('maple-selected');
+        //   $(this).find('span').addClass('maple-selected');
+        // }
+      };
+    },
+
+    formatCatalogItem : function ( item ) {
+      var treeView = this;
+
+      return {
+        name : item.name,
+        attributes : {
+          'object-type' : 'catalog-item'
+        },
+        onClicked : function ( $item ) {
+          var view = '/js/vcloud/views/catalog/vcloudCatalogItemAppView.js';
+          treeView.loadChildView(view, { model : item, parentView : treeView });
+          $('.maple-selected').removeClass('maple-selected');
+          $(this).find('span').addClass('maple-selected');
+        }
+      }
+    },
+
+    formatVapp : function ( vapp ) {
+      var treeView = this;
+
+      var attributes = vapp.attributes;
+      return {
+        name : attributes.name,
+        cssClass : 'vapp-item',
+        
+        attributes : {
+          "object-type" : "vapp"
+        },
+
+        branches : [
+          {
+            name : 'VMs',
+            cssClass : 'vms-folder',
+            type : 'folder',
+            getData : function ( cb ) {
+              var VMs = new treeView.Vms({
                 cred_id : treeView.credentialId
-              },
-              preload : true,
-              onLoaded : treeView.onVappsLoaded.bind(treeView)
-            }
-          ],
-          onClicked : function ( $vdc ) {
-            treeView.selectedVdc = vdc;
-            var path = '/js/vcloud/views/compute/vcloudDataCentersAppView.js';
-            treeView.loadChildView(path, { model : vdc, parentView : treeView });
+              });
 
-            $('.maple-selected').removeClass('maple-selected');
-            $vdc.children('span').addClass('maple-selected');
+              VMs.fetch({
+                data : {
+                  vdc : attributes.vdc,
+                  vapp : attributes.name
+                },
+                success : function ( vms ) {
+                  vms = vms.models.map(treeView.formatVm.bind(treeView));
+                  cb(vms);
+                }
+              });
+            },
+            preload : true
           }
-        };
-      });
+        ],
+
+        onClicked : function ( $vapp ) {
+          treeView.selectedVapp = vapp;
+          var view = '/js/vcloud/views/compute/vcloudVappAppView.js';
+          treeView.loadChildView(view , {
+            model : vapp,
+            parentView : treeView
+          });
+
+          $('.maple-selected').removeClass('maple-selected');
+          $vapp.children('span').addClass('maple-selected');
+        }
+      };
     },
 
-    onVappsLoaded : function ( vapps, $parent ) {
-
+    formatVm : function ( vm ) {
       var treeView = this;
-      return vapps.map(function ( vapp ) {
-        return {
-          name : vapp.name,
-          cssClass : 'vapp-item',
-          
-          attributes : {
-            "object-type" : "vapp"
-          },
+      var atts = vm.attributes;
 
-          branches : [
-            {
-              name : 'VMs',
-              cssClass : 'vms-folder',
-              type : 'folder',
-              url: Common.apiUrl + '/stackstudio/v1/cloud_management/vcloud/compute/vms',
-              data : {
-                cred_id : treeView.credentialId,
-                vdc : vapp.vdc,
-                vapp : vapp.name
-              },
-              preload : true,
-              onLoaded : treeView.onVmsLoaded.bind(treeView)
-            }
-          ],
+      return {
+        name: atts.name,
 
-          onClicked : function ( $vapp ) {
-            treeView.selectedVapp = vapp;
-            var view = '/js/vcloud/views/compute/vcloudVappsAppView.js';
-            treeView.loadChildView(view , {
-              model : vapp,
-              parentView : treeView
-            });
+        cssClass : 'vm-item',
 
-            $('.maple-selected').removeClass('maple-selected');
-            $vapp.children('span').addClass('maple-selected');
-          }
-        };
-      });
-    },
+        attributes : { 
+          "object-type" : "vm",
+          "vapp" : atts.vapp,
+          "vdc" : atts.vdc
+        },
 
-    onVmsLoaded : function ( vms, $parent ) {
-      var treeView = this;
-
-      return vms.map(function ( vm ) {
-        return {
-          name: vm.name,
-
-          cssClass : 'vm-item',
-
-          attributes : { 
-            "object-type" : "vm",
-            "vapp" : vm.vapp,
-            "vdc" : vm.vdc
-          },
-
-          onClicked: function ( $vm ) {
-            var view = '/js/vcloud/views/compute/vcloudVmsAppView.js'
-              , vapp = vm.vapp
-              , vdc = vm.vdc;
-              
-            treeView.loadChildView(view, { model: vm, parentView : treeView, vdc : vdc, vapp : vapp });
-          }
-        };
-      });
-    },
-
-    onNetworksLoaded : function ( networks, $parent ) {
-
-      var treeView = this;
-
-      return networks.map(function ( network ) {
-        return {
-          name : network.name,
-          cssClass : 'network-item',
-          attributes : {
-            "object-type" : 'network'
-          },
-          onClicked : function ( $network ) {
-            var view = "/js/vcloud/views/network/vcloudNetworkAppView.js";
-            treeView.loadChildView(view, { model : network, parentView : treeView });
-
-            $('.maple-selected').removeClass('maple-selected');
-            $(this).find('span').addClass('maple-selected');
-          }
-        };
-      });
-    },
-
-    onCatalogsLoaded : function ( catalogs, $parent ) {
-
-      var treeView = this;
-
-      return catalogs.map(function ( catalog ) {
-        return {
-          name: catalog.name,
-          cssClass : 'catalog-item',
-          attributes : {
-            'object-type' : 'catalog'
-          },
-          onClicked: function ( $catalog ) {
-            var view = '/js/vcloud/views/catalog/vcloudCatalogAppView.js';
-            treeView.loadChildView(view, { model : catalog, parentView : treeView });
-
-            $('.maple-selected').removeClass('maple-selected');
-            $(this).find('span').addClass('maple-selected');
-          }
-        };
-      });
+        onClicked: function ( $vm ) {
+          var view = '/js/vcloud/views/compute/vcloudVmAppView.js'
+            , vapp = atts.vapp
+            , vdc = atts.vdc;
+            
+          treeView.loadChildView(view, { model: vm, parentView : treeView, vdc : vdc, vapp : vapp });
+        }
+      };
     },
 
     loadChildView : function ( view, options ) {

@@ -15,7 +15,6 @@ define([
 	var VCloudVapp = ResourceModel.extend({
 		
 		defaults : {
-			id : '',
 			name : ''
 		}
 	});

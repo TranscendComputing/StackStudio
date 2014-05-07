@@ -8,11 +8,12 @@
 define([
 	'backbone',
 	'common',
+	'/js/vcloud/collections/vcloudCollection.js',
 	'/js/vcloud/models/compute/vcloudVapp.js'
-], function ( Backbone, Common, VCloudVapp ) {
+], function ( Backbone, Common, VCloudCollection, VCloudVapp ) {
 	'use strict';
 
-	var Vapps = Backbone.Collection.extend({
+	var Vapps = VCloudCollection.extend({
 		
 		model : VCloudVapp,
 

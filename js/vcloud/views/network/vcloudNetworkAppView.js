@@ -20,38 +20,10 @@ define([
 	var VCloudNetworkAppView = ResourceDetailView.extend({
 
 		initialize : function ( options ) {
-			var appView = this;
-			this.credentialId = options.cred_id;
-
-			Networks.fetch({
-				data : $.param({
-					cred_id : options.cred_id,
-					id : options.model.id
-				}),
-
-				success: function ( collection ) {
-					appView.network = appView.makeModel(collection.models[0]);
-					appView.render();
-				},
-
-				error : function ( err ) {
-					console.err(err);
-				}
-			});
-
-			Common.vent.on('networkAppRefresh', function ( network ) {
-				appView.network = appView.makeModel(network);
-				appView.render();
-			});
+			this.render();
 		},
 	
-		template : _.template(VCloudNetworkTemplate),
-
-		makeModel : function ( network ) {
-			return _.extend(network, {
-				cred_id : this.credentialId
-			});
-		}
+		template : _.template(VCloudNetworkTemplate)
 	});
 
 	return VCloudNetworkAppView;

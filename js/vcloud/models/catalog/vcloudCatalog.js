@@ -15,7 +15,6 @@ define([
 	var VCloudCatalog = ResourceModel.extend({
 		
 		defaults : {
-			id : '',
 			name : ''
 		},
 

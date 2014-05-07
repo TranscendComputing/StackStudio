@@ -28,33 +28,9 @@ define([
 			this.vapp = options.vapp;
 			this.vdc = options.vdc;
 			this.model = options.model;
-
-			Vms.fetch({
-				data : $.param({
-					cred_id : options.cred_id,
-					id : options.model.name,
-					vdc : options.vdc,
-					vapp : options.vapp
-				}),
-
-				success: function ( collection ) {
-					appView.vm = appView.makeModel(collection.models[0]);
-
-					appView.vm.id = appView.model.name;
-					appView.vm.cred_id = appView.credentialId;
-					appView.vm.vdc = appView.vdc;
-					appView.vm.vapp = appView.vapp;
-
-					appView.vm.loadNetwork();
-					appView.vm.loadDisks();
-
-					appView.render();
-				},
-
-				error : function ( err ) {
-					console.err(err);
-				}
-			});
+			this.model.loadNetwork();
+			this.model.loadDisks();
+			this.render();
 
 			function refreshNetwork ( network ) {
 				if(!ich.templates.vm_network) {
@@ -124,15 +100,6 @@ define([
 			});
 
 			this.vm.updateNetwork(options);
-		},
-
-		makeModel : function ( vm ) {
-			return _.extend(vm, {
-				cred_id : this.credentialId,
-				vdc : this.vdc,
-				vapp : this.vapp,
-				id : this.model.name
-			});
 		}
 	});
 

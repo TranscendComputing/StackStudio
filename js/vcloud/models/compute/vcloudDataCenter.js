@@ -15,7 +15,6 @@ define([
 	var VCloudDataCenter = ResourceModel.extend({
 		
 		defaults : {
-			id : '',
 			name : ''
 		},
 
