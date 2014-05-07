@@ -15,7 +15,6 @@ define([
 	var VCloudNetwork = ResourceModel.extend({
 		
 		defaults : {
-			id : '',
 			cred_id : ''
 		},
 

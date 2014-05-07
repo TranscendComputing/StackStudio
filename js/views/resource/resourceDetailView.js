@@ -69,7 +69,7 @@ define([
             this.model.region = this.region;
 
 
-            $('#details').html(ich.resource_detail(this.model.attributes));
+            $('#details').html(ich.resource_detail(this.model.attributes || this.model));
 
             $("#detail_tabs").tabs({
                 select: function(event, ui) {

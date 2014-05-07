@@ -12,22 +12,11 @@ define([
 	'common',
 	'models/resource/resourceModel'
 ], function ( $, _, Backbone, Common, ResourceModel ) {
-	var VCloudOrganization = ResourceModel.extend({
-		
+	var VCloudCatalogItem = ResourceModel.extend({
 		defaults : {
 			name : ''
-		},
-
-		apiUrl : Common.apiUrl + "stackstudio/v1/cloud_management/vcloud/compute/organizations",
-
-		create : function ( credentialId, options ) {
-			var ajaxOptions = {
-				cred_id : credentialId,
-				"organization" : options
-			};
-			this.sendAjaxAction(this.apiUrl, "POST", ajaxOptions);
 		}
 	});
 
-	return VCloudOrganization;
+	return VCloudCatalogItem;
 });

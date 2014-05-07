@@ -3,7 +3,7 @@
  * (c) 2012 Transcend Computing <http://www.transcendcomputing.com/>
  * Available under ASL2 license <http://www.apache.org/licenses/LICENSE-2.0.html>
  */
-/*jshint smarttabs:true */
+/*jshint smarttabs:true, laxcomma:true*/
 /*global define:true console:true requirejs:true require:true alert:true*/
 define([
         'jquery',

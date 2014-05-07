@@ -18,9 +18,10 @@ define([
   '/js/vcloud/collections/compute/vcloudDataCenters.js',
   '/js/vcloud/collections/network/vcloudNetworks.js',
   '/js/vcloud/collections/catalog/vcloudCatalogs.js',
+  '/js/vcloud/collections/catalog/vcloudCatalogItems.js',
   '/js/vcloud/collections/compute/vcloudVapps.js',
   '/js/vcloud/collections/compute/vcloudVms.js'
-], function ( $, _, Backbone, ich, Common, maple, ResourceTreeView, ResourceAppView, vcloudTreeViewTemplate, DataCenters, Networks, Catalogs, Vapps, Vms ) {
+], function ( $, _, Backbone, ich, Common, maple, ResourceTreeView, ResourceAppView, vcloudTreeViewTemplate, DataCenters, Networks, Catalogs, CatalogItems, Vapps, Vms ) {
 	'use strict';
 
   var vcloudTree = ResourceTreeView.extend({
@@ -83,7 +84,7 @@ define([
 
         var options = {
           success : function ( models ) {
-            models = _.pluck(models.models, "attributes").map(format.bind(treeView));
+            models = models.models.map(format.bind(treeView));
             cb(models);
           }
         };
@@ -100,7 +101,7 @@ define([
       var treeView = this;
       
       return {
-        name : network.name,
+        name : network.attributes.name,
         cssClass : 'network-item',
         attributes : {
           "object-type" : 'network'
@@ -119,26 +120,55 @@ define([
       var treeView = this;
 
       return {
-        name: catalog.name,
+        name: catalog.attributes.name,
         cssClass : 'catalog-item',
         attributes : {
           'object-type' : 'catalog'
         },
-        onClicked: function ( $catalog ) {
-          var view = '/js/vcloud/views/catalog/vcloudCatalogAppView.js';
-          treeView.loadChildView(view, { model : catalog, parentView : treeView });
+        type : 'folder',
+        getData : function ( cb ) {
+          catalog.attributes.items = catalog.attributes.items.map(function ( item ) {
+            return _.extend(item, {
+              catalog : catalog.attributes.name
+            })
+          });
+          var items = catalog.attributes.items.map(treeView.formatCatalogItem.bind(treeView));
+          cb(items);
+        }//,
 
+        // onClicked: function ( $catalog ) {
+        //   var view = '/js/vcloud/views/catalog/vcloudCatalogAppView.js';
+        //   treeView.loadChildView(view, { model : catalog, parentView : treeView });
+
+        //   $('.maple-selected').removeClass('maple-selected');
+        //   $(this).find('span').addClass('maple-selected');
+        // }
+      };
+    },
+
+    formatCatalogItem : function ( item ) {
+      var treeView = this;
+
+      return {
+        name : item.name,
+        attributes : {
+          'object-type' : 'catalog-item'
+        },
+        onClicked : function ( $item ) {
+          var view = '/js/vcloud/views/catalog/vcloudCatalogItemAppView.js';
+          treeView.loadChildView(view, { model : item, parentView : treeView });
           $('.maple-selected').removeClass('maple-selected');
           $(this).find('span').addClass('maple-selected');
         }
-      };
+      }
     },
 
     formatVapp : function ( vapp ) {
       var treeView = this;
 
+      var attributes = vapp.attributes;
       return {
-        name : vapp.name,
+        name : attributes.name,
         cssClass : 'vapp-item',
         
         attributes : {
@@ -157,8 +187,8 @@ define([
 
               VMs.fetch({
                 data : {
-                  vdc : vapp.vdc,
-                  vapp : vapp.name
+                  vdc : attributes.vdc,
+                  vapp : attributes.name
                 },
                 success : function ( vms ) {
                   vms = vms.models.map(treeView.formatVm.bind(treeView));
