@@ -58,7 +58,8 @@ define([
             'click #action_menu ul li': 'performAction',
             'click .add-button': 'featureNotImplemented', //Remove when feture is implemented.
             'click #resource_table tr': 'clickOne',
-            'click #add_association_button' : 'addAssociation'
+            'click #add_association_button' : 'addAssociation',
+            'click #associations_table tr': 'clickTableItem'
         },
 
         initialize: function(options) {
@@ -165,6 +166,16 @@ define([
             var thisView = this;
             // debugger
             new RouteTableAssociateView({routeTable: thisView.routeTable, cred_id: thisView.credentialId , region: thisView.region});
+        },
+
+        clickTableItem: function(event){
+                this.selectTableItem(event.currentTarget);
+        },
+
+        selectTableItem: function(target){
+            $(".sub-route-table tr").removeClass('row_selected');
+            // debugger
+            $(target).addClass('row_selected');
         },
 
         //Remove once features have been implemented.
