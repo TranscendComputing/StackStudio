@@ -51,3 +51,7 @@ js/vendor/ICanHaz.js
 js/vendor/require.js
 js/vendor/twitter/*.js
 js/vendor/URI
+
+#RVM default version files
+.ruby-version
+.ruby-gemset
