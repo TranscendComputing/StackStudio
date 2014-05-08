@@ -11,14 +11,15 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/vpc/awsNetworkAclCreateTemplate.html',
+        '/js/aws/collections/vpc/awsVpcs.js',
         '/js/aws/models/vpc/awsNetworkAcl.js',
         'icanhaz',
         'common',
         'jquery.multiselect',
         'jquery.multiselect.filter'
         
-], function( $, _, Backbone, DialogView, networkAclCreateTemplate, NetworkAcl, ich, Common ) {
-			
+], function( $, _, Backbone, DialogView, networkAclCreateTemplate, Vpcs, NetworkAcl, ich, Common ) {
+            
     /**
      * NetworkAclCreateView is UI form to create compute.
      *
@@ -28,26 +29,37 @@ define([
      * @param {Object} initialization object.
      * @returns {Object} Returns a NetworkAclCreateView instance.
      */
-	
-	var NetworkAclCreateView = DialogView.extend({
-		
-		template: _.template(networkAclCreateTemplate),
-		// Delegated events for creating new instances, etc.
-		events: {
-			"dialogclose": "close"
-		},
+    
+    var NetworkAclCreateView = DialogView.extend({
 
-		initialize: function() {
-			//TODO
-		},
+        credentialId: undefined,
 
-		render: function() {
-			var createView = this;
+        region: undefined,
+
+        vpcs: new Vpcs(),
+
+        networkAcl: new NetworkAcl(),
+
+        template: _.template(networkAclCreateTemplate),
+
+        // Delegated events for creating new instances, etc.
+        events: {
+            "dialogclose": "close"
+        },
+
+        initialize: function(options) {
+            //TODO
+            this.credentialId = options.cred_id;
+            this.region = options.region;
+        },
+
+        render: function() {
+            var createView = this;
             this.$el.html(this.template);
 
             this.$el.dialog({
                 autoOpen: true,
-                title: "Create Network ACL",
+                title: "Create Network Acl",
                 width:500,
                 minHeight: 150,
                 resizable: false,
@@ -60,17 +72,41 @@ define([
                         createView.cancel();
                     }
                 }
+                
             });
            
-            return this;
-		},
-		
-		create: function() {
-			//Validate and create
-			this.$el.dialog('close');
-		}
+            this.vpcs.on( 'reset', this.addAllVpcs, this );
+            this.vpcs.fetch({ data: $.param({ cred_id: this.credentialId, region: this.region }), reset: true });
+        },
+        
+        addAllVpcs: function() {
+            $("#vpc_select").empty();
+            this.vpcs.each(function(vpc) {
+                $("#vpc_select").append($("<option value=" + vpc.attributes.id + ">" + vpc.attributes.id + "</option>"));
+            });
+        },
 
-	});
+        create: function() {
+            var networkAcl = this.networkAcl;
+            var options = {};
+            var issue = false;
+
+            //Validate and create
+            if($("#vpc_select").val !== null && $("#vpc_select").val() !== "") {
+                options.vpc_id = $("#vpc_select").val();
+            }else {
+                issue = true;
+            }
+
+            if(!issue) {
+                networkAcl.create(options, this.credentialId, this.region);
+                this.$el.dialog('close');
+            }else {
+                Common.errorDialog("Invalid Request", "Please supply all required fields.");
+            }
+        }
+
+    });
     
-	return NetworkAclCreateView;
+    return NetworkAclCreateView;
 });

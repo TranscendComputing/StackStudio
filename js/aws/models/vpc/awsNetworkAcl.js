@@ -6,12 +6,12 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-        'jquery',
-        'backbone'
-], function( $, Backbone ) {
+        'models/resource/resourceModel',
+        'common'
+], function( ResourceModel, Common ) {
     'use strict';
 
-    // Base NetworkAcl Model
+    // Network ACL Model
     // ----------
 
     /**
@@ -22,31 +22,30 @@ define([
      * @param {Object} initialization object.
      * @returns {Object} Returns a NetworkAcl instance.
      */
-    var NetworkAcl = Backbone.Model.extend({
+    var NetworkAcl = ResourceModel.extend({
 
-        idAttribute: "networkAclId",
+        idAttribute: "network_acl_id",
         
         /** Default attributes for compute */
         defaults: {
-            "networkAclId": '',
-            "vpcId": '',
-            "default": '',
-            "entrySet": [],
-            "associationSet": [],
-            "tagSet": []
-		},
+            network_acl_id: '',
+            vpc_id: '',
+            "default": false,
+            entries: [],
+            associations: [],
+            tags: []
+        },
 
-	    /**
-	     * Override the base Backbone set method, for debugging.
-	     *
-	     * @memberOf NetworkAcl
-	     * @category Internal
-	     * @param {Object} hash of attribute values to set.
-	     * @param {Object} (optional) options to tweak (see Backbone docs).
-	     */
-		set: function(attributes, options) {
-		    Backbone.Model.prototype.set.apply(this, arguments);
-		}
+        create: function(options, credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/network_acls?cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", {"network_acl": options}, "networkAclAppRefresh");
+        },
+
+        destroy: function(credentialId, region) {
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/network_acls/" + this.attributes.network_acl_id + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            this.sendAjaxAction(url, "POST", undefined, "networkAclAppRefresh");
+        }
+
     });
 
     return NetworkAcl;

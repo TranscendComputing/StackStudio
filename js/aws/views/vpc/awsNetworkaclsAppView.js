@@ -9,67 +9,98 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'views/featureNotImplementedView',
         'views/resource/resourceAppView',
         'text!templates/aws/vpc/awsNetworkAclAppTemplate.html',
         '/js/aws/models/vpc/awsNetworkAcl.js',
         '/js/aws/collections/vpc/awsNetworkAcls.js',
         '/js/aws/views/vpc/awsNetworkAclCreateView.js',
+        '/js/views/featureNotImplementedDialogView.js',
         'icanhaz',
         'common',
         'jquery.dataTables'
-], function( $, _, Backbone, FeatureNotImplementedView, AppView, awsNetworkAclAppTemplate, NetworkAcl, NetworkAcls, AwsNetworkAclCreateView, ich, Common ) {
-	'use strict';
+], function( $, _, Backbone, AppView, awsNetworkAclAppTemplate, NetworkAcl, NetworkAcls, awsNetworkAclCreateView, FeatureNotImplementedDialogView, ich, Common ) {
+    'use strict';
 
-	// Aws Application View
-	// ------------------------------
+    // Aws NetworkAcl Application View
+    // ------------------------------
 
     /**
-     * Aws AppView is UI view list of cloud items.
+     * AwsNetworkAclAppView is UI view list of cloud Network Acls.
      *
-     * @name AppView
+     * @name NetworkAclAppView
      * @constructor
      * @category Resources
      * @param {Object} initialization object.
-     * @returns {Object} Returns an AwsAppView instance.
+     * @returns {Object} Returns a AwsNetworkAclsAppView instance.
      */
-	var AwsNetworkAclsAppView = AppView.extend({
-	    template: _.template(awsNetworkAclAppTemplate),
-	    
-        modelStringIdentifier: "network_acl_id",
-                
-        model: NetworkAcl,
+    var AwsNetworkAclsAppView = AppView.extend({
+        template: _.template(awsNetworkAclAppTemplate),
         
+        modelStringIdentifier: "network_acl_id",
+
+        model: NetworkAcl,
+
         idColumnNumber: 0,
         
-        columns: ["network_acl_id","vpc_id", "default"],
+        columns: ["network_acl_id", "vpc_id", "default"],
         
         collectionType: NetworkAcls,
         
         type: "vpc",
         
-        subtype: "networkAcls",
+        subtype: "networkacls",
         
-        CreateView: AwsNetworkAclCreateView,
-                
+        CreateView: awsNetworkAclCreateView,
+        
         events: {
             'click .create_button': 'createNew',
+            'click #action_menu ul li': 'performAction',
             'click #resource_table tr': 'clickOne'
         },
 
-        initialize: function() {
+        initialize: function(options) {
+            if(options.cred_id) {
+                this.credentialId = options.cred_id;
+            }
+            if(options.region) {
+                this.region = options.region;
+            }
+            
+            
+            var networkAclApp = this;
+            Common.vent.on("networkAclAppRefresh", function() {
+                networkAclApp.render();
+            });
             this.render();
-        },
-
-        render: function() {
-            var featureNotImplemented = new FeatureNotImplementedView({feature_url: "https://github.com/TranscendComputing/StackStudio/issues/8", element: "#resource_app"});
-            featureNotImplemented.render();
         },
 
         toggleActions: function(e) {
             //Disable any needed actions
+            this.networkAcl = this.collection.get(this.selectedId);
+        },
+
+        toggleButton: function(target, toggle){
+            if(toggle === true){
+                target.attr("disabled", true);
+                target.addClass("ui-state-disabled");
+            }else{
+                target.removeAttr("disabled");
+                target.removeClass("ui-state-disabled");
+            }
+        },
+
+        performAction: function(event) {
+            var networkAcl = this.networkAcl;
+            
+            switch(event.target.text)
+            {
+            case "Delete":
+                networkAcl.destroy(this.credentialId, this.region);
+                break;
+            }
         }
-	});
+
+    });
     
-	return AwsNetworkAclsAppView;
+    return AwsNetworkAclsAppView;
 });
