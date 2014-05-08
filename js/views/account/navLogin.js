@@ -11,8 +11,9 @@ define([
         'backbone',
         'common',
         'views/account/accountLoginView',
+        'js/views/dashboardView.js',
         'jquery-ui'
-], function( $, _, Backbone, Common, AccountLoginView ) {
+], function( $, _, Backbone, Common, AccountLoginView, DashboardView ) {
     'use strict';
 
     var NavLogin = Backbone.View.extend({
@@ -47,8 +48,18 @@ define([
 
         accountLogout: function() {
             sessionStorage.clear();
+
+            // Clear state so dashboard view can be refreshed
+            Common.unloadPreviousState();
+            var dashboardView = new DashboardView();
+            Common.setPreviousState(dashboardView);
+
+            // Navigate to root so username and Logout link go away
             Common.router.navigate("/", {trigger: true});
             this.render();
+
+            // Re-render dashboardView so we can see getstarted div
+            dashboardView.render();
         }
     });
 
