@@ -30,7 +30,7 @@ define([
         defaults: {
             network_acl_id: '',
             vpc_id: '',
-            defaults: false,
+            "default": false,
             entries: [],
             associations: [],
             tags: []
@@ -38,14 +38,14 @@ define([
 
         create: function(options, credentialId, region) {
             var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/network_acls?cred_id=" + credentialId + "&region=" + region;
-            this.sendAjaxAction(url, "POST", {"vpc_id": options}, "networkAclAppRefresh");
+            this.sendAjaxAction(url, "POST", {"network_acl": options}, "networkAclAppRefresh");
         },
 
         destroy: function(credentialId, region) {
-            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/network_acls/" + this.attributes.id + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
+            var url = Common.apiUrl + "/stackstudio/v1/cloud_management/aws/compute/network_acls/" + this.attributes.network_acl_id + "?_method=DELETE&cred_id=" + credentialId + "&region=" + region;
             this.sendAjaxAction(url, "POST", undefined, "networkAclAppRefresh");
         }
-        
+
     });
 
     return NetworkAcl;
