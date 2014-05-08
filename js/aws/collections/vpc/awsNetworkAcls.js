@@ -21,7 +21,7 @@ define([
         // Reference to this collection's model.
         model: NetworkAcl,
 
-        url: 'samples/networkAcls.json'
+        url: Common.apiUrl + '/stackstudio/v1/cloud_management/aws/compute/network_acls'
         
     });
 
