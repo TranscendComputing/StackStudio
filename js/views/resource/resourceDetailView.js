@@ -25,13 +25,9 @@ define([
 
         initialize: function ( options ) {
             this.model = options.model;
-
-            if (options.cred_id)
-                this.credentialId = options.cred_id;
-            if (options.region)
-                this.region = options.region;
-            if (options.$container)
-                this.$container = options.$container;
+            this.credentialId = options.cred_id;
+            this.region = options.region;
+            this.$container = options.$container;
 
             var parentViewOptions = [
                 // Order is important: #resources/:cloud/:region/:type/:subtype
