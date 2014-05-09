@@ -103,6 +103,10 @@ define([
         render: function () {
             if($("#cloud_coverflow").children().length > 0){
                 //debugger
+
+                //wait until datacenters are loaded to display in vcloud case
+                Common.vent.on('dataCentersLoaded', this.loadResourceApp);
+
                 if(this.resourceApp) {
                     this.resourceApp.remove();
                 } else {
@@ -135,8 +139,9 @@ define([
                     }
                 }
                 
-                this.loadResourceApp();
-    
+                if(this.cloudProvider !== 'vcloud'|| this.VdcsLoaded === true) {
+                    this.loadResourceApp();
+                }
             }else{
                 this.enableCloudMessage();
             }
@@ -454,6 +459,7 @@ define([
         },
 
         loadDataCenters : function () {
+
             var View = this;
             var DataCenters = this.DataCenters;
             DataCenters = new DataCenters({
@@ -462,15 +468,16 @@ define([
 
             DataCenters.fetch({
                 success : function ( vdcs ) {
+                    View.VdcsLoaded = true;
 
-                    var vcloudPath = '/js/vcloud/views/compute/vcloudTreeView.js';
+                    // var vcloudPath = '/js/vcloud/views/compute/vcloudTreeView.js';
 
                     var $centers = $('<div id="dataCenters" class="col-lg-4 spec_select">Data Center: </div>')
                         , $select = $('<select id="data_center_select" class="cloud_spec_select form-control"></select>');
 
                     $select.change(function () {
                         View.selectedDataCenter = $(this).val();
-                        View.loadTreeView(vcloudPath);
+                        // View.loadTreeView(vcloudPath);
                     });
 
                     $.each(vdcs.models, function ( index, vdc ) {
@@ -481,7 +488,9 @@ define([
                     $("#cloud_specs").append($centers);
 
                     View.selectedDataCenter = $select.val();
-                    View.loadTreeView(vcloudPath);
+
+                    View.loadResourceApp();
+                    // View.loadTreeView(vcloudPath);
                 }
             });
         },
@@ -552,51 +561,57 @@ define([
                     $("#resource_app").removeClass("service_width");
                 }
 
-                if(!serviceObject.view) {
-                    var appPath;
-                    //Camelcase the subtype for the file name
-                    var split = this.subtype.split("_"),
-                        subType,
-                        camelCase;
+                var appPath;
+                //Camelcase the subtype for the file name
+                var split = this.subtype.split("_"),
+                    subType,
+                    camelCase;
 
-                    _.each(split, function(s) {
-                        camelCase = s.charAt(0).toUpperCase() + s.slice(1);
-                        subType = subType ? (subType + camelCase) : camelCase;
-                    });
+                _.each(split, function(s) {
+                    camelCase = s.charAt(0).toUpperCase() + s.slice(1);
+                    subType = subType ? (subType + camelCase) : camelCase;
+                });
 
-                    if(this.type === "admin") {
-                        appPath = "../topstack/views/"+this.type+"/topstack"+subType+"AppView";
-                    }else {
-                        appPath = "../"+this.cloudProvider+"/views/"+this.type+"/"+this.cloudProvider+subType+"AppView";
+
+                if(this.type === "admin") {
+                    appPath = "../topstack/views/"+this.type+"/topstack"+subType+"AppView";
+                }else {
+                    var folder;
+
+                    if(serviceObject && serviceObject.useSubServiceFolderNames) {
+                        folder = _.find(serviceObject.subServices, { type : subType.toLowerCase() }).folder;
+                        this.subServiceFolder = folder;
+                    } else {
+                        folder = this.type;
                     }
 
-                    this.loadAppView(appPath);
+                    appPath = "../"+this.cloudProvider+"/views/"+folder+"/"+this.cloudProvider+subType+"AppView";
                 }
 
-                
+                this.loadAppView(appPath);
             }
         },
 
-        loadTreeView : function ( view ) {
-            var resourceNav = this;
+        // loadTreeView : function ( view ) {
+        //     var resourceNav = this;
 
-            require([view], function ( TreeView ) {
-                if (resourceNav.resourceApp instanceof TreeView) {
-                    //refresh
-                    return;
-                }
+        //     require([view], function ( TreeView ) {
+        //         if (resourceNav.resourceApp instanceof TreeView) {
+        //             //refresh
+        //             return;
+        //         }
 
-                var resourceTreeView = new TreeView({
-                    cred_id : resourceNav.selectedCredential,
-                    data_center : resourceNav.selectedDataCenter,
-                    cloudProvider : resourceNav.cloudProvider
-                });
+        //         var resourceTreeView = new TreeView({
+        //             cred_id : resourceNav.selectedCredential,
+        //             data_center : resourceNav.selectedDataCenter,
+        //             cloudProvider : resourceNav.cloudProvider
+        //         });
 
-                resourceNav.resourceApp = resourceTreeView;
-                resourceNav.resourceSelect(resourceNav.type);
-                resourceNav.refreshPath();
-            });
-        },
+        //         resourceNav.resourceApp = resourceTreeView;
+        //         resourceNav.resourceSelect(resourceNav.type);
+        //         resourceNav.refreshPath();
+        //     });
+        // },
 
         loadAppView : function ( view ) {
             var resourceNav = this;
@@ -612,7 +627,7 @@ define([
                     return;
                 }
 
-                var resourceAppView = new AppView({cred_id: resourceNav.selectedCredential, region: resourceNav.selectedRegion});
+                var resourceAppView = new AppView({cred_id: resourceNav.selectedCredential, region: resourceNav.selectedRegion, data_center : resourceNav.selectedDataCenter});
                 resourceAppView.cloudProvider = resourceNav.cloudProvider;
                 resourceNav.resourceApp = resourceAppView;
                 resourceNav.resourceSelect(resourceNav.type);
@@ -625,7 +640,7 @@ define([
                 Common.router.navigate("#resources/"+this.cloudProvider+"/"+this.selectedRegion+"/"+this.type+"/"+this.subtype+"/"+this.resourceId, {trigger: false});
                 this.resourceApp.selectedId = this.resourceId;
             }else {
-                Common.router.navigate("#resources/"+this.cloudProvider+"/"+this.selectedRegion+"/"+this.type+"/"+this.subtype, {trigger: false});
+                Common.router.navigate("#resources/"+this.cloudProvider+"/"+this.selectedRegion+"/"+(this.subServiceFolder || this.type)+"/"+this.subtype, {trigger: false});
             }
         },
 

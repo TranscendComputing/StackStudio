@@ -64,10 +64,15 @@ define([
             this.$table.fnProcessingIndicator(true);
             //$('input').addClass("form-control");
 
-            var CollectionType = this.collectionType;
-            this.collection = new CollectionType();
+            //if child view hasn't explicitly set up the collection, set it up here
+            if(typeof(this.collection) === 'undefined') {
+                var CollectionType = this.collectionType;
+                this.collection = new CollectionType();
+            }
+
             this.collection.on( 'add', this.addOne, this );
             this.collection.on( 'reset', this.addAll, this );
+            
             $("#action_menu li").addClass("ui-state-disabled");
 
             var view = this;
@@ -99,8 +104,8 @@ define([
             if(view.region) { data.region = view.region; }
             if(view.credentialId) { data.cred_id = view.credentialId; }
 
-            if(view.collectionData) {
-                data = _.extend(data, view.collectionData);
+            if(view.fetchParams) {
+                data = _.extend(data, view.fetchParams);
             }
 
             var parameters = {
@@ -109,9 +114,7 @@ define([
                 data : data
             };
 
-            view.collection.fetch(parameters);
-            
-            view.setResourceAppHeightify();
+            this.collection.fetch(parameters);
         },
 
         addOne: function( model ) {
