@@ -8,16 +8,18 @@
 define([
 	'backbone',
 	'common',
-	'/js/vcloud/collections/vcloudCollection.js',
 	'/js/vcloud/models/compute/vcloudVapp.js'
-], function ( Backbone, Common, VCloudCollection, VCloudVapp ) {
+], function ( Backbone, Common, VCloudVapp ) {
 	'use strict';
 
-	var Vapps = VCloudCollection.extend({
-		
-		model : VCloudVapp,
+	var Vapps = Backbone.Collection.extend({
 
-		url : Common.apiUrl + '/stackstudio/v1/cloud_management/vcloud/compute/vapps'
+		fetch : function ( options ) {
+			this.url = Common.apiUrl + '/stackstudio/v1/cloud_management/vcloud/compute/data_centers/' + encodeURIComponent(options.data.vdc) + '/vapps';
+			Backbone.Collection.prototype.fetch.call(this, options);
+		},
+		
+		model : VCloudVapp
 	});
 
 	return Vapps;

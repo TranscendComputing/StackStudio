@@ -8,12 +8,11 @@
 define([
 	'backbone',
 	'common',
-	'/js/vcloud/collections/vcloudCollection.js',
 	'/js/vcloud/models/compute/vcloudDataCenter.js'
-], function ( Backbone, Common, VCloudCollection, VCloudDataCenter ) {
+], function ( Backbone, Common, VCloudDataCenter ) {
 	'use strict';
 
-	var DataCenters = VCloudCollection.extend({
+	var DataCenters = Backbone.Collection.extend({
 		
 		model : VCloudDataCenter,
 
