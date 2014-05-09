@@ -16,6 +16,23 @@ define([
 		
 		defaults : {
 			name : ''
+		},
+		idAttribute : 'name',
+
+		getVms : function ( cb ) {
+			$.ajax({
+				type : 'GET',
+				url : Common.apiUrl + '/stackstudio/v1/cloud_management/vcloud/compute/data_centers/' + encodeURIComponent(this.attributes.vdc) + '/vapps/' + encodeURIComponent(this.attributes.name) + '/vms',
+				data : {
+					cred_id : this.attributes.cred_id
+				},
+				success : function ( results ) {
+					Common.vent.trigger('vcloudAppRefresh', results);
+				},
+				error : function ( err ) {
+					console.log(err);
+				}
+			});
 		}
 	});
 
