@@ -33,22 +33,19 @@ define([
             if (options.$container)
                 this.$container = options.$container;
 
-            var route = '#resources/';
             var parentViewOptions = [
                 // Order is important: #resources/:cloud/:region/:type/:subtype
                 options.parentView.cloudProvider, // 1st
                 options.parentView.region,        // 2nd
                 options.parentView.type,          // 3rd
                 options.parentView.subtype        // 4th
-            ];
+            ].filter(Boolean);
 
-            // Iterate over possible options above and construct route
-            for (option in parentViewOptions) {
-                if (parentViewOptions[option])
-                    route += parentViewOptions[option] + '/';
-            }
+            var route = ['#resources']
+                        .concat(parentViewOptions)
+                        .concat(this.model.id)
+                        .join('/');
 
-            route += this.model.id;
             Common.router.navigate(route, {trigger: false});
         },
 
