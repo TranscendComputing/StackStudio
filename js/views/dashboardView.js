@@ -24,9 +24,9 @@ define([
 
         render: function() {
             this.$el.html(this.template);
-            if (! sessionStorage.account_id)
+            if (! sessionStorage.account_id) {
                 $('#getstarted').fadeIn();
-
+            }
             
             var url = sessionStorage.rss_url;
             if(url === "undefined" || url === "" || url === undefined){

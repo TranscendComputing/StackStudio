@@ -130,7 +130,7 @@ define([
           catalog.attributes.items = catalog.attributes.items.map(function ( item ) {
             return _.extend(item, {
               catalog : catalog.attributes.name
-            })
+            });
           });
           var items = catalog.attributes.items.map(treeView.formatCatalogItem.bind(treeView));
           cb(items);
@@ -160,7 +160,7 @@ define([
           $('.maple-selected').removeClass('maple-selected');
           $(this).find('span').addClass('maple-selected');
         }
-      }
+      };
     },
 
     formatVapp : function ( vapp ) {
