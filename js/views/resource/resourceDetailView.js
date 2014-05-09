@@ -26,31 +26,29 @@ define([
         initialize: function ( options ) {
             this.model = options.model;
 
-            if(options.cred_id) {
+            if (options.cred_id)
                 this.credentialId = options.cred_id;
-            }
-            if(options.region) {
+            if (options.region)
                 this.region = options.region;
-            }
-            if(options.$container) {
+            if (options.$container)
                 this.$container = options.$container;
-            }
 
             var route = '#resources/';
-            if(options.parentView.cloudProvider) {
-                route += options.parentView.cloudProvider + '/';
-            }
-            if(options.parentView.region) {
-                route += options.parentView.region + '/';
-            }
-            if(options.parentView.type) {
-                route += options.parentView.type + '/';
-            }
-            if(options.parentView.subtype) {
-                route += options.parentView.subtype + '/';
-            }
-            route += this.model.id;
+            var parentViewOptions = [
+                // Order is important: #resources/:cloud/:region/:type/:subtype
+                options.parentView.cloudProvider, // 1st
+                options.parentView.region,        // 2nd
+                options.parentView.type,          // 3rd
+                options.parentView.subtype        // 4th
+            ];
 
+            // Iterate over possible options above and construct route
+            for (option in parentViewOptions) {
+                if (parentViewOptions[option])
+                    route += parentViewOptions[option] + '/';
+            }
+
+            route += this.model.id;
             Common.router.navigate(route, {trigger: false});
         },
 
