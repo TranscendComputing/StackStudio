@@ -657,11 +657,6 @@ define([
 
             var rowData = $("#images_table_"+provider).dataTable().fnGetData(target);
 
-            // $("#add_image").hide();
-//             $("#add_image_source").hide();
-
-            // $("#add_image").show(1000);
-//             $("#add_image_source").show(1000);
             this.addImage(provider,rowData[0],rowData[1]);
         },
 

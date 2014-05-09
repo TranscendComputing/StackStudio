@@ -18,9 +18,9 @@ define([
         sendAjaxAction: function(url, type, options, triggerString, messengerString) {
 
             /*
-            
+
             TODO: Incorporate this example to wrap our models ajax call to create messages
-            
+
             Messenger.options = {
                 extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-left'
             };
@@ -46,7 +46,7 @@ define([
                     type: type,
                     contentType: 'application/x-www-form-urlencoded',
                     dataType: 'json',
-                    data: options,
+                    data: JSON.stringify(options),
                     success: function(data) {
                         if(messengerString){
                             new Messenger().post({type:"success", message:messengerString});
