@@ -1,0 +1,65 @@
+
+<div>
+    <div class="button_bar">
+        <table>
+            <tr>
+                <td>
+                    <button class="create_button">Create</button>
+                </td>
+                <td>
+                    <ul id="action_menu">
+                        <li style="z-index: 1000">
+                            <a id="action_button">Actions</a>
+                            <ul>
+                                <li><a>Update vApp</a></li>
+                                <li><a>Delete vApp</a></li>             
+                            </ul>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table id="resource_table" class="full_width">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th class="medium_width">Description</th>
+                <th class="medium_width">Deployed</th>
+                <th class="medium_width">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    <div id="details" class="detail_panel"></div>
+</div>
+
+<script type="text/html" id="resource_detail">
+    <div id="detail_tabs">
+        <ul>
+            <li><a id="vapp_details" href="#tabs-1">Details</a></li>
+            <li><a id="vapp_vms" href="#tabs-2">Virtual Machines</a></li>
+        </ul>
+        <div id="tabs-1" class="tab">
+            <table>
+                <tbody>
+                    <tr><td><b>Name:</b></td><td>{{name}}</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="tabs-2" class="tab">
+            <table>
+                <tbody>
+                    {{#vms}
+                        <tr>
+                            <td><b>Name:</b></td><td>{{name}}</td><td><b>Status:</b></td><td>{{status}}</td>
+                        </tr>
+                    {{/vms}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</script>
