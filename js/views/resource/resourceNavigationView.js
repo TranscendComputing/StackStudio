@@ -621,12 +621,20 @@ define([
         },
 
         refreshPath: function() {
-            if(this.resourceId) {
-                Common.router.navigate("#resources/"+this.cloudProvider+"/"+this.selectedRegion+"/"+this.type+"/"+this.subtype+"/"+this.resourceId, {trigger: false});
+            var viewOptions = [
+                this.cloudProvider,
+                this.selectedRegion,
+                this.type,
+                this.subtype,
+                this.resourceId
+            ].filter(Boolean);
+            var route = ['#resources'].concat(viewOptions).join('/');
+
+            if (this.resourceId) {
                 this.resourceApp.selectedId = this.resourceId;
-            }else {
-                Common.router.navigate("#resources/"+this.cloudProvider+"/"+this.selectedRegion+"/"+this.type+"/"+this.subtype, {trigger: false});
             }
+
+            Common.router.navigate(route, {trigger: false});
         },
 
         close: function(){

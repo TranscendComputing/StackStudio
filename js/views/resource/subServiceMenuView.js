@@ -58,10 +58,17 @@ define([
         },
 
         selectSubService: function( click ) {
+            var viewOptions = [
+                this.cloudProvider,
+                this.region,
+                this.service.type,
+                click.target.id
+            ].filter(Boolean);
+            var route = ['#resources'].concat(viewOptions).join('/');
+
             this.clearSelection();
             $(click.target).addClass("selected_item");
-
-            Common.router.navigate("#resources/"+this.cloudProvider+"/"+this.region+"/"+this.service.type+"/"+click.target.id, {trigger: true});
+            Common.router.navigate(route, {trigger: true});
         },
 
         clearSelection: function() {
