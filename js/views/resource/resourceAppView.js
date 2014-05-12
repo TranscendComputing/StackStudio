@@ -138,9 +138,19 @@ define([
             var id, parentNode;
             var rowData = this.$table.fnGetData(event.currentTarget);
             console.log("ROW DATA", rowData, "COLUMN NUMBER", this.idColumnNumber);
+
             //TODO -- make more dynamic in order to allow user to define columns
             id = rowData[this.idColumnNumber];
-            Common.router.navigate("#resources/" + this.cloudProvider + "/"+this.region+"/"+this.type+"/"+this.subtype+"/"+id, {trigger: false});
+
+            var viewOptions = [
+                this.cloudProvider,
+                this.region,
+                this.type,
+                this.subtype
+            ].filter(Boolean);
+
+            var route = ['#resources'].concat(viewOptions).concat(id).join('/');
+            Common.router.navigate(route, {trigger: false});
             this.selectOne(id, event.currentTarget);
         },
 

@@ -65,6 +65,7 @@ define([
                 $("#sidebar").empty();
                 $("#sidebar").hide();
                 $(".main-nav a").removeClass("nav_selected");
+                $("#dashboard_nav").addClass("nav_selected");
                 this.trigger("route:dashboard");
 		    }
 		},
