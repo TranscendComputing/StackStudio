@@ -160,80 +160,99 @@ module.exports = function(grunt) {
           templateOptions: {
             requireConfig: {
               baseUrl: '',
-                        // The shim config allows us to configure dependencies for
-                        // scripts that do not call define() to register a module
-                        shim: {
-                          'jquery-ui': {
-                            deps: ['jquery']
-                          },
-                          'underscore': {
-                            exports: '_'
-                          },
-                          'backbone': {
-                            deps: [
-                            'underscore',
-                            'jquery'
-                            ],
-                            exports: 'Backbone'
-                          },
-                          'icanhaz': {
-                            deps: ['jquery'],
-                            exports: 'ich'
-                          },
-                          'jquery.terminal': {
-                            deps: ['jquery', 'jquery.mousewheel'],
-                            exports: 'jQuery.fn.terminal'
-                          },
-                          'jquery.dataTables': {
-                            deps: ['jquery'],
-                            exports: 'jQuery.fn.dataTable'
-                          },
-                          'jquery.purr': {
-                            deps: ['jquery'],
-                            exports: 'jQuery.fn.purr'
-                          },
-                          'jquery.mousewheel': {
-                            deps: ['jquery'],
-                            exports: 'jQuery.fn.mousewheel'
-                          }
-                        },
-                        paths: {
-                          collections: 'js/collections',
-                          models: 'js/models',
-                          routers: 'js/routers',
-                          views: 'js/views',
-                          interpreters: 'js/interpreters',
-                          'jquery': 'js/vendor/jquery-1.9.1.min',
-                          'jquery-ui': 'js/vendor/jquery-ui',
-                          'underscore': 'js/vendor/lodash',
-                          'backbone': 'js/vendor/backbone',
-                          'icanhaz': 'js/vendor/ICanHaz',
-                          'jquery.terminal': 'js/vendor/jquery.terminal-0.7.3',
-                          'jquery.mousewheel': 'js/vendor/jquery.mousewheel-min'
-                        }
-                      }
-                    }
-                  }
+              // The shim config allows us to configure dependencies for
+              // scripts that do not call define() to register a module
+              shim: {
+                'jquery-ui': {
+                  deps: ['jquery']
+                },
+                'underscore': {
+                  exports: '_'
+                },
+                'backbone': {
+                  deps: [
+                    'underscore',
+                    'jquery'
+                  ],
+                  exports: 'Backbone'
+                },
+                'backbone.queryparams': {
+                    deps: [
+                       'backbone'
+                    ]
+                },
+                'icanhaz': {
+                  deps: ['jquery'],
+                  exports: 'ich'
+                },
+                'jquery.terminal': {
+                  deps: ['jquery', 'jquery.mousewheel'],
+                  exports: 'jQuery.fn.terminal'
+                },
+                'jquery.dataTables': {
+                  deps: ['jquery'],
+                  exports: 'jQuery.fn.dataTable'
+                },
+                'jquery.purr': {
+                  deps: ['jquery'],
+                  exports: 'jQuery.fn.purr'
+                },
+                'jquery.mousewheel': {
+                  deps: ['jquery'],
+                  exports: 'jQuery.fn.mousewheel'
                 }
               },
-              less: {
-                "2.0.0-rc1": {
-                  options: {
-                    paths: ["css"],
-                    compress: true
-                  },
-                  files: {
-                    "css/main.css": "css/main.less",
-                    "css/jquery.dataTables.css": "css/jquery.dataTables.less",
-                    "css/jquery.terminal.css": "css/jquery.terminal.less",
-                    "css/jquery.multiselect.css": "css/jquery.multiselect.less",
-                    "css/jquery.multiselect.filter.css": "css/jquery.multiselect.filter.less",
-                    "css/jquery-ui.css": "css/jquery-ui.less",
-                    "css/morris.css": "css/morris.less"
-                  }
+              paths: {
+                collections: 'js/collections',
+                models: 'js/models',
+                routers: 'js/routers',
+                views: 'js/views',
+                interpreters: 'js/interpreters',
+                //'jquery': 'js/vendor/jquery-1.9.1.min',
+                'jquery': 'http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min',
+                'jquery-ui': 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min',
+                'underscore': 'http://cdnjs.cloudflare.com/ajax/libs/lodash.js/1.1.0/lodash.min',
+                'backbone': 'http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min',
+                'backbone.queryparams': 'backbone.queryparams',
+                //'jquery': 'js/vendor/jquery',
+                //'jquery-ui': 'js/vendor/jquery-ui',
+                //'underscore': 'js/vendor/lodash',
+                //'backbone': 'js/vendor/backbone',
+                'icanhaz': 'js/vendor/ICanHaz',
+                'common': 'js/common',
+                'jquery.terminal': 'js/vendor/jquery.terminal-0.7.3',
+                'jquery.mousewheel': 'js/vendor/jquery.mousewheel-min',
+                'jquery-migrate': 'http://code.jquery.com/jquery-migrate-1.1.0'
+              },
+              map: {
+                '*': {
+                  // Phantom does not do well with non-protocol'd remote resources
+                  '//code.jquery.com/jquery-migrate-1.1.0.js': 'jquery-migrate',
                 }
               }
-            });
+            }
+          }
+        }
+      }
+    },
+    less: {
+      "2.0.0-rc1": {
+        options: {
+          paths: ["css"],
+          compress: true
+        },
+        files: {
+          "css/main.css": "css/main.less",
+          "css/jquery.dataTables.css": "css/jquery.dataTables.less",
+          "css/jquery.terminal.css": "css/jquery.terminal.less",
+          "css/jquery.multiselect.css": "css/jquery.multiselect.less",
+          "css/jquery.multiselect.filter.css": "css/jquery.multiselect.filter.less",
+          "css/jquery-ui.css": "css/jquery-ui.less",
+          "css/morris.css": "css/morris.less"
+        }
+      }
+    }
+  });
 
   grunt.loadNpmTasks('grunt-contrib-jasmine');
   grunt.loadNpmTasks('grunt-contrib-jshint');

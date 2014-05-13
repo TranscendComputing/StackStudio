@@ -24,13 +24,13 @@ require(['./common', './main'], function (common) {
 				deps: ['jasmine'],
 				exports: 'jasmine'
 			}
-
 		}
 	},
 	['underscore', 'jquery', 'jasmine-html'], function(_, $, jasmine){
 		var jasmineEnv = jasmine.getEnv();
 		jasmineEnv.updateInterval = 1000;
 
+        // TrivialReporter depreccated in favor of HTMLReporter
 	    var trivialReporter = new jasmine.TrivialReporter();
 
 	    jasmineEnv.addReporter(trivialReporter);
@@ -39,9 +39,10 @@ require(['./common', './main'], function (common) {
 			return trivialReporter.specFilter(spec);
 		};
 
-		var specs = [];
-
-		specs.push('../../spec/console');
+		var specs = [
+            '../../spec/console'
+            //'../../spec/console'
+        ];
 
 		$(function(){
 			require(specs, function(){

@@ -14,13 +14,10 @@ define([
 	'use strict';
 
 	var StackList = Backbone.Collection.extend({
-
 		model: Stack,
-
-		url: function(){return Common.apiUrl + '/stackstudio/v1/stacks/account/' + sessionStorage.account_id;}
-		
+		//url: function(){return Common.apiUrl + '/stackstudio/v1/stacks/account/' + sessionStorage.account_id;}
+        url: Common.apiUrl + '/stackstudio/v1/stacks/account/' + sessionStorage.account_id,
 	});
 
 	return StackList;
-
 });
