@@ -13,7 +13,7 @@ define([
         'text!templates/dashboard.html',
         'FeedEk'
 ], function( $, _, Backbone, Common, dashboardTemplate, FeedEk ) {
-    
+
     var DashboardView = Backbone.View.extend({
         el: "#main",
         template: _.template(dashboardTemplate),

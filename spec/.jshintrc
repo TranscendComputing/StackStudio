@@ -1,0 +1,19 @@
+{
+    "predef" : [
+        "define",
+        "describe",
+        "it",
+        "expect",
+        "spyOn",
+        "beforeEach",
+        "afterEach",
+        "Backbone",
+        "jquery",
+        "console",
+        "require",
+        "process",
+        "__dirname",
+        "exports",
+        "angular"
+    ]
+}

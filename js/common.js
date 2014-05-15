@@ -3,155 +3,7 @@
  * (c) 2012 Transcend Computing <http://www.transcendcomputing.com/>
  * Available under ASL2 license <http://www.apache.org/licenses/LICENSE-2.0.html>
  */
-// Configure defaults for require.js
-var URL_ARGS = URL_ARGS || ''
-requirejs.config({
-    baseUrl: 'js/vendor',
-    urlArgs: URL_ARGS,
-    nodeRequire: require,
-    // The shim config allows us to configure dependencies for
-    // scripts that do not call define() to register a module
-    shim: {
-        'jquery-ui': {
-            deps: ['jquery']
-        },
-        'underscore': {
-            exports: '_'
-        },
-        'backbone': {
-            deps: [
-                  'underscore',
-                'jquery'
-            ],
-            exports: 'Backbone'
-        },
-        'backbone.queryparams': {
-            deps: [
-               'backbone'
-            ]
-        },
-        'backbone.stickit': {
-            deps: [
-               'backbone',
-               'underscore',
-               'jquery'
-            ]
-        },
-        'backbone-validation': {
-            deps: [
-               'backbone',
-               'jquery'
-            ]
-        },
-        'base64': {
-            exports: 'Base64'
-        },
-        'dataTables.bootstrap': {
-            deps: ['jquery.dataTables']
-        },
-        'dataTables.fnReloadAjax': {
-            deps: ['jquery.dataTables'],
-            exports: 'fnReloadAjax'
-        },
-        'dataTables.fnProcessingIndicator': {
-            deps: ['jquery.dataTables'],
-            exports: 'fnProcessingIndicator'
-        },
-        'FeedEk': {
-            deps: ['jquery']
-        },
-        'github': {
-            deps: ['base64', 'underscore'],
-            exports: 'Github'
-        },
-        'gh3': {
-            deps: ['underscore', 'jquery'],
-            exports: 'Gh3'
-        },
-        'icanhaz': {
-            deps: ['jquery'],
-            exports: 'ich'
-        },
-        'jquery.form': {
-            deps: ['jquery']
-        },
-        'jquery.list': {
-            deps: ['jquery']
-        },
-        'jquery.terminal': {
-            deps: ['jquery', 'jquery.mousewheel'],
-            exports: 'jQuery.fn.terminal'
-        },
-        'jquery.dataTables': {
-            deps: ['jquery'],
-            exports: 'jQuery.fn.dataTable'
-        },
-        'jquery.purr': {
-            deps: ['jquery'],
-            exports: 'jQuery.fn.purr'
-        },
-        'jquery.mousewheel': {
-            deps: ['jquery'],
-            exports: 'jQuery.fn.mousewheel'
-        },
-        'jquery.jstree': {
-            deps: ['jquery', 'jquery.cookie'],
-            exports: 'jQuery.fn.jstree'
-        },
-        'morris': {
-            deps: ['jquery', 'raphael'],
-            exports: 'Morris'
-        },
-        'messenger': {
-            exports: 'Messenger'
-        },
-        'raphael': {
-            deps: ['jquery'],
-            exports: 'Raphael'
-        },
-        'spinner': {
-            exports: 'Spinner'
-        },
-        'URIjs': {
-
-        },
-        'instructor': {
-            deps: ['jquery', 'jquery-ui']
-        }
-    },
-    paths: {
-        collections: '../collections',
-        models: '../models',
-        routers: '../routers',
-        views: '../views',
-        interpreters: '../interpreters',
-        templates: '../../templates',
-        wrappers: '../../wrappers',
-        //'jquery': '//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min',
-        //'jquery-ui': '//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min',
-        'jquery': 'http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min',
-        'jquery-ui': 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min',
-        'underscore': 'http://cdnjs.cloudflare.com/ajax/libs/lodash.js/1.1.0/lodash.min',
-        'backbone': 'http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min',
-        'backbone.stickit': 'backbone.stickit.min',
-        'backbone-validation': 'backbone-validation.min',
-        'icanhaz': 'ICanHaz',
-        'jquery.form': 'http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.45/jquery.form',
-        'jquery.terminal': 'jquery.terminal',
-        'jquery.mousewheel': 'jquery.mousewheel-min',
-        'jquery.multiselect': 'http://cdn.jsdelivr.net/jquery.multiselect/1.13/jquery.multiselect.min',
-        'jquery.multiselect.filter': 'http://cdn.jsdelivr.net/jquery.multiselect/1.13/jquery.multiselect.filter.min',
-        'jquery.jstree': 'http://cdn.jsdelivr.net/jquery.jstree/pre1.0/jquery.jstree',
-        'messenger': 'messenger.min',
-        'raphael': 'raphael-min',
-        'spinner': 'spin.min',
-         URIjs: 'URI',
-        'bootstrap': 'http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min',
-        'typeahead': '../vendor/twitter/typeahead',
-        'ace': 'http://cdnjs.cloudflare.com/ajax/libs/ace/1.1.01/ace',
-        'mode-json': 'http://cdnjs.cloudflare.com/ajax/libs/ace/1.1.01/mode-json'
-    }
-});
+/*
 
 /**
  * This require block requires the core apps loaded by CDN, and fails back to
@@ -185,7 +37,7 @@ require(
                 console.log("Redirecting to local path.");
                 requirejs.config({
                     paths: {
-                        jquery: 'jquery'
+                        jquery: 'js/vendor/jquery'
                     }
                 });
 
@@ -198,7 +50,7 @@ require(
                 console.log("Redirecting to local path:" + failedId);
                 requirejs.config({
                     paths: {
-                        'jquery-ui': 'jquery-ui'
+                        'jquery-ui': 'js/vendor/jquery-ui'
                     }
                 });
                 require(['jquery-ui'], function () {console.log("Got it now.")});
@@ -206,7 +58,7 @@ require(
                 requirejs.undef(failedId);
                 requirejs.config({
                     paths: {
-                        'underscore': 'lodash'
+                        'underscore': 'js/vendor/lodash'
                     }
                 });
                 require(['underscore'], function () {});
@@ -214,7 +66,7 @@ require(
                 requirejs.undef(failedId);
                 requirejs.config({
                     paths: {
-                        'icanhaz': 'ICanHaz'
+                        'icanhaz': 'js/vendor/ICanHaz'
                     }
                 });
                 require(['icanhaz'], function () {});
@@ -222,7 +74,7 @@ require(
                 requirejs.undef(failedId);
                 requirejs.config({
                     paths: {
-                        'backbone': 'backbone'
+                        'backbone': 'js/vendor/backbone'
                     }
                 });
                 require(['backbone'], function () {});
@@ -230,7 +82,7 @@ require(
                 requirejs.undef(failedId);
                 requirejs.config({
                     paths: {
-                        'jquery.jstree': 'jquery.jstree'
+                        'jquery.jstree': 'js/vendor/jquery.jstree'
                     }
                 });
                 require(['jquery.jstree'], function () {});
@@ -253,7 +105,7 @@ define(
         'views/consoleAppView',
         'routers/router',
         'views/errorDialog',
-        'text!../../backend.json',
+        'text!config/backend.json',
         'jquery-ui',
         'jquery-ui-plugins',
         'backbone.stickit',

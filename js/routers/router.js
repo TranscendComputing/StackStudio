@@ -23,7 +23,7 @@ define([
      * @returns {Object} Returns a Router instance.
      */
 
-	if(window.app === "stackplace") {
+	if (window.app === "stackplace") {
 	    Backbone.Router.namedParameters = true;
 	}else {
 	    Backbone.Router.namedParameters = false;

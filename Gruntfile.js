@@ -4,7 +4,7 @@ module.exports = function(grunt) {
 
   // Project configuration.
   grunt.initConfig({
-    pkg: grunt.file.readJSON('package.json'),
+    pkg: grunt.file.readJSON('config/package.json'),
     meta: {
       banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
       '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
@@ -26,7 +26,7 @@ module.exports = function(grunt) {
     },
     lint: {
       files: ['Gruntfile.js',
-      'js/stackplace.build.js',
+      'js/config/*.js',
       '<%= source.files %>']
     },
     concat: {
@@ -105,6 +105,7 @@ module.exports = function(grunt) {
         browser: true,
         smarttabs: true,
         devel:true,
+        expr: true,
         globals: {
           jQuery: true,
           console: true,
@@ -115,11 +116,7 @@ module.exports = function(grunt) {
       source_files: '<%= lint.files %>',
       spec_files: {
         options: {
-          globals: {
-            describe: true,
-            it: true,
-            expect: true
-          }
+          jshintrc: 'spec/.jshintrc'
         },
         files: {
           src: '<%= spec.files %>'
@@ -158,76 +155,12 @@ module.exports = function(grunt) {
           specs: '<%= spec.files %>',
           template: require('grunt-template-jasmine-requirejs'),
           templateOptions: {
+            requireConfigFile: 'js/config/rjsConfig.js',
             requireConfig: {
-              baseUrl: '',
-              // The shim config allows us to configure dependencies for
-              // scripts that do not call define() to register a module
-              shim: {
-                'jquery-ui': {
-                  deps: ['jquery']
-                },
-                'underscore': {
-                  exports: '_'
-                },
-                'backbone': {
-                  deps: [
-                    'underscore',
-                    'jquery'
-                  ],
-                  exports: 'Backbone'
-                },
-                'backbone.queryparams': {
-                    deps: [
-                       'backbone'
-                    ]
-                },
-                'icanhaz': {
-                  deps: ['jquery'],
-                  exports: 'ich'
-                },
-                'jquery.terminal': {
-                  deps: ['jquery', 'jquery.mousewheel'],
-                  exports: 'jQuery.fn.terminal'
-                },
-                'jquery.dataTables': {
-                  deps: ['jquery'],
-                  exports: 'jQuery.fn.dataTable'
-                },
-                'jquery.purr': {
-                  deps: ['jquery'],
-                  exports: 'jQuery.fn.purr'
-                },
-                'jquery.mousewheel': {
-                  deps: ['jquery'],
-                  exports: 'jQuery.fn.mousewheel'
-                }
-              },
-              paths: {
-                collections: 'js/collections',
-                models: 'js/models',
-                routers: 'js/routers',
-                views: 'js/views',
-                interpreters: 'js/interpreters',
-                //'jquery': 'js/vendor/jquery-1.9.1.min',
-                'jquery': 'http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min',
-                'jquery-ui': 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min',
-                'underscore': 'http://cdnjs.cloudflare.com/ajax/libs/lodash.js/1.1.0/lodash.min',
-                'backbone': 'http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min',
-                'backbone.queryparams': 'backbone.queryparams',
-                //'jquery': 'js/vendor/jquery',
-                //'jquery-ui': 'js/vendor/jquery-ui',
-                //'underscore': 'js/vendor/lodash',
-                //'backbone': 'js/vendor/backbone',
-                'icanhaz': 'js/vendor/ICanHaz',
-                'common': 'js/common',
-                'jquery.terminal': 'js/vendor/jquery.terminal-0.7.3',
-                'jquery.mousewheel': 'js/vendor/jquery.mousewheel-min',
-                'jquery-migrate': 'http://code.jquery.com/jquery-migrate-1.1.0'
-              },
               map: {
                 '*': {
                   // Phantom does not do well with non-protocol'd remote resources
-                  '//code.jquery.com/jquery-migrate-1.1.0.js': 'jquery-migrate',
+                  '//code.jquery.com/jquery-migrate-1.1.0.js': 'jquery-migrate'
                 }
               }
             }
