@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/notification/awsSubscription.js',
+        'aws/models/notification/awsSubscription',
         'common'
 ], function( $, Backbone, Subscription, Common ) {
     'use strict';

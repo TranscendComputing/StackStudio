@@ -12,8 +12,8 @@ define([
 	'common',
 	'views/resource/resourceDetailView',
 	'text!templates/vcloud/network/vcloudNetworkTemplate.html',
-	'/js/vcloud/models/network/vcloudNetwork.js',
-	'/js/vcloud/collections/network/vcloudNetworks.js'
+	'vcloud/models/network/vcloudNetwork',
+	'vcloud/collections/network/vcloudNetworks'
 ], function( $, _, Backbone, Common, ResourceDetailView, VCloudNetworkTemplate, Network, Networks ) {
 	'use strict';
 

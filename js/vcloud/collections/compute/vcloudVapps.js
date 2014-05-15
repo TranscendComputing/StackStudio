@@ -8,8 +8,8 @@
 define([
 	'backbone',
 	'common',
-	'/js/vcloud/collections/vcloudCollection.js',
-	'/js/vcloud/models/compute/vcloudVapp.js'
+	'vcloud/collections/vcloudCollection',
+	'vcloud/models/compute/vcloudVapp'
 ], function ( Backbone, Common, VCloudCollection, VCloudVapp ) {
 	'use strict';
 

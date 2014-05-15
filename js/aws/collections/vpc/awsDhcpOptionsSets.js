@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/vpc/awsDhcpOptionsSet.js',
+        'aws/models/vpc/awsDhcpOptionsSet',
         'common'
 ], function( $, Backbone, DhcpOptionsSet, Common ) {
     'use strict';

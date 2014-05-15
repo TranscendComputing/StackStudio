@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/compute/awsSpotInstanceRequest.js',
+        'aws/models/compute/awsSpotInstanceRequest',
         'common'
 ], function( $, Backbone, SpotInstance, Common ) {
     'use strict';

@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/queue/awsQueue.js',
+        'aws/models/queue/awsQueue',
         'common'
 ], function( $, Backbone, Queue, Common ) {
     'use strict';

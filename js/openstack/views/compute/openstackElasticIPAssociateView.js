@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/openstack/compute/openstackElasticIPAssociateTemplate.html',
-        '/js/openstack/collections/compute/openstackInstances.js',
+        'openstack/collections/compute/openstackInstances',
         'icanhaz',
         'common'
         

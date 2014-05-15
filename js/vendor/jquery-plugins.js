@@ -13,7 +13,7 @@ define(
     function(jQuery){
         jQuery.migrateMute = true;
         require([
-                '//code.jquery.com/jquery-migrate-1.1.0.js',
+                '//code.jquery.com/jquery-migrate-1.1.0',
                 'jquery.coverscroll.min',
                 'jquery.purr'
         ], function() {

@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/account/groupCreateTemplate.html',
-        '/js/models/group.js',
+        'models/group',
         'common'
 ], function( $, _, Backbone, DialogView, groupCreateTemplate, Group, Common ) {
     

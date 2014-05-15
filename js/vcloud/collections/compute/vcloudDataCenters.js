@@ -8,8 +8,8 @@
 define([
 	'backbone',
 	'common',
-	'/js/vcloud/collections/vcloudCollection.js',
-	'/js/vcloud/models/compute/vcloudDataCenter.js'
+	'vcloud/collections/vcloudCollection',
+	'vcloud/models/compute/vcloudDataCenter'
 ], function ( Backbone, Common, VCloudCollection, VCloudDataCenter ) {
 	'use strict';
 

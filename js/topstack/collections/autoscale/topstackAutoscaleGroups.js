@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/topstack/models/autoscale/topstackAutoscaleGroup.js',
+        'topstack/models/autoscale/topstackAutoscaleGroup',
         'common'
 ], function( $, Backbone, AutoscaleGroup, Common ) {
     'use strict';

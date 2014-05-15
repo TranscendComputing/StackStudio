@@ -13,8 +13,8 @@ define([
 	'common',
 	'views/resource/resourceDetailView',
 	'text!templates/vcloud/compute/vcloudVmsTemplate.html',
-	'/js/vcloud/models/compute/vcloudVm.js',
-	'/js/vcloud/collections/compute/vcloudVms.js'
+	'vcloud/models/compute/vcloudVm',
+	'vcloud/collections/compute/vcloudVms'
 ], function( $, _, Backbone, ich, Common, ResourceDetailView, VCloudVmTemplate, Vm, Vms ) {
 	'use strict';
 

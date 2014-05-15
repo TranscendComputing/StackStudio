@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/rds/awsDBEngineVersion.js',
+        'aws/models/rds/awsDBEngineVersion',
         'common'
 ], function( $, Backbone, DBEngineVersion, Common ) {
     'use strict';

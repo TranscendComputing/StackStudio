@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/vpc/awsSubnet.js',
+        'aws/models/vpc/awsSubnet',
         'common'
 ], function( $, Backbone, Subnet, Common ) {
     'use strict';

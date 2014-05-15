@@ -17,7 +17,7 @@
               'views/resource/resourceNavigationView'
               ],
     excludeShallow: ['jquery.jstree'], // doesn't play well minified.
-    mainConfigFile: 'common.js',
+    mainConfigFile: 'common',
 
     optimize: "uglify2",
     generateSourceMaps: true,

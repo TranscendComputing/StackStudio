@@ -11,9 +11,9 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/aws/compute/awsTagsAppTemplate.html',
-        '/js/aws/models/compute/awsTag.js',
-        '/js/aws/collections/compute/awsTags.js',
-        '/js/aws/views/compute/awsKeyPairCreateView.js',
+        'aws/models/compute/awsTag',
+        'aws/collections/compute/awsTags',
+        'aws/views/compute/awsKeyPairCreateView',
         'icanhaz',
         'common',
         'jquery.dataTables'

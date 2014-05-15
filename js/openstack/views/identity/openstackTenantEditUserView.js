@@ -13,7 +13,7 @@ define([
         'icanhaz',
         'views/dialogView',
         'text!templates/openstack/identity/openstackTenantEditUserTemplate.html',
-        '/js/openstack/collections/identity/openstackRoles.js',
+        'openstack/collections/identity/openstackRoles',
         'jquery.multiselect'
 ], function( $, _, Backbone, Common, ich, DialogView, tenantEditUserTemplate, Roles ) {
 

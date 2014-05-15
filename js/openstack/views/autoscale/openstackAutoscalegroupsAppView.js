@@ -6,8 +6,8 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-    '/js/topstack/views/autoscale/topstackAutoscaleGroupsAppView.js',
-    '/js/openstack/views/autoscale/openstackAutoscaleGroupCreateView.js'
+    'topstack/views/autoscale/topstackAutoscaleGroupsAppView',
+    'openstack/views/autoscale/openstackAutoscaleGroupCreateView'
 ], function( TopStackAutoScaleGroupsAppView, OpenStackAutoScaleGroupCreateView ) {
     'use strict';
 

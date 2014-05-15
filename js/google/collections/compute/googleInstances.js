@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/google/models/compute/googleInstance.js',
+        'google/models/compute/googleInstance',
         'common'
 ], function( $, Backbone, Instance, Common ) {
     'use strict';

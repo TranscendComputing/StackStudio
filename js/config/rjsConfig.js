@@ -112,7 +112,14 @@ requirejs.config({
         interpreters: 'js/interpreters',
         templates   : 'templates',
         wrappers    : 'wrappers',
+        openstack   : 'js/openstack',
+        topstack    : 'js/topstack',
         URIjs       : 'js/vendor/URI',
+        aws         : 'js/aws',
+        util        : 'js/util',
+        vcloud      : 'js/vcloud',
+        google      : 'js/google',
+        sites       : 'js/sites',
         'common'    : 'js/common',
          /* Backbone Stuff */
         'backbone': 'http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min',
@@ -135,7 +142,7 @@ requirejs.config({
         'jquery.purr'       : 'js/vendor/jquery.purr',
         'jquery.sortable'   : 'js/vendor/jquery.sortable',
         'jquery.coverscroll.min': 'js/vendor/jquery.coverscroll.min',
-        'jquery.dataTables.fnProcessingIndicator': '/js/vendor/jquery.dataTables.fnProcessingIndicator',
+        'jquery.dataTables.fnProcessingIndicator': 'js/vendor/jquery.dataTables.fnProcessingIndicator',
         'jquery.multiselect.filter': 'http://cdn.jsdelivr.net/jquery.multiselect/1.13/jquery.multiselect.filter.min',
         /* Other Stuff */
         'underscore' : 'http://cdnjs.cloudflare.com/ajax/libs/lodash.js/1.1.0/lodash.min',

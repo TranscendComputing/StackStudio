@@ -11,9 +11,9 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/aws/vpc/awsDhcpOptionsSetAppTemplate.html',
-        '/js/aws/models/vpc/awsDhcpOptionsSet.js',
-        '/js/aws/collections/vpc/awsDhcpOptionsSets.js',
-        '/js/aws/views/vpc/awsDhcpOptionsSetCreateView.js',
+        'aws/models/vpc/awsDhcpOptionsSet',
+        'aws/collections/vpc/awsDhcpOptionsSets',
+        'aws/views/vpc/awsDhcpOptionsSetCreateView',
         'icanhaz',
         'common',
         'jquery.dataTables'

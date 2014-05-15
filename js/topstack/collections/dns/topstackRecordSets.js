@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/topstack/models/dns/topstackRecordSet.js',
+        'topstack/models/dns/topstackRecordSet',
         'common'
 ], function( $, Backbone, RecordSet, Common ) {
     'use strict';

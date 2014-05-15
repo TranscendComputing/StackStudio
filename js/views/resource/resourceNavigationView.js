@@ -16,7 +16,7 @@ define([
         'models/cloudCredential',
         'collections/cloudCredentials',
         'views/resource/subServiceMenuView',
-        '/js/vcloud/collections/compute/vcloudDataCenters.js',
+        'vcloud/collections/compute/vcloudDataCenters',
         'jquery-plugins',
         'jquery-ui-plugins'
 ], function( $, _, Backbone, ich, Common, resourcesTemplate, breadcrumbTemplate,

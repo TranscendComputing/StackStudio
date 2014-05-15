@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/openstack/models/compute/openstackImage.js',
+        'openstack/models/compute/openstackImage',
         'common'
 ], function( $, Backbone, Image, Common ) {
     'use strict';

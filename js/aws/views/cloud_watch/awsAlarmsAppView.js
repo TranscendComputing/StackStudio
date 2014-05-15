@@ -11,9 +11,9 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/aws/cloud_watch/awsAlarmAppTemplate.html',
-        '/js/aws/models/cloud_watch/awsAlarm.js',
-        '/js/aws/collections/cloud_watch/awsAlarms.js',
-        '/js/aws/views/cloud_watch/awsAlarmCreateView.js',
+        'aws/models/cloud_watch/awsAlarm',
+        'aws/collections/cloud_watch/awsAlarms',
+        'aws/views/cloud_watch/awsAlarmCreateView',
         'icanhaz',
         'common',
         'jquery.dataTables'

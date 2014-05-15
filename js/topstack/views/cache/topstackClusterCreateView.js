@@ -11,9 +11,9 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/topstack/cache/topstackCacheClusterCreateTemplate.html',
-        '/js/topstack/models/cache/topstackCacheCluster.js',
-        '/js/topstack/collections/cache/topstackCacheParameterGroups.js',
-        '/js/topstack/collections/cache/topstackCacheSecurityGroups.js',
+        'topstack/models/cache/topstackCacheCluster',
+        'topstack/collections/cache/topstackCacheParameterGroups',
+        'topstack/collections/cache/topstackCacheSecurityGroups',
         'common',
         'jquery.multiselect',
         'jquery.multiselect.filter'

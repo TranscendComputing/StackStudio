@@ -7,7 +7,7 @@
 /*global define:true console:true */
 define([
         'backbone',
-        '/js/topstack/views/dns/topstackRecordSetCreateView.js'
+        'topstack/views/dns/topstackRecordSetCreateView'
 ], function( Backbone, TopStackRecordSetCreateView ) {
     
     var OpenStackRecordSetCreateView = TopStackRecordSetCreateView.extend({

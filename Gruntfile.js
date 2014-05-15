@@ -159,6 +159,7 @@ module.exports = function(grunt) {
                             map: {
                                 '*': {
                                     // Phantom does not do well with non-protocol'd remote resources
+                                    '//code.jquery.com/jquery-migrate-1.1.0'   : 'jquery-migrate',
                                     '//code.jquery.com/jquery-migrate-1.1.0.js': 'jquery-migrate'
                                 }
                             }

@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/iam/awsUserCreateTemplate.html',
-        '/js/aws/models/iam/awsUser.js',
+        'aws/models/iam/awsUser',
         'common'      
 ], function( $, _, Backbone, DialogView, userCreateTemplate, User, Common ) {
     

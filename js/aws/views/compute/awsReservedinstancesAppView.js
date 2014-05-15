@@ -11,9 +11,9 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/aws/compute/awsReservedInstanceAppTemplate.html',
-        '/js/aws/models/compute/awsReservedInstance.js',
-        '/js/aws/collections/compute/awsReservedInstances.js',
-        '/js/aws/views/compute/awsReservedInstanceCreateView.js',
+        'aws/models/compute/awsReservedInstance',
+        'aws/collections/compute/awsReservedInstances',
+        'aws/views/compute/awsReservedInstanceCreateView',
         'icanhaz',
         'common',
         'jquery.dataTables'

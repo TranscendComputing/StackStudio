@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/topstack/models/cache/topstackCacheSecurityGroup.js',
+        'topstack/models/cache/topstackCacheSecurityGroup',
         'common'
 ], function( $, Backbone, CacheSecurityGroup, Common ) {
     'use strict';

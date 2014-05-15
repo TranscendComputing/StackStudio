@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/notification/awsSubscriptionCreateTemplate.html',
-        '/js/aws/models/notification/awsSubscription.js',
+        'aws/models/notification/awsSubscription',
         'common'
         
 ], function( $, _, Backbone, DialogView, subscriptionCreateTemplate, Subscription, Common ) {

@@ -7,7 +7,7 @@
 /*global define:true console:true */
 define([
         'backbone',
-        '/js/topstack/views/dns/topstackHostedZoneCreateView.js'
+        'topstack/views/dns/topstackHostedZoneCreateView'
 ], function( Backbone, TopStackHostedZoneCreateView ) {
     
     var OpenStackHostedZoneCreateView = TopStackHostedZoneCreateView.extend({

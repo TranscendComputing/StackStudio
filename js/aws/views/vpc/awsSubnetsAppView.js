@@ -11,9 +11,9 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/aws/vpc/awsSubnetAppTemplate.html',
-        '/js/aws/models/vpc/awsSubnet.js',
-        '/js/aws/collections/vpc/awsSubnets.js',
-        '/js/aws/views/vpc/awsSubnetCreateView.js',
+        'aws/models/vpc/awsSubnet',
+        'aws/collections/vpc/awsSubnets',
+        'aws/views/vpc/awsSubnetCreateView',
         'icanhaz',
         'common',
         'jquery.dataTables'

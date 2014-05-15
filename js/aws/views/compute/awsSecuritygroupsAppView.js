@@ -11,9 +11,9 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/aws/compute/awsSecurityGroupAppTemplate.html',
-        '/js/aws/models/compute/awsSecurityGroup.js',
-        '/js/aws/collections/compute/awsSecurityGroups.js',
-        '/js/aws/views/compute/awsSecurityGroupCreateView.js',
+        'aws/models/compute/awsSecurityGroup',
+        'aws/collections/compute/awsSecurityGroups',
+        'aws/views/compute/awsSecurityGroupCreateView',
         'icanhaz',
         'common',
         'jquery.dataTables'

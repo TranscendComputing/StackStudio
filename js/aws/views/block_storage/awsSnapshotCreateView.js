@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/block_storage/awsSnapshotCreateTemplate.html',
-        '/js/aws/models/block_storage/awsSnapshot.js',
+        'aws/models/block_storage/awsSnapshot',
         'common'  
 ], function( $, _, Backbone, DialogView, snapshotCreateTemplate, Snapshot, Common ) {
 

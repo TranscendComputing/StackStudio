@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/openstack/models/compute/openstackSecurityGroup.js',
+        'openstack/models/compute/openstackSecurityGroup',
         'common'
 ], function( $, Backbone, SecurityGroup, Common ) {
     'use strict';

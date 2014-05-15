@@ -11,9 +11,9 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/openstack/network/openstackFloatingIpAppTemplate.html',
-        '/js/openstack/models/network/openstackFloatingIp.js',
-        '/js/openstack/collections/network/openstackFloatingIps.js',
-        '/js/openstack/views/network/openstackFloatingIpCreateView.js',
+        'openstack/models/network/openstackFloatingIp',
+        'openstack/collections/network/openstackFloatingIps',
+        'openstack/views/network/openstackFloatingIpCreateView',
         'icanhaz',
         'common'
 ], function( $, _, Backbone, AppView, openstackFloatingIpAppTemplate, FloatingIp, FloatingIps, OpenstackFloatingIpCreateView, ich, Common ) {

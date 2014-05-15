@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/topstack/models/rds/topstackDBParameterGroup.js',
+        'topstack/models/rds/topstackDBParameterGroup',
         'common'
 ], function( $, Backbone, DBParameterGroup, Common ) {
     'use strict';

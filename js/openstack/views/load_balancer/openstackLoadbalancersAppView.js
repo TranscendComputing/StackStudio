@@ -6,10 +6,10 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-    '/js/topstack/views/load_balancer/topstackLoadbalancersAppView.js',
-    '/js/openstack/views/load_balancer/openstackLoadBalancerCreateView.js',
-    '/js/openstack/views/load_balancer/openstackManageAvailabilityZonesView.js',
-    '/js/openstack/views/load_balancer/openstackRegisterInstancesView.js'
+    'topstack/views/load_balancer/topstackLoadbalancersAppView',
+    'openstack/views/load_balancer/openstackLoadBalancerCreateView',
+    'openstack/views/load_balancer/openstackManageAvailabilityZonesView',
+    'openstack/views/load_balancer/openstackRegisterInstancesView'
 ], function( TopStackLoadBalancerAppView, OpenStackLoadBalancerCreateView, OpenStackManageAvailabilityZonesView, OpenStackRegisterInstancesView ) {
     'use strict';
 

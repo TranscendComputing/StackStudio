@@ -12,7 +12,7 @@ define([
         'common',
         'views/dialogView',
         'text!templates/openstack/identity/openstackTenantCreateTemplate.html',
-        '/js/openstack/models/identity/openstackTenant.js'
+        'openstack/models/identity/openstackTenant'
 ], function( $, _, Backbone, Common, DialogView, tenantCreateTemplate, Tenant ) {
 
     var TenantCreateView = DialogView.extend({

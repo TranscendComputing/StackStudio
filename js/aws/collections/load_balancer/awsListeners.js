@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/load_balancer/awsListener.js',
+        'aws/models/load_balancer/awsListener',
         'common'
 ], function( $, Backbone, Listener, Common ) {
     'use strict';

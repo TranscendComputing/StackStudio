@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/cloud_formation/awsStack.js',
+        'aws/models/cloud_formation/awsStack',
         'common'
 ], function( $, Backbone, Stack, Common ) {
     'use strict';

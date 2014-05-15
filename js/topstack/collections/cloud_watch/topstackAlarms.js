@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/topstack/models/cloud_watch/topstackAlarm.js',
+        'topstack/models/cloud_watch/topstackAlarm',
         'common'
 ], function( $, Backbone, Alarm, Common ) {
     'use strict';

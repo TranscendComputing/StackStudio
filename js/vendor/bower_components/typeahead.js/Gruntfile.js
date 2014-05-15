@@ -1,17 +1,17 @@
 var semver = require('semver'),
     f = require('util').format,
     jsFiles = [
-      'src/version.js',
-      'src/utils.js',
-      'src/event_target.js',
-      'src/event_bus.js',
-      'src/persistent_storage.js',
-      'src/request_cache.js',
-      'src/transport.js',
-      'src/dataset.js',
-      'src/input_view.js',
-      'src/dropdown_view.js',
-      'src/typeahead_view.js',
+      'src/version',
+      'src/utils',
+      'src/event_target',
+      'src/event_bus',
+      'src/persistent_storage',
+      'src/request_cache',
+      'src/transport',
+      'src/dataset',
+      'src/input_view',
+      'src/dropdown_view',
+      'src/typeahead_view',
       'src/typeahead.js'
     ];
 
@@ -81,7 +81,7 @@ module.exports = function(grunt) {
       js: {
         src: jsFiles,
         options: {
-          specs: 'test/*_spec.js',
+          specs: 'test/*_spec',
           helpers: 'test/helpers/*',
           vendor: 'test/vendor/*'
         }
@@ -112,8 +112,8 @@ module.exports = function(grunt) {
       },
       publish_assets: {
         cmd: [
-          'cp -r <%= buildDir %> typeahead.js',
-          'zip -r typeahead.js/typeahead.js.zip typeahead.js',
+          'cp -r <%= buildDir %> typeahead',
+          'zip -r typeahead.js/typeahead.js.zip typeahead',
           'git checkout gh-pages',
           'rm -rf releases/latest',
           'cp -r typeahead.js releases/<%= version %>',

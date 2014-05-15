@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/beanstalk/awsVersionCreateTemplate.html',
-        '/js/aws/models/beanstalk/awsApplication.js',
+        'aws/models/beanstalk/awsApplication',
         'common',
         'jquery.multiselect',
         'jquery.multiselect.filter',

@@ -13,8 +13,8 @@ define([
         'icanhaz',
         'views/dialogView',
         'text!templates/openstack/network/openstackSubnetCreateTemplate.html',
-        '/js/openstack/models/network/openstackSubnet.js',
-        '/js/openstack/collections/network/openstackNetworks.js',
+        'openstack/models/network/openstackSubnet',
+        'openstack/collections/network/openstackNetworks',
         'jquery.multiselect',
         'jquery.multiselect.filter',
         'backbone.stickit'

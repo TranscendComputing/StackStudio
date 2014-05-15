@@ -12,9 +12,9 @@ define([
         'views/featureNotImplementedView',
         'views/resource/resourceAppView',
         'text!templates/aws/cache/awsParameterGroupAppTemplate.html',
-        '/js/aws/models/cache/awsCacheParameterGroup.js',
-        '/js/aws/collections/cache/awsCacheParameterGroups.js',
-        '/js/aws/views/cache/awsParameterGroupCreateView.js',
+        'aws/models/cache/awsCacheParameterGroup',
+        'aws/collections/cache/awsCacheParameterGroups',
+        'aws/views/cache/awsParameterGroupCreateView',
         'icanhaz',
         'common',
         'jquery.dataTables'

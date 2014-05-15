@@ -13,9 +13,9 @@ define([
         'icanhaz',
         'views/dialogView',
         'text!templates/openstack/network/openstackNetworkCreateTemplate.html',
-        '/js/openstack/models/network/openstackNetwork.js',
-        '/js/openstack/collections/network/openstackNetworks.js',
-        '/js/openstack/collections/identity/openstackTenants.js',
+        'openstack/models/network/openstackNetwork',
+        'openstack/collections/network/openstackNetworks',
+        'openstack/collections/identity/openstackTenants',
         'jquery.multiselect',
         'jquery.multiselect.filter'
 ], function( $, _, Backbone, Common, ich, DialogView, networkCreateTemplate, Network, Tenants ) {

@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/openstack/block_storage/openstackVolumeAttachTemplate.html',
-        '/js/openstack/collections/compute/openstackInstances.js',
+        'openstack/collections/compute/openstackInstances',
         'common'
 ], function( $, _, Backbone, DialogView, volumeAttachTemplate, Instances, Common ) {
     

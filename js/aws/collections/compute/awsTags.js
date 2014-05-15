@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/compute/awsTag.js',
+        'aws/models/compute/awsTag',
         'common'
 ], function( $, Backbone, KeyPair, Common ) {
     'use strict';

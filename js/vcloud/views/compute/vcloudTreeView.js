@@ -11,16 +11,16 @@ define([
   'backbone',
   'icanhaz',
   'common',
-  '/js/vendor/maple/js/maple.js',
+  'vendor/maple/js/maple',
   'views/resource/resourceTreeView',
   'views/resource/resourceAppView',
   'text!templates/vcloud/vcloudTreeViewTemplate.html',
-  '/js/vcloud/collections/compute/vcloudDataCenters.js',
-  '/js/vcloud/collections/network/vcloudNetworks.js',
-  '/js/vcloud/collections/catalog/vcloudCatalogs.js',
-  '/js/vcloud/collections/catalog/vcloudCatalogItems.js',
-  '/js/vcloud/collections/compute/vcloudVapps.js',
-  '/js/vcloud/collections/compute/vcloudVms.js'
+  'vcloud/collections/compute/vcloudDataCenters',
+  'vcloud/collections/network/vcloudNetworks',
+  'vcloud/collections/catalog/vcloudCatalogs',
+  'vcloud/collections/catalog/vcloudCatalogItems',
+  'vcloud/collections/compute/vcloudVapps',
+  'vcloud/collections/compute/vcloudVms'
 ], function ( $, _, Backbone, ich, Common, maple, ResourceTreeView, ResourceAppView, vcloudTreeViewTemplate, DataCenters, Networks, Catalogs, CatalogItems, Vapps, Vms ) {
 	'use strict';
 

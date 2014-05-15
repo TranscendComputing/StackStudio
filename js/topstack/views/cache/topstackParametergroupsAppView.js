@@ -11,8 +11,8 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/topstack/cache/topstackParameterGroupAppTemplate.html',
-        '/js/topstack/models/cache/topstackCacheParameterGroup.js',
-        '/js/topstack/collections/cache/topstackCacheParameterGroups.js',
+        'topstack/models/cache/topstackCacheParameterGroup',
+        'topstack/collections/cache/topstackCacheParameterGroups',
         'icanhaz',
         'common',
         'jquery.dataTables'
