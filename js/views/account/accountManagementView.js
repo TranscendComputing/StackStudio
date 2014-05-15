@@ -33,409 +33,427 @@ define([
         'jquery-plugins',
         'jquery-ui-plugins',
         'jquery.jstree'
-], function( $, _, Backbone, Common, managementTemplate, Groups, CloudCredentials, CloudAccounts, Policies, NewLoginView, CloudAccountManagementView, CloudCredentialManagementView, CloudCredentialManagementListView, CloudAccountManagementListView, UsersManagementView, PoliciesManagementView, PolicyManagementView, HomeView, GroupsManagementView, GroupsManagementListView, DevOpsToolsManagementView, ContinuousIntegrationManagementView, SourceControlRepositoryManagementListView, TutorialView ) {
-    var AccountManagementView = Backbone.View.extend({
-        /** @type {String} DOM element to attach view to */
-        el: "#main",
-        /** @type {Template} HTML template to generate view from */
-        template: _.template(managementTemplate),
-        /** @type {Object} Object of events for view to listen on */
-        events: {
-            "click .account_list": "selectManagement",
-            "click .group_item": "selectGroup",
-            "click .cloud_account_item": "selectCloudAccount",
-            "click .credential_item": "selectCloudCred",
-            "click .policy_item": "selectPolicy",
-            "click #treeAddUser": "addUser"
-        },
-        subApp: undefined,
-        tree: undefined,
-        groups: undefined,
-        cloudCredentials: undefined,
-        cloudAccounts: undefined,
-        policies: undefined,
-        treeGroup: undefined,
-        treeCloudAccount: undefined,
-        treeCloudCred: undefined,
-        treePolicy: undefined,
-        afterSubAppRender: undefined,
-        /** Constructor method for current view */
-        initialize: function() {
-            //Render my template
-            this.$el.html(this.template);
+    ],
+    function($, _, Backbone, Common, managementTemplate, Groups, CloudCredentials,
+             CloudAccounts, Policies, NewLoginView, CloudAccountManagementView,
+             CloudCredentialManagementView, CloudCredentialManagementListView,
+             CloudAccountManagementListView, UsersManagementView, PoliciesManagementView,
+             PolicyManagementView, HomeView, GroupsManagementView, GroupsManagementListView,
+             DevOpsToolsManagementView, ContinuousIntegrationManagementView,
+             SourceControlRepositoryManagementListView, TutorialView ) {
 
-            this.groups = new Groups();
-            this.groups.on('reset', this.addAllGroups, this);
-
-            this.cloudCredentials = new CloudCredentials();
-            this.cloudCredentials.on( 'reset', this.addAllCreds, this );
-
-            this.cloudAccounts = new CloudAccounts();
-            this.cloudAccounts.on( 'reset', this.addAllCloudAccounts, this );
-
-            this.policies = new Policies();
-            this.policies.on( 'reset', this.addAllPolicies, this );
-
-            //Render my own views
-            this.render();
-
-            if(sessionStorage && parseInt(sessionStorage.num_logins, 10) < 5)  {//todo: change this to 0
-                this.tutorial = new TutorialView({ rootView: this });
-
-                this.afterSubAppRender = function () {
-                    this.tutorial.update();
-                }.bind(this);
-
-                this.tutorial.render();
-            }
-            window.jQuery = $;
-            window.$ = $;
-        },
-        /** Add all of my own html elements */
-        render: function () {
-            var accMan = this;
-            $("#mCloudAccount_tree").jstree({
-                "themeroller":{"item": "jstree_custom_item"},
-                "plugins":[ "themeroller", "html_data", "crrm" ]
-            }).on('loaded.jstree', function() {
-                //async
-                accMan.cloudAccounts.fetch({
-                    data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id}),
-                    reset: true
-                });
-            });
-            $("#mCloudCredential_tree").jstree({
-                "themeroller":{"item": "jstree_custom_item"},
-                "plugins":[ "themeroller", "html_data", "crrm" ]
-            }).on('loaded.jstree', function() {
-                //async
-                accMan.cloudCredentials.fetch({reset: true});
-            });
-            $("#mGroup_tree").jstree({
-                "themeroller":{"item": "jstree_custom_item"},
-                "plugins":[ "themeroller", "html_data", "crrm" ]
-            }).on('loaded.jstree', function() {
-                //Fetch Collections
-                accMan.groups.fetch({
-                    reset: true
-                });
-            });
-            $("#mUser_tree").jstree({
-                "themeroller":{"item": "jstree_custom_item"},
-                "plugins":[ "themeroller", "html_data", "crrm" ]
-            }).on('loaded.jstree', function() {
-                $("#mUser_tree").jstree('open_all');
-            });
-            $("#mPolicy_tree").jstree({
-                "themeroller":{"item": "jstree_custom_item"},
-                "plugins":[ "themeroller", "html_data", "crrm" ]
-            }).on('loaded.jstree', function() {
-                //async
-                accMan.policies.fetch({
-                    data: $.param({ org_id: sessionStorage.org_id}),
-                    reset: true
-                });
-            });
-            $("#mSCRepos_tree").jstree({
-                "themeroller":{"item": "jstree_custom_item"},
-                "plugins":[ "themeroller", "html_data", "crrm" ]
-            }).on('loaded.jstree', function() {
-                    $("#mSCRepos_tree").jstree('open_all');
-            });
-            $("#mContinuousIntegration_tree").jstree({
-                "themeroller":{"item": "jstree_custom_item"},
-                "plugins":[ "themeroller", "html_data", "crrm" ]
-            }).on('loaded.jstree', function() {
-                    $("#mContinuousIntegration_tree").jstree('open_all');
-            });
-            $("#mdevOps_tree").jstree({
-                "themeroller":{"item": "jstree_custom_item"},
-                "plugins":[ "themeroller", "html_data", "crrm" ]
-            }).on('loaded.jstree', function() {
-                    $("#mdevOps_tree").jstree('open_all');
-            });
-            $("#mMyAccount_tree").jstree({
-                "themeroller":{"item": "jstree_custom_item"},
-                "plugins":[ "themeroller", "html_data", "crrm" ]
-            }).on('loaded.jstree', function() {
-                $("#mMyAccount_tree").jstree('open_all');
-            });
-
-            if(parseInt(sessionStorage.num_logins, 10) < 20) {
-                //todo: init instructor
-                // $('#instructor').instructor('nextTip');
-            }
-        },
-        addAllGroups: function() {
-            $('.group_item.tree_item').remove();
-            this.groups.each(function(group) {
-                $("#mGroup_tree").jstree("create","#group_list","first",{ attr : {class : "group_item tree_item"} , data : { title: group.attributes.name, attr : { id : group.attributes.id, href : "#account/management/groups", class : "group_item tree_item" }} },false, true);
-            });
-
-            if(this.groups.get(this.treeGroup) && typeof(this.subApp.treeSelect) !== "undefined"){
-                this.subApp.treeSelect();
-            }else{
-                $("#selected_group_name").html("No Group Selected");
-            }
-        },
-        addAllCreds: function(){
-            $('.credential_item.tree_item').remove();
-            this.cloudCredentials.each(function(cred) {
-                $("#mCloudCredential_tree").jstree("create","#cred_list","first",{ attr : {class : "credential_item tree_item"} , data : { title: cred.attributes.name, attr : { id : cred.attributes.id, href : "#account/management/cloud-credentials", class : "credential_item tree_item" }} },false, true);
-            });
-        },
-        addAllPolicies: function(){
-            $('.policy_item.tree_item').remove();
-            this.policies.each(function(policy) {
-                $("#mPolicy_tree").jstree("create","#policy_list","first",{ attr : {class : "policy_item tree_item"} , data : { title: policy.attributes.name, attr : { id : policy.attributes._id, href : "#account/management/policy", class : "policy_item tree_item" }} },false, true);
-            });
-        },
-        addAllCloudAccounts: function(){
-            $('.cloud_account_item.tree_item').remove();
-
-            this.cloudAccounts.each(function(c_account) {
-                $("#mCloudAccount_tree").jstree("create","#c_account_list","first",{ attr : {class : "cloud_account_item tree_item"} , data : { title: c_account.attributes.name, attr : { id : c_account.attributes.id, href : "#account/management/cloud-accounts", class : "cloud_account_item tree_item" }} },false, true);
-            });
-
-            if(!this.treeCloudAccount){
-                this.treeCloudAccount = this.cloudAccounts.models[this.cloudAccounts.length-1].id;
-            }
-            if(this.cloudAccounts.get(this.treeCloudAccount) && typeof(this.subApp.treeSelectCloudAccount) !== "undefined"){
-                this.subApp.treeSelectCloudAccount();
-            }else if(typeof(this.subApp.treeSelectCloudAccount) !== "undefined"){
-                this.treeCloudAccount = this.cloudAccounts.models[this.cloudAccounts.length-1].id;
-                this.subApp.treeSelectCloudAccount();
-            }
-        },
-
-        selectManagement: function(event){
-            var self = this;
-            if(event.target.attributes.href){
-                if($("#"+event.target.id).hasClass('policy_item')){
-                    this.treePolicy = event.target.id;
+        var AccountManagementView = Backbone.View.extend({
+            /** @type {String} DOM element to attach view to */
+            el: "#main",
+            /** @type {Template} HTML template to generate view from */
+            template: _.template(managementTemplate),
+            /** @type {Object} Object of events for view to listen on */
+            events: {
+                "click .account_list": "selectManagement",
+                "click .group_item": "selectGroup",
+                "click .cloud_account_item": "selectCloudAccount",
+                "click .credential_item": "selectCloudCred",
+                "click .policy_item": "selectPolicy",
+                "click #treeAddUser": "addUser"
+            },
+            subApp: undefined,
+            tree: undefined,
+            groups: undefined,
+            cloudCredentials: undefined,
+            cloudAccounts: undefined,
+            policies: undefined,
+            treeGroup: undefined,
+            treeCloudAccount: undefined,
+            treeCloudCred: undefined,
+            treePolicy: undefined,
+            afterSubAppRender: undefined,
+            /** Constructor method for current view */
+            initialize: function() {
+                //Render my template
+                this.$el.html(this.template);
+    
+                this.groups = new Groups();
+                this.groups.on('reset', this.addAllGroups, this);
+    
+                this.cloudCredentials = new CloudCredentials();
+                this.cloudCredentials.on( 'reset', this.addAllCreds, this );
+    
+                this.cloudAccounts = new CloudAccounts();
+                this.cloudAccounts.on( 'reset', this.addAllCloudAccounts, this );
+    
+                this.policies = new Policies();
+                this.policies.on( 'reset', this.addAllPolicies, this );
+    
+                //Render my own views
+                this.render();
+    
+                if (sessionStorage && parseInt(sessionStorage.num_logins, 10) < 5)  {//todo: change this to 0
+                    this.tutorial = new TutorialView({ rootView: this });
+    
+                    this.afterSubAppRender = function () {
+                        this.tutorial.update();
+                    }.bind(this);
+    
+                    this.tutorial.render();
                 }
-
-                //if no hash change, go ahead and run the after render logic anyway
-                var currentHash = location.href.split('#');
-                if(currentHash.length > 1) {
-                    currentHash = currentHash[1];
-                    var newHash = event.target.attributes.href.nodeValue.split('#');
-
-                    if(newHash.length > 1) {
-                        newHash = newHash[1];
-
-                        if(currentHash === newHash) {
-                            if(this.afterSubAppRender) {
-                                //make sure other event handlers are registered first
-                                setTimeout(function () {
-                                    self.afterSubAppRender();
-                                }, 5);
-                                return;
+                window.jQuery = $;
+                window.$ = $;
+            },
+            /** Add all of my own html elements */
+            render: function () {
+                var accMan = this;
+                $("#mCloudAccount_tree").jstree({
+                    "themeroller":{"item": "jstree_custom_item"},
+                    "plugins":[ "themeroller", "html_data", "crrm" ]
+                }).on('loaded.jstree', function() {
+                    //async
+                    accMan.cloudAccounts.fetch({
+                        data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id}),
+                        reset: true
+                    });
+                });
+                $("#mCloudCredential_tree").jstree({
+                    "themeroller":{"item": "jstree_custom_item"},
+                    "plugins":[ "themeroller", "html_data", "crrm" ]
+                }).on('loaded.jstree', function() {
+                    //async
+                    accMan.cloudCredentials.fetch({reset: true});
+                });
+                $("#mGroup_tree").jstree({
+                    "themeroller":{"item": "jstree_custom_item"},
+                    "plugins":[ "themeroller", "html_data", "crrm" ]
+                }).on('loaded.jstree', function() {
+                    //Fetch Collections
+                    accMan.groups.fetch({
+                        reset: true
+                    });
+                });
+                $("#mUser_tree").jstree({
+                    "themeroller":{"item": "jstree_custom_item"},
+                    "plugins":[ "themeroller", "html_data", "crrm" ]
+                }).on('loaded.jstree', function() {
+                    $("#mUser_tree").jstree('open_all');
+                });
+                $("#mPolicy_tree").jstree({
+                    "themeroller":{"item": "jstree_custom_item"},
+                    "plugins":[ "themeroller", "html_data", "crrm" ]
+                }).on('loaded.jstree', function() {
+                    //async
+                    accMan.policies.fetch({
+                        data: $.param({ org_id: sessionStorage.org_id}),
+                        reset: true
+                    });
+                });
+                $("#mSCRepos_tree").jstree({
+                    "themeroller":{"item": "jstree_custom_item"},
+                    "plugins":[ "themeroller", "html_data", "crrm" ]
+                }).on('loaded.jstree', function() {
+                        $("#mSCRepos_tree").jstree('open_all');
+                });
+                $("#mContinuousIntegration_tree").jstree({
+                    "themeroller":{"item": "jstree_custom_item"},
+                    "plugins":[ "themeroller", "html_data", "crrm" ]
+                }).on('loaded.jstree', function() {
+                        $("#mContinuousIntegration_tree").jstree('open_all');
+                });
+                $("#mdevOps_tree").jstree({
+                    "themeroller":{"item": "jstree_custom_item"},
+                    "plugins":[ "themeroller", "html_data", "crrm" ]
+                }).on('loaded.jstree', function() {
+                        $("#mdevOps_tree").jstree('open_all');
+                });
+                $("#mMyAccount_tree").jstree({
+                    "themeroller":{"item": "jstree_custom_item"},
+                    "plugins":[ "themeroller", "html_data", "crrm" ]
+                }).on('loaded.jstree', function() {
+                    $("#mMyAccount_tree").jstree('open_all');
+                });
+    
+                if (parseInt(sessionStorage.num_logins, 10) < 20) {
+                    //todo: init instructor
+                    // $('#instructor').instructor('nextTip');
+                }
+            },
+    
+            addAllGroups: function() {
+                $('.group_item.tree_item').remove();
+                this.groups.each(function(group) {
+                    $("#mGroup_tree").jstree("create","#group_list","first",{ attr : {class : "group_item tree_item"} , data : { title: group.attributes.name, attr : { id : group.attributes.id, href : "#account/management/groups", class : "group_item tree_item" }} },false, true);
+                });
+    
+                if (this.groups.get(this.treeGroup) && typeof(this.subApp.treeSelect) !== "undefined") {
+                    this.subApp.treeSelect();
+                }else{
+                    $("#selected_group_name").html("No Group Selected");
+                }
+            },
+    
+            addAllCreds: function() {
+                $('.credential_item.tree_item').remove();
+                this.cloudCredentials.each(function(cred) {
+                    $("#mCloudCredential_tree").jstree("create","#cred_list","first",{ attr : {class : "credential_item tree_item"} , data : { title: cred.attributes.name, attr : { id : cred.attributes.id, href : "#account/management/cloud-credentials", class : "credential_item tree_item" }} },false, true);
+                });
+            },
+    
+            addAllPolicies: function() {
+                $('.policy_item.tree_item').remove();
+                this.policies.each(function(policy) {
+                    $("#mPolicy_tree").jstree("create","#policy_list","first",{ attr : {class : "policy_item tree_item"} , data : { title: policy.attributes.name, attr : { id : policy.attributes._id, href : "#account/management/policy", class : "policy_item tree_item" }} },false, true);
+                });
+            },
+    
+            addAllCloudAccounts: function() {
+                $('.cloud_account_item.tree_item').remove();
+    
+                this.cloudAccounts.each(function(c_account) {
+                    $("#mCloudAccount_tree").jstree("create","#c_account_list","first",{ attr : {class : "cloud_account_item tree_item"} , data : { title: c_account.attributes.name, attr : { id : c_account.attributes.id, href : "#account/management/cloud-accounts", class : "cloud_account_item tree_item" }} },false, true);
+                });
+    
+                if (!this.treeCloudAccount) {
+                    this.treeCloudAccount = this.cloudAccounts.models[this.cloudAccounts.length-1].id;
+                }
+                if (this.cloudAccounts.get(this.treeCloudAccount) && typeof(this.subApp.treeSelectCloudAccount) !== "undefined") {
+                    this.subApp.treeSelectCloudAccount();
+                }else if (typeof(this.subApp.treeSelectCloudAccount) !== "undefined") {
+                    this.treeCloudAccount = this.cloudAccounts.models[this.cloudAccounts.length-1].id;
+                    this.subApp.treeSelectCloudAccount();
+                }
+            },
+    
+            selectManagement: function(event) {
+                var self = this;
+                if (event.target.attributes.href) {
+                    if ($("#"+event.target.id).hasClass('policy_item')) {
+                        this.treePolicy = event.target.id;
+                    }
+    
+                    //if no hash change, go ahead and run the after render logic anyway
+                    var currentHash = location.href.split('#');
+                    if (currentHash.length > 1) {
+                        currentHash = currentHash[1];
+                        var newHash = event.target.attributes.href.nodeValue.split('#');
+    
+                        if (newHash.length > 1) {
+                            newHash = newHash[1];
+    
+                            if (currentHash === newHash) {
+                                if (this.afterSubAppRender) {
+                                    //make sure other event handlers are registered first
+                                    setTimeout(function () {
+                                        self.afterSubAppRender();
+                                    }, 5);
+                                    return;
+                                }
                             }
                         }
                     }
+                    location.href = event.target.attributes.href.nodeValue;
                 }
-                location.href = event.target.attributes.href.nodeValue;
+            },
+    
+            selectGroup: function(event) {
+                this.treeGroup = event.target.id;
+                if (typeof(this.subApp.treeSelect) !== "undefined") {
+                    this.subApp.treeSelect();
+                }
+            },
+    
+            selectCloudAccount: function(event) {
+                this.treeCloudAccount = event.target.id;
+                if (typeof(this.subApp.treeSelectCloudAccount) !== "undefined") {
+                    this.subApp.treeSelectCloudAccount();
+                }
+            },
+    
+            selectCloudCred: function(event) {
+                this.treeCloudCred = event.target.id;
+                if (typeof(this.subApp.treeSelectCloudCred) !== "undefined") {
+                    this.subApp.treeSelectCloudCred();
+                }
+            },
+    
+            selectPolicy: function(event) {
+                this.treePolicy = event.target.id;
+                if (typeof(this.subApp.treeSelect) !== "undefined") {
+                    this.subApp.treeSelect();
+                }
+            },
+            addUser: function(event) {
+                new NewLoginView({org_id: sessionStorage.org_id});
+            },
+    
+            close: function() {
+                this.$el.empty();
+                this.undelegateEvents();
+                this.stopListening();
+                this.unbind();
+                // handle other unbinding needs, here
+                _.each(this.subViews, function(childView) {
+                  if (childView.close) {
+                    childView.close();
+                  }
+                });
             }
-        },
-        selectGroup: function(event){
-            this.treeGroup = event.target.id;
-            if(typeof(this.subApp.treeSelect) !== "undefined"){
-                this.subApp.treeSelect();
+        });
+    
+        /** Variable to track whether view has been initialized or not */
+        var accountManagementView;
+        var self = this;
+        Common.router.on("route:accountManagement", function (action) {
+            if (this.previousView !== accountManagementView) {
+                this.unloadPreviousState();
+                accountManagementView = new AccountManagementView();
+                this.setPreviousState(accountManagementView);
             }
-        },
-        selectCloudAccount: function(event){
-            this.treeCloudAccount = event.target.id;
-            if(typeof(this.subApp.treeSelectCloudAccount) !== "undefined"){
-                this.subApp.treeSelectCloudAccount();
+
+            switch(action) {
+                case "cloud-accounts":
+                    if (accountManagementView.subApp instanceof CloudAccountManagementView)
+                    {
+                        //do nothing
+                    }else{
+                        if (accountManagementView.subApp !== undefined) {
+                            accountManagementView.subApp.close();
+                        }
+                        accountManagementView.subApp = new CloudAccountManagementView({rootView: accountManagementView});
+                    }
+                    break;
+                case "cloud-credentials":
+                    if (accountManagementView.subApp instanceof CloudCredentialManagementView)
+                    {
+                        //do nothing
+                    }else{
+                        if (accountManagementView.subApp !== undefined) {
+                            accountManagementView.subApp.close();
+                        }
+                        accountManagementView.subApp = new CloudCredentialManagementView({rootView: accountManagementView});
+                    }
+                    break;
+                case "users":
+                    if (accountManagementView.subApp instanceof UsersManagementView)
+                    {
+                        //do nothing
+                    }else{
+                        if (accountManagementView.subApp !== undefined) {
+                            accountManagementView.subApp.close();
+                        }
+                        accountManagementView.subApp = new UsersManagementView();
+                    }
+                    break;
+                case "policies":
+                    if (accountManagementView.subApp instanceof PoliciesManagementView)
+                    {
+                        //do nothing
+                    }else{
+                        if (accountManagementView.subApp !== undefined) {
+                            accountManagementView.subApp.close();
+                        }
+                        accountManagementView.subApp = new PoliciesManagementView({rootView: accountManagementView});
+                    }
+                    break;
+                case "policy":
+                    if (accountManagementView.subApp instanceof PolicyManagementView)
+                    {
+                        //do nothing
+                    }else{
+                        if (accountManagementView.subApp !== undefined) {
+                            accountManagementView.subApp.close();
+                        }
+                        accountManagementView.subApp = new PolicyManagementView({rootView: accountManagementView});
+                    }
+                    break;
+                case "groups":
+                    if (accountManagementView.subApp instanceof GroupsManagementView)
+                    {
+                        //do nothing
+                    }else{
+                        if (accountManagementView.subApp !== undefined) {
+                            accountManagementView.subApp.close();
+                        }
+                        accountManagementView.subApp = new GroupsManagementView({rootView: accountManagementView});
+                    }
+                    break;
+                case "groups_list":
+                    if (accountManagementView.subApp instanceof GroupsManagementListView)
+                    {
+                        //do nothing
+                    }else{
+                        if (accountManagementView.subApp !== undefined) {
+                            accountManagementView.subApp.close();
+                        }
+                        accountManagementView.subApp = new GroupsManagementListView({rootView: accountManagementView});
+                    }
+                    break;
+                case "cloud-credentials_list":
+                    if (accountManagementView.subApp instanceof CloudCredentialManagementListView)
+                    {
+                        //do nothing
+                    }else{
+                        if (accountManagementView.subApp !== undefined) {
+                            accountManagementView.subApp.close();
+                        }
+                        accountManagementView.subApp = new CloudCredentialManagementListView({rootView: accountManagementView});
+                    }
+                    break;
+                case "cloud-accounts_list":
+                    if (accountManagementView.subApp instanceof CloudAccountManagementListView)
+                    {
+                        //do nothing
+                    }else{
+                        if (accountManagementView.subApp !== undefined) {
+                            accountManagementView.subApp.close();
+                        }
+                        accountManagementView.subApp = new CloudAccountManagementListView({rootView: accountManagementView});
+                    }
+                    break;
+                case "configuration_managers":
+                    if (accountManagementView.subApp instanceof DevOpsToolsManagementView) {
+    
+                    }else{
+                        if (accountManagementView.subApp !== undefined) {
+                            accountManagementView.subApp.close();
+                        }
+                        accountManagementView.subApp = new DevOpsToolsManagementView({rootView: accountManagementView});
+                    }
+                    break;
+                case "continuous_integration":
+                    if (accountManagementView.subApp instanceof ContinuousIntegrationManagementView) {
+    
+                    }else{
+                        if (accountManagementView.subApp !== undefined) {
+                            accountManagementView.subApp.close();
+                        }
+                        accountManagementView.subApp = new ContinuousIntegrationManagementView({rootView: accountManagementView});
+                    }
+                    break;
+                case "source_control_repositories":
+                    if (accountManagementView.subApp instanceof SourceControlRepositoryManagementListView) {
+    
+                    }else{
+                        if (accountManagementView.subApp !== undefined) {
+                            accountManagementView.subApp.close();
+                        }
+                        accountManagementView.subApp = new SourceControlRepositoryManagementListView({rootView: accountManagementView});
+                    }
+                    break;
+                case "home":
+                    if (accountManagementView.subApp instanceof HomeView)
+                    {
+                        //do nothing
+                    }else{
+                        if (accountManagementView.subApp !== undefined) {
+                            accountManagementView.subApp.close();
+                        }
+                        accountManagementView.subApp = new HomeView({rootView: accountManagementView});
+                    }
+                    break;
             }
-        },
-        selectCloudCred: function(event){
-            this.treeCloudCred = event.target.id;
-            if(typeof(this.subApp.treeSelectCloudCred) !== "undefined"){
-                this.subApp.treeSelectCloudCred();
+    
+            if (accountManagementView.afterSubAppRender) {
+                accountManagementView.afterSubAppRender.call(accountManagementView);
             }
-        },
-        selectPolicy: function(event){
-            this.treePolicy = event.target.id;
-            if(typeof(this.subApp.treeSelect) !== "undefined"){
-                this.subApp.treeSelect();
-            }
-        },
-        addUser: function(event){
-            new NewLoginView({org_id: sessionStorage.org_id});
-        },
-        close: function(){
-            this.$el.empty();
-            this.undelegateEvents();
-            this.stopListening();
-            this.unbind();
-            // handle other unbinding needs, here
-            _.each(this.subViews, function(childView){
-              if (childView.close){
-                childView.close();
-              }
-            });
-        }
-    });
-
-    /** Variable to track whether view has been initialized or not */
-    var accountManagementView;
-    var self = this;
-    Common.router.on("route:accountManagement", function (action) {
-        if (this.previousView !== accountManagementView) {
-            this.unloadPreviousState();
-            accountManagementView = new AccountManagementView();
-            this.setPreviousState(accountManagementView);
-        }
-        switch(action)
-        {
-            case "cloud-accounts":
-                if(accountManagementView.subApp instanceof CloudAccountManagementView)
-                {
-                    //do nothing
-                }else{
-                    if(accountManagementView.subApp !== undefined){
-                        accountManagementView.subApp.close();
-                    }
-                    accountManagementView.subApp = new CloudAccountManagementView({rootView: accountManagementView});
-                }
-                break;
-            case "cloud-credentials":
-                if(accountManagementView.subApp instanceof CloudCredentialManagementView)
-                {
-                    //do nothing
-                }else{
-                    if(accountManagementView.subApp !== undefined){
-                        accountManagementView.subApp.close();
-                    }
-                    accountManagementView.subApp = new CloudCredentialManagementView({rootView: accountManagementView});
-                }
-                break;
-            case "users":
-                if(accountManagementView.subApp instanceof UsersManagementView)
-                {
-                    //do nothing
-                }else{
-                    if(accountManagementView.subApp !== undefined){
-                        accountManagementView.subApp.close();
-                    }
-                    accountManagementView.subApp = new UsersManagementView();
-                }
-                break;
-            case "policies":
-                if(accountManagementView.subApp instanceof PoliciesManagementView)
-                {
-                    //do nothing
-                }else{
-                    if(accountManagementView.subApp !== undefined){
-                        accountManagementView.subApp.close();
-                    }
-                    accountManagementView.subApp = new PoliciesManagementView({rootView: accountManagementView});
-                }
-                break;
-            case "policy":
-                if(accountManagementView.subApp instanceof PolicyManagementView)
-                {
-                    //do nothing
-                }else{
-                    if(accountManagementView.subApp !== undefined){
-                        accountManagementView.subApp.close();
-                    }
-                    accountManagementView.subApp = new PolicyManagementView({rootView: accountManagementView});
-                }
-                break;
-            case "groups":
-                if(accountManagementView.subApp instanceof GroupsManagementView)
-                {
-                    //do nothing
-                }else{
-                    if(accountManagementView.subApp !== undefined){
-                        accountManagementView.subApp.close();
-                    }
-                    accountManagementView.subApp = new GroupsManagementView({rootView: accountManagementView});
-                }
-                break;
-            case "groups_list":
-                if(accountManagementView.subApp instanceof GroupsManagementListView)
-                {
-                    //do nothing
-                }else{
-                    if(accountManagementView.subApp !== undefined){
-                        accountManagementView.subApp.close();
-                    }
-                    accountManagementView.subApp = new GroupsManagementListView({rootView: accountManagementView});
-                }
-                break;
-            case "cloud-credentials_list":
-                if(accountManagementView.subApp instanceof CloudCredentialManagementListView)
-                {
-                    //do nothing
-                }else{
-                    if(accountManagementView.subApp !== undefined){
-                        accountManagementView.subApp.close();
-                    }
-                    accountManagementView.subApp = new CloudCredentialManagementListView({rootView: accountManagementView});
-                }
-                break;
-            case "cloud-accounts_list":
-                if(accountManagementView.subApp instanceof CloudAccountManagementListView)
-                {
-                    //do nothing
-                }else{
-                    if(accountManagementView.subApp !== undefined){
-                        accountManagementView.subApp.close();
-                    }
-                    accountManagementView.subApp = new CloudAccountManagementListView({rootView: accountManagementView});
-                }
-                break;
-            case "configuration_managers":
-                if(accountManagementView.subApp instanceof DevOpsToolsManagementView){
-
-                }else{
-                    if(accountManagementView.subApp !== undefined){
-                        accountManagementView.subApp.close();
-                    }
-                    accountManagementView.subApp = new DevOpsToolsManagementView({rootView: accountManagementView});
-                }
-                break;
-            case "continuous_integration":
-                if(accountManagementView.subApp instanceof ContinuousIntegrationManagementView){
-
-                }else{
-                    if(accountManagementView.subApp !== undefined){
-                        accountManagementView.subApp.close();
-                    }
-                    accountManagementView.subApp = new ContinuousIntegrationManagementView({rootView: accountManagementView});
-                }
-                break;
-            case "source_control_repositories":
-                if(accountManagementView.subApp instanceof SourceControlRepositoryManagementListView){
-
-                }else{
-                    if(accountManagementView.subApp !== undefined){
-                        accountManagementView.subApp.close();
-                    }
-                    accountManagementView.subApp = new SourceControlRepositoryManagementListView({rootView: accountManagementView});
-                }
-                break;
-            case "home":
-                if(accountManagementView.subApp instanceof HomeView)
-                {
-                    //do nothing
-                }else{
-                    if(accountManagementView.subApp !== undefined){
-                        accountManagementView.subApp.close();
-                    }
-                    accountManagementView.subApp = new HomeView({rootView: accountManagementView});
-                }
-                break;
-        }
-
-        if(accountManagementView.afterSubAppRender) {
-            accountManagementView.afterSubAppRender.call(accountManagementView);
-        }
-    }, Common);
-
-    return AccountManagementView;
-});
+        }, Common);
+    
+        return AccountManagementView;
+    }
+);

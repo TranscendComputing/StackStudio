@@ -54,12 +54,12 @@ define([
 			'*actions': 'defaultRoute'
 		},
 
-		defaultRoute: function( actions ) {
+		defaultRoute: function(actions) {
 		    if (window.app === "stackplace") {
 		        if ( (typeof actions === 'object') && (actions.url !== undefined) ) {
 		            this.trigger('route:projectEdit', actions.url);
 		        } else {
-		          this.trigger('route:projectEdit');
+                    this.trigger('route:projectEdit');
 		        }
 		    } else {
                 $("#sidebar").empty();

@@ -1,9 +1,9 @@
 /* jshint smarttabs:true */
 /* global router:true */
-define(['routers/router'], function(Router) {
+define(['routers/router', 'common'], function(Router, Common) {
     describe("Verify Routes", function() {
         beforeEach(function() {
-            spyOn(Router.prototype, "defaultRoute");
+//            spyOn(Router.prototype, "defaultRoute");//.andCallThrough();
             spyOn(Router.prototype, "imagesRoute");
 //            spyOn(Router.prototype, "cloudCredentials");
             spyOn(Router.prototype, "accountManagementRoute");
@@ -26,8 +26,11 @@ define(['routers/router'], function(Router) {
         });
 
         it("verify defaultRoute", function() {
-            router.navigate('/', true);
-            expect(Router.prototype.defaultRoute).toHaveBeenCalled();  
+            router.navigate('/', {trigger: true});
+            //expect(Router.prototype.defaultRoute).toHaveBeenCalled();  
+            //Common.vent.trigger("route:dashboard");
+            //console.info($(document).text());
+            //expect($("#getstarted").length > 0).toBeTruthy();
         });
 
         it("verify /images (imagesRoute)", function() {
