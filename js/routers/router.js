@@ -55,6 +55,7 @@ define([
 		},
 
 		defaultRoute: function(actions) {
+            console.info('defaultRoute called');
 		    if (window.app === "stackplace") {
 		        if ( (typeof actions === 'object') && (actions.url !== undefined) ) {
 		            this.trigger('route:projectEdit', actions.url);

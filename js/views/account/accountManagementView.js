@@ -99,9 +99,11 @@ define([
                 window.jQuery = $;
                 window.$ = $;
             },
+
             /** Add all of my own html elements */
             render: function () {
                 var accMan = this;
+
                 $("#mCloudAccount_tree").jstree({
                     "themeroller":{"item": "jstree_custom_item"},
                     "plugins":[ "themeroller", "html_data", "crrm" ]
@@ -112,6 +114,7 @@ define([
                         reset: true
                     });
                 });
+
                 $("#mCloudCredential_tree").jstree({
                     "themeroller":{"item": "jstree_custom_item"},
                     "plugins":[ "themeroller", "html_data", "crrm" ]
@@ -119,6 +122,7 @@ define([
                     //async
                     accMan.cloudCredentials.fetch({reset: true});
                 });
+
                 $("#mGroup_tree").jstree({
                     "themeroller":{"item": "jstree_custom_item"},
                     "plugins":[ "themeroller", "html_data", "crrm" ]
@@ -128,12 +132,14 @@ define([
                         reset: true
                     });
                 });
+
                 $("#mUser_tree").jstree({
                     "themeroller":{"item": "jstree_custom_item"},
                     "plugins":[ "themeroller", "html_data", "crrm" ]
                 }).on('loaded.jstree', function() {
                     $("#mUser_tree").jstree('open_all');
                 });
+
                 $("#mPolicy_tree").jstree({
                     "themeroller":{"item": "jstree_custom_item"},
                     "plugins":[ "themeroller", "html_data", "crrm" ]
@@ -144,24 +150,28 @@ define([
                         reset: true
                     });
                 });
+
                 $("#mSCRepos_tree").jstree({
                     "themeroller":{"item": "jstree_custom_item"},
                     "plugins":[ "themeroller", "html_data", "crrm" ]
                 }).on('loaded.jstree', function() {
                         $("#mSCRepos_tree").jstree('open_all');
                 });
+
                 $("#mContinuousIntegration_tree").jstree({
                     "themeroller":{"item": "jstree_custom_item"},
                     "plugins":[ "themeroller", "html_data", "crrm" ]
                 }).on('loaded.jstree', function() {
                         $("#mContinuousIntegration_tree").jstree('open_all');
                 });
+
                 $("#mdevOps_tree").jstree({
                     "themeroller":{"item": "jstree_custom_item"},
                     "plugins":[ "themeroller", "html_data", "crrm" ]
                 }).on('loaded.jstree', function() {
                         $("#mdevOps_tree").jstree('open_all');
                 });
+
                 $("#mMyAccount_tree").jstree({
                     "themeroller":{"item": "jstree_custom_item"},
                     "plugins":[ "themeroller", "html_data", "crrm" ]
@@ -278,6 +288,7 @@ define([
                     this.subApp.treeSelect();
                 }
             },
+
             addUser: function(event) {
                 new NewLoginView({org_id: sessionStorage.org_id});
             },
@@ -300,12 +311,15 @@ define([
         var accountManagementView;
         var self = this;
         Common.router.on("route:accountManagement", function (action) {
+            console.info('accountManagement jQuery binding triggered');
             if (this.previousView !== accountManagementView) {
                 this.unloadPreviousState();
                 accountManagementView = new AccountManagementView();
                 this.setPreviousState(accountManagementView);
             }
 
+            /* Container for actual view decided on below */
+            var TargetView;
             switch(action) {
                 case "cloud-accounts":
                     if (accountManagementView.subApp instanceof CloudAccountManagementView)
@@ -448,6 +462,14 @@ define([
                     }
                     break;
             }
+
+            /* Common instruction for entire switch statement above */
+//            if (! accountManagementView.subApp instanceof TargetView) {
+//                if (accountManagementView.subApp !== undefined) {
+//                    accountManagementView.subApp.close();
+//                }
+//                accountManagementView.subApp = new TargetView({rootView: accountManagementView});
+//            }
     
             if (accountManagementView.afterSubAppRender) {
                 accountManagementView.afterSubAppRender.call(accountManagementView);
