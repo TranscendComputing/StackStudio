@@ -12,8 +12,7 @@ require(['config/rjsConfig'], function(undefined) {
             requirejs.config({urlArgs: 'cb=' + Math.random()});
         }
     
-        var dashboardView;
-        dashboardView = "views/dashboardView";
+        var dashboardView = "views/dashboardView";
         common.rssFeed = "http://www.transcendcomputing.com/feed/";
         /* NOT WORKING
         var site = window.location.hostname.split(".")[0];
@@ -44,7 +43,7 @@ require(['config/rjsConfig'], function(undefined) {
             [
                 'views/topNav',
                 'views/account/navLogin',
-                 dashboardView,
+                dashboardView,
                 'views/projectSidebarView',
                 'views/account/accountManagementView',
                 'views/projectAppView',

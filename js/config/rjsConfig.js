@@ -109,7 +109,7 @@ requirejs.config({
         collections: 'js/collections',
         models: 'js/models',
         routers: 'js/routers',
-        'views': 'js/views',
+        views: 'js/views',
         interpreters: 'js/interpreters',
         templates: 'templates',
         wrappers: 'wrappers',

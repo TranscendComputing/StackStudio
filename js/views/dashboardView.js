@@ -13,7 +13,6 @@ define([
         'text!templates/dashboard.html',
         'FeedEk'
 ], function( $, _, Backbone, Common, dashboardTemplate, FeedEk ) {
-
     var DashboardView = Backbone.View.extend({
         el: "#main",
         template: _.template(dashboardTemplate),
@@ -50,6 +49,7 @@ define([
             this.unbind();
         }
     });
+
     /** Variable to track whether view has been initialized or not */
     var dashboardView;
     
