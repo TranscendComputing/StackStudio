@@ -32,7 +32,7 @@ define([
         columns : ["name", "status"],
 
         actions: [
-            
+            { text: "Update Network", type: }
         ],
 
         idColumnNumber : 0,
@@ -50,6 +50,7 @@ define([
         UpdateView : undefined,
 
         initialize : function ( options ) {
+
 
             var appView = this;
             this.vdc = options.data_center;
