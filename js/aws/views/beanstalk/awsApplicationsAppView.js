@@ -67,6 +67,13 @@ define([
             'click #version_action_menu ul li': 'performVersionAction'
         },
 
+        createButton: true,
+        createText: "Create Application",
+
+        actions: [
+            { text: "Delete Application", type: "row" }
+        ],
+
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
@@ -74,8 +81,12 @@ define([
             if(options.region) {
                 this.region = options.region;
             }
-            
+
+            this.$el.html(this.template);
+
+            this.loadData();
             this.render();
+            this.loadTable();
             
             var applicationApp = this;
             Common.vent.on("applicationAppRefresh", function() {

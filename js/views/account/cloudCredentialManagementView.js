@@ -37,10 +37,11 @@ define([
             //"change select#cloud_accounts_select": "selectCloudAccount"
         },
         /** Constructor method for current view */
-        initialize: function() {
+        initialize: function ( options ) {
             
-            this.rootView = this.options.rootView;
-            this.cloudCredentials = this.rootView.cloudCredentials;
+            this.rootView = options.rootView;
+            this.cloudCredentials = options.collection;
+            this.selectedCloudCredential = this.cloudCredentials.get(options.selectedId);
             
             this.subViews = [];
             //Render my own view
@@ -50,21 +51,24 @@ define([
             Common.vent.on("cloudCredentialDeleted", this.notifyDeleted, this);
             Common.vent.on("cloudCredentialSaved", this.notifySaved, this);
             
-            //Add listeners and fetch db for credentials collection
-            this.cloudCredentials.fetch({reset: true});
-            //Add listeners and fetch db for cloud accounts collection
-            /*
-            this.cloudAccounts = new CloudAccounts();
-            this.cloudAccounts.on( 'add', this.addCloudAccount, this);
-            this.cloudAccounts.on( 'reset', this.addAllCloudAccounts, this);
-            this.cloudAccounts.fetch({ 
-                data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id }),
-                reset: true
-            });
-            */
         },
         /** Add all of my own html elements */
         render: function () {
+            var thisView = this;
+            if(!this.rootView.cloudAccounts) {
+                this.rootView.cloudAccounts = new CloudAccounts();
+                this.rootView.cloudAccounts.on('reset', this.rootView.addAll.bind(this.rootView, this.rootView.cloudAccounts, $('#cloud_account_list')));
+
+                this.rootView.cloudAccounts.fetch({
+                    data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id}),
+                    success : function ( cloudAccounts ) {
+                        thisView.render();    
+                    }
+                });
+
+                return;
+            }
+
             //Render my template
             this.$el.html(this.template);
             $("#submanagement_app").html(this.$el);
@@ -73,11 +77,11 @@ define([
                 disabled: true
             });
             $("button#save_credential").hide();
-            
-            if(this.rootView.treeCloudCred){
-                this.treeSelectCloudCred();
-            }
 
+            $("#cloud_account_label").html(this.rootView.cloudAccounts.get(this.selectedCloudCredential.attributes.cloud_account_id).attributes.name);
+            this.renderCredentialForm();
+            $("button#delete_credential").button("option", "disabled", false);
+            
             if(this.rootView.afterSubAppRender) {
                 this.rootView.afterSubAppRender.call(this.rootView);
             }
@@ -93,58 +97,10 @@ define([
             $("button#save_credential").show();
             this.subViews.push(this.credentialForm);
         },
-        /*
-        addCloudAccount: function(model) {
-            $("select#cloud_accounts_select").append("<option value='"+model.attributes.name+"'>"+model.attributes.name+"</option>");
-            this.selectedCloudAccount = model;
-        },
-
-        addAllCloudAccounts: function() {
-            $("select#cloud_accounts_select").empty();  
-            $("select#cloud_accounts_select").append("<option value='All'>All</option>");          
-            this.cloudAccounts.each(this.addCloudAccount, this);
-        },
-        
-        selectCloudAccount: function(event) {
-            var accountName = $(event.target).val();
-            //var accountName = event.target.selectedOptions[0].value;
-            if(accountName !== "All")
-            {
-                $("button#new_credential").button("option", "disabled", false);
-                this.selectedCloudAccount = this.cloudAccounts.where({name: accountName})[0];
-            }else{
-                $("button#new_credential").button("option", "disabled", true);
-            }
-        },
-        
-        selectCloudCredential: function(event) {
-            this.clearSelection();
-            $(event.target).addClass("selected_item");
-            this.selectedCloudCredential = this.cloudCredentials.where({name: event.target.id})[0];
-            this.renderCredentialForm();
-            $("button#delete_credential").button("option", "disabled", false);
-        },
-        */
-        
-        treeSelectCloudCred: function() {
-            this.clearSelection();
-            this.selectedCloudCredential = this.rootView.cloudCredentials.get(this.rootView.treeCloudCred);
-            $("#cloud_account_label").html(this.rootView.cloudAccounts.get(this.selectedCloudCredential.attributes.cloud_account_id).attributes.name);
-            this.renderCredentialForm();
-            $("button#delete_credential").button("option", "disabled", false);
-        },
 
         clearSelection: function() {
-            $("#credential_list li").each(function() {
-               $(this).removeClass("selected_item");
-            });
+            $("#credential_list li").removeClass("selected_item");
         },
-        /*
-        newCredential: function() {
-            this.selectedCloudCredential = new CloudCredential({cloud_provider: this.selectedCloudAccount.attributes.cloud_provider});
-            this.renderCredentialForm();
-        },
-        */
         registerNewCredential: function() {
             $("button#save_credential").button("option", "disabled", false);
         },

@@ -15,23 +15,79 @@ define([
 	var VCloudVapp = ResourceModel.extend({
 		
 		defaults : {
-			name : ''
+			cred_id : ''
 		},
-		idAttribute : 'name',
 
-		getVms : function ( cb ) {
+		defaultErrorHandler : function ( err ) {
+			var status;
+			var message;
+			if(!err) {
+				status = "Unknown";
+				message = "An unknown error has occurred.";
+				return Common.errorDialog(status, message);
+			}
+
+			console.log("AJAX Error: ", err);
+
+			status = err.status || err.status_code || err.errorCode || err.minorErrorCode || "Unknown";
+			message = (typeof err === 'string') ? err : err.responseText || err.message;
+			if(typeof message !== 'string') {
+				message = "An unknown error has occurred.";
+			}
+			return Common.errorDialog("Error (" + status + ")", message);
+		},
+
+		destroy : function ( options ) {
 			$.ajax({
-				type : 'GET',
-				url : Common.apiUrl + '/stackstudio/v1/cloud_management/vcloud/compute/data_centers/' + encodeURIComponent(this.attributes.vdc) + '/vapps/' + encodeURIComponent(this.attributes.name) + '/vms',
+				type: 'POST',
+				url : Common.apiUrl + '/stackstudio/v1/cloud_management/vcloud/compute/data_centers/' + options.vdc_id + '/vapps/' + options.vapp_id  + '?_method=DELETE&cred_id=' + options.cred_id,
+				success : options.success || function ( result ) {
+					console.log(result);
+				},
+				error : options.error || this.defaultErrorHandler
+			});
+		},
+
+
+		createSnapshot : function ( options ) {
+			$.ajax({
+				type : 'POST',
+				url : Common.apiUrl + '/stackstudio/v1/cloud_management/vcloud/compute/data_centers/' + options.vdc_id + '/vapps/' + options.vapp_id + '/snapshot',
 				data : {
-					cred_id : this.attributes.cred_id
+					cred_id : options.cred_id
 				},
-				success : function ( results ) {
-					Common.vent.trigger('vcloudAppRefresh', results);
+				success : options.success || function ( result ) {
+					console.log(result);
 				},
-				error : function ( err ) {
-					console.log(err);
-				}
+				error : options.error || this.defaultErrorHandler
+			});
+		},
+
+		revert : function ( options ) {
+			$.ajax({
+				type : 'POST',
+				url : Common.apiUrl + '/stackstudio/v1/cloud_management/vcloud/compute/data_centers/' + options.vdc_id + '/vapps/' + options.vapp_id + '/revert_to_snapshot',
+				data : {
+					cred_id : options.cred_id
+				},
+				success : options.success || function ( result ) {
+					console.log(result);
+				},
+				error : options.error || this.defaultErrorHandler
+			});
+		},
+
+		removeSnapshots : function ( options ) {
+			$.ajax({
+				type : 'POST',
+				url : Common.apiUrl + '/stackstudio/v1/cloud_management/vcloud/compute/data_centers/' + options.vdc_id + '/vapps/' + options.vapp_id + '/snapshot?_method=DELETE&cred_id=' + options.cred_id,
+				data : {
+					cred_id : options.cred_id
+				},
+				success : options.success || function ( result ) {
+					console.log(result);
+				},
+				error : options.error || this.defaultErrorHandler
 			});
 		}
 	});

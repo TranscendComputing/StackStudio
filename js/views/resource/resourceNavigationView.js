@@ -77,10 +77,7 @@ define([
             this.subViews = [];
             $("#main").html(this.el);
             this.$el.html(this.template);
-            $("#resource_summary").accordion({
-                collapsible: true,
-                heightStyle: "content"
-            });
+
             var response = $.ajax({
                 url: "samples/cloudDefinitions.json",
                 async: false
@@ -103,9 +100,6 @@ define([
         render: function () {
             if($("#cloud_coverflow").children().length > 0){
                 //debugger
-
-                //wait until datacenters are loaded to display in vcloud case
-                Common.vent.on('dataCentersLoaded', this.loadResourceApp);
 
                 if(this.resourceApp) {
                     this.resourceApp.remove();
@@ -138,8 +132,9 @@ define([
                         this.cloudSelection(firstCloudProvider);
                     }
                 }
-                
-                if(this.cloudProvider !== 'vcloud'|| this.VdcsLoaded === true) {
+                if(this.cloudProvider === 'vcloud' && !this.dataCenters) {
+                    this.loadDataCenters(this.loadResourceApp.bind(this));
+                } else {
                     this.loadResourceApp();
                 }
             }else{
@@ -350,9 +345,9 @@ define([
             $("#cloud_nav").html(this.crumbTemplate({pathElt: this.cloudDefinitions[this.cloudProvider].name}));
             this.refreshCloudSpecs();
 
-            if(this.cloudProvider === "vcloud") {
-                this.loadDataCenters();
-            }
+            // if(this.cloudProvider === "vcloud") {
+            //     this.loadDataCenters();
+            // }
         },
 
         credentialChange: function(event) {
@@ -458,30 +453,31 @@ define([
             }
         },
 
-        loadDataCenters : function () {
+        loadDataCenters : function ( cb ) {
 
             var View = this;
             var DataCenters = this.DataCenters;
-            DataCenters = new DataCenters({
-                cred_id : this.selectedCredential
-            });
+            DataCenters = new DataCenters();
 
             DataCenters.fetch({
+                data : {
+                    cred_id : View.selectedCredential
+                },
                 success : function ( vdcs ) {
-                    View.VdcsLoaded = true;
+                    View.dataCenters = vdcs;
 
                     // var vcloudPath = '/js/vcloud/views/compute/vcloudTreeView.js';
 
                     var $centers = $('<div id="dataCenters" class="col-lg-4 spec_select">Data Center: </div>')
                         , $select = $('<select id="data_center_select" class="cloud_spec_select form-control"></select>');
 
-                    $select.change(function () {
-                        View.selectedDataCenter = $(this).val();
-                        // View.loadTreeView(vcloudPath);
+                    $.each(vdcs.models, function ( index, vdc ) {
+                        $select.append('<option value="' + vdc.attributes.id + '">' + vdc.attributes.name + '</option>');
                     });
 
-                    $.each(vdcs.models, function ( index, vdc ) {
-                        $select.append('<option value="' + vdc.attributes.name + '">' + vdc.attributes.name + '</option>');
+                    $select.change(function () {
+                        View.selectedDataCenter = $(this).val();
+                        View.render();
                     });
 
                     $centers.append($select);
@@ -489,8 +485,9 @@ define([
 
                     View.selectedDataCenter = $select.val();
 
-                    View.loadResourceApp();
-                    // View.loadTreeView(vcloudPath);
+                    if(cb) {
+                        cb.call(this);
+                    }
                 }
             });
         },
@@ -592,27 +589,6 @@ define([
             }
         },
 
-        // loadTreeView : function ( view ) {
-        //     var resourceNav = this;
-
-        //     require([view], function ( TreeView ) {
-        //         if (resourceNav.resourceApp instanceof TreeView) {
-        //             //refresh
-        //             return;
-        //         }
-
-        //         var resourceTreeView = new TreeView({
-        //             cred_id : resourceNav.selectedCredential,
-        //             data_center : resourceNav.selectedDataCenter,
-        //             cloudProvider : resourceNav.cloudProvider
-        //         });
-
-        //         resourceNav.resourceApp = resourceTreeView;
-        //         resourceNav.resourceSelect(resourceNav.type);
-        //         resourceNav.refreshPath();
-        //     });
-        // },
-
         loadAppView : function ( view ) {
             var resourceNav = this;
             require([view], function ( AppView ) {
@@ -627,7 +603,7 @@ define([
                     return;
                 }
 
-                var resourceAppView = new AppView({cred_id: resourceNav.selectedCredential, region: resourceNav.selectedRegion, data_center : resourceNav.selectedDataCenter});
+                var resourceAppView = new AppView({navView: resourceNav,cred_id: resourceNav.selectedCredential, region: resourceNav.selectedRegion, data_center : resourceNav.selectedDataCenter});
                 resourceAppView.cloudProvider = resourceNav.cloudProvider;
                 resourceNav.resourceApp = resourceAppView;
                 resourceNav.resourceSelect(resourceNav.type);

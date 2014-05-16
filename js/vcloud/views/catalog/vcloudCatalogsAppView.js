@@ -37,13 +37,18 @@ define([
 
         collectionType : Catalogs,
 
-        type : 'compute',
+        type : 'catalog',
 
         subtype : 'catalogs',
 
         CreateView : undefined,
 
         UpdateView : undefined,
+
+        events : {
+            'click #resource_table tr': "clickOne",
+            'click #instantiate_vapp': "instantiateVapp"
+        },
 
         initialize : function ( options ) {
 
@@ -60,6 +65,27 @@ define([
             appView.render();
 
             Common.vent.on("vcloudAppRefresh", appView.render.bind(appView));
+        },
+
+        toggleActions : function () {
+
+        },
+
+        instantiateVapp : function ( event ) {
+            var item_id = $(event.currentTarget).parents('tr').attr('item-id');
+            var cat_id = $(event.currentTarget).parents('table').attr('cat-id');
+
+            var catalog = new this.model();
+
+            catalog.instantiateVapp({
+                cred_id : this.credentialId,
+                cat_id : cat_id,
+                item_id : item_id,
+                vapp_name : 'test-vapp-1',
+                vapp_options : {
+                    vdc_id : this.vdc
+                }
+            });
         }
     });
 

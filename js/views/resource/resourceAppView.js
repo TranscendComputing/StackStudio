@@ -12,9 +12,10 @@ define([
         'icanhaz',
         'common',
         'views/resource/resourceRowView',
+        'text!templates/resources/actionBarTemplate.html',
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator'
-], function( $, _, Backbone, ich, Common , ResourceRowView ) {
+], function( $, _, Backbone, ich, Common , ResourceRowView, actionBarTemplate ) {
     'use strict';
 
     var ResourceAppView = Backbone.View.extend({
@@ -42,79 +43,139 @@ define([
 
         tagName: 'div',
 
-        render: function() {
-            this.$el.html(this.template);
+        createButton: true,
 
-            $('#resource_app').html(this.$el);
+        createText: 'Create',
 
-            this.delegateEvents(this.events);
-            ich.refresh();
+        loadTable : function ( options ) {
+            options = options || {};
+            options.bProcessing = options.bProcessing || true;
+            var $el = options.$el || this.$el.find('#resource_table');
 
-
-
-            $('button').button();
-            $('button').addClass("btn btn-primary");
-            $("#action_menu").menu();
-
-            this.$table = $('#resource_table').dataTable({
-                "bJQueryUI": true,
+            this.$table = $el.dataTable({
+                "bJQueryUI": options.bJQueryUI || true,
                 "bProcessing": true,
-                "bDestroy": true
+                "bDestroy": options.bDestroy || true,
+                "bSort" : options.bSort || false
             });
-            this.$table.fnProcessingIndicator(true);
-            //$('input').addClass("form-control");
 
-            //if child view hasn't explicitly set up the collection, set it up here
+            this.$table.fnProcessingIndicator(!!options.bProcessing);
+
+            this.collection.on( 'add', this.addOne, this );
+            this.collection.on( 'reset', this.addAll, this );
+
+            return this.$table;
+        },
+
+        loadActionMenu : function () {
+            var actions = this.actions || [];
+            var view = this;
+            var $actionBar = $(actionBarTemplate);
+
+            var $tableActions = $actionBar.find('#table_level_actions');
+            var $rowActions = $actionBar.find('#action_menu');
+
+
+            if(this.createButton) {
+                var createAction = this.createAction(this.createText);
+                $tableActions.append('<button class="create_button table-level-action">' + createAction.text + '</button>');
+            }
+
+            $.each(actions, function ( index, action ) {
+
+                if(action.type === "table") {
+                    $tableActions.append('<button id="' + action.id + '" class="table-level-action' + (action.cssClass || "") + '">' + action.text + '</button>');
+                } else {
+                    $rowActions.append('<li role="presentation"><a role="menuitem" tabindex="-1" href="#" id="' + action.id + '">' + action.text + '</a></li>');
+                }
+            });
+
+            $actionBar.find("#action_menu li").addClass("ui-state-disabled");
+
+            $actionBar.find('#row_level_actions a').click(function ( e ) {
+                e.preventDefault();
+            });
+
+            if($tableActions.length === 0) {
+                $tableActions = $actionBar.find('td:first');
+                $tableActions.prop('id', "table_level_actions");
+            }
+            var $refreshButton = $tableActions.find('#refresh_resource_table');
+            // if there isn't a refresh button, let's add it. Refreshing is good.
+            if($refreshButton.length === 0) {
+                $refreshButton = $('<button class="btn btn-primary" id="refresh_resource_table">Reload</button>');
+                $tableActions.append($refreshButton);
+            }
+
+            $refreshButton.unbind('click');
+
+            $refreshButton.on('click', function ( e ) {
+                view.$table.fnProcessingIndicator(true);
+                view.collection.fetch(this.collectionParams);
+            });
+
+            this.$el.find('.button_bar').html($actionBar);
+        },
+
+        loadData : function ( options ) {
+            options = options || {};
+            var data = options.data || {};
+
+            if(this.region) { data.region = this.region; }
+            if(this.credentialId) { data.cred_id = this.credentialId; }
+
+            var parameters = {
+                error : options.error || this.onLoadingError.bind(this),
+                reset : options.reset || true,
+                data : data
+            };
+
+            this.collectionParams = parameters;
+
             if(typeof(this.collection) === 'undefined') {
                 var CollectionType = this.collectionType;
                 this.collection = new CollectionType();
             }
 
-            this.collection.on( 'add', this.addOne, this );
-            this.collection.on( 'reset', this.addAll, this );
-            
-            $("#action_menu li").addClass("ui-state-disabled");
+            this.collection.fetch(parameters);
 
-            var view = this;
-            // Fetch error callback function is defined here to
-            // ensure variable scopes
-            var fetchErrorFunction = function(collection, response, options) {
-                view.$table.fnProcessingIndicator(false);
+            if(options.render === true) {
+                this.render();
+                this.loadTable();
+            }
+        },
+
+        render: function() {
+            this.loadActionMenu();
+            $('#resource_app').html(this.$el);
+
+            this.delegateEvents(this.events);
+
+            $('button').button();
+            $('button').addClass("btn btn-primary");
+
+            this.$el.find('#action_menu a').click(function ( e ) {
+                e.preventDefault();
+            });
+        },
+
+        onLoadingError : function ( err ) {
+            this.$table.fnProcessingIndicator(false);
                 var status,
                     message;
-                if(response.statusText !== "")
+                if(err.statusText !== "")
                 {
-                    status = response.statusText;
+                    status = err.statusText;
                 }else{
                     status = "Connection Error";
                 }
-                if(response.responseText !== "")
+                if(err.responseText !== "")
                 {
-                    message = response.responseText;
+                    message = err.responseText;
                 }else{
                     message = "Unable to connect to server to fetch resources.";
                 }
                 Common.errorDialog(status, message);
-            };
-
-            
-
-            var data = {};
-
-            if(view.region) { data.region = view.region; }
-            if(view.credentialId) { data.cred_id = view.credentialId; }
-
-            if(view.fetchParams) {
-                data = _.extend(data, view.fetchParams);
-            }
-
-            var parameters = {
-                error : fetchErrorFunction,
-                reset : true,
-                data : data
-            };
-
-            this.collection.fetch(parameters);
         },
 
         addOne: function( model ) {
@@ -142,7 +203,12 @@ define([
             var rowData = this.$table.fnGetData(event.currentTarget);
             console.log("ROW DATA", rowData, "COLUMN NUMBER", this.idColumnNumber);
             //TODO -- make more dynamic in order to allow user to define columns
-            id = rowData[this.idColumnNumber];
+            var customId = $(event.currentTarget).data('id');
+            if(customId) {
+                id = customId;
+            } else {
+                id = rowData[this.idColumnNumber];
+            }
             Common.router.navigate("#resources/" + this.cloudProvider + "/"+this.region+"/"+this.type+"/"+this.subtype+"/"+id, {trigger: false});
             this.selectOne(id, event.currentTarget);
         },
@@ -163,6 +229,14 @@ define([
                 this.selectedId = id;
                 $("#action_menu li").removeClass("ui-state-disabled");
                 var template = this.cloudProvider + "_resource_detail";
+
+                ich.refresh();
+                if(!ich.templates.resource_detail) {
+                    var $temp = $('<div>');
+                    $temp.html(this.template());
+                    var updatedTemplate = $temp.find('#resource_detail');
+                    ich.addTemplate("resource_detail", updatedTemplate.html());
+                }
                 if (ich.templates.resource_detail) {
                     // Some templates use links to navigate to related resources, so merge the selected
                     // into the model attributes in order to use in template links
@@ -171,11 +245,14 @@ define([
                     // Delete region attribute added above, as it was only needed for templating
                     delete selectedModel.attributes['region'];
                     var resourceApp = this;
-                    $("#detail_tabs").tabs({
-                        select: function(event, ui) {
-                            resourceApp.selectedTabIndex = ui.index;
-                        }
-                    });
+
+                    if($('#detail_tabs .nav-tabs').length === 0) {
+                        $("#detail_tabs").tabs({
+                            select: function(event, ui) {
+                                resourceApp.selectedTabIndex = ui.index;
+                            }
+                        });
+                    }
                     $('.create_button').button();
                 }
                 this.toggleActions();
@@ -228,13 +305,17 @@ define([
             }
         },
 
+        createAction : function ( text ) {
+            return { text: text, cssClass: "create_button", type: "table"};
+        },
+
         close: function(){
             //if(this.$table)
             //{
             //    this.$table.fnDestroy();
             //}
-            this.$el.empty();
             this.undelegateEvents();
+            this.$el.remove();
             this.stopListening();
             this.unbind();
             // handle other unbinding needs, here

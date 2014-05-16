@@ -80,6 +80,14 @@ define([
             'click #refresh_monitors_button': 'refreshMonitors'
         },
 
+        actions: [
+            { text: "Start", type: "row" },
+            { text: "Stop", type: "row" },
+            { text: "Reboot", type: "row" },
+            { text: "Terminate", type: "row" },
+            { text: "Disassociate Address", type: "row" }
+        ],
+
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
@@ -87,7 +95,8 @@ define([
             if(options.region) {
                 this.region = options.region;
             }
-            this.render();
+            this.$el.html(this.template);
+            this.loadData({render: true});
             
             var instanceApp = this;
             Common.vent.on("instanceAppRefresh", function() {

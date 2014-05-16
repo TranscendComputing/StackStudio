@@ -58,11 +58,18 @@ define([
             'click #record_set_action_menu ul li': 'performRecordSetAction'
         },
 
+        createText: createHostedZone,
+
+        actions: [
+            { text: "Delete Hosted Zone", type: "row" }
+        ],
+
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
             }
-            this.render();
+            this.$el.html(this.template);
+            this.loadData({ render: true });
             
             var hostedZoneApp = this;
             Common.vent.on("hostedZoneAppRefresh", function() {

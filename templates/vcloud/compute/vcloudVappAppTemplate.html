@@ -1,25 +1,5 @@
-
 <div>
-    <div class="button_bar">
-        <table>
-            <tr>
-                <td>
-                    <button class="create_button">Create</button>
-                </td>
-                <td>
-                    <ul id="action_menu">
-                        <li style="z-index: 1000">
-                            <a id="action_button">Actions</a>
-                            <ul>
-                                <li><a>Update vApp</a></li>
-                                <li><a>Delete vApp</a></li>             
-                            </ul>
-                        </li>
-                    </ul>
-                </td>
-            </tr>
-        </table>
-    </div>
+    <div class="button_bar"></div>
     <table id="resource_table" class="full_width">
         <thead>
             <tr>
@@ -36,30 +16,28 @@
     </table>
     <div id="details" class="detail_panel"></div>
 </div>
-
 <script type="text/html" id="resource_detail">
-    <div id="detail_tabs">
-        <ul>
-            <li><a id="vapp_details" href="#tabs-1">Details</a></li>
-            <li><a id="vapp_vms" href="#tabs-2">Virtual Machines</a></li>
-        </ul>
-        <div id="tabs-1" class="tab">
-            <table>
-                <tbody>
-                    <tr><td><b>Name:</b></td><td>{{name}}</td></tr>
-                </tbody>
-            </table>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">Detail View: {{name}}</h3>
         </div>
-        <div id="tabs-2" class="tab">
-            <table>
-                <tbody>
-                    {{#vms}
-                        <tr>
-                            <td><b>Name:</b></td><td>{{name}}</td><td><b>Status:</b></td><td>{{status}}</td>
-                        </tr>
-                    {{/vms}}
-                </tbody>
-            </table>
+        <div class="panel-body">
+            <div id="detail_tabs">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#tabs-1">Details</a></li>
+                    <li><a data-toggle="tab" href="#tabs-2">Virtual Machines</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div id="tabs-1" class="tab-pane active">
+                        <table>
+                            <tbody>
+                                <tr><td><b>Name:</b></td><td>{{name}}</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="tabs-2" class="tab-pane"></div>
+                </div>
+            </div>
         </div>
     </div>
 </script>

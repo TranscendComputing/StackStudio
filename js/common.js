@@ -307,6 +307,10 @@ define(
         e.preventDefault();
     });
 
+    String.prototype.capitalize = function() {
+        return this.charAt(0).toUpperCase() + this.slice(1);
+    }
+
     // Initialize the command line, since that's global to all pages.
     var consoleAppView = new CommandLineView();
 

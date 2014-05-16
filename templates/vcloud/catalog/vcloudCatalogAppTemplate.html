@@ -38,6 +38,7 @@
     <div id="detail_tabs">
         <ul>
             <li><a id="catalog_details" href="#tabs-1">Details</a></li>
+            <li><a id="catalog_items" href="#tabs-2">vApp Templates</a></li>
         </ul>
         <div id="tabs-1" class="tab">
             <table>
@@ -54,12 +55,24 @@
                         </td>
                         <td>{{description}}</td>
                     </tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="tabs-2" class="tab">
+            <table cat-id="{{id}}">
+                <thead>
                     <tr>
-                        <td>
-                            <b>Status:</b>
-                        </td>
-                        <td>{{status}}</td>
+                        <th>Name</th>
+                        <th>Actions</th>
                     </tr>
+                </thead>
+                <tbody>
+                    {{#items}}
+                    <tr item-id="{{id}}">
+                        <td>{{name}}</td>
+                        <td><button id="instantiate_vapp">Create vApp</button></td>
+                    </tr>
+                    {{/items}}
                 </tbody>
             </table>
         </div>

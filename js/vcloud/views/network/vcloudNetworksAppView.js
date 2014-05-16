@@ -31,6 +31,10 @@ define([
 
         columns : ["name", "status"],
 
+        actions: [
+            
+        ],
+
         idColumnNumber : 0,
 
         model : Network,

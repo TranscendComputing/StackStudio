@@ -60,6 +60,13 @@ define([
             'click #resource_table tr': "clickOne"
         },
 
+        createText: "Create Key Pair",
+
+        actions: [
+            { text: "Import Key Pair", type: "table", cssClass: "import_button" },
+            { text: "Delete Key Pair", type: "row" }
+        ],
+
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
@@ -67,7 +74,8 @@ define([
             if(options.region) {
                 this.region = options.region;
             }
-            this.render();
+            this.$el.html(this.template);
+            this.loadData({render: true});
             
             var keyPairApp = this;
             Common.vent.on("keyPairAppRefresh", function() {

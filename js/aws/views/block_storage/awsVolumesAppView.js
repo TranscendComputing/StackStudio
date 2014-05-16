@@ -70,6 +70,17 @@ define([
             'click #monitoring': 'refreshMonitors'
         },
 
+        createButton: true,
+        createText: "Create Volume",
+
+        actions: [
+            { text: "Delete Volume", type: "row"},
+            { text: "Attach Volume", type: "row"},
+            { text: "Detach Volume", type: "row"},
+            { text: "Force Detach", type: "row"},
+            { text: "Create Snapshot", type: "row"}
+        ],
+
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
@@ -77,7 +88,10 @@ define([
             if(options.region) {
                 this.region = options.region;
             }
-            this.render();
+
+            this.$el.html(this.template);
+
+            this.loadData({render: true});
             
             var volumeApp = this;
             Common.vent.on("volumeAppRefresh", function() {

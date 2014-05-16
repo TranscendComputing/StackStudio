@@ -1,355 +1,353 @@
 <div class="row">
-    <div id="image_template_list" class="layout sidebar accordion col-lg-4">
-        <div class="form-group button_bar">
-            <div class="controls">
-                <a id="save_image_template_button" class="btn btn-primary">Save</a>
-                <a id="deploy_image_template_button" class="btn btn-success">Deploy</a>
-                <a id="close_image_template_button" class="btn btn-default">Close</a>
-                <a id="delete_image_template_button" class="btn btn-danger">Delete</a>
-            </div>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h1 class="panel-title">Packed Images</h1>
         </div>
-        <div id="packed_images" class="panel panel-default">
-            <div class="panel-heading"><h3 class="panel-title">Packed Images</h3></div>
-            <div  class="panel-body">
-                <ul id="packed_images_list">
-                    <li>image-name1</li>
-                </ul>
-                <a id="new_image_template_button" class="btn btn-primary"><i class="fa fa-plus"></i>New</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-8">
-        <div id="image_template_open" hidden>
-            <div id="image_initialization_accordion" class="layout sidebar accordion col-lg-12" style="margin-left:0px;">
-
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Packed Image Initialization</h3>
-                    </div>
-                    <div id="templateInitialization" class="panel-body collapse in">
-                        <div class="accordion-inner">
-                            <form class="form-horizontal">
-                                <fieldset>
-                                    <div class="well">
-                                    <!-- Text input-->
-                                    <div class="form-group">
-                                        <label class="col-lg-4 control-label">Packed Image Name</label>
-                                        <div class="controls col-lg-8">
-                                            <input id="image_template_name_input" type="text" placeholder="MyTemplate" class="form-control">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="col-lg-4 control-label">Description</label>
-                                        <div class="col-lg-8 controls">
-                                            <input id="image_template_desc_input" type="text" placeholder="My Description" class="form-control">
-                                        </div>
-                                    </div>
-
-                                    <!-- Multiple Checkboxes -->
-                                    <div class="form-group">
-                                      <label class="col-lg-4 control-label" for="clouds_select">Clouds</label>
-                                      <div class="col-lg-8 controls form-inline">
-                                        <label class="checkbox" for="clouds_select_aws">
-                                          <input type="checkbox" name="clouds_select" id="clouds_select_aws" value="aws" style="display:none;">
-                                          <a id="aws_toggle" class="btn cloud-button" style="display:none;">
-                                            <img style="width:64px;" src="/images/CloudLogos/aws_transparent.png" />
-                                          </a>
-                                        </label>
-                                        <!-- checkbox?-->
-                                        <label class="checkbox" for="clouds_select_openstack">
-                                          <input type="checkbox" name="clouds_select" id="clouds_select_openstack" value="openstack" style="display:none;">
-                                          <a id="os_toggle" class="btn primary cloud-button" style="display:none;">
-                                            <img src="/images/CloudLogos/openstack300_transparent.png" style="width:64px;"/>
-                                          </a>
-                                          <span id="clouds_select_msg" style="color:red;"></span>
-                                        </label>
-                                      </div>
-                                    </div>
-                                    </div>
-
-                                    <!-- Select Basic -->
-                                    <div id="aws_well" class="form-group well" style="display:none;">
-                                        <label class="col-lg-4 control-label">AWS Builder</label>
-                                        <div class="col-lg-8 controls">
-                                            <select id="image_type_select" class="form-control">
-                                                <option>QEMU</option>
-                                            </select><br/>
-                                            <select id="aws_cred_select" class='form-control'><option>Cred</option></select><br/>
-                                            <select id="aws_region_select" name="aws_region_select" class="form-control">
-                                                <option value="us-east-1">US East (Northern Virginia)</option>
-                                                <option value="us-west-2">US West (Oregon)</option>
-                                                <option value="us-west-1">US West (Northern California)   EU (Ireland)</option>
-                                                <option value="eu-west-1">EU (Ireland)</option>
-                                                <option value="ap-southeast-1">Asia Pacific (Singapore)</option>
-                                                <option value="ap-southeast-2">Asia Pacific (Sydney)</option>
-                                                <option value="ap-northeast-1">Asia Pacific (Tokyo)</option>
-                                                <option value="sa-east-1">South America (Sao Paulo)</option>
-                                                <option value="us-gov-west-1">US Gov</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <!-- Select Basic -->
-                                    <div id="os_well" class="form-group well" style="display:none;">
-                                        <label class="col-lg-4 control-label">OpenStack Builder</label>
-                                        <div class="col-lg-8 controls">
-                                            <select id="openstack_type_select" class="form-control">
-                                                <option>QEMU</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="well" id="instance_well" style="display:none;">
-
-                                    <!-- Text input-->
-                                    <div class="form-group">
-                                        <label class="col-lg-4 control-label">OS</label>
-                                        <div class="col-lg-8 controls">
-                                            <input id="os_input" type="text" class="form-control">
-                                            <br/><span id="os_input_msg" style="color:red;"></span>
-                                        </div>
-                                    </div>
-
-                                    <!-- Select Basic -->
-                                    <div class="form-group">
-                                        <label class="col-lg-4 control-label">Machine Type</label>
-                                        <div class="col-lg-8 controls">
-                                            <select id="instance_type_select" class="form-control">
-                                                <option>t1.micro</option>
-                                                <option>m1.small</option>
-                                                <option>m1.medium</option>
-                                                <option>c1.medium</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <!-- Text input-->
-                                    <div class="form-group" style="display:none;">
-                                        <label class="col-lg-4 control-label">Hypervisor</label>
-                                        <div class="col-lg-8 controls">
-                                            <select id="image_hypervisor_select" class="form-control">
-                                                <option>Xen</option>
-                                                <option>KVM</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    </div>
-
-                                    <div class="well" id="components_well" style="display:none;">
-                                    <!-- Select Basic -->
-                                    <div class="form-group">
-                                        <label class="col-lg-4 control-label">Provisioner</label>
-                                        <div class="col-lg-8 controls">
-                                            <select id="image_config_management_select" class="form-control">
-                                                <option value="none">None</option>
-                                                <option value="chef">Chef</option>
-                                                <option value="puppet">Puppet</option>
-                                                <option value="saltstack">SaltStack</option>
-                                                <option value="ansible">Ansible</option>
-                                            </select>
-                                            <span class="help-block">Invoke kickstart commands.</span>
-                                        </div>
-                                    </div>
-
-                                    <!-- Select Basic -->
-                                    <div class="form-group">
-                                        <label class="col-lg-4 control-label">DevOps Tool</label>
-                                        <div class="col-lg-8 controls">
-                                            <select id="dev_ops_select" class="form-control">
-                                                <option value="none">None</option>
-                                                <option value="chef">Chef</option>
-                                                <option value="puppet">Puppet</option>
-                                                <option value="ansible">Ansible</option>
-                                            </select>
-                                            <span class="help-block">Simplify the task of Configuration Management.</span>
-                                        </div>
-                                    </div>
-
-                                    <!-- Select Basic -->
-                                    <div class="form-group">
-                                        <label class="col-lg-4 control-label">Post-Processor</label>
-                                        <div class="col-lg-8 controls">
-                                            <select id="post_processor_select" class="form-control">
-                                                <option value="none">None</option>
-                                            </select>
-                                            <span class="help-block">Invoke tasks after image has been built. (image upload)</span>
-                                        </div>
-                                    </div>
-                                    </div>
-
-                                    <!-- Text input-->
-                                    <div class="form-group" style="display:none;">
-                                        <label class="col-lg-4 control-label">ISO URL</label>
-                                        <div class="col-lg-8 controls">
-                                            <input id="iso_url" name="iso_url" type="text" placeholder="http://mirror.raystedman.net/centos/6/isos/x86_64/CentOS-6.4-x86_64-minimal.iso" style="width:525px;">
-                                        </div>
-                                    </div>
-                                </fieldset>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div id="image_settings_accordion" class="layout sidebar accordion col-lg-12" style="margin-left:0px;">
-                <div class="panel panel-primary" style="margin-bottom: 8px;">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#advancedSettingsCollapse">
-                            Packed Image Initialization
-                            </a>
-                        </h3>
-                    </div>
-                        <div id="advancedSettingsCollapse" class="accordion-body collapse">
-                            <div class="accordion-inner">
-                                <form class="form-horizontal">
-                                    <fieldset>
-                                        <ul class="nav nav-tabs">
-                                          <li class="active"><a class="adv_tab" id="builder_tab">AWS</a></li>
-                                          <li><a class="adv_tab" id="openstack_tab">Openstack</a></li>
-                                          <li><a class="adv_tab" id="provisioner_tab">Provisioner</a></li>
-                                          <li><a class="adv_tab" id="devops_tab">DevOps Tool</a></li>
-                                          <li><a class="adv_tab" id="postprocessor_tab">Post-Processor</a></li>
-                                        </ul>
-                                        <div id="builder_settings" class="adv_tab_panel">
-                                            <!-- Text input-->
-                                            <div class="form-group">
-                                                <label class="col-lg-4 control-label">Boot Command</label>
-                                                <div class="col-lg-8 controls">
-                                                    <textarea id="boot_command" name="boot_command" type="text" placeholder="separate commands by comma" class="form-control"></textarea>
-                                                </div>
-                                            </div>
-
-                                            <!-- Text input-->
-                                            <div class="form-group">
-                                                <label class="col-lg-4 control-label">Disk Interface</label>
-                                                <div class="col-lg-8 controls">
-                                                    <input id="disk_interface" name="disk_interface" type="text" placeholder="virtio" class="form-control">
-                                                </div>
-                                            </div>
-
-                                            <!-- Text input-->
-                                            <div class="form-group">
-                                                <label class="col-lg-4 control-label">Disk Size</label>
-                                                <div class="col-lg-8 controls">
-                                                    <input id="disk_size" name="disk_size" type="text" placeholder="5000" class="form-control">
-                                                </div>
-                                            </div>
-
-                                            <!-- Text input-->
-                                            <div class="form-group">
-                                                <label class="col-lg-4 control-label">Format</label>
-                                                <div class="col-lg-8 controls">
-                                                    <input id="format" name="format" type="text" placeholder="qcow2" class="form-control">
-                                                </div>
-                                            </div>
-
-                                            <!-- Text input-->
-                                            <div class="form-group">
-                                                <label class="col-lg-4 control-label">HTTP Directory</label>
-                                                <div class="col-lg-8 controls">
-                                                    <input id="http_directory" name="http_directory" type="text" placeholder="/home/tdhite/packer/httpfiles" class="form-control">
-                                                </div>
-                                            </div>
-
-                                            <!-- Text input-->
-                                            <div class="form-group">
-                                                <label class="col-lg-4 control-label">ISO Checksum</label>
-                                                <div class="col-lg-8 controls">
-                                                    <input id="iso_checksum" name="iso_checksum" type="text" placeholder="4a5fa01c81cc300f4729136e28ebe600" class="form-control">
-                                                </div>
-                                            </div>
-
-                                            <!-- Text input-->
-                                            <div class="form-group">
-                                                <label class="col-lg-4 control-label">ISO Checksum Type</label>
-                                                <div class="col-lg-8 controls">
-                                                    <input id="iso_checksum_type" name="iso_checksum_type" type="text" placeholder="md5" class="form-control">
-                                                </div>
-                                            </div>
-
-                                            <!-- Text input-->
-                                            <div class="form-group">
-                                                <label class="col-lg-4 control-label">Network Device</label>
-                                                <div class="col-lg-8 controls">
-                                                    <input id="net_device" name="net_device" type="text" placeholder="virtio" class="form-control">
-                                                </div>
-                                            </div>
-
-                                            <!-- Text input-->
-                                            <div class="form-group">
-                                                <label class="col-lg-4 control-label">Shutdown Command</label>
-                                                <div class="col-lg-8 controls">
-                                                    <input id="shutdown_command" name="shutdown_command" type="text" placeholder="shutdown -P now" class="form-control">
-                                                </div>
-                                            </div>
-
-                                            <!-- Text input-->
-                                            <div class="form-group">
-                                                <label class="col-lg-4 control-label">SSH Password</label>
-                                                <div class="col-lg-8 controls">
-                                                    <input id="ssh_password" name="ssh_password" type="text" placeholder="s0m3password" class="form-control">
-                                                </div>
-                                            </div>
-
-                                            <!-- Text input-->
-                                            <div class="form-group">
-                                                <label class="col-lg-4 control-label">SSH Username</label>
-                                                <div class="col-lg-8 controls">
-                                                    <input id="ssh_username" name="ssh_username" type="text" placeholder="root" class="form-control">
-                                                </div>
-                                            </div>
-
-                                            <!-- Text input-->
-                                            <div class="form-group">
-                                                <label class="col-lg-4 control-label">SSH Wait Timeout</label>
-                                                <div class="col-lg-8 controls">
-                                                    <input id="ssh_wait_timeout" name="ssh_wait_timeout" type="text" placeholder="90m" class="form-control">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div id="openstack_settings" class="adv_tab_panel" style="display:none;"></div>
-                                        <div id="provisioner_settings" class="adv_tab_panel" style="display:none;"></div>
-                                        <div id="devops_settings" class="adv_tab_panel" style="display:none;"></div>
-                                        <div id="postprocessor_settings" class="adv_tab_panel" style="display:none;"></div>
-                                    </fieldset>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="panel panel-primary" style="margin-bottom: 8px;">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#uploadSettingsCollapse">
-                            Upload Files
-                            </a>
-                        </h3>
-                    </div>
-
-                        <div id="uploadSettingsCollapse" class="accordion-body collapse">
-                            <div class="accordion-inner">
-                                <!-- <input multiple="" type="file" id="mciaas_files" name="mciaas_files"/> -->
-                                <form multiple="" id="upForm" action="" method="post" enctype="multipart/form-data">
-                                     <input multiple="" type="file" id="mciaas_files" name="mciaas_files">
-                                     <input id="upSub" type="submit">
-                                 </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- <div class="form-group">
-                    <div class="col-lg-8 controls">
+        <div class="panel-body"> 
+            <div id="image_template_list" class="layout sidebar accordion col-lg-4">
+                <div class="form-group button_bar">
+                    <div class="controls">
                         <a id="save_image_template_button" class="btn btn-primary">Save</a>
                         <a id="deploy_image_template_button" class="btn btn-success">Deploy</a>
-                        <a id="close_image_template_button" class="btn">Close</a>
+                        <a id="close_image_template_button" class="btn btn-default">Close</a>
                         <a id="delete_image_template_button" class="btn btn-danger">Delete</a>
                     </div>
-                </div> -->
+                </div>
+                <div id="packed_images" class="panel panel-default">
+                    <div class="panel-heading"><h3 class="panel-title">Packed Images</h3></div>
+                    <div  class="panel-body">
+                        <ul id="packed_images_list">
+                            <li>image-name1</li>
+                        </ul>
+                        <a id="new_image_template_button" class="btn btn-primary"><i class="fa fa-plus"></i>New</a>
+                    </div>
+                </div>
             </div>
-            <div id="image_template_not_opened" hidden>
-                <div class="jumbotron well">
-                    <h3>Select an image template from the list to the left, or begin by creating a new template!</h3>
+            <div class="col-lg-8">
+                <div id="image_template_open" hidden>
+                    <div id="image_initialization_accordion" class="layout sidebar accordion col-lg-12" style="margin-left:0px;">
+
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Packed Image Initialization</h3>
+                            </div>
+                            <div id="templateInitialization" class="panel-body collapse in">
+                                <div class="accordion-inner">
+                                    <form class="form-horizontal">
+                                        <fieldset>
+                                            <div class="well">
+                                            <!-- Text input-->
+                                            <div class="form-group">
+                                                <label class="col-lg-4 control-label">Packed Image Name</label>
+                                                <div class="controls col-lg-8">
+                                                    <input id="image_template_name_input" type="text" placeholder="MyTemplate" class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-lg-4 control-label">Description</label>
+                                                <div class="col-lg-8 controls">
+                                                    <input id="image_template_desc_input" type="text" placeholder="My Description" class="form-control">
+                                                </div>
+                                            </div>
+
+                                            <!-- Multiple Checkboxes -->
+                                            <div class="form-group">
+                                              <label class="col-lg-4 control-label" for="clouds_select">Clouds</label>
+                                              <div class="col-lg-8 controls form-inline">
+                                                <label class="checkbox" for="clouds_select_aws">
+                                                  <input type="checkbox" name="clouds_select" id="clouds_select_aws" value="aws" style="display:none;">
+                                                  <a id="aws_toggle" class="btn cloud-button" style="display:none;">
+                                                    <img style="width:64px;" src="/images/CloudLogos/aws_transparent.png" />
+                                                  </a>
+                                                </label>
+                                                <!-- checkbox?-->
+                                                <label class="checkbox" for="clouds_select_openstack">
+                                                  <input type="checkbox" name="clouds_select" id="clouds_select_openstack" value="openstack" style="display:none;">
+                                                  <a id="os_toggle" class="btn primary cloud-button" style="display:none;">
+                                                    <img src="/images/CloudLogos/openstack300_transparent.png" style="width:64px;"/>
+                                                  </a>
+                                                  <span id="clouds_select_msg" style="color:red;"></span>
+                                                </label>
+                                              </div>
+                                            </div>
+                                            </div>
+
+                                            <!-- Select Basic -->
+                                            <div id="aws_well" class="form-group well" style="display:none;">
+                                                <label class="col-lg-4 control-label">AWS Builder</label>
+                                                <div class="col-lg-8 controls">
+                                                    <select id="image_type_select" class="form-control">
+                                                        <option>QEMU</option>
+                                                    </select><br/>
+                                                    <select id="aws_cred_select" class='form-control'><option>Cred</option></select><br/>
+                                                    <select id="aws_region_select" name="aws_region_select" class="form-control">
+                                                        <option value="us-east-1">US East (Northern Virginia)</option>
+                                                        <option value="us-west-2">US West (Oregon)</option>
+                                                        <option value="us-west-1">US West (Northern California)   EU (Ireland)</option>
+                                                        <option value="eu-west-1">EU (Ireland)</option>
+                                                        <option value="ap-southeast-1">Asia Pacific (Singapore)</option>
+                                                        <option value="ap-southeast-2">Asia Pacific (Sydney)</option>
+                                                        <option value="ap-northeast-1">Asia Pacific (Tokyo)</option>
+                                                        <option value="sa-east-1">South America (Sao Paulo)</option>
+                                                        <option value="us-gov-west-1">US Gov</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <!-- Select Basic -->
+                                            <div id="os_well" class="form-group well" style="display:none;">
+                                                <label class="col-lg-4 control-label">OpenStack Builder</label>
+                                                <div class="col-lg-8 controls">
+                                                    <select id="openstack_type_select" class="form-control">
+                                                        <option>QEMU</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="well" id="instance_well" style="display:none;">
+
+                                            <!-- Text input-->
+                                            <div class="form-group">
+                                                <label class="col-lg-4 control-label">OS</label>
+                                                <div class="col-lg-8 controls">
+                                                    <input id="os_input" type="text" class="form-control">
+                                                    <br/><span id="os_input_msg" style="color:red;"></span>
+                                                </div>
+                                            </div>
+
+                                            <!-- Select Basic -->
+                                            <div class="form-group">
+                                                <label class="col-lg-4 control-label">Machine Type</label>
+                                                <div class="col-lg-8 controls">
+                                                    <select id="instance_type_select" class="form-control">
+                                                        <option>t1.micro</option>
+                                                        <option>m1.small</option>
+                                                        <option>m1.medium</option>
+                                                        <option>c1.medium</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <!-- Text input-->
+                                            <div class="form-group" style="display:none;">
+                                                <label class="col-lg-4 control-label">Hypervisor</label>
+                                                <div class="col-lg-8 controls">
+                                                    <select id="image_hypervisor_select" class="form-control">
+                                                        <option>Xen</option>
+                                                        <option>KVM</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            </div>
+
+                                            <div class="well" id="components_well" style="display:none;">
+                                            <!-- Select Basic -->
+                                            <div class="form-group">
+                                                <label class="col-lg-4 control-label">Provisioner</label>
+                                                <div class="col-lg-8 controls">
+                                                    <select id="image_config_management_select" class="form-control">
+                                                        <option value="none">None</option>
+                                                        <option value="chef">Chef</option>
+                                                        <option value="puppet">Puppet</option>
+                                                        <option value="saltstack">SaltStack</option>
+                                                        <option value="ansible">Ansible</option>
+                                                    </select>
+                                                    <span class="help-block">Invoke kickstart commands.</span>
+                                                </div>
+                                            </div>
+
+                                            <!-- Select Basic -->
+                                            <div class="form-group">
+                                                <label class="col-lg-4 control-label">DevOps Tool</label>
+                                                <div class="col-lg-8 controls">
+                                                    <select id="dev_ops_select" class="form-control">
+                                                        <option value="none">None</option>
+                                                        <option value="chef">Chef</option>
+                                                        <option value="puppet">Puppet</option>
+                                                        <option value="ansible">Ansible</option>
+                                                    </select>
+                                                    <span class="help-block">Simplify the task of Configuration Management.</span>
+                                                </div>
+                                            </div>
+
+                                            <!-- Select Basic -->
+                                            <div class="form-group">
+                                                <label class="col-lg-4 control-label">Post-Processor</label>
+                                                <div class="col-lg-8 controls">
+                                                    <select id="post_processor_select" class="form-control">
+                                                        <option value="none">None</option>
+                                                    </select>
+                                                    <span class="help-block">Invoke tasks after image has been built. (image upload)</span>
+                                                </div>
+                                            </div>
+                                            </div>
+
+                                            <!-- Text input-->
+                                            <div class="form-group" style="display:none;">
+                                                <label class="col-lg-4 control-label">ISO URL</label>
+                                                <div class="col-lg-8 controls">
+                                                    <input id="iso_url" name="iso_url" type="text" placeholder="http://mirror.raystedman.net/centos/6/isos/x86_64/CentOS-6.4-x86_64-minimal.iso" style="width:525px;">
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="image_settings_accordion" class="layout sidebar accordion col-lg-12" style="margin-left:0px;">
+                        <div class="panel panel-primary" style="margin-bottom: 8px;">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#advancedSettingsCollapse">
+                                    Packed Image Initialization
+                                    </a>
+                                </h3>
+                            </div>
+                            <div id="advancedSettingsCollapse" class="accordion-body collapse">
+                                <div class="accordion-inner">
+                                    <form class="form-horizontal">
+                                        <fieldset>
+                                            <ul class="nav nav-tabs">
+                                              <li class="active"><a class="adv_tab" id="builder_tab">AWS</a></li>
+                                              <li><a class="adv_tab" id="openstack_tab">Openstack</a></li>
+                                              <li><a class="adv_tab" id="provisioner_tab">Provisioner</a></li>
+                                              <li><a class="adv_tab" id="devops_tab">DevOps Tool</a></li>
+                                              <li><a class="adv_tab" id="postprocessor_tab">Post-Processor</a></li>
+                                            </ul>
+                                            <div id="builder_settings" class="adv_tab_panel">
+                                                <!-- Text input-->
+                                                <div class="form-group">
+                                                    <label class="col-lg-4 control-label">Boot Command</label>
+                                                    <div class="col-lg-8 controls">
+                                                        <textarea id="boot_command" name="boot_command" type="text" placeholder="separate commands by comma" class="form-control"></textarea>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Text input-->
+                                                <div class="form-group">
+                                                    <label class="col-lg-4 control-label">Disk Interface</label>
+                                                    <div class="col-lg-8 controls">
+                                                        <input id="disk_interface" name="disk_interface" type="text" placeholder="virtio" class="form-control">
+                                                    </div>
+                                                </div>
+
+                                                <!-- Text input-->
+                                                <div class="form-group">
+                                                    <label class="col-lg-4 control-label">Disk Size</label>
+                                                    <div class="col-lg-8 controls">
+                                                        <input id="disk_size" name="disk_size" type="text" placeholder="5000" class="form-control">
+                                                    </div>
+                                                </div>
+
+                                                <!-- Text input-->
+                                                <div class="form-group">
+                                                    <label class="col-lg-4 control-label">Format</label>
+                                                    <div class="col-lg-8 controls">
+                                                        <input id="format" name="format" type="text" placeholder="qcow2" class="form-control">
+                                                    </div>
+                                                </div>
+
+                                                <!-- Text input-->
+                                                <div class="form-group">
+                                                    <label class="col-lg-4 control-label">HTTP Directory</label>
+                                                    <div class="col-lg-8 controls">
+                                                        <input id="http_directory" name="http_directory" type="text" placeholder="/home/tdhite/packer/httpfiles" class="form-control">
+                                                    </div>
+                                                </div>
+
+                                                <!-- Text input-->
+                                                <div class="form-group">
+                                                    <label class="col-lg-4 control-label">ISO Checksum</label>
+                                                    <div class="col-lg-8 controls">
+                                                        <input id="iso_checksum" name="iso_checksum" type="text" placeholder="4a5fa01c81cc300f4729136e28ebe600" class="form-control">
+                                                    </div>
+                                                </div>
+
+                                                <!-- Text input-->
+                                                <div class="form-group">
+                                                    <label class="col-lg-4 control-label">ISO Checksum Type</label>
+                                                    <div class="col-lg-8 controls">
+                                                        <input id="iso_checksum_type" name="iso_checksum_type" type="text" placeholder="md5" class="form-control">
+                                                    </div>
+                                                </div>
+
+                                                <!-- Text input-->
+                                                <div class="form-group">
+                                                    <label class="col-lg-4 control-label">Network Device</label>
+                                                    <div class="col-lg-8 controls">
+                                                        <input id="net_device" name="net_device" type="text" placeholder="virtio" class="form-control">
+                                                    </div>
+                                                </div>
+
+                                                <!-- Text input-->
+                                                <div class="form-group">
+                                                    <label class="col-lg-4 control-label">Shutdown Command</label>
+                                                    <div class="col-lg-8 controls">
+                                                        <input id="shutdown_command" name="shutdown_command" type="text" placeholder="shutdown -P now" class="form-control">
+                                                    </div>
+                                                </div>
+
+                                                <!-- Text input-->
+                                                <div class="form-group">
+                                                    <label class="col-lg-4 control-label">SSH Password</label>
+                                                    <div class="col-lg-8 controls">
+                                                        <input id="ssh_password" name="ssh_password" type="text" placeholder="s0m3password" class="form-control">
+                                                    </div>
+                                                </div>
+
+                                                <!-- Text input-->
+                                                <div class="form-group">
+                                                    <label class="col-lg-4 control-label">SSH Username</label>
+                                                    <div class="col-lg-8 controls">
+                                                        <input id="ssh_username" name="ssh_username" type="text" placeholder="root" class="form-control">
+                                                    </div>
+                                                </div>
+
+                                                <!-- Text input-->
+                                                <div class="form-group">
+                                                    <label class="col-lg-4 control-label">SSH Wait Timeout</label>
+                                                    <div class="col-lg-8 controls">
+                                                        <input id="ssh_wait_timeout" name="ssh_wait_timeout" type="text" placeholder="90m" class="form-control">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="openstack_settings" class="adv_tab_panel" style="display:none;"></div>
+                                            <div id="provisioner_settings" class="adv_tab_panel" style="display:none;"></div>
+                                            <div id="devops_settings" class="adv_tab_panel" style="display:none;"></div>
+                                            <div id="postprocessor_settings" class="adv_tab_panel" style="display:none;"></div>
+                                        </fieldset>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel panel-primary" style="margin-bottom: 8px;">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#uploadSettingsCollapse">
+                                    Upload Files
+                                    </a>
+                                </h3>
+                            </div>
+
+                            <div id="uploadSettingsCollapse" class="accordion-body collapse">
+                                <div class="accordion-inner">
+                                    <!-- <input multiple="" type="file" id="mciaas_files" name="mciaas_files"/> -->
+                                    <form multiple="" id="upForm" action="" method="post" enctype="multipart/form-data">
+                                         <input multiple="" type="file" id="mciaas_files" name="mciaas_files">
+                                         <input id="upSub" type="submit">
+                                     </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="image_template_not_opened" hidden>
+                    <div class="jumbotron well">
+                        <h3>Select an image template from the list to the left, or begin by creating a new template!</h3>
+                    </div>
                 </div>
             </div>
         </div>

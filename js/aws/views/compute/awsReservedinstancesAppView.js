@@ -56,6 +56,13 @@ define([
             'click #resource_table tr': 'clickOne'
         },
 
+        createText: "Purchase Reserved Instance",
+
+        actions: [
+            { text: "Purchase More Like This", type: "row"},
+            { text: "Sell Reserved Instance", type: "row"}
+        ],
+
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
@@ -63,7 +70,8 @@ define([
             if(options.region) {
                 this.region = options.region;
             }
-            this.render();
+            this.$el.html(this.template);
+            this.loadData({ render: true});
 
             var reservedInstanceApp = this;
             Common.vent.on("reservedInstanceAppRefresh", function() {

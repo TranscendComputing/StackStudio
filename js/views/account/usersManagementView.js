@@ -35,7 +35,7 @@ define([
             "click #delete_user_button": "deleteUser"
         },
 
-        initialize: function() {
+        initialize: function ( options ) {
             this.$el.html(this.template);
             $("#submanagement_app").html(this.$el);
             $("button").button();
@@ -47,8 +47,10 @@ define([
             Common.vent.on("userRefresh", function() {
                 usersView.render();
             });
+
+            this.rootView = options.rootView;
             
-            this.users = new Users();
+            this.users = this.collection = this.rootView.users = new Users();
             this.users.on('reset', this.addAllUsers, this);
             this.render();
         },
@@ -62,6 +64,8 @@ define([
 
         addAllUsers: function() {
             var usersView = this;
+
+            this.rootView.addAll(this.users, $('#user_list'));
             $("#users_table").dataTable().fnClearTable();
             this.users.each(function(user) {
                 var rowData = [user.attributes.login, user.attributes.first_name, user.attributes.last_name, user.attributes.email, user.role()];

@@ -58,6 +58,14 @@ define([
             'click #resource_table tr': "clickOne"
         },
 
+        createText: "Allocate New Address",
+
+        actions: [
+            { text: "Release Address", type: "row"},
+            { text: "Associate Address", type: "row"},
+            { text: "Disassociate Adress", type: "row"}
+        ],
+
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
@@ -65,7 +73,9 @@ define([
             if(options.region) {
                 this.region = options.region;
             }
-            this.render();
+
+            this.$el.html(this.template);
+            this.loadData({render: true});
             
             var elasticIpApp = this;
             Common.vent.on("elasticIPAppRefresh", function() {

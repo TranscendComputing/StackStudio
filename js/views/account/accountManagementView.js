@@ -70,6 +70,11 @@ define([
             this.cloudCredentials = new CloudCredentials();
             this.cloudCredentials.on( 'reset', this.addAllCreds, this );
 
+            this.cloudCredentials.fetch({
+                data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id}),
+                reset: true
+            });
+
             this.cloudAccounts = new CloudAccounts();
             this.cloudAccounts.on( 'reset', this.addAllCloudAccounts, this );
 
@@ -94,118 +99,53 @@ define([
         /** Add all of my own html elements */
         render: function () {
             var accMan = this;
-            $("#mCloudAccount_tree").jstree({
-                "themeroller":{"item": "jstree_custom_item"},
-                "plugins":[ "themeroller", "html_data", "crrm" ]
-            }).on('loaded.jstree', function() {
-                //async
-                accMan.cloudAccounts.fetch({
-                    data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id}),
-                    reset: true
-                });
-            });
-            $("#mCloudCredential_tree").jstree({
-                "themeroller":{"item": "jstree_custom_item"},
-                "plugins":[ "themeroller", "html_data", "crrm" ]
-            }).on('loaded.jstree', function() {
-                //async
-                accMan.cloudCredentials.fetch({reset: true});
-            });
-            $("#mGroup_tree").jstree({
-                "themeroller":{"item": "jstree_custom_item"},
-                "plugins":[ "themeroller", "html_data", "crrm" ]
-            }).on('loaded.jstree', function() {
-                //Fetch Collections
-                accMan.groups.fetch({
-                    reset: true
-                });
-            });
-            $("#mUser_tree").jstree({
-                "themeroller":{"item": "jstree_custom_item"},
-                "plugins":[ "themeroller", "html_data", "crrm" ]
-            }).on('loaded.jstree', function() {
-                $("#mUser_tree").jstree('open_all');
-            });
-            $("#mPolicy_tree").jstree({
-                "themeroller":{"item": "jstree_custom_item"},
-                "plugins":[ "themeroller", "html_data", "crrm" ]
-            }).on('loaded.jstree', function() {
-                //async
-                accMan.policies.fetch({
-                    data: $.param({ org_id: sessionStorage.org_id}),
-                    reset: true
-                });
-            });
-            $("#mSCRepos_tree").jstree({
-                "themeroller":{"item": "jstree_custom_item"},
-                "plugins":[ "themeroller", "html_data", "crrm" ]
-            }).on('loaded.jstree', function() {
-                    $("#mSCRepos_tree").jstree('open_all');
-            });
-            $("#mContinuousIntegration_tree").jstree({
-                "themeroller":{"item": "jstree_custom_item"},
-                "plugins":[ "themeroller", "html_data", "crrm" ]
-            }).on('loaded.jstree', function() {
-                    $("#mContinuousIntegration_tree").jstree('open_all');
-            });
-            $("#mdevOps_tree").jstree({
-                "themeroller":{"item": "jstree_custom_item"},
-                "plugins":[ "themeroller", "html_data", "crrm" ]
-            }).on('loaded.jstree', function() {
-                    $("#mdevOps_tree").jstree('open_all');
-            });
-            $("#mMyAccount_tree").jstree({
-                "themeroller":{"item": "jstree_custom_item"},
-                "plugins":[ "themeroller", "html_data", "crrm" ]
-            }).on('loaded.jstree', function() {
-                $("#mMyAccount_tree").jstree('open_all');
-            });
 
-            if(parseInt(sessionStorage.num_logins, 10) < 20) {
-                //todo: init instructor
-                // $('#instructor').instructor('nextTip');
-            }
+            $(document).on('click', '#management_tree li', function () {
+                $('#management_tree li.active').removeClass('active');
+                $(this).addClass('active');
+
+                $(this).find('ul').toggleClass('open');
+            });
         },
-        addAllGroups: function() {
-            $('.group_item.tree_item').remove();
-            this.groups.each(function(group) {
-                $("#mGroup_tree").jstree("create","#group_list","first",{ attr : {class : "group_item tree_item"} , data : { title: group.attributes.name, attr : { id : group.attributes.id, href : "#account/management/groups", class : "group_item tree_item" }} },false, true);
-            });
 
-            if(this.groups.get(this.treeGroup) && typeof(this.subApp.treeSelect) !== "undefined"){
-                this.subApp.treeSelect();
-            }else{
-                $("#selected_group_name").html("No Group Selected");
-            }
+        addAllGroups: function() {
+            $('#group_list').empty();
+            this.groups.each(function ( group ) {
+                $('#group_list').append('<li><a href="#">' + group.attributes.name + '</a></li>');
+            });
         },
         addAllCreds: function(){
-            $('.credential_item.tree_item').remove();
-            this.cloudCredentials.each(function(cred) {
-                $("#mCloudCredential_tree").jstree("create","#cred_list","first",{ attr : {class : "credential_item tree_item"} , data : { title: cred.attributes.name, attr : { id : cred.attributes.id, href : "#account/management/cloud-credentials", class : "credential_item tree_item" }} },false, true);
+            $('#cred_list').empty();
+            this.cloudCredentials.each(function ( cred ) {
+                $('#cred_list').append('<li><a id="' + cred.attributes.id + '" class="credential_item" href="#">' + cred.attributes.name + '</a></li>');
             });
         },
         addAllPolicies: function(){
-            $('.policy_item.tree_item').remove();
-            this.policies.each(function(policy) {
-                $("#mPolicy_tree").jstree("create","#policy_list","first",{ attr : {class : "policy_item tree_item"} , data : { title: policy.attributes.name, attr : { id : policy.attributes._id, href : "#account/management/policy", class : "policy_item tree_item" }} },false, true);
+            $('#policy_list').empty();
+            this.policies.each(function ( policy ) {
+                $('#policy_list').append('<li><a id="' + policy.attributes.id + '" class="policy_item" href="#">' + policy.attributes.name + '</a></li>');
             });
         },
         addAllCloudAccounts: function(){
-            $('.cloud_account_item.tree_item').remove();
-
-            this.cloudAccounts.each(function(c_account) {
-                $("#mCloudAccount_tree").jstree("create","#c_account_list","first",{ attr : {class : "cloud_account_item tree_item"} , data : { title: c_account.attributes.name, attr : { id : c_account.attributes.id, href : "#account/management/cloud-accounts", class : "cloud_account_item tree_item" }} },false, true);
+            $('#cloud_account_list').empty();
+            this.cloudAccounts.each(function ( acc ) {
+               $('#cloud_account_list').append('<li><a id="' + acc.attributes.id + '" class="cloud_account_item" href="#">' + acc.attributes.name + '</a></li>'); 
             });
+            // $('.cloud_account_item.tree_item').remove();
 
-            if(!this.treeCloudAccount){
-                this.treeCloudAccount = this.cloudAccounts.models[this.cloudAccounts.length-1].id;
-            }
-            if(this.cloudAccounts.get(this.treeCloudAccount) && typeof(this.subApp.treeSelectCloudAccount) !== "undefined"){
-                this.subApp.treeSelectCloudAccount();
-            }else if(typeof(this.subApp.treeSelectCloudAccount) !== "undefined"){
-                this.treeCloudAccount = this.cloudAccounts.models[this.cloudAccounts.length-1].id;
-                this.subApp.treeSelectCloudAccount();
-            }
+            // this.cloudAccounts.each(function(c_account) {
+            //     $("#mCloudAccount_tree").jstree("create","#c_account_list","first",{ attr : {class : "cloud_account_item tree_item"} , data : { title: c_account.attributes.name, attr : { id : c_account.attributes.id, href : "#account/management/cloud-accounts", class : "cloud_account_item tree_item" }} },false, true);
+            // });
+
+            // if(!this.treeCloudAccount){
+            //     this.treeCloudAccount = this.cloudAccounts.models[this.cloudAccounts.length-1].id;
+            // }
+            // if(this.cloudAccounts.get(this.treeCloudAccount) && typeof(this.subApp.treeSelectCloudAccount) !== "undefined"){
+            //     this.subApp.treeSelectCloudAccount();
+            // }else if(typeof(this.subApp.treeSelectCloudAccount) !== "undefined"){
+            //     this.treeCloudAccount = this.cloudAccounts.models[this.cloudAccounts.length-1].id;
+            //     this.subApp.treeSelectCloudAccount();
+            // }
         },
 
         selectManagement: function(event){
