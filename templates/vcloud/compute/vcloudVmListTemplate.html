@@ -1,0 +1,15 @@
+<script type="text/html" id="vapp_vms">
+    <div id="tabs-2" class="tab">
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#vms}}<tr vm_id="{{id}}"><td>{{name}}</td><td>{{status}}</td></tr>{{/vms}}
+            </tbody>
+        </table>
+    </div>
+</script>
