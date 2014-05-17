@@ -104,7 +104,13 @@ requirejs.config({
         }
     },
     paths: {
-        /* Set some paths so rest of application can use relative paths */
+        /* 
+            Configure absolute paths here so application can use relative reference.
+            We still want to allow RequireJS to use it's baseUrl and add file
+            extension for us so dont include leading / or trailing extension.
+
+            *NOTE: Remote resource paths should NOT include protocol designation.
+        */
         collections : 'js/collections',
         models      : 'js/models',
         routers     : 'js/routers',
@@ -122,19 +128,19 @@ requirejs.config({
         sites       : 'js/sites',
         'common'    : 'js/common',
          /* Backbone Stuff */
-        'backbone': 'http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min',
+        'backbone': '//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min',
         'backbone.stickit'    : 'js/vendor/backbone.stickit.min',
         'backbone-validation' : 'js/vendor/backbone-validation.min',
         'backbone.queryparams': 'js/vendor/backbone.queryparams',
          /* jQuery Stuff */
-        'jquery'            : 'http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min',
-        'jquery-ui'         : 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min',
-        'jquery.form'       : 'http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.45/jquery.form',
+        'jquery'            : '//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min',
+        'jquery-ui'         : '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min',
+        'jquery.form'       : '//cdnjs.cloudflare.com/ajax/libs/jquery.form/3.45/jquery.form',
         'jquery.terminal'   : 'js/vendor/jquery.terminal',
         'jquery.mousewheel' : 'js/vendor/jquery.mousewheel-min',
-        'jquery.multiselect': 'http://cdn.jsdelivr.net/jquery.multiselect/1.13/jquery.multiselect.min',
-        'jquery.jstree'     : 'http://cdn.jsdelivr.net/jquery.jstree/pre1.0/jquery.jstree',
-        'jquery-migrate'    : 'http://code.jquery.com/jquery-migrate-1.1.0',
+        'jquery.multiselect': '//cdn.jsdelivr.net/jquery.multiselect/1.13/jquery.multiselect.min',
+        'jquery.jstree'     : '//cdn.jsdelivr.net/jquery.jstree/pre1.0/jquery.jstree',
+        'jquery-migrate'    : '//code.jquery.com/jquery-migrate-1.1.0',
         'jquery.cookie'     : 'js/vendor/jquery.cookie',
         'jquery-plugins'    : 'js/vendor/jquery-plugins',
         'jquery-ui-plugins' : 'js/vendor/jquery-ui-plugins',
@@ -143,18 +149,18 @@ requirejs.config({
         'jquery.sortable'   : 'js/vendor/jquery.sortable',
         'jquery.coverscroll.min': 'js/vendor/jquery.coverscroll.min',
         'jquery.dataTables.fnProcessingIndicator': 'js/vendor/jquery.dataTables.fnProcessingIndicator',
-        'jquery.multiselect.filter': 'http://cdn.jsdelivr.net/jquery.multiselect/1.13/jquery.multiselect.filter.min',
+        'jquery.multiselect.filter': '//cdn.jsdelivr.net/jquery.multiselect/1.13/jquery.multiselect.filter.min',
         /* Other Stuff */
-        'underscore' : 'http://cdnjs.cloudflare.com/ajax/libs/lodash.js/1.1.0/lodash.min',
+        'underscore' : '//cdnjs.cloudflare.com/ajax/libs/lodash.js/1.1.0/lodash.min',
         'icanhaz'    : 'js/vendor/ICanHaz',
         'messenger'  : 'js/vendor/messenger.min',
         'raphael'    : 'js/vendor/raphael-min',
         'spinner'    : 'js/vendor/spin.min',
         'text'       : 'js/vendor/text',
-        'bootstrap'  : 'http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min',
+        'bootstrap'  : '//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min',
         'typeahead'  : 'js/vendor/twitter/typeahead',
-        'ace'        : 'http://cdnjs.cloudflare.com/ajax/libs/ace/1.1.01/ace',
-        'mode-json'  : 'http://cdnjs.cloudflare.com/ajax/libs/ace/1.1.01/mode-json',
+        'ace'        : '//cdnjs.cloudflare.com/ajax/libs/ace/1.1.01/ace',
+        'mode-json'  : '//cdnjs.cloudflare.com/ajax/libs/ace/1.1.01/mode-json',
         'FeedEk'     : 'js/vendor/FeedEk',
         'opentip'    : 'js/vendor/opentip',
         'gh3'        : 'js/vendor/gh3',

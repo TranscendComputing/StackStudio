@@ -13,13 +13,19 @@ require(['rjsConfig'], function(undefined) {
         require({
             paths: {
                 'jasmine': '../../node_modules/grunt-contrib-jasmine/vendor/jasmine-1.3.0/jasmine',
-                'jasmine-html': '../../node_modules/grunt-contrib-jasmine/vendor/jasmine-1.3.0/jasmine-html'
+                'jasmine-html': '../../node_modules/grunt-contrib-jasmine/vendor/jasmine-1.3.0/jasmine-html',
+                'jasmine-jquery': 'https://raw.githubusercontent.com/velesin/jasmine-jquery/master/lib/jasmine-jquery.js'
+
             },
             shim: {
-                jasmine: {
+                'jasmine': {
                     exports: 'jasmine'
                 },
                 'jasmine-html': {
+                    deps: ['jasmine'],
+                    exports: 'jasmine'
+                },
+                'jasmine-jquery': {
                     deps: ['jasmine'],
                     exports: 'jasmine'
                 }
@@ -42,7 +48,8 @@ require(['rjsConfig'], function(undefined) {
                 '../../spec/console',
                 '../../spec/routerSpec',
                 '../../spec/dockerSpec',
-                '../../spec/stacksSpec'
+                '../../spec/stacksSpec',
+                '../../spec/views/accountManagementSpec'
             ];
     
             $(function(){

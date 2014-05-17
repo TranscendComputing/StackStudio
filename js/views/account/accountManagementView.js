@@ -101,7 +101,7 @@ define([
             },
 
             /** Add all of my own html elements */
-            render: function () {
+            render: function() {
                 var accMan = this;
 
                 $("#mCloudAccount_tree").jstree({
@@ -311,165 +311,38 @@ define([
         var accountManagementView;
         var self = this;
         Common.router.on("route:accountManagement", function (action) {
-            console.info('accountManagement jQuery binding triggered');
             if (this.previousView !== accountManagementView) {
                 this.unloadPreviousState();
                 accountManagementView = new AccountManagementView();
                 this.setPreviousState(accountManagementView);
             }
 
-            /* Container for actual view decided on below */
-            var TargetView;
-            switch(action) {
-                case "cloud-accounts":
-                    if (accountManagementView.subApp instanceof CloudAccountManagementView)
-                    {
-                        //do nothing
-                    }else{
-                        if (accountManagementView.subApp !== undefined) {
-                            accountManagementView.subApp.close();
-                        }
-                        accountManagementView.subApp = new CloudAccountManagementView({rootView: accountManagementView});
-                    }
-                    break;
-                case "cloud-credentials":
-                    if (accountManagementView.subApp instanceof CloudCredentialManagementView)
-                    {
-                        //do nothing
-                    }else{
-                        if (accountManagementView.subApp !== undefined) {
-                            accountManagementView.subApp.close();
-                        }
-                        accountManagementView.subApp = new CloudCredentialManagementView({rootView: accountManagementView});
-                    }
-                    break;
-                case "users":
-                    if (accountManagementView.subApp instanceof UsersManagementView)
-                    {
-                        //do nothing
-                    }else{
-                        if (accountManagementView.subApp !== undefined) {
-                            accountManagementView.subApp.close();
-                        }
-                        accountManagementView.subApp = new UsersManagementView();
-                    }
-                    break;
-                case "policies":
-                    if (accountManagementView.subApp instanceof PoliciesManagementView)
-                    {
-                        //do nothing
-                    }else{
-                        if (accountManagementView.subApp !== undefined) {
-                            accountManagementView.subApp.close();
-                        }
-                        accountManagementView.subApp = new PoliciesManagementView({rootView: accountManagementView});
-                    }
-                    break;
-                case "policy":
-                    if (accountManagementView.subApp instanceof PolicyManagementView)
-                    {
-                        //do nothing
-                    }else{
-                        if (accountManagementView.subApp !== undefined) {
-                            accountManagementView.subApp.close();
-                        }
-                        accountManagementView.subApp = new PolicyManagementView({rootView: accountManagementView});
-                    }
-                    break;
-                case "groups":
-                    if (accountManagementView.subApp instanceof GroupsManagementView)
-                    {
-                        //do nothing
-                    }else{
-                        if (accountManagementView.subApp !== undefined) {
-                            accountManagementView.subApp.close();
-                        }
-                        accountManagementView.subApp = new GroupsManagementView({rootView: accountManagementView});
-                    }
-                    break;
-                case "groups_list":
-                    if (accountManagementView.subApp instanceof GroupsManagementListView)
-                    {
-                        //do nothing
-                    }else{
-                        if (accountManagementView.subApp !== undefined) {
-                            accountManagementView.subApp.close();
-                        }
-                        accountManagementView.subApp = new GroupsManagementListView({rootView: accountManagementView});
-                    }
-                    break;
-                case "cloud-credentials_list":
-                    if (accountManagementView.subApp instanceof CloudCredentialManagementListView)
-                    {
-                        //do nothing
-                    }else{
-                        if (accountManagementView.subApp !== undefined) {
-                            accountManagementView.subApp.close();
-                        }
-                        accountManagementView.subApp = new CloudCredentialManagementListView({rootView: accountManagementView});
-                    }
-                    break;
-                case "cloud-accounts_list":
-                    if (accountManagementView.subApp instanceof CloudAccountManagementListView)
-                    {
-                        //do nothing
-                    }else{
-                        if (accountManagementView.subApp !== undefined) {
-                            accountManagementView.subApp.close();
-                        }
-                        accountManagementView.subApp = new CloudAccountManagementListView({rootView: accountManagementView});
-                    }
-                    break;
-                case "configuration_managers":
-                    if (accountManagementView.subApp instanceof DevOpsToolsManagementView) {
-    
-                    }else{
-                        if (accountManagementView.subApp !== undefined) {
-                            accountManagementView.subApp.close();
-                        }
-                        accountManagementView.subApp = new DevOpsToolsManagementView({rootView: accountManagementView});
-                    }
-                    break;
-                case "continuous_integration":
-                    if (accountManagementView.subApp instanceof ContinuousIntegrationManagementView) {
-    
-                    }else{
-                        if (accountManagementView.subApp !== undefined) {
-                            accountManagementView.subApp.close();
-                        }
-                        accountManagementView.subApp = new ContinuousIntegrationManagementView({rootView: accountManagementView});
-                    }
-                    break;
-                case "source_control_repositories":
-                    if (accountManagementView.subApp instanceof SourceControlRepositoryManagementListView) {
-    
-                    }else{
-                        if (accountManagementView.subApp !== undefined) {
-                            accountManagementView.subApp.close();
-                        }
-                        accountManagementView.subApp = new SourceControlRepositoryManagementListView({rootView: accountManagementView});
-                    }
-                    break;
-                case "home":
-                    if (accountManagementView.subApp instanceof HomeView)
-                    {
-                        //do nothing
-                    }else{
-                        if (accountManagementView.subApp !== undefined) {
-                            accountManagementView.subApp.close();
-                        }
-                        accountManagementView.subApp = new HomeView({rootView: accountManagementView});
-                    }
-                    break;
-            }
+            var actionMap = {
+                'cloud-accounts': CloudAccountManagementView,
+                'cloud-credentials': CloudCredentialManagementView,
+                'users': UsersManagementView,
+                'policies': PoliciesManagementView,
+                'policy': PoliciesManagementView,
+                'groups': GroupsManagementView,
+                'groups_list': GroupsManagementListView,
+                'cloud-credentials_list': CloudCredentialManagementListView,
+                'cloud-accounts_list': CloudAccountManagementListView,
+                'configuration_managers': DevOpsToolsManagementView,
+                'continuous_integration': ContinuousIntegrationManagementView,
+                'source_control_repositories': SourceControlRepositoryManagementListView,
+                'home': HomeView
+            };
+
+            var TargetView = actionMap[action];
 
             /* Common instruction for entire switch statement above */
-//            if (! accountManagementView.subApp instanceof TargetView) {
-//                if (accountManagementView.subApp !== undefined) {
-//                    accountManagementView.subApp.close();
-//                }
-//                accountManagementView.subApp = new TargetView({rootView: accountManagementView});
-//            }
+            if (! (accountManagementView.subApp instanceof TargetView)) {
+                if (accountManagementView.subApp !== undefined) {
+                    accountManagementView.subApp.close();
+                }
+                var args = (TargetView === UsersManagementView) ? {} : {rootView: accountManagementView};
+                accountManagementView.subApp = new TargetView(args);
+            }
     
             if (accountManagementView.afterSubAppRender) {
                 accountManagementView.afterSubAppRender.call(accountManagementView);

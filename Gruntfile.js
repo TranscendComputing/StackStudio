@@ -156,9 +156,39 @@ module.exports = function(grunt) {
                     templateOptions: {
                         requireConfigFile: 'js/config/rjsConfig.js',
                         requireConfig: {
+                            /* 
+                                The application requires the absense of protocol when loading
+                                remote resources so it can work with http and https.
+
+                                Phantom however, does not do well with missing protocol when
+                                executing unit tests. This inline config block is used to override,
+                                via merge down, the default config set in rjsConfig.js above.
+                            */
+                            shim: {
+                                'jasmine'       : {exports: 'jasmine'},
+                                //'jasmine-html'  : {deps: ['jasmine'], exports: 'jasmine'},
+                                'jasmine-jquery': {exports: 'jasmine'}
+                            },
+                            paths: {
+                                'backbone'          : 'http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min',
+                                'jquery'            : 'http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min',
+                                'jquery-ui'         : 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min',
+                                'jquery.form'       : 'http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.45/jquery.form',
+                                'jquery.multiselect': 'http://cdn.jsdelivr.net/jquery.multiselect/1.13/jquery.multiselect.min',
+                                'jquery.jstree'     : 'http://cdn.jsdelivr.net/jquery.jstree/pre1.0/jquery.jstree',
+                                'jquery-migrate'    : 'http://code.jquery.com/jquery-migrate-1.1.0',
+                                //'jasmine'           : 'node_modules/grunt-contrib-jasmine/vendor/jasmine-1.3.0/jasmine',
+                                //'jasmine-html'      : 'node_modules/grunt-contrib-jasmine/vendor/jasmine-1.3.0/jasmine-html',
+                                'jasmine-jquery'    : 'js/vendor/jasmine-jquery-1.3.0',
+                                'underscore' : 'http://cdnjs.cloudflare.com/ajax/libs/lodash.js/1.1.0/lodash.min',
+                                'bootstrap'  : 'http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min',
+                                'ace'        : 'http://cdnjs.cloudflare.com/ajax/libs/ace/1.1.01/ace',
+                                'mode-json'  : 'http://cdnjs.cloudflare.com/ajax/libs/ace/1.1.01/mode-json',
+                                'jquery.multiselect.filter': 'http://cdn.jsdelivr.net/jquery.multiselect/1.13/jquery.multiselect.filter.min'
+                            },
                             map: {
                                 '*': {
-                                    // Phantom does not do well with non-protocol'd remote resources
+                                    /* Map any path used by a vendor or plugin here as neccessary */
                                     '//code.jquery.com/jquery-migrate-1.1.0'   : 'jquery-migrate',
                                     '//code.jquery.com/jquery-migrate-1.1.0.js': 'jquery-migrate'
                                 }
