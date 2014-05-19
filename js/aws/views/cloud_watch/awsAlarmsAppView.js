@@ -58,6 +58,10 @@ define([
             'click #history_tab' : 'refreshHistoryTab'
         },
 
+        actions: [
+            { text: "Delete Alarm", type: "row" }
+        ],
+
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
@@ -65,7 +69,10 @@ define([
             if(options.region) {
                 this.region = options.region;
             }
-            this.render();
+
+            this.$el.html(this.template);
+
+            this.loadData({render: true});
             
             $("#alarm_history").dataTable({
                 "bJQueryUI": true,

@@ -41,6 +41,7 @@ define([
     render : function () {
       this.$el.html(this.template);
       $("#resource_app").html(this.$el);
+
       this.buildTree();
     },
 

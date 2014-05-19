@@ -52,11 +52,16 @@ define([
             'click #add_users_to_group_button': 'addUsersToGroup'
         },
 
+        actions: [
+            { text: "Delete Group", type: "row" }
+        ],
+
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
             }
-            this.render();
+            this.$el.html(this.template);
+            this.loadData({ render: true });
             
             var groupApp = this;
             Common.vent.off("groupAppRefresh");

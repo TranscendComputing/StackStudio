@@ -8,12 +8,17 @@
 define([
 	'backbone',
 	'common',
+<<<<<<< HEAD
 	'vcloud/collections/vcloudCollection',
 	'vcloud/models/catalog/vcloudCatalog'
 ], function ( Backbone, Common, VCloudCollection, VCloudCatalog ) {
+=======
+	'/js/vcloud/models/catalog/vcloudCatalog.js'
+], function ( Backbone, Common, VCloudCatalog ) {
+>>>>>>> cloud_management_refactor
 	'use strict';
 
-	var Catalogs = VCloudCollection.extend({
+	var Catalogs = Backbone.Collection.extend({
 		
 		model : VCloudCatalog,
 

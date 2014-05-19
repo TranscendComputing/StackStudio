@@ -85,6 +85,14 @@ define([
             'click #monitoring': 'selectNode'
         },
 
+        createButton: true,
+        createText: 'Create Cluster',
+
+        actions: [
+            { text: "Delete", type: "row" },
+            { text: "Modify Node Count", type: "row" }
+        ],
+
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
@@ -92,7 +100,10 @@ define([
             if(options.region) {
                 this.region = options.region;
             }
-            this.render();
+
+            this.$el.html(this.template);
+
+            this.loadData({ render: true });
             
             var cacheApp = this;
             Common.vent.on("cacheAppRefresh", function() {

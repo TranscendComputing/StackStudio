@@ -154,6 +154,10 @@ define(
         $(document).on('click', '.no-default', function ( e ) {
             e.preventDefault();
         });
+
+        String.prototype.capitalize = function() {
+            return this.charAt(0).toUpperCase() + this.slice(1);
+        }
     
         // Initialize the command line, since that's global to all pages.
         var consoleAppView = new CommandLineView();
@@ -194,8 +198,7 @@ define(
             },
     
             unloadPreviousState: function() {
-                if(!$.isEmptyObject(this.previousView))
-                {
+                if (!$.isEmptyObject(this.previousView)) {
                     this.previousView.close();
                 }
             },

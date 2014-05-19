@@ -60,11 +60,20 @@ define([
         
         events: {
             'click .create_button': 'createNew',
-            'click #action_menu ul li': 'performAction',
+            'click #action_menu li': 'performAction',
             'click #resource_table tr': "clickOne",
             'click #monitoring': 'refreshMonitors',
             'click #refresh_monitors_button': 'refreshMonitors'
         },
+
+        createButton : true,
+
+        createText : "Create Auto Scale",
+
+        actions : [
+            { text: "Spin Down Group", type: "row" },
+            { text: "Delete Group", type: "row" }
+        ],
 
         initialize: function(options) {
             if(options.cred_id) {
@@ -73,7 +82,14 @@ define([
             if(options.region) {
                 this.region = options.region;
             }
+
+            this.$el.html(this.template);
+
+            this.loadData();
+
             this.render();
+
+            this.loadTable();
             
             var topicApp = this;
             Common.vent.on("autoscaleAppRefresh", function() {

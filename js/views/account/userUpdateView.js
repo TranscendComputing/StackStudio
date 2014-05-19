@@ -30,6 +30,19 @@ define([
         },
 
         initialize: function(options) {
+            if(options.user) {
+                this.userSelected = options.user;
+            } else {
+                var users = options.collection;
+                this.userSelected = users.get(options.selectedId);
+            }
+
+            //shouldn't let user update their own account here
+            if(sessionStorage.account_id === this.userSelected.attributes.id) {
+                Common.router.navigate('#cloud/setup/user_list', { trigger: true });
+                return;
+            }
+
             this.$el.html( this.template );
             var userUpdateView = this;
             this.$el.dialog({
@@ -60,7 +73,6 @@ define([
             if(options && options.org_id) {
                 this.orgId = options.org_id;
             }
-            this.userSelected = options.user;
             this.render();
         },
 
