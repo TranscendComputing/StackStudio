@@ -12,7 +12,7 @@ define([
         'backbone',
         'icanhaz',
         'common',
-        'text!templates/assemblies/dockerFileView.html',
+        'text!templates/assemblies/dockerfileView.html',
         'collections/apps',
         'collections/cloudCredentials',
         'collections/cookbooks',
