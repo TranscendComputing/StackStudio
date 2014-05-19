@@ -8,14 +8,8 @@
 define([
 	'backbone',
 	'common',
-<<<<<<< HEAD
-	'vcloud/collections/vcloudCollection',
 	'vcloud/models/compute/vcloudDataCenter'
-], function ( Backbone, Common, VCloudCollection, VCloudDataCenter ) {
-=======
-	'/js/vcloud/models/compute/vcloudDataCenter.js'
 ], function ( Backbone, Common, VCloudDataCenter ) {
->>>>>>> cloud_management_refactor
 	'use strict';
 
 	var DataCenters = Backbone.Collection.extend({

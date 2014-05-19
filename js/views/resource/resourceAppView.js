@@ -214,8 +214,8 @@ define([
             var customId = $(event.currentTarget).data('id');
             id = customId ? customId : rowData[this.idColumnNumber];
 
-            var route = ['#resources'].concat(viewOptions).concat(id).join('/');^M
-            Common.router.navigate(route, {trigger: false});^M
+            var route = ['#resources'].concat(viewOptions).concat(id).join('/');
+            Common.router.navigate(route, {trigger: false});
 
             this.selectOne(id, event.currentTarget);
         },
