@@ -33,7 +33,13 @@ define([
         'jquery-plugins',
         'jquery-ui-plugins',
         'jquery.jstree'
-], function( $, _, Backbone, Common, setupTemplate, CloudAccounts, CloudCredentials, Policies, Users, Groups, CloudAccountManagementView, CloudCredentialManagementView, CloudCredentialManagementListView, CloudAccountManagementListView, UsersManagementView, UserUpdateView, PoliciesManagementView, PolicyManagementView, GroupsManagementView, GroupsManagementListView, DevOpsToolsManagementView, ContinuousIntegrationManagementView, SourceControlRepositoryManagementListView, TutorialView ) {
+], function( $, _, Backbone, Common, setupTemplate, CloudAccounts, CloudCredentials,
+             Policies, Users, Groups, CloudAccountManagementView, CloudCredentialManagementView,
+             CloudCredentialManagementListView, CloudAccountManagementListView,
+             UsersManagementView, UserUpdateView, PoliciesManagementView, PolicyManagementView,
+             GroupsManagementView, GroupsManagementListView, DevOpsToolsManagementView,
+             ContinuousIntegrationManagementView, SourceControlRepositoryManagementListView,
+             TutorialView ) {
     var CloudSetupView = Backbone.View.extend({
         /** @type {String} DOM element to attach view to */
         el: "#main",
@@ -205,19 +211,12 @@ define([
             "home" : CloudAccountManagementListView
         };
 
-        var SubView = viewAssociations[action];
+        // Set SubView based on action as key in hash map above
+        var SubView = viewAssociations[action] || CloudAccountManagementView;
 
-        //default to cloud account view
-        if(!SubView) {
-            SubView = CloudAccountManagementView;
-        }
-
-        if(cloudSetupView.subApp) {
+        if (cloudSetupView.subApp) {
             cloudSetupView.subApp.close();
         }
-        var params = {
-            rootView : cloudSetupView
-        };
 
         if(action.indexOf('list') === -1) {
             if(!(cloudSetupView.selectedId && cloudSetupView.selectedCollection)) {
@@ -226,7 +225,8 @@ define([
             }
         }
 
-        if(cloudSetupView.selectedId) {
+        var params = {rootView : cloudSetupView};
+        if (cloudSetupView.selectedId) {
             params.selectedId = cloudSetupView.selectedId;
             params.collection = cloudSetupView.selectedCollection;
         }

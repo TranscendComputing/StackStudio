@@ -99,7 +99,7 @@ define(
             });
 
             it("trigger jQuery binding route:accountManagement sending cloud-accounts", function() {
-                Common.router.trigger("route:accountManagement", 'cloud-accounts');
+                Common.router.trigger("route:cloudSetup", 'cloud-accounts');
                 //expect(Common.TargetView instanceof CloudAccountManagementView).toBeTruthy();
             });
 
