@@ -12,7 +12,7 @@ define([
 	'icanhaz',
 	'common',
     'views/modalView',
-	'text!templates/vcloud/compute/vcloudVmsTemplate.html',
+	'text!templates/vcloud/compute/vcloudVmTemplate.html',
 	'vcloud/models/compute/vcloudVm',
 	'vcloud/collections/compute/vcloudVms'
 ], function( $, _, Backbone, ich, Common, ModalView, VCloudVmTemplate, Vm, Vms ) {

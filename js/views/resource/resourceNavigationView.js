@@ -246,6 +246,14 @@ define([
         cloudChange: function(event) {
             if(!event.isTrigger) {
                 $(".resources").remove();
+
+                if(event.target.id === 'vcloud') {
+                    $('#regions').hide();
+                } else {
+                    $('#dataCenters').hide();
+                    $('#regions').show();
+                }
+
                 Common.router.navigate("#resources/"+event.target.id, {trigger: false});
                 this.cloudSelection(event.target.id);
                 this.displayCloudChangeMessage();
@@ -343,11 +351,10 @@ define([
             }
 
             $("#cloud_nav").html(this.crumbTemplate({pathElt: this.cloudDefinitions[this.cloudProvider].name}));
+            this.type = undefined;
+            this.subtype = undefined;
+            $('#service_nav').empty();
             this.refreshCloudSpecs();
-
-            // if(this.cloudProvider === "vcloud") {
-            //     this.loadDataCenters();
-            // }
         },
 
         credentialChange: function(event) {
@@ -404,7 +411,7 @@ define([
             //Remove previous region
             $("#regions").remove();
             //Add regions if cloud has regions
-            if(resourceNav.cloudDefinitions[this.cloudProvider].regions.length) {
+            if(resourceNav.cloudDefinitions[this.cloudProvider].regions) {
                 $("#cloud_specs").append('<div id="regions" class="col-lg-4 spec_select">Region: <select id="region_select" class="cloud_spec_select form-control"></select></div>');
                 $.each(resourceNav.cloudDefinitions[this.cloudProvider].regions, function(index, region) {
                     //regions check
@@ -449,7 +456,7 @@ define([
                 $("#region_nav").show();
             }else {
                 this.selectedRegion = undefined;
-                $("region_nav").hide();
+                $("#region_nav").hide();
             }
         },
 
@@ -466,11 +473,16 @@ define([
                 success : function ( vdcs ) {
                     View.dataCenters = vdcs;
 
-                    // var vcloudPath = '/js/vcloud/views/compute/vcloudTreeView.js';
+                    var $select = $('#data_center_select');
 
-                    var $centers = $('<div id="dataCenters" class="col-lg-4 spec_select">Data Center: </div>')
-                        , $select = $('<select id="data_center_select" class="cloud_spec_select form-control"></select>');
+                    if($select.length === 0) {
+                        $select = $('<select id="data_center_select" class="cloud_spec_select form-control"></select>');
+                    }
 
+                    $select.empty();
+                    
+                    $('#dataCenters').remove();
+                    var $centers = $('<div id="dataCenters" class="col-lg-4 spec_select">Data Center: </div>');
                     $.each(vdcs.models, function ( index, vdc ) {
                         $select.append('<option value="' + vdc.attributes.id + '">' + vdc.attributes.name + '</option>');
                     });
@@ -571,7 +583,7 @@ define([
 
 
                 if(this.type === "admin") {
-                    appPath = "../topstack/views/"+this.type+"/topstack"+subType+"AppView";
+                    appPath = "js/topstack/views/"+this.type+"/topstack"+subType+"AppView";
                 }else {
                     var folder;
 
@@ -582,7 +594,7 @@ define([
                         folder = this.type;
                     }
 
-                    appPath = "../"+this.cloudProvider+"/views/"+folder+"/"+this.cloudProvider+subType+"AppView";
+                    appPath = "js/"+this.cloudProvider+"/views/"+folder+"/"+this.cloudProvider+subType+"AppView";
                 }
 
                 this.loadAppView(appPath);
@@ -614,7 +626,7 @@ define([
         refreshPath: function() {
             var viewOptions = [
                 this.cloudProvider,
-                this.selectedRegion,
+                this.selectedRegion || this.selectedDataCenter || "none",
                 this.type,
                 this.subtype,
                 this.resourceId

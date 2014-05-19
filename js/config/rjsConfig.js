@@ -155,6 +155,7 @@ requirejs.config({
         'icanhaz'    : 'js/vendor/ICanHaz',
         'messenger'  : 'js/vendor/messenger.min',
         'raphael'    : 'js/vendor/raphael-min',
+        'morris'     : 'js/vendor/morris',
         'spinner'    : 'js/vendor/spin.min',
         'text'       : 'js/vendor/text',
         'bootstrap'  : '//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min',
