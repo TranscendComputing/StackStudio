@@ -127,7 +127,10 @@ define([
 			this.network = network;
 
 			if(!ich.templates.vm_network) {
-				ich.grabTemplates();
+				var $temp = $('<div>');
+                $temp.html(this.template());
+                var updatedTemplate = $temp.find('#vm_network');
+                ich.addTemplate("resource_detail", updatedTemplate.html());
 			}
 
 			$('#vm_network_tab').html(ich.vm_network(network));

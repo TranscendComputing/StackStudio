@@ -32,7 +32,7 @@ define([
         columns : ["name", "status"],
 
         actions: [
-            { text: "Update Network", type: }
+            { text: "Update Network", type: "row" }
         ],
 
         idColumnNumber : 0,
@@ -41,7 +41,7 @@ define([
 
         collectionType : Networks,
 
-        type : 'compute',
+        type : 'network',
 
         subtype : 'networks',
 
@@ -49,8 +49,11 @@ define([
 
         UpdateView : undefined,
 
-        initialize : function ( options ) {
+        events: {
+            'click #resource_table tr': "clickOne"
+        },
 
+        initialize : function ( options ) {
 
             var appView = this;
             this.vdc = options.data_center;
@@ -58,11 +61,8 @@ define([
             options = options || {};
             this.credentialId = options.cred_id;
 
-            this.fetchParams = {
-                vdc : this.vdc
-            };
-
-            appView.render();
+            this.$el.html(this.template);
+            this.loadData({ render: true, data: { vdc: this.vdc }});
 
             Common.vent.on("vcloudAppRefresh", appView.render.bind(appView));
         }

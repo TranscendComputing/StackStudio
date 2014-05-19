@@ -58,7 +58,7 @@ define([
             'click #record_set_action_menu ul li': 'performRecordSetAction'
         },
 
-        createText: createHostedZone,
+        createText: "Create Hosted Zone",
 
         actions: [
             { text: "Delete Hosted Zone", type: "row" }
