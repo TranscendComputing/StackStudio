@@ -176,7 +176,7 @@ module.exports = function(grunt) {
                                 'jquery.form'       : 'http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.45/jquery.form',
                                 'jquery.multiselect': 'http://cdn.jsdelivr.net/jquery.multiselect/1.13/jquery.multiselect.min',
                                 'jquery.jstree'     : 'http://cdn.jsdelivr.net/jquery.jstree/pre1.0/jquery.jstree',
-                                'jquery-migrate'    : 'http://code.jquery.com/jquery-migrate-1.1.0',
+                                'jquery-migrate'    : 'http://code.jquery.com/jquery-migrate-1.1.0.js',
                                 //'jasmine'           : 'node_modules/grunt-contrib-jasmine/vendor/jasmine-1.3.0/jasmine',
                                 //'jasmine-html'      : 'node_modules/grunt-contrib-jasmine/vendor/jasmine-1.3.0/jasmine-html',
                                 'jasmine-jquery'    : 'js/vendor/jasmine-jquery-1.3.0',
@@ -189,7 +189,6 @@ module.exports = function(grunt) {
                             map: {
                                 '*': {
                                     /* Map any path used by a vendor or plugin here as neccessary */
-                                    '//code.jquery.com/jquery-migrate-1.1.0'   : 'jquery-migrate',
                                     '//code.jquery.com/jquery-migrate-1.1.0.js': 'jquery-migrate'
                                 }
                             }

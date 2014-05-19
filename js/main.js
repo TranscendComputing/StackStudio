@@ -46,6 +46,7 @@ require(['config/rjsConfig'], function(undefined) {
                 dashboardView,
                 'views/projectSidebarView',
                 'views/account/accountManagementView',
+                'views/cloud_setup/cloudSetupView',
                 'views/projectAppView',
                 // 'views/projectNavigationSidebarView',
                 'views/projectResourceSidebarView',

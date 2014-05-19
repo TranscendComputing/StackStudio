@@ -140,7 +140,7 @@ requirejs.config({
         'jquery.mousewheel' : 'js/vendor/jquery.mousewheel-min',
         'jquery.multiselect': '//cdn.jsdelivr.net/jquery.multiselect/1.13/jquery.multiselect.min',
         'jquery.jstree'     : '//cdn.jsdelivr.net/jquery.jstree/pre1.0/jquery.jstree',
-        'jquery-migrate'    : '//code.jquery.com/jquery-migrate-1.1.0',
+        'jquery-migrate'    : '//code.jquery.com/jquery-migrate-1.1.0.js',
         'jquery.cookie'     : 'js/vendor/jquery.cookie',
         'jquery-plugins'    : 'js/vendor/jquery-plugins',
         'jquery-ui-plugins' : 'js/vendor/jquery-ui-plugins',
