@@ -189,7 +189,6 @@ module.exports = function(grunt) {
                             map: {
                                 '*': {
                                     /* Map any path used by a vendor or plugin here as neccessary */
-                                    '//code.jquery.com/jquery-migrate-1.1.0'   : 'jquery-migrate',
                                     '//code.jquery.com/jquery-migrate-1.1.0.js': 'jquery-migrate'
                                 }
                             }
