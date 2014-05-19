@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/simple_db/awsSimpleDBCreateTemplate.html',
-        '/js/aws/models/simple_db/awsSimpleDatabase.js',
+        'aws/models/simple_db/awsSimpleDatabase',
         'common'
         
 ], function( $, _, Backbone, DialogView, simpleDBCreateTemplate, SimpleDB, Common ) {

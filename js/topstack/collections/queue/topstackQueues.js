@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/topstack/models/queue/topstackQueue.js',
+        'topstack/models/queue/topstackQueue',
         'common'
 ], function( $, Backbone, Queue, Common ) {
     'use strict';

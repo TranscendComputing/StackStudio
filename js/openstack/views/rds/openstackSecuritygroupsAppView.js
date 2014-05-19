@@ -6,8 +6,8 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-    '/js/topstack/views/rds/topstackSecuritygroupsAppView.js',
-    '/js/openstack/views/rds/openstackSecurityGroupCreateView.js'
+    'topstack/views/rds/topstackSecuritygroupsAppView',
+    'openstack/views/rds/openstackSecurityGroupCreateView'
 ], function( TopStackSecurityGroupAppView, OpenStackSecurityGroupCreateView ) {
     'use strict';
 

@@ -41,7 +41,7 @@ define([
             "click button.save-manager" : "saveManager"
         },
 
-        initialize: function(options) {
+        initialize: function ( options ) {
             this.template = _.template(managementCloudAccountTemplate);
             this.$el.html(this.template);
             $("#submanagement_app").html(this.$el);
@@ -61,7 +61,10 @@ define([
                 thisView.render();
             });
             $("input").addClass("form-control");
-            this.render();
+
+            this.cloudAccounts = options.collection;
+            this.selectedCloudAccount = this.cloudAccounts.get(options.selectedId);
+            this.initFields();
         },
 
         render: function () {
@@ -134,8 +137,7 @@ define([
             }});
         },
         
-        treeSelectCloudAccount: function() {
-            this.selectedCloudAccount = this.rootView.cloudAccounts.get(this.rootView.treeCloudAccount);
+        initFields : function () {
             $("#services_tab").html(this.selectedCloudAccount.attributes.name);
             $("#cloud_provider_label").html(this.selectedCloudAccount.attributes.cloud_provider);
             

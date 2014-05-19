@@ -8,16 +8,25 @@
 define([
 	'backbone',
 	'common',
-	'/js/vcloud/collections/vcloudCollection.js',
-	'/js/vcloud/models/compute/vcloudVm.js'
-], function ( Backbone, Common, VCloudCollection, VCloudVm ) {
+	'vcloud/models/compute/vcloudVm'
+], function ( Backbone, Common, VCloudVm ) {
 	'use strict';
 
-	var Vms = VCloudCollection.extend({
+	var Vms = Backbone.Collection.extend({
 		
 		model : VCloudVm,
 
-		url : Common.apiUrl + '/stackstudio/v1/cloud_management/vcloud/compute/vms'
+		url : Common.apiUrl + '/stackstudio/v1/cloud_management/vcloud/compute/vms',
+
+		initialize : function ( options ) {
+			if(!(options && options.vdc_id && options.vapp_id)) {
+				Backbone.Collection.prototype.initialize.call(this);
+			}
+
+			this.options = options;
+			this.url = Common.apiUrl + '/stackstudio/v1/cloud_management/vcloud/compute/data_centers/' + options.vdc_id + '/vapps/' + options.vapp_id + '/vms?cred_id=' + options.cred_id;
+			Backbone.Collection.prototype.initialize.call(this, options);
+		}
 	});
 
 	return Vms;

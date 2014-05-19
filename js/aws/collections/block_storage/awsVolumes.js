@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/block_storage/awsVolume.js',
+        'aws/models/block_storage/awsVolume',
         'common'
 ], function( $, Backbone, Volume, Common ) {
     'use strict';

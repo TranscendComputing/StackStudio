@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/topstack/rds/topstackParameterGroupCreateTemplate.html',
-        '/js/topstack/models/rds/topstackDBParameterGroup.js',
+        'topstack/models/rds/topstackDBParameterGroup',
         'icanhaz',
         'common'
         

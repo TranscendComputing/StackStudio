@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/topstack/models/load_balancer/topstackListener.js',
+        'topstack/models/load_balancer/topstackListener',
         'common'
 ], function( $, Backbone, Listener, Common ) {
     'use strict';

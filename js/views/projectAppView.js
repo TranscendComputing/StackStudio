@@ -117,7 +117,6 @@ define([
         },
         
         addResource: function() {
-            console.log("adding resource from main project view...");
             return false;
         }
     });
@@ -128,7 +127,6 @@ define([
         if ( !projView || projView.el.innerHTML === '') {
             projView = new ProjectsView();
         }
-        console.log("Got project app route.");
     }, this);
     
     Common.router.on('route:projectDetail', function (id) {
@@ -138,7 +136,6 @@ define([
         if (projView.selectedId !== id) {
             projView.updateDetails(id);
         }
-        console.log('Got project detail route');
     }, this);
 
     Common.router.on('route:projectCreate', function () {
@@ -146,10 +143,7 @@ define([
             projView = new ProjectsView();
         }
         projView.createNew();
-        
-        console.log('Got project create route');
     }, this);
     
-    console.log("Project Nav view defined");
     return ProjectsView;
 });

@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/vpc/awsVpc.js',
+        'aws/models/vpc/awsVpc',
         'common'
 ], function( $, Backbone, Vpc, Common ) {
     'use strict';

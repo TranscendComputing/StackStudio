@@ -11,9 +11,9 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/topstack/cache/topstackSecurityGroupAppTemplate.html',
-        '/js/topstack/models/rds/topstackDBSecurityGroup.js',
-        '/js/topstack/collections/rds/topstackDBSecurityGroups.js',
-        '/js/openstack/collections/compute/openstackSecurityGroups.js',
+        'topstack/models/rds/topstackDBSecurityGroup',
+        'topstack/collections/rds/topstackDBSecurityGroups',
+        'openstack/collections/compute/openstackSecurityGroups',
         'icanhaz',
         'common',
         'jquery.dataTables'

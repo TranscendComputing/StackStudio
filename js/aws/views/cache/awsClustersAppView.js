@@ -11,11 +11,11 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/aws/cache/awsCacheClusterAppTemplate.html',
-        '/js/aws/models/cache/awsCacheCluster.js',
-        '/js/aws/collections/cache/awsCacheClusters.js',
-        '/js/aws/views/cache/awsClusterCreateView.js',
-        '/js/aws/views/cache/awsClusterModifyView.js',
-        '/js/aws/collections/cloud_watch/awsMetricStatistics.js',
+        'aws/models/cache/awsCacheCluster',
+        'aws/collections/cache/awsCacheClusters',
+        'aws/views/cache/awsClusterCreateView',
+        'aws/views/cache/awsClusterModifyView',
+        'aws/collections/cloud_watch/awsMetricStatistics',
         'text!templates/emptyGraphTemplate.html',
         'icanhaz',
         'common',
@@ -85,6 +85,14 @@ define([
             'click #monitoring': 'selectNode'
         },
 
+        createButton: true,
+        createText: 'Create Cluster',
+
+        actions: [
+            { text: "Delete", type: "row" },
+            { text: "Modify Node Count", type: "row" }
+        ],
+
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
@@ -92,7 +100,10 @@ define([
             if(options.region) {
                 this.region = options.region;
             }
-            this.render();
+
+            this.$el.html(this.template);
+
+            this.loadData({ render: true });
             
             var cacheApp = this;
             Common.vent.on("cacheAppRefresh", function() {

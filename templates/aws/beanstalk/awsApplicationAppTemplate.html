@@ -1,23 +1,5 @@
 <div>
-    <div class="button_bar">
-        <table>
-            <tr>
-                <td>
-                    <button class="create_button">Create Application</button>
-                </td>
-                <td>
-                    <ul id="action_menu">
-                        <li style="z-index: 1000">
-                            <a id="action_button">Actions</a>
-                            <ul>
-                                <li><a>Delete Application</a></li>                   
-                            </ul>
-                        </li>
-                    </ul>
-                </td>
-            </tr>
-        </table>
-    </div>
+    <div class="button_bar"></div>
     <table id="resource_table" class="full_width">
         <thead>
             <tr>
@@ -34,19 +16,27 @@
     <div id="details" class="detail_panel"></div>
 </div>
 
+
 <script type="text/html" id="resource_detail">
-    <div id="detail_tabs">
-        <ul>
-            
-            <li><a id="environments" href="#tabs-1">App</a></li>
-            <li><a id="events" href="#tabs-2">Events</a></li>
-        </ul>
-        
-        <div id="tabs-1" class="tab">
-            <div id="environments_tab_content"></div>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">Detail View: {{id}}</h3>
         </div>
-        <div id="tabs-2" class="tab">
-            <div id="events_tab_content"></div>
+        <div class="panel-body">
+            <div id="detail_tabs">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" id="environments" href="#tabs-1">App</a></li>
+                    <li><a data-toggle="tab" id="events" href="#tabs-2">Events</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div id="tabs-1" class="tab-pane active">
+                        <div id="environments_tab_content"></div>
+                    </div>
+                    <div id="tabs-2" class="tab-pane">
+                        <div id="events_tab_content"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </script>

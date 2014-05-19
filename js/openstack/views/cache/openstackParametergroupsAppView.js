@@ -6,8 +6,8 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-    '/js/topstack/views/cache/topstackParametergroupsAppView.js',
-    '/js/openstack/views/cache/openstackParameterGroupCreateView.js'
+    'topstack/views/cache/topstackParametergroupsAppView',
+    'openstack/views/cache/openstackParameterGroupCreateView'
 ], function( TopStackParameterGroupAppView, OpenStackParameterGroupCreateView ) {
     'use strict';
 

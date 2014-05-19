@@ -1,23 +1,5 @@
 <div>
-    <div class="button_bar">
-        <table>
-            <tr>
-                <td>
-                    <button class="create_button">Create Security Group</button>
-                </td>
-                <td>
-                    <ul id="action_menu">
-                        <li style="z-index: 1000">
-                            <a id="action_button">Actions</a>
-                            <ul>
-                                <li><a>Delete Security Group</a></li>                   
-                            </ul>
-                        </li>
-                    </ul>
-                </td>
-            </tr>
-        </table>
-    </div>
+    <div class="button_bar"></div>
     <table id="resource_table" class="full_width">
         <thead>
             <tr>
@@ -34,35 +16,44 @@
 </div>
 
 <script type="text/html" id="resource_detail">
-    <div id="detail_tabs">
-        <ul>
-            <li><a href="#rules_tab">Rules</a></li>
-            <li><a href="#properties_tab">Details</a></li>
-        </ul>
-        <div id="properties_tab" class="tab">
-            <table>
-                <tbody>
-                    <tr><td><b>Group ID:</b></td>       <td>{{ id }}</td></tr>
-                    <tr><td><b>Description:</b></td>    <td>{{ description }}</td></tr>
-                    <tr><td><b>Owner ID:</b></td>       <td>{{ owner_id }}</td></tr>
-                </tbody>
-            </table>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <div class="panel-title">Detail View: {{id}}</div>
         </div>
-        <div id="rules_tab" class="tab">
-            <h4>CIDR</h4>
-            <div class="form-horizontal" style="float: right;margin-bottom: 5px;">
-                <input class="input-small" id="cidr_input" placeholder='0.0.0.0/0'/>
-                <button id="add_cidr" class="btn btn-primary">Add IP Range</button>
-                <button class="btn btn-danger revoke-btn">Revoke</button>
+        <div class="panel-body">
+            <div id="detail_tabs">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#properties_tab">Details</a></li>
+                    <li><a data-toggle="tab" href="#rules_tab">Rules</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div id="properties_tab" class="tab-pane active">
+                        <table>
+                            <tbody>
+                                <tr><td><b>Group ID:</b></td>       <td>{{ id }}</td></tr>
+                                <tr><td><b>Description:</b></td>    <td>{{ description }}</td></tr>
+                                <tr><td><b>Owner ID:</b></td>       <td>{{ owner_id }}</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="rules_tab" class="tab-pane">
+                        <h4>CIDR</h4>
+                        <div class="form-horizontal" style="float: right;margin-bottom: 5px;">
+                            <input class="input-small" id="cidr_input" placeholder='0.0.0.0/0'/>
+                            <button id="add_cidr" class="btn btn-primary">Add IP Range</button>
+                            <button class="btn btn-danger revoke-btn">Revoke</button>
+                        </div>
+                        <table cellpadding="0" cellspacing="0" border="0" class="display" id="cidrip_table"></table>
+                        <h4>Nova Security Groups</h4>
+                        <div class="form-horizontal" style="float: right;margin-bottom: 5px;">
+                            <select id="select_ec2"></select>
+                            <button id="add_ec2" class="btn btn-primary">Add Group</button>
+                            <button class="btn btn-danger revoke-btn">Revoke</button>
+                        </div>
+                        <table cellpadding="0" cellspacing="0" border="0" class="display" id="ec2groups_table"></table>
+                    </div>
+                </div>
             </div>
-            <table cellpadding="0" cellspacing="0" border="0" class="display" id="cidrip_table"></table>
-            <h4>Nova Security Groups</h4>
-            <div class="form-horizontal" style="float: right;margin-bottom: 5px;">
-                <select id="select_ec2"></select>
-                <button id="add_ec2" class="btn btn-primary">Add Group</button>
-                <button class="btn btn-danger revoke-btn">Revoke</button>
-            </div>
-            <table cellpadding="0" cellspacing="0" border="0" class="display" id="ec2groups_table"></table>
         </div>
     </div>
 </script>

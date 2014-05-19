@@ -13,8 +13,8 @@ define([
         'icanhaz',
         'views/dialogView',
         'text!templates/openstack/identity/openstackRoleCreateTemplate.html',
-        '/js/openstack/models/identity/openstackRole.js',
-        '/js/openstack/collections/identity/openstackRoles.js',
+        'openstack/models/identity/openstackRole',
+        'openstack/collections/identity/openstackRoles',
         'jquery.multiselect',
         'jquery.multiselect.filter'
 ], function( $, _, Backbone, Common, ich, DialogView, roleCreateTemplate, Role, Roles ) {

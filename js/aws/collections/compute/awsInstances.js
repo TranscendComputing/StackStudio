@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/compute/awsInstance.js',
+        'aws/models/compute/awsInstance',
         'common'
 ], function( $, Backbone, Instance, Common ) {
     'use strict';

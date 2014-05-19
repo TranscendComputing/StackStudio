@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/load_balancer/awsManageAvailabilityZonesTemplate.html',
-        '/js/aws/collections/compute/awsAvailabilityZones.js',
+        'aws/collections/compute/awsAvailabilityZones',
         'common'
         
 ], function( $, _, Backbone, DialogView, manageAvailabilityZones, AvailabilityZones, Common ) {

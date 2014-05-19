@@ -7,8 +7,8 @@
 /*global define:true console:true */
 define([
         'backbone',
-        '/js/topstack/views/cache/topstackClusterCreateView.js',
-        '/js/openstack/collections/compute/openstackAvailabilityZones.js'
+        'topstack/views/cache/topstackClusterCreateView',
+        'openstack/collections/compute/openstackAvailabilityZones'
 ], function( Backbone, TopStackClusterCreateView, AvailabilityZones ) {
     
     var OpenStackClusterCreateView = TopStackClusterCreateView.extend({

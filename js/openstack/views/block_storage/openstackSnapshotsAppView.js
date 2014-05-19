@@ -11,9 +11,9 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/openstack/block_storage/openstackSnapshotAppTemplate.html',
-        '/js/openstack/models/block_storage/openstackSnapshot.js',
-        '/js/openstack/collections/block_storage/openstackSnapshots.js',
-        '/js/openstack/views/block_storage/openstackSnapshotCreateView.js',
+        'openstack/models/block_storage/openstackSnapshot',
+        'openstack/collections/block_storage/openstackSnapshots',
+        'openstack/views/block_storage/openstackSnapshotCreateView',
         'icanhaz',
         'common'
 ], function( $, _, Backbone, AppView, openstackSnapshotAppTemplate, Snapshot, Snapshots, OpenstackSnapshotCreateView, ich, Common ) {

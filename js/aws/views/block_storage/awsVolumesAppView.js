@@ -11,12 +11,12 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/aws/block_storage/awsVolumeAppTemplate.html',
-        '/js/aws/models/block_storage/awsVolume.js',
-        '/js/aws/collections/block_storage/awsVolumes.js',
-        '/js/aws/views/block_storage/awsVolumeCreateView.js',
-        '/js/aws/views/block_storage/awsVolumeAttachView.js',
-        '/js/aws/views/block_storage/awsSnapshotCreateView.js',
-        '/js/aws/collections/cloud_watch/awsMetricStatistics.js',
+        'aws/models/block_storage/awsVolume',
+        'aws/collections/block_storage/awsVolumes',
+        'aws/views/block_storage/awsVolumeCreateView',
+        'aws/views/block_storage/awsVolumeAttachView',
+        'aws/views/block_storage/awsSnapshotCreateView',
+        'aws/collections/cloud_watch/awsMetricStatistics',
         'text!templates/emptyGraphTemplate.html',
         'icanhaz',
         'common',
@@ -70,6 +70,17 @@ define([
             'click #monitoring': 'refreshMonitors'
         },
 
+        createButton: true,
+        createText: "Create Volume",
+
+        actions: [
+            { text: "Delete Volume", type: "row"},
+            { text: "Attach Volume", type: "row"},
+            { text: "Detach Volume", type: "row"},
+            { text: "Force Detach", type: "row"},
+            { text: "Create Snapshot", type: "row"}
+        ],
+
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
@@ -77,7 +88,10 @@ define([
             if(options.region) {
                 this.region = options.region;
             }
-            this.render();
+
+            this.$el.html(this.template);
+
+            this.loadData({render: true});
             
             var volumeApp = this;
             Common.vent.on("volumeAppRefresh", function() {

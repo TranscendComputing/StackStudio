@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/cloud_watch/awsMetricStatistic.js',
+        'aws/models/cloud_watch/awsMetricStatistic',
         'common'
 ], function( $, Backbone, MetricStatistic, Common ) {
     'use strict';

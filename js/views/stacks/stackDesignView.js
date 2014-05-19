@@ -12,7 +12,7 @@ define([
         'common',
         'text!templates/stacks/stackDesignTemplate.html',
         'collections/assemblies',
-        '/js/aws/views/cloud_formation/awsCloudFormationStackCreateView.js',
+        'aws/views/cloud_formation/awsCloudFormationStackCreateView',
         'ace',
         'collections/configManagers',
         'jquery.jstree'

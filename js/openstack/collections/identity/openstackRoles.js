@@ -9,7 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        '/js/openstack/models/identity/openstackRole.js',
+        'openstack/models/identity/openstackRole',
         'common'
 ], function( $, _, Backbone, Role, Common ) {
     'use strict';

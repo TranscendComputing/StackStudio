@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/topstack/models/rds/topstackRelationalDatabase.js',
+        'topstack/models/rds/topstackRelationalDatabase',
         'common'
 ], function( $, Backbone, RelationalDatabase, Common ) {
     'use strict';

@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/google/models/compute/googleKeyPair.js',
+        'google/models/compute/googleKeyPair',
         'common'
 ], function( $, Backbone, KeyPair, Common ) {
     'use strict';

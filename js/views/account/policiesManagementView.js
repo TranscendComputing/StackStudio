@@ -12,27 +12,27 @@ define([
         'common',
         'text!templates/account/policiesManagementTemplate.html',
         'collections/policies',
-        'views/account/policyCreateView',
+        // 'views/account/policyCreateView',
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator'
-], function( $, _, Backbone, Common, usersManagementTemplate, Users, NewLoginView) {
+], function( $, _, Backbone, Common, policiesManagementTemplate, Policies ) {
 
-    var UserManagementView = Backbone.View.extend({
+    var PolicyManagementView = Backbone.View.extend({
 
         tagName: 'div',
 
-        template: _.template(usersManagementTemplate),
+        template: _.template(policiesManagementTemplate),
 
-        users: undefined,
+        policies: undefined,
 
-        selectedUser: undefined,
+        selectedPolicy: undefined,
         
         rootView: undefined,
 
         events: {
-            "click #users_table tr": "selectUser",
-            "click #create_user_button": "createUser",
-            "click #delete_user_button": "deleteUser"
+            "click #users_table tr": "selectPolicy",
+            "click #create_user_button": "createPolicy",
+            "click #delete_user_button": "deletePolicy"
         },
 
         initialize: function() {
@@ -44,57 +44,45 @@ define([
                 "bJQueryUI": true,
                 "bProcessing": true
             });
-            var usersView = this;
+            var view = this;
             Common.vent.on("policyAppRefresh", function() {
-                usersView.render();
+                view.render();
             });
             
-            this.users = new Users();
-            this.users.on('reset', this.addAllUsers, this);
+            this.policies = new Policies();
+            this.policies.on('reset', this.addAllPolicies, this);
+            this.rootView.policies = this.policies;
             this.render();
         },
 
         render: function () {
             $("#users_table").dataTable().fnProcessingIndicator(true);
-            this.users.fetch({
+            this.policies.fetch({
                 data: $.param({ org_id: sessionStorage.org_id }),
                 reset: true
             });
             this.disableDeleteButton(true);
         },
 
-        addAllUsers: function() {
-            var usersView = this;
+        addAllPolicies: function() {
+            var view = this;
             $("#users_table").dataTable().fnClearTable();
-            this.users.each(function(user) {
-                var rowData = [user.attributes.name];
+            this.policies.each(function ( policy ) {
+                var rowData = [policy.attributes.name];
                 $("#users_table").dataTable().fnAddData(rowData);
             });
             $("#users_table").dataTable().fnProcessingIndicator(false);
-            
-            //this.disableCreateButton();
         },
 
-        selectUser: function(event) {
+        selectPolicy: function(event) {
             this.clearSelection();
             $(event.currentTarget).addClass("row_selected");
             var rowData = $("#users_table").dataTable().fnGetData(event.currentTarget);
-            var usersView = this;
-            this.users.each(function(user) {
-                if(user.attributes.name === rowData[0]) {
-                    usersView.selectedUser = user;
-                    /*
-                    var isAdmin = false;
-                    if(usersView.users.get(sessionStorage.account_id).attributes.permissions.length > 0){
-                        isAdmin = usersView.users.get(sessionStorage.account_id).attributes.permissions[0].permission.name === "admin";
-                    }
-                    
-                    if(sessionStorage.account_id === user.attributes.id || !isAdmin) {
-                        usersView.disableDeleteButton(true);
-                    }else {
-                        usersView.disableDeleteButton(false);
-                    }*/
-                    usersView.disableDeleteButton(false);
+            var view = this;
+            this.policies.each(function ( policy ) {
+                if(policy.attributes.name === rowData[0]) {
+                    view.selectedPolicy = policy;
+                    view.disableDeleteButton(false);
                 }
             });
         },
@@ -111,8 +99,8 @@ define([
         /*
         disableCreateButton: function() {
             var isAdmin = false;
-            if(this.users.get(sessionStorage.account_id).attributes.permissions.length > 0){
-                isAdmin = this.users.get(sessionStorage.account_id).attributes.permissions[0].permission.name === "admin";
+            if(this.policies.get(sessionStorage.account_id).attributes.permissions.length > 0){
+                isAdmin = this.policies.get(sessionStorage.account_id).attributes.permissions[0].permission.name === "admin";
             }
             if(!isAdmin){
                 $("#create_user_button").attr("disabled", true);
@@ -120,15 +108,13 @@ define([
             }
         },*/
 
-        createUser: function() {
-            this.rootView.treePolicy = undefined;
+        createPolicy: function() {
             location.href = "#account/management/policy";
-            //new NewLoginView({org_id: sessionStorage.org_id});
         },
 
-        deleteUser: function() {
-            if(this.selectedUser) {
-                this.selectedUser.destroy();
+        deletePolicy: function() {
+            if(this.selectedPolicy) {
+                this.selectedPolicy.destroy();
             }
         },
 
@@ -141,5 +127,5 @@ define([
         }  
     });
 
-    return UserManagementView;
+    return PolicyManagementView;
 });

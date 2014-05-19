@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/google/models/compute/googleFirewall.js',
+        'google/models/compute/googleFirewall',
         'common'
 ], function( $, Backbone, Firewall, Common ) {
     'use strict';

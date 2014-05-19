@@ -23,7 +23,7 @@ define([
      * @returns {Object} Returns a Router instance.
      */
 
-	if(window.app === "stackplace") {
+	if (window.app === "stackplace") {
 	    Backbone.Router.namedParameters = true;
 	}else {
 	    Backbone.Router.namedParameters = false;
@@ -33,7 +33,7 @@ define([
 
 		routes:{
             'account/cloudcredentials': 'cloudCredentials',
-            'account/management(/:action)': 'accountManagementRoute',
+            'cloud/setup(/)(:action)': 'cloudSetupRoute',
 			'resources': 'resourcesRoute',
 			'resources/:cloud': 'resourcesRoute',
 			'resources/:cloud/:region': 'resourcesRoute',
@@ -54,12 +54,12 @@ define([
 			'*actions': 'defaultRoute'
 		},
 
-		defaultRoute: function( actions ) {
+		defaultRoute: function(actions) {
 		    if (window.app === "stackplace") {
 		        if ( (typeof actions === 'object') && (actions.url !== undefined) ) {
 		            this.trigger('route:projectEdit', actions.url);
 		        } else {
-		          this.trigger('route:projectEdit');
+                    this.trigger('route:projectEdit');
 		        }
 		    } else {
                 $("#sidebar").empty();
@@ -124,6 +124,14 @@ define([
             $(".main-nav a").removeClass("nav_selected");
             $("#nav_account").addClass("nav_selected");
             this.trigger("route:accountManagement", action);
+        },
+
+        cloudSetupRoute : function ( action ) {
+            $("#sidebar").empty();
+            $("#sidebar").hide();
+            $(".main-nav a").removeClass("nav_selected");
+            $("#cloud_setup_nav").addClass('nav_selected');
+            this.trigger("route:cloudSetup", action);
         }
 	});
 

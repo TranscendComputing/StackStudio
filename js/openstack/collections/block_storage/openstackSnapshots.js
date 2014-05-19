@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/openstack/models/block_storage/openstackSnapshot.js',
+        'openstack/models/block_storage/openstackSnapshot',
         'common'
 ], function( $, Backbone, Snapshot, Common ) {
     'use strict';

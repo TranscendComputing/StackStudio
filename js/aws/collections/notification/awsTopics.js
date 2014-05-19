@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/notification/awsTopic.js',
+        'aws/models/notification/awsTopic',
         'common'
 ], function( $, Backbone, Topic, Common ) {
     'use strict';

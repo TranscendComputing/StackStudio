@@ -11,9 +11,9 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/aws/cloud_watch/awsAlarmAppTemplate.html',
-        '/js/aws/models/cloud_watch/awsAlarm.js',
-        '/js/aws/collections/cloud_watch/awsAlarms.js',
-        '/js/aws/views/cloud_watch/awsAlarmCreateView.js',
+        'aws/models/cloud_watch/awsAlarm',
+        'aws/collections/cloud_watch/awsAlarms',
+        'aws/views/cloud_watch/awsAlarmCreateView',
         'icanhaz',
         'common',
         'jquery.dataTables'
@@ -58,6 +58,10 @@ define([
             'click #history_tab' : 'refreshHistoryTab'
         },
 
+        actions: [
+            { text: "Delete Alarm", type: "row" }
+        ],
+
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
@@ -65,7 +69,10 @@ define([
             if(options.region) {
                 this.region = options.region;
             }
-            this.render();
+
+            this.$el.html(this.template);
+
+            this.loadData({render: true});
             
             $("#alarm_history").dataTable({
                 "bJQueryUI": true,

@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/openstack/object_storage/openstackBucketCreateTemplate.html',
-        '/js/openstack/models/object_storage/openstackBucket.js',
+        'openstack/models/object_storage/openstackBucket',
         'common'
 ], function( $, _, Backbone, DialogView, bucketCreateTemplate, Bucket, Common ) {	
 	

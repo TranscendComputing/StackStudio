@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/google/models/compute/googleNetwork.js',
+        'google/models/compute/googleNetwork',
         'common'
 ], function( $, Backbone, Network, Common ) {
     'use strict';

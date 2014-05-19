@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/cache/awsCacheParameterGroup.js',
+        'aws/models/cache/awsCacheParameterGroup',
         'common'
 ], function( $, Backbone, CacheParameterGroup, Common ) {
     'use strict';

@@ -11,13 +11,13 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/aws/dns/awsHostedZoneAppTemplate.html',
-        '/js/aws/models/dns/awsHostedZone.js',
-        '/js/aws/collections/dns/awsHostedZones.js',
-        '/js/aws/models/dns/awsRecordSet.js',
-        '/js/aws/collections/dns/awsRecordSets.js',
-        '/js/aws/views/dns/awsHostedZoneCreateView.js',
+        'aws/models/dns/awsHostedZone',
+        'aws/collections/dns/awsHostedZones',
+        'aws/models/dns/awsRecordSet',
+        'aws/collections/dns/awsRecordSets',
+        'aws/views/dns/awsHostedZoneCreateView',
         'views/resource/resourceRowView',
-        '/js/aws/views/dns/awsRecordSetCreateView.js',
+        'aws/views/dns/awsRecordSetCreateView',
         'icanhaz',
         'common',
         'jquery.dataTables'
@@ -58,11 +58,18 @@ define([
             'click #record_set_action_menu ul li': 'performRecordSetAction'
         },
 
+        createText: "Create Hosted Zone",
+
+        actions: [
+            { text: "Delete Hosted Zone", type: "row" }
+        ],
+
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
             }
-            this.render();
+            this.$el.html(this.template);
+            this.loadData({ render: true });
             
             var hostedZoneApp = this;
             Common.vent.on("hostedZoneAppRefresh", function() {

@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/topstack/models/load_balancer/topstackLoadBalancer.js',
+        'topstack/models/load_balancer/topstackLoadBalancer',
         'common'
 ], function( $, Backbone, LoadBalancer, Common ) {
     'use strict';

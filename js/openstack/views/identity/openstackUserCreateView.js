@@ -12,8 +12,8 @@ define([
         'common',
         'views/dialogView',
         'text!templates/openstack/identity/openstackUserCreateTemplate.html',
-        '/js/openstack/models/identity/openstackUser.js',
-        '/js/openstack/collections/identity/openstackTenants.js'
+        'openstack/models/identity/openstackUser',
+        'openstack/collections/identity/openstackTenants'
 ], function( $, _, Backbone, Common, DialogView, userCreateTemplate, User, Tenants ) {
 
     var UserCreateView = DialogView.extend({

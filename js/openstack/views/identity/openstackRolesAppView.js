@@ -11,9 +11,9 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/openstack/identity/openstackRoleAppTemplate.html',
-        '/js/openstack/models/identity/openstackRole.js',
-        '/js/openstack/collections/identity/openstackRoles.js',
-        '/js/openstack/views/identity/openstackRoleCreateView.js',
+        'openstack/models/identity/openstackRole',
+        'openstack/collections/identity/openstackRoles',
+        'openstack/views/identity/openstackRoleCreateView',
         'icanhaz',
         'common'
 ], function( $, _, Backbone, AppView, openstackRoleAppTemplate, Role, Roles, OpenstackRoleCreateView, ich, Common ) {

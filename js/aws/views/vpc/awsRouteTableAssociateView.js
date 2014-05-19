@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/vpc/awsRouteTableAssociateTemplate.html',
-        '/js/aws/collections/vpc/awsSubnets.js',
+        'aws/collections/vpc/awsSubnets',
         'icanhaz',
         'common',
         'jquery.multiselect',

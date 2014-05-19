@@ -7,8 +7,8 @@
 /*global define:true console:true */
 define([
         'backbone',
-        '/js/topstack/views/load_balancer/topstackRegisterInstancesView.js',
-        '/js/openstack/collections/compute/openstackInstances.js'
+        'topstack/views/load_balancer/topstackRegisterInstancesView',
+        'openstack/collections/compute/openstackInstances'
 ], function( Backbone, TopStackRegisterInstancesView, Instances ) {
     
     var OpenStackRegisterInstancesView = TopStackRegisterInstancesView.extend({

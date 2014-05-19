@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/topstack/models/rds/topstackDBSecurityGroup.js',
+        'topstack/models/rds/topstackDBSecurityGroup',
         'common'
 ], function( $, Backbone, DBSecurityGroup, Common ) {
     'use strict';

@@ -9,7 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        '/js/openstack/models/network/openstackFloatingIp.js',
+        'openstack/models/network/openstackFloatingIp',
         'common'
 ], function( $, _, Backbone, FloatingIp, Common ) {
     'use strict';

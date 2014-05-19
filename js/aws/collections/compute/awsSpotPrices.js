@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/compute/awsSpotPrice.js',
+        'aws/models/compute/awsSpotPrice',
         'common'
 ], function( $, Backbone, SpotPrice, Common ) {
     'use strict';

@@ -11,7 +11,7 @@ define([
         'backbone',
         'common',
         'views/account/accountLoginView',
-        'js/views/dashboardView.js',
+        'views/dashboardView',
         'jquery-ui'
 ], function( $, _, Backbone, Common, AccountLoginView, DashboardView ) {
     'use strict';

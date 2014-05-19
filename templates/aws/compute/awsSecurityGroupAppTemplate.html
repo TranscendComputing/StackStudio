@@ -1,23 +1,5 @@
 <div>
-    <div class="button_bar">
-        <table>
-            <tr>
-                <td>
-                    <button class="create_button">Create Security Group</button>
-                </td>
-                <td>
-                    <ul id="action_menu">
-                        <li style="z-index: 1000">
-                            <a id="action_button">Actions</a>
-                            <ul>
-                                <li><a>Delete Security Group</a></li>                   
-                            </ul>
-                        </li>
-                    </ul>
-                </td>
-            </tr>
-        </table>
-    </div>
+    <div class="button_bar"></div>
     <table id="resource_table" class="full_width">
         <thead>
             <tr>
@@ -34,46 +16,56 @@
     <div id="details" class="detail_panel"></div>
 </div>
 
+
 <script type="text/html" id="resource_detail">
-    <div id="detail_tabs">
-        <ul>
-            <li><a href="#properties_tab">Details</a></li>
-            <li><a href="#rules_tab">Rules</a></li>
-        </ul>
-        <div id="properties_tab" class="tab">
-            <table>
-                <tbody>
-                    <tr><td><b>Name:</b></td>           <td>{{ name }}</td></tr>
-                    <tr><td><b>Description:</b></td>    <td>{{ description }}</td></tr>
-                    <tr><td><b>Group ID:</b></td>       <td>{{ group_id }}</td></tr>
-                    <tr><td><b>Owner ID:</b></td>       <td>{{ owner_id }}</td></tr>
-                    <tr><td><b>VPC ID:</b></td>         <td>{{ vpc_id }}</td></tr>
-                </tbody>
-            </table>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <div class="panel-title">Detail View: {{name}}</div>
         </div>
-        <div id="rules_tab">
-            <div class="row">
-                <div class="fivecol">
-                    <form>
-                        <fieldset>
-                            <legend>Security Group Ingress</legend>
-                            <p><label class="field">New Rule:</label>
-                                <select class="select-200" id="new_rule_select">
-                                    <option data-cidr="0.0.0.0/0" data-protocol="tcp">Custom TCP</option>
-                                    <option data-from-port="1" data-to-port="65535" data-cidr="0.0.0.0/0" data-protocol="tcp">ALL TCP</option>
-                                </select>
-                            </p>
-                            <p><label class="field">Port Range:</label><input id="port_range_input" class="textbox-200" type="text"></input></p>
-                            <p><label class="field">Source:</label></p>
-                            <p><input type="radio" name="source" value="cidr" checked="checked" class="sub-field" ></input><label class="sub-field">CIDR IP:</label><input type="text" class="sub-textbox-150" id="cidr_input"></input></p>
-                            <p><input type="radio" name="source" value="group" class="sub-field"></input><label class="sub-field">Existing Group:</label><input type="text" class="sub-textbox-150" id="group_input"></input></p><br>
-                            <button id="add_rule_button">Add Rule</button>
-                        </fieldset>
-                    </form>
-                </div>
-                <div class="sevencol">
-                    <table id="rules_table">
-                    </table>
+        <div class="panel-body">
+            <div id="detail_tabs">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#properties_tab">Details</a></li>
+                    <li><a data-toggle="tab" href="#rules_tab">Rules</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div id="properties_tab" class="tab-pane active">
+                        <table>
+                            <tbody>
+                                <tr><td><b>Name:</b></td>           <td>{{ name }}</td></tr>
+                                <tr><td><b>Description:</b></td>    <td>{{ description }}</td></tr>
+                                <tr><td><b>Group ID:</b></td>       <td>{{ group_id }}</td></tr>
+                                <tr><td><b>Owner ID:</b></td>       <td>{{ owner_id }}</td></tr>
+                                <tr><td><b>VPC ID:</b></td>         <td>{{ vpc_id }}</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="rules_tab" class="tab-pane">
+                        <div class="row">
+                            <div class="fivecol">
+                                <form>
+                                    <fieldset>
+                                        <legend>Security Group Ingress</legend>
+                                        <p><label class="field">New Rule:</label>
+                                            <select class="select-200" id="new_rule_select">
+                                                <option data-cidr="0.0.0.0/0" data-protocol="tcp">Custom TCP</option>
+                                                <option data-from-port="1" data-to-port="65535" data-cidr="0.0.0.0/0" data-protocol="tcp">ALL TCP</option>
+                                            </select>
+                                        </p>
+                                        <p><label class="field">Port Range:</label><input id="port_range_input" class="textbox-200" type="text"></input></p>
+                                        <p><label class="field">Source:</label></p>
+                                        <p><input type="radio" name="source" value="cidr" checked="checked" class="sub-field" ></input><label class="sub-field">CIDR IP:</label><input type="text" class="sub-textbox-150" id="cidr_input"></input></p>
+                                        <p><input type="radio" name="source" value="group" class="sub-field"></input><label class="sub-field">Existing Group:</label><input type="text" class="sub-textbox-150" id="group_input"></input></p><br>
+                                        <button id="add_rule_button">Add Rule</button>
+                                    </fieldset>
+                                </form>
+                            </div>
+                            <div class="sevencol">
+                                <table id="rules_table">
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

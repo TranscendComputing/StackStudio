@@ -11,83 +11,194 @@ define([
 	'backbone',
 	'icanhaz',
 	'common',
-	'views/resource/resourceDetailView',
+    'views/modalView',
 	'text!templates/vcloud/compute/vcloudVmsTemplate.html',
-	'/js/vcloud/models/compute/vcloudVm.js',
-	'/js/vcloud/collections/compute/vcloudVms.js'
-], function( $, _, Backbone, ich, Common, ResourceDetailView, VCloudVmTemplate, Vm, Vms ) {
+	'vcloud/models/compute/vcloudVm',
+	'vcloud/collections/compute/vcloudVms'
+], function( $, _, Backbone, ich, Common, ModalView, VCloudVmTemplate, Vm, Vms ) {
 	'use strict';
 
-	var VCloudVmsAppView = ResourceDetailView.extend({
+	var VCloudVmsAppView = ModalView.extend({
 
 		template : _.template(VCloudVmTemplate),
+
+		events: {
+			"click #power_off_vm": "powerOff",
+			"click #power_on_vm": "powerOn",
+			"click #modify_vm" : "modifyVm",
+			"click #update_network" : "updateNetwork",
+			"click #create_disk" : "createDisk",
+			"click #create_disk_submit" : "createDiskSubmit"
+		},
 
 		initialize : function ( options ) {
 			var appView = this;
 			this.credentialId = options.cred_id;
 			this.vapp = options.vapp;
-			this.vdc = options.vdc;
+			this.vdc = options.data_center;
 			this.model = options.model;
-			this.model.loadNetwork();
-			this.model.loadDisks();
-			this.render();
+			
+			Common.vent.on('networkLoaded', this.refreshNetwork);
+			Common.vent.on('networkRefresh', this.refreshNetwork);
 
-			function refreshNetwork ( network ) {
-				if(!ich.templates.vm_network) {
-					ich.grabTemplates();
-				}
+			Common.vent.on('disksLoaded', this.refreshDisks);
+			Common.vent.on('disksRefresh', this.refreshDisks);
 
-				$('#tabs-4').html(ich.vm_network(network));
+			this.vmOptions = {
+				cred_id : this.credentialId,
+				vdc_id : this.vdc,
+				vapp_id : this.vapp,
+				vm_id : this.model.attributes.id
+			};
+
+			this.$el.find('.modal-body').html(this.template);
+			
+			if(!ich.templates.resource_detail_modal) {
+				ich.grabTemplates();
 			}
-
-			function refreshDisks ( disks ) {
-				if(!ich.templates.vm_disks) {
-					ich.grabTemplates();
-				}
-
-				$('#tabs-5').html(ich.vm_disks({ disks : disks }));
-			}
-
-
-			Common.vent.on('vmAppRefresh', function ( vm ) {
-				appView.vm = appView.makeModel(vm);
-				appView.render();
+			
+			$.each(this.model.attributes, function ( attr ) {
+				attr = attr.capitalize();
 			});
 
+			//replace template variables
+			this.$el.find('.modal-body').html(ich.resource_detail_modal(this.model.attributes));
 
-			Common.vent.on('networkLoaded', refreshNetwork);
-			Common.vent.on('networkRefresh', refreshNetwork);
+			this.$el.find('.modal-title').text('VM Details: ' + this.model.attributes.name);
 
-			Common.vent.on('disksLoaded', refreshDisks);
-			Common.vent.on('disksRefresh', refreshDisks);
+			if(this.model.attributes.status === 'on') {
+				this.$el.find('#power_on_vm').hide();
+				this.$el.find('#power_off_vm').show();
+			} else {
+				this.$el.find('#power_off_vm').hide();
+				this.$el.find('#power_on_vm').show();
+			}
 
+			$('.disk-hidden').hide();
+			
+			this.setupValidation();
+
+			var $table = $('#vm_disk_list');
+
+			$table.dataTable({
+				"bJQueryUI": true,
+				"bProcessing": true,
+				"bDestroy": true,
+				"bSort" : false,
+				"bFilter" : false
+			});
+
+			this.model.loadNetwork(this.vmOptions);
+			this.model.loadDisks(this.vmOptions);
+
+			$table.dataTable().fnProcessingIndicator(true);
+
+			this.render();
 		},
 
-		events: {
-			"click #power_off_vm": "powerOff",
-			"click #power_on_vm": "powerOn",
-			"click #modify_memory" : "modifyMemory",
-			"click #modify_cpu" : "modifyCpu",
-			"click #update_network" : "updateNetwork"
+		setupValidation : function () {
+
+			this.$el.on('change', '#memory', function ( e ) {
+				var val = parseInt($(this).val(), 10);
+				if(isNaN(val)) {
+					e.preventDefault();
+					return;
+				}
+			});
+
+			this.$el.on('change', '#memory', function ( e ) {
+				var val = parseInt($(this).val(), 10);
+				var rem = val % 4;
+
+				if(rem !== 0) {
+					var correctedValue;
+					if(rem <=  2) {
+						correctedValue = val - rem;
+					} else {
+						correctedValue = val + 4 - rem;
+					}
+
+					$(this).val(correctedValue);
+				}
+			});
 		},
-		
+
+		refreshNetwork : function ( network ) {
+			this.network = network;
+
+			if(!ich.templates.vm_network) {
+				var $temp = $('<div>');
+                $temp.html(this.template());
+                var updatedTemplate = $temp.find('#vm_network');
+                ich.addTemplate("resource_detail", updatedTemplate.html());
+			}
+
+			$('#vm_network_tab').html(ich.vm_network(network));
+		},
+
+		refreshDisks : function ( disks ) {
+			this.disks = disks;
+
+			var $table = $('#vm_disk_list');
+
+			$table.dataTable().fnClearTable();
+			$.each(disks, function () {
+				$table.dataTable().fnAddData([this.name, this.capacity.toString()]);
+			});
+
+			$table.fnProcessingIndicator(false);
+		},
+
+		createDisk : function () {
+			$('#create_disk').hide();
+			$('.disk-hidden').show();
+		},
+
+		createDiskSubmit : function () {
+			var diskOptions = _.extend(this.vmOptions, {
+				size : $('#new_disk_size').val(),
+				success: function () {
+					$('#new_disk_size').val('');
+				}
+			});
+
+			this.model.createDisk(diskOptions);
+
+			var $diskPlaceholder = $('<tr><td>Creating..</td><td>' + $('#new_disk_size').val() + '</td></tr>');
+
+			$('.disk-hidden').hide();
+			$('#create_disk').show();
+			$('#vm_disk_list').find('tbody').append($diskPlaceholder);
+		},
 
 		powerOff : function () {
-			this.vm.powerOff();
+			this.model.powerOff(this.vmOptions);
 		},
 
 		powerOn : function () {
-			this.vm.powerOn();
+			this.model.powerOn(this.vmOptions);
 		},
 
-		modifyCpu : function () {
-			var numCpus = parseInt($('#number_of_cpus').val(), 10);
-			this.vm.modifyCpu(numCpus);
-		},
+		modifyVm : function () {
 
-		modifyMemory : function () {
-			var memory = parseInt($('#memory').val(), 10);
-			this.vm.modifyMemory(memory);
+			var options = {
+				vdc_id : this.vdc,
+				vapp_id : this.vapp,
+				vm_id : this.model.attributes.id,
+				data : {
+					cred_id : this.credentialId
+				}
+			};
+
+			var cpus = $('#number_of_cpus').val();
+			var memory = $('#memory').val();
+			if(cpus) {
+				options.data.cpu = parseInt(cpus, 10);
+			}
+			if(memory) {
+				options.data.memory = parseInt(memory, 10);
+			}
+			this.model.modify(options);
 		},
 
 		updateNetwork : function () {
@@ -99,7 +210,9 @@ define([
 				options[prop] = $(this).val();
 			});
 
-			this.vm.updateNetwork(options);
+			options = _.extend(options, this.vmOptions);
+
+			this.model.updateNetwork(options);
 		}
 	});
 
