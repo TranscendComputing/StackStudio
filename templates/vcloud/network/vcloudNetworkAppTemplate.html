@@ -14,51 +14,59 @@
     </table>
     <div id="details" class="detail_panel"></div>
 </div>
-
 <script type="text/html" id="resource_detail">
-    <div id="detail_tabs">
-        <ul>
-            <li><a id="network_details" href="#tabs-1">Details</a></li>
-        </ul>
-        <div id="tabs-1" class="tab">
-            <table>
-                <tbody>
-                    <tr>
-                        <td>
-                            <b>Name:</b>
-                        </td>
-                        <td>{{name}}</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <b>Description:</b>
-                        </td>
-                        <td>{{description}}</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <b>Gateway:</b>
-                        </td>
-                        <td>{{gateway}}</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <b>Subnet Mask:</b>
-                        </td>
-                        <td>{{netmask}}</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <b>IP Ranges:</b>
-                        </td>
-                        <td>
-                            {{#ip_ranges}}
-                                {{start_address}} - {{end_address}} <br />
-                            {{/ip_ranges}}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <div class="panel-title">Detail View: {{name}}</div>
+        </div>
+        <div class="panel-body">
+            <div id="detail_tabs">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" id="network_details" href="#tabs-1">Details</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div id="tabs-1" class="tab-pane active">
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <b>Name:</b>
+                                    </td>
+                                    <td>{{name}}</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <b>Description:</b>
+                                    </td>
+                                    <td>{{description}}</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <b>Gateway:</b>
+                                    </td>
+                                    <td>{{gateway}}</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <b>Subnet Mask:</b>
+                                    </td>
+                                    <td>{{netmask}}</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <b>IP Ranges:</b>
+                                    </td>
+                                    <td>
+                                        {{#ip_ranges}}
+                                            {{start_address}} - {{end_address}} <br />
+                                        {{/ip_ranges}}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </script>

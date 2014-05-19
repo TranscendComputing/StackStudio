@@ -47,8 +47,12 @@ define([
 
         events : {
             'click #resource_table tr': "clickOne",
-            'click #instantiate_vapp': "instantiateVapp"
+            'click .instantiate_vapp': "instantiateVapp"
         },
+
+        actions: [
+            { text: "Delete Catalog", type: "row" }
+        ],
 
         initialize : function ( options ) {
 
@@ -58,11 +62,8 @@ define([
             options = options || {};
             this.credentialId = options.cred_id;
 
-            this.fetchParams = {
-                vdc : this.vdc
-            };
-
-            appView.render();
+            this.$el.html(this.template);
+            appView.loadData({ render: true, data: { vdc: this.vdc }});
 
             Common.vent.on("vcloudAppRefresh", appView.render.bind(appView));
         },
@@ -81,7 +82,7 @@ define([
                 cred_id : this.credentialId,
                 cat_id : cat_id,
                 item_id : item_id,
-                vapp_name : 'test-vapp-1',
+                vapp_name : 'Unnamed Vapp',
                 vapp_options : {
                     vdc_id : this.vdc
                 }
