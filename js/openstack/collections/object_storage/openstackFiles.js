@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/openstack/models/object_storage/openstackFile.js',
+        'openstack/models/object_storage/openstackFile',
         'common'
 ], function( $, Backbone, File, Common ) {
     'use strict';

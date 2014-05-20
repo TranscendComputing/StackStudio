@@ -11,8 +11,8 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/topstack/cloud_watch/topstackAlarmAppTemplate.html',
-        '/js/topstack/models/cloud_watch/topstackAlarm.js',
-        '/js/topstack/collections/cloud_watch/topstackAlarms.js',
+        'topstack/models/cloud_watch/topstackAlarm',
+        'topstack/collections/cloud_watch/topstackAlarms',
         'icanhaz',
         'common',
         'jquery.dataTables'

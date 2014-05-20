@@ -8,16 +8,15 @@
 define([
 	'backbone',
 	'common',
-	'/js/vcloud/collections/vcloudCollection.js',
-	'/js/vcloud/models/network/vcloudNetwork.js'
-], function ( Backbone, Common, VCloudCollection, VCloudNetwork ) {
+	'vcloud/models/network/vcloudNetwork'
+], function ( Backbone, Common, VCloudNetwork ) {
 	'use strict';
 
-	var Networks = VCloudCollection.extend({
+	var Networks = Backbone.Collection.extend({
 		
 		model : VCloudNetwork,
 
-		url : Common.apiUrl + '/stackstudio/v1/cloud_management/vcloud/networks'
+		url : Common.apiUrl + '/stackstudio/v1/cloud_management/vcloud/networks/'
 	});
 
 	return Networks;

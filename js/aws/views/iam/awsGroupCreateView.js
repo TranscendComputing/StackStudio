@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/iam/awsGroupCreateTemplate.html',
-        '/js/aws/models/iam/awsGroup.js',
+        'aws/models/iam/awsGroup',
         'common'      
 ], function( $, _, Backbone, DialogView, groupCreateTemplate, Group, Common ) {
     

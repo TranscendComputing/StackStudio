@@ -12,10 +12,10 @@ define([
         'views/resource/resourceAppView',
         'views/resource/resourceRowView',
         'text!templates/aws/autoscale/awsAutoscaleAppTemplate.html',
-        '/js/aws/models/autoscale/awsAutoscaleGroup.js',
-        '/js/aws/collections/autoscale/awsAutoscaleGroups.js',
-        '/js/aws/views/autoscale/awsAutoscaleGroupCreateView.js',
-        '/js/aws/collections/cloud_watch/awsMetricStatistics.js',
+        'aws/models/autoscale/awsAutoscaleGroup',
+        'aws/collections/autoscale/awsAutoscaleGroups',
+        'aws/views/autoscale/awsAutoscaleGroupCreateView',
+        'aws/collections/cloud_watch/awsMetricStatistics',
         'text!templates/emptyGraphTemplate.html',
         'icanhaz',
         'common',
@@ -60,11 +60,20 @@ define([
         
         events: {
             'click .create_button': 'createNew',
-            'click #action_menu ul li': 'performAction',
+            'click #action_menu li': 'performAction',
             'click #resource_table tr': "clickOne",
             'click #monitoring': 'refreshMonitors',
             'click #refresh_monitors_button': 'refreshMonitors'
         },
+
+        createButton : true,
+
+        createText : "Create Auto Scale",
+
+        actions : [
+            { text: "Spin Down Group", type: "row" },
+            { text: "Delete Group", type: "row" }
+        ],
 
         initialize: function(options) {
             if(options.cred_id) {
@@ -73,7 +82,14 @@ define([
             if(options.region) {
                 this.region = options.region;
             }
+
+            this.$el.html(this.template);
+
+            this.loadData();
+
             this.render();
+
+            this.loadTable();
             
             var topicApp = this;
             Common.vent.on("autoscaleAppRefresh", function() {

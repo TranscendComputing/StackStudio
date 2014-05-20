@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/vpc/awsVpcCreateTemplate.html',
-        '/js/aws/models/vpc/awsVpc.js',
+        'aws/models/vpc/awsVpc',
         'icanhaz',
         'common',
         'jquery.multiselect',

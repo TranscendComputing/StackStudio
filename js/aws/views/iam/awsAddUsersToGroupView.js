@@ -11,8 +11,8 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/iam/awsAddUsersToGroupTemplate.html',
-        '/js/aws/models/iam/awsGroup.js',
-        '/js/aws/collections/iam/awsUsers.js',
+        'aws/models/iam/awsGroup',
+        'aws/collections/iam/awsUsers',
         'common'      
 ], function( $, _, Backbone, DialogView, addUsersToGroupTemplate, Group, Users, Common ) {
     

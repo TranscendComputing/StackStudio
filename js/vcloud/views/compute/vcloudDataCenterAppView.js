@@ -11,8 +11,8 @@ define([
         'backbone',
         'views/resource/resourceDetailView',
         'text!templates/vcloud/compute/vcloudDataCentersTemplate.html',
-        '/js/vcloud/models/compute/vcloudDataCenter.js',
-        '/js/vcloud/collections/compute/vcloudDataCenters.js'
+        'vcloud/models/compute/vcloudDataCenter',
+        'vcloud/collections/compute/vcloudDataCenters'
 ], function( $, _, Backbone, ResourceDetailView, VCloudDataCenterTemplate, DataCenter, DataCenters ) {
     'use strict';
 

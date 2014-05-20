@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/vpc/awsRouteTable.js',
+        'aws/models/vpc/awsRouteTable',
         'common'
 ], function( $, Backbone, RouteTable, Common ) {
     'use strict';

@@ -19,89 +19,157 @@ define([
 			cred_id : ''
 		},
 
-		apiUrl : Common.apiUrl + "/stackstudio/v1/cloud_management/vcloud/compute/vms",
+		defaultErrorHandler : function ( err ) {
+			var status;
+			var message;
+			if(!err) {
+				status = "Unknown";
+				message = "An unknown error has occurred.";
+				return Common.errorDialog(status, message);
+			}
+
+			console.log("AJAX Error: ", err);
+
+			status = err.status;
+			message = (typeof err === 'string') ? err : err.responseText;
+			if(typeof message !== 'string') {
+				message = "An unknown error has occurred.";
+			}
+			return Common.errorDialog(status + ' Error', message);
+		},
+
 
 		initialize : function ( options ) {
-			this.id = this.attributes.name;
-			this.vdc = this.attributes.vdc;
-			this.vapp = this.attributes.vapp;
+			this.vdc_id = this.collection.options.vdc_id;
+			this.vapp_id = this.collection.options.vapp_id;
 			this.cred_id = this.collection.options.cred_id;
+
+			this.baseUrl = Common.apiUrl + '/stackstudio/v1/cloud_management/vcloud/compute/data_centers/' + this.vdc_id + '/vapps/' + this.vapp_id + '/vms/' + this.attributes.id;
 		},
 
-		powerOff : function () {
+		powerOff : function ( options ) {
 			var ajaxOptions = {
-				"cred_id" : this.cred_id,
-				"id" : this.id,
-				"vdc" : this.vdc,
-				"vapp" : this.vapp
+				type : 'POST',
+				url : Common.apiUrl + '/stackstudio/v1/cloud_management/vcloud/compute/data_centers/' + options.vdc_id + '/vapps/' + options.vapp_id + '/vms/' + options.vm_id,
+				data : {
+					status : 'off',
+					cred_id : options.cred_id
+				},
+				success : function ( vm ) {
+					Common.vent.trigger('vmAppRefresh', vm);
+				},
+				error : options.error || this.defaultErrorHandler
 			};
-			this.sendAjaxAction(this.apiUrl + "/power_off", "POST", ajaxOptions, "vmAppRefresh");
+
+			$.ajax(ajaxOptions);
 		},
 
-		powerOn : function () {
+		powerOn : function ( options ) {
 			var ajaxOptions = {
-				"cred_id" : this.cred_id,
-				"id" : this.id,
-				"vdc" : this.vdc,
-				"vapp" : this.vapp
+				type : 'POST',
+				url : Common.apiUrl + '/stackstudio/v1/cloud_management/vcloud/compute/data_centers/' + options.vdc_id + '/vapps/' + options.vapp_id + '/vms/' + options.vm_id,
+				data : {
+					status : 'on',
+					cred_id : options.cred_id
+				},
+				success : function ( vm ) {
+					Common.vent.trigger('vmAppRefresh', vm);
+				},
+				error : options.error || this.defaultErrorHandler
 			};
-			this.sendAjaxAction(this.apiUrl + "/power_on", "POST", ajaxOptions, "vmAppRefresh");
+
+			$.ajax(ajaxOptions);
 		},
 
-		modifyCpu : function ( cpuValue ) {
+		modify : function ( options ) {
+			var mdl = this;
 			var ajaxOptions = {
-				"cred_id" : this.cred_id,
-				"id" : this.id,
-				"vdc" : this.vdc,
-				"vapp" : this.vapp,
-				"cpu" : cpuValue
+				type : 'POST',
+				url : Common.apiUrl + '/stackstudio/v1/cloud_management/vcloud/compute/data_centers/' + options.vdc_id + '/vapps/' + options.vapp_id + '/vms/' + options.vm_id,
+				data : options.data,
+				success : options.success || function ( vm ) {
+					Common.vent.trigger('vmAppRefresh', vm);
+				},
+				error : options.error || function ( err ) {
+					if(!(err && err.responseText)) {
+						return mdl.defaultErrorHandler(err);
+					}
+					var message;
+					if(err.responseText.indexOf('multiple of') > -1) {
+						message = "The virtual machine memory size must be a multiple of 4 MB.";
+					} else { // if (err.responseText.indexOf('support') > -1) {
+						message = "Error modifying VM. Make sure that the VM is powered on and that both the the vCloud VM configuration and the VM operating system itself support this action.";
+					}
+					Common.errorDialog(err.status + ' Error', message);
+				}
 			};
-
-			this.sendAjaxAction(this.apiUrl + "/modify_cpu", "POST", ajaxOptions, "vmAppRefresh");
+			
+			$.ajax(ajaxOptions);
 		},
 
-		modifyMemory : function ( memValue ) {
+		loadNetwork : function ( options ) {
 			var ajaxOptions = {
-				"cred_id" : this.cred_id,
-				"id" : this.id,
-				"vdc" : this.vdc,
-				"vapp" : this.vapp,
-				"memory" : memValue
-			};
-			this.sendAjaxAction(this.apiUrl + "/modify_memory", "POST", ajaxOptions, "vmAppRefresh");
-		},
-
-		loadNetwork : function () {
-			var ajaxOptions = {
-				"cred_id" : this.cred_id,
-				"id" : this.id,
-				"vdc" : this.vdc,
-				"vapp" : this.vapp
+				type : 'GET',
+				url : Common.apiUrl + '/stackstudio/v1/cloud_management/vcloud/compute/data_centers/' + options.vdc_id + '/vapps/' + options.vapp_id + '/vms/' + options.vm_id + '/network',
+				data : {
+					cred_id : options.cred_id
+				},
+				success : function ( vm ) {
+					Common.vent.trigger('vmAppRefresh', vm);
+				},
+				error : options.error || function ( err ) {
+					Common.vent.trigger('vmNetworkLoadError', err);
+				}
 			};
 
-			this.sendAjaxAction(this.apiUrl + "/network", "GET", ajaxOptions, "networkLoaded");
+			$.ajax(ajaxOptions);
 		},
 
 		updateNetwork : function ( options ) {
 			var refinedOptions = _.refine(options);
-			var ajaxOptions = _.extend(refinedOptions, {
-				cred_id : this.cred_id,
-				vdc : this.vdc,
-				vapp : this.vapp,
-				id : this.id
-			});
+			var ajaxOptions = {
+				type : 'POST',
+				url : Common.apiUrl + '/stackstudio/v1/cloud_management/vcloud/compute/data_centers/' + options.vdc_id + '/vapps/' + options.vapp_id + '/vms/' + options.vm_id + '/network',
+				data : refinedOptions,
+				success : function ( network ) {
+					Common.vent.trigger('networkRefresh', network);
+				},
+				error : options.error || this.defaultErrorHandler
+			};
 
-			this.sendAjaxAction(this.apiUrl + "/network", "POST", ajaxOptions, "networkRefresh");
+			$.ajax(ajaxOptions);
 		},
 
-		loadDisks : function () {
+		loadDisks : function ( options ) {
 			var ajaxOptions = {
-				"cred_id" : this.cred_id,
-				"id" : this.id,
-				"vdc" : this.vdc,
-				"vapp" : this.vapp
+				type : 'GET',
+				url : Common.apiUrl + '/stackstudio/v1/cloud_management/vcloud/compute/data_centers/' + options.vdc_id + '/vapps/' + options.vapp_id + '/vms/' + options.vm_id + '/disks',
+				data : {
+					cred_id : options.cred_id
+				},
+				success : function ( disks ) {
+					Common.vent.trigger('disksLoaded', disks);
+				},
+				error : options.error || function ( err ) {
+					Common.vent.trigger('vmDiskLoadError', err);
+				}
 			};
-			this.sendAjaxAction(this.apiUrl + "/disks", "GET", ajaxOptions, "disksLoaded");
+			$.ajax(ajaxOptions);
+		},
+
+		createDisk : function ( options ) {
+			var ajaxOptions = {
+				type : 'POST',
+				url : Common.apiUrl + '/stackstudio/v1/cloud_management/vcloud/compute/data_centers/' + options.vdc_id + '/vapps/' + options.vapp_id + '/vms/' + options.vm_id + '/disks',
+				data : {
+					cred_id : options.cred_id,
+					size : options.size
+				},
+				success : options.success,
+				error : options.error || this.defaultErrorHandler
+			};
+
+			$.ajax(ajaxOptions);
 		}
 	});
 

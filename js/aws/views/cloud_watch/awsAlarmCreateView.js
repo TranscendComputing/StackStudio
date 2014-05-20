@@ -11,9 +11,9 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/cloud_watch/awsAlarmCreateTemplate.html',
-        '/js/aws/models/cloud_watch/awsAlarm.js',
-        '/js/aws/collections/cloud_watch/awsMetrics.js',
-        '/js/aws/collections/notification/awsTopics.js',
+        'aws/models/cloud_watch/awsAlarm',
+        'aws/collections/cloud_watch/awsMetrics',
+        'aws/collections/notification/awsTopics',
         'common'
         
 ], function( $, _, Backbone, DialogView, alarmCreateTemplate, Alarm, Metrics, Topics, Common ) {

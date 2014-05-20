@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/google/models/compute/googleImage.js',
+        'google/models/compute/googleImage',
         'common'
 ], function( $, Backbone, Image, Common ) {
     'use strict';

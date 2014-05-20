@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/block_storage/awsSnapshot.js',
+        'aws/models/block_storage/awsSnapshot',
         'common'
 ], function( $, Backbone, Snapshot, Common ) {
     'use strict';

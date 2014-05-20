@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/vpc/awsInternetGatewayAttachTemplate.html',
-        '/js/aws/collections/vpc/awsVpcs.js',
+        'aws/collections/vpc/awsVpcs',
         'common'
         
 ], function( $, _, Backbone, DialogView, internetGatewayAttachTemplate, Vpcs, Common ) {

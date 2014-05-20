@@ -11,9 +11,9 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/aws/cache/awsSecurityGroupAppTemplate.html',
-        '/js/aws/models/cache/awsCacheSecurityGroup.js',
-        '/js/aws/collections/cache/awsCacheSecurityGroups.js',
-        '/js/aws/views/cache/awsSecurityGroupCreateView.js',
+        'aws/models/cache/awsCacheSecurityGroup',
+        'aws/collections/cache/awsCacheSecurityGroups',
+        'aws/views/cache/awsSecurityGroupCreateView',
         'icanhaz',
         'common',
         'jquery.dataTables'
@@ -58,6 +58,10 @@ define([
             'click #resource_table tr': "clickOne"
         },
 
+        actions: [
+            { text: "Delete Security Group", type: "row" }
+        ],
+
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
@@ -65,7 +69,9 @@ define([
             if(options.region) {
                 this.region = options.region;
             }
-            this.render();
+
+            this.$el.html(this.template);
+            this.loadData({render: true});
             
             var securityGroupApp = this;
             Common.vent.on("securityGroupAppRefresh", function() {

@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/vpc/awsDhcpOptionsSetCreateTemplate.html',
-        '/js/aws/models/vpc/awsDhcpOptionsSet.js',
+        'aws/models/vpc/awsDhcpOptionsSet',
         'icanhaz',
         'common',
         'jquery.multiselect',

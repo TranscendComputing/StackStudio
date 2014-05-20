@@ -14,7 +14,7 @@ define([
         'text!templates/images/imagesTemplate.html',
         'text!templates/images/advancedTemplate.html',
         'models/packedImage',
-        '/js/aws/collections/compute/awsImages.js',
+        'aws/collections/compute/awsImages',
         'collections/packedImages',
         'messenger',
         'jquery-ui',

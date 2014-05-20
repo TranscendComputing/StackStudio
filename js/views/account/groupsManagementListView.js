@@ -15,9 +15,10 @@ define([
         'collections/users',
         'views/account/groupCreateView',
         'views/account/groupManageUsersView',
+        'views/account/groupsManagementView',
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator'
-], function( $, _, Backbone, Common, groupsManagementListTemplate, Groups, Users, CreateGroupView, ManageGroupUsers ) {
+], function( $, _, Backbone, Common, groupsManagementListTemplate, Groups, Users, CreateGroupView, ManageGroupUsers, GroupsManagementView ) {
 
     var GroupsManagementListView = Backbone.View.extend({
 
@@ -54,7 +55,9 @@ define([
                 groupsView.render();
             });
             this.selectedGroup = undefined;
-            this.groups = this.rootView.groups;
+            this.groups = new Groups();
+            this.rootView.groups = this.groups;
+            this.groups.on('reset', this.addAllGroups, this);
             this.render();
         },
 
@@ -71,7 +74,7 @@ define([
             });
         },
         
-        selectGroup: function(event){
+        selectGroup: function ( event ) {
             $("#group_users_table tr").removeClass('row_selected');
             $(event.currentTarget).addClass('row_selected');
             
@@ -81,12 +84,15 @@ define([
             if(this.selectedGroup) {
                 this.disableSelectionRequiredButtons(false);
             }
+
+            this.groupView = new GroupsManagementView({ rootView : this, modelId : this.selectedGroup.attributes.id });
         },
         
         addAllGroups: function() {
+            this.rootView.addAll(this.groups, $("#group_list"));
             $("#group_users_table").dataTable().fnClearTable();
-            $.each(this.groups.models, function(index, value) {
-                var rowData = ['<a href="#account/management/groups" id="'+value.attributes.id+'" class="group_item">'+value.attributes.name+"</a>", value.attributes.description];
+            this.groups.each(function ( group ) {
+                var rowData = ['<a href="#account/management/groups" id="'+group.attributes.id+'" class="group_item">'+group.attributes.name+"</a>", group.attributes.description];
                 $("#group_users_table").dataTable().fnAddData(rowData);
             });
         },

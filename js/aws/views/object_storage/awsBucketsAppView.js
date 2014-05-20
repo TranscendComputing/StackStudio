@@ -11,10 +11,10 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/aws/object_storage/awsBucketAppTemplate.html',
-        '/js/aws/models/object_storage/awsBucket.js',
-        '/js/aws/collections/object_storage/awsBuckets.js',
-        '/js/aws/views/object_storage/awsBucketCreateView.js',
-        '/js/aws/collections/object_storage/awsFiles.js',
+        'aws/models/object_storage/awsBucket',
+        'aws/collections/object_storage/awsBuckets',
+        'aws/views/object_storage/awsBucketCreateView',
+        'aws/collections/object_storage/awsFiles',
         'views/resource/resourceRowView',
         'icanhaz',
         'common',
@@ -72,6 +72,10 @@ define([
             'click #object_action_menu ul li': 'performObjectAction'
         },
 
+        actions: [
+            { text: "Delete", type: "row" }
+        ],
+
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
@@ -79,8 +83,8 @@ define([
             if(options.region) {
                 this.region = options.region;
             }
-            this.render();
-            
+            this.$el.html(this.template);
+            this.loadData({ render: true });            
             var objectStorageApp = this;
             Common.vent.on("objectStorageAppRefresh", function() {
                 objectStorageApp.render();

@@ -26,8 +26,50 @@
     border-collapse:inherit;
 }
 
+dl.property-list {
+    float: left;
+    width: 100%;
+    max-width: 520px;
+    margin: 1em 0;
+    padding: 0;
+    margin-top: 0;
+
+    dt {
+        clear: left;
+        float: left;
+        width: 30%;
+        margin: 0;
+        padding: 5px;
+        background-color: #eeeeee;
+        border-top : 1px solid #cccccc;
+        border-left: 1px solid #cccccc;
+        border-right: 1px sollid #cccccc;
+
+        &:last-of-type {
+            border-bottom: 1px solid #cccccc;
+        }
+    }
+
+    dd {
+        float: left;
+        width: 70%;
+        margin: 0;
+        padding: 5px;
+        border-top: 1px solid #cccccc;
+        border-right: 1px solid #cccccc;
+
+        &:last-of-type {
+            border-bottom: 1px solid #cccccc;
+        }
+    }
+}
+
 .resource_link {
     padding-left:2px;
+}
+
+.panel .tab-content {
+    padding: 20px;
 }
 
 #native_service_label {
@@ -52,6 +94,15 @@
     -o-transform: rotate(-90deg); /* Opera */
     transform-origin: 220% 220%;
     filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3); /* Internet Explorer */
+}
+
+#modal-placeholder .modal-dialog {
+    margin-top: 25%;
+
+    .tab-pane {
+        padding: 20px;
+        padding-top: 10px;
+    }
 }
 
 .service_group_label {
@@ -161,6 +212,9 @@
 #service_menu {
     float:left;
     margin-top:5px;
+    width: 20%;
+    min-width: 150px;
+    max-width: 300px;
 }
 
 #subservice_menu {

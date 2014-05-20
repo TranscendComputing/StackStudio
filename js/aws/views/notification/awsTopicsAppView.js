@@ -12,13 +12,13 @@ define([
         'views/resource/resourceAppView',
         'views/resource/resourceRowView',
         'text!templates/aws/notification/awsTopicAppTemplate.html',
-        '/js/aws/models/notification/awsTopic.js',
-        '/js/aws/collections/notification/awsTopics.js',
-        '/js/aws/collections/notification/awsSubscriptions.js',
-        '/js/aws/views/notification/awsTopicsCreateView.js',
-        '/js/aws/views/notification/awsPublishToTopicView.js',
-        '/js/aws/views/notification/awsTopicDisplayNameEditView.js',
-        '/js/aws/views/notification/awsSubscriptionCreateView.js',
+        'aws/models/notification/awsTopic',
+        'aws/collections/notification/awsTopics',
+        'aws/collections/notification/awsSubscriptions',
+        'aws/views/notification/awsTopicsCreateView',
+        'aws/views/notification/awsPublishToTopicView',
+        'aws/views/notification/awsTopicDisplayNameEditView',
+        'aws/views/notification/awsSubscriptionCreateView',
         'icanhaz',
         'common'
 ], function( $, _, Backbone, ResourceAppView, ResourceRowView, awsTopicAppTemplate, Topic, Topics, Subscriptions, AwsTopicCreate, PublishToTopic, EditTopicDisplayName, SuscriptionCreate, ich, Common ) {
@@ -58,6 +58,12 @@ define([
             'click #delete_subscription_button': 'deleteSubscription'
         },
 
+        actions: [
+            { text: "Publish to this Topic", type: "row" },
+            { text: "Delete Topic", type: "row" },
+            { text: "Edit Topic Display Name", type: "row" }
+        ],
+
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
@@ -65,7 +71,8 @@ define([
             if(options.region) {
                 this.region = options.region;
             }
-            this.render();
+            this.$el.html(this.template);
+            this.loadData({ render: true });
             
             var topicApp = this;
             Common.vent.on("topicAppRefresh", function() {

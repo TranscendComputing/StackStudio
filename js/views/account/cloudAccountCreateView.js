@@ -11,8 +11,8 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/account/cloudAccountCreateTemplate.html',
-        '/js/collections/clouds.js',
-        '/js/models/cloudAccount.js',
+        'collections/clouds',
+        'models/cloudAccount',
         'common'
         
 ], function( $, _, Backbone, DialogView, cloudAccountCreateTemplate, Clouds, CloudAccount, Common ) {

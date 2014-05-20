@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/openstack/models/compute/openstackElasticIP.js',
+        'openstack/models/compute/openstackElasticIP',
         'common'
 ], function( $, Backbone, ElasticIP, Common ) {
     'use strict';

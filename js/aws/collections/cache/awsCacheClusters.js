@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/cache/awsCacheCluster.js',
+        'aws/models/cache/awsCacheCluster',
         'common'
 ], function( $, Backbone, CacheCluster, Common ) {
     'use strict';

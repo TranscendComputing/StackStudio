@@ -11,11 +11,11 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/aws/iam/awsGroupAppTemplate.html',
-        '/js/aws/models/iam/awsGroup.js',
-        '/js/aws/collections/iam/awsGroups.js',
-        '/js/aws/collections/iam/awsGroupUsers.js',
-        '/js/aws/views/iam/awsGroupCreateView.js',
-        '/js/aws/views/iam/awsAddUsersToGroupView.js',
+        'aws/models/iam/awsGroup',
+        'aws/collections/iam/awsGroups',
+        'aws/collections/iam/awsGroupUsers',
+        'aws/views/iam/awsGroupCreateView',
+        'aws/views/iam/awsAddUsersToGroupView',
         'icanhaz',
         'common'
 ], function( $, _, Backbone, ResourceAppView, GroupAppTemplate, Group, Groups, GroupUsers, GroupCreateView, AddUsersToGroupView, ich, Common ) {
@@ -52,11 +52,16 @@ define([
             'click #add_users_to_group_button': 'addUsersToGroup'
         },
 
+        actions: [
+            { text: "Delete Group", type: "row" }
+        ],
+
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
             }
-            this.render();
+            this.$el.html(this.template);
+            this.loadData({ render: true });
             
             var groupApp = this;
             Common.vent.off("groupAppRefresh");

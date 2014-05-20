@@ -11,12 +11,12 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/aws/beanstalk/awsApplicationAppTemplate.html',
-        '/js/aws/models/beanstalk/awsApplication.js',
-        '/js/aws/collections/beanstalk/awsApplications.js',
-        '/js/aws/views/beanstalk/awsApplicationCreateView.js',
-        '/js/aws/views/beanstalk/awsVersionCreateView.js',
-        '/js/aws/views/beanstalk/awsEnvironmentCreateView.js',
-        '/js/aws/views/beanstalk/awsEnvironmentModifyView.js',
+        'aws/models/beanstalk/awsApplication',
+        'aws/collections/beanstalk/awsApplications',
+        'aws/views/beanstalk/awsApplicationCreateView',
+        'aws/views/beanstalk/awsVersionCreateView',
+        'aws/views/beanstalk/awsEnvironmentCreateView',
+        'aws/views/beanstalk/awsEnvironmentModifyView',
         'icanhaz',
         'common',
         'jquery.dataTables'
@@ -67,6 +67,13 @@ define([
             'click #version_action_menu ul li': 'performVersionAction'
         },
 
+        createButton: true,
+        createText: "Create Application",
+
+        actions: [
+            { text: "Delete Application", type: "row" }
+        ],
+
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
@@ -74,8 +81,12 @@ define([
             if(options.region) {
                 this.region = options.region;
             }
-            
+
+            this.$el.html(this.template);
+
+            this.loadData();
             this.render();
+            this.loadTable();
             
             var applicationApp = this;
             Common.vent.on("applicationAppRefresh", function() {

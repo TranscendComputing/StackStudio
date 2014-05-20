@@ -11,9 +11,9 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/account/continuousIntegrationServerAddEditTemplate.html',
-        '/js/models/continuousIntegrationServer.js',
+        'models/continuousIntegrationServer',
         'common',
-        '/js/util/url.js'
+        'util/url'
 
 ], function( $, _, Backbone, DialogView, ciServerAddEditTemplate, CIServer, Common, URL ) {
 

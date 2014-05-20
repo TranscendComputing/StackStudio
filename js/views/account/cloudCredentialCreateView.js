@@ -11,9 +11,9 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/account/cloudCredentialCreateTemplate.html',
-        '/js/collections/cloudAccounts.js',
-        '/js/collections/cloudCredentials.js',
-        '/js/models/cloudCredential.js',
+        'collections/cloudAccounts',
+        'collections/cloudCredentials',
+        'models/cloudCredential',
         'views/account/cloudCredentialFormView',
         'common'
         

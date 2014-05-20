@@ -12,10 +12,10 @@ define([
         'views/resource/resourceAppView',
         'views/resource/resourceRowView',
         'text!templates/aws/cloud_formation/awsCloudFormationAppTemplate.html',
-        '/js/aws/models/cloud_formation/awsStack.js',
-        '/js/aws/collections/cloud_formation/awsStacks.js',
-        '/js/aws/views/cloud_formation/awsCloudFormationStackCreateView.js',
-        '/js/aws/views/cloud_formation/awsCloudFormationStackUpdateView.js',
+        'aws/models/cloud_formation/awsStack',
+        'aws/collections/cloud_formation/awsStacks',
+        'aws/views/cloud_formation/awsCloudFormationStackCreateView',
+        'aws/views/cloud_formation/awsCloudFormationStackUpdateView',
         'icanhaz',
         'common',
         'morris',
@@ -53,6 +53,11 @@ define([
             'tabsactivate' : 'loadStackResources'
         },
 
+        actions: [
+            { text: "Update Stack", type: "row" },
+            { text: "Delete Stack", type: "row" }
+        ],
+
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
@@ -60,7 +65,9 @@ define([
             if(options.region) {
                 this.region = options.region;
             }
-            this.render();
+
+            this.$el.html(this.template);
+            this.loadData({render: true});
             
             var topicApp = this;
             Common.vent.on("cloudFormationAppRefresh", function() {

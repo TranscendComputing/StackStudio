@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/topstack/dns/topstackHostedZoneCreateTemplate.html',
-        '/js/topstack/models/dns/topstackHostedZone.js',
+        'topstack/models/dns/topstackHostedZone',
         'common'
         
 ], function( $, _, Backbone, DialogView, hostedZoneCreateTemplate, HostedZone, Common ) {

@@ -11,10 +11,10 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/aws/rds/awsRelationalDatabaseAppTemplate.html',
-        '/js/aws/models/rds/awsRelationalDatabase.js',
-        '/js/aws/collections/rds/awsRelationalDatabases.js',
-        '/js/aws/views/rds/awsRelationalDatabaseCreateView.js',
-        '/js/aws/collections/cloud_watch/awsMetricStatistics.js',
+        'aws/models/rds/awsRelationalDatabase',
+        'aws/collections/rds/awsRelationalDatabases',
+        'aws/views/rds/awsRelationalDatabaseCreateView',
+        'aws/collections/cloud_watch/awsMetricStatistics',
         'text!templates/emptyGraphTemplate.html',
         'icanhaz',
         'common',
@@ -78,6 +78,10 @@ define([
             'click #refresh_monitors_button': 'refreshMonitors'
         },
 
+        actions: [
+            { text: "Delete", type: "row" }
+        ],
+
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
@@ -85,7 +89,8 @@ define([
             if(options.region) {
                 this.region = options.region;
             }
-            this.render();
+            this.$el.html(this.template);
+            this.loadData({ render: true });
             
             var rdsApp = this;
             Common.vent.on("rdsAppRefresh", function() {

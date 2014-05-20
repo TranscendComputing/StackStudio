@@ -14,10 +14,10 @@
               'views/projectAppView',
               'views/projectResourceSidebarView',
               'views/projectEditView',
-              'views/resource/resourceNavigationView',
+              'views/resource/resourceNavigationView'
               ],
     excludeShallow: ['jquery.jstree'], // doesn't play well minified.
-    mainConfigFile: 'common.js',
+    mainConfigFile: 'common',
 
     optimize: "uglify2",
     generateSourceMaps: true,
@@ -26,6 +26,6 @@
 
     paths: {
         // r.js can't find this file.
-        common: '../common',
+        common: '../common'
     }
-})
+});

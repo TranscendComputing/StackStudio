@@ -12,13 +12,13 @@ define([
         'views/resource/resourceAppView',
         'views/resource/resourceRowView',
         'text!templates/aws/load_balancer/awsLoadBalancerAppTemplate.html',
-        '/js/aws/models/load_balancer/awsLoadBalancer.js',
-        '/js/aws/collections/load_balancer/awsLoadBalancers.js',
-        '/js/aws/views/load_balancer/awsLoadBalancerCreateView.js',
-        '/js/aws/views/load_balancer/awsRegisterInstancesView.js',
-        '/js/aws/views/load_balancer/awsManageAvailabilityZonesView.js',
-        '/js/aws/collections/load_balancer/awsListeners.js',
-        '/js/aws/collections/cloud_watch/awsMetricStatistics.js',
+        'aws/models/load_balancer/awsLoadBalancer',
+        'aws/collections/load_balancer/awsLoadBalancers',
+        'aws/views/load_balancer/awsLoadBalancerCreateView',
+        'aws/views/load_balancer/awsRegisterInstancesView',
+        'aws/views/load_balancer/awsManageAvailabilityZonesView',
+        'aws/collections/load_balancer/awsListeners',
+        'aws/collections/cloud_watch/awsMetricStatistics',
         'text!templates/emptyGraphTemplate.html',
         'icanhaz',
         'common',
@@ -75,6 +75,10 @@ define([
             'click #manage_availability_zones_button' : 'manageAvailabilityZones'
         },
 
+        actions: [
+            { text: "Delete Load Balancer", type: "row" }
+        ],
+
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
@@ -82,7 +86,8 @@ define([
             if(options.region) {
                 this.region = options.region;
             }
-            this.render();
+            this.$el.html(this.template);
+            this.loadData({ render: true });
             
             var loadBalancerApp = this;
             Common.vent.on("loadBalancerAppRefresh", function() {

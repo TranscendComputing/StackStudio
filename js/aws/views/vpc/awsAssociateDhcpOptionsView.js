@@ -11,8 +11,8 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/vpc/awsAssociateDhcpOptionsTemplate.html',
-        '/js/aws/models/vpc/awsVpc.js',
-        '/js/aws/collections/vpc/awsDhcpOptionsSets.js',
+        'aws/models/vpc/awsVpc',
+        'aws/collections/vpc/awsDhcpOptionsSets',
         'common'
         
 ], function( $, _, Backbone, DialogView, associateDhcpOptionTemplate, Vpc, DhcpOptions, Common ) {

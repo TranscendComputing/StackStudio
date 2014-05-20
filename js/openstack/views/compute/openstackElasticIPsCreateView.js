@@ -11,8 +11,8 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/openstack/compute/openstackElasticIPCreateTemplate.html',
-        '/js/openstack/models/compute/openstackElasticIP.js',
-        '/js/openstack/collections/compute/openstackAddressPools.js',
+        'openstack/models/compute/openstackElasticIP',
+        'openstack/collections/compute/openstackAddressPools',
         'common'
         
 ], function( $, _, Backbone, DialogView, elasticIPCreateTemplate, ElasticIP, AddressPools, Common ) {

@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/topstack/dns/topstackRecordSetCreateTemplate.html',
-        '/js/topstack/models/dns/topstackRecordSet.js',
+        'topstack/models/dns/topstackRecordSet',
         'common'
         
 ], function( $, _, Backbone, DialogView, recordSetCreateTemplate, RecordSet, Common ) {

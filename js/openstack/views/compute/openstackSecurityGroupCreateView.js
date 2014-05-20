@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/openstack/compute/openstackSecurityGroupCreateTemplate.html',
-        '/js/openstack/models/compute/openstackSecurityGroup.js',
+        'openstack/models/compute/openstackSecurityGroup',
         'icanhaz',
         'common'
         

@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/openstack/models/compute/openstackFlavor.js',
+        'openstack/models/compute/openstackFlavor',
         'common'
 ], function( $, Backbone, Flavor, Common ) {
     'use strict';
