@@ -29,6 +29,9 @@ requirejs.config({
         'backbone-validation': {
             deps: ['backbone', 'jquery']
         },
+        'opentip': {
+            deps: ['jquery']
+        },
         'base64': {
             exports: 'Base64'
         },

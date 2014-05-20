@@ -1,5 +1,5 @@
 /*jshint smarttabs:true */
-/*global loadFixtures:false */
+/*global loadFixtures:false, setFixtures:false */
 define(
     [
         'jquery',
@@ -99,7 +99,7 @@ define(
             it("Verify views element is as intended", function() {
                 //var fixture = setFixtures();
                 //var element = $(accountManagementView.el);
-                console.info("View element markup: "+fixture.html());
+                console.info("View element markup: ");
 
                 //expect($('#acct_sidebar')).toBeEmpty();
                 expect(accountManagementView.$el).toBe('section#main');
