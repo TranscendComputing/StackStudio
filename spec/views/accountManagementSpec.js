@@ -1,5 +1,5 @@
 /*jshint smarttabs:true */
-/*global loadFixtures:false */
+/*global loadFixtures:false, setFixtures:false */
 define(
     [
         'jquery',
@@ -98,7 +98,22 @@ define(
                 element = $('#jasmine-fixtures');
             });
 
-            it("trigger jQuery binding route:accountManagement sending cloud-accounts", function() {
+            it("Verify views element is as intended", function() {
+                //var fixture = setFixtures();
+                //var element = $(accountManagementView.el);
+                console.info("View element markup: ");
+
+                //expect($('#acct_sidebar')).toBeEmpty();
+                expect(accountManagementView.$el).toBe('section#main');
+                expect($('#cloud_account_list')).toBeEmpty();
+                expect($('#cred_list')).toBeEmpty();
+                expect($('#group_list')).toBeEmpty();
+                expect($('#policy_list')).toBeEmpty();
+                expect($('#user_list')).toBeEmpty();
+                expect($('#source_control_list')).toBeEmpty();
+            });
+
+            it("trigger jQuery binding route:cloudSetup sending cloud-accounts", function() {
                 Common.router.trigger("route:cloudSetup", 'cloud-accounts');
                 //expect(Common.TargetView instanceof CloudAccountManagementView).toBeTruthy();
             });
