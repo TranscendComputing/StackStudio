@@ -91,7 +91,7 @@ define([
     
                 //Render my own views
                 this.render();
-    
+
                 if (sessionStorage && parseInt(sessionStorage.num_logins, 10) < 5)  {//todo: change this to 0
                     this.tutorial = new TutorialView({ rootView: this });
     

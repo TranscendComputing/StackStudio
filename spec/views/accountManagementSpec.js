@@ -10,7 +10,7 @@ define(
         'jasmine-jquery'
     ],
     function($, Common, AccountManagementView, CloudAccountManagementView, ManagementTemplate) {
-        jasmine.getFixtures().fixturesPath = 'templates/';
+        //jasmine.getFixtures().fixturesPath = 'templates/';
 
         describe("Account Management View Tests", function() {
             var accountManagementView = new AccountManagementView();
@@ -89,13 +89,23 @@ define(
         });
 
         describe("Account Management jQuery Bindings Tests", function() {
-            var element;
+            //jasmine.getFixtures().containerId = 'jasmine-fixtures';
+            //console.info('Spinner is: '+Spinner);
+            //setFixtures('<section id="main"></section>');
+            //var accountManagementView = new AccountManagementView();
+            //console.info('el id: '+accountManagementView.$el.prop('id'));
+            //var element;
 
+            var accountManagementView;
             beforeEach(function() {
-                // XXX - Probably have to loadFixture for each unit test
-                // I think each action has its own template.
-                loadFixtures('account/managementTemplate.html');
-                element = $('#jasmine-fixtures');
+                //setFixtures('<section id="main"></section>');
+                accountManagementView = new AccountManagementView({ el: $('#jasmine-fixtures')});
+            });
+
+            it("Verify views element is as intended", function() {
+                console.info(accountManagementView.$el.parent().parent().html());
+                console.info($('#jasmine-fixtures').html());
+                expect(accountManagementView.$el).toBe('#main');
             });
 
             it("trigger jQuery binding route:accountManagement sending cloud-accounts", function() {
