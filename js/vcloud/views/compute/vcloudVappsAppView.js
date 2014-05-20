@@ -56,7 +56,7 @@ define([
             'click #remove_snapshots': "deleteSnapshots"
         },
 
-        createButton : true,
+        createButton : false,
 
         actions : [
             { text: "Delete", id: "delete_vapp", type: "row" },

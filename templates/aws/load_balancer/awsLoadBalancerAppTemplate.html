@@ -1,23 +1,5 @@
 <div>
-    <div class="button_bar">
-        <table>
-            <tr>
-                <td>
-                    <button class="create_button">Create Load Balancer</button>
-                </td>
-                <td>
-                    <ul id="action_menu">
-                        <li style="z-index: 1000">
-                            <a id="action_button">Actions</a>
-                            <ul>
-                                <li><a>Delete Load Balancer</a></li>              
-                            </ul>
-                        </li>
-                    </ul>
-                </td>
-            </tr>
-        </table>
-    </div>
+    <div class="button_bar"></div>
     <table id="resource_table" class="full_width">
         <thead>
             <tr>
@@ -35,75 +17,84 @@
     <div id="details" class="detail_panel"></div>
 </div>
 
+
 <script type="text/html" id="resource_detail">
-    <div id="detail_tabs">
-        <ul>
-            <li><a href="#tabs-1">Details</a></li>
-            <li><a id="instances" href="#tabs-2">Instances</a></li>
-            <li><a id="health_check" href="#tabs-3">Health Check</a></li>
-            <li><a id="listeners" href="#tabs-4">Listeners</a></li>
-            <li><a id="monitoring" href="#tabs-5">Monitoring</a></li>
-        </ul>
-        <div id="tabs-1" class="tab">
-            <table>
-                <tbody>
-                    <tr><td><b>Name:</b></td>                  <td>{{ id }}</td></tr>
-                    <tr><td><b>DNS Name:</b></td>              <td>{{ dns_name }}</td></tr>
-                    <tr><td><b>Instances:</b></td>             <td>{{#instances}}{{.}} {{/instances}}</td></tr>
-                    <tr><td><b>Availability Zones:</b></td>    <td>{{#availability_zones}}{{.}} {{/availability_zones}}</td></tr>
-                    <tr><td><b>Source Security Group:</b></td> <td>{{ source_group.GroupName }}</td></tr>
-                    <tr><td><b>Created At:</b></td>            <td>{{ created_at }}</td></tr>
-                </tbody>
-            </table>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <div class="panel-title">Detail View: {{id}}</div>
         </div>
-        <div id="tabs-2" class="tab">
-            <div id="instances_tab_content"></div>
-        </div>
-        <div id="tabs-3" class="tab">
-            <table>
-                <tbody>
-                    <tr><td><b>Ping Target:</b></td>        <td>{{ health_check.Target }}</td></tr>
-                    <tr><td><b>Timeout:</b></td>            <td>{{ health_check.Timeout }}</td></tr>
-                    <tr><td><b>Interval:</b></td>           <td>{{ health_check.Interval }}</td></tr>
-                    <tr><td><b>Unheathy Threshold:</b></td> <td>{{ health_check.UnhealthyThreshold }}</td></tr>
-                    <tr><td><b>Healthy Threshold:</b></td>  <td>{{ health_check.HealthyThreshold }}</td></tr>
-                </tbody>
-            </table>
-        </div>
-        <div id="tabs-4" class="tab">
-            <div id="listeners_tab_content"></div>
-        </div>
-        <div id="tabs-5" class="tab" style="overflow:hidden;">
-            <div class="monitor_options">
-                <table>
-                    <tr>
-                        <td>Time Range:</td>
-                        <td>
-                            <select id="monitor_time_range">
-                                <option value='{"time_range":3600, "period":300}' selected>Last Hour</option>
-                                <option value='{"time_range":10800, "period":600}'>Last 3 Hours</option>
-                                <option value='{"time_range":21600, "period":900}'>Last 6 Hours</option>
-                                <option value='{"time_range":43200, "period":1800}'>Last 12 Hours</option>
-                                <option value='{"time_range":86400, "period":3600}'>Last 24 Hours</option>
-                                <option value='{"time_range":604800, "period":21600}'>Last Week</option>
-                                <option value='{"time_range":1209600, "period":21600}'>Last 2 Weeks</option>
-                            </select>
-                        </td>
-                        <td>
-                            <button id="refresh_monitors_button">Refresh</button>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-            <div class="monitor_graph_container">
-                <div class="monitor_caption">Healthy Host Count</div>
-                <div id="healthy_host_count" class="monitor_graph"></div>
-            </div>
-            <div class="monitor_graph_container">
-                <div class="monitor_caption">Unhealthy Host Count</div>
-                <div id="unhealthy_host_count" class="monitor_graph"></div>
+        <div class="panel-body">
+            <div id="detail_tabs">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#tabs-1">Details</a></li>
+                    <li><a data-toggle="tab" id="instances" href="#tabs-2">Instances</a></li>
+                    <li><a data-toggle="tab" id="health_check" href="#tabs-3">Health Check</a></li>
+                    <li><a data-toggle="tab" id="listeners" href="#tabs-4">Listeners</a></li>
+                    <li><a data-toggle="tab" id="monitoring" href="#tabs-5">Monitoring</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div id="tabs-1" class="tab-pane active">
+                        <table>
+                            <tbody>
+                                <tr><td><b>Name:</b></td>                  <td>{{ id }}</td></tr>
+                                <tr><td><b>DNS Name:</b></td>              <td>{{ dns_name }}</td></tr>
+                                <tr><td><b>Instances:</b></td>             <td>{{#instances}}{{.}} {{/instances}}</td></tr>
+                                <tr><td><b>Availability Zones:</b></td>    <td>{{#availability_zones}}{{.}} {{/availability_zones}}</td></tr>
+                                <tr><td><b>Source Security Group:</b></td> <td>{{ source_group.GroupName }}</td></tr>
+                                <tr><td><b>Created At:</b></td>            <td>{{ created_at }}</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="tabs-2" class="tab-pane">
+                        <div id="instances_tab_content"></div>
+                    </div>
+                    <div id="tabs-3" class="tab-pane">
+                        <table>
+                            <tbody>
+                                <tr><td><b>Ping Target:</b></td>        <td>{{ health_check.Target }}</td></tr>
+                                <tr><td><b>Timeout:</b></td>            <td>{{ health_check.Timeout }}</td></tr>
+                                <tr><td><b>Interval:</b></td>           <td>{{ health_check.Interval }}</td></tr>
+                                <tr><td><b>Unheathy Threshold:</b></td> <td>{{ health_check.UnhealthyThreshold }}</td></tr>
+                                <tr><td><b>Healthy Threshold:</b></td>  <td>{{ health_check.HealthyThreshold }}</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="tabs-4" class="tab-pane">
+                        <div id="listeners_tab_content"></div>
+                    </div>
+                    <div id="tabs-5" class="tab-pane" style="overflow:hidden;">
+                        <div class="monitor_options">
+                            <table>
+                                <tr>
+                                    <td>Time Range:</td>
+                                    <td>
+                                        <select id="monitor_time_range">
+                                            <option value='{"time_range":3600, "period":300}' selected>Last Hour</option>
+                                            <option value='{"time_range":10800, "period":600}'>Last 3 Hours</option>
+                                            <option value='{"time_range":21600, "period":900}'>Last 6 Hours</option>
+                                            <option value='{"time_range":43200, "period":1800}'>Last 12 Hours</option>
+                                            <option value='{"time_range":86400, "period":3600}'>Last 24 Hours</option>
+                                            <option value='{"time_range":604800, "period":21600}'>Last Week</option>
+                                            <option value='{"time_range":1209600, "period":21600}'>Last 2 Weeks</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <button id="refresh_monitors_button">Refresh</button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="monitor_graph_container">
+                            <div class="monitor_caption">Healthy Host Count</div>
+                            <div id="healthy_host_count" class="monitor_graph"></div>
+                        </div>
+                        <div class="monitor_graph_container">
+                            <div class="monitor_caption">Unhealthy Host Count</div>
+                            <div id="unhealthy_host_count" class="monitor_graph"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    
 </script>

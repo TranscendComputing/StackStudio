@@ -71,7 +71,7 @@ define([
                 this.region = options.region;
             }
             this.$el.html(this.template);
-            this.loadData({ render: true});
+            this.loadData({ render: true });
 
             var reservedInstanceApp = this;
             Common.vent.on("reservedInstanceAppRefresh", function() {

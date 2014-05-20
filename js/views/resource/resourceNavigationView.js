@@ -583,7 +583,7 @@ define([
 
 
                 if(this.type === "admin") {
-                    appPath = "js/topstack/views/"+this.type+"/topstack"+subType+"AppView";
+                    appPath = "js/topstack/views/"+this.type+"/topstack"+subType+"AppView.js";
                 }else {
                     var folder;
 
@@ -594,7 +594,7 @@ define([
                         folder = this.type;
                     }
 
-                    appPath = "js/"+this.cloudProvider+"/views/"+folder+"/"+this.cloudProvider+subType+"AppView";
+                    appPath = "js/"+this.cloudProvider+"/views/"+folder+"/"+this.cloudProvider+subType+"AppView.js";
                 }
 
                 this.loadAppView(appPath);

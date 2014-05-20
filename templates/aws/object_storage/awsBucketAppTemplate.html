@@ -1,23 +1,5 @@
 <div>
-    <div class="button_bar">
-        <table>
-            <tr>
-                <td>
-                    <button class="create_button">Create Bucket</button>
-                </td>
-                <td>                    
-                    <ul id="action_menu">
-                        <li style="z-index: 1000">
-                            <a id="action_button">Actions</a>
-                            <ul>
-                                <li><a>Delete</a></li>                
-                            </ul>
-                        </li>
-                    </ul>
-                </td>
-            </tr>
-        </table>
-    </div>
+    <div class="button_bar"></div>
     <table id="resource_table" class="full_width">
         <thead>
             <tr>
@@ -30,19 +12,28 @@
 </div>
 
 <script type="text/html" id="resource_detail">
-    <div id="detail_tabs">
-        <ul>
-            <li id="properties"><a href="#properties_tab">Details</a></li>
-            <li id="objects"><a href="#object_tab">Objects</a></li>
-        </ul>
-        <div id="properties_tab" class="tab">
-            <table>
-                <tbody>
-                    <tr><td><b>Name:</b></td>                   <td>{{ key }}</td></tr>
-                    <tr><td><b>Creation Date:</b></td>          <td>{{ creation_date }}</td></tr>
-                </tbody>
-            </table>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <div class="panel-title">Detail View: {{key}}</div>
         </div>
-        <div id="object_tab" class="tab"></div>
+        <div class="panel-body">
+            <div id="detail_tabs">
+                <ul class="nav nav-tabs">
+                    <li class="active" id="properties"><a data-toggle="tab" href="#properties_tab">Details</a></li>
+                    <li id="objects"><a data-toggle="tab" href="#object_tab">Objects</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div id="properties_tab" class="tab-pane active">
+                        <table>
+                            <tbody>
+                                <tr><td><b>Name:</b></td>                   <td>{{ key }}</td></tr>
+                                <tr><td><b>Creation Date:</b></td>          <td>{{ creation_date }}</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="object_tab" class="tab-pane"></div>
+                </div>
+            </div>
+        </div>
     </div>
 </script>
