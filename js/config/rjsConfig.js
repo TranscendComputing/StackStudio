@@ -162,6 +162,7 @@ requirejs.config({
         'icanhaz'    : 'js/vendor/ICanHaz',
         'messenger'  : 'js/vendor/messenger.min',
         'raphael'    : 'js/vendor/raphael-min',
+        'morris'     : 'js/vendor/morris',
         'spinner'    : 'js/vendor/spin.min',
         'text'       : 'js/vendor/text',
         'bootstrap'  : '//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min',
@@ -175,6 +176,7 @@ requirejs.config({
         'instructor' : 'js/vendor/instructor',
         'mixins'     : 'js/vendor/mixins',
         'github'     : 'js/vendor/github',
-        'dataTables.bootstrap': 'js/vendor/dataTables.bootstrap'
+        'dataTables.bootstrap': 'js/vendor/dataTables.bootstrap',
+        'dataTables.fnReloadAjax': 'js/vendor/dataTables.fnReloadAjax'
     }
 });

@@ -46,6 +46,10 @@ define([
             'click #resource_table tr': "clickOne"
         },
 
+        actions: [
+            { text: "Delete Domain", type: "row" }
+        ],
+
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;

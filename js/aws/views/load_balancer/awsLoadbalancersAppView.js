@@ -75,6 +75,10 @@ define([
             'click #manage_availability_zones_button' : 'manageAvailabilityZones'
         },
 
+        actions: [
+            { text: "Delete Load Balancer", type: "row" }
+        ],
+
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
@@ -82,7 +86,8 @@ define([
             if(options.region) {
                 this.region = options.region;
             }
-            this.render();
+            this.$el.html(this.template);
+            this.loadData({ render: true });
             
             var loadBalancerApp = this;
             Common.vent.on("loadBalancerAppRefresh", function() {
