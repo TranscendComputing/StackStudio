@@ -169,6 +169,7 @@ requirejs.config({
         'instructor' : 'js/vendor/instructor',
         'mixins'     : 'js/vendor/mixins',
         'github'     : 'js/vendor/github',
-        'dataTables.bootstrap': 'js/vendor/dataTables.bootstrap'
+        'dataTables.bootstrap': 'js/vendor/dataTables.bootstrap',
+        'dataTables.fnReloadAjax': 'js/vendor/dataTables.fnReloadAjax'
     }
 });
