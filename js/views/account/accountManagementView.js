@@ -33,10 +33,6 @@ define([
             render: function () {
                 this.$el.html(this.template);
                 $('#main').html(this.$el);
-            },
-
-            addUser: function(event) {
-                new NewLoginView({org_id: sessionStorage.org_id});
             }
         });
 
