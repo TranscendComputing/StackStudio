@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/topstack/cache/topstackSecurityGroupCreateTemplate.html',
-        '/js/topstack/models/rds/topstackDBSecurityGroup.js',
+        'topstack/models/rds/topstackDBSecurityGroup',
         'icanhaz',
         'common'
         

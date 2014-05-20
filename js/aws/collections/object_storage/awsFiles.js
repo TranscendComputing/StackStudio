@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/object_storage/awsFile.js',
+        'aws/models/object_storage/awsFile',
         'common'
 ], function( $, Backbone, File, Common ) {
     'use strict';

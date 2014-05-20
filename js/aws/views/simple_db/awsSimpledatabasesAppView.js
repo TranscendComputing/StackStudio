@@ -12,9 +12,9 @@ define([
         'views/resource/resourceAppView',
         'views/resource/resourceRowView',
         'text!templates/aws/simple_db/awsSimpleDBAppTemplate.html',
-        '/js/aws/models/simple_db/awsSimpleDatabase.js',
-        '/js/aws/collections/simple_db/awsSimpleDatabases.js',
-        '/js/aws/views/simple_db/awsSimpleDatabaseCreateView.js',
+        'aws/models/simple_db/awsSimpleDatabase',
+        'aws/collections/simple_db/awsSimpleDatabases',
+        'aws/views/simple_db/awsSimpleDatabaseCreateView',
         'icanhaz',
         'common'
 ], function( $, _, Backbone, ResourceAppView, ResourceRowView, awsSimpleDBAppTemplate, SimpleDB, SimpleDBs, AwsSimpleDBCreate, ich, Common ) {
@@ -45,6 +45,10 @@ define([
             'click #action_menu ul li': 'performAction',
             'click #resource_table tr': "clickOne"
         },
+
+        actions: [
+            { text: "Delete Domain", type: "row" }
+        ],
 
         initialize: function(options) {
             if(options.cred_id) {

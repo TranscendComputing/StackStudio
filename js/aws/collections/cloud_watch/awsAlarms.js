@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/cloud_watch/awsAlarm.js',
+        'aws/models/cloud_watch/awsAlarm',
         'common'
 ], function( $, Backbone, Alarm, Common ) {
     'use strict';

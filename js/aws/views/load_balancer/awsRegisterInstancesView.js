@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/load_balancer/awsRegisterInstancesTemplate.html',
-        '/js/aws/collections/compute/awsInstances.js',
+        'aws/collections/compute/awsInstances',
         'common'
         
 ], function( $, _, Backbone, DialogView, registerInstancesTemplate, Instances, Common ) {

@@ -37,6 +37,7 @@ define([
             $("#submanagement_app").html(this.$el);
             this.rootView = options.rootView;
             this.repositories = new SCRepositories();
+            this.rootView.repositories = this.repositories;
             
             var repoManagementView = this;
             Common.vent.off("SCRepoCreated");

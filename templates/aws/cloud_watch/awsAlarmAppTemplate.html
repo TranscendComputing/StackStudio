@@ -1,23 +1,5 @@
 <div>
-    <div class="button_bar">
-        <table>
-            <tr>
-                <td>
-                    <button class="create_button">Create Alarm</button>
-                </td>
-                <td>
-                    <ul id="action_menu">
-                        <li style="z-index: 1000">
-                            <a id="action_button">Actions</a>
-                            <ul>
-                                <li><a>Delete Alarm</a></li>                   
-                            </ul>
-                        </li>
-                    </ul>
-                </td>
-            </tr>
-        </table>
-    </div>
+    <div class="button_bar"></div>
     <table id="resource_table" class="full_width">
         <thead>
             <tr>
@@ -34,36 +16,47 @@
     <div id="details" class="detail_panel"></div>
 </div>
 
+
 <script type="text/html" id="resource_detail">
-    <div id="detail_tabs">
-        <ul>
-            <li><a href="#tabs-1">Details</a></li>
-            <li><a id="history_tab" href="#tabs-2">History</a></li>
-        </ul>
-        <div id="tabs-1" class="tab">
-            <table>
-                <tbody>
-                    <tr><td><b>Name:</b></td>                   <td>{{ id }}</td>                   <td><b>Comparison Operator:</b></td>    <td>{{ comparison_operator }}</td></tr>
-                    <tr><td><b>Description:</b></td>            <td>{{ alarm_description }}</td>    <td><b>Namespace:</b></td>              <td>{{ namespace }}</td></tr>
-                    <tr><td><b>Resource Name:</b></td>          <td>{{ arn }}</td>                  <td><b>Period:</b></td>                 <td>{{ period }}</td></tr>
-                    <tr><td><b>Actions Enabled:</b></td>        <td>{{ actions_enabled }}</td>      <td><b>Statistic:</b></td>              <td>{{ statistic }}</td></tr>
-                    <tr><td><b>Metric Name:</b></td>            <td>{{ metric_name }}</td></tr>
-                    <tr><td><b>Threshold:</b></td>              <td>{{ threshold }}</td></tr>          
-                    <tr><td><b>State Reason:</b></td>           <td>{{ state_reason }}</td></tr>
-                    <tr><td><b>State Value:</b></td>            <td>{{ state_value }}</td></tr>
-                </tbody>
-            </table>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <div class="panel-title">Detail View: {{id}}</div>
         </div>
-        <div id="tabs-2" class="tab">
-            <table id="alarm_history" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th>History Summary</th>
-                        <th>History Item Type</th>
-                        <th>Timestamp</th>
-                    </tr>
-                </thead>
-            </table>
+        <div class="panel-body">
+            <div id="detail_tabs">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#tabs-1">Details</a></li>
+                    <li><a data-toggle="tab" id="history_tab" href="#tabs-2">History</a></li>
+                </ul>
+                
+            </div>
+            <div class="tab-content">
+                <div id="tabs-1" class="tab-pane active">
+                    <table>
+                        <tbody>
+                            <tr><td><b>Name:</b></td>                   <td>{{ id }}</td>                   <td><b>Comparison Operator:</b></td>    <td>{{ comparison_operator }}</td></tr>
+                            <tr><td><b>Description:</b></td>            <td>{{ alarm_description }}</td>    <td><b>Namespace:</b></td>              <td>{{ namespace }}</td></tr>
+                            <tr><td><b>Resource Name:</b></td>          <td>{{ arn }}</td>                  <td><b>Period:</b></td>                 <td>{{ period }}</td></tr>
+                            <tr><td><b>Actions Enabled:</b></td>        <td>{{ actions_enabled }}</td>      <td><b>Statistic:</b></td>              <td>{{ statistic }}</td></tr>
+                            <tr><td><b>Metric Name:</b></td>            <td>{{ metric_name }}</td></tr>
+                            <tr><td><b>Threshold:</b></td>              <td>{{ threshold }}</td></tr>          
+                            <tr><td><b>State Reason:</b></td>           <td>{{ state_reason }}</td></tr>
+                            <tr><td><b>State Value:</b></td>            <td>{{ state_value }}</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="tabs-2" class="tab-pane">
+                    <table id="alarm_history" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>History Summary</th>
+                                <th>History Item Type</th>
+                                <th>Timestamp</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </script>

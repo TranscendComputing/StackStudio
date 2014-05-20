@@ -1,23 +1,5 @@
 <div>
-    <div class="button_bar">
-        <table>
-            <tr>
-                <td>
-                    <button class="create_button">Create User</button>
-                </td>
-                <td>
-                    <ul id="action_menu">
-                        <li style="z-index: 1000">
-                            <a id="action_button">Actions</a>
-                            <ul>
-                                <li><a>Delete User</a></li>             
-                            </ul>
-                        </li>
-                    </ul>
-                </td>
-            </tr>
-        </table>
-    </div>
+    <div class="button_bar"></div>
     <table id="resource_table" class="full_width">
         <thead>
             <tr>
@@ -33,20 +15,28 @@
 </div>
 
 <script type="text/html" id="resource_detail">
-    <div id="detail_tabs">
-        <ul>
-            <li><a href="#tabs-1">Details</a></li>
-        </ul>
-        <div id="tabs-1" class="tab">
-            <table>
-                <tbody>
-                    <tr><td><b>User Name:</b></td>  <td>{{ id }}</td></tr>
-                    <tr><td><b>Path:</b></td>       <td>{{ path }}</td></tr>
-                    <tr><td><b>Resource:</b></td>   <td>{{ arn }}</td></tr>
-                    <tr><td><b>ID:</b></td>         <td>{{ user_id }}</td></tr>
-                </tbody>
-            </table>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <div class="panel-title">Detail View: {{id}}</div>
+        </div>
+        <div class="panel-body">
+            <div id="detail_tabs">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#tabs-1">Details</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div id="tabs-1" class="tab-pane active">
+                        <table>
+                            <tbody>
+                                <tr><td><b>User Name:</b></td>  <td>{{ id }}</td></tr>
+                                <tr><td><b>Path:</b></td>       <td>{{ path }}</td></tr>
+                                <tr><td><b>Resource:</b></td>   <td>{{ arn }}</td></tr>
+                                <tr><td><b>ID:</b></td>         <td>{{ user_id }}</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    
 </script>

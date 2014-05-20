@@ -11,9 +11,9 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/openstack/network/openstackNetworkAppTemplate.html',
-        '/js/openstack/models/network/openstackNetwork.js',
-        '/js/openstack/collections/network/openstackNetworks.js',
-        '/js/openstack/views/network/openstackNetworkCreateView.js',
+        'openstack/models/network/openstackNetwork',
+        'openstack/collections/network/openstackNetworks',
+        'openstack/views/network/openstackNetworkCreateView',
         'icanhaz',
         'common'
 ], function( $, _, Backbone, AppView, openstackNetworkAppTemplate, Network, Networks, OpenstackNetworkCreateView, ich, Common ) {

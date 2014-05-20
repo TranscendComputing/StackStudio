@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/object_storage/awsBucket.js',
+        'aws/models/object_storage/awsBucket',
         'common'
 ], function( $, Backbone, Bucket, Common ) {
     'use strict';

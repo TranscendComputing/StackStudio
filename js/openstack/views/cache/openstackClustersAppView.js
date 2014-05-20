@@ -6,9 +6,9 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-    '/js/topstack/views/cache/topstackClustersAppView.js',
-    '/js/openstack/views/cache/openstackClusterCreateView.js',
-    '/js/openstack/views/cache/openstackClusterModifyView.js'
+    'topstack/views/cache/topstackClustersAppView',
+    'openstack/views/cache/openstackClusterCreateView',
+    'openstack/views/cache/openstackClusterModifyView'
 ], function( TopStackClusterAppView, OpenStackClusterCreateView, OpenStackClusterModifyView ) {
     'use strict';
 

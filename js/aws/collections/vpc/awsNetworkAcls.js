@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/vpc/awsNetworkAcl.js',
+        'aws/models/vpc/awsNetworkAcl',
         'common'
 ], function( $, Backbone, NetworkAcl, Common ) {
     'use strict';

@@ -1,0 +1,98 @@
+<script type="text/html" id="resource_detail_modal">
+    <div id="detail_tabs detail_panel">
+        <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#vm_details_tab">General</a></li>
+            <li><a data-toggle="tab" href="#vm_power_tab">Power</a></li>
+            <li><a data-toggle="tab" href="#vm_hardware_tab">CPU/Memory</a></li>
+            <li><a data-toggle="tab" href="#vm_network_tab">Network</a></li>
+            <li><a data-toggle="tab" href="#vm_disks_tab">Disks</a></li>
+        </ul>
+        <div class="tab-content">
+            <div id="vm_details_tab" class="tab-pane active">
+                <dl class="property-list">
+                    <dt>Name</dt><dd>{{name}}</dd>
+                    <dt>Status</dt><dd>{{status}}</dd>
+                    <dt>Operating System</dt><dd>{{operating_system}}</dd>
+                    <dt>IP Address</dt><dd>{{ip_address}}</dd>
+                </dl>
+                <br style="clear: both;" />
+            </div>
+            <div id="vm_power_tab" class="tab-pane">
+
+                <p>Current status:  <strong>{{status}}</strong></p>
+
+                <button id="power_on_vm">Power on</button>
+                <button id="power_off_vm">Power off</button>
+            </div>
+            <div id="vm_hardware_tab" class="tab-pane">
+                
+                <div class="input-group">
+                    <span class="input-group-addon">CPUs</span>
+                    <input type="number" class="form-control" id="number_of_cpus" value="{{cpu}}" />
+                </div>
+                <br />
+                <div class="input-group">
+                    <span class="input-group-addon">Memory</span>
+                    <input type="number" step="4" min="4" class="form-control" id="memory" value="{{memory}}" />
+                    <span class="input-group-addon">MB</span>
+                </div>
+                <br />      
+                <button id="modify_vm">Save</button>
+            </div>
+            <div id="vm_network_tab" class="tab-pane"></div>
+            <div id="vm_disks_tab" class="tab-pane">
+                <table cellpadding="0" cellspacing="0" id="vm_disk_list">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Size</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <button id="create_disk">New Disk</button>
+                <label class="disk-hidden">Disk Size (MB)</label>
+                <input type="number" class="disk-hidden" id="new_disk_size" placeholder="1024" />
+                <button class="disk-hidden" id="create_disk_submit">Create</button>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script id="vm_network" type="text/html">
+    <table>
+        <tbody>
+            <tr>
+                <td>Network:</td>
+                <td>{{network}}</td>
+            </tr>
+            <tr>
+                <td>Connected:</td>
+                <td>
+                    <select name="is_connected" id="network_is_connected">
+                        <option value="true" {{#is_connected}}selected{{/is_connected}}>Yes</option>
+                        <option value="false" {{^is_connected}}selected{{/is_connected}}>No</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>MAC Address:</td>
+                <td><input type="text" id="network_mac_address" name="mac_address" value="{{mac_address}}" /></td>
+            </tr>
+            <tr>
+                <td>Allocation Mode:</td>
+                <td>
+                    <select name="ip_address_allocation_mode" id="network_ip_address_allocation_mode">
+                        <option value="POOL">Pool</option>
+                        <option value="DHCP">DHCP</option>
+                        <option value="MANUAL">Manual</option>
+                        <option value="NONE">None</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><button id="update_network">Save</button></td>
+            </tr>
+        </tbody>
+    </table>
+</script>

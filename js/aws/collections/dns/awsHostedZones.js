@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/dns/awsHostedZone.js',
+        'aws/models/dns/awsHostedZone',
         'common'
 ], function( $, Backbone, HostedZone, Common ) {
     'use strict';

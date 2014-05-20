@@ -4,7 +4,7 @@
     dir: "../../StackStudio-build",
     modules: [
         {
-            name: "main",
+            name: "main"
         },
         {
             name: "collections"

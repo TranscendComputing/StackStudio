@@ -20,9 +20,9 @@ define([
 
 		initialize : function ( options ) {
 			options = options || {};
-			
-			this.id = options.id;
 		},
+
+		idAttribute : 'name',
 
 		apiUrl : Common.apiUrl + "/stackstudio/v1/cloud_management/vcloud/networks"
 	});

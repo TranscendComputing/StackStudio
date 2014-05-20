@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/google/models/compute/googleDisk.js',
+        'google/models/compute/googleDisk',
         'common'
 ], function( $, Backbone, Disk, Common ) {
     'use strict';

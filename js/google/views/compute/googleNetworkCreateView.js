@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/google/compute/googleNetworkCreateTemplate.html',
-        '/js/google/models/compute/googleNetwork.js',
+        'google/models/compute/googleNetwork',
         'icanhaz',
         'common'
         

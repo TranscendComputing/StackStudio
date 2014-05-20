@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/google/compute/googleImageCreateTemplate.html',
-        '/js/google/models/compute/googleImage.js',
+        'google/models/compute/googleImage',
         'icanhaz',
         'common'
         

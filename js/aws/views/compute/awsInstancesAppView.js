@@ -11,10 +11,10 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/aws/compute/awsInstanceAppTemplate.html',
-        '/js/aws/models/compute/awsInstance.js',
-        '/js/aws/collections/compute/awsInstances.js',
-        '/js/aws/views/compute/awsInstanceCreateView.js',
-        '/js/aws/collections/cloud_watch/awsMetricStatistics.js',
+        'aws/models/compute/awsInstance',
+        'aws/collections/compute/awsInstances',
+        'aws/views/compute/awsInstanceCreateView',
+        'aws/collections/cloud_watch/awsMetricStatistics',
         'text!templates/emptyGraphTemplate.html',
         'icanhaz',
         'common',
@@ -80,6 +80,14 @@ define([
             'click #refresh_monitors_button': 'refreshMonitors'
         },
 
+        actions: [
+            { text: "Start", type: "row" },
+            { text: "Stop", type: "row" },
+            { text: "Reboot", type: "row" },
+            { text: "Terminate", type: "row" },
+            { text: "Disassociate Address", type: "row" }
+        ],
+
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
@@ -87,7 +95,8 @@ define([
             if(options.region) {
                 this.region = options.region;
             }
-            this.render();
+            this.$el.html(this.template);
+            this.loadData({render: true});
             
             var instanceApp = this;
             Common.vent.on("instanceAppRefresh", function() {

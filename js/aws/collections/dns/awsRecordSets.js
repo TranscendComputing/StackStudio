@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/dns/awsRecordSet.js',
+        'aws/models/dns/awsRecordSet',
         'common'
 ], function( $, Backbone, RecordSet, Common ) {
     'use strict';

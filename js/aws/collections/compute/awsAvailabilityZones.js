@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/compute/awsAvailabilityZone.js',
+        'aws/models/compute/awsAvailabilityZone',
         'common'
 ], function( $, Backbone, AvailabilityZone, Common ) {
     'use strict';

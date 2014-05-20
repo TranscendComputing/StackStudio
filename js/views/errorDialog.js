@@ -14,22 +14,25 @@ define([
 
     var ErrorDialogView = Backbone.View.extend({
         
-        tagName: "div",
-        
         events: {
-            "dialogclose": "close"
+            "click #error_accept_button": "close"
         },
 
-        initialize: function(options) {
-            var compiledTemplate = _.template(errorDialogTemplate);
-            this.$el.html(compiledTemplate);
+        initialize: function ( options ) {
+
+            var $newElement = $(errorDialogTemplate);
+            this.setElement($newElement);
+
             var errorDialogView = this;
             var title, message;
+            
             if(options.title) {
                 title = options.title;
             }else {
                 title = "Error";
             }
+
+            this.$el.find('.error-title').text(title);
             
             if(options.message) {
                 try {
@@ -40,33 +43,38 @@ define([
                 }
             }else {
                 message = "Invalid Request.";
-            } 
+            }
 
-            this.$el.dialog({
-                title: title,
-                autoOpen: true,
-                width:300,
-                minHeight: 150,
-                resizable: false,
-                modal: true,
-                buttons: [
-                    {
-                        text: "Ok",
-                        click: function() {
-                            errorDialogView.ok();
-                        }
-                    }
-                ]
-            });
-            $("#message").text(message);
+            this.$el.find('.error-message').text(message);
+
+            this.render();
         },
-        
-        ok: function() {
-            this.$el.dialog('close');
+
+        render : function () {
+            var self = this;
+
+            $('.modal.in').addClass('active-modal-window').modal('hide');
+
+            $('body').append(this.$el);
+
+            this.$el.modal({
+                show : true,
+                backdrop : true,
+                keyboard : true
+            });
+
+            this.$el.on('hidden.bs.modal', function ( e ) {
+                self.close();
+            });
         },
         
         close: function() {
             this.$el.remove();
+            var $active = $('.active-modal-window');
+
+            if($active.length) {
+                $active.modal('show');
+            }
         }
     });
     

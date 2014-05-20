@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/compute/awsImage.js',
+        'aws/models/compute/awsImage',
         'common'
 ], function( $, Backbone, Image, Common ) {
     'use strict';

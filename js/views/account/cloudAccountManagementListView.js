@@ -11,34 +11,33 @@ define([
         'backbone',
         'common',
         'text!templates/account/managementCloudAccountListTemplate.html',
-        'collections/groups',
         'collections/users',
+        'collections/cloudAccounts',
         'views/account/cloudAccountCreateView',
-        'views/account/groupManageUsersView',
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator'
-], function( $, _, Backbone, Common, groupsManagementListTemplate, Groups, Users, CloudAccountCreate, ManageGroupUsers ) {
+], function( $, _, Backbone, Common, cloudAccountManagementListTemplate, Users, CloudAccounts, CloudAccountCreate ) {
 
     var CloudAccountsManagementListView = Backbone.View.extend({
 
         tagName: 'div',
 
-        template: _.template(groupsManagementListTemplate),
+        template: _.template(cloudAccountManagementListTemplate),
         
         rootView: undefined,
 
-        groups: undefined,
+        cloudAccounts : undefined,
         
         users: new Users(),
 
-        selectedGroup: undefined,
+        selectedCloudAccount: undefined,
         
         CloudAccountCreateView: CloudAccountCreate,
 
         events: {
-            "click #create_group_button" : "createGroup",
-            "click #delete_group_button" : "deleteGroup",
-            'click #group_users_table tr': 'selectGroup'
+            "click #create_group_button" : "createCloudAccount",
+            "click #delete_group_button" : "deleteCloudAccount",
+            'click #group_users_table tr': 'selectCloudAccount'
         },
 
         initialize: function( options ) {
@@ -46,6 +45,7 @@ define([
             this.rootView = options.rootView;
             $("#submanagement_app").html(this.$el);
             $("button").button();
+            
             $("#group_users_table").dataTable({
                 "bJQueryUI": true,
                 "bProcessing": true
@@ -56,8 +56,9 @@ define([
                 managementView.render();
             });
             
-            this.selectedGroup = undefined;
-            this.groups = this.rootView.cloudAccounts;
+            this.cloudAccounts = new CloudAccounts();
+            this.rootView.cloudAccounts = this.cloudAccounts;
+            this.cloudAccounts.on( 'reset', this.addAllCloudAccounts, this );
             this.render();
         },
 
@@ -65,38 +66,39 @@ define([
             this.disableSelectionRequiredButtons(true);
             $("#group_users_table").dataTable().fnClearTable();
             
-            var groupListView = this;
-            this.groups.fetch({
+            var listView = this;
+            this.cloudAccounts.fetch({
                 data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id}),
                 reset: true,
                 success: function(){
-                    groupListView.addAllGroups();
+                    listView.addAllCloudAccounts();
                 }
             });
         },
         
-        selectGroup: function(event){
+        selectCloudAccount: function(event){
             $("#group_users_table tr").removeClass('row_selected');
             $(event.currentTarget).addClass('row_selected');
             
             var rowData = $("#group_users_table").dataTable().fnGetData(event.currentTarget);
             
-            this.selectedGroup = this.groups.get($.parseHTML(rowData[0])[0]);
+            this.selectedCloudAccount = this.cloudAccounts.get($.parseHTML(rowData[0])[0]);
             
-            if(this.selectedGroup) {
+            if(this.selectedCloudAccount) {
                 this.disableSelectionRequiredButtons(false);
             }
         },
         
-        addAllGroups: function() {
+        addAllCloudAccounts: function() {
+            this.rootView.addAll(this.cloudAccounts, $('#cloud_account_list'));
             $("#group_users_table").dataTable().fnClearTable();
-            $.each(this.groups.models, function(index, value) {
+            this.cloudAccounts.each(function( cloudAccount ) {
                 var auth_url = "";
-                if(value.attributes.url){
-                    auth_url = value.attributes.url;
+                if(cloudAccount.attributes.url){
+                    auth_url = cloudAccount.attributes.url;
                 }
                 
-                var rowData = ['<a href="#account/management/cloud-accounts" id="'+value.attributes.id+'" class="cloud_account_item">'+value.attributes.name+"</a>", value.attributes.cloud_provider, auth_url];
+                var rowData = ['<a href="#account/management/cloud-accounts" id="'+cloudAccount.attributes.id+'" class="cloud_account_item">'+cloudAccount.attributes.name+"</a>", cloudAccount.attributes.cloud_provider, auth_url];
                 $("#group_users_table").dataTable().fnAddData(rowData);
             });
         },
@@ -119,11 +121,11 @@ define([
         },
         
         adminCheck: function(){
-            var groupsView = this;
-            groupsView.users.fetch({success: function(){
+            var cloudAccountsView = this;
+            cloudAccountsView.users.fetch({success: function(){
                 var isAdmin = false;
-                if(groupsView.users.get(sessionStorage.account_id).attributes.permissions.length > 0){
-                    isAdmin = groupsView.users.get(sessionStorage.account_id).attributes.permissions[0].permission.name === "admin";
+                if(cloudAccountsView.users.get(sessionStorage.account_id).attributes.permissions.length > 0){
+                    isAdmin = cloudAccountsView.users.get(sessionStorage.account_id).attributes.permissions[0].permission.name === "admin";
                 }
                 if(!isAdmin){
                     $("#delete_group_button").attr("disabled", true);
@@ -135,7 +137,7 @@ define([
             }});
         },
 
-        createGroup: function() {
+        createCloudAccount: function() {
             var CloudAccountCreateView = this.CloudAccountCreateView;
             
             this.newResourceDialog = new CloudAccountCreateView({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id, rootView: this.rootView });
@@ -143,14 +145,14 @@ define([
             this.newResourceDialog.render();
         },
 
-        deleteGroup: function() {
-            if(this.selectedGroup) {
-                this.selectedGroup.destroy(sessionStorage.login);
+        deleteCloudAccount: function() {
+            if(this.selectedCloudAccount) {
+                this.selectedCloudAccount.destroy(sessionStorage.login);
             }
         },
 
         clearSelection: function() {
-            this.selectedGroup = undefined;
+            this.selectedCloudAccount = undefined;
             $(".group_item").removeClass("selected_item");
         },
 

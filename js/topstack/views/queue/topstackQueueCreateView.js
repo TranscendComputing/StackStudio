@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/topstack/queue/topstackQueueCreateTemplate.html',
-        '/js/topstack/models/queue/topstackQueue.js',
+        'topstack/models/queue/topstackQueue',
         'common'      
 ], function( $, _, Backbone, DialogView, queueCreateTemplate, Queue, Common ) {
     

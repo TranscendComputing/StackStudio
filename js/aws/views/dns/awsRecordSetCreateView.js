@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/dns/awsRecordSetCreateTemplate.html',
-        '/js/aws/models/dns/awsRecordSet.js',
+        'aws/models/dns/awsRecordSet',
         'common'
         
 ], function( $, _, Backbone, DialogView, recordSetCreateTemplate, RecordSet, Common ) {

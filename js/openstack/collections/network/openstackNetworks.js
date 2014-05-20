@@ -9,7 +9,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        '/js/openstack/models/network/openstackNetwork.js',
+        'openstack/models/network/openstackNetwork',
         'common'
 ], function( $, _, Backbone, Network, Common ) {
     'use strict';

@@ -42,10 +42,10 @@ Getting Started
 	Copy backend.json.sample to backend.json
 
     ```
-	cp backend.json.sample backend.json
+	cp config/backend.json.sample config/backend.json
     ```
 
-	Edit backend.json @backend_endpoint@ field to point to your CloudMux backend.
+	Edit config/backend.json @backend_endpoint@ field to point to your CloudMux backend.
 
 	(e.g. "http://localhost:9292")
 

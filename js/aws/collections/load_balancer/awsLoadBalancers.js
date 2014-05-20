@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/load_balancer/awsLoadBalancer.js',
+        'aws/models/load_balancer/awsLoadBalancer',
         'common'
 ], function( $, Backbone, LoadBalancer, Common ) {
     'use strict';

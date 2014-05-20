@@ -13,8 +13,8 @@ define([
         'icanhaz',
         'views/dialogView',
         'text!templates/openstack/block_storage/openstackSnapshotCreateTemplate.html',
-        '/js/openstack/collections/block_storage/openstackSnapshots.js',
-        '/js/openstack/collections/block_storage/openstackVolumes.js',
+        'openstack/collections/block_storage/openstackSnapshots',
+        'openstack/collections/block_storage/openstackVolumes',
         'jquery.multiselect',
         'jquery.multiselect.filter'
 ], function( $, _, Backbone, Common, ich, DialogView, snapshotCreateTemplate, Snapshots, Volumes ) {

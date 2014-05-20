@@ -11,8 +11,8 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/compute/awsSecurityGroupCreateTemplate.html',
-        '/js/aws/models/rds/awsDBSecurityGroup.js',
-        '/js/aws/collections/vpc/awsVpcs.js',
+        'aws/models/rds/awsDBSecurityGroup',
+        'aws/collections/vpc/awsVpcs',
         'icanhaz',
         'common'
         

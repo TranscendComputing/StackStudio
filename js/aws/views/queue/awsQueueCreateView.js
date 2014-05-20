@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/queue/awsQueueCreateTemplate.html',
-        '/js/aws/models/queue/awsQueue.js',
+        'aws/models/queue/awsQueue',
         'common'      
 ], function( $, _, Backbone, DialogView, queueCreateTemplate, Queue, Common ) {
     

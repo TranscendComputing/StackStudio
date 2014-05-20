@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/google/models/compute/googleSnapshot.js',
+        'google/models/compute/googleSnapshot',
         'common'
 ], function( $, Backbone, Snapshot, Common ) {
     'use strict';

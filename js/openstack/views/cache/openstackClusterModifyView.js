@@ -7,7 +7,7 @@
 /*global define:true console:true */
 define([
         'backbone',
-        '/js/topstack/views/cache/topstackClusterModifyView.js'
+        'topstack/views/cache/topstackClusterModifyView'
 ], function( Backbone, TopStackClusterModifyView ) {
     
     var OpenStackClusterModifyView = TopStackClusterModifyView.extend({

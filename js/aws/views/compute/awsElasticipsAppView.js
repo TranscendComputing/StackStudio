@@ -11,10 +11,10 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/aws/compute/awsElasticIPAppTemplate.html',
-        '/js/aws/models/compute/awsElasticIP.js',
-        '/js/aws/collections/compute/awsElasticIPs.js',
-        '/js/aws/views/compute/awsElasticIPsCreateView.js',
-        '/js/aws/views/compute/awsElasticIPAssociateView.js',
+        'aws/models/compute/awsElasticIP',
+        'aws/collections/compute/awsElasticIPs',
+        'aws/views/compute/awsElasticIPsCreateView',
+        'aws/views/compute/awsElasticIPAssociateView',
         'icanhaz',
         'common',
         'jquery.dataTables'
@@ -58,6 +58,14 @@ define([
             'click #resource_table tr': "clickOne"
         },
 
+        createText: "Allocate New Address",
+
+        actions: [
+            { text: "Release Address", type: "row"},
+            { text: "Associate Address", type: "row"},
+            { text: "Disassociate Adress", type: "row"}
+        ],
+
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
@@ -65,7 +73,9 @@ define([
             if(options.region) {
                 this.region = options.region;
             }
-            this.render();
+
+            this.$el.html(this.template);
+            this.loadData({render: true});
             
             var elasticIpApp = this;
             Common.vent.on("elasticIPAppRefresh", function() {

@@ -7,7 +7,7 @@
 /*global define:true console:true */
 define([
         'backbone',
-        '/js/topstack/views/cache/topstackParameterGroupCreateView.js'
+        'topstack/views/cache/topstackParameterGroupCreateView'
 ], function( Backbone, TopStackParameterGroupCreateView ) {
     
     var OpenStackParameterGroupCreateView = TopStackParameterGroupCreateView.extend({

@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/google/compute/googleFirewallCreateTemplate.html',
-        '/js/google/models/compute/googleFirewall.js',
+        'google/models/compute/googleFirewall',
         'icanhaz',
         'common',
         'jquery.multiselect'

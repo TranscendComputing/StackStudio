@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/topstack/models/cache/topstackCacheCluster.js',
+        'topstack/models/cache/topstackCacheCluster',
         'common'
 ], function( $, Backbone, CacheCluster, Common ) {
     'use strict';

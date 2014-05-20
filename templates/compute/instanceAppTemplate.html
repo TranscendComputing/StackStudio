@@ -1,7 +1,5 @@
 <div>
-    <div class="button_bar">
-        <button id="new_instance">Create New Instance</button>
-    </div>
+    <div class="button_bar"></div>
     <table id="resource_table" class="full_width">
         <thead>
             <tr>
@@ -20,14 +18,23 @@
 </div>
 
 <script type="text/html" id="instance_detail">
-    <div id="detail_tabs" class="full_width">
-        <ul>
-            <li><a href="#tabs-1">Details</a></li>
-        </ul>
-        <div id="tabs-1" class="tab">
-            <div>Name: {{ name }} </div>
-            <div>Instance ID: {{ instanceId }} </div>
-            <div>Key Name: {{ keyName }} </div>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <div class="panel-title">Detail View: {{name}}</div>
+        </div>
+        <div class="panel-body">
+            <div id="detail_tabs" class="full_width">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#tabs-1">Details</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div id="tabs-1" class="tab-pane active">
+                        <div>Name: {{ name }} </div>
+                        <div>Instance ID: {{ instanceId }} </div>
+                        <div>Key Name: {{ keyName }} </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </script>

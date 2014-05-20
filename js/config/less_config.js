@@ -6,7 +6,7 @@
 /**
  * Configuration for Less CSS library.
  */
-less = {
+var less = {
         //async: false,       // load imports async
         //fileAsync: false,   // load imports async when in a page under
                             // a file protocol

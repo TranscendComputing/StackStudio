@@ -28,8 +28,6 @@ define([
         template: _.template(groupsManagementTemplate),
         
         rootView: undefined,
-
-        groups: undefined,
         
         users: new Users(),
         
@@ -44,9 +42,10 @@ define([
             "change #policy_select":"policySelect"
         },
 
-        initialize: function() {
+        initialize: function ( options ) {
+
             this.$el.html(this.template);
-            this.rootView = this.options.rootView;
+            this.rootView = options.rootView;
             $("#submanagement_app").html(this.$el);
             $("button").button();
             $("#group_users_table").dataTable({
@@ -61,25 +60,17 @@ define([
                 groupsView.render();
                 //refetch tree groups
             });
-            this.selectedGroup = undefined;
-            this.groups = this.rootView.groups;
-            this.policies = this.rootView.policies;
+
+            this.groups = options.collection;
+            this.policies = new Policies();
+
+            this.selectedGroup = this.groups.get(options.selectedId);
             this.render();
         },
 
         render: function () {
             this.disableSelectionRequiredButtons(true);
             $("#group_users_table").dataTable().fnClearTable();
-            
-            this.groups.fetch({
-                reset: true
-            });
-        },
-        
-        treeSelect: function() {
-            this.clearSelection();
-            //$(event.target).addClass("selected_item");
-            this.selectedGroup = this.rootView.groups.get(this.rootView.treeGroup);
             $("#selected_group_name").html(this.selectedGroup.attributes.name);
             this.disableSelectionRequiredButtons(false);
             this.addAllGroupUsers();

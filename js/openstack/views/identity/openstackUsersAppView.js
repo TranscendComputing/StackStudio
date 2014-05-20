@@ -11,9 +11,9 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/openstack/identity/openstackUserAppTemplate.html',
-        '/js/openstack/models/identity/openstackUser.js',
-        '/js/openstack/collections/identity/openstackUsers.js',
-        '/js/openstack/views/identity/openstackUserCreateView.js',
+        'openstack/models/identity/openstackUser',
+        'openstack/collections/identity/openstackUsers',
+        'openstack/views/identity/openstackUserCreateView',
         'icanhaz',
         'common'
 ], function( $, _, Backbone, AppView, openstackUserAppTemplate, User, Users, OpenstackUserCreateView, ich, Common ) {

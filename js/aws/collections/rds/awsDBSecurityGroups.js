@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/rds/awsDBSecurityGroup.js',
+        'aws/models/rds/awsDBSecurityGroup',
         'common'
 ], function( $, Backbone, DBSecurityGroup, Common ) {
     'use strict';

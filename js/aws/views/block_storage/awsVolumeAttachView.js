@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/block_storage/awsVolumeAttachTemplate.html',
-        '/js/aws/collections/compute/awsInstances.js',
+        'aws/collections/compute/awsInstances',
         'common'
 ], function( $, _, Backbone, DialogView, volumeAttachTemplate, Instances, Common ) {
     

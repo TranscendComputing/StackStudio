@@ -6,8 +6,8 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-    '/js/topstack/views/cloud_watch/topstackAlarmsAppView.js',
-    '/js/openstack/views/cloud_watch/openstackAlarmCreateView.js'
+    'topstack/views/cloud_watch/topstackAlarmsAppView',
+    'openstack/views/cloud_watch/openstackAlarmCreateView'
 ], function( TopStackAlarmsAppView, OpenStackAlarmCreateView ) {
     'use strict';
 
