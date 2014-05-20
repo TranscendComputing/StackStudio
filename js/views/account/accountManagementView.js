@@ -67,8 +67,9 @@ define([
             treeCloudCred: undefined,
             treePolicy: undefined,
             afterSubAppRender: undefined,
+
             /** Constructor method for current view */
-            initialize: function() {
+            initialize: function(options) {
                 //Render my template
                 this.$el.html(this.template);
     

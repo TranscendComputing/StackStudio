@@ -89,71 +89,79 @@ define(
         });
 
         describe("Account Management jQuery Bindings Tests", function() {
-            //jasmine.getFixtures().containerId = 'jasmine-fixtures';
-            //console.info('Spinner is: '+Spinner);
-            //setFixtures('<section id="main"></section>');
-            //var accountManagementView = new AccountManagementView();
-            //console.info('el id: '+accountManagementView.$el.prop('id'));
-            //var element;
-
             var accountManagementView;
+
             beforeEach(function() {
-                //setFixtures('<section id="main"></section>');
-                accountManagementView = new AccountManagementView({ el: $('#jasmine-fixtures')});
+                setFixtures('<section id="main"></section>');
+                accountManagementView = new AccountManagementView();
             });
 
             it("Verify views element is as intended", function() {
-                console.info(accountManagementView.$el.parent().parent().html());
-                console.info($('#jasmine-fixtures').html());
-                expect(accountManagementView.$el).toBe('#main');
+                //var fixture = setFixtures();
+                //var element = $(accountManagementView.el);
+                console.info("View element markup: "+fixture.html());
+
+                //expect($('#acct_sidebar')).toBeEmpty();
+                expect(accountManagementView.$el).toBe('section#main');
+                expect($('#cloud_account_list')).toBeEmpty();
+                expect($('#cred_list')).toBeEmpty();
+                expect($('#group_list')).toBeEmpty();
+                expect($('#policy_list')).toBeEmpty();
+                expect($('#user_list')).toBeEmpty();
+                expect($('#source_control_list')).toBeEmpty();
             });
 
-            it("trigger jQuery binding route:accountManagement sending cloud-accounts", function() {
+            it("trigger jQuery binding route:cloudSetup sending cloud-accounts", function() {
                 Common.router.trigger("route:cloudSetup", 'cloud-accounts');
                 //expect(Common.TargetView instanceof CloudAccountManagementView).toBeTruthy();
             });
 
-            it("trigger jQuery binding route:accountManagement sending cloud-credentials", function() {
+
+
+
+
+
+            xit("trigger jQuery binding route:accountManagement sending cloud-credentials", function() {
                 Common.router.trigger("route:accountManagement", 'cloud-credentials');
             });
 
-            it("trigger jQuery binding route:accountManagement sending users", function() {
+            xit("trigger jQuery binding route:accountManagement sending users", function() {
                 Common.router.trigger("route:accountManagement", 'users');
             });
 
-            it("trigger jQuery binding route:accountManagement sending policies", function() {
+            xit("trigger jQuery binding route:accountManagement sending policies", function() {
                 Common.router.trigger("route:accountManagement", 'policies');
             });
 
-            it("trigger jQuery binding route:accountManagement sending policy", function() {
+            xit("trigger jQuery binding route:accountManagement sending policy", function() {
                 Common.router.trigger("route:accountManagement", 'policy');
             });
 
-            it("trigger jQuery binding route:accountManagement sending groups", function() {
+            xit("trigger jQuery binding route:accountManagement sending groups", function() {
                 Common.router.trigger("route:accountManagement", 'groups');
             });
 
-            it("trigger jQuery binding route:accountManagement sending groups_list", function() {
+            xit("trigger jQuery binding route:accountManagement sending groups_list", function() {
                 Common.router.trigger("route:accountManagement", 'groups_list');
             });
 
-            it("trigger jQuery binding route:accountManagement sending cloud-credentials_list", function() {
+            xit("trigger jQuery binding route:accountManagement sending cloud-credentials_list", function() {
                 Common.router.trigger("route:accountManagement", 'cloud-credentials_list');
             });
 
-            it("trigger jQuery binding route:accountManagement sending cloud-accounts_list", function() {
+            xit("trigger jQuery binding route:accountManagement sending cloud-accounts_list", function() {
                 Common.router.trigger("route:accountManagement", 'cloud-accounts_list');
             });
 
-            it("trigger jQuery binding route:accountManagement sending configuration_managers", function() {
+            xit("trigger jQuery binding route:accountManagement sending configuration_managers", function() {
                 Common.router.trigger("route:accountManagement", 'configuration_managers');
             });
 
-            it("trigger jQuery binding route:accountManagement sending continuous_integration", function() {
+            xit("trigger jQuery binding route:accountManagement sending continuous_integration", function() {
                 Common.router.trigger("route:accountManagement", 'continuous_integration');
             });
 
-            it("trigger jQuery binding route:accountManagement sending source_control_repositories", function() {
+            xit("trigger jQuery binding route:accountManagement sending source_control_repositories", function() {
                 Common.router.trigger("route:accountManagement", 'source_control_repositories');
             });
 
