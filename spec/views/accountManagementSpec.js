@@ -97,11 +97,7 @@ define(
             });
 
             it("Verify views element is as intended", function() {
-                //var fixture = setFixtures();
                 //var element = $(accountManagementView.el);
-                console.info("View element markup: ");
-
-                //expect($('#acct_sidebar')).toBeEmpty();
                 expect(accountManagementView.$el).toBe('section#main');
                 expect($('#cloud_account_list')).toBeEmpty();
                 expect($('#cred_list')).toBeEmpty();
@@ -111,8 +107,27 @@ define(
                 expect($('#source_control_list')).toBeEmpty();
             });
 
+            // XXX - Plan of action is to spyOn the internal accountManagementView instance bindings
+            // and trigger them and then check markup for each section population. These will still
+            // fail without proper data sets. Thought: stub out the spy and provide dataset! :-)
+            //
+            // Then spyOn each initialize() method in each subApp view class and trigger different
+            // views with different arguments and check that the proper view initialize() is called
+
+            it("trigger jQuery binding route:cloudSetup", function() {
+                Common.router.trigger("route:cloudSetup");
+                //console.info('cloudSetup: '+$('#main').html());
+            });
+
+            it("trigger jQuery binding route:cloudSetup", function() {
+                Common.router.trigger("route:cloudSetup");
+                //console.info('cloudSetup: '+$('#main').html());
+            });
+
             it("trigger jQuery binding route:cloudSetup sending cloud-accounts", function() {
                 Common.router.trigger("route:cloudSetup", 'cloud-accounts');
+                //console.info('cloudSetup:cloud-accounts: '+$('#main').html());
+                //expect($('#cloud_account_list')).not.toBeEmpty();
                 //expect(Common.TargetView instanceof CloudAccountManagementView).toBeTruthy();
             });
 
