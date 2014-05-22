@@ -24,7 +24,7 @@ define([
         return model.get("stack_name");
       },
       fetch: function(options){
-        options.data = $.paam({account_id:sessionStorage.accound_id}); 
+        options.data = $.param({account_id:sessionStorage.accound_id}); 
         Backbone.Collection.prototype.fetch.apply(this, arguments);
       },
 
