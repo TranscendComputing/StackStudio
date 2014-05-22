@@ -21,12 +21,54 @@ define([
             events: {
                 "click #addUser": "addUser"
             },
+            subApp: undefined,
+            tree: undefined,
+            groups: undefined,
+            cloudCredentials: undefined,
+            cloudAccounts: undefined,
+            policies: undefined,
+            treeGroup: undefined,
+            treeCloudAccount: undefined,
+            treeCloudCred: undefined,
+            treePolicy: undefined,
+            afterSubAppRender: undefined,
 
             /** Constructor method for current view */
-            initialize: function() {
-                
+            initialize: function(options) {
+                //Render my template
+                this.$el.html(this.template);
+    
+                this.groups = new Groups();
+                this.groups.on('reset', this.addAllGroups, this);
+    
+                this.cloudCredentials = new CloudCredentials();
+                this.cloudCredentials.on( 'reset', this.addAllCreds, this );
+
+                this.cloudCredentials.fetch({
+                    data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id}),
+                    reset: true
+                });
+    
+                this.cloudAccounts = new CloudAccounts();
+                this.cloudAccounts.on( 'reset', this.addAllCloudAccounts, this );
+    
+                this.policies = new Policies();
+                this.policies.on( 'reset', this.addAllPolicies, this );
+    
                 //Render my own views
                 this.render();
+
+                if (sessionStorage && parseInt(sessionStorage.num_logins, 10) < 5)  {//todo: change this to 0
+                    this.tutorial = new TutorialView({ rootView: this });
+    
+                    this.afterSubAppRender = function () {
+                        this.tutorial.update();
+                    }.bind(this);
+    
+                    this.tutorial.render();
+                }
+                window.jQuery = $;
+                window.$ = $;
             },
 
             /** Add all of my own html elements */

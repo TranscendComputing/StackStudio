@@ -59,6 +59,7 @@ define([
         afterSubAppRender: undefined,
         initialize: function() {
             var self = this;
+            this.render();
 
             this.cloudAccounts = new CloudAccounts();
 
@@ -87,8 +88,6 @@ define([
                 success : this.onFetched('#group_list'),
                 reset : true
             });
-
-            this.render();
 
             if(sessionStorage && parseInt(sessionStorage.num_logins, 10) < 5)  {
                 this.tutorial = new TutorialView({ rootView: this });
@@ -139,8 +138,21 @@ define([
         addAll : function ( collection, $list ) {
             $list.empty();
             collection.each(function ( model ) {
-                $list.append('<li><a id="' + model.attributes.id + '" class="cloud-submenu-item ' + $list.attr('data-collection-name') + '" href="' + $list.attr('data-base-url') + '">' + (model.attributes.name || model.attributes.login) + '</a></li>');
+                var id = model.attributes.id;
+                var classes = 'cloud-submenu-item '+$list.attr('data-collection-name');
+                var href = $list.attr('data-base-url');
+                var text = (model.attributes.name || model.attributes.login);
+
+                //console.info('ID: '+id+', Classes: '+classes+'. HREF: '+href+', Text: '+text);
+                $list.append(
+                    '<li>'
+                    +'<a id="'+id+'" class="'+classes+'" href="'+href+'">'
+                    +text
+                    +'</a>'
+                    +'</li>'
+                );
             });
+
             $list.parent().find('.badge').text(collection.length);
         },
 
