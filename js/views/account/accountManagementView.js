@@ -21,17 +21,6 @@ define([
             events: {
                 "click #addUser": "addUser"
             },
-            subApp: undefined,
-            tree: undefined,
-            groups: undefined,
-            cloudCredentials: undefined,
-            cloudAccounts: undefined,
-            policies: undefined,
-            treeGroup: undefined,
-            treeCloudAccount: undefined,
-            treeCloudCred: undefined,
-            treePolicy: undefined,
-            afterSubAppRender: undefined,
 
             /** Constructor method for current view */
             initialize: function(options) {
