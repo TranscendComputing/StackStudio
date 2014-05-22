@@ -5,24 +5,37 @@ define(
         'jquery',
         'common',
         'models/cloudAccount',
+        'models/group',
+        'models/user',
         'collections/cloudAccounts',
+        'collections/groups',
+        'collections/users',
         'views/cloud_setup/cloudSetupView',
         'jasmine-jquery'
     ],
-    function($, Common, CloudAccountModel, CloudAccountCollection, CloudSetupView) {
+    function($, Common, CloudAccountModel, GroupModel, UserModel,
+             CloudAccountCollection, GroupCollection, UserCollection,
+             CloudSetupView) {
+
         describe("Cloud Setup Function Callable Tests", function() {
-            spyOn(CloudSetupView.prototype, 'onFetched');
-            spyOn(CloudSetupView.prototype, 'render');
-            var cloudSetupView = new CloudSetupView();
+            var cloudSetupView;
+
+            beforeEach(function() {
+                // Have to trap these here so object instantiation does
+                // not propogate beyond initialize() method
+                spyOn(CloudSetupView.prototype, 'onFetched');
+                spyOn(CloudSetupView.prototype, 'render');
+                cloudSetupView = new CloudSetupView();
+            });
 
             it("render is callable", function() {
-                 spyOn(cloudSetupView, 'render');
+                 //spyOn(cloudSetupView, 'render');
                  cloudSetupView.render();
                  expect(cloudSetupView.render).toHaveBeenCalled();
             });
 
             it("onFetched is callable", function() {
-                 spyOn(cloudSetupView, 'onFetched');
+                 //spyOn(cloudSetupView, 'onFetched');
                  cloudSetupView.onFetched();
                  expect(cloudSetupView.onFetched).toHaveBeenCalled();
             });
@@ -62,35 +75,79 @@ define(
                 });
                 spyOn(CloudSetupView.prototype, 'onFetched').andCallFake(function(list) {
                     var collection;
-                    if (list === '#cloud_account_list') {
-                        collection = new CloudAccountCollection([
-                            new CloudAccountModel({id:"0000001", name:"Awesome Web Service 1"}),
-                            new CloudAccountModel({id:"0000002", name:"Awesome Web Service 2"}),
-                            new CloudAccountModel({id:"0000003", name:"Awesome Web Service 3"}),
-                            new CloudAccountModel({id:"0000004", name:"Awesome Web Service 4"}),
-                            new CloudAccountModel({id:"0000005", name:"Awesome Web Service 5"})
-                        ]);
+
+                    switch(list) {
+                        case '#cloud_account_list':
+                            collection = new CloudAccountCollection([
+                                new CloudAccountModel({id:"0000001", name:"Awesome Web Service 1"}),
+                                new CloudAccountModel({id:"0000002", name:"Awesome Web Service 2"}),
+                                new CloudAccountModel({id:"0000003", name:"Awesome Web Service 3"}),
+                                new CloudAccountModel({id:"0000004", name:"Awesome Web Service 4"}),
+                                new CloudAccountModel({id:"0000005", name:"Awesome Web Service 5"})
+                            ]);
+                            break;
+                        case '#group_list':
+                            collection = new GroupCollection([
+                                new GroupModel({id:"0000001",name:"Development",description:"default development group"}),
+                                new GroupModel({id:"0000002",name:"Test",description:"default test group"}),
+                                new GroupModel({id:"0000003",name:"Stage",description:"default stage group"}),
+                                new GroupModel({id:"0000004",name:"Production",description:"default production group"})
+                            ]);
+                            break;
+                        case '#user_list':
+                            collection = new UserCollection([
+                                new UserModel({id:"0000001",login:"user1",email:"user1@momentumsi.com",first_name:"User",last_name:"One"}),
+                                new UserModel({id:"0000002",login:"user2",email:"user2@momentumsi.com",first_name:"User",last_name:"Two"}),
+                                new UserModel({id:"0000003",login:"user3",email:"user3@momentumsi.com",first_name:"User",last_name:"Three"}),
+                                new UserModel({id:"0000004",login:"user4",email:"user4@momentumsi.com",first_name:"User",last_name:"Four"}),
+                                new UserModel({id:"0000005",login:"user5",email:"user5@momentumsi.com",first_name:"User",last_name:"Five"})
+                            ]);
+                            break;
+                        case '#cred_list':
+                            break;
+                        case '#policy_list':
+                            break;
+                        case '#source_control_list':
+                            break;
                     }
 
                     if (collection) {
                         this.addAll(collection, $(list));
                     }
                 });
+
                 cloudSetupView = new CloudSetupView();
             });
 
-            it("Verify view is as intended with no datasets", function() {
-//                spyOn(CloudSetupView.prototype, 'onFetched');
-//                cloudSetupView = new CloudSetupView();
-
+            it("Verify view containing element is correct", function() {
                 expect(cloudSetupView.$el).toBe('section#main');
-                //expect($('#cloud_account_list')).toBeEmpty();
-                expect($('#cred_list')).toBeEmpty();
-                expect($('#group_list')).toBeEmpty();
-                expect($('#policy_list')).toBeEmpty();
-                expect($('#user_list')).toBeEmpty();
-                expect($('#source_control_list')).toBeEmpty();
             });
+
+            it("Verify cloud account list is populated", function() {
+                expect($('#cloud_account_list > li').length).toEqual(5);
+            });
+
+            it("Verify group list is populated", function() {
+                expect($('#group_list > li').length).toEqual(4);
+            });
+
+            it("Verify user list is populated", function() {
+                expect($('#user_list > li').length).toEqual(5);
+            });
+
+            xit("Verify credential list is populated", function() {
+                expect($('#cred_list > li').length).toEqual(5);
+            });
+
+            xit("Verify policy list is populated", function() {
+                expect($('#policy_list > li').length).toEqual(5);
+            });
+
+            xit("Verify source control list is populated", function() {
+                expect($('#source_control_list > li').length).toEqual(5);
+            });
+
+
 
             // XXX - Plan of action is to spyOn the internal cloudSetupView instance bindings
             // and trigger them and then check markup for each section population. These will still
@@ -98,11 +155,6 @@ define(
             //
             // Then spyOn each initialize() method in each subApp view class and trigger different
             // views with different arguments and check that the proper view initialize() is called
-
-            it("Verify view is as intended with cloud accounts dataset", function() {
-                //cloudSetupView = new CloudSetupView();
-                expect($('#cloud_account_list > li').length).toEqual(5);
-            });
 
             xit("trigger jQuery binding route:cloudSetup", function() {
                 Common.router.trigger("route:cloudSetup");
@@ -114,62 +166,6 @@ define(
                 console.info('cloudSetup:cloud-accounts: '+$('#main').html());
                 //expect($('#cloud_account_list')).not.toBeEmpty();
                 //expect(Common.TargetView instanceof CloudCloudSetupView).toBeTruthy();
-            });
-
-
-
-
-
-
-            xit("trigger jQuery binding route:accountManagement sending cloud-credentials", function() {
-                Common.router.trigger("route:accountManagement", 'cloud-credentials');
-            });
-
-            xit("trigger jQuery binding route:accountManagement sending users", function() {
-                Common.router.trigger("route:accountManagement", 'users');
-            });
-
-            xit("trigger jQuery binding route:accountManagement sending policies", function() {
-                Common.router.trigger("route:accountManagement", 'policies');
-            });
-
-            xit("trigger jQuery binding route:accountManagement sending policy", function() {
-                Common.router.trigger("route:accountManagement", 'policy');
-            });
-
-            xit("trigger jQuery binding route:accountManagement sending groups", function() {
-                Common.router.trigger("route:accountManagement", 'groups');
-            });
-
-            xit("trigger jQuery binding route:accountManagement sending groups_list", function() {
-                Common.router.trigger("route:accountManagement", 'groups_list');
-            });
-
-            xit("trigger jQuery binding route:accountManagement sending cloud-credentials_list", function() {
-                Common.router.trigger("route:accountManagement", 'cloud-credentials_list');
-            });
-
-            xit("trigger jQuery binding route:accountManagement sending cloud-accounts_list", function() {
-                Common.router.trigger("route:accountManagement", 'cloud-accounts_list');
-            });
-
-            xit("trigger jQuery binding route:accountManagement sending configuration_managers", function() {
-                Common.router.trigger("route:accountManagement", 'configuration_managers');
-            });
-
-            xit("trigger jQuery binding route:accountManagement sending continuous_integration", function() {
-                Common.router.trigger("route:accountManagement", 'continuous_integration');
-            });
-
-            xit("trigger jQuery binding route:accountManagement sending source_control_repositories", function() {
-                Common.router.trigger("route:accountManagement", 'source_control_repositories');
-            });
-
-            // Disabled for now becasue this binding calls homeView constructor,
-            // then that constructor calls render and render calls displayPasswordRules
-            // which attempts to parse JSON from sessionStorage which is not present in tests
-            xit("trigger jQuery binding route:accountManagement sending home", function() {
-                Common.router.trigger("route:accountManagement", 'home');
             });
         });
     }
