@@ -145,11 +145,9 @@ define([
 
                 //console.info('ID: '+id+', Classes: '+classes+'. HREF: '+href+', Text: '+text);
                 $list.append(
-                    '<li>'
-                    +'<a id="'+id+'" class="'+classes+'" href="'+href+'">'
-                    +text
-                    +'</a>'
-                    +'</li>'
+                    '<li>'+
+                    '<a id="'+id+'" class="'+classes+'" href="'+href+'">'+
+                    text+'</a></li>'
                 );
             });
 

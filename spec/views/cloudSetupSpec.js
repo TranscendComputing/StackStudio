@@ -62,7 +62,7 @@ define(
                 });
                 spyOn(CloudSetupView.prototype, 'onFetched').andCallFake(function(list) {
                     var collection;
-                    if (list == '#cloud_account_list') {
+                    if (list === '#cloud_account_list') {
                         collection = new CloudAccountCollection([
                             new CloudAccountModel({id:"0000001", name:"Awesome Web Service 1"}),
                             new CloudAccountModel({id:"0000002", name:"Awesome Web Service 2"}),
