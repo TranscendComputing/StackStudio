@@ -10,21 +10,25 @@ define(
         'models/user',
         'models/policy',
         'models/sourceControlRepository',
+        'models/configManager',
         'collections/cloudCredentials',
         'collections/cloudAccounts',
         'collections/groups',
         'collections/users',
         'collections/policies',
         'collections/sourceControlRepositories',
+        'collections/configManagers',
         'views/account/cloudCredentialManagementListView',
         'views/account/sourceControlRepositoryManagementListView',
+        'views/account/devOpsToolsManagementView',
         'views/cloud_setup/cloudSetupView',
         'jasmine-jquery'
     ],
     function($, Common, CredModel, AccountModel, GroupModel, UserModel,
-             PolicyModel, SCRModel, CredCollection, AccountCollection,
+             PolicyModel, SCRModel, ConfigModel, CredCollection, AccountCollection,
              GroupCollection, UserCollection, PolicyCollection, SCRCollection,
-             CredManagementListView, SCRManagementListView, CloudSetupView) {
+             ConfigCollection, CredManagementListView, SCRManagementListView,
+             DevOpsToolsManagementView, CloudSetupView) {
 
         describe("Cloud Setup Function Callable Tests", function() {
             var cloudSetupView;
@@ -229,6 +233,44 @@ define(
 
                 expect($('.manager_list:eq(0) p', '#repositories_page').length).toEqual(2);
                 expect($('.manager_list:eq(1) p', '#repositories_page').length).toEqual(2);
+            });
+
+            it("Verify configuration managers list is populated", function() {
+                var collection = new ConfigCollection([
+                    new ConfigModel({
+                        _id:"0000001",org_id:"1000000",name:"Chef Manager 1",type:"chef",
+                        url:"http://www.google.com",branch:"Branch_1"}),
+                    new ConfigModel({
+                        _id:"0000002",org_id:"2000000",name:"Chef Manager 2",type:"chef",
+                        url:"http://www.google.com",branch:"Branch_2"}),
+                    new ConfigModel({
+                        _id:"0000003",org_id:"3000000",name:"Puppet Manager 1",type:"puppet",
+                        url:"http://www.google.com",branch:"Branch_3"}),
+                    new ConfigModel({
+                        _id:"0000004",org_id:"4000000",name:"Puppet Manager 2",type:"puppet",
+                        url:"http://www.google.com",branch:"Branch_4"}),
+                    new ConfigModel({
+                        _id:"0000005",org_id:"5000000",name:"Salt Manager 1",type:"salt",
+                        url:"http://www.google.com",branch:"Branch_5"}),
+                    new ConfigModel({
+                        _id:"0000006",org_id:"6000000",name:"Salt Manager 2",type:"salt",
+                        url:"http://www.google.com",branch:"Branch_6"}),
+                    new ConfigModel({
+                        _id:"0000007",org_id:"7000000",name:"Ansible Manager 1",type:"ansible",
+                        url:"http://www.google.com",branch:"Branch_7"}),
+                    new ConfigModel({
+                        _id:"0000008",org_id:"8000000",name:"Ansible Manager 2",type:"ansible",
+                        url:"http://www.google.com",branch:"Branch_8"})
+                ]);
+
+                var devOpsToolsManagementView = new DevOpsToolsManagementView({rootView:cloudSetupView});
+                devOpsToolsManagementView.configManagers = collection;
+                devOpsToolsManagementView.renderConfigManagers();
+
+                expect($('.manager_list:eq(0) p', '#config_managers_page').length).toEqual(2);
+                expect($('.manager_list:eq(1) p', '#config_managers_page').length).toEqual(2);
+                expect($('.manager_list:eq(2) p', '#config_managers_page').length).toEqual(2);
+                expect($('.manager_list:eq(3) p', '#config_managers_page').length).toEqual(2);
             });
 
 

@@ -14,13 +14,10 @@ define([
     'use strict';
 
     var ConfigManagerList = Backbone.Collection.extend({
-
         model: ConfigManager,
-
-        url: function(options){return Common.apiUrl + '/api/v1/orchestration/managers/org/' + sessionStorage.org_id;}
-    
+        //url: function(options){return Common.apiUrl + '/api/v1/orchestration/managers/org/' + sessionStorage.org_id;}
+        url: Common.apiUrl + '/api/v1/orchestration/managers/org/' + sessionStorage.org_id
     });
 
     return ConfigManagerList;
-
 });
