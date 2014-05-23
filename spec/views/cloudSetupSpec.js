@@ -220,7 +220,7 @@ define(
                     new SCRModel({
                         _id:"0000004",org_name:"Org 4",name:"Other Repo 2",type:"other",
                         url:"http://www.google.com",username:"username",
-                        password:"password",key:"key"}),
+                        password:"password",key:"key"})
                 ]);
 
                 var scrManagementListView = new SCRManagementListView({rootView:cloudSetupView});
