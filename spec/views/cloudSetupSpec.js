@@ -4,18 +4,27 @@ define(
     [
         'jquery',
         'common',
+        'models/cloudCredential',
         'models/cloudAccount',
         'models/group',
         'models/user',
+        'models/policy',
+        'models/sourceControlRepository',
+        'collections/cloudCredentials',
         'collections/cloudAccounts',
         'collections/groups',
         'collections/users',
+        'collections/policies',
+        'collections/sourceControlRepositories',
+        'views/account/cloudCredentialManagementListView',
+        'views/account/sourceControlRepositoryManagementListView',
         'views/cloud_setup/cloudSetupView',
         'jasmine-jquery'
     ],
-    function($, Common, CloudAccountModel, GroupModel, UserModel,
-             CloudAccountCollection, GroupCollection, UserCollection,
-             CloudSetupView) {
+    function($, Common, CredModel, AccountModel, GroupModel, UserModel,
+             PolicyModel, SCRModel, CredCollection, AccountCollection,
+             GroupCollection, UserCollection, PolicyCollection, SCRCollection,
+             CredManagementListView, SCRManagementListView, CloudSetupView) {
 
         describe("Cloud Setup Function Callable Tests", function() {
             var cloudSetupView;
@@ -78,36 +87,66 @@ define(
 
                     switch(list) {
                         case '#cloud_account_list':
-                            collection = new CloudAccountCollection([
-                                new CloudAccountModel({id:"0000001", name:"Awesome Web Service 1"}),
-                                new CloudAccountModel({id:"0000002", name:"Awesome Web Service 2"}),
-                                new CloudAccountModel({id:"0000003", name:"Awesome Web Service 3"}),
-                                new CloudAccountModel({id:"0000004", name:"Awesome Web Service 4"}),
-                                new CloudAccountModel({id:"0000005", name:"Awesome Web Service 5"})
+                            collection = new AccountCollection([
+                                new AccountModel({id:"0000001", name:"Awesome Web Service 1"}),
+                                new AccountModel({id:"0000002", name:"Awesome Web Service 2"}),
+                                new AccountModel({id:"0000003", name:"Awesome Web Service 3"}),
+                                new AccountModel({id:"0000004", name:"Awesome Web Service 4"}),
+                                new AccountModel({id:"0000005", name:"Awesome Web Service 5"})
                             ]);
                             break;
                         case '#group_list':
                             collection = new GroupCollection([
-                                new GroupModel({id:"0000001",name:"Development",description:"default development group"}),
-                                new GroupModel({id:"0000002",name:"Test",description:"default test group"}),
-                                new GroupModel({id:"0000003",name:"Stage",description:"default stage group"}),
-                                new GroupModel({id:"0000004",name:"Production",description:"default production group"})
+                                new GroupModel({
+                                    id:"0000001",name:"Development",
+                                    description:"default development group"
+                                }),
+                                new GroupModel({
+                                    id:"0000002",name:"Test",
+                                    description:"default test group"
+                                }),
+                                new GroupModel({
+                                    id:"0000003",name:"Stage",
+                                    description:"default stage group"
+                                }),
+                                new GroupModel({
+                                    id:"0000004",name:"Production",
+                                    description:"default production group"
+                                })
                             ]);
                             break;
                         case '#user_list':
                             collection = new UserCollection([
-                                new UserModel({id:"0000001",login:"user1",email:"user1@momentumsi.com",first_name:"User",last_name:"One"}),
-                                new UserModel({id:"0000002",login:"user2",email:"user2@momentumsi.com",first_name:"User",last_name:"Two"}),
-                                new UserModel({id:"0000003",login:"user3",email:"user3@momentumsi.com",first_name:"User",last_name:"Three"}),
-                                new UserModel({id:"0000004",login:"user4",email:"user4@momentumsi.com",first_name:"User",last_name:"Four"}),
-                                new UserModel({id:"0000005",login:"user5",email:"user5@momentumsi.com",first_name:"User",last_name:"Five"})
+                                new UserModel({
+                                    id:"0000001",login:"user1",email:"user1@momentumsi.com",
+                                    first_name:"User",last_name:"One"
+                                }),
+                                new UserModel({
+                                    id:"0000002",login:"user2",email:"user2@momentumsi.com",
+                                    first_name:"User",last_name:"Two"
+                                }),
+                                new UserModel({
+                                    id:"0000003",login:"user3",email:"user3@momentumsi.com",
+                                    first_name:"User",last_name:"Three"
+                                }),
+                                new UserModel({
+                                    id:"0000004",login:"user4",email:"user4@momentumsi.com",
+                                    first_name:"User",last_name:"Four"
+                                }),
+                                new UserModel({
+                                    id:"0000005",login:"user5",email:"user5@momentumsi.com",
+                                    first_name:"User",last_name:"Five"
+                                })
                             ]);
                             break;
-                        case '#cred_list':
-                            break;
                         case '#policy_list':
-                            break;
-                        case '#source_control_list':
+                            collection = new PolicyCollection([
+                                new PolicyModel({id:"0000001", name:"Awesome Policy 1"}),
+                                new PolicyModel({id:"0000002", name:"Awesome Policy 2"}),
+                                new PolicyModel({id:"0000003", name:"Awesome Policy 3"}),
+                                new PolicyModel({id:"0000004", name:"Awesome Policy 4"}),
+                                new PolicyModel({id:"0000005", name:"Awesome Policy 5"})
+                            ]);
                             break;
                     }
 
@@ -135,16 +174,61 @@ define(
                 expect($('#user_list > li').length).toEqual(5);
             });
 
-            xit("Verify credential list is populated", function() {
-                expect($('#cred_list > li').length).toEqual(5);
-            });
-
-            xit("Verify policy list is populated", function() {
+            it("Verify policy list is populated", function() {
                 expect($('#policy_list > li').length).toEqual(5);
             });
 
-            xit("Verify source control list is populated", function() {
-                expect($('#source_control_list > li').length).toEqual(5);
+            it("Verify credential list is populated", function() {
+                //console.info($("#main").html());
+                var collection = new CredCollection([
+                    new CredModel({
+                        id:"0000001",name:"Creds 1",description:"Creds 1",cloud_id:"0000001",
+                        cloud_name:"Cloud 1",cloud_provider:"Provider 1",access_key:"0000001",
+                        secret_key:"1000000"}),
+                    new CredModel({
+                        id:"0000002",name:"Creds 2",description:"Creds 2",cloud_id:"0000002",
+                        cloud_name:"Cloud 2",cloud_provider:"Provider 2",access_key:"0000002",
+                        secret_key:"2000000"}),
+                    new CredModel({
+                        id:"0000003",name:"Creds 3",description:"Creds 3",cloud_id:"0000003",
+                        cloud_name:"Cloud 3",cloud_provider:"Provider 3",access_key:"0000003",
+                        secret_key:"3000000"}),
+                    new CredModel({
+                        id:"0000004",name:"Creds 4",description:"Creds 4",cloud_id:"0000004",
+                        cloud_name:"Cloud 4",cloud_provider:"Provider 4",access_key:"0000004",
+                        secret_key:"4000000"})
+                ]);
+
+                cloudSetupView.addAll(collection, $('#cred_list'));
+                expect($('#cred_list > li').length).toEqual(4);
+            });
+
+            it("Verify source control list is populated", function() {
+                var collection = new SCRCollection([
+                    new SCRModel({
+                        _id:"0000001",org_name:"Org 1",name:"Git Repo 1",type:"git",
+                        url:"http://www.google.com",username:"username",
+                        password:"password",key:"key"}),
+                    new SCRModel({
+                        _id:"0000002",org_name:"Org 2",name:"Git Repo 2",type:"git",
+                        url:"http://www.google.com",username:"username",
+                        password:"password",key:"key"}),
+                    new SCRModel({
+                        _id:"0000003",org_name:"Org 3",name:"Other Repo 1",type:"other",
+                        url:"http://www.google.com",username:"username",
+                        password:"password",key:"key"}),
+                    new SCRModel({
+                        _id:"0000004",org_name:"Org 4",name:"Other Repo 2",type:"other",
+                        url:"http://www.google.com",username:"username",
+                        password:"password",key:"key"}),
+                ]);
+
+                var scrManagementListView = new SCRManagementListView({rootView:cloudSetupView});
+                scrManagementListView.repositories = collection;
+                scrManagementListView.renderRepositories();
+
+                expect($('.manager_list:eq(0) p', '#repositories_page').length).toEqual(2);
+                expect($('.manager_list:eq(1) p', '#repositories_page').length).toEqual(2);
             });
 
 
