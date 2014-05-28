@@ -186,17 +186,15 @@ define([
     var cloudSetupView;
     var self = this;
     Common.router.on("route:cloudSetup", function ( action ) {
+        // Make sure action always has a value, if not default to /
+        action = action || '/';
 
-        if(!action || action === "/") {
-            Common.router.navigate("#cloud/setup/cloud-accounts_list", { trigger : true });
-            return;
-        }
-
+        // category is used below in jQuery styling. if category is false 
+        // (NaN, undefined, false) or is blank, default to cloud-accounts
         var category = action.replace('/','').split("_list")[0];
-
-        $('#cloud_setup_menu>li.active').removeClass('active');
-        $('.sub-active').removeClass('sub-active');
-        $('[data-group="' + category + '"]').addClass('active');
+        if (!category || category === '') {
+            category = 'cloud-accounts';
+        }
 
         if (this.previousView !== cloudSetupView) {
             this.unloadPreviousState();
@@ -204,6 +202,12 @@ define([
             this.setPreviousState(cloudSetupView);
         }
 
+        // Close/clear previous loaded subApp if defined/loaded
+        if (cloudSetupView.subApp) {
+            cloudSetupView.subApp.close();
+        }
+
+        // HashMap for mapping actions to proper subApp view
         var viewAssociations = {
             "user_list" : UsersManagementView,
             "policy_list" : PoliciesManagementView,
@@ -218,31 +222,30 @@ define([
             "configuration_managers_list" : DevOpsToolsManagementView,
             "continuous_integration_list" : ContinuousIntegrationManagementView,
             "source_control_repositories_list" : SourceControlRepositoryManagementListView,
-            "home" : CloudAccountManagementListView
+            "home" : CloudAccountManagementListView,
+            "/": CloudAccountManagementListView
         };
 
         // Set SubView based on action as key in hash map above
-        var SubView = viewAssociations[action] || CloudAccountManagementView;
+        var SubView = viewAssociations[action] || CloudAccountManagementListView;
 
-        if (cloudSetupView.subApp) {
-            cloudSetupView.subApp.close();
-        }
-
-        if(action.indexOf('list') === -1) {
-            if(!(cloudSetupView.selectedId && cloudSetupView.selectedCollection)) {
-                Common.router.navigate('#cloud/setup/' + action + '_list', { trigger: true});
-                return;
-            }
-        }
-
+        // Create params object for subApp instantiation
         var params = {rootView : cloudSetupView};
         if (cloudSetupView.selectedId) {
             params.selectedId = cloudSetupView.selectedId;
             params.collection = cloudSetupView.selectedCollection;
         }
 
+        // Instantiate subApp view object
         cloudSetupView.subApp = new SubView(params);
 
+        // Can't execute this logic until after subApp has rendered rootView
+        // or else these elements will not be present yet on initial request
+        $('#cloud_setup_menu>li.active').removeClass('active');
+        $('.sub-active').removeClass('sub-active');
+        $('[data-group="' + category + '"]').addClass('active open');
+
+        // Highlight selected sub-menu item when selected
         if(cloudSetupView.selectedId) {
             $('#' + cloudSetupView.selectedId).addClass('sub-active');
         }

@@ -21,6 +21,16 @@ define(
         'views/account/cloudCredentialManagementListView',
         'views/account/sourceControlRepositoryManagementListView',
         'views/account/devOpsToolsManagementView',
+        'views/account/cloudAccountManagementView',
+        'views/account/cloudCredentialManagementView',
+        'views/account/cloudAccountManagementListView',
+        'views/account/usersManagementView',
+        'views/account/userUpdateView',
+        'views/account/policiesManagementView',
+        'views/account/policyManagementView',
+        'views/account/groupsManagementView',
+        'views/account/groupsManagementListView',
+        'views/account/continuousIntegrationManagementView',
         'views/cloud_setup/cloudSetupView',
         'jasmine-jquery'
     ],
@@ -28,7 +38,10 @@ define(
              PolicyModel, SCRModel, ConfigModel, CredCollection, AccountCollection,
              GroupCollection, UserCollection, PolicyCollection, SCRCollection,
              ConfigCollection, CredManagementListView, SCRManagementListView,
-             DevOpsToolsManagementView, CloudSetupView) {
+             DevOpsToolsManagementView, AccountManagementView, CredManagementView,
+             AccountManagementListView, UsersManagementView, UserUpdateView,
+             PoliciesManagementView, PolicyManagementView, GroupsManagementView,
+             GroupsManagementListView, CIManagementView, CloudSetupView) {
 
         describe("Cloud Setup Function Callable Tests", function() {
             var cloudSetupView;
@@ -273,25 +286,121 @@ define(
                 expect($('.manager_list:eq(3) p', '#config_managers_page').length).toEqual(2);
             });
 
+            // XXX - need to add more tests in this describe block to check for proper 
+            // element class assignment (highlighting)
+        });
 
 
-            // XXX - Plan of action is to spyOn the internal cloudSetupView instance bindings
-            // and trigger them and then check markup for each section population. These will still
-            // fail without proper data sets. Thought: stub out the spy and provide dataset! :-)
-            //
-            // Then spyOn each initialize() method in each subApp view class and trigger different
-            // views with different arguments and check that the proper view initialize() is called
+        describe("Cloud Setup SubApp jQuery Binding Tests", function() {
+            beforeEach(function() {
+                spyOn(CredManagementListView.prototype, 'initialize');
+                spyOn(SCRManagementListView.prototype, 'initialize');
+                spyOn(DevOpsToolsManagementView.prototype, 'initialize');
+                spyOn(AccountManagementView.prototype, 'initialize');
+                spyOn(CredManagementView.prototype, 'initialize');
+                spyOn(AccountManagementListView.prototype, 'initialize');
+                spyOn(UsersManagementView.prototype, 'initialize');
+                spyOn(UserUpdateView.prototype, 'initialize');
+                spyOn(PoliciesManagementView.prototype, 'initialize');
+                spyOn(PolicyManagementView.prototype, 'initialize');
+                spyOn(GroupsManagementView.prototype, 'initialize');
+                spyOn(GroupsManagementListView.prototype, 'initialize');
+                spyOn(CIManagementView.prototype, 'initialize');
 
-            xit("trigger jQuery binding route:cloudSetup", function() {
-                Common.router.trigger("route:cloudSetup");
-                console.info('cloudSetup: '+$('#main').html());
+                // Have to trap these here so object instantiation does
+                // not propogate beyond initialize() method
+                spyOn(CloudSetupView.prototype, 'onFetched');
+                spyOn(CloudSetupView.prototype, 'render');
             });
 
-            xit("trigger jQuery binding route:cloudSetup sending cloud-accounts", function() {
+            it("trigger jQuery binding route:cloudSetup", function() {
+                expect(AccountManagementListView.prototype.initialize).not.toHaveBeenCalled();
+                Common.router.trigger("route:cloudSetup");
+                expect(AccountManagementListView.prototype.initialize).toHaveBeenCalled();
+            });
+
+            it("trigger jQuery binding route:cloudSetup sending user_list", function() {
+                expect(UsersManagementView.prototype.initialize).not.toHaveBeenCalled();
+                Common.router.trigger("route:cloudSetup", 'user_list');
+                expect(UsersManagementView.prototype.initialize).toHaveBeenCalled();
+            });
+
+            it("trigger jQuery binding route:cloudSetup sending policy_list", function() {
+                expect(PoliciesManagementView.prototype.initialize).not.toHaveBeenCalled();
+                Common.router.trigger("route:cloudSetup", 'policy_list');
+                expect(PoliciesManagementView.prototype.initialize).toHaveBeenCalled();
+            });
+
+            it("trigger jQuery binding route:cloudSetup sending group_list", function() {
+                expect(GroupsManagementListView.prototype.initialize).not.toHaveBeenCalled();
+                Common.router.trigger("route:cloudSetup", 'group_list');
+                expect(GroupsManagementListView.prototype.initialize).toHaveBeenCalled();
+            });
+
+            it("trigger jQuery binding route:cloudSetup sending cloud-credentials_list", function() {
+                expect(CredManagementListView.prototype.initialize).not.toHaveBeenCalled();
+                Common.router.trigger("route:cloudSetup", 'cloud-credentials_list');
+                expect(CredManagementListView.prototype.initialize).toHaveBeenCalled();
+            });
+
+            it("trigger jQuery binding route:cloudSetup sending cloud-accounts_list", function() {
+                expect(AccountManagementListView.prototype.initialize).not.toHaveBeenCalled();
+                Common.router.trigger("route:cloudSetup", 'cloud-accounts_list');
+                expect(AccountManagementListView.prototype.initialize).toHaveBeenCalled();
+            });
+
+            it("trigger jQuery binding route:cloudSetup sending cloud-accounts", function() {
+                expect(AccountManagementView.prototype.initialize).not.toHaveBeenCalled();
                 Common.router.trigger("route:cloudSetup", 'cloud-accounts');
-                console.info('cloudSetup:cloud-accounts: '+$('#main').html());
-                //expect($('#cloud_account_list')).not.toBeEmpty();
-                //expect(Common.TargetView instanceof CloudCloudSetupView).toBeTruthy();
+                expect(AccountManagementView.prototype.initialize).toHaveBeenCalled();
+            });
+
+            it("trigger jQuery binding route:cloudSetup sending cloud-credentials", function() {
+                expect(CredManagementView.prototype.initialize).not.toHaveBeenCalled();
+                Common.router.trigger("route:cloudSetup", 'cloud-credentials');
+                expect(CredManagementView.prototype.initialize).toHaveBeenCalled();
+            });
+
+            it("trigger jQuery binding route:cloudSetup sending user", function() {
+                expect(UserUpdateView.prototype.initialize).not.toHaveBeenCalled();
+                Common.router.trigger("route:cloudSetup", 'user');
+                expect(UserUpdateView.prototype.initialize).toHaveBeenCalled();
+            });
+
+            it("trigger jQuery binding route:cloudSetup sending policy", function() {
+                expect(PolicyManagementView.prototype.initialize).not.toHaveBeenCalled();
+                Common.router.trigger("route:cloudSetup", 'policy');
+                expect(PolicyManagementView.prototype.initialize).toHaveBeenCalled();
+            });
+
+            it("trigger jQuery binding route:cloudSetup sending group", function() {
+                expect(GroupsManagementView.prototype.initialize).not.toHaveBeenCalled();
+                Common.router.trigger("route:cloudSetup", 'group');
+                expect(GroupsManagementView.prototype.initialize).toHaveBeenCalled();
+            });
+
+            it("trigger jQuery binding route:cloudSetup sending configuration_managers_list", function() {
+                expect(DevOpsToolsManagementView.prototype.initialize).not.toHaveBeenCalled();
+                Common.router.trigger("route:cloudSetup", 'configuration_managers_list');
+                expect(DevOpsToolsManagementView.prototype.initialize).toHaveBeenCalled();
+            });
+
+            it("trigger jQuery binding route:cloudSetup sending continuous_integration_list", function() {
+                expect(CIManagementView.prototype.initialize).not.toHaveBeenCalled();
+                Common.router.trigger("route:cloudSetup", 'continuous_integration_list');
+                expect(CIManagementView.prototype.initialize).toHaveBeenCalled();
+            });
+
+            it("trigger jQuery binding route:cloudSetup sending source_control_repositories_list", function() {
+                expect(SCRManagementListView.prototype.initialize).not.toHaveBeenCalled();
+                Common.router.trigger("route:cloudSetup", 'source_control_repositories_list');
+                expect(SCRManagementListView.prototype.initialize).toHaveBeenCalled();
+            });
+
+            it("trigger jQuery binding route:cloudSetup sending home", function() {
+                expect(AccountManagementListView.prototype.initialize).not.toHaveBeenCalled();
+                Common.router.trigger("route:cloudSetup", 'home');
+                expect(AccountManagementListView.prototype.initialize).toHaveBeenCalled();
             });
         });
     }
