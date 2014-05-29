@@ -133,6 +133,10 @@ define([
                     $el.removeClass('open');
                 }
             }
+
+            $('.sub-active', '#cloud_setup_menu').removeClass('sub-active');
+            $('.active', '#cloud_setup_menu').removeClass('active');
+            $el.addClass('active');
         },
 
         addAll : function ( collection, $list ) {
@@ -155,11 +159,10 @@ define([
         },
 
         itemSelected : function ( event ) {
-            var id = event.target.id;
-            var $list = $(event.currentTarget).parents('[data-collection-name]');
-            var collectionName = $list.attr('data-collection-name');
-            this.selectedId = id;
-            this.selectedCollection = this[collectionName];
+            var $el = $(event.currentTarget);
+            var $list = $el.parents('[data-collection-name]');
+            this.selectedId = event.target.id;
+            this.selectedCollection = this[$list.attr('data-collection-name')];
 
             var route = $list.attr('data-base-url');
 
@@ -167,6 +170,11 @@ define([
             if(location.hash === route) {
                 Backbone.history.loadUrl(Backbone.history.fragment);
             }
+
+            $('.active', '#cloud_setup_menu').removeClass('active');
+            $('.sub-active', '#cloud_setup_menu').removeClass('sub-active');
+            $el.parents().eq(2).addClass('active');
+            $el.addClass('sub-active');
         },
         close: function(){
             this.$el.empty();
@@ -189,22 +197,25 @@ define([
         // Make sure action always has a value, if not default to /
         action = action || '/';
 
-        // category is used below in jQuery styling. if category is false 
-        // (NaN, undefined, false) or is blank, default to cloud-accounts
-        var category = action.replace('/','').split("_list")[0];
-        if (!category || category === '') {
-            category = 'cloud-accounts';
-        }
-
-        if (this.previousView !== cloudSetupView) {
+        // Only load cloudSetupView if not already loaded or root action requested
+        if (this.previousView !== cloudSetupView || action === '/') {
             this.unloadPreviousState();
             cloudSetupView = new CloudSetupView();
             this.setPreviousState(cloudSetupView);
         }
 
-        // Close/clear previous loaded subApp if defined/loaded
-        if (cloudSetupView.subApp) {
-            cloudSetupView.subApp.close();
+        // Create params object for subApp instantiation below
+        var params = {
+            rootView : cloudSetupView,
+            selectedId : cloudSetupView.selectedId,
+            collection : cloudSetupView.selectedCollection
+        };
+
+        // category is used below in jQuery styling. if category is false 
+        // (NaN, undefined, false) or is blank, default to cloud-accounts
+        var category = action.replace('/','').split("_list")[0];
+        if (!category || category === '') {
+            category = 'cloud-accounts';
         }
 
         // HashMap for mapping actions to proper subApp view
@@ -229,30 +240,25 @@ define([
         // Set SubView based on action as key in hash map above
         var SubView = viewAssociations[action] || CloudAccountManagementListView;
 
-        // Create params object for subApp instantiation
-        var params = {rootView : cloudSetupView};
-        if (cloudSetupView.selectedId) {
-            params.selectedId = cloudSetupView.selectedId;
-            params.collection = cloudSetupView.selectedCollection;
+        // Close/clear previous loaded subApp if defined/loaded
+        if (cloudSetupView.subApp) {
+            cloudSetupView.subApp.close();
+
+            // Handle special case of user menu item by loading the
+            // UsersManagementView in background before showing edit dialig
+            if (action === 'user') {
+                cloudSetupView.subApp = new UsersManagementView(params);
+            }
         }
 
         // Instantiate subApp view object
         cloudSetupView.subApp = new SubView(params);
 
-        // Can't execute this logic until after subApp has rendered rootView
-        // or else these elements will not be present yet on initial request
-        $('#cloud_setup_menu>li.active').removeClass('active');
-        $('.sub-active').removeClass('sub-active');
-        $('[data-group="' + category + '"]').addClass('active open');
-
-        // Highlight selected sub-menu item when selected
-        if(cloudSetupView.selectedId) {
-            $('#' + cloudSetupView.selectedId).addClass('sub-active');
-        }
+        // Reset attributes to avoid "bleed over"
         cloudSetupView.selectedId = undefined;
         cloudSetupView.selectedCollection = undefined;
 
-        if(cloudSetupView.afterSubAppRender) {
+        if (cloudSetupView.afterSubAppRender) {
             cloudSetupView.afterSubAppRender.call(cloudSetupView);
         }
     }, Common);

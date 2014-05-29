@@ -286,8 +286,62 @@ define(
                 expect($('.manager_list:eq(3) p', '#config_managers_page').length).toEqual(2);
             });
 
-            // XXX - need to add more tests in this describe block to check for proper 
-            // element class assignment (highlighting)
+            it("Verify Cloud Accounts menu item is highlighted", function() {
+                expect(
+                    $('#cloud_accounts_tab').hasClass('active') &&
+                    $('#cloud_accounts_tab').hasClass('open')
+                ).toBeTruthy();
+            });
+
+            it("Verify Cloud Credentials menu item is highlighted", function() {
+                $('#cloud_credentials_tab').trigger('click');
+                expect(
+                    $('#cloud_credentials_tab').hasClass('active') &&
+                    $('#cloud_credentials_tab').hasClass('open')
+                ).toBeTruthy();
+            });
+
+            it("Verify Groups menu item is highlighted", function() {
+                $('#groups_tab').trigger('click');
+                expect(
+                    $('#groups_tab').hasClass('active') &&
+                    $('#groups_tab').hasClass('open')
+                ).toBeTruthy();
+            });
+
+            it("Verify Policies menu item is highlighted", function() {
+                $('#policies_tab').trigger('click');
+                expect(
+                    $('#policies_tab').hasClass('active') &&
+                    $('#policies_tab').hasClass('open')
+                ).toBeTruthy();
+            });
+
+            it("Verify Users menu item is highlighted", function() {
+                $('#users_tab').trigger('click');
+                expect(
+                    $('#users_tab').hasClass('active') &&
+                    $('#users_tab').hasClass('open')
+                ).toBeTruthy();
+            });
+
+            it("Verify Configuration Managers menu item is highlighted", function() {
+                $('#configuration_managers_tab').trigger('click');
+                expect(
+                    $('#configuration_managers_tab').hasClass('active') &&
+                    $('#configuration_managers_tab').hasClass('open')
+                ).toBeTruthy();
+            });
+
+            it("Verify Source Control menu item is highlighted", function() {
+                $('#source_control_tab').trigger('click');
+                expect(
+                    $('#source_control_tab').hasClass('active') &&
+                    $('#source_control_tab').hasClass('open')
+                ).toBeTruthy();
+            });
+
+            // XXX - Add more tests to check for sub-active menu item highlighting
         });
 
 
