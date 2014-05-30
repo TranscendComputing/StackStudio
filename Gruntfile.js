@@ -166,7 +166,6 @@ module.exports = function(grunt) {
                             */
                             shim: {
                                 'jasmine'       : {exports: 'jasmine'},
-                                //'jasmine-html'  : {deps: ['jasmine'], exports: 'jasmine'},
                                 'jasmine-jquery': {exports: 'jasmine'},
                                 'jquery.multiselect': {deps: ['jquery']}
                             },
@@ -178,9 +177,7 @@ module.exports = function(grunt) {
                                 'jquery.multiselect': 'http://cdn.jsdelivr.net/jquery.multiselect/1.13/jquery.multiselect.min',
                                 'jquery.jstree'     : 'http://cdn.jsdelivr.net/jquery.jstree/pre1.0/jquery.jstree',
                                 'jquery-migrate'    : 'http://code.jquery.com/jquery-migrate-1.1.0',
-                                //'jasmine'           : 'node_modules/grunt-contrib-jasmine/vendor/jasmine-1.3.0/jasmine',
-                                //'jasmine-html'      : 'node_modules/grunt-contrib-jasmine/vendor/jasmine-1.3.0/jasmine-html',
-                                'jasmine-jquery'    : 'js/vendor/jasmine-jquery-1.3.0',
+                                'jasmine-jquery'    : 'http://cloud.github.com/downloads/velesin/jasmine-jquery/jasmine-jquery-1.3.0',
                                 'underscore' : 'http://cdnjs.cloudflare.com/ajax/libs/lodash.js/1.1.0/lodash.min',
                                 'bootstrap'  : 'https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min',
                                 'ace'        : 'http://cdnjs.cloudflare.com/ajax/libs/ace/1.1.01/ace',
