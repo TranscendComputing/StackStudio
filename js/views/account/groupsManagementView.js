@@ -116,8 +116,8 @@ define([
             var groupsView = this;
             groupsView.users.fetch({success: function(){
                 var isAdmin = false;
-                if(groupsView.users.get(sessionStorage.account_id).attributes.permissions.length > 0){
-                    isAdmin = groupsView.users.get(sessionStorage.account_id).attributes.permissions[0].permission.name === "admin";
+                if(groupsView.users.get(Common.account.id).attributes.permissions.length > 0){
+                    isAdmin = groupsView.users.get(Common.account.id).attributes.permissions[0].permission.name === "admin";
                 }
                 if(!isAdmin){
                     $("#delete_group_button").attr("disabled", true);
@@ -160,19 +160,19 @@ define([
                 options.group_policy_id = event.target.value;
                 options.group_id = this.selectedGroup.id;
                 var newPolicy = new Policy();
-                newPolicy.addToGroup(options,sessionStorage.org_id,sessionStorage.login);
+                newPolicy.addToGroup(options,Common.account.org_id,Common.account.login);
                 //}
         },
         
         refreshSession: function(){
-            var url = Common.apiUrl + "/identity/v1/accounts/auth/" + sessionStorage.account_id;
+            var url = Common.apiUrl + "/identity/v1/accounts/auth/" + Common.account.id;
             
             $.ajax({
                 url: url,
                 type: 'GET',
                 contentType: 'application/x-www-form-urlencoded',
                 success: function(data) {
-                    sessionStorage.group_policies = JSON.stringify(data.account.group_policies);
+                    Common.account.group_policies = JSON.stringify(data.account.group_policies);
                 },
                 error: function(jqXHR) {
                     Common.errorDialog(jqXHR.statusText, jqXHR.responseText);

@@ -58,7 +58,7 @@ define([
         render: function () {
             $("#users_table").dataTable().fnProcessingIndicator(true);
             this.policies.fetch({
-                data: $.param({ org_id: sessionStorage.org_id }),
+                data: $.param({ org_id: Common.account.org_id }),
                 reset: true
             });
             this.disableDeleteButton(true);
@@ -99,8 +99,8 @@ define([
         /*
         disableCreateButton: function() {
             var isAdmin = false;
-            if(this.policies.get(sessionStorage.account_id).attributes.permissions.length > 0){
-                isAdmin = this.policies.get(sessionStorage.account_id).attributes.permissions[0].permission.name === "admin";
+            if(this.policies.get(Common.account.id).attributes.permissions.length > 0){
+                isAdmin = this.policies.get(Common.account.id).attributes.permissions[0].permission.name === "admin";
             }
             if(!isAdmin){
                 $("#create_user_button").attr("disabled", true);

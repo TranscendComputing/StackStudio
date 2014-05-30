@@ -82,7 +82,10 @@ define([
                 cred_id : this.credentialId,
                 cat_id : cat_id,
                 item_id : item_id,
-                vapp_name : 'Unnamed Vapp',
+                vapp_name : 'Vapp-' + 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    var r = Math.random()*16|0, v = c === 'x' ? r : (r&0x3|0x8);
+                    return v.toString(16);
+                }),
                 vapp_options : {
                     vdc_id : this.vdc
                 }

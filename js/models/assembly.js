@@ -7,8 +7,9 @@
 /*global define:true console:true */
 define([
         'jquery',
-        'backbone'
-], function( $, Backbone ) {
+        'backbone',
+        'common'
+], function( $, Backbone, Common ) {
     'use strict';
 
     // App Model
@@ -30,7 +31,7 @@ define([
             configurations: {}
         },
         url: function(){
-            return Backbone.Model.prototype.url.apply(this, arguments) + "?account_id="+ sessionStorage.account_id;
+            return Backbone.Model.prototype.url.apply(this, arguments) + "?account_id="+ Common.account.id;
         }
 
     });

@@ -70,7 +70,7 @@ define([
         render: function () {
             var thisView = this;
             this.configManagers.fetch({
-                data: $.param({org_id: sessionStorage.org_id}),
+                data: $.param({org_id: Common.account.org_id}),
                 success:function(collection, response, options){
                     thisView.populateConfigMenus();
                 }
@@ -122,8 +122,8 @@ define([
             var thisView = this;
             thisView.users.fetch({success: function(){
                 var isAdmin = false;
-                if(thisView.users.get(sessionStorage.account_id).attributes.permissions.length > 0){
-                    isAdmin = thisView.users.get(sessionStorage.account_id).attributes.permissions[0].permission.name === "admin";
+                if(thisView.users.get(Common.account.id).attributes.permissions.length > 0){
+                    isAdmin = thisView.users.get(Common.account.id).attributes.permissions[0].permission.name === "admin";
                 }
                 if(!isAdmin){
                     $(".delete-button").attr("disabled", true);
@@ -175,7 +175,7 @@ define([
             });
             service.unset("password");
             service.unset("username");
-            this.selectedCloudAccount.updateService(service,sessionStorage.login);
+            this.selectedCloudAccount.updateService(service,Common.account.login);
             return false;
         },
 
@@ -198,7 +198,7 @@ define([
 
         deleteService: function(event) {
             var serviceData = $(event.currentTarget.parentElement).find("input").data();
-            this.selectedCloudAccount.deleteService(serviceData, sessionStorage.login);
+            this.selectedCloudAccount.deleteService(serviceData, Common.account.login);
             
             return false;
         },

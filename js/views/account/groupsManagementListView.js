@@ -6,151 +6,156 @@
 /*jshint smarttabs:true */
 /*global define:true console:true requirejs:true require:true*/
 define([
-        'jquery',
-        'underscore',
-        'backbone',
-        'common',
-        'text!templates/account/groupsManagementListTemplate.html',
-        'collections/groups',
-        'collections/users',
-        'views/account/groupCreateView',
-        'views/account/groupManageUsersView',
-        'views/account/groupsManagementView',
-        'jquery.dataTables',
-        'jquery.dataTables.fnProcessingIndicator'
-], function( $, _, Backbone, Common, groupsManagementListTemplate, Groups, Users, CreateGroupView, ManageGroupUsers, GroupsManagementView ) {
+  'jquery',
+  'underscore',
+  'backbone',
+  'common',
+  'text!templates/account/groupsManagementListTemplate.html',
+  'collections/groups',
+  'collections/users',
+  'views/account/groupCreateView',
+  'views/account/groupManageUsersView',
+  'views/account/groupsManagementView',
+  'jquery.dataTables',
+  'jquery.dataTables.fnProcessingIndicator'
+], function($, _, Backbone, Common, groupsManagementListTemplate, Groups, Users, CreateGroupView, ManageGroupUsers, GroupsManagementView) {
 
-    var GroupsManagementListView = Backbone.View.extend({
+  var GroupsManagementListView = Backbone.View.extend({
 
-        tagName: 'div',
+    tagName: 'div',
 
-        template: _.template(groupsManagementListTemplate),
-        
-        rootView: undefined,
+    template: _.template(groupsManagementListTemplate),
 
-        groups: undefined,
-        
-        users: new Users(),
+    rootView: undefined,
 
-        selectedGroup: undefined,
+    groups: undefined,
 
-        events: {
-            "click #create_group_button" : "createGroup",
-            "click #delete_group_button" : "deleteGroup",
-            'click #group_users_table tr': 'selectGroup'
-        },
+    users: new Users(),
 
-        initialize: function() {
-            this.$el.html(this.template);
-            this.rootView = this.options.rootView;
-            $("#submanagement_app").html(this.$el);
-            $("button").button();
-            $("#group_users_table").dataTable({
-                "bJQueryUI": true,
-                "bProcessing": true
-            });
-            var groupsView = this;
-            Common.vent.off("groupRefresh");
-            Common.vent.on("groupRefresh", function() {
-                groupsView.render();
-            });
-            this.selectedGroup = undefined;
-            this.groups = new Groups();
-            this.rootView.groups = this.groups;
-            this.groups.on('reset', this.addAllGroups, this);
-            this.render();
-        },
+    selectedGroup: undefined,
 
-        render: function () {
-            this.disableSelectionRequiredButtons(true);
-            $("#group_users_table").dataTable().fnClearTable();
-            
-            var groupListView = this;
-            this.groups.fetch({
-                reset: true,
-                success: function(){
-                    groupListView.addAllGroups();
-                }
-            });
-        },
-        
-        selectGroup: function ( event ) {
-            $("#group_users_table tr").removeClass('row_selected');
-            $(event.currentTarget).addClass('row_selected');
-            
-            var rowData = $("#group_users_table").dataTable().fnGetData(event.currentTarget);
-            this.selectedGroup = this.groups.get($.parseHTML(rowData[0])[0]);
-            
-            if(this.selectedGroup) {
-                this.disableSelectionRequiredButtons(false);
-            }
+    events: {
+      "click #create_group_button": "createGroup",
+      "click #delete_group_button": "deleteGroup",
+      'click #group_users_table tr': 'selectGroup'
+    },
 
-            this.groupView = new GroupsManagementView({ rootView : this, modelId : this.selectedGroup.attributes.id });
-        },
-        
-        addAllGroups: function() {
-            this.rootView.addAll(this.groups, $("#group_list"));
-            $("#group_users_table").dataTable().fnClearTable();
-            this.groups.each(function ( group ) {
-                var rowData = ['<a href="#account/management/groups" id="'+group.attributes.id+'" class="group_item">'+group.attributes.name+"</a>", group.attributes.description];
-                $("#group_users_table").dataTable().fnAddData(rowData);
-            });
-        },
+    initialize: function() {
+      this.$el.html(this.template);
+      this.rootView = this.options.rootView;
+      $("#submanagement_app").html(this.$el);
+      $("button").button();
+      $("#group_users_table").dataTable({
+        "bJQueryUI": true,
+        "bProcessing": true
+      });
+      var groupsView = this;
+      Common.vent.off("groupRefresh");
+      Common.vent.on("groupRefresh", function() {
+        groupsView.render();
+      });
+      this.selectedGroup = undefined;
+      this.groups = new Groups();
+      this.rootView.groups = this.groups;
+      this.groups.on('reset', this.addAllGroups, this);
+      this.render();
+    },
 
-        disableSelectionRequiredButtons: function(toggle) {
-            if(toggle) {
-                $("#delete_group_button").attr("disabled", true);
-                $("#delete_group_button").addClass("ui-state-disabled");
-                $("#delete_group_button").removeClass("ui-state-hover");
-                $("#manage_group_users_button").attr("disabled", true);
-                $("#manage_group_users_button").addClass("ui-state-disabled");
-            }else {
-                $("#delete_group_button").removeAttr("disabled");
-                $("#delete_group_button").removeClass("ui-state-disabled");
-                $("#create_group_button").removeAttr("disabled");
-                $("#create_group_button").removeClass("ui-state-disabled");
-            }
-            
-            //check admin
-            this.adminCheck();
-        },
-        
-        adminCheck: function(){
-            var groupsView = this;
-            groupsView.users.fetch({success: function(){
-                var isAdmin = false;
-                if(groupsView.users.get(sessionStorage.account_id).attributes.permissions.length > 0){
-                    isAdmin = groupsView.users.get(sessionStorage.account_id).attributes.permissions[0].permission.name === "admin";
-                }
-                if(!isAdmin){
-                    $("#delete_group_button").attr("disabled", true);
-                    $("#delete_group_button").addClass("ui-state-disabled");
-                    $("#delete_group_button").removeClass("ui-state-hover");
-                    $("#create_group_button").attr("disabled", true);
-                    $("#create_group_button").addClass("ui-state-disabled");
-                }
-            }});
-        },
+    render: function() {
+      this.disableSelectionRequiredButtons(true);
+      $("#group_users_table").dataTable().fnClearTable();
 
-        createGroup: function() {
-            new CreateGroupView();
-        },
+      var groupListView = this;
+      this.groups.fetch({
+        reset: true,
+        success: function() {
+          groupListView.addAllGroups();
+        }
+      });
+    },
 
-        deleteGroup: function() {
-            if(this.selectedGroup) {
-                this.selectedGroup.destroy(sessionStorage.login);
-            }
-        },
+    selectGroup: function(event) {
+      $("#group_users_table tr").removeClass('row_selected');
+      $(event.currentTarget).addClass('row_selected');
 
-        clearSelection: function() {
-            this.selectedGroup = undefined;
-            $(".group_item").removeClass("selected_item");
-        },
+      var rowData = $("#group_users_table").dataTable().fnGetData(event.currentTarget);
+      this.selectedGroup = this.groups.get($.parseHTML(rowData[0])[0]);
 
-        close: function(){
-            this.$el.remove();
-        }  
-    });
+      if (this.selectedGroup) {
+        this.disableSelectionRequiredButtons(false);
+      }
 
-    return GroupsManagementListView;
+      this.groupView = new GroupsManagementView({
+        rootView: this,
+        modelId: this.selectedGroup.attributes.id
+      });
+    },
+
+    addAllGroups: function() {
+      this.rootView.addAll(this.groups, $("#group_list"));
+      $("#group_users_table").dataTable().fnClearTable();
+      this.groups.each(function(group) {
+        var rowData = ['<a href="#account/management/groups" id="' + group.attributes.id + '" class="group_item">' + group.attributes.name + "</a>", group.attributes.description];
+        $("#group_users_table").dataTable().fnAddData(rowData);
+      });
+    },
+
+    disableSelectionRequiredButtons: function(toggle) {
+      if (toggle) {
+        $("#delete_group_button").attr("disabled", true);
+        $("#delete_group_button").addClass("ui-state-disabled");
+        $("#delete_group_button").removeClass("ui-state-hover");
+        $("#manage_group_users_button").attr("disabled", true);
+        $("#manage_group_users_button").addClass("ui-state-disabled");
+      } else {
+        $("#delete_group_button").removeAttr("disabled");
+        $("#delete_group_button").removeClass("ui-state-disabled");
+        $("#create_group_button").removeAttr("disabled");
+        $("#create_group_button").removeClass("ui-state-disabled");
+      }
+
+      //check admin
+      this.adminCheck();
+    },
+
+    adminCheck: function() {
+      var groupsView = this;
+      groupsView.users.fetch({
+        success: function() {
+          var isAdmin = false;
+          if (groupsView.users.get(Common.account.id).attributes.permissions.length > 0) {
+            isAdmin = groupsView.users.get(Common.account.id).attributes.permissions[0].permission.name === "admin";
+          }
+          if (!isAdmin) {
+            $("#delete_group_button").attr("disabled", true);
+            $("#delete_group_button").addClass("ui-state-disabled");
+            $("#delete_group_button").removeClass("ui-state-hover");
+            $("#create_group_button").attr("disabled", true);
+            $("#create_group_button").addClass("ui-state-disabled");
+          }
+        }
+      });
+    },
+
+    createGroup: function() {
+      new CreateGroupView();
+    },
+
+    deleteGroup: function() {
+      if (this.selectedGroup) {
+        this.selectedGroup.destroy(Common.account.login);
+      }
+    },
+
+    clearSelection: function() {
+      this.selectedGroup = undefined;
+      $(".group_item").removeClass("selected_item");
+    },
+
+    close: function() {
+      this.$el.remove();
+    }
+  });
+
+  return GroupsManagementListView;
 });

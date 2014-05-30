@@ -68,7 +68,7 @@ define([
             
             var listView = this;
             this.cloudAccounts.fetch({
-                data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id}),
+                data: $.param({ org_id: Common.account.org_id, account_id: Common.account.id}),
                 reset: true,
                 success: function(){
                     listView.addAllCloudAccounts();
@@ -124,8 +124,8 @@ define([
             var cloudAccountsView = this;
             cloudAccountsView.users.fetch({success: function(){
                 var isAdmin = false;
-                if(cloudAccountsView.users.get(sessionStorage.account_id).attributes.permissions.length > 0){
-                    isAdmin = cloudAccountsView.users.get(sessionStorage.account_id).attributes.permissions[0].permission.name === "admin";
+                if(cloudAccountsView.users.get(Common.account.id).attributes.permissions.length > 0){
+                    isAdmin = cloudAccountsView.users.get(Common.account.id).attributes.permissions[0].permission.name === "admin";
                 }
                 if(!isAdmin){
                     $("#delete_group_button").attr("disabled", true);
@@ -140,14 +140,14 @@ define([
         createCloudAccount: function() {
             var CloudAccountCreateView = this.CloudAccountCreateView;
             
-            this.newResourceDialog = new CloudAccountCreateView({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id, rootView: this.rootView });
+            this.newResourceDialog = new CloudAccountCreateView({ org_id: Common.account.org_id, account_id: Common.account.id, rootView: this.rootView });
             
             this.newResourceDialog.render();
         },
 
         deleteCloudAccount: function() {
             if(this.selectedCloudAccount) {
-                this.selectedCloudAccount.destroy(sessionStorage.login);
+                this.selectedCloudAccount.destroy(Common.account.login);
             }
         },
 

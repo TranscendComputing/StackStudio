@@ -38,7 +38,7 @@ define([
             }
 
             //shouldn't let user update their own account here
-            if(sessionStorage.account_id === this.userSelected.attributes.id) {
+            if(Common.account.id === this.userSelected.attributes.id) {
                 Common.router.navigate('#cloud/setup/user_list', { trigger: true });
                 return;
             }
@@ -158,7 +158,7 @@ define([
                             "country_code": $("#country_id").val()
                         },
                         "permissions":{
-                            "admin_login": sessionStorage.login
+                            "admin_login": Common.account.login
                         }
 
                     };
@@ -172,7 +172,7 @@ define([
                             "country_code": $("#country_id").val()
                         },
                         "permissions":{
-                            "admin_login": sessionStorage.login
+                            "admin_login": Common.account.login
                         }
 
                     }; 

@@ -173,7 +173,7 @@ define([
                 // Build Offering Object from form
                 var options = {
                     "name": $("#offering_name_input").val(),
-                    "account_id": sessionStorage.account_id,
+                    "account_id": Common.account.id,
                     "version": $("#offering_version_input").val(),
                     "url": $("#offering_url_input").val(),
                     "sku": $("#offering_sku_input").val(),
@@ -215,7 +215,7 @@ define([
     var offeringDesignView;
 
     Common.router.on('route:offeringsEdit', function () {
-        if(sessionStorage.account_id) {
+        if(Common.account.id) {
             if (this.previousView !== offeringDesignView) {
                 this.unloadPreviousState();
                 offeringDesignView = new OfferingDesignView();

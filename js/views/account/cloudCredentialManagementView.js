@@ -60,7 +60,7 @@ define([
                 this.rootView.cloudAccounts.on('reset', this.rootView.addAll.bind(this.rootView, this.rootView.cloudAccounts, $('#cloud_account_list')));
 
                 this.rootView.cloudAccounts.fetch({
-                    data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id}),
+                    data: $.param({ org_id: Common.account.org_id, account_id: Common.account.id}),
                     success : function ( cloudAccounts ) {
                         thisView.render();    
                     }

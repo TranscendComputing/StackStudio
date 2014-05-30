@@ -141,7 +141,7 @@ define([
                 // Build Portfolio Object from form
                 var options = {
                     "name": $("#portfolio_name_input").val(),
-                    "org_id": sessionStorage.org_id,
+                    "org_id": Common.account.org_id,
                     "version": $("#portfolio_version_input").val(),
                     "description": $("#portfolio_description_input").val(),
                     "offering_ids": offeringIds
