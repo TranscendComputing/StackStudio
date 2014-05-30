@@ -33,7 +33,9 @@ define([
 
     routes: {
       'account/cloudcredentials': 'cloudCredentials',
-      'cloud/setup(/)(:action)': 'cloudSetupRoute',
+      'cloud/setup/:action/:id': 'cloudSetupRoute',
+      'cloud/setup/:action': 'cloudSetupRoute',
+      'cloud/setup': 'cloudSetupRoute',
       'account/management': 'accountManagementRoute',
       'resources': 'resourcesRoute',
       'resources/:cloud': 'resourcesRoute',
@@ -123,12 +125,12 @@ define([
       this.trigger("route:account/management", action);
     },
 
-    cloudSetupRoute: function(action) {
+    cloudSetupRoute: function ( action, id ) {
       $("#sidebar").empty();
       $("#sidebar").hide();
       $(".main-nav a").removeClass("nav_selected");
       $("#cloud_setup_nav").addClass('nav_selected');
-      this.trigger("route:cloudSetup", action);
+      this.trigger("route:cloudSetup", action, id);
     }
   });
 

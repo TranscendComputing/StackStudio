@@ -61,11 +61,20 @@ define([
                 //refetch tree groups
             });
 
-            this.groups = options.collection;
+            this.groups = new Groups();
             this.policies = new Policies();
 
-            this.selectedGroup = this.groups.get(options.selectedId);
-            this.render();
+            var self = this;
+            this.groups.on('reset', function () {
+              self.selectedGroup = self.groups.get(options.selectedId);
+              self.render();
+            });
+
+            if(options.collection && options.collection.models.length) {
+              this.groups.reset(options.collection.models);
+            } else {
+              this.groups.fetch({ reset: true });
+            }            
         },
 
         render: function () {

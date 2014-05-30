@@ -95,7 +95,7 @@ define([
       this.rootView.addAll(this.groups, $("#group_list"));
       $("#group_users_table").dataTable().fnClearTable();
       this.groups.each(function(group) {
-        var rowData = ['<a href="#account/management/groups" id="' + group.attributes.id + '" class="group_item">' + group.attributes.name + "</a>", group.attributes.description];
+        var rowData = ['<a href="#cloud/setup/group/' + group.attributes.id + '" id="' + group.attributes.id + '" class="group_item">' + group.attributes.name + "</a>", group.attributes.description];
         $("#group_users_table").dataTable().fnAddData(rowData);
       });
     },

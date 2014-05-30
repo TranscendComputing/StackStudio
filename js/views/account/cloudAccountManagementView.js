@@ -42,6 +42,7 @@ define([
         },
 
         initialize: function ( options ) {
+            var self = this;
             this.template = _.template(managementCloudAccountTemplate);
             this.$el.html(this.template);
             $("#submanagement_app").html(this.$el);
@@ -62,9 +63,28 @@ define([
             });
             $("input").addClass("form-control");
 
-            this.cloudAccounts = options.collection;
-            this.selectedCloudAccount = this.cloudAccounts.get(options.selectedId);
-            this.initFields();
+            this.cloudAccounts = new CloudAccounts();
+
+            this.cloudAccounts.on('reset', function ( data ) {
+              self.selectedCloudAccount = self.cloudAccounts.get(options.selectedId);
+              self.initFields();
+            });
+
+            if(options.collection && options.collection.models.length > 0) {
+              this.cloudAccounts.reset(options.collection.models);
+            }
+
+            if(this.cloudAccounts.models.length === 0) {
+              this.cloudAccounts.fetch({
+                data: $.param({
+                  org_id: Common.account.org_id,
+                  account_id: Common.account.id
+                }),
+                reset : true
+              });
+            }
+
+
         },
 
         render: function () {

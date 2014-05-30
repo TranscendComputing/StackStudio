@@ -72,6 +72,9 @@ define([
         reset: true
       });
 
+      this.credentials = new CloudCredentials();
+      this.credentials.reset(Common.credentials);
+
       this.policies = new Policies();
       this.policies.fetch({
         data: $.param({
@@ -182,7 +185,7 @@ define([
   /** Variable to track whether view has been initialized or not */
   var cloudSetupView;
   var self = this;
-  Common.router.on("route:cloudSetup", function(action) {
+  Common.router.on("route:cloudSetup", function ( action, id ) {
 
     if (!Common.authenticate({ redirect: 'here' })) {
       return;
@@ -232,12 +235,23 @@ define([
     }
 
     if (action.indexOf('list') === -1) {
-      if (!(cloudSetupView.selectedId && cloudSetupView.selectedCollection)) {
-        Common.router.navigate('#cloud/setup/' + action + '_list', {
-          trigger: true
-        });
-        return;
+
+      //if there is an id in the url
+      if(id) {
+        cloudSetupView.selectedId = id;
+        var collectionName = $('#' + id)
+                              .parents('[data-collection-name]')
+                              .attr('data-collection-name');
+        cloudSetupView.selectedCollection = cloudSetupView[collectionName];
+      } else { //otherwise, navigate to list view
+        if (!(cloudSetupView.selectedId && cloudSetupView.selectedCollection)) {
+          Common.router.navigate('#cloud/setup/' + action + '_list', {
+            trigger: true
+          });
+          return;
+        }
       }
+
     }
 
     var params = {
