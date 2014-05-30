@@ -43,7 +43,7 @@ define([
                 DescCharacterLimit: 200,
                 TitleLinkTarget: '_blank'
             });
-            if(sessionStorage.login)
+            if(Common.account.login)
             {
                 $('button.dashboard-login').hide();
             }else{
@@ -71,7 +71,7 @@ define([
         },
 
         handleClick: function() {
-            if(!sessionStorage.cloud_credentials)
+            if(!Common.credentials)
             {
                 return false;
             }

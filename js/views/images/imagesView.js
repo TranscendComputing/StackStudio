@@ -64,7 +64,7 @@ define([
 //                 heightStyle: "content"
 //             });
 
-            var creds = JSON.parse(sessionStorage.cloud_credentials);
+            var creds = Common.credentials;
             $("#aws_cred_select").empty();
             for (var i in creds) {
                 if(creds[i].cloud_credential.cloud_provider === "AWS"){
@@ -122,8 +122,8 @@ define([
         },
 
         showAvailableClouds: function(){
-            var policy = JSON.parse(sessionStorage.group_policies);
-            var permissions = JSON.parse(sessionStorage.permissions);
+            var policy = JSON.parse(Common.account.group_policies);
+            var permissions = JSON.parse(Common.account.permissions);
             if(policy.length > 0 && permissions.length < 1){
                 policy = policy[0].group_policy;
                 var count = 0;
@@ -449,7 +449,7 @@ define([
            this.toggleComponents();
 
            $.ajax({
-             url: Common.apiUrl + "/stackstudio/v1/packed_images/templates/" + sessionStorage.org_id + "/" + doc_id,
+             url: Common.apiUrl + "/stackstudio/v1/packed_images/templates/" + Common.account.org_id + "/" + doc_id,
              async: false,
              success: function(data) {
                  pi.attributes.packed_image = data;
@@ -779,7 +779,7 @@ define([
 
         uploadAsync: function(){
             var d_id = this.currentImageTemplate;
-            var upUrl = Common.apiUrl + "/stackstudio/v1/packed_images/save?uid=" + sessionStorage.org_id + "&docid=" + d_id;
+            var upUrl = Common.apiUrl + "/stackstudio/v1/packed_images/save?uid=" + Common.account.org_id + "&docid=" + d_id;
             $("#upForm").attr('action',upUrl);
             if($("#mciaas_files").val() !== ""){
                 $("#upSub").click();
@@ -915,19 +915,16 @@ define([
 
     var imagesView;
 
-    Common.router.on('route:images', function (id) {
-        if(sessionStorage.account_id) {
-            if (this.previousView !== imagesView) {
-                this.unloadPreviousState();
-                imagesView = new ImagesView();
-                this.setPreviousState(imagesView);
-            }
-            imagesView.currentImageTemplate = id;
-            imagesView.render();
-        }else {
-            Common.router.navigate("", {trigger: true});
-            Common.errorDialog("Login Error", "You must login.");
+    Common.router.on('route:images', function ( id ) {
+      if(Common.authenticate({ redirect: 'here' })) {
+        if (this.previousView !== imagesView) {
+            this.unloadPreviousState();
+            imagesView = new ImagesView();
+            this.setPreviousState(imagesView);
         }
+        imagesView.currentImageTemplate = id;
+        imagesView.render();
+      }
     }, Common);
 
 	return ImagesView;

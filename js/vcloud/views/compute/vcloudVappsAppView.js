@@ -50,6 +50,10 @@ define([
 
         events : {
             'click #resource_table tr': "loadVapp",
+            'click #power_on_vapp' : "powerOn",
+            'click #power_off_vapp' : "powerOff",
+            'click #reboot_vapp' : "reboot",
+            'click #suspend_vapp' : "suspend",
             'click #delete_vapp': "deleteVapp",
             'click #create_snapshot': "createSnapshot",
             'click #revert_to_snapshot': "revert",
@@ -59,10 +63,14 @@ define([
         createButton : false,
 
         actions : [
-            { text: "Delete", id: "delete_vapp", type: "row" },
-            { text: "Create Snapshot", id:"create_snapshot", type: "row" },
-            { text: "Revert", id:"revert_to_snapshot", type: "row"},
-            { text: "Remove Snapshots", id: "remove_snapshots", type: "row"}
+          { text: "Power On", id: "power_on_vapp", type : "row" },
+          { text: "Power Off", id: "power_off_vapp", type : "row" },
+          { text: "Reboot", id: "reboot_vapp", type : "row" },
+          { text: "Suspend", id: "suspend_vapp", type: "row" },
+          { text: "Delete", id: "delete_vapp", type: "row" },
+          { text: "Create Snapshot", id:"create_snapshot", type: "row" },
+          { text: "Revert", id:"revert_to_snapshot", type: "row"},
+          { text: "Remove Snapshots", id: "remove_snapshots", type: "row"}
         ],
 
         initialize : function ( options ) {
@@ -145,6 +153,46 @@ define([
             });
 
             this.clickOne.call(this, event);
+        },
+
+        powerOn : function () {
+          var vapp = this.collection.get(this.selectedVapp);
+
+          vapp.powerOn({
+            cred_id : this.credentialId,
+            vdc_id : this.vdc,
+            vapp_id : this.selectedVapp
+          });
+        },
+
+        powerOff : function () {
+          var vapp = this.collection.get(this.selectedVapp);
+
+          vapp.powerOff({
+            cred_id : this.credentialId,
+            vdc_id : this.vdc,
+            vapp_id : this.selectedVapp
+          });
+        },
+
+        reboot : function () {
+          var vapp = this.collection.get(this.selectedVapp);
+
+          vapp.reboot({
+            cred_id : this.credentialId,
+            vdc_id : this.vdc,
+            vapp_id : this.selectedVapp
+          });
+        },
+
+        suspend : function () {
+          var vapp = this.collection.get(this.selectedVapp);
+
+          vapp.suspend({
+            cred_id : this.credentialId,
+            vdc_id : this.vdc,
+            vapp_id : this.selectedVapp
+          });
         },
 
         toggleActions : function () {

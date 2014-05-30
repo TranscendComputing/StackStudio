@@ -17,7 +17,7 @@ define([
 
 		model: PackedImage,
 
-        url: function(){return Common.apiUrl + "/stackstudio/v1/packed_images/templates/"+ sessionStorage.org_id;}
+        url: function(){return Common.apiUrl + "/stackstudio/v1/packed_images/templates/"+ Common.account.org_id;}
 	
 	});
 

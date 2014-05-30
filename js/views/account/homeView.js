@@ -29,8 +29,8 @@ define([
 
         initialize: function() {
             this.$el.html(this.template);
-            $("#submanagement_app").html(this.$el);
-            
+            $("#main").html(this.el);            
+            this.delegateEvents();
             this.account = new Account();
             var x = this;
             Common.vent.on("accountUpdate", function(data) {
@@ -44,7 +44,7 @@ define([
         render: function () {
             this.displayPasswordRules();
             var userUpdateView = this;
-            $("#username_label").html(sessionStorage.login);
+            $("#username_label").html(Common.account.login);
         },
          populateFormHelper: function(p,form){
             for (var key in p) {
@@ -79,44 +79,40 @@ define([
         },
         displayPasswordRules: function (){
             var password_rules = [];
-            if(JSON.parse(sessionStorage.group_policies)[0] !== undefined && JSON.parse(sessionStorage.permissions).length < 1)
+            var show = false;
+            if(Common.account.group_policies[0] !== undefined && Common.account.permissions.length < 1)
             {
-                password_rules = JSON.parse(sessionStorage.group_policies)[0].group_policy.org_governance;
+                password_rules = Common.account.group_policies[0].group_policy.org_governance;
                 if(password_rules.usable_characters !== undefined){
-                    if(password_rules.usable_characters.length === 2){
-                        $.each(password_rules.usable_characters, function(index,value){
-                            if(value === "Digit"){
-                                $("#password_policy_digit").show();
-                            }
-                            else if(value === "Special"){
-                                $("#password_policy_special").show();
-                            }
-                            else{
-                                $("#password_policy_digit").hide();
-                                $("#password_policy_special").hide();
-                            }
-                        });
+
+                  if(_.filter(password_rules.usable_characters, function ( character ) {
+                    return character === "Digit" || character === "Special";
+                  }).length > 0) {
+                    if(_.contains(password_rules.usable_characters, "Digit")) {
+                      show = true;
+                      $('#must_contain_digit').show();
                     }
-                    else if(password_rules.usable_characters === "Digit"){
-                        $("#password_policy_digit").show();
+                    if(_.contains(password_rules.usable_characters, "Special")) {
+                      show = true;
+                      $('#must_contain_special_character').show();
                     }
-                    else if(password_rules.usable_characters === "Special"){
-                        $("#password_policy_special").show();
-                    }
-                    else{
-                        $("#password_policy_digit").hide();
-                        $("#password_policy_special").hide();
-                    }
+                  }
                 }
-                $("#password_policy_must").show();
-                $("#password_policy_none").hide();
-                $("#password_policy_length").show();
-                $("#password_length").html(password_rules.min_password_length);
+                
+                if(password_rules.min_password_length) {
+                  show = true;
+                  $('#min_chars').html(password_rules.min_password_length);
+                  $('#min_character_length').show();
+                }
             }
-            else{
-                $("#password_policy_must").hide();
-                $("#password_policy_length").hide();
-                $("#password_policy_none").show();
+            else {
+              $('.password-restrictions').hide();
+              $('.no-password-restrictions').show();
+            }
+
+            if(!show) {
+              $('.password-restrictions').hide();
+              $('.no-password-restrictions').show();
             }
         },
         disableInput: function(id,toggle) {
@@ -149,7 +145,7 @@ define([
                         "email": $("#email").val()
                     },
                     "permissions":{
-                        "admin_login": sessionStorage.login
+                        "admin_login": Common.account.login
                     }
 
                 };

@@ -17,7 +17,7 @@ define([
 
 		model: Offering,
 
-        url: function(){return Common.apiUrl + '/stackstudio/v1/offerings/account/' + sessionStorage.account_id;}
+        url: function(){return Common.apiUrl + '/stackstudio/v1/offerings/account/' + Common.account.id;}
 	
 	});
 

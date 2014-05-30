@@ -22,22 +22,21 @@ define([
 		// Reference to this collection's model.
 		model: CloudCredential,
 
-        /**
-         * Override Collection.fetch() because CloudCredentials are
-         * stored in session storage for a user when logged in (views/accountLoginView)
-         * @param  {Object} options
-         * @return {nil}
-         */
-        fetch: function(options) {
-            var cloudCreds = [];
-            if(sessionStorage.cloud_credentials) {
-                var cloudCredentials = JSON.parse(sessionStorage.cloud_credentials);
-                $.each(cloudCredentials, function(index, value) {
-                    var cloudCred = new CloudCredential(value.cloud_credential);
-                    cloudCreds.push(cloudCred);
-                });
-            }
-            this.reset(cloudCreds);
+    /**
+     * Override Collection.fetch() because CloudCredentials are
+     * stored in session storage for a user when logged in (views/accountLoginView)
+     * @param  {Object} options
+     * @return {nil}
+     */
+    fetch: function(options) {
+        var cloudCreds = [];
+        if(Common.credentials) {
+            $.each(Common.credentials, function(index, value) {
+                var cloudCred = new CloudCredential(value.cloud_credential);
+                cloudCreds.push(cloudCred);
+            });
+        }
+        this.reset(cloudCreds);
 
 		},
 		/**
@@ -52,7 +51,7 @@ define([
                 theme: 'future'
             };
             var coll = this;
-            var url = Common.apiUrl + "/identity/v1/accounts/" + sessionStorage.account_id + "/" + options.cloud_account_id + "/cloud_credentials";
+            var url = Common.apiUrl + "/identity/v1/accounts/" + Common.account.id + "/" + options.cloud_account_id + "/cloud_credentials";
             var cloudCredential = {"cloud_credential": model.attributes};
             new Messenger().run({
                 errorMessage: "Unable to save credentials.",
@@ -68,8 +67,8 @@ define([
                 data: JSON.stringify(cloudCredential),
                 success: function(data) {
                     var cloudCreds = [];
-                    sessionStorage.cloud_credentials = JSON.stringify(data.account.cloud_credentials);
-                    var cloudCredentials = JSON.parse(sessionStorage.cloud_credentials);
+                    Common.credentials = data.account.cloud_credentials;
+                    var cloudCredentials = Common.credentials;
                     $.each(cloudCredentials, function(index, value) {
                         var cloudCred = new CloudCredential(value.cloud_credential);
                         cloudCreds.push(cloudCred);
@@ -86,7 +85,7 @@ define([
          * @return {nil}
          */
 		update: function(model, options) {
-            var url = Common.apiUrl + "/identity/v1/accounts/" + sessionStorage.account_id + "/cloud_credentials/" + model.attributes.id + "?_method=PUT";
+            var url = Common.apiUrl + "/identity/v1/accounts/" + Common.account.id + "/cloud_credentials/" + model.attributes.id + "?_method=PUT";
             var cloudCredential = {"cloud_credential": model.attributes};
             new Messenger().run({
                 errorMessage: "Unable to save credentials.",
@@ -101,7 +100,7 @@ define([
                 dataType: 'json',
                 data: JSON.stringify(cloudCredential),
                 success: function(data) {
-                    sessionStorage.cloud_credentials = JSON.stringify(data.account.cloud_credentials);
+                    Common.credentials = data.account.cloud_credentials;
                     Common.vent.trigger("cloudCredentialSaved");
                 }
             });
@@ -113,7 +112,7 @@ define([
          */
 		deleteCredential: function(cloudCredential) {
             var coll = this;
-            var url = Common.apiUrl + "/identity/v1/accounts/" + sessionStorage.account_id + "/cloud_credentials/" + cloudCredential.id + "?_method=DELETE";
+            var url = Common.apiUrl + "/identity/v1/accounts/" + Common.account.id + "/cloud_credentials/" + cloudCredential.id + "?_method=DELETE";
             new Messenger().run({
                 errorMessage: "Unable to delete credentials.",
                 successMessage: "Credentials deleted.",
@@ -126,7 +125,7 @@ define([
                 dataType: 'json',
                 contentType: 'application/x-www-form-urlencoded',
                 success: function(data) {
-                    sessionStorage.cloud_credentials = JSON.stringify(data.account.cloud_credentials);
+                    Common.credentials = data.account.cloud_credentials;
                     coll.remove(cloudCredential);
                     Common.vent.trigger("cloudCredentialDeleted");
                 }

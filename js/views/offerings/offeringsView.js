@@ -6,81 +6,79 @@
 /*jshint smarttabs:true */
 /*global define:true console:true requirejs:true require:true alert:true*/
 define([
-        'jquery',
-        'underscore',
-        'bootstrap',
-        'backbone',
-        'text!templates/offerings/offeringsTemplate.html',
-        'views/offerings/offeringDesignView',
-        'views/offerings/portfoliosView',
-        'models/offering',
-        'common'
-], function( $, _, bootstrap, Backbone, offeringsTemplate, OfferingDesignView, PortfoliosView, Offering, Common ) {
+  'jquery',
+  'underscore',
+  'bootstrap',
+  'backbone',
+  'text!templates/offerings/offeringsTemplate.html',
+  'views/offerings/offeringDesignView',
+  'views/offerings/portfoliosView',
+  'models/offering',
+  'common'
+], function($, _, bootstrap, Backbone, offeringsTemplate, OfferingDesignView, PortfoliosView, Offering, Common) {
 
-    var OfferingsView = Backbone.View.extend({
+  var OfferingsView = Backbone.View.extend({
 
-        tagName: 'div',
+    tagName: 'div',
 
-        template: _.template(offeringsTemplate),
+    template: _.template(offeringsTemplate),
 
-        offeringDesignView: undefined,
+    offeringDesignView: undefined,
 
-        portfoliosView: undefined,
+    portfoliosView: undefined,
 
-        events: {
-            "click #offerings_portfolios a": "changeTabs"
-        },
+    events: {
+      "click #offerings_portfolios a": "changeTabs"
+    },
 
-        initialize: function() {
-            $("#main").html(this.el);
-            this.$el.html(this.template);
-            var offeringsView = this;
-        },
+    initialize: function() {
+      $("#main").html(this.el);
+      this.$el.html(this.template);
+      var offeringsView = this;
+    },
 
-        render: function(){
-            this.changeTabs();
-        },
+    render: function() {
+      this.changeTabs();
+    },
 
-        changeTabs: function(evt) {
-            console.log("changing Tabs");
-            if (evt && $(evt.target).attr("href") === '#portfolios_tab') {
-                console.log("Switching to portfoliosView");
-                if(!this.portfoliosView) {
-                    this.portfoliosView = new PortfoliosView();
-                }
-                this.portfoliosView.render();
-            }else {
-                console.log("Switching to OfferingDesignView");
-                if(!this.offeringDesignView) {
-                    this.offeringDesignView = new OfferingDesignView();
-                }
-                this.offeringDesignView.render();
-            }
-        },
-
-        close: function(){
-            this.$el.empty();
-            this.undelegateEvents();
-            this.stopListening();
-            this.unbind();
+    changeTabs: function(evt) {
+      console.log("changing Tabs");
+      if (evt && $(evt.target).attr("href") === '#portfolios_tab') {
+        console.log("Switching to portfoliosView");
+        if (!this.portfoliosView) {
+          this.portfoliosView = new PortfoliosView();
         }
-    });
-
-    var offeringsView;
-
-    Common.router.on('route:offerings', function () {
-        if(sessionStorage.account_id) {
-            if (this.previousView !== offeringsView) {
-                this.unloadPreviousState();
-                offeringsView = new OfferingsView();
-                this.setPreviousState(offeringsView);
-            }
-            offeringsView.render();
-        }else {
-            Common.router.navigate("", {trigger: true});
-            Common.errorDialog("Login Error", "You must login.");
+        this.portfoliosView.render();
+      } else {
+        console.log("Switching to OfferingDesignView");
+        if (!this.offeringDesignView) {
+          this.offeringDesignView = new OfferingDesignView();
         }
-    }, Common);
+        this.offeringDesignView.render();
+      }
+    },
 
-    return OfferingsView;
+    close: function() {
+      this.$el.empty();
+      this.undelegateEvents();
+      this.stopListening();
+      this.unbind();
+    }
+  });
+
+  var offeringsView;
+
+  Common.router.on('route:offerings', function() {
+    if(!Common.authenticate({ redirect: 'here' })) {
+      return;
+    }
+    if (this.previousView !== offeringsView) {
+      this.unloadPreviousState();
+      offeringsView = new OfferingsView();
+      this.setPreviousState(offeringsView);
+    }
+    offeringsView.render();
+  }, Common);
+
+  return OfferingsView;
 });

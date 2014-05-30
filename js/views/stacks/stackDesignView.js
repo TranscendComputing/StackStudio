@@ -42,7 +42,7 @@ define([
             this.$el.html(this.template);
             this.configManagers = new ConfigManagers();
             this.configManagers.fetch({
-              data: $.param({org_id: sessionStorage.org_id})
+              data: $.param({org_id: Common.account.org_id})
             });
             this.assemblies = new Assemblies();
             this.assemblies.on( 'reset', this.addAllAssemblies, this );

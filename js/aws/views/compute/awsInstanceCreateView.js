@@ -92,8 +92,8 @@ define([
                 noneSelectedText: "Select Security Group(s)"
             }).multiselectfilter();
             
-            if(JSON.parse(sessionStorage.group_policies).length > 0){
-                this.addPolicyImages(JSON.parse(sessionStorage.group_policies));
+            if(JSON.parse(Common.account.group_policies).length > 0){
+                this.addPolicyImages(JSON.parse(Common.account.group_policies));
             }
             this.images.on( 'reset', this.addAllImages, this );
             this.images.fetch({reset: true});

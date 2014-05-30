@@ -79,7 +79,7 @@ define([
         render: function() {
             this.cloudAccounts.on('reset', this.addCloudAccounts, this);
             this.cloudAccounts.fetch({
-                data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id }), 
+                data: $.param({ org_id: Common.account.org_id, account_id: Common.account.id }), 
                 reset: true
             });
             

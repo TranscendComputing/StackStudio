@@ -18,7 +18,7 @@ define([
         model: User,
 
         url: function(){
-            return Common.apiUrl + '/identity/v1/orgs/' + sessionStorage.org_id + '.json';
+            return Common.apiUrl + '/identity/v1/orgs/' + Common.account.org_id + '.json';
         },
         
         parse: function(resp) {

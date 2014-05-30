@@ -103,7 +103,7 @@ define([
 
                 options["url"] = $("#ci_url_input").val();
                 options["type"] = $("#ci_type_select").val();
-                options["org_id"] = sessionStorage.org_id;
+                options["org_id"] = Common.account.org_id;
 
                 if($("#ci_username_input").val().trim() !== "") {
                     options["username"] = $("#ci_username_input").val();
