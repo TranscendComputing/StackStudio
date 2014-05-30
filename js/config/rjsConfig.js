@@ -29,6 +29,9 @@ requirejs.config({
         'backbone-validation': {
             deps: ['backbone', 'jquery']
         },
+        'opentip': {
+            deps: ['jquery']
+        },
         'base64': {
             exports: 'Base64'
         },
@@ -42,6 +45,12 @@ requirejs.config({
         'dataTables.fnProcessingIndicator': {
             deps: ['jquery.dataTables'],
             exports: 'fnProcessingIndicator'
+        },
+        'jquery.multiselect': {
+            deps: ['jquery']
+        },
+        'jquery.multiselect.filter': {
+            deps: ['jquery', 'jquery.multiselect']
         },
         'FeedEk': {
             deps: ['jquery']
@@ -89,6 +98,7 @@ requirejs.config({
             exports: 'Morris'
         },
         'messenger': {
+            deps: ['jquery', 'backbone'],
             exports: 'Messenger'
         },
         'raphael': {
@@ -140,7 +150,7 @@ requirejs.config({
         'jquery.mousewheel' : 'js/vendor/jquery.mousewheel-min',
         'jquery.multiselect': '//cdn.jsdelivr.net/jquery.multiselect/1.13/jquery.multiselect.min',
         'jquery.jstree'     : '//cdn.jsdelivr.net/jquery.jstree/pre1.0/jquery.jstree',
-        'jquery-migrate'    : '//code.jquery.com/jquery-migrate-1.1.0.js',
+        'jquery-migrate'    : '//code.jquery.com/jquery-migrate-1.1.0',
         'jquery.cookie'     : 'js/vendor/jquery.cookie',
         'jquery-plugins'    : 'js/vendor/jquery-plugins',
         'jquery-ui-plugins' : 'js/vendor/jquery-ui-plugins',

@@ -12,7 +12,7 @@ define(['routers/router', 'common'], function(Router, Common) {
             spyOn(Router.prototype, "defaultRoute");
             spyOn(Router.prototype, "imagesRoute");
 //            spyOn(Router.prototype, "cloudCredentials");
-            spyOn(Router.prototype, "accountManagementRoute");
+            spyOn(Router.prototype, "cloudSetupRoute");
             spyOn(Router.prototype, "resourcesRoute");
             spyOn(Router.prototype, "assembliesRoute");
             spyOn(Router.prototype, "platformComponentsRoute");
@@ -50,92 +50,92 @@ define(['routers/router', 'common'], function(Router, Common) {
 //            expect(router.cloudCredentials).toHaveBeenCalled();
 //        });
 
-        /* begin /account/management stuff */
-        it("verify /account/management (accountManagementRoute)", function() {
-            router.navigate('account/management', {trigger: true});
-            expect(router.accountManagementRoute).toHaveBeenCalled();
-            expect(router.accountManagementRoute.mostRecentCall.args[0]).toBe(undefined);
+        /* begin /cloud/setup stuff */
+        it("verify /cloud/setup (cloudSetupRoute)", function() {
+            router.navigate('cloud/setup', {trigger: true});
+            expect(router.cloudSetupRoute).toHaveBeenCalled();
+            expect(router.cloudSetupRoute.mostRecentCall.args[0]).toBe(undefined);
         });
 
-        it("verify /account/management/cloud-accounts (accountManagementRoute)", function() {
-            router.navigate('account/management/cloud-accounts', true);
-            expect(router.accountManagementRoute).toHaveBeenCalled();
-            expect(router.accountManagementRoute.mostRecentCall.args[0]).toBe('cloud-accounts');
+        it("verify /cloud/setup/cloud-accounts (cloudSetupRoute)", function() {
+            router.navigate('cloud/setup/cloud-accounts', true);
+            expect(router.cloudSetupRoute).toHaveBeenCalled();
+            expect(router.cloudSetupRoute.mostRecentCall.args[0]).toBe('cloud-accounts');
         }); 
 
-        it("verify /account/management/cloud-credentials (accountManagementRoute)", function() {
-            router.navigate('account/management/cloud-credentials', true);
-            expect(router.accountManagementRoute).toHaveBeenCalled();
-            expect(router.accountManagementRoute.mostRecentCall.args[0]).toBe('cloud-credentials');
+        it("verify /cloud/setup/cloud-credentials (cloudSetupRoute)", function() {
+            router.navigate('cloud/setup/cloud-credentials', true);
+            expect(router.cloudSetupRoute).toHaveBeenCalled();
+            expect(router.cloudSetupRoute.mostRecentCall.args[0]).toBe('cloud-credentials');
         }); 
 
-        it("verify /account/management/users (accountManagementRoute)", function() {
-            router.navigate('account/management/users', true);
-            expect(router.accountManagementRoute).toHaveBeenCalled();
-            expect(router.accountManagementRoute.mostRecentCall.args[0]).toBe('users');
+        it("verify /cloud/setup/users (cloudSetupRoute)", function() {
+            router.navigate('cloud/setup/users', true);
+            expect(router.cloudSetupRoute).toHaveBeenCalled();
+            expect(router.cloudSetupRoute.mostRecentCall.args[0]).toBe('users');
         }); 
 
-        it("verify /account/management/policies (accountManagementRoute)", function() {
-            router.navigate('account/management/policies', true);
-            expect(router.accountManagementRoute).toHaveBeenCalled();
-            expect(router.accountManagementRoute.mostRecentCall.args[0]).toBe('policies');
+        it("verify /cloud/setup/policies (cloudSetupRoute)", function() {
+            router.navigate('cloud/setup/policies', true);
+            expect(router.cloudSetupRoute).toHaveBeenCalled();
+            expect(router.cloudSetupRoute.mostRecentCall.args[0]).toBe('policies');
         }); 
 
-        it("verify /account/management/policy (accountManagementRoute)", function() {
-            router.navigate('account/management/policy', true);
-            expect(router.accountManagementRoute).toHaveBeenCalled();
-            expect(router.accountManagementRoute.mostRecentCall.args[0]).toBe('policy');
+        it("verify /cloud/setup/policy (cloudSetupRoute)", function() {
+            router.navigate('cloud/setup/policy', true);
+            expect(router.cloudSetupRoute).toHaveBeenCalled();
+            expect(router.cloudSetupRoute.mostRecentCall.args[0]).toBe('policy');
         }); 
 
-        it("verify /account/management/groups (accountManagementRoute)", function() {
-            router.navigate('account/management/groups', true);
-            expect(router.accountManagementRoute).toHaveBeenCalled();
-            expect(router.accountManagementRoute.mostRecentCall.args[0]).toBe('groups');
+        it("verify /cloud/setup/groups (cloudSetupRoute)", function() {
+            router.navigate('cloud/setup/groups', true);
+            expect(router.cloudSetupRoute).toHaveBeenCalled();
+            expect(router.cloudSetupRoute.mostRecentCall.args[0]).toBe('groups');
         }); 
 
-        it("verify /account/management/groups_list (accountManagementRoute)", function() {
-            router.navigate('account/management/groups_list', true);
-            expect(router.accountManagementRoute).toHaveBeenCalled();
-            expect(router.accountManagementRoute.mostRecentCall.args[0]).toBe('groups_list');
+        it("verify /cloud/setup/groups_list (cloudSetupRoute)", function() {
+            router.navigate('cloud/setup/groups_list', true);
+            expect(router.cloudSetupRoute).toHaveBeenCalled();
+            expect(router.cloudSetupRoute.mostRecentCall.args[0]).toBe('groups_list');
         }); 
 
-        it("verify /account/management/cloud-credentials_list (accountManagementRoute)", function() {
-            router.navigate('account/management/cloud-credentials_list', true);
-            expect(router.accountManagementRoute).toHaveBeenCalled();
-            expect(router.accountManagementRoute.mostRecentCall.args[0]).toBe('cloud-credentials_list');
+        it("verify /cloud/setup/cloud-credentials_list (cloudSetupRoute)", function() {
+            router.navigate('cloud/setup/cloud-credentials_list', true);
+            expect(router.cloudSetupRoute).toHaveBeenCalled();
+            expect(router.cloudSetupRoute.mostRecentCall.args[0]).toBe('cloud-credentials_list');
         }); 
 
-        it("verify /account/management/cloud-accounts_list (accountManagementRoute)", function() {
-            router.navigate('account/management/cloud-accounts_list', true);
-            expect(router.accountManagementRoute).toHaveBeenCalled();
-            expect(router.accountManagementRoute.mostRecentCall.args[0]).toBe('cloud-accounts_list');
+        it("verify /cloud/setup/cloud-accounts_list (cloudSetupRoute)", function() {
+            router.navigate('cloud/setup/cloud-accounts_list', true);
+            expect(router.cloudSetupRoute).toHaveBeenCalled();
+            expect(router.cloudSetupRoute.mostRecentCall.args[0]).toBe('cloud-accounts_list');
         }); 
 
-        it("verify /account/management/configuration_managers (accountManagementRoute)", function() {
-            router.navigate('account/management/configuration_managers', true);
-            expect(router.accountManagementRoute).toHaveBeenCalled();
-            expect(router.accountManagementRoute.mostRecentCall.args[0]).toBe('configuration_managers');
+        it("verify /cloud/setup/configuration_managers (cloudSetupRoute)", function() {
+            router.navigate('cloud/setup/configuration_managers', true);
+            expect(router.cloudSetupRoute).toHaveBeenCalled();
+            expect(router.cloudSetupRoute.mostRecentCall.args[0]).toBe('configuration_managers');
         }); 
 
-        it("verify /account/management/continuous_integration (accountManagementRoute)", function() {
-            router.navigate('account/management/continuous_integration', true);
-            expect(router.accountManagementRoute).toHaveBeenCalled();
-            expect(router.accountManagementRoute.mostRecentCall.args[0]).toBe('continuous_integration');
+        it("verify /cloud/setup/continuous_integration (cloudSetupRoute)", function() {
+            router.navigate('cloud/setup/continuous_integration', true);
+            expect(router.cloudSetupRoute).toHaveBeenCalled();
+            expect(router.cloudSetupRoute.mostRecentCall.args[0]).toBe('continuous_integration');
         }); 
 
-        it("verify /account/management/source_control_repositories (accountManagementRoute)", function() {
-            router.navigate('account/management/source_control_repositories', true);
-            expect(router.accountManagementRoute).toHaveBeenCalled();
-            expect(router.accountManagementRoute.mostRecentCall.args[0]).toBe('source_control_repositories');
+        it("verify /cloud/setup/source_control_repositories (cloudSetupRoute)", function() {
+            router.navigate('cloud/setup/source_control_repositories', true);
+            expect(router.cloudSetupRoute).toHaveBeenCalled();
+            expect(router.cloudSetupRoute.mostRecentCall.args[0]).toBe('source_control_repositories');
         }); 
 
-        it("verify /account/management/home (accountManagementRoute)", function() {
-            router.navigate('account/management/home', true);
-            expect(router.accountManagementRoute).toHaveBeenCalled();
-            expect(router.accountManagementRoute.mostRecentCall.args[0]).toBe('home');
+        it("verify /cloud/setup/home (cloudSetupRoute)", function() {
+            router.navigate('cloud/setup/home', true);
+            expect(router.cloudSetupRoute).toHaveBeenCalled();
+            expect(router.cloudSetupRoute.mostRecentCall.args[0]).toBe('home');
         }); 
 
-        /* end /account/management stuff */
+        /* end /cloud/setup stuff */
         it("verify /resources (resourcesRoute)", function() {
             router.navigate('resources', true);
             expect(router.resourcesRoute).toHaveBeenCalled();

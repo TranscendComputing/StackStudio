@@ -52,14 +52,14 @@ module.exports = function(grunt) {
         // Download some CDN assets to serve as backups (served locally as last resort)
         curl: {
             'js/vendor/require.js': 'http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.5/require.min.js',
-            'js/vendor/jquery.js': 'http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js',
+            'js/vendor/jquery.js': 'http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js',
             'js/vendor/jquery.dataTables.js': 'http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.js',
             'js/vendor/dataTables.bootstrap.js': 'https://raw.github.com/DataTables/Plugins/master/integration/bootstrap/3/dataTables.bootstrap.js',
             'css/dataTables.bootstrap.css': 'https://raw.github.com/DataTables/Plugins/master/integration/bootstrap/3/dataTables.bootstrap.css',
             'js/vendor/ace/ace.js': 'https://github.com/ajaxorg/ace-builds/blob/master/src-min/ace.js',
             'js/vendor/backbone.js': 'http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min.js',
             'js/vendor/lodash.js': 'http://cdnjs.cloudflare.com/ajax/libs/lodash.js/1.1.0/lodash.min.js',
-            'js/vendor/jquery-ui.js': 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js',
+            'js/vendor/jquery-ui.js': 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js',
             'js/vendor/jquery.jstree.js': 'http://cdn.jsdelivr.net/jquery.jstree/pre1.0/jquery.jstree.js',
             'js/vendor/jquery.terminal.js': 'http://cdn.jsdelivr.net/jquery.terminal/0.7.8/jquery.terminal-min.js',
             'js/vendor/ICanHaz.js': 'https://raw.github.com/HenrikJoreteg/ICanHaz.js/master/ICanHaz.js',
@@ -167,7 +167,8 @@ module.exports = function(grunt) {
                             shim: {
                                 'jasmine'       : {exports: 'jasmine'},
                                 //'jasmine-html'  : {deps: ['jasmine'], exports: 'jasmine'},
-                                'jasmine-jquery': {exports: 'jasmine'}
+                                'jasmine-jquery': {exports: 'jasmine'},
+                                'jquery.multiselect': {deps: ['jquery']}
                             },
                             paths: {
                                 'backbone'          : 'http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min',
@@ -176,12 +177,12 @@ module.exports = function(grunt) {
                                 'jquery.form'       : 'http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.45/jquery.form',
                                 'jquery.multiselect': 'http://cdn.jsdelivr.net/jquery.multiselect/1.13/jquery.multiselect.min',
                                 'jquery.jstree'     : 'http://cdn.jsdelivr.net/jquery.jstree/pre1.0/jquery.jstree',
-                                'jquery-migrate'    : 'http://code.jquery.com/jquery-migrate-1.1.0.js',
+                                'jquery-migrate'    : 'http://code.jquery.com/jquery-migrate-1.1.0',
                                 //'jasmine'           : 'node_modules/grunt-contrib-jasmine/vendor/jasmine-1.3.0/jasmine',
                                 //'jasmine-html'      : 'node_modules/grunt-contrib-jasmine/vendor/jasmine-1.3.0/jasmine-html',
                                 'jasmine-jquery'    : 'js/vendor/jasmine-jquery-1.3.0',
                                 'underscore' : 'http://cdnjs.cloudflare.com/ajax/libs/lodash.js/1.1.0/lodash.min',
-                                'bootstrap'  : 'http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min',
+                                'bootstrap'  : 'https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min',
                                 'ace'        : 'http://cdnjs.cloudflare.com/ajax/libs/ace/1.1.01/ace',
                                 'mode-json'  : 'http://cdnjs.cloudflare.com/ajax/libs/ace/1.1.01/mode-json',
                                 'jquery.multiselect.filter': 'http://cdn.jsdelivr.net/jquery.multiselect/1.13/jquery.multiselect.filter.min'
@@ -189,7 +190,7 @@ module.exports = function(grunt) {
                             map: {
                                 '*': {
                                     /* Map any path used by a vendor or plugin here as neccessary */
-                                    '//code.jquery.com/jquery-migrate-1.1.0.js': 'jquery-migrate'
+                                    //'//code.jquery.com/jquery-migrate-1.1.0.js': 'jquery-migrate',
                                 }
                             }
                         }

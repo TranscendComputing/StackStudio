@@ -33,7 +33,13 @@ define([
         'jquery-plugins',
         'jquery-ui-plugins',
         'jquery.jstree'
-], function( $, _, Backbone, Common, setupTemplate, CloudAccounts, CloudCredentials, Policies, Users, Groups, CloudAccountManagementView, CloudCredentialManagementView, CloudCredentialManagementListView, CloudAccountManagementListView, UsersManagementView, UserUpdateView, PoliciesManagementView, PolicyManagementView, GroupsManagementView, GroupsManagementListView, DevOpsToolsManagementView, ContinuousIntegrationManagementView, SourceControlRepositoryManagementListView, TutorialView ) {
+], function( $, _, Backbone, Common, setupTemplate, CloudAccounts, CloudCredentials,
+             Policies, Users, Groups, CloudAccountManagementView, CloudCredentialManagementView,
+             CloudCredentialManagementListView, CloudAccountManagementListView,
+             UsersManagementView, UserUpdateView, PoliciesManagementView, PolicyManagementView,
+             GroupsManagementView, GroupsManagementListView, DevOpsToolsManagementView,
+             ContinuousIntegrationManagementView, SourceControlRepositoryManagementListView,
+             TutorialView ) {
     var CloudSetupView = Backbone.View.extend({
         /** @type {String} DOM element to attach view to */
         el: "#main",
@@ -53,6 +59,7 @@ define([
         afterSubAppRender: undefined,
         initialize: function() {
             var self = this;
+            this.render();
 
             this.cloudAccounts = new CloudAccounts();
 
@@ -81,8 +88,6 @@ define([
                 success : this.onFetched('#group_list'),
                 reset : true
             });
-
-            this.render();
 
             if(sessionStorage && parseInt(sessionStorage.num_logins, 10) < 5)  {
                 this.tutorial = new TutorialView({ rootView: this });
@@ -128,22 +133,36 @@ define([
                     $el.removeClass('open');
                 }
             }
+
+            $('.sub-active', '#cloud_setup_menu').removeClass('sub-active');
+            $('.active', '#cloud_setup_menu').removeClass('active');
+            $el.addClass('active');
         },
 
         addAll : function ( collection, $list ) {
             $list.empty();
             collection.each(function ( model ) {
-                $list.append('<li><a id="' + model.attributes.id + '" class="cloud-submenu-item ' + $list.attr('data-collection-name') + '" href="' + $list.attr('data-base-url') + '">' + (model.attributes.name || model.attributes.login) + '</a></li>');
+                var id = model.attributes.id;
+                var classes = 'cloud-submenu-item '+$list.attr('data-collection-name');
+                var href = $list.attr('data-base-url');
+                var text = (model.attributes.name || model.attributes.login);
+
+                //console.info('ID: '+id+', Classes: '+classes+'. HREF: '+href+', Text: '+text);
+                $list.append(
+                    '<li>'+
+                    '<a id="'+id+'" class="'+classes+'" href="'+href+'">'+
+                    text+'</a></li>'
+                );
             });
+
             $list.parent().find('.badge').text(collection.length);
         },
 
         itemSelected : function ( event ) {
-            var id = event.target.id;
-            var $list = $(event.currentTarget).parents('[data-collection-name]');
-            var collectionName = $list.attr('data-collection-name');
-            this.selectedId = id;
-            this.selectedCollection = this[collectionName];
+            var $el = $(event.currentTarget);
+            var $list = $el.parents('[data-collection-name]');
+            this.selectedId = event.target.id;
+            this.selectedCollection = this[$list.attr('data-collection-name')];
 
             var route = $list.attr('data-base-url');
 
@@ -151,6 +170,11 @@ define([
             if(location.hash === route) {
                 Backbone.history.loadUrl(Backbone.history.fragment);
             }
+
+            $('.active', '#cloud_setup_menu').removeClass('active');
+            $('.sub-active', '#cloud_setup_menu').removeClass('sub-active');
+            $el.parents().eq(2).addClass('active');
+            $el.addClass('sub-active');
         },
         close: function(){
             this.$el.empty();
@@ -170,24 +194,31 @@ define([
     var cloudSetupView;
     var self = this;
     Common.router.on("route:cloudSetup", function ( action ) {
+        // Make sure action always has a value, if not default to /
+        action = action || '/';
 
-        if(!action || action === "/") {
-            Common.router.navigate("#cloud/setup/cloud-accounts_list", { trigger : true });
-            return;
-        }
-
-        var category = action.replace('/','').split("_list")[0];
-
-        $('#cloud_setup_menu>li.active').removeClass('active');
-        $('.sub-active').removeClass('sub-active');
-        $('[data-group="' + category + '"]').addClass('active');
-
-        if (this.previousView !== cloudSetupView) {
+        // Only load cloudSetupView if not already loaded or root action requested
+        if (this.previousView !== cloudSetupView || action === '/') {
             this.unloadPreviousState();
             cloudSetupView = new CloudSetupView();
             this.setPreviousState(cloudSetupView);
         }
 
+        // Create params object for subApp instantiation below
+        var params = {
+            rootView : cloudSetupView,
+            selectedId : cloudSetupView.selectedId,
+            collection : cloudSetupView.selectedCollection
+        };
+
+        // category is used below in jQuery styling. if category is false 
+        // (NaN, undefined, false) or is blank, default to cloud-accounts
+        var category = action.replace('/','').split("_list")[0];
+        if (!category || category === '') {
+            category = 'cloud-accounts';
+        }
+
+        // HashMap for mapping actions to proper subApp view
         var viewAssociations = {
             "user_list" : UsersManagementView,
             "policy_list" : PoliciesManagementView,
@@ -202,44 +233,32 @@ define([
             "configuration_managers_list" : DevOpsToolsManagementView,
             "continuous_integration_list" : ContinuousIntegrationManagementView,
             "source_control_repositories_list" : SourceControlRepositoryManagementListView,
-            "home" : CloudAccountManagementListView
+            "home" : CloudAccountManagementListView,
+            "/": CloudAccountManagementListView
         };
 
-        var SubView = viewAssociations[action];
+        // Set SubView based on action as key in hash map above
+        var SubView = viewAssociations[action] || CloudAccountManagementListView;
 
-        //default to cloud account view
-        if(!SubView) {
-            SubView = CloudAccountManagementView;
-        }
-
-        if(cloudSetupView.subApp) {
+        // Close/clear previous loaded subApp if defined/loaded
+        if (cloudSetupView.subApp) {
             cloudSetupView.subApp.close();
-        }
-        var params = {
-            rootView : cloudSetupView
-        };
 
-        if(action.indexOf('list') === -1) {
-            if(!(cloudSetupView.selectedId && cloudSetupView.selectedCollection)) {
-                Common.router.navigate('#cloud/setup/' + action + '_list', { trigger: true});
-                return;
+            // Handle special case of user menu item by loading the
+            // UsersManagementView in background before showing edit dialig
+            if (action === 'user') {
+                cloudSetupView.subApp = new UsersManagementView(params);
             }
         }
 
-        if(cloudSetupView.selectedId) {
-            params.selectedId = cloudSetupView.selectedId;
-            params.collection = cloudSetupView.selectedCollection;
-        }
-
+        // Instantiate subApp view object
         cloudSetupView.subApp = new SubView(params);
 
-        if(cloudSetupView.selectedId) {
-            $('#' + cloudSetupView.selectedId).addClass('sub-active');
-        }
+        // Reset attributes to avoid "bleed over"
         cloudSetupView.selectedId = undefined;
         cloudSetupView.selectedCollection = undefined;
 
-        if(cloudSetupView.afterSubAppRender) {
+        if (cloudSetupView.afterSubAppRender) {
             cloudSetupView.afterSubAppRender.call(cloudSetupView);
         }
     }, Common);

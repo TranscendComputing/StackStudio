@@ -10,9 +10,10 @@ define([
         'underscore',
         'backbone',
         'common',
+        'views/account/newLoginView',
         'text!templates/account/homeTemplate.html'
     ],
-    function ( $, _, Backbone, Common, homeTemplate ) {
+    function ( $, _, Backbone, Common, NewLoginView, homeTemplate ) {
 
         var AccountManagementView = Backbone.View.extend({
 
@@ -24,7 +25,6 @@ define([
 
             /** Constructor method for current view */
             initialize: function() {
-                
                 //Render my own views
                 this.render();
             },
