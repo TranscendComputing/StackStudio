@@ -26,7 +26,8 @@ define([
       components: ["test"],
       assemblies: ["dev", "prod"],
       stacks: ["dev", "prod"],
-      offerings: ["prod"]
+      offerings: ["prod"],
+      meshes: ["prod"]
     },
 
     enabledModes: [],

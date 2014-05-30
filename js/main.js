@@ -56,7 +56,8 @@ require(['./common'], function (common) {
              'views/assemblies/assembliesView',
              'views/platform_components/platformComponentsView',
              'views/stacks/stacksView',
-             'views/offerings/offeringsView'
+             'views/offerings/offeringsView',
+             'views/meshes/meshesView'
             ], function(TopNavView, NavLogin, DashboardView) {
         var topNav = new TopNavView(),
          navLogin = new NavLogin();

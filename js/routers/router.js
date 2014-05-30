@@ -46,6 +46,7 @@ define([
             'platform_components': 'platformComponentsRoute',
             'stacks': 'stacksRoute',
             'offerings': 'offeringsRoute',
+            'meshes': 'meshesRoute',
 			'projects': 'projects',
 			'project/new': 'projectCreate',
 			'projects/:url': 'projectEdit',
@@ -118,8 +119,16 @@ define([
             this.trigger("route:offerings");
         },
 
+        meshesRoute: function(action) {
+            $("#sidebar").empty();
+            $("#sidebar").hide();
+            $(".main-nav a").removeClass("nav_selected");
+            $("#meshes_nav").addClass("nav_selected");
+            this.trigger("route:meshes");
+        },
+
         accountManagementRoute: function(action) {
-        	$("#sidebar").empty();
+           	$("#sidebar").empty();
             $("#sidebar").hide();
             $(".main-nav a").removeClass("nav_selected");
             $("#nav_account").addClass("nav_selected");
