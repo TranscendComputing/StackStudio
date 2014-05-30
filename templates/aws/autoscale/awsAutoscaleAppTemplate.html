@@ -31,16 +31,32 @@
                 </ul>
                 <div class="tab-content">
                     <div id="tabs-1" class="tab-pane active">
-                        <table>
-                            <tbody>                
-                                <tr><td><b>Group ID:</b></td>               <td>{{ id }}</td>                       <td><b>Instances:</b></td>          <td><section class="comma_list">{{#instances}}<span>{{InstanceId}}</span>{{/instances}}</section></td></tr>
-                                <tr><td><b>Desired Capacity:</b></td>       <td>{{ desired_capacity }}</td>         <td><b>Availability Zones:</b></td> <td><section class="comma_list">{{#availability_zones}}<span>{{.}}</span>{{/availability_zones}}</section></td></tr>
-                                <tr><td><b>Min Size:</b></td>               <td>{{ min_size }}</td>                 <td><b>Load Balancers:</b></td>     <td><section class="comma_list">{{#load_balancer_names}}<span>{{.}}</span>{{/load_balancer_names}}</section></td></tr>
-                                <tr><td><b>Max Size:</b></td>               <td>{{ max_size }}</td></tr>
-                                <tr><td><b>Cooldown:</b></td>               <td>{{ default_cooldown }}</td></tr>
-                                <tr><td><b>Created At:</b></td>             <td>{{ created_at }}</td></tr>
-                            </tbody>
-                        </table>
+                      <dl class="dl-horizontal">
+                        <dt>Group ID</dt>
+                        <dd>{{ id }}</dd>
+                        <dt>Instances</dt>
+                        {{#instances}}
+                          <dd>{{InstanceId}}</dd>
+                        {{/instances}}
+                        {{^instances}}
+                          <dd>None</dd>
+                        {{/instances}}
+                        <dt>Availability Zones</dt>
+                        {{#availability_zones}}
+                          <dd>{{.}}</dd>
+                        {{/availability_zones}}
+                        {{^availability_zones}}
+                          <dd>None</dd>
+                        {{/availability_zones}}
+                        <dt>Min Size</dt>
+                        <dd>{{min_size}}</dd>
+                        <dt>Max Size</dt>
+                        <dd>{{max_size}}</dd>
+                        <dt>Cooldown</dt>
+                        <dd>{{default_cooldown}}</dd>
+                        <dt>Created At</dt>
+                        <dd>{{created_at}}</dd>
+                      </dl>
                     </div>
                     <div id="tabs-2" class="tab-pane" style="overflow:hidden;">
                         <div class="monitor_options">

@@ -38,12 +38,9 @@ define([
             }
 
             //shouldn't let user update their own account here
-            if(sessionStorage.account_id === this.userSelected.attributes.id) {
-                // XXX - raise error condition here instead of silently redirect
-                //       or just let the admin user modify their account here.
-                //       Why is this bad?
-                //Common.router.navigate('#cloud/setup/user_list', { trigger: true });
-                //return;
+            if(Common.account.id === this.userSelected.attributes.id) {
+                Common.router.navigate('#cloud/setup/user_list', { trigger: true });
+                return;
             }
 
             this.$el.html( this.template );
@@ -161,7 +158,7 @@ define([
                             "country_code": $("#country_id").val()
                         },
                         "permissions":{
-                            "admin_login": sessionStorage.login
+                            "admin_login": Common.account.login
                         }
 
                     };
@@ -175,7 +172,7 @@ define([
                             "country_code": $("#country_id").val()
                         },
                         "permissions":{
-                            "admin_login": sessionStorage.login
+                            "admin_login": Common.account.login
                         }
 
                     }; 

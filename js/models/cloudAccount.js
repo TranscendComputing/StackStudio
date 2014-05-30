@@ -61,6 +61,7 @@ define([
         },
         
         destroy: function(login) {
+            var deleteCreds = this;
             var url = Common.apiUrl + "/stackstudio/v1/cloud_accounts/" + this.id + "?_method=DELETE" + "&login=" + login;
             
             $.ajax({
@@ -68,15 +69,32 @@ define([
                 type: "POST",
                 contentType: 'application/x-www-form-urlencoded',
                 success: function(data) {
+                    deleteCreds.deleteAssocCredentials(login);
                     Common.vent.trigger("managementRefresh");
                 },
                 error: function(jqXHR) {
                     Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
                 }
             });
-            
         },
-        
+
+        deleteAssocCredentials: function(login) {
+            var url = Common.apiUrl + "/identity/v1/accounts/" + sessionStorage.account_id + "/cloud_account_credentials/" + this.id + "?_method=DELETE";
+
+            $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/x-www-form-urlencoded',
+                success: function(data) {
+                    sessionStorage.cloud_credentials = JSON.stringify(data.account.cloud_credentials);
+                    Common.vent.trigger("cloudCredentialsRefresh");
+                },
+                error: function(jqXHR) {
+                    Common.errorDialog(jqXHR.statusText, jqXHR.responseText);
+                }
+            });
+        },
+
         addService: function(options,login) {
             var url = Common.apiUrl + "/stackstudio/v1/cloud_accounts/" + this.id + "/services?_method=POST" + "&login=" + login;
             

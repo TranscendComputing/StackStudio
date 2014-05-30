@@ -56,6 +56,12 @@ define([
                     reset: true
                 });
             });
+
+            Common.vent.on("cloudCredentialsRefresh", function() {
+                groupsView.rootView.cloudCredentials.fetch({
+                    reset: true
+                });
+            });
             
             Common.vent.on("cloudCredentialDeleted", function() {
                 credentialsView.render();
@@ -92,7 +98,7 @@ define([
             this.rootView.addAll(this.credentials, $('#cred_list'));
             $("#group_users_table").dataTable().fnClearTable();
             this.credentials.each(function ( cred ) {
-                var rowData = ['<a href="#cloud/setup/cloud-credentials" id="'+ cred.attributes.id+'" class="credential_item">'+cred.attributes.name+"</a>",cred.attributes.cloud_provider];
+                var rowData = ['<a href="#cloud/setup/cloud-credentials/' + cred.attributes.id + '" id="'+ cred.attributes.id+'" class="credential_item">'+cred.attributes.name+"</a>",cred.attributes.cloud_provider];
                 $("#group_users_table").dataTable().fnAddData(rowData);
             });
         },

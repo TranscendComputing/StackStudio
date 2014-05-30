@@ -17,7 +17,7 @@ define([
 
         model: SourceControlRepository,
 
-        url: function(options){return Common.apiUrl + '/api/v1/source_control_repositories/org/' + sessionStorage.org_id;}
+        url: function(options){return Common.apiUrl + '/api/v1/source_control_repositories/org/' + Common.account.org_id;}
     
     });
 

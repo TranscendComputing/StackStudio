@@ -89,7 +89,7 @@ define([
                     }
                 }
             });
-            options["org_id"] = sessionStorage.org_id;
+            options["org_id"] = Common.account.org_id;
             
             if(!issue) {
                if(this.repository) {

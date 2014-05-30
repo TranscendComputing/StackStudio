@@ -9,61 +9,51 @@ define([
         'jquery',
         'underscore',
         'backbone',
+        'common',
         'views/dialogView',
         'text!templates/account/newLoginTemplate.html',
         'collections/countries',
-        'models/user',
-        'common'      
-], function( $, _, Backbone, DialogView, newLoginTemplate, Countries, User, Common ) {
+        'models/user'
+], function( $, _, Backbone, Common, DialogView, newLoginTemplate, Countries, User ) {
     
     var NewLoginView = DialogView.extend({
-
-        template: _.template(newLoginTemplate),
 
         orgId: undefined,
         
         countries: undefined,
 
         events: {
-            "dialogclose": "close"
+            "click #show_login_form": "login",
+            "click #register_button": "register",
+            "click #cancel_button": "close"
         },
 
-        initialize: function(options) {
-            this.$el.html( this.template );
-            var newLoginView = this;
-            this.$el.dialog({
-                title: "Register User",
-                autoOpen: true,
-                width:500,
-                minHeight: 150,
-                resizable: false,
-                modal: true,
-                buttons: [
-                    {
-                        text: "Register",
-                        click: function() {
-                            newLoginView.register();
-                        }
-                    },
-                    {
-                        text: "Cancel",
-                        click: function() {
-                            newLoginView.cancel();
-                        }
-                    }
-                ]
-            });
-            this.countries = new Countries();
-            this.countries.on( 'reset', this.addAllCountries, this );
-            this.countries.fetch({reset: true});
-            if(options && options.org_id) {
-                this.orgId = options.org_id;
-                $("#changeable_content").html("<td><b>Admin:</b></td><td><input id='admin_checkbox' type='checkbox'/></td>");
-            }
+        initialize: function ( options ) {
+          
+          this.countries = new Countries();
+          this.countries.on( 'reset', this.addAllCountries, this );
+          this.countries.fetch({reset: true});
+          if(options && options.org_id) {
+              this.orgId = options.org_id;
+              $("#changeable_content").html("<td><b>Admin:</b></td><td><input id='admin_checkbox' type='checkbox'/></td>");
+          }
         },
 
         render: function() {
-            
+
+          var $newElement = $(newLoginTemplate);
+          this.setElement($newElement);
+
+          $('#account_register').remove();
+          $('body').append(this.$el);
+
+          this.$el.modal({
+            show: true,
+            backdrop : true,
+            keyboard: true
+          });
+
+          this.delegateEvents();
         },
         
         addAllCountries: function() {
@@ -165,7 +155,16 @@ define([
             }
             
             Common.vent.trigger("userRefresh");
-            this.$el.dialog('close');
+            this.close();
+        },
+
+        login : function () {
+          this.close();
+          this.LoginView.render();
+        },
+
+        close : function () {
+          this.$el.modal('hide');
         }
     });
     

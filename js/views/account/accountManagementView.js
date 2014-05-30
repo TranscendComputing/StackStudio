@@ -6,49 +6,43 @@
 /*jshint smarttabs:true */
 /*global define:true console:true requirejs:true require:true*/
 define([
-        'jquery',
-        'underscore',
-        'backbone',
-        'common',
-        'views/account/newLoginView',
-        'text!templates/account/homeTemplate.html'
-    ],
-    function ( $, _, Backbone, Common, NewLoginView, homeTemplate ) {
+    'jquery',
+    'underscore',
+    'backbone',
+    'common',
+    'js/views/account/homeView'
+  ],
+  function ( $, _, Backbone, Common, HomeView ) {
 
-        var AccountManagementView = Backbone.View.extend({
+    var AccountManagementView = Backbone.View.extend({
 
-            template: _.template(homeTemplate),
-            /** @type {Object} Object of events for view to listen on */
-            events: {
-                "click #addUser": "addUser"
-            },
+      /** @type {Object} Object of events for view to listen on */
+      events: {
+        "click #addUser": "addUser"
+      },
 
-            /** Constructor method for current view */
-            initialize: function() {
-                //Render my own views
-                this.render();
-            },
+      initialize : function ( options ) {
+        this.subView = new HomeView();
+      },
 
-            /** Add all of my own html elements */
-            render: function () {
-                this.$el.html(this.template);
-                $('#main').html(this.$el);
-            },
+      /** Add all of my own html elements */
+      render: function() {
+        this.subView.render();
+      }
+    });
 
-            addUser: function(event) {
-                new NewLoginView({org_id: sessionStorage.org_id});
-            }
+    Common.router.on('route:account/management', function() {
+      if (Common.account) {
+        var accountView = new AccountManagementView();
+        accountView.render();
+      } else {
+        Common.router.navigate("", {
+          trigger: true
         });
+        Common.login();
+      }
+    });
 
-        Common.router.on('route:account/management', function () {
-            if(sessionStorage.account_id) {
-                var accountView = new AccountManagementView();
-            } else {
-                Common.router.navigate("", {trigger: true});
-                Common.errorDialog("Login Error", "You must login.");
-            }
-        });
-
-        return AccountManagementView;
-    }
+    return AccountManagementView;
+  }
 );

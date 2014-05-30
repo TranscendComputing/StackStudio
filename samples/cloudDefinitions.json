@@ -467,7 +467,7 @@
     },
     "vcloud" : {
         "name" : "VCloud",
-        "logo": "/images/CloudLogos/vmware.png",
+        "logo": "/images/CloudLogos/vmware.jpg",
         "native_services" : [
             {
                 "name": "vApps",

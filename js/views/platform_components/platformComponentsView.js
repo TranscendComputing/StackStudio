@@ -272,17 +272,16 @@ define([
     var platformComponentsView;
 
     Common.router.on('route:platformComponents', function () {
-        if(sessionStorage.account_id) {
-            if (this.previousView !== platformComponentsView) {
-                this.unloadPreviousState();
-                platformComponentsView = new PlatformComponentsView();
-                this.setPreviousState(platformComponentsView);
-            }
-            platformComponentsView.render();
-        }else {
-            Common.router.navigate("", {trigger: true});
-            Common.errorDialog("Login Error", "You must login.");
-        }
+      if(!Common.authenticate({ redirect: 'here' })) {
+        return;
+      }  
+      
+      if (this.previousView !== platformComponentsView) {
+          this.unloadPreviousState();
+          platformComponentsView = new PlatformComponentsView();
+          this.setPreviousState(platformComponentsView);
+      }
+      platformComponentsView.render();
     }, Common);
 
     return PlatformComponentsView;

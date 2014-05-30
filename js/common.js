@@ -112,7 +112,7 @@ define(
         'jquery.dataTables',
         'dataTables.bootstrap'
     ],
-    function ($, _, Backbone, CommandLineView, Router, ErrorDialog, backendTxt) {
+    function ( $, _, Backbone, CommandLineView, Router, ErrorDialog, backendTxt ) {
         // Added custom handler for select
         Backbone.Stickit.addHandler({
             selector: 'select',
@@ -157,13 +157,12 @@ define(
 
         String.prototype.capitalize = function() {
             return this.charAt(0).toUpperCase() + this.slice(1);
-        }
+        };
     
         // Initialize the command line, since that's global to all pages.
         var consoleAppView = new CommandLineView();
-    
-        // Return some "globals".
-        return {
+        
+        var Common = {
             // Which filter are we using?
             InstanceFilter: '', // empty, active, completed
     
@@ -186,6 +185,57 @@ define(
             backbone: Backbone,
     
             previousView: {},
+
+            cacheCollection: {},
+
+            cache : function ( key, value ) {
+              var self = this;
+              if(!value) {
+                if(!this.cacheCollection[key]) {
+                  var sessionValue;
+                  try {
+                    var sessionValue = sessionStorage[key]
+                    self.cacheCollection[key] = JSON.parse(sessionStorage[key]);
+                  } catch ( err ) {
+                    this.cacheCollection[key] = sessionValue;
+                  }
+                }
+                return this.cacheCollection[key];
+              }
+
+              this.cacheCollection[key] = value;
+              if(typeof Storage !== 'undefined') {
+                sessionStorage[key] = JSON.stringify(value);
+              }
+            },
+
+            clearCache : function () {
+              this.cacheCollection = {};
+              if(typeof Storage !== 'undefined') {
+                sessionStorage.clear();
+              }
+            },
+
+            login : function ( options ) {
+              this.router.navigate('#', { trigger: true });
+              require([
+                'views/account/accountLoginView'
+              ], function ( LoginView ) {
+                var loginView = new LoginView(options);
+                loginView.render();    
+              });
+            },
+
+            authenticate : function ( options ) {
+              options = options || {};
+              if(!this.account) {
+                if(options.redirect === 'here') {
+                  options.redirect = window.location.hash;
+                }
+                this.login(options);
+              }
+              return !!this.account;
+            },
     
             errorDialog: function(title, message) {
                 new ErrorDialog({title: title, message: message});
@@ -207,5 +257,26 @@ define(
                 router.navigate(this.previousState, {trigger: true});
             }
         };
+
+        Common.__defineGetter__("account", function () {
+          return Common.cache('account');
+        });
+
+        Common.__defineSetter__("account", function ( val ) {
+          Common.cache('account', val);          
+        });
+
+        Common.__defineGetter__("credentials", function () {
+          return Common.cache('account').cloud_credentials;
+        });
+
+        Common.__defineSetter__("credentials", function ( val ) {
+          if(!Common.account) {
+            Common.account = {};
+          }
+          Common.cacheCollection.account.cloud_credentials = JSON.stringify(val);
+        });
+
+        return Common;
     }
 );

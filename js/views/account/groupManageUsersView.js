@@ -64,9 +64,9 @@ define([
         render: function() {
             var view = this;
             //call to get updated org
-            if(sessionStorage) {
+            if(Common.account) {
                $.ajax({
-                    url: Common.apiUrl + "/identity/v1/orgs/" + sessionStorage.org_id + ".json",
+                    url: Common.apiUrl + "/identity/v1/orgs/" + Common.account.org_id + ".json",
                     type: 'GET',
                     contentType: 'application/x-www-form-urlencoded',
                     success: function(data) {
@@ -125,13 +125,13 @@ define([
 
         addUser: function() {
             if(this.group) {
-                this.group.addUser(this.selectedNonGroupUserId,sessionStorage.login);
+                this.group.addUser(this.selectedNonGroupUserId,Common.account.login);
             }
         },
 
         removeUser: function() {
             if(this.group) {
-                this.group.removeUser(this.selectedGroupUserId,sessionStorage.login);
+                this.group.removeUser(this.selectedGroupUserId,Common.account.login);
             }
         },
 

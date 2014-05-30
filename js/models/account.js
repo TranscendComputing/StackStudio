@@ -70,7 +70,7 @@ define([
         },
         
         getUser: function(){
-            var url = Common.apiUrl + "/identity/v1/accounts/" + sessionStorage.account_id +".json";
+            var url = Common.apiUrl + "/identity/v1/accounts/" + Common.account.id +".json";
             $.ajax({
                 url: url,
                 type: 'GET',
@@ -85,7 +85,7 @@ define([
         },
         
         setUser: function(options){
-            var url = Common.apiUrl + "/identity/v1/accounts/" + sessionStorage.account_id + "/update?_method=PUT";
+            var url = Common.apiUrl + "/identity/v1/accounts/" + Common.account.id + "/update?_method=PUT";
             $.ajax({
                 url: url,
                 type: "POST",
@@ -93,8 +93,12 @@ define([
                 dataType: 'json',
                 data: JSON.stringify(options),
                 success: function(data) {
-                    sessionStorage.rss_url = data.rss_url;
-                    sessionStorage.email = data.email;
+                    var account = Common.account;
+                    account.rss_url = data.rss_url;
+                    account.email = data.email;
+
+                    Common.account = account;
+
                     new Messenger().post({type:"success", message:"User Updated..."});
                 },
                 error: function(jqXHR) {
