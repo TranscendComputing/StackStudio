@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/topstack/models/beanstalk/topstackApplication.js',
+        'topstack/models/beanstalk/topstackApplication',
         'common'
 ], function( $, Backbone, Application, Common ) {
     'use strict';

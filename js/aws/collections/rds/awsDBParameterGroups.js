@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/rds/awsDBParameterGroup.js',
+        'aws/models/rds/awsDBParameterGroup',
         'common'
 ], function( $, Backbone, DBParameterGroup, Common ) {
     'use strict';

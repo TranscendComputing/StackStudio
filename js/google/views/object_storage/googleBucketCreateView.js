@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/object_storage/awsBucketCreateTemplate.html',
-        '/js/google/models/object_storage/googleBucket.js',
+        'google/models/object_storage/googleBucket',
         'common'
 ], function( $, _, Backbone, DialogView, bucketCreateTemplate, Bucket, Common ) {	
 	

@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/rds/awsRelationalDatabase.js',
+        'aws/models/rds/awsRelationalDatabase',
         'common'
 ], function( $, Backbone, RelationalDatabase, Common ) {
     'use strict';

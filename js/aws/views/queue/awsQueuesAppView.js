@@ -11,9 +11,9 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/aws/queue/awsQueueAppTemplate.html',
-        '/js/aws/models/queue/awsQueue.js',
-        '/js/aws/collections/queue/awsQueues.js',
-        '/js/aws/views/queue/awsQueueCreateView.js',
+        'aws/models/queue/awsQueue',
+        'aws/collections/queue/awsQueues',
+        'aws/views/queue/awsQueueCreateView',
         'icanhaz',
         'common'
 ], function( $, _, Backbone, ResourceAppView, queueAppTemplate, Queue, Queues, QueueCreateView, ich, Common ) {
@@ -45,6 +45,10 @@ define([
             'click #resource_table tr': "clickOne"
         },
 
+        actions: [
+            { text: "Delete Queue", type: "row" }
+        ],
+
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
@@ -52,7 +56,8 @@ define([
             if(options.region) {
                 this.region = options.region;
             }
-            this.render();
+            this.$el.html(this.template);
+            this.loadData({ render : true });
             
             var userApp = this;
             Common.vent.off("queueAppRefresh");

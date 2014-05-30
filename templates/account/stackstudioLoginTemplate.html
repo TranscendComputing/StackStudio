@@ -1,21 +1,27 @@
-<div>
-    <div id="account_login">
-        <h5>
-            Please enter your username and password.
-        </h5>
-        <table style="font-size:14px;line-height:1.2;">
-            <tr>
-                <td><label class="top_align">Username:</label></td>
-                <td>
-                    <input id="username" type="text" style="width:200px;"/>
-                </td>
-            </tr>
-            <tr>
-                <td><label class="top_align">Password:</label></td>
-                <td>
-                    <input id="password" type="password" style="width:200px;"/>
-                </td>
-            </tr>
-        </table>
+<div role="dialog" tabindex="-1" aria-hidden="true" class="modal fade" id="account_login">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">StackStudio Login</h4>
+      </div>
+      <div class="modal-body">
+        <fieldset>
+          <div class="input-group">
+            <span class="input-group-addon">Username</span>
+            <input type="text" class="form-control" id="username" />
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon">Password</span>
+            <input type="password" class="form-control" id="password" />
+          </div>
+        </fieldset>
+        <br>
+        <p class="register-text">Don't have an account? <a href="#" id="show_register_form">Register for one</a></p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="account_login_button">Login</button>
+        <button class="btn btn-default" id="cancel_button">Cancel</button>
+      </div>
     </div>
+  </div>
 </div>

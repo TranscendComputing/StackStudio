@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/vpc/awsInternetGateway.js',
+        'aws/models/vpc/awsInternetGateway',
         'common'
 ], function( $, Backbone, InternetGateway, Common ) {
     'use strict';

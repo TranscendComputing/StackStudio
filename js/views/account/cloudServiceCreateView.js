@@ -71,7 +71,7 @@ define([
             }
             
             if(!issue){
-                this.cloud_account.addService(options,sessionStorage.login);
+                this.cloud_account.addService(options,Common.account.login);
                 this.$el.dialog('close');
             }else {
                 Common.errorDialog("Invalid Request", "Please supply all required fields.");

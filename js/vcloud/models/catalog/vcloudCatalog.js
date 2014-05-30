@@ -18,10 +18,20 @@ define([
 			name : ''
 		},
 
-		get_items : function ( cred_id ) {
-			var ajaxOptions = {
-				cred_id : cred_id
-			};
+		instantiateVapp : function ( options ) {
+			var url = Common.apiUrl + '/stackstudio/v1/cloud_management/vcloud/catalogs/' + options.cat_id + '/items/' + options.item_id + '/vapp?cred_id=' + options.cred_id;
+			$.ajax({
+				type : 'POST',
+				url : url,
+				data : {
+					cred_id : options.cred_id,
+					vapp_name : options.vapp_name,
+					vapp_options : options.vapp_options
+				},
+				success: function ( result ) {
+					console.log(result);
+				}
+			});
 		}
 	});
 

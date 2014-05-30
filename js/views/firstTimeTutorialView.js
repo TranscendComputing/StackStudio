@@ -15,7 +15,7 @@ define([
 	'text!templates/firstTimeTutorialTemplate.html',
 	'models/tutorialState',
 	'../instructor'
-], function ( $, _, Backbone, icanhaz, common, Account, tutorialTemplate, TutorialState ) {
+], function ( $, _, Backbone, icanhaz, Common, Account, tutorialTemplate, TutorialState ) {
 	var tooltipView = Backbone.View.extend({
 		el: "#instructor",
 		template: tutorialTemplate,
@@ -130,7 +130,7 @@ define([
 			});
 
 			var ts = new TutorialState();
-			ts.get(sessionStorage.account_id, function ( state ) {
+			ts.get(Common.account.id, function ( state ) {
 				var $instructor = $('#instructor');
 
 				if(state) {
@@ -150,7 +150,7 @@ define([
 					},
 					onProgressChange : function ( tutorialState ) {
 						var tutState = _.extend(tutorialState, {
-							account_id: sessionStorage.account_id
+							account_id: Common.account.id
 						});
 
 						ts.save(tutState);

@@ -13,8 +13,8 @@ define([
         'icanhaz',
         'views/dialogView',
         'text!templates/openstack/identity/openstackTenantAddUsersTemplate.html',
-        '/js/openstack/collections/identity/openstackRoles.js',
-        '/js/openstack/collections/identity/openstackUsers.js',
+        'openstack/collections/identity/openstackRoles',
+        'openstack/collections/identity/openstackUsers',
         'jquery.multiselect',
         'jquery.multiselect.filter',
         'dataTables.fnReloadAjax'

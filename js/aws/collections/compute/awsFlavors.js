@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/compute/awsFlavor.js',
+        'aws/models/compute/awsFlavor',
         'common'
 ], function( $, Backbone, Flavor, Common ) {
     'use strict';

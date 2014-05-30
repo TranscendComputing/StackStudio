@@ -1,79 +1,53 @@
 <div class="management_page col-lg-10" style="margin:10px;">
-    <form id="user_form" class="col-lg-12">
-        <fieldset>
+	<form id="user_form" class="col-lg-12">
+		<fieldset>
 
-            <!-- Form Name -->
-            <legend class="panel" style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;border-radius: 5px 5px 0px 0px;">&nbsp;Welcome:&nbsp;<b id="username_label"></b></legend>
-            <div id="home_container" class="panel-body well">
-    
-                <!-- Text input-->
-                <p>
-                    <div class="form-group">
-                        <div class="control-group">
-                            <label class="col-lg-4 control-label">RSS Feed URL:</label>
-                            <div class="controls col-lg-8">
-                                <input id="rss_url" name="rss_url" type="text" placeholder="http://www.transcendcomputing.com/feed/" class="input-xlarge form-control">
-                            </div>
-                        </div>
-                    </div>
-                </p>
-                <div class="form-group">
-                    <div class="control-group">
-                        <label class="col-lg-4 control-label">First Name:</label>
-                        <div class="controls col-lg-8">
-                            <input id="first_name" type="text" placeholder="First Name" class="form-control">
-                        </div>
-                    </div>
+			<!-- Form Name -->
+			<legend class="panel" style="background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;border-radius: 5px 5px 0px 0px;">&nbsp;Welcome:&nbsp;<b id="username_label"></b></legend>
+			<div id="home_container" class="panel-body well">
+                <div class="input-group">
+                    <span class="input-group-addon">First Name</span>
+                    <input id="first_name" name="first_name" type="text" class="form-control" placeholder="First Name">
                 </div>
-                <p>
-                    <div class="form-group">
-                        <div class="control-group">
-                            <label class="col-lg-4 control-label">Last Name:</label>
-                            <div class="controls col-lg-8">
-                                <input id="last_name" type="text" placeholder="Last Name" class="form-control">
-                            </div>
-                        </div>
-                    </div>
-                </p>
-                <div class="form-group">
-                    <div class="control-group">
-                        <label class="col-lg-4 control-label">Email Address*:</label>
-                        <div class="controls col-lg-8">
-                            <input id="email" type="text" placeholder="E-mail" class="form-control">
-                        </div>
-                    </div>
+                <div class="input-group">
+                    <span class="input-group-addon">Last Name</span>
+                    <input id="last_name" type="text" placeholder="Last Name" class="form-control">
                 </div>
-                <p>
-                    <div class="form-group">
-                        <div class="control-group">
-                            <label class="col-lg-4 control-label">New Password:</label>
-                            <div class="controls col-lg-8">
-                                <input id="password_input" type="password" placeholder="Password" class="password form-control">
-                            </div>
-                        </div>
-                    </div>
-                </p>
-                <div class="form-group">
-                    <div class="control-group">
-                        <label class="col-lg-4 control-label">Confirm New Password:</label>
-                        <div class="controls col-lg-8">
-                            <input id="confirm_password_input" type="password" placeholder="Confirm Password" class="password form-control">
-                        </div>
-                    </div>
+                <div class="input-group">
+                    <span class="input-group-addon">Email Address*</span>
+                    <input id="email" type="text" placeholder="E-mail" class="form-control">
                 </div>
-                <p>
-                    <div class="password-messenger">
-                                <span id="password_policy" class="contro-label" for="clouds_select" style="color:red;">Password: </span>
-                                <span id="password_policy_must" class="contro-label" for="clouds_select" style="color:red; display: none;"> must have </span>
-                                <span id="password_policy_digit" class="contro-label" for="clouds_select" style="color:red; display: none;"> a digit,</span>
-                                <span id="password_policy_special" class="contro-label" for="clouds_select" style="color:red; display: none;"> a special character,</span>
-                                <span id="password_policy_length" class="contro-label" for="clouds_select" style="color:red; display: none;"> a length of <b id="password_length"></b></span>
-                                <span id="password_policy_none" class="contro-label" for="clouds_select" style="color:red; display: none;"> has no restrictions</span>
-                    </div>
-                </p>
+				<div class="input-group">
+	               <span class="input-group-addon">RSS Feed URL</span>
+                   <input id="rss_url" name="rss_url" type="text" class="form-control" placeholder="http://www.transcendcomputing.com">
+				</div>
+                <div class="input-group">
+                    <span class="input-group-addon">New Password</span>
+                    <input id="password_input" type="password" placeholder="Password" class="password form-control">
+                </div>
+				
+				<div class="input-group">
+					<span class="input-group-addon">Confirm New Password</span>
+					<input id="confirm_password_input" type="password" placeholder="Confirm Password" class="password form-control">
+				</div>
+
+
                 <br/>
-                <a id="updateUserB" style="float:right;" class="btn btn-primary">Update<a>
-                </div>
+                <a id="updateUserB" style="float:right;" class="btn btn-primary">Update</a>
+            </div>
+        </fieldset>
+        <fieldset>
+            <div class="password-restrictions">
+                <div class="alert alert-info password-restrictions-info"><strong>Restrictions</strong> Passwords must comply to these restrictions.</div>
+        		
+                <ul id="password_restrictions" class="list-group">
+                    <li style="display:none;" id="must_contain_digit" class="list-group-item">Password must have at least one digit</li>
+                    <li style="display:none;" id="must_contain_special_character" class="list-group-item">Password must have at least one special character</li>
+                    <li style="display:none;" id="min_character_length" class="list-group-item">Password must be at least <span id="min_chars"></span> characters</li>
+                </ul>
+            </div>
+            <div class="no-password-restrictions" style="display:none;">
+                <div class="alert alert-info"><strong>Restrictions</strong> No password restrictions.</div>
             </div>
         </fieldset>
     </form>

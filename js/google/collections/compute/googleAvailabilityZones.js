@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/google/models/compute/googleAvailabilityZone.js',
+        'google/models/compute/googleAvailabilityZone',
         'common'
 ], function( $, Backbone, AvailabilityZone, Common ) {
     'use strict';

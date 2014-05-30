@@ -1,42 +1,58 @@
-<div>
-    <table id="new_user_form">
-        <tbody>
-            <tr>
-                <td><b>First Name:</b></td>
-                <td><input id="first_name" type="text" style="width:200px;"/></td>
-            </tr>
-            <tr>
-                <td><b>Last Name:</b></td>
-                <td><input id="last_name" type="text" style="width:200px;"/></td>
-            </tr>
-            <tr>
-                <td><b>Username*:</b></td>
-                <td><input id="new_username" type="text" style="width:200px;"/></td>
-            </tr>
-            <tr>
-                <td><b>Email Address*:</b></td>
-                <td><input id="email_address" type="text" style="width:300px;"/></td>
-            </tr>
-            <tr>
-                <td><b>Country*:</b></td>
-                <td><select id="country_select" style="width:200px;"></select></td>
-            </tr>
-            <tr id="changeable_content">
-                <td><b>Company:</b></td>
-                <td><input id="company" type="text" style="width:200px;"/></td>
-            </tr>
-            <tr>
-                <td><b>Password*:</b></td>
-                <td><input id="new_password" type="password" style="width:200px;"/></td>
-            </tr>
-            <tr>
-                <td><b>Confirm Password*:</b></td>
-                <td><input id="confirm_password" type="password" style="width:200px;"/></td>
-            </tr>
-        </tbody>
-    </table>
-    <br />
-    <div id="terms">
-        <center><input id="terms_checkbox" type="checkbox"/><b>I agree to the Transcend </b><a href="http://www.transcendcomputing.com/terms-of-service/" target="_blank"><b>Terms of Service</b></a></center>
+<div role="dialog" tabindex="-1" aria-hidden="true" class="modal fade" id="account_register">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">StackStudio Registration</h4>
+      </div>
+      <div class="modal-body">
+        <fieldset>
+          <div class="input-group">
+            <span class="input-group-addon">First Name</span>
+            <input id="first_name" type="text" class="form-control" />
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon">Last Name</span>
+            <input id="last_name" type="text" class="form-control" />
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon">Username</span>
+            <input id="new_username" type="text" class="form-control" />
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon">Email</span>
+            <input id="email_address" type="text" class="form-control" />
+          </div>
+          <div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+              Country <span class="caret"></span>
+            </button>
+            <ul id="country_select" class="dropdown-menu" role="menu"></ul>
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon">Company</span>
+            <input id="company" type="text" class="form-control" />
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon">Password</span>
+            <input id="new_password" type="password" class="form-control" />
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon">Confirm Password</span>
+            <input id="confirm_password" type="password" class="form-control" />
+          </div>
+          <div id="terms">
+            <label><input id="terms_checkbox" type="checkbox" />I agree to the Transcend <a href="http://www.transcendcomputing.com/terms-of-service/" target="_blank">Terms of Service</a></label>
+          </div>
+
+          <br>
+
+          <p>Already have an account? <a href="#" id="show_login_form">Log in</a></p>
+        </fieldset>
+      </div>
+      <div class="modal-footer">
+        <button id="register_button" class="btn btn-primary">Register</button>
+        <button id="cancel_button" class="btn btn-default">Cancel</button>
+      </div>
     </div>
+  </div>
 </div>

@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/compute/awsKeyPair.js',
+        'aws/models/compute/awsKeyPair',
         'common'
 ], function( $, Backbone, KeyPair, Common ) {
     'use strict';

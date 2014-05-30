@@ -28,14 +28,14 @@ define([
         },
 
         create: function(options,login) {
-            var url = Common.apiUrl + "/identity/v1/orgs/" + sessionStorage.org_id + "/groups?&login=" + login;
+            var url = Common.apiUrl + "/identity/v1/orgs/" + Common.account.org_id + "/groups?&login=" + login;
             var group = {group: options};
             this.sendPostAction(url, group);
         },
 
         addUser: function(accountId, login) {
             $.ajax({
-                url: Common.apiUrl + "/identity/v1/orgs/" + sessionStorage.org_id + "/groups/" + this.attributes.id + "/accounts/" + accountId + "?&login=" + login,
+                url: Common.apiUrl + "/identity/v1/orgs/" + Common.account.org_id + "/groups/" + this.attributes.id + "/accounts/" + accountId + "?&login=" + login,
                 type: 'POST',
                 contentType: 'application/x-www-form-urlencoded',
                 success: function(data) {
@@ -49,7 +49,7 @@ define([
 
         removeUser: function(accountId, login) {
             $.ajax({
-                url: Common.apiUrl + "/identity/v1/orgs/" + sessionStorage.org_id + "/groups/" + this.attributes.id + "/accounts/" + accountId + "?_method=DELETE" + "&login=" + login,
+                url: Common.apiUrl + "/identity/v1/orgs/" + Common.account.org_id + "/groups/" + this.attributes.id + "/accounts/" + accountId + "?_method=DELETE" + "&login=" + login,
                 type: 'POST',
                 contentType: 'application/x-www-form-urlencoded',
                 success: function(data) {

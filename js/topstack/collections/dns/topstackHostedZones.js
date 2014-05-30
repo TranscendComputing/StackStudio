@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/topstack/models/dns/topstackHostedZone.js',
+        'topstack/models/dns/topstackHostedZone',
         'common'
 ], function( $, Backbone, HostedZone, Common ) {
     'use strict';

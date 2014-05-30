@@ -12,9 +12,9 @@ define([
         'views/featureNotImplementedView',
         'views/resource/resourceAppView',
         'text!templates/aws/cache/awsParameterGroupAppTemplate.html',
-        '/js/aws/models/cache/awsCacheParameterGroup.js',
-        '/js/aws/collections/cache/awsCacheParameterGroups.js',
-        '/js/aws/views/cache/awsParameterGroupCreateView.js',
+        'aws/models/cache/awsCacheParameterGroup',
+        'aws/collections/cache/awsCacheParameterGroups',
+        'aws/views/cache/awsParameterGroupCreateView',
         'icanhaz',
         'common',
         'jquery.dataTables'
@@ -47,6 +47,10 @@ define([
             'click #resource_table tr': 'clickOne'
         },
 
+        actions: [
+            { text: "Delete", type: "row" }
+        ],
+
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
@@ -54,7 +58,9 @@ define([
             if(options.region) {
                 this.region = options.region;
             }
-            this.render();
+
+            this.$el.html(this.template);
+            this.loadData({ render: true });
             
             var cacheApp = this;
             Common.vent.on("parameterGroupAppRefresh", function() {

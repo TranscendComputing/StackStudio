@@ -6,8 +6,8 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-    '/js/topstack/views/queue/topstackQueuesAppView.js',
-    '/js/openstack/views/queue/openstackQueueCreateView.js'
+    'topstack/views/queue/topstackQueuesAppView',
+    'openstack/views/queue/openstackQueueCreateView'
 ], function( TopStackQueueAppView, OpenStackQueueCreateView ) {
     'use strict';
 

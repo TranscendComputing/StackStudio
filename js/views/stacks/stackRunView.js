@@ -12,7 +12,7 @@ define([
         'common',
         'text!templates/stacks/stackRunTemplate.html',
         'jquery.jstree',
-        '/js/aws/views/cloud_formation/awsCloudFormationStackCreateView.js'
+        'aws/views/cloud_formation/awsCloudFormationStackCreateView'
 ], function( $, _, Backbone, Common, stacksRunTemplate ) {
     'use strict';
 

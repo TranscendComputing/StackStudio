@@ -1,6 +1,15 @@
-<div class='ui-state-error ui-corner-all' style='padding: 0 .7em;'>
-    <p>
-    <span class='ui-icon ui-icon-alert' style='float:left;margin-right:.3em;background-image: url(/images/jqueryUI/ui-icons_cd0a0a_256x240.png)'></span>
-    <span id="message"></span>
-    </p>
+<div role="dialog" tabindex="-1" aria-hidden="true" class="modal fade" id="error_modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        	<div class="modal-header">
+        		<h4 class="error-title"></h4>
+        	</div>
+        	<div class="modal-body">
+        		<p class="error-message"></p>
+        	</div>
+        	<div class="modal-footer">
+        		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        	</div>
+        </div>
+    </div>
 </div>

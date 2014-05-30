@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/iam/awsGroupUser.js',
+        'aws/models/iam/awsGroupUser',
         'common'
 ], function( $, Backbone, GroupUser, Common ) {
     'use strict';

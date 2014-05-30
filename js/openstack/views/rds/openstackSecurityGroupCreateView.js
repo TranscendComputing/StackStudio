@@ -7,7 +7,7 @@
 /*global define:true console:true */
 define([
         'backbone',
-        '/js/topstack/views/rds/topstackSecurityGroupCreateView.js'
+        'topstack/views/rds/topstackSecurityGroupCreateView'
 ], function( Backbone, TopStackSecurityGroupCreateView ) {
     
     var OpenStackSecurityGroupCreateView = TopStackSecurityGroupCreateView.extend({

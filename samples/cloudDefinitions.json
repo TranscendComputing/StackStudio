@@ -467,15 +467,23 @@
     },
     "vcloud" : {
         "name" : "VCloud",
-        "logo": "/images/CloudLogos/vmware.png",
+        "logo": "/images/CloudLogos/vmware.jpg",
         "native_services" : [
             {
-                "name" : "Compute Engine",
-                "type" : "compute",
-                "view" : "/js/vcloud/views/compute/vcloudTreeView.js",
-                "defaultSubtype": "dataCenters"
+                "name": "vApps",
+                "type": "compute",
+                "defaultSubtype": "vapps"
+            },
+            {
+                "name": "Networks",
+                "type": "network",
+                "defaultSubtype": "networks"
+            },
+            {
+                "name": "Catalogs",
+                "type": "catalog",
+                "defaultSubtype": "catalogs"
             }
-        ],
-        "regions" : []
+        ]
     }
 }

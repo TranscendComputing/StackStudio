@@ -26,7 +26,7 @@ define([
             return model.get("name");
         },
         fetch: function(options){
-            options.data = $.param({account_id:sessionStorage.account_id});
+            options.data = $.param({account_id:Common.account.id});
             Backbone.Collection.prototype.fetch.apply(this, arguments);
         },
 

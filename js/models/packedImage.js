@@ -21,16 +21,16 @@ define([
         },
         
         save: function() {
-            var url = Common.apiUrl + "/stackstudio/v1/packed_images/save?uid=" + sessionStorage.org_id;
+            var url = Common.apiUrl + "/stackstudio/v1/packed_images/save?uid=" + Common.account.org_id;
             if(this.attributes.doc_id !== "test"){
-                url = Common.apiUrl + "/stackstudio/v1/packed_images/save?uid=" + sessionStorage.org_id + "&docid=" + this.attributes.doc_id;
+                url = Common.apiUrl + "/stackstudio/v1/packed_images/save?uid=" + Common.account.org_id + "&docid=" + this.attributes.doc_id;
             }
             this.sendAjaxAction(url, "POST", {"packed_image": this.attributes.packed_image,"name":this.attributes.name,"base_image":this.attributes.base_image}, "packedImageAppRefresh", "Image Saved...");
             //this.deployIndicator();
         },
         
         deploy: function() {
-            var url = Common.apiUrl + "/stackstudio/v1/packed_images/deploy?uid=" + sessionStorage.org_id + "&doc_id=" + this.attributes.doc_id;
+            var url = Common.apiUrl + "/stackstudio/v1/packed_images/deploy?uid=" + Common.account.org_id + "&doc_id=" + this.attributes.doc_id;
             this.sendAjaxAction(url, "POST", undefined, "packedImageAppRefresh", "Deploying "+this.attributes.name+"...");
             this.deployIndicator();
         },
@@ -61,7 +61,7 @@ define([
         },
         
         destroy: function(){
-            var url = Common.apiUrl + "/stackstudio/v1/packed_images/templates/" + sessionStorage.org_id + "/" + this.attributes.doc_id + "?_method=DELETE";
+            var url = Common.apiUrl + "/stackstudio/v1/packed_images/templates/" + Common.account.org_id + "/" + this.attributes.doc_id + "?_method=DELETE";
             this.sendAjaxAction(url, "POST", undefined, "packedImageAppDelete", "Image Deleted...");
         }
 

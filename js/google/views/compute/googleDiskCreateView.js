@@ -11,8 +11,8 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/google/compute/googleDiskCreateTemplate.html',
-        '/js/google/models/compute/googleDisk.js',
-        '/js/google/collections/compute/googleAvailabilityZones.js',
+        'google/models/compute/googleDisk',
+        'google/collections/compute/googleAvailabilityZones',
         'icanhaz',
         'common'
         

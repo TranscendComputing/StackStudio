@@ -11,8 +11,8 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/google/compute/googleInstanceCreateTemplate.html',
-        '/js/google/models/compute/googleInstance.js',
-        '/js/google/collections/compute/googleAvailabilityZones.js',
+        'google/models/compute/googleInstance',
+        'google/collections/compute/googleAvailabilityZones',
         'icanhaz',
         'common'
         

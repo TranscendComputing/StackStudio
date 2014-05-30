@@ -7,12 +7,12 @@
 /*global define:true console:true */
 define([
         'backbone',
-        '/js/topstack/views/autoscale/topstackAutoscaleGroupCreateView.js',
-        '/js/openstack/collections/compute/openstackImages.js',
-        '/js/openstack/collections/compute/openstackAvailabilityZones.js',
-        '/js/openstack/collections/compute/openstackFlavors.js',
-        '/js/openstack/collections/compute/openstackKeyPairs.js',
-        '/js/openstack/collections/compute/openstackSecurityGroups.js'
+        'topstack/views/autoscale/topstackAutoscaleGroupCreateView',
+        'openstack/collections/compute/openstackImages',
+        'openstack/collections/compute/openstackAvailabilityZones',
+        'openstack/collections/compute/openstackFlavors',
+        'openstack/collections/compute/openstackKeyPairs',
+        'openstack/collections/compute/openstackSecurityGroups'
 ], function( Backbone, TopStackAutoScaleCreateView, Images, AvailabilityZones, Flavors, KeyPairs, SecurityGroups) {
     
     var AutoscaleGroupCreateView = TopStackAutoScaleCreateView.extend({

@@ -11,8 +11,8 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/topstack/autoscale/topstackAutoscaleGroupCreateTemplate.html',
-        '/js/topstack/models/autoscale/topstackAutoscaleGroup.js',
-        '/js/openstack/collections/compute/openstackImages.js',
+        'topstack/models/autoscale/topstackAutoscaleGroup',
+        'openstack/collections/compute/openstackImages',
         'common',
         'spinner',
         'jquery.multiselect',
@@ -137,9 +137,9 @@ define([
 
             $(".spinner").remove();
             var createView = this;
-            var policies = JSON.parse(sessionStorage.group_policies);
+            var policies = JSON.parse(Common.account.group_policies);
             var default_images = [];
-            var permissions = JSON.parse(sessionStorage.permissions);
+            var permissions = JSON.parse(Common.account.permissions);
             //Check if this user has a policy for images they can use if not use all images.
             if(policies.length > 0 && permissions.length < 1){
                 default_images = policies[0].group_policy.os_governance.default_images;

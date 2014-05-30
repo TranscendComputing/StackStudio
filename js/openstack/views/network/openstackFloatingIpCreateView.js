@@ -13,8 +13,8 @@ define([
         'icanhaz',
         'views/dialogView',
         'text!templates/openstack/network/openstackFloatingIpCreateTemplate.html',
-        '/js/openstack/models/network/openstackFloatingIp.js',
-        '/js/openstack/collections/network/openstackFloatingIps.js',
+        'openstack/models/network/openstackFloatingIp',
+        'openstack/collections/network/openstackFloatingIps',
         'jquery.multiselect',
         'jquery.multiselect.filter'
 ], function( $, _, Backbone, Common, ich, DialogView, floatingIpCreateTemplate, FloatingIp ) {

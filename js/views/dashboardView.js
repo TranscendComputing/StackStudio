@@ -13,7 +13,6 @@ define([
         'text!templates/dashboard.html',
         'FeedEk'
 ], function( $, _, Backbone, Common, dashboardTemplate, FeedEk ) {
-    
     var DashboardView = Backbone.View.extend({
         el: "#main",
         template: _.template(dashboardTemplate),
@@ -24,13 +23,13 @@ define([
 
         render: function() {
             this.$el.html(this.template);
-            if (! sessionStorage.account_id) {
-                $('#getstarted').fadeIn();
-            }
-            
-            var url = sessionStorage.rss_url;
-            if(url === "undefined" || url === "" || url === undefined){
-                url = Common.rssFeed;
+
+            var url;
+            if (Common.account) {
+              url = Common.account.rss_url;
+            } else {
+              $('#getstarted').fadeIn();
+              url = Common.rssFeed;
             }
             
             $("#divRss").FeedEk({
@@ -50,6 +49,7 @@ define([
             this.unbind();
         }
     });
+
     /** Variable to track whether view has been initialized or not */
     var dashboardView;
     

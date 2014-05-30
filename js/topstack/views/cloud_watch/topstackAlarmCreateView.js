@@ -11,8 +11,8 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/topstack/cloud_watch/topstackAlarmCreateTemplate.html',
-        '/js/topstack/models/cloud_watch/topstackAlarm.js',
-        '/js/topstack/collections/cloud_watch/topstackMetrics.js',
+        'topstack/models/cloud_watch/topstackAlarm',
+        'topstack/collections/cloud_watch/topstackMetrics',
         'common'
         
 ], function( $, _, Backbone, DialogView, alarmCreateTemplate, Alarm, Metrics, Common ) {

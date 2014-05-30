@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/google/models/object_storage/googleBucket.js',
+        'google/models/object_storage/googleBucket',
         'common'
 ], function( $, Backbone, Bucket, Common ) {
     'use strict';

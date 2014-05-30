@@ -28,8 +28,6 @@ define([
         template: _.template(groupsManagementTemplate),
         
         rootView: undefined,
-
-        groups: undefined,
         
         users: new Users(),
         
@@ -44,9 +42,10 @@ define([
             "change #policy_select":"policySelect"
         },
 
-        initialize: function() {
+        initialize: function ( options ) {
+
             this.$el.html(this.template);
-            this.rootView = this.options.rootView;
+            this.rootView = options.rootView;
             $("#submanagement_app").html(this.$el);
             $("button").button();
             $("#group_users_table").dataTable({
@@ -61,25 +60,26 @@ define([
                 groupsView.render();
                 //refetch tree groups
             });
-            this.selectedGroup = undefined;
-            this.groups = this.rootView.groups;
-            this.policies = this.rootView.policies;
-            this.render();
+
+            this.groups = new Groups();
+            this.policies = new Policies();
+
+            var self = this;
+            this.groups.on('reset', function () {
+              self.selectedGroup = self.groups.get(options.selectedId);
+              self.render();
+            });
+
+            if(options.collection && options.collection.models.length) {
+              this.groups.reset(options.collection.models);
+            } else {
+              this.groups.fetch({ reset: true });
+            }            
         },
 
         render: function () {
             this.disableSelectionRequiredButtons(true);
             $("#group_users_table").dataTable().fnClearTable();
-            
-            this.groups.fetch({
-                reset: true
-            });
-        },
-        
-        treeSelect: function() {
-            this.clearSelection();
-            //$(event.target).addClass("selected_item");
-            this.selectedGroup = this.rootView.groups.get(this.rootView.treeGroup);
             $("#selected_group_name").html(this.selectedGroup.attributes.name);
             this.disableSelectionRequiredButtons(false);
             this.addAllGroupUsers();
@@ -125,8 +125,8 @@ define([
             var groupsView = this;
             groupsView.users.fetch({success: function(){
                 var isAdmin = false;
-                if(groupsView.users.get(sessionStorage.account_id).attributes.permissions.length > 0){
-                    isAdmin = groupsView.users.get(sessionStorage.account_id).attributes.permissions[0].permission.name === "admin";
+                if(groupsView.users.get(Common.account.id).attributes.permissions.length > 0){
+                    isAdmin = groupsView.users.get(Common.account.id).attributes.permissions[0].permission.name === "admin";
                 }
                 if(!isAdmin){
                     $("#delete_group_button").attr("disabled", true);
@@ -169,19 +169,19 @@ define([
                 options.group_policy_id = event.target.value;
                 options.group_id = this.selectedGroup.id;
                 var newPolicy = new Policy();
-                newPolicy.addToGroup(options,sessionStorage.org_id,sessionStorage.login);
+                newPolicy.addToGroup(options,Common.account.org_id,Common.account.login);
                 //}
         },
         
         refreshSession: function(){
-            var url = Common.apiUrl + "/identity/v1/accounts/auth/" + sessionStorage.account_id;
+            var url = Common.apiUrl + "/identity/v1/accounts/auth/" + Common.account.id;
             
             $.ajax({
                 url: url,
                 type: 'GET',
                 contentType: 'application/x-www-form-urlencoded',
                 success: function(data) {
-                    sessionStorage.group_policies = JSON.stringify(data.account.group_policies);
+                    Common.account.group_policies = JSON.stringify(data.account.group_policies);
                 },
                 error: function(jqXHR) {
                     Common.errorDialog(jqXHR.statusText, jqXHR.responseText);

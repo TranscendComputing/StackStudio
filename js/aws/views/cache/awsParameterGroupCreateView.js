@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/cache/awsParameterGroupCreateTemplate.html',
-        '/js/aws/models/cache/awsCacheParameterGroup.js',
+        'aws/models/cache/awsCacheParameterGroup',
         'icanhaz',
         'common'
         

@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/compute/awsKeyPairCreateTemplate.html',
-        '/js/aws/models/compute/awsKeyPair.js',
+        'aws/models/compute/awsKeyPair',
         'icanhaz',
         'common'
         

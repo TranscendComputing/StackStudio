@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/topstack/models/cloud_watch/topstackMetricStatistic.js',
+        'topstack/models/cloud_watch/topstackMetricStatistic',
         'common'
 ], function( $, Backbone, MetricStatistic, Common ) {
     'use strict';

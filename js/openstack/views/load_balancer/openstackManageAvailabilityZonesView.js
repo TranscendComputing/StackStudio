@@ -7,8 +7,8 @@
 /*global define:true console:true */
 define([
         'backbone',
-        '/js/topstack/views/load_balancer/topstackManageAvailabilityZonesView.js',
-        '/js/openstack/collections/compute/openstackAvailabilityZones.js'
+        'topstack/views/load_balancer/topstackManageAvailabilityZonesView',
+        'openstack/collections/compute/openstackAvailabilityZones'
 ], function( Backbone, TopStackManageAvailabilityZonesView, AvailabilityZones ) {
     
     var OpenStackManageAvailabilityZonesView = TopStackManageAvailabilityZonesView.extend({

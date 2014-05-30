@@ -6,158 +6,169 @@
 /*jshint smarttabs:true */
 /*global define:true console:true requirejs:true require:true*/
 define([
-        'jquery',
-        'underscore',
-        'backbone',
-        'common',
-        'text!templates/account/managementCloudAccountListTemplate.html',
-        'collections/groups',
-        'collections/users',
-        'views/account/cloudAccountCreateView',
-        'views/account/groupManageUsersView',
-        'jquery.dataTables',
-        'jquery.dataTables.fnProcessingIndicator'
-], function( $, _, Backbone, Common, groupsManagementListTemplate, Groups, Users, CloudAccountCreate, ManageGroupUsers ) {
+  'jquery',
+  'underscore',
+  'backbone',
+  'common',
+  'text!templates/account/managementCloudAccountListTemplate.html',
+  'collections/users',
+  'collections/cloudAccounts',
+  'views/account/cloudAccountCreateView',
+  'jquery.dataTables',
+  'jquery.dataTables.fnProcessingIndicator'
+], function($, _, Backbone, Common, cloudAccountManagementListTemplate, Users, CloudAccounts, CloudAccountCreate) {
 
-    var CloudAccountsManagementListView = Backbone.View.extend({
+  var CloudAccountsManagementListView = Backbone.View.extend({
 
-        tagName: 'div',
+    tagName: 'div',
 
-        template: _.template(groupsManagementListTemplate),
-        
-        rootView: undefined,
+    template: _.template(cloudAccountManagementListTemplate),
 
-        groups: undefined,
-        
-        users: new Users(),
+    rootView: undefined,
 
-        selectedGroup: undefined,
-        
-        CloudAccountCreateView: CloudAccountCreate,
+    cloudAccounts: undefined,
 
-        events: {
-            "click #create_group_button" : "createGroup",
-            "click #delete_group_button" : "deleteGroup",
-            'click #group_users_table tr': 'selectGroup'
-        },
+    users: new Users(),
 
-        initialize: function( options ) {
-            this.$el.html(this.template);
-            this.rootView = options.rootView;
-            $("#submanagement_app").html(this.$el);
-            $("button").button();
-            $("#group_users_table").dataTable({
-                "bJQueryUI": true,
-                "bProcessing": true
-            });
-            
-            var managementView = this;
-            Common.vent.on("managementRefresh", function() {
-                managementView.render();
-            });
-            
-            this.selectedGroup = undefined;
-            this.groups = this.rootView.cloudAccounts;
-            this.render();
-        },
+    selectedCloudAccount: undefined,
 
-        render: function () {
-            this.disableSelectionRequiredButtons(true);
-            $("#group_users_table").dataTable().fnClearTable();
-            
-            var groupListView = this;
-            this.groups.fetch({
-                data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id}),
-                reset: true,
-                success: function(){
-                    groupListView.addAllGroups();
-                }
-            });
-        },
-        
-        selectGroup: function(event){
-            $("#group_users_table tr").removeClass('row_selected');
-            $(event.currentTarget).addClass('row_selected');
-            
-            var rowData = $("#group_users_table").dataTable().fnGetData(event.currentTarget);
-            
-            this.selectedGroup = this.groups.get($.parseHTML(rowData[0])[0]);
-            
-            if(this.selectedGroup) {
-                this.disableSelectionRequiredButtons(false);
-            }
-        },
-        
-        addAllGroups: function() {
-            $("#group_users_table").dataTable().fnClearTable();
-            $.each(this.groups.models, function(index, value) {
-                var auth_url = "";
-                if(value.attributes.url){
-                    auth_url = value.attributes.url;
-                }
-                
-                var rowData = ['<a href="#account/management/cloud-accounts" id="'+value.attributes.id+'" class="cloud_account_item">'+value.attributes.name+"</a>", value.attributes.cloud_provider, auth_url];
-                $("#group_users_table").dataTable().fnAddData(rowData);
-            });
-        },
+    CloudAccountCreateView: CloudAccountCreate,
 
-        disableSelectionRequiredButtons: function(toggle) {
-            if(toggle) {
-                $("#delete_group_button").attr("disabled", true);
-                $("#delete_group_button").addClass("ui-state-disabled");
-                $("#delete_group_button").removeClass("ui-state-hover");
-                $("#manage_group_users_button").attr("disabled", true);
-                $("#manage_group_users_button").addClass("ui-state-disabled");
-            }else {
-                $("#delete_group_button").removeAttr("disabled");
-                $("#delete_group_button").removeClass("ui-state-disabled");
-                $("#manage_group_users_button").removeAttr("disabled");
-                $("#manage_group_users_button").removeClass("ui-state-disabled");
-            }
-            
-            this.adminCheck();
-        },
-        
-        adminCheck: function(){
-            var groupsView = this;
-            groupsView.users.fetch({success: function(){
-                var isAdmin = false;
-                if(groupsView.users.get(sessionStorage.account_id).attributes.permissions.length > 0){
-                    isAdmin = groupsView.users.get(sessionStorage.account_id).attributes.permissions[0].permission.name === "admin";
-                }
-                if(!isAdmin){
-                    $("#delete_group_button").attr("disabled", true);
-                    $("#delete_group_button").addClass("ui-state-disabled");
-                    $("#delete_group_button").removeClass("ui-state-hover");
-                    $("#create_group_button").attr("disabled", true);
-                    $("#create_group_button").addClass("ui-state-disabled");
-                }
-            }});
-        },
+    events: {
+      "click #create_group_button": "createCloudAccount",
+      "click #delete_group_button": "deleteCloudAccount",
+      'click #group_users_table tr': 'selectCloudAccount'
+    },
 
-        createGroup: function() {
-            var CloudAccountCreateView = this.CloudAccountCreateView;
-            
-            this.newResourceDialog = new CloudAccountCreateView({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id, rootView: this.rootView });
-            
-            this.newResourceDialog.render();
-        },
+    initialize: function(options) {
+      this.$el.html(this.template);
+      this.rootView = options.rootView;
+      $("#submanagement_app").html(this.$el);
+      $("button").button();
 
-        deleteGroup: function() {
-            if(this.selectedGroup) {
-                this.selectedGroup.destroy(sessionStorage.login);
-            }
-        },
+      $("#group_users_table").dataTable({
+        "bJQueryUI": true,
+        "bProcessing": true
+      });
 
-        clearSelection: function() {
-            this.selectedGroup = undefined;
-            $(".group_item").removeClass("selected_item");
-        },
+      var managementView = this;
+      Common.vent.on("managementRefresh", function() {
+        managementView.render();
+      });
 
-        close: function(){
-            this.$el.remove();
-        }  
-    });
+      this.cloudAccounts = new CloudAccounts();
+      this.rootView.cloudAccounts = this.cloudAccounts;
+      this.cloudAccounts.on('reset', this.addAllCloudAccounts, this);
+      this.render();
+    },
 
-    return CloudAccountsManagementListView;
+    render: function() {
+      this.disableSelectionRequiredButtons(true);
+      $("#group_users_table").dataTable().fnClearTable();
+
+      var listView = this;
+      this.cloudAccounts.fetch({
+        data: $.param({
+          org_id: Common.account.org_id,
+          account_id: Common.account.id
+        }),
+        reset: true,
+        success: function() {
+          listView.addAllCloudAccounts();
+        }
+      });
+    },
+
+    selectCloudAccount: function(event) {
+      $("#group_users_table tr").removeClass('row_selected');
+      $(event.currentTarget).addClass('row_selected');
+
+      var rowData = $("#group_users_table").dataTable().fnGetData(event.currentTarget);
+
+      this.selectedCloudAccount = this.cloudAccounts.get($.parseHTML(rowData[0])[0]);
+
+      if (this.selectedCloudAccount) {
+        this.disableSelectionRequiredButtons(false);
+      }
+    },
+
+    addAllCloudAccounts: function() {
+      this.rootView.addAll(this.cloudAccounts, $('#cloud_account_list'));
+      $("#group_users_table").dataTable().fnClearTable();
+      this.cloudAccounts.each(function(cloudAccount) {
+        var auth_url = "";
+        if (cloudAccount.attributes.url) {
+          auth_url = cloudAccount.attributes.url;
+        }
+
+        var rowData = ['<a href="#cloud/setup/cloud-accounts/' + cloudAccount.attributes.id + '" id="' + cloudAccount.attributes.id + '" class="cloud_account_item">' + cloudAccount.attributes.name + "</a>", cloudAccount.attributes.cloud_provider, auth_url];
+        $("#group_users_table").dataTable().fnAddData(rowData);
+      });
+    },
+
+    disableSelectionRequiredButtons: function(toggle) {
+      if (toggle) {
+        $("#delete_group_button").attr("disabled", true);
+        $("#delete_group_button").addClass("ui-state-disabled");
+        $("#delete_group_button").removeClass("ui-state-hover");
+        $("#manage_group_users_button").attr("disabled", true);
+        $("#manage_group_users_button").addClass("ui-state-disabled");
+      } else {
+        $("#delete_group_button").removeAttr("disabled");
+        $("#delete_group_button").removeClass("ui-state-disabled");
+        $("#manage_group_users_button").removeAttr("disabled");
+        $("#manage_group_users_button").removeClass("ui-state-disabled");
+      }
+
+      this.adminCheck();
+    },
+
+    adminCheck: function() {
+      var cloudAccountsView = this;
+      cloudAccountsView.users.fetch({
+        success: function() {
+          var isAdmin = false;
+          if (cloudAccountsView.users.get(Common.account.id).attributes.permissions.length > 0) {
+            isAdmin = cloudAccountsView.users.get(Common.account.id).attributes.permissions[0].permission.name === "admin";
+          }
+          if (!isAdmin) {
+            $("#delete_group_button").attr("disabled", true);
+            $("#delete_group_button").addClass("ui-state-disabled");
+            $("#delete_group_button").removeClass("ui-state-hover");
+            $("#create_group_button").attr("disabled", true);
+            $("#create_group_button").addClass("ui-state-disabled");
+          }
+        }
+      });
+    },
+
+    createCloudAccount: function() {
+      var CloudAccountCreateView = this.CloudAccountCreateView;
+
+      this.newResourceDialog = new CloudAccountCreateView({
+        org_id: Common.account.org_id,
+        account_id: Common.account.id,
+        rootView: this.rootView
+      });
+
+      this.newResourceDialog.render();
+    },
+
+    deleteCloudAccount: function() {
+      if (this.selectedCloudAccount) {
+        this.selectedCloudAccount.destroy(Common.account.login);
+      }
+    },
+
+    clearSelection: function() {
+      this.selectedCloudAccount = undefined;
+      $(".group_item").removeClass("selected_item");
+    },
+
+    close: function() {
+      this.$el.remove();
+    }
+  });
+
+  return CloudAccountsManagementListView;
 });

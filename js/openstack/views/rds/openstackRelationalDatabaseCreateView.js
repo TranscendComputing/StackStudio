@@ -7,8 +7,8 @@
 /*global define:true console:true */
 define([
         'backbone',
-        '/js/topstack/views/rds/topstackRelationalDatabaseCreateView.js',
-        '/js/openstack/collections/compute/openstackAvailabilityZones.js'
+        'topstack/views/rds/topstackRelationalDatabaseCreateView',
+        'openstack/collections/compute/openstackAvailabilityZones'
 ], function( Backbone, TopStackRelationalDatabaseCreateView, AvailabilityZones ) {
     
     var RelationalDatabaseCreateView = TopStackRelationalDatabaseCreateView.extend({

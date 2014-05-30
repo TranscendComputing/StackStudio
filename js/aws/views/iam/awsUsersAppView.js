@@ -11,10 +11,10 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/aws/iam/awsUserAppTemplate.html',
-        '/js/aws/models/iam/awsUser.js',
-        '/js/aws/collections/iam/awsUsers.js',
-        '/js/aws/views/iam/awsUserCreateView.js',
-        '/js/aws/views/iam/awsUserKeyDisplayView.js',
+        'aws/models/iam/awsUser',
+        'aws/collections/iam/awsUsers',
+        'aws/views/iam/awsUserCreateView',
+        'aws/views/iam/awsUserKeyDisplayView',
         'icanhaz',
         'common'
 ], function( $, _, Backbone, ResourceAppView, UserAppTemplate, User, Users, UserCreateView, UserDisplayKeyView, ich, Common ) {
@@ -46,6 +46,10 @@ define([
             'click #resource_table tr': "clickOne"
         },
 
+        actions: [
+            { text: "Delete User", type: "row" }
+        ],
+
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
@@ -53,7 +57,8 @@ define([
             if(options.region) {
                 this.region = options.region;
             }
-            this.render();
+            this.$el.html(this.template);
+            this.loadData({ render: true });
             
             var userApp = this;
             Common.vent.off("userAppRefresh");

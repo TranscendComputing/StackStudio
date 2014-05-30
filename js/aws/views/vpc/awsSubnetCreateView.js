@@ -11,9 +11,9 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/vpc/awsSubnetCreateTemplate.html',
-        '/js/aws/models/vpc/awsSubnet.js',
-        '/js/aws/collections/vpc/awsVpcs.js',
-        '/js/aws/collections/compute/awsAvailabilityZones.js',
+        'aws/models/vpc/awsSubnet',
+        'aws/collections/vpc/awsVpcs',
+        'aws/collections/compute/awsAvailabilityZones',
         'common'
         
 ], function( $, _, Backbone, DialogView, subnetCreateTemplate, Subnet, Vpcs, AvailabilityZones, Common ) {

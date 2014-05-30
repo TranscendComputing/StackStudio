@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/autoscale/awsAutoscaleGroup.js',
+        'aws/models/autoscale/awsAutoscaleGroup',
         'common'
 ], function( $, Backbone, AutoscaleGroup, Common ) {
     'use strict';

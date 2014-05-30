@@ -36,8 +36,8 @@ define([
 
         addEnabledClouds: function(){
             //debugger
-            var policy = JSON.parse(sessionStorage.group_policies);
-            var permissions = JSON.parse(sessionStorage.permissions);
+            var policy = JSON.parse(Common.account.group_policies);
+            var permissions = JSON.parse(Common.account.permissions);
             if( policy.length > 0 && permissions < 1){
                 policy = policy[0].group_policy;
                 $("#stack_compatible_clouds_select").empty();
@@ -61,7 +61,7 @@ define([
             var stack = new Stack();
             var valid = true;
             var options = {};
-            options["account_id"] = sessionStorage.account_id;
+            options["account_id"] = Common.account.id;
             if($("#stack_name_input").val() !== "") {
                 options["name"] = $("#stack_name_input").val();
             }else {

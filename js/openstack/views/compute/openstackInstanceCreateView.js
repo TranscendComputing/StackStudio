@@ -11,12 +11,12 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/openstack/compute/openstackInstanceCreateTemplate.html',
-        '/js/openstack/models/compute/openstackInstance.js',
-        '/js/openstack/collections/compute/openstackImages.js',
-        '/js/openstack/collections/compute/openstackAvailabilityZones.js',
-        '/js/openstack/collections/compute/openstackFlavors.js',
-        '/js/openstack/collections/compute/openstackKeyPairs.js',
-        '/js/openstack/collections/compute/openstackSecurityGroups.js',
+        'openstack/models/compute/openstackInstance',
+        'openstack/collections/compute/openstackImages',
+        'openstack/collections/compute/openstackAvailabilityZones',
+        'openstack/collections/compute/openstackFlavors',
+        'openstack/collections/compute/openstackKeyPairs',
+        'openstack/collections/compute/openstackSecurityGroups',
         'common',
         'spinner',
         'jquery.multiselect',
@@ -116,9 +116,9 @@ define([
 
             $(".spinner").remove();
             var createView = this;
-            var policies = JSON.parse(sessionStorage.group_policies);
+            var policies = JSON.parse(Common.account.group_policies);
             var default_images = [];
-            var permissions = JSON.parse(sessionStorage.permissions);
+            var permissions = JSON.parse(Common.account.permissions);
             //Check if this user has a policy for images they can use if not use all images.
             if(policies.length > 0 && permissions.length < 1){
                 default_images = policies[0].group_policy.os_governance.default_images;

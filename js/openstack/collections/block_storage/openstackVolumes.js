@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/openstack/models/block_storage/openstackVolume.js',
+        'openstack/models/block_storage/openstackVolume',
         'common'
 ], function( $, Backbone, Volume, Common ) {
     'use strict';

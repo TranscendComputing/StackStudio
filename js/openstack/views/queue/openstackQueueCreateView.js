@@ -7,7 +7,7 @@
 /*global define:true console:true */
 define([
         'backbone',
-        '/js/topstack/views/queue/topstackQueueCreateView.js'
+        'topstack/views/queue/topstackQueueCreateView'
 ], function( Backbone, TopStackQueueCreateView) {
     
     var OpenStackQueueCreateView = TopStackQueueCreateView.extend({

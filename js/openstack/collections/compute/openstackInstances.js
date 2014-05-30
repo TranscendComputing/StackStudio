@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/openstack/models/compute/openstackInstance.js',
+        'openstack/models/compute/openstackInstance',
         'common'
 ], function( $, Backbone, Instance, Common ) {
     'use strict';

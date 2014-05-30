@@ -11,9 +11,9 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/openstack/network/openstackSubnetAppTemplate.html',
-        '/js/openstack/models/network/openstackSubnet.js',
-        '/js/openstack/collections/network/openstackSubnets.js',
-        '/js/openstack/views/network/openstackSubnetCreateView.js',
+        'openstack/models/network/openstackSubnet',
+        'openstack/collections/network/openstackSubnets',
+        'openstack/views/network/openstackSubnetCreateView',
         'icanhaz',
         'common'
 ], function( $, _, Backbone, AppView, openstackSubnetAppTemplate, Subnet, Subnets, OpenstackSubnetCreateView, ich, Common ) {

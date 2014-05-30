@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/simple_db/awsSimpleDatabase.js',
+        'aws/models/simple_db/awsSimpleDatabase',
         'common'
 ], function( $, Backbone, SimpleDB, Common ) {
     'use strict';
