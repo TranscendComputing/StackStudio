@@ -58,7 +58,7 @@ define([
             });
 
             Common.vent.on("cloudCredentialsRefresh", function() {
-                groupsView.rootView.cloudCredentials.fetch({
+                credentialsView.rootView.cloudCredentials.fetch({
                     reset: true
                 });
             });

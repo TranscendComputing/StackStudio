@@ -51,7 +51,7 @@ define([
 
             var $activeLoginModal = $(this.$el.selector);
             if($activeLoginModal.length > 0) {
-              this.setElement($activeLoginModal)
+              this.setElement($activeLoginModal);
             } else {
               $('body').append(this.$el);
             }
