@@ -13,7 +13,7 @@ define([
         'text!templates/meshes/meshesTemplate.html',
         // 'views/meshes/dashboardView',
         // 'views/meshes/gridsView',
-        // 'views/meshes/appliancesView',
+        'views/meshes/appliancesView',
         // 'views/meshes/capsulesView',
         'common'
 ], function( $,
@@ -23,7 +23,7 @@ Backbone,
 meshesTemplate,
 // DashboardView,
 // GridsView,
-// AppliancesView,
+AppliancesView,
 // CapsulesView,
 Common
 ) {
@@ -76,10 +76,10 @@ Common
                     break;
                 case '#appliances_tab':
                     console.log('Switching to AppliancesView');
-                    // if(!this.appliancesView) {
-                    //     this.appliancesView = new AppliancesView();
-                    // }
-                    // this.appliancesView.render();
+                    if(!this.appliancesView) {
+                        this.appliancesView = new AppliancesView();
+                    }
+                    this.appliancesView.render();
                     break;
                 case '#capsules_tab':
                     console.log('Switching to CapsulesView');

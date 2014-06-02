@@ -10,79 +10,148 @@ define([
         'underscore',
         'bootstrap',
         'backbone',
-        'text!templates/meshes/meshesTemplate.html',
-        'views/meshes/dashboardView',
-        'views/meshes/gridsView',
-        'views/meshes/appliancesView',
-        'views/meshes/capsulesView',
-        'models/mesh',
-        'common'
-], function( $, _, bootstrap, Backbone, meshesTemplate, DashboardView, GridsView, AppliancesView, CapsulesView, Mesh, Common ) {
+        'common',
+        'text!templates/meshes/subcomponentTemplate.html'//,
+        // 'collections/capsules',
+        // 'models/capsule'
+], function( $, _, bootstrap, Backbone, Common,
+    capsulesTemplate//, 
+    // Capsules, 
+    // Capsule
+) {
 
-    var MeshesView = Backbone.View.extend({
+    var CapsulesView = Backbone.View.extend({
 
         tagName: 'div',
 
-        template: _.template(meshesTemplate),
+        template: _.template(capsulesTemplate),
 
-        dashboardView: undefined,
+        capsules: undefined,
 
-        gridsView: undefined,
-
-        appliancesView: undefined,
-
-        capsulesView: undefined,
-
+        currentCapsule: undefined,
+        
         events: {
-            'click #meshes_tabs a': 'changeTabs'
+            "click #new_component_button": "newCapsule"
+            // "click #save_capsule_button": "saveCapsule",
+            // "click #close_capsule_button": "closeCapsule",
+            // "click #delete_capsule_button": "deleteCapsule",
+            // "click .capsule": "openCapsule"
         },
 
         initialize: function() {
-            $('#main').html(this.el);
+            $("#capsules_container").html(this.el);
             this.$el.html(this.template);
-            var meshesView = this;
+            // this.capsules = new Capsules();
+            // this.capsules.on( 'reset', this.addAllCapsules, this );
+            var capsuleApp = this;
+            Common.vent.off("capsuleCreated");
+            capsuleApp.render();
+            // Common.vent.on("capsuleCreated", function(newCapsule) {
+            //     capsuleApp.currentCapsule = new Capsule(newCapsule.capsule);
+            //     capsuleApp.render();
+            // });
+            // Common.vent.off("capsuleUpdated");
+            // Common.vent.on("capsuleUpdated", function(updatedCapsule) {
+            //     capsuleApp.currentCapsule = new Capsule(updatedCapsule.capsule);
+            //     capsuleApp.render();
+            // });
+            // Common.vent.off("capsuleDeleted");
+            // Common.vent.on("capsuleDeleted", function() {
+            //     capsuleApp.closeCapsule();
+            // });
         },
 
         render: function(){
-            this.changeTabs();
-        },
-
-        changeTabs: function(evt) {
-            console.log('changing Tabs');
-            if (evt) {
-                switch($(evt.target).attr('href')) {
-                case '#dashboard_tab':
-                    console.log('Switching to DashboardView');
-                    if(!this.dashboardView) {
-                        this.dashboardView = new DashboardView();
-                    }
-                    this.dashboardView.render();
-                    break;
-                case '#grids_tab':
-                    console.log('Switching to GridsView');
-                    if(!this.gridsView) {
-                        this.gridsView = new GridsView();
-                    }
-                    this.gridsView.render();
-                    break;
-                case '#appliances_tab':
-                    console.log('Switching to AppliancesView');
-                    if(!this.appliancesView) {
-                        this.appliancesView = new AppliancesView();
-                    }
-                    this.appliancesView.render();
-                    break;
-                case '#capsules_tab':
-                    console.log('Switching to CapsulesView');
-                    if(!this.capsulesView) {
-                        this.capsulesView = new CapsulesView();
-                    }
-                    this.capsulesView.render();
-                    break;
+            // this.capsules.fetch({reset:true});
+            $("#component_list").text("Capsules");
+            $('#not_selected_message').text('Select an capsule from the list to the left, or begin by creating a new capsule!');
+            $("#capsule_version_input").val("");
+            $("#capsule_description_input").val("");
+            if(this.currentCapsule) {
+                if(this.currentCapsule.id === "") {
+                }else {
+                    $("#capsule_offerings_list_label").html("Offerings Included");
+                    $("#capsule_name_input").val(this.currentCapsule.attributes.name);
+                    $("#capsule_version_input").val(this.currentCapsule.attributes.version);
+                    $("#capsule_description_input").val(this.currentCapsule.attributes.description);
                 }
+                $("#not_selected").hide();
+                $("#capsule_open").show();
+            }else {
+                $("#capsule_open").hide();
+                $("#not_selected").show();
             }
         },
 
+        // addAllCapsules: function() {
+        //     $("#capsule_list").empty();
+        //     this.capsules.each(function(capsule) {
+        //         $("#capsule_list").append("<li><a id='"+capsule.id+"' class='capsule selectable_item'>"+capsule.attributes.name+"</a></li>");
+        //     });
+        // },
+
+        newCapsule: function() {
+            this.openNewCapsule();
+        },
+
+        openNewCapsule: function() {
+            this.currentCapsule = new Capsule();
+            this.render();
+        },
+
+        // openCapsule: function() {
+        //     if(this.currentCapsule) {
+        //         var confirmation = confirm("Are you sure you want to open " + event.target.innerText + "? Any unsaved changes to the current capsule will be lost.");
+        //         if(confirmation === true) {
+        //             this.currentCapsule = this.capsules.get(event.target.id);
+        //             this.render();
+        //         }
+        //     }else {
+        //         this.currentCapsule = this.capsules.get(event.target.id);
+        //         this.render();
+        //     }
+        // },
+
+        // saveCapsule: function() {
+        //     if($("#offering_name_input").val().trim !== "") {
+        //         // Get Selected Offering IDs
+        //         var offeringIds = [];
+        //         $.each($("input:checked[type=checkbox][name=offering]"), function(index, value) {
+        //             offeringIds.push(value.value);
+        //         });
+        //         // Build Capsule Object from form
+        //         var options = {
+        //             "name": $("#capsule_name_input").val(),
+        //             "org_id": sessionStorage.org_id,
+        //             "version": $("#capsule_version_input").val(),
+        //             "description": $("#capsule_description_input").val(),
+        //             "offering_ids": offeringIds
+        //         };
+        //         // Create/Update Capsule
+        //         if(this.currentCapsule.id === "") {
+        //             this.currentCapsule.create(options);
+        //         }else {
+        //             this.currentCapsule.update(options);
+        //         }
+        //     }else {
+        //         Common.errorDialog({title:"Invalid Request", message:"You must provide a name for this capsule."});
+        //     }
+        // },
+
+        // closeCapsule: function() {
+        //     this.currentCapsule = undefined;
+        //     this.render();
+        // },
+
+        // deleteCapsule: function() {
+        //     if(this.currentCapsule) {
+        //         var confirmation = confirm("Are you sure you want to delete " + this.currentCapsule.attributes.name + "?");
+        //         if(confirmation === true) {
+        //             this.currentCapsule.destroy();
+        //         }
+        //     }
+        // },
+        
         close: function(){
             this.$el.empty();
             this.undelegateEvents();
@@ -91,21 +160,5 @@ define([
         }
     });
 
-    var meshesView;
-
-    Common.router.on('route:meshes', function () {
-        if(sessionStorage.account_id) {
-            if (this.previousView !== meshesView) {
-                this.unloadPreviousState();
-                meshesView = new MeshesView();
-                this.setPreviousState(meshesView);
-            }
-            meshesView.render();
-        }else {
-            Common.router.navigate('', {trigger: true});
-            Common.errorDialog('Login Error', 'You must login.');
-        }
-    }, Common);
-
-    return meshesView;
+    return CapsulesView;
 });

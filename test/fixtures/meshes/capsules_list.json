@@ -1,0 +1,94 @@
+[
+  {
+    "CapsuleSpec": {
+      "PolicyURL": "http://some/accounting/url",
+      "AccountingURL": "",
+      "ImageURL": "tdhite/demosite",
+      "StartCMD": "/start.sh {{range $index, $peer := .NetworkPeers}} {{$peer.IPAddress}}:{{$peer.Port}} {{end}}",
+      "ServicePorts": [
+        "80"
+      ],
+      "PeerImageURLs": [
+        "tdhite/demosite",
+        "tdhite/mciaas",
+        "tdhite/etcd"
+      ],
+      "TunnelTo": [
+        [],
+        [],
+        [
+          {
+            "InternalPort": 8080,
+            "Type": "zebedee"
+          }
+        ]
+      ],
+      "VolumeSpecs": [
+        {
+          "InternalPath": "/tmp",
+          "Size": "1M",
+          "EncryptionKey": "AAAAAA",
+          "EncryptionModel": ""
+        }
+      ]
+    }
+  },
+  {
+    "CapsuleSpec": {
+      "PolicyURL": "http://some/accounting/url",
+      "AccountingURL": "",
+      "ImageURL": "tdhite/etcd",
+      "StartCMD": "/start.sh {{range $index, $peer := .NetworkPeers}} {{$peer.IPAddress}}:{{$peer.Port}} {{end}}",
+      "ServicePorts": [
+        "80"
+      ],
+      "PeerImageURLs": [
+        "tdhite/demosite",
+        "tdhite/mciaas",
+        "tdhite/etcd"
+      ],
+      "VolumeSpecs": [
+        {
+          "InternalPath": "/tmp",
+          "Size": "1M",
+          "EncryptionKey": "AAAAAA",
+          "EncryptionModel": ""
+        }
+      ]
+    }
+  },
+  {
+    "CapsuleSpec": {
+      "PolicyURL": "http://some/accounting/url",
+      "AccountingURL": "",
+      "ImageURL": "tdhite/mciaas",
+      "StartCMD": "/start.sh {{range $index, $peer := .NetworkPeers}} {{$peer.IPAddress}}:{{$peer.Port}} {{end}}",
+      "ServicePorts": [
+        "80"
+      ],
+      "PeerImageURLs": [
+        "tdhite/demosite",
+        "tdhite/mciaas",
+        "tdhite/etcd"
+      ],
+      "TunnelFrom": [
+        [
+          {
+            "InternalPort": 8080,
+            "Type": "zebedee"
+          }
+        ],
+        [],
+        []
+      ],
+      "VolumeSpecs": [
+        {
+          "InternalPath": "/tmp",
+          "Size": "1M",
+          "EncryptionKey": "AAAAAA",
+          "EncryptionModel": ""
+        }
+      ]
+    }
+  }
+]

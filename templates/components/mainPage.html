@@ -1,0 +1,46 @@
+<div class="well well-lg">
+<div class="row">
+    <div class="col-lg-3">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+        <h3 id="component_list_title" class="panel-title">COMPONENT LIST</h3>
+        </div>
+        <div class="panel-body">
+            <div class="accordion-inner">
+                <ul id="component_list" class="nav"></ul>
+                <a id="new_component_button" class="btn"><i class="fa fa-plus-circle"></i> New</a>
+            </div>
+        </div>
+    </div>
+    </div>
+    <div class="col-lg-9">
+        <div id="component_open" hidden>
+            <form class="form-horizontal">
+                <div id="button_group"/>
+            </form>
+        </div>
+        <div id="not_selected" hidden>
+            <div class="jumbotron">
+                <h3 id="not_selected_message">NOT SELECTED MESSAGE</h3>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script id="component_actions" type="text/html">
+    <div class="btn-group">
+      <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+        Actions <span class="caret"></span>
+      </button>
+      <ul id="component_actions" class="dropdown-menu" role="menu">
+        {{#primary_actions}}
+        <li><a href="#">{{.}}</a></li>
+        {{/primary_actions}}
+        <li class="divider"></li>
+        {{#secondary_actions}}
+        <li><a href="#">{{.}}</a></li>
+        {{/secondary_actions}}
+      </ul>
+    </div>
+</script>

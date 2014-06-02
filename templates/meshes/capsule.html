@@ -1,0 +1,113 @@
+<script id="spec_form" type="text/html">
+<form class="form-horizontal">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Appliance Spec</h3>
+      </div>
+      <div class="panel-body">
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="control-group">
+                    <label class="control-label" for="image_url">Image URL</label>
+                    <div class="list-group">
+                        <a href="#" class="list-group-item">
+                            {{ImageURL}}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="control-group">
+                    <label class="control-label" for="start_command">Start Command</label>
+                    <div class="list-group">
+                        <a href="#" class="list-group-item">
+                            {{StartCMD}}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="control-group">
+                    <label class="control-label">Exposed Ports</label>
+                    <div class="list-group">
+                        <a href="#" class="list-group-item">
+                            {{ServicePorts}}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="control-group">
+                    <label class="control-label">Peer Image URLS</label>
+                    <div class="list-group">
+                        {{#PeerImageURLS}}
+                        <a href="#" class="list-group-item">
+                            {{.}}
+                        </a>
+                        {{/PeerImageURLS}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="control-group">
+                    <label class="control-label">Secure Tunnels</label>
+                    <div class="list-group">
+                        {{#TunnelTo}}
+                        <a href="#" class="list-group-item">
+                            {{.}}
+                        </a>
+                        {{/TunnelTo}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="control-group">
+                    <label class="control-label">Encrypted Volumes</label>
+                    <div class="list-group">
+                        {{#VolumeSpecs}}
+                        <a href="#" class="list-group-item">
+                            {{.}}
+                        </a>
+                        {{/VolumeSpecs}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="control-group">
+                    <label class="control-label" for="policy_url">Policy URL</label>
+                    <div class="list-group">
+                        <a href="#" class="list-group-item">
+                            {{PolicyURL}}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="control-group">
+                    <label class="control-label" for="accounting_url">Accounting URL</label>
+                    <div class="list-group">
+                        <a href="#" class="list-group-item">
+                            {{AccountingURL}}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+</form>
+</script>
