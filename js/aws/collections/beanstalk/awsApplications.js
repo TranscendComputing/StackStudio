@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/aws/models/beanstalk/awsApplication.js',
+        'aws/models/beanstalk/awsApplication',
         'common'
 ], function( $, Backbone, Application, Common ) {
     'use strict';

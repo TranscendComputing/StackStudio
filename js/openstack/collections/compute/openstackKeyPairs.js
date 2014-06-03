@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/openstack/models/compute/openstackKeyPair.js',
+        'openstack/models/compute/openstackKeyPair',
         'common'
 ], function( $, Backbone, KeyPair, Common ) {
     'use strict';

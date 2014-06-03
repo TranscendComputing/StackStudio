@@ -13,10 +13,9 @@ define([
         'text!templates/account/cloudCredentialManagementListTemplate.html',
         'collections/cloudCredentials',
         'views/account/cloudCredentialCreateView',
-        'views/account/groupManageUsersView',
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator'
-], function( $, _, Backbone, Common, cloudCredentialManagementListTemplate, CloudCredentials, CreateCloudCredentialView, ManageGroupUsers ) {
+], function( $, _, Backbone, Common, cloudCredentialManagementListTemplate, CloudCredentials, CreateCloudCredentialView ) {
 
     var CloudCredentialManagementListView = Backbone.View.extend({
 
@@ -26,14 +25,14 @@ define([
         
         rootView: undefined,
 
-        groups: undefined,
+        credentials: undefined,
 
-        selectedGroup: undefined,
+        selectedCredential: undefined,
 
         events: {
-            "click #create_group_button" : "createGroup",
-            "click #delete_group_button" : "deleteGroup",
-            'click #group_users_table tr': 'selectGroup'
+            "click #create_group_button" : "createCredential",
+            "click #delete_group_button" : "deleteCredential",
+            'click #group_users_table tr': "selectCredential"
         },
 
         initialize: function() {
@@ -45,62 +44,61 @@ define([
                 "bJQueryUI": true,
                 "bProcessing": true
             });
-            var groupsView = this;
-            //Common.vent.off("groupRefresh");
+            var credentialsView = this;
+
+            this.credentials = new CloudCredentials();
+            this.rootView.credentials = this.credentials;
+            this.credentials.on('reset', this.addAllCredentials, this);
+
             Common.vent.on("cloudCredentialCreated", function() {
-                groupsView.render();
-                groupsView.rootView.cloudCredentials.fetch({
+                credentialsView.render();
+                this.credentials.fetch({
                     reset: true
                 });
             });
 
             Common.vent.on("cloudCredentialsRefresh", function() {
-                groupsView.rootView.cloudCredentials.fetch({
+                credentialsView.rootView.cloudCredentials.fetch({
                     reset: true
                 });
             });
             
             Common.vent.on("cloudCredentialDeleted", function() {
-                groupsView.render();
-                groupsView.rootView.cloudCredentials.fetch({
+                credentialsView.render();
+                this.credentials.fetch({
                     reset: true
                 });
             });
-            this.selectedGroup = undefined;
-            //this.groups = this.rootView.cloudCredentials;
-            this.groups = new CloudCredentials();
-            this.groups.on('reset', this.addAllGroups, this);
+            this.selectedCredential = undefined;
+
+            this.credentials.fetch({
+                reset : true
+            });
+
             this.render();
         },
 
         render: function () {
-            var self = this;
             this.disableSelectionRequiredButtons(true);
-            $("#group_users_table").dataTable().fnClearTable();
-            
-            var groupListView = this;
-            
-            this.groups.fetch({
-                reset: true
-            });
         },
         
-        selectGroup: function(event){
+        selectCredential: function ( event ) {
             $("#group_users_table tr").removeClass('row_selected');
             $(event.currentTarget).addClass('row_selected');
             
             var rowData = $("#group_users_table").dataTable().fnGetData(event.currentTarget);
-            this.selectedGroup = this.groups.get($.parseHTML(rowData[0])[0]);
+            this.selectedCredential = this.credentials.get($.parseHTML(rowData[0])[0]);
             
-            if(this.selectedGroup) {
+            if(this.selectedCredential) {
                 this.disableSelectionRequiredButtons(false);
             }
         },
         
-        addAllGroups: function() {
+        addAllCredentials: function() {
+            this.rootView.addAll(this.credentials, $('#cred_list'));
             $("#group_users_table").dataTable().fnClearTable();
-            $.each(this.groups.models, function(index, value) {
-                var rowData = ['<a href="#account/management/cloud-credentials" id="'+value.attributes.id+'" class="credential_item">'+value.attributes.name+"</a>",value.attributes.cloud_provider];
+            this.credentials.each(function ( cred ) {
+                var rowData = ['<a href="#cloud/setup/cloud-credentials/' + cred.attributes.id + '" id="'+ cred.attributes.id+'" class="credential_item">'+cred.attributes.name+"</a>",cred.attributes.cloud_provider];
                 $("#group_users_table").dataTable().fnAddData(rowData);
             });
         },
@@ -120,19 +118,18 @@ define([
             }
         },
 
-        createGroup: function() {
+        createCredential: function() {
             new CreateCloudCredentialView({rootView: this.rootView});
-            //alert("Create Cloud Credential");
         },
 
-        deleteGroup: function() {
-            if(this.selectedGroup) {
-                this.groups.deleteCredential(this.selectedGroup);
+        deleteCredential: function() {
+            if(this.selectedCredential) {
+                this.credentials.deleteCredential(this.selectedCredential);
             }
         },
 
         clearSelection: function() {
-            this.selectedGroup = undefined;
+            this.selectedCredential = undefined;
             $(".group_item").removeClass("selected_item");
         },
 

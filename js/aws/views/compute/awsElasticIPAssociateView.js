@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/compute/awsElasticIPAssociateTemplate.html',
-        '/js/aws/collections/compute/awsInstances.js',
+        'aws/collections/compute/awsInstances',
         'icanhaz',
         'common'
         

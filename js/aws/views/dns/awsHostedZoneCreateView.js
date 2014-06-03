@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/dns/awsHostedZoneCreateTemplate.html',
-        '/js/aws/models/dns/awsHostedZone.js',
+        'aws/models/dns/awsHostedZone',
         'common'
         
 ], function( $, _, Backbone, DialogView, hostedZoneCreateTemplate, HostedZone, Common ) {

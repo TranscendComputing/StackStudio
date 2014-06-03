@@ -11,15 +11,15 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/cloud_formation/awsStackCreateTemplate.html',
-        '/js/aws/models/cloud_formation/awsStack.js',
-        '/js/aws/collections/notification/awsTopics.js',
-        '/js/aws/models/notification/awsTopic.js',
-        '/js/aws/models/notification/awsSubscription.js',
+        'aws/models/cloud_formation/awsStack',
+        'aws/collections/notification/awsTopics',
+        'aws/models/notification/awsTopic',
+        'aws/models/notification/awsSubscription',
         'collections/cloudCredentials',
         'common',
         'spinner',
         'messenger',
-        '/js/models/ansibleQueueItem.js',
+        'models/ansibleQueueItem',
         'jquery.form'
         
 ], function( $, _, Backbone, DialogView, StackCreateTemplate, 
@@ -228,10 +228,10 @@ define([
                 $.each(this.cloudDefinitions[this.cloudProvider].regions, function(index, region) {
                     //regions check
                     var addRegion = false;
-                    if(JSON.parse(sessionStorage.group_policies)[0] == null){
+                    if(JSON.parse(Common.account.group_policies)[0] == null){
                         addRegion = true;
                     }else{
-                        $.each(JSON.parse(sessionStorage.group_policies), function(index,value){
+                        $.each(JSON.parse(Common.account.group_policies), function(index,value){
                             if(value != null){
                                 var usable_regions = value.group_policy.aws_governance.usable_regions;
                                 if($.inArray(region.name, usable_regions) !== -1){

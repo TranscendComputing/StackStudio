@@ -11,7 +11,7 @@ define([
         'backbone',
         'common',
         'views/account/accountLoginView',
-        'js/views/dashboardView.js',
+        'views/dashboardView',
         'jquery-ui'
 ], function( $, _, Backbone, Common, AccountLoginView, DashboardView ) {
     'use strict';
@@ -34,8 +34,8 @@ define([
         },
 
         render: function() {
-            if(sessionStorage.login) {
-                this.$el.html("<li id='nav_account' class='main_nav'><a href='#account/management/home'><i class='fa fa-user' style='padding-right:3px;'></i>"+sessionStorage.login+"</a></li><li><a id='account_logout'>Logout</a></li>");
+            if(Common.account) {
+                this.$el.html("<li id='nav_account' class='main_nav'><a href='#account/management'><i class='fa fa-user' style='padding-right:3px;'></i>"+Common.account.login+"</a></li><li><a id='account_logout'>Logout</a></li>");
             } else {
                 this.$el.html("<li><a id='account_login'>Login</a></li>");
             }
@@ -47,7 +47,7 @@ define([
         },
 
         accountLogout: function() {
-            sessionStorage.clear();
+            Common.clearCache();
 
             // Clear state so dashboard view can be refreshed
             Common.unloadPreviousState();

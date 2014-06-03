@@ -1,0 +1,167 @@
+<style type="text/css">
+
+    #cloud_setup_menu {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+
+    #cloud_setup_menu .nav {
+        padding-left: 15px !important;
+    }
+    .group {
+        background: yellow;
+        width: 200px;
+        height: 500px;
+    }
+    .group .subgroup {
+        background: orange;
+        width: 150px;
+        height: 200px;
+    }
+    .fixed {
+        position: fixed;
+    }
+
+    .bs-docs-sidebar, #submanagement_app {
+        vertical-align: top;
+        display: inline-block;
+    }
+
+    /* sidebar */
+    .bs-docs-sidebar {
+        width: 200px;
+    }
+
+    #submanagement_app {
+        width: calc(100% - 250px);
+        min-width: 550px;
+        margin-left: 15px;
+    }
+
+    #submanagement_app h3 {
+        margin-top: 0;
+    }
+
+    /* nested links */
+    .bs-docs-sidebar .nav .nav>li>a {
+        padding-top: 1px;
+        padding-bottom: 1px;
+        padding-left: 30px;
+        font-size: 12px;
+    }
+
+    /* all active links */
+    .bs-docs-sidebar .nav>.active>a, 
+    .bs-docs-sidebar .nav>.active:hover>a,
+    .bs-docs-sidebar .nav>.active:focus>a {
+        font-weight: 700;
+    }
+    /* nested active links */
+    .bs-docs-sidebar .nav .nav>.active>a, 
+    .bs-docs-sidebar .nav .nav>.active:hover>a,
+    .bs-docs-sidebar .nav .nav>.active:focus>a {
+        font-weight: 500;
+    }
+
+    /* hide inactive nested list */
+    #cloud_setup_menu>li>ul {
+        display: none;
+    }
+    /* show active nested list */
+    #cloud_setup_menu>li.open>ul {
+        display: block;
+    }
+
+    #cloud_setup_menu>li.active {
+        border-left: 4px solid #428bca;
+    }
+
+    #cloud_setup_menu>li a {
+        text-decoration: none;
+        padding-top: 2px;
+        padding-bottom: 2px;
+    }
+
+    #cloud_setup_menu .sub-active {
+        border-left: 3px solid #4a2e83;
+    }
+
+    #cloud_setup_menu>li .caret {
+        -webkit-transform: rotate(-90deg);
+           -moz-transform: rotate(-90deg);
+            -ms-transform: rotate(-90deg);
+             -o-transform: rotate(-90deg);
+                transform: rotate(-90deg);
+    }
+
+    #cloud_setup_menu>li.open .caret {
+        -webkit-transform: rotate(0deg);
+           -moz-transform: rotate(0deg);
+            -ms-transform: rotate(0deg);
+             -o-transform: rotate(0deg);
+                transform: rotate(0deg);
+    }    
+</style>
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h1 class="panel-title">
+            Cloud Setup
+        </h1>
+    </div>
+    <div class="panel-body">
+        <nav id="cloud_nav" class="bs-docs-sidebar">
+            <ul id="cloud_setup_menu" class="list-group">
+                <!-- Cloud Accounts Tab -->
+                <li data-group="cloud-accounts" class="list-group-item active open" id="cloud_accounts_tab">
+                    <span class="badge"></span>
+                    <a href="#cloud/setup/cloud-accounts_list"><span class="caret"></span> Cloud Accounts</a>
+                    <!-- Accounts as submenus -->
+                    <ul data-collection-name="cloudAccounts" data-base-url="#cloud/setup/cloud-accounts" id ="cloud_account_list" class="nav nav-stacked"></ul>
+                </li>
+                <!-- Cloud Credentials Tab -->
+                <li data-group="cloud-credentials" class="list-group-item" id="cloud_credentials_tab">
+                    <span class="badge"></span>
+                    <a href="#cloud/setup/cloud-credentials_list"><span class="caret"></span> Cloud Credentials</a>
+                    <!-- Cloud Credentials as submenus -->
+                    <ul data-collection-name="credentials" data-base-url="#cloud/setup/cloud-credentials" id="cred_list" class="nav nav-stacked cred_list"></ul>
+                </li>
+                <!-- Groups Tab -->
+                <li data-group="group" class="list-group-item" id="groups_tab">
+                    <span class="badge"></span>
+                    <a href="#cloud/setup/group_list"><span class="caret"></span> Groups</a>
+                    <!-- Groups as submenus -->
+                    <ul data-collection-name="groups" data-base-url="#cloud/setup/group" id="group_list" class="nav nav-stacked group_list"></ul>
+                </li>
+                <!-- Policies Tab -->
+                <li data-group="policy" class="list-group-item" id="policies_tab">
+                    <span class="badge"></span>
+                    <a href="#cloud/setup/policy_list"><span class="caret"></span> Policies</a>
+                    <!-- Policies as submenus -->
+                    <ul data-collection-name="policies" data-base-url="#cloud/setup/policy" id="policy_list" class="nav nav-stacked policy_list"></ul>
+                </li>
+                <!-- Users Tab -->
+                <li data-group="user" class="list-group-item" id="users_tab">
+                    <span class="badge"></span>
+                    <a href="#cloud/setup/user_list"><span class="caret"></span> Users</a>
+                    <!-- Users as submenus -->
+                    <ul data-collection-name="users" data-base-url="#cloud/setup/user" id="user_list" class="nav nav-stacked user_list"></ul>
+                </li>
+                <!-- Config managers Tab -->
+                <li data-group="configuration_managers" class="list-group-item" id="configuration_managers_tab">
+                    <span class="badge"></span>
+                    <a href="#cloud/setup/configuration_managers">Configuration Managers</a>
+                    <!-- Repos as submenus -->
+                    <ul data-collection-name="configurationManagers" data-base-url="#cloud/setup/configuration_managers" id="configuration_manager_list" class="nav nav-stacked configuration_manager_list"></ul>
+                </li>
+                <!-- SCM Tab -->
+                <li data-group="source_control_repositories" class="list-group-item" id="source_control_tab">
+                    <span class="badge"></span>
+                    <a href="#cloud/setup/source_control_repositories_list">Source Control</a>
+                    <!-- Repos as submenus -->
+                    <ul data-collection-name="repositories" data-base-url="#cloud/setup/source_control_repositories" id="source_control_list" class="nav nav-stacked source_control_list"></ul>
+                </li>
+            </ul>
+        </nav>
+        <div id="submanagement_app"></div>
+    </div>
+</div>

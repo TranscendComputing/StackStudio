@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/google/models/compute/googleSecurityGroup.js',
+        'google/models/compute/googleSecurityGroup',
         'common'
 ], function( $, Backbone, SecurityGroup, Common ) {
     'use strict';

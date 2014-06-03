@@ -1,17 +1,138 @@
+<style type="text/css">
+
+    #account_management_menu {
+        border-radius: 5px;
+        border-color: #ddd;
+        border-width: 1px;
+        border-style: solid;
+    }
+    .group {
+        background: yellow;
+        width: 200px;
+        height: 500px;
+    }
+    .group .subgroup {
+        background: orange;
+        width: 150px;
+        height: 200px;
+    }
+    .fixed {
+        position: fixed;
+    }
+
+    /* sidebar */
+    .bs-docs-sidebar {
+        padding-left: 20px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    /* nested links */
+    .bs-docs-sidebar .nav .nav>li>a {
+        padding-top: 1px;
+        padding-bottom: 1px;
+        padding-left: 30px;
+        font-size: 12px;
+    }
+
+    /* all active links */
+    .bs-docs-sidebar .nav>.active>a, 
+    .bs-docs-sidebar .nav>.active:hover>a,
+    .bs-docs-sidebar .nav>.active:focus>a {
+        font-weight: 700;
+    }
+    /* nested active links */
+    .bs-docs-sidebar .nav .nav>.active>a, 
+    .bs-docs-sidebar .nav .nav>.active:hover>a,
+    .bs-docs-sidebar .nav .nav>.active:focus>a {
+        font-weight: 500;
+    }
+
+    /* hide inactive nested list */
+    .bs-docs-sidebar .nav ul.nav {
+        display: none;
+    }
+    /* show active nested list */
+    .bs-docs-sidebar .nav ul.nav.open {
+        display: block;
+    }
+</style>
+<!-- <div class="row">
+    <nav class="col-xs-3 bs-docs-sidebar">
+        <ul id="acct_sidebar" class="nav nav-stacked fixed">
+            <li>
+                <a href="#cloud_accounts_new">Cloud Accounts</a>
+                <ul class="nav nav-stacked">
+                    <li><a href="#cloud/management/cloud-credentials/cloud1">Eventually</a></li>
+                    <li><a href="#cloud/management/cloud-credentials/cloud2">This</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#cloud_credentials_new">Cloud Credentials</a>
+            </li>
+            <li>
+                <a href="#groups_new">Groups</a>
+            </li>
+        </ul>
+    </nav>
+    <div class="col-xs-9">
+        <section class="group" id="cloud_accounts_new">
+            <div>List of cloud accounts or whatever</div>
+        </section>
+        <section class="group" id="cloud_credentials_new">
+            <div>List of cloud credentials or whatever</div>
+        </section>
+        <section class="group" id="groups_new">
+            <div>List of groups or whatever</div>
+        </section>
+    </div>
+</div> -->
+
 <div class="row">
-    <div id="management_tree" class="col-lg-3">
-        <div id="account_management_menu">
-            <div style="border-bottom-style:none;background:#4a2e83 url(/images/jqueryUI/ui-bg_highlight-soft_65_4A2E83_1x100.png) 50% 50% repeat-x;color: #ffffff;text-align: center;border-radius: 5px 5px 0px 0px;box-shadow: 0 0 5px #888;">Account Management</div>
-            <div id="mCloudAccount_tree" style="border-bottom-style:none;"><ul><li id="c_account_list" class="account_list"><a href="#account/management/cloud-accounts_list">Cloud Accounts</a></li></ul></div>
-            <div id="mCloudCredential_tree" style="border-bottom-style:none;border-top-style:none;"><ul><li id="cred_list" class="account_list"><a href="#account/management/cloud-credentials_list">Cloud Credentials</a></li></ul></div>
-            <div id="mGroup_tree" style="border-bottom-style:none;border-top-style:none;"><ul><li id="group_list" class="account_list"><a href="#account/management/groups_list">Groups</a></li></ul></div>
-            <div id="mPolicy_tree" style="border-bottom-style:none;border-top-style:none;"><ul><li id="policy_list" class="account_list"><a href="#account/management/policies">Policies</a></li></ul></div>
-            <div id="mUser_tree" style="border-bottom-style:none;border-top-style:none;"><ul><li id="user_list" class="account_list"><a href="#account/management/users">Users</a></li></ul></div>
+    <nav id="management_tree" class="col-xs-3 col-lg-2 bs-docs-sidebar">
+        <ul id="account_management_menu" class="nav nav-stacked nav-pills fixed">
+            <!-- Cloud Accounts Tab -->
+            <li id="cloud_accounts_tab">
+                <a href="#account/management/cloud-accounts_list">Cloud Accounts</a>
+                <!-- Accounts as submenus -->
+                <ul id ="cloud_account_list" class="nav nav-stacked"></ul>
+            </li>
+            <!-- Cloud Credentials Tab -->
+            <li id="cloud_credentials_tab">
+                <a href="#account/management/cloud-credentials_list">Cloud Credentials</a>
+                <!-- Cloud Credentials as submenus -->
+                <ul id="cred_list" class="nav nav-stacked cred_list"></ul>
+            </li>
+            <!-- Groups Tab -->
+            <li id="groups_tab">
+                <a href="#account/management/groups_list">Groups</a>
+                <!-- Groups as submenus -->
+                <ul id="group_list" class="nav nav-stacked group_list"></ul>
+            </li>
+            <!-- Policies Tab -->
+            <li id="policies_tab">
+                <a href="#account/management/policies">Policies</a>
+                <!-- Policies as submenus -->
+                <ul id="policy_list" class="nav nav-stacked policy_list"></ul>
+            </li>
+            <!-- Users Tab -->
+            <li id="users_tab">
+                <a href="#account/management/users">Users</a>
+                <!-- Users as submenus -->
+                <ul id="user_list" class="nav nav-stacked user_list"></ul>
+            </li>
+            <!-- SCM Tab -->
+            <li id="source_control_tab">
+                <a href="#account/management/source_control_repositories">Source Control</a>
+                <!-- Repos as submenus -->
+                <ul id="source_control_list" class="nav nav-stacked source_control_list"></ul>
+            </li>
+            <!-- <div id="mUser_tree" style="border-bottom-style:none;border-top-style:none;"><ul><li id="user_list" class="account_list"><a href="#account/management/users">Users</a></li></ul></div>
             <div id="mSCRepos_tree" style="border-bottom-style:none;border-top-style:none;"><ul><li id="repositories_list" class="account_list"><a href="#account/management/source_control_repositories">Source Control Repositories</a></li></ul></div>
             <div id="mContinuousIntegration_tree" style="border-bottom-style:none;border-top-style:none;"><ul><li id="ci_list" class="account_list"><a href="#account/management/continuous_integration">Continuous Integration</a></li></ul></div>
             <div id="mdevOps_tree" style="border-bottom-style:none;border-top-style:none;"><ul><li id="devops_list" class="account_list"><a href="#account/management/configuration_managers">Configuration Managers</a></li></ul></div>
-            <div id="mMyAccount_tree" style="border-top-style:none;border-radius: 0px 0px 5px 5px;"><ul><li id="my_account_list" class="account_list"><a href="#account/management/home">My Account</a></li></ul></div>
-        </div>
-    </div>
-    <div id="submanagement_app" class="col-lg-9"></div>
+            <div id="mMyAccount_tree" style="border-top-style:none;border-radius: 0px 0px 5px 5px;"><ul><li id="my_account_list" class="account_list"><a href="#account/management/home">My Account</a></li></ul></div> -->
+        </ul>
+    </nav>
+    <div id="submanagement_app" class="col-xs-9 col-lg-10"></div>
 </div>

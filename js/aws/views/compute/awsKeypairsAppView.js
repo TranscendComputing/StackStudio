@@ -11,10 +11,10 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/aws/compute/awsKeyPairAppTemplate.html',
-        '/js/aws/models/compute/awsKeyPair.js',
-        '/js/aws/collections/compute/awsKeyPairs.js',
-        '/js/aws/views/compute/awsKeyPairCreateView.js',
-        '/js/aws/views/compute/awsKeyPairImportView.js',
+        'aws/models/compute/awsKeyPair',
+        'aws/collections/compute/awsKeyPairs',
+        'aws/views/compute/awsKeyPairCreateView',
+        'aws/views/compute/awsKeyPairImportView',
         'icanhaz',
         'common',
         'jquery.dataTables'
@@ -60,6 +60,13 @@ define([
             'click #resource_table tr': "clickOne"
         },
 
+        createText: "Create Key Pair",
+
+        actions: [
+            { text: "Import Key Pair", type: "table", cssClass: "import_button" },
+            { text: "Delete Key Pair", type: "row" }
+        ],
+
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
@@ -67,7 +74,8 @@ define([
             if(options.region) {
                 this.region = options.region;
             }
-            this.render();
+            this.$el.html(this.template);
+            this.loadData({render: true});
             
             var keyPairApp = this;
             Common.vent.on("keyPairAppRefresh", function() {

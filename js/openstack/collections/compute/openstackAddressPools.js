@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/openstack/models/compute/openstackAddressPool.js',
+        'openstack/models/compute/openstackAddressPool',
         'common'
 ], function( $, Backbone, AddressPool, Common ) {
     'use strict';

@@ -6,8 +6,8 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-    '/js/topstack/views/rds/topstackRelationaldatabasesAppView.js',
-    '/js/openstack/views/rds/openstackRelationalDatabaseCreateView.js'
+    'topstack/views/rds/topstackRelationaldatabasesAppView',
+    'openstack/views/rds/openstackRelationalDatabaseCreateView'
 ], function( TopStackRelationalDatabaseAppView, OpenStackRelationalDatabaseCreateView ) {
     'use strict';
 

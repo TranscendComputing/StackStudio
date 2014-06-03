@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/topstack/models/rds/topstackDBEngineVersion.js',
+        'topstack/models/rds/topstackDBEngineVersion',
         'common'
 ], function( $, Backbone, DBEngineVersion, Common ) {
     'use strict';

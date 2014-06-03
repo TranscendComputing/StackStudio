@@ -11,9 +11,9 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/openstack/block_storage/openstackVolumeCreateTemplate.html',
-        '/js/openstack/collections/block_storage/openstackVolumes.js',
-        '/js/openstack/collections/compute/openstackAvailabilityZones.js',
-        '/js/openstack/collections/block_storage/openstackSnapshots.js',
+        'openstack/collections/block_storage/openstackVolumes',
+        'openstack/collections/compute/openstackAvailabilityZones',
+        'openstack/collections/block_storage/openstackSnapshots',
         'common',
         'jquery.multiselect',
         'jquery.multiselect.filter'

@@ -41,7 +41,8 @@ define([
             "click button.save-manager" : "saveManager"
         },
 
-        initialize: function(options) {
+        initialize: function ( options ) {
+            var self = this;
             this.template = _.template(managementCloudAccountTemplate);
             this.$el.html(this.template);
             $("#submanagement_app").html(this.$el);
@@ -61,13 +62,35 @@ define([
                 thisView.render();
             });
             $("input").addClass("form-control");
-            this.render();
+
+            this.cloudAccounts = new CloudAccounts();
+
+            this.cloudAccounts.on('reset', function ( data ) {
+              self.selectedCloudAccount = self.cloudAccounts.get(options.selectedId);
+              self.initFields();
+            });
+
+            if(options.collection && options.collection.models.length > 0) {
+              this.cloudAccounts.reset(options.collection.models);
+            }
+
+            if(this.cloudAccounts.models.length === 0) {
+              this.cloudAccounts.fetch({
+                data: $.param({
+                  org_id: Common.account.org_id,
+                  account_id: Common.account.id
+                }),
+                reset : true
+              });
+            }
+
+
         },
 
         render: function () {
             var thisView = this;
             this.configManagers.fetch({
-                data: $.param({org_id: sessionStorage.org_id}),
+                data: $.param({org_id: Common.account.org_id}),
                 success:function(collection, response, options){
                     thisView.populateConfigMenus();
                 }
@@ -119,8 +142,8 @@ define([
             var thisView = this;
             thisView.users.fetch({success: function(){
                 var isAdmin = false;
-                if(thisView.users.get(sessionStorage.account_id).attributes.permissions.length > 0){
-                    isAdmin = thisView.users.get(sessionStorage.account_id).attributes.permissions[0].permission.name === "admin";
+                if(thisView.users.get(Common.account.id).attributes.permissions.length > 0){
+                    isAdmin = thisView.users.get(Common.account.id).attributes.permissions[0].permission.name === "admin";
                 }
                 if(!isAdmin){
                     $(".delete-button").attr("disabled", true);
@@ -134,8 +157,7 @@ define([
             }});
         },
         
-        treeSelectCloudAccount: function() {
-            this.selectedCloudAccount = this.rootView.cloudAccounts.get(this.rootView.treeCloudAccount);
+        initFields : function () {
             $("#services_tab").html(this.selectedCloudAccount.attributes.name);
             $("#cloud_provider_label").html(this.selectedCloudAccount.attributes.cloud_provider);
             
@@ -173,7 +195,7 @@ define([
             });
             service.unset("password");
             service.unset("username");
-            this.selectedCloudAccount.updateService(service,sessionStorage.login);
+            this.selectedCloudAccount.updateService(service,Common.account.login);
             return false;
         },
 
@@ -196,7 +218,7 @@ define([
 
         deleteService: function(event) {
             var serviceData = $(event.currentTarget.parentElement).find("input").data();
-            this.selectedCloudAccount.deleteService(serviceData, sessionStorage.login);
+            this.selectedCloudAccount.deleteService(serviceData, Common.account.login);
             
             return false;
         },

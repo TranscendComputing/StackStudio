@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/topstack/cache/topstackParameterGroupCreateTemplate.html',
-        '/js/topstack/models/cache/topstackCacheParameterGroup.js',
+        'topstack/models/cache/topstackCacheParameterGroup',
         'icanhaz',
         'common'
         

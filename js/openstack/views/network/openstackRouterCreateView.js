@@ -13,8 +13,8 @@ define([
         'icanhaz',
         'views/dialogView',
         'text!templates/openstack/network/openstackRouterCreateTemplate.html',
-        '/js/openstack/models/network/openstackRouter.js',
-        '/js/openstack/collections/network/openstackNetworks.js',
+        'openstack/models/network/openstackRouter',
+        'openstack/collections/network/openstackNetworks',
         'jquery.multiselect',
         'jquery.multiselect.filter',
         'backbone.stickit'

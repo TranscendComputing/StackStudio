@@ -11,9 +11,9 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/topstack/queue/topstackQueueAppTemplate.html',
-        '/js/topstack/models/queue/topstackQueue.js',
-        '/js/topstack/collections/queue/topstackQueues.js',
-        '/js/topstack/views/queue/topstackQueueCreateView.js',
+        'topstack/models/queue/topstackQueue',
+        'topstack/collections/queue/topstackQueues',
+        'topstack/views/queue/topstackQueueCreateView',
         'icanhaz',
         'common'
 ], function( $, _, Backbone, ResourceAppView, queueAppTemplate, Queue, Queues, QueueCreateView, ich, Common ) {

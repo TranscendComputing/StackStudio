@@ -1,25 +1,5 @@
 <div>
-    <div class="button_bar">
-        <table>
-            <tr>
-                <td>
-                    <button class="create_button">Create Topic</button>
-                </td>
-                <td>
-                    <ul id="action_menu">
-                        <li style="z-index: 1000">
-                            <a id="action_button">Actions</a>
-                            <ul>
-                                <li><a>Publish to this Topic</a></li>
-                                <li><a>Delete Topic</a></li>
-                                <li><a>Edit Topic Display Name</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </td>
-            </tr>
-        </table>
-    </div>
+    <div class="button_bar"></div>
     <table id="resource_table" class="full_width">
         <thead>
             <tr>
@@ -36,26 +16,35 @@
 </div>
 
 <script type="text/html" id="resource_detail">
-    <div id="detail_tabs">
-        <ul>
-            <li><a id="topic_details" href="#tabs-1">Details</a></li>
-            <li><a id="subscription_details" href="#tabs-2">Subscription</a></li>
-        </ul>
-        <div id="tabs-1" class="tab">
-            <table>
-                <tbody>
-                    <tr><td><b>Topic Name:</b></td>                 <td>{{ Name }}</td></tr>
-                    <tr><td><b>Topic ID:</b></td>                   <td>{{ id }}</td></tr>
-                    <tr><td><b>Display Name:</b></td>               <td>{{ DisplayName }}</td></tr>
-                    <tr><td><b>Owner:</b></td>                      <td>{{ Owner }}</td></tr>
-                    <tr><td><b>Subscriptions Pending:</b></td>      <td>{{ SubscriptionsPending }}</td></tr>
-                    <tr><td><b>Subscriptions Confirmed:</b></td>    <td>{{ SubscriptionsConfirmed }}</td></tr>
-                    <tr><td><b>Subscriptions Deleted:</b></td>      <td>{{ SubscriptionsDeleted }}</td></tr>
-                </tbody>
-            </table>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <div class="panel-title">Detail View: {{Name}}</div>
         </div>
-        <div id="tabs-2" class="tab">
-            <div id="subscriptions_tab_content"></div>
+        <div class="panel-body">    
+            <div id="detail_tabs">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" id="topic_details" href="#tabs-1">Details</a></li>
+                    <li><a data-toggle="tab" id="subscription_details" href="#tabs-2">Subscription</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div id="tabs-1" class="tab-pane active">
+                        <table>
+                            <tbody>
+                                <tr><td><b>Topic Name:</b></td>                 <td>{{ Name }}</td></tr>
+                                <tr><td><b>Topic ID:</b></td>                   <td>{{ id }}</td></tr>
+                                <tr><td><b>Display Name:</b></td>               <td>{{ DisplayName }}</td></tr>
+                                <tr><td><b>Owner:</b></td>                      <td>{{ Owner }}</td></tr>
+                                <tr><td><b>Subscriptions Pending:</b></td>      <td>{{ SubscriptionsPending }}</td></tr>
+                                <tr><td><b>Subscriptions Confirmed:</b></td>    <td>{{ SubscriptionsConfirmed }}</td></tr>
+                                <tr><td><b>Subscriptions Deleted:</b></td>      <td>{{ SubscriptionsDeleted }}</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="tabs-2" class="tab-pane">
+                        <div id="subscriptions_tab_content"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </script>

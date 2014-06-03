@@ -17,7 +17,7 @@ define([
 
 		model: Portfolio,
 
-        url: function(options){return Common.apiUrl + '/stackstudio/v1/portfolios/org/' + sessionStorage.org_id;}
+        url: function(options){return Common.apiUrl + '/stackstudio/v1/portfolios/org/' + Common.account.org_id;}
 	
 	});
 

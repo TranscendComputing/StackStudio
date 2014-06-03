@@ -10,7 +10,7 @@ define([
         'underscore',
         'backbone',
         'common',
-        '/js/openstack/models/compute/openstackSecurityGroupRule.js'
+        'openstack/models/compute/openstackSecurityGroupRule'
 ], function( $, _, Backbone, Common ) {
     'use strict';   
 

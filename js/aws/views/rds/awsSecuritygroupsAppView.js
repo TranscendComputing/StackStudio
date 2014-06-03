@@ -11,10 +11,10 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/aws/cache/awsSecurityGroupAppTemplate.html',
-        '/js/aws/models/rds/awsDBSecurityGroup.js',
-        '/js/aws/collections/rds/awsDBSecurityGroups.js',
-        '/js/aws/views/rds/awsSecurityGroupCreateView.js',
-        '/js/aws/collections/compute/awsSecurityGroups.js',
+        'aws/models/rds/awsDBSecurityGroup',
+        'aws/collections/rds/awsDBSecurityGroups',
+        'aws/views/rds/awsSecurityGroupCreateView',
+        'aws/collections/compute/awsSecurityGroups',
         'icanhaz',
         'common',
         'jquery.dataTables'
@@ -62,6 +62,10 @@ define([
             'click .revoke-btn':'revokeRule'
         },
 
+        actions: [
+            { text: "Delete Security Group", type: "row" }
+        ],
+
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
@@ -69,7 +73,8 @@ define([
             if(options.region) {
                 this.region = options.region;
             }
-            this.render();
+            this.$el.html(this.template);
+            this.loadData({ render: true });
             
             var securityGroupApp = this;
             Common.vent.on("securityGroupAppRefresh", function() {

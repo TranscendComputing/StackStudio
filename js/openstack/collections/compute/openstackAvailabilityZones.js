@@ -8,7 +8,7 @@
 define([
         'jquery',
         'backbone',
-        '/js/openstack/models/compute/openstackAvailabilityZone.js',
+        'openstack/models/compute/openstackAvailabilityZone',
         'common'
 ], function( $, Backbone, AvailabilityZone, Common ) {
     'use strict';

@@ -6,9 +6,9 @@
 /*jshint smarttabs:true */
 /*global define:true console:true */
 define([
-    '/js/topstack/views/dns/topstackHostedzonesAppView.js',
-    '/js/openstack/views/dns/openstackHostedZoneCreateView.js',
-    '/js/openstack/views/dns/openstackRecordSetCreateView.js'
+    'topstack/views/dns/topstackHostedzonesAppView',
+    'openstack/views/dns/openstackHostedZoneCreateView',
+    'openstack/views/dns/openstackRecordSetCreateView'
 ], function( TopStackHostedZonesAppView, OpenStackHostedZoneCreateView, OpenStackRecordSetCreateView ) {
     'use strict';
 

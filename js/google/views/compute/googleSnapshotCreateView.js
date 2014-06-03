@@ -11,8 +11,8 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/google/compute/googleSnapshotCreateTemplate.html',
-        '/js/google/models/compute/googleSnapshot.js',
-        '/js/google/collections/compute/googleAvailabilityZones.js',
+        'google/models/compute/googleSnapshot',
+        'google/collections/compute/googleAvailabilityZones',
         'icanhaz',
         'common'
         

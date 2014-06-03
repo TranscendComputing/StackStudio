@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/aws/notification/awsTopicCreateTemplate.html',
-        '/js/aws/models/notification/awsTopic.js',
+        'aws/models/notification/awsTopic',
         'common'
         
 ], function( $, _, Backbone, DialogView, topicCreateTemplate, Topic, Common ) {

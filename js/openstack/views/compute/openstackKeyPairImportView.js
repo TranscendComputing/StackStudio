@@ -11,7 +11,7 @@ define([
         'backbone',
         'views/dialogView',
         'text!templates/openstack/compute/openstackKeyPairImportTemplate.html',
-        '/js/openstack/models/compute/openstackKeyPair.js',
+        'openstack/models/compute/openstackKeyPair',
         'icanhaz',
         'common'
         

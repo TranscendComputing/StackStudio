@@ -59,7 +59,7 @@ define([
                 $("#resource_app").html("");
             }else if (this.adminConsoleUrl){
                 //Find credentials to log in to console with access key and secret key
-                var credentials = JSON.parse(sessionStorage.cloud_credentials);
+                var credentials = Common.credentials;
                 var credential = {};
                 for(var i = 0; i < credentials.length; i++){
                     if(this.selectedCloudAccount === credentials[i].cloud_credential.cloud_account_id){
@@ -90,7 +90,7 @@ define([
                 this.cloudAccounts = new CloudAccountsType();
                 this.cloudAccounts.on( 'reset', this.setCloudAccount, this );
                 this.cloudAccounts.fetch({
-                    data: $.param({ org_id: sessionStorage.org_id, account_id: sessionStorage.account_id}),
+                    data: $.param({ org_id: Common.account.org_id, account_id: Common.account.id}),
                     reset: true
                 });
             }else {

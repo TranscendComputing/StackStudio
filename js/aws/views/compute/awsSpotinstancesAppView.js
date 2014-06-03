@@ -11,10 +11,10 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/aws/compute/awsSpotInstanceAppTemplate.html',
-        '/js/aws/models/compute/awsSpotInstanceRequest.js',
-        '/js/aws/collections/compute/awsSpotInstanceRequests.js',
-        '/js/aws/views/compute/awsSpotInstanceCreateView.js',
-        '/js/aws/views/compute/awsSpotPriceHistoryView.js',
+        'aws/models/compute/awsSpotInstanceRequest',
+        'aws/collections/compute/awsSpotInstanceRequests',
+        'aws/views/compute/awsSpotInstanceCreateView',
+        'aws/views/compute/awsSpotPriceHistoryView',
         'icanhaz',
         'common',
         'jquery.dataTables'
@@ -59,6 +59,11 @@ define([
             'click #resource_table tr': 'clickOne'
         },
 
+        actions: [
+            { text: "Price History", type: "table", id: "price_history_button" },
+            { text: "Cancel", type: "row" }
+        ],
+
         initialize: function(options) {
             if(options.cred_id) {
                 this.credentialId = options.cred_id;
@@ -66,7 +71,9 @@ define([
             if(options.region) {
                 this.region = options.region;
             }
-            this.render();
+            this.$el.html(this.template);
+
+            this.loadData({ render: true });
             
             var spotInstanceApp = this;
             Common.vent.on("spotInstanceAppRefresh", function() {

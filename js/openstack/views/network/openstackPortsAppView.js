@@ -11,9 +11,9 @@ define([
         'backbone',
         'views/resource/resourceAppView',
         'text!templates/openstack/network/openstackPortAppTemplate.html',
-        '/js/openstack/models/network/openstackPort.js',
-        '/js/openstack/collections/network/openstackPorts.js',
-        '/js/openstack/views/network/openstackPortCreateView.js',
+        'openstack/models/network/openstackPort',
+        'openstack/collections/network/openstackPorts',
+        'openstack/views/network/openstackPortCreateView',
         'icanhaz',
         'common'
 ], function( $, _, Backbone, AppView, openstackPortAppTemplate, Port, Ports, OpenstackPortCreateView, ich, Common ) {

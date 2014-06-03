@@ -213,7 +213,7 @@ define([
             var options = {};
             var issue = false;
 
-            options["org_id"] = sessionStorage.org_id;
+            options["org_id"] = Common.account.org_id;
 
             //Get All inputs
             var cmInputs = $("#config_manager_add_edit input,textarea,select");
