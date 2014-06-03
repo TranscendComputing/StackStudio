@@ -17,7 +17,8 @@ define([
         defaults: {
             _id: '',
             Name: 'New Capsule',
-            StartCMD: ''
+            StartCMD: '',
+            ServicePorts: []
         },
 
         parse: function(resp) {
