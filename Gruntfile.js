@@ -3,7 +3,7 @@
 module.exports = function(grunt) {
     // Project configuration.
     grunt.initConfig({
-        pkg: grunt.file.readJSON('config/package.json'),
+        pkg: grunt.file.readJSON('package.json'),
         meta: {
             banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
             '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
@@ -67,7 +67,8 @@ module.exports = function(grunt) {
             'js/vendor/URI/URI.js': 'http://cdn.jsdelivr.net/uri.js/1.10.2/URI.js',
             'js/vendor/URI/punycode.js': 'http://cdn.jsdelivr.net/uri.js/1.10.2/punycode.js',
             'js/vendor/URI/IPv6.js': 'http://cdn.jsdelivr.net/uri.js/1.10.2/IPv6.js',
-            'js/vendor/URI/SecondLevelDomains.js': 'http://cdn.jsdelivr.net/uri.js/1.10.2/SecondLevelDomains.js'
+            'js/vendor/URI/SecondLevelDomains.js': 'http://cdn.jsdelivr.net/uri.js/1.10.2/SecondLevelDomains.js',
+            'js/vendor/jasmine-jquery-1.3.0.js': 'https://raw.githubusercontent.com/velesin/jasmine-jquery/1.3.0/lib/jasmine-jquery.js'
         },
         clean: ['js/vendor/require.js',
             'js/vendor/jquery.js',
@@ -83,7 +84,8 @@ module.exports = function(grunt) {
             'js/vendor/URI/URI.js',
             'js/vendor/URI/punycode.js',
             'js/vendor/URI/IPv6.js',
-            'js/vendor/URI/SecondLevelDomains.js'
+            'js/vendor/URI/SecondLevelDomains.js',
+            'js/vendor/jasmine-jquery-1.3.0.js'
         ],
         watch: {
             files: '<%= lint.files %>',
@@ -167,6 +169,7 @@ module.exports = function(grunt) {
                             shim: {
                                 'jasmine'       : {exports: 'jasmine'},
                                 //'jasmine-html'  : {deps: ['jasmine'], exports: 'jasmine'},
+                                'jquery-ui': { deps: ['jquery']},
                                 'jasmine-jquery': {exports: 'jasmine'},
                                 'jquery.multiselect': {deps: ['jquery']}
                             },
@@ -178,8 +181,6 @@ module.exports = function(grunt) {
                                 'jquery.multiselect': 'http://cdn.jsdelivr.net/jquery.multiselect/1.13/jquery.multiselect.min',
                                 'jquery.jstree'     : 'http://cdn.jsdelivr.net/jquery.jstree/pre1.0/jquery.jstree',
                                 'jquery-migrate'    : 'http://code.jquery.com/jquery-migrate-1.1.0',
-                                //'jasmine'           : 'node_modules/grunt-contrib-jasmine/vendor/jasmine-1.3.0/jasmine',
-                                //'jasmine-html'      : 'node_modules/grunt-contrib-jasmine/vendor/jasmine-1.3.0/jasmine-html',
                                 'jasmine-jquery'    : 'js/vendor/jasmine-jquery-1.3.0',
                                 'underscore' : 'http://cdnjs.cloudflare.com/ajax/libs/lodash.js/1.1.0/lodash.min',
                                 'bootstrap'  : 'https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min',

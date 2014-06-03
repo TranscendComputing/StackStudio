@@ -228,10 +228,10 @@ define([
                 $.each(this.cloudDefinitions[this.cloudProvider].regions, function(index, region) {
                     //regions check
                     var addRegion = false;
-                    if(JSON.parse(Common.account.group_policies)[0] == null){
+                    if(Common.account.group_policies[0] == null){
                         addRegion = true;
                     }else{
-                        $.each(JSON.parse(Common.account.group_policies), function(index,value){
+                        $.each(Common.account.group_policies, function(index,value){
                             if(value != null){
                                 var usable_regions = value.group_policy.aws_governance.usable_regions;
                                 if($.inArray(region.name, usable_regions) !== -1){

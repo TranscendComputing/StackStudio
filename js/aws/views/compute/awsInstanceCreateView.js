@@ -86,14 +86,14 @@ define([
                 }
             });
             $("#accordion").accordion();
-            $("#radio").buttonset();  
+            $("#radio").buttonset();
             $("#security_group_select").multiselect({
                 selectedList: 3,
                 noneSelectedText: "Select Security Group(s)"
             }).multiselectfilter();
             
-            if(JSON.parse(Common.account.group_policies).length > 0){
-                this.addPolicyImages(JSON.parse(Common.account.group_policies));
+            if(Common.account.group_policies.length > 0){
+                this.addPolicyImages(Common.account.group_policies);
             }
             this.images.on( 'reset', this.addAllImages, this );
             this.images.fetch({reset: true});

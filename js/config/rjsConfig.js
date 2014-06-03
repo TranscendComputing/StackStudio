@@ -13,6 +13,9 @@ requirejs.config({
         'jquery-ui': {
             deps: ['jquery']
         },
+        'typeahead': {
+            deps: ['jquery']
+        },
         'underscore': {
             exports: '_'
         },

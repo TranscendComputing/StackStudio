@@ -11,7 +11,7 @@ define(
     ],
     function($, Common, AccountManagementView, CloudAccountManagementView, ManagementTemplate) {
         //jasmine.getFixtures().fixturesPath = 'templates/';
-
+        Common.cache('account', { group_policies: []});
         describe("Account Management View Tests", function() {
             var accountManagementView = new AccountManagementView();
 
