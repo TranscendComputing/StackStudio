@@ -56,13 +56,17 @@
                 <div class="control-group">
                     <label class="control-label">Secure Tunnels To</label>
                     <div class="list-group">
-                        <% _.each(capsuleSpec.TunnelTo, function(tunnel){ %>
-                            <% _.each(tunnel, function(peerTunnel){ %>
+                        <% if (capsuleSpec.TunnelTo == undefined || capsuleSpec.TunnelTo.length == 0) { %>
+                        <li class="list-group-item">None</li>
+                        <% }else { %> 
+                            <% _.each(capsuleSpec.TunnelTo, function(tunnel){ %>
+                                <% _.each(tunnel, function(peerTunnel){ %>
                         <li class="list-group-item">
                             <%= peerTunnel.Type %>:<%= peerTunnel.InternalPort %>
                         </li>
+                                <% }); %>
                             <% }); %>
-                        <% }); %>
+                        <% } %>
                     </div>
                 </div>
             </div>
