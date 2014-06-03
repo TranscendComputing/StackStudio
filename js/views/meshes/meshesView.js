@@ -12,7 +12,7 @@ define([
         'backbone',
         'text!templates/meshes/meshesTemplate.html',
         // 'views/meshes/dashboardView',
-        // 'views/meshes/gridsView',
+        'views/meshes/gridsView',
         'views/meshes/appliancesView',
         'views/meshes/capsulesView',
         'common'
@@ -22,7 +22,7 @@ bootstrap,
 Backbone,
 meshesTemplate,
 // DashboardView,
-// GridsView,
+GridsView,
 AppliancesView,
 CapsulesView,
 Common
@@ -69,10 +69,10 @@ Common
                     break;
                 case '#grids_tab':
                     console.log('Switching to GridsView');
-                    // if(!this.gridsView) {
-                    //     this.gridsView = new GridsView();
-                    // }
-                    // this.gridsView.render();
+                    if(!this.gridsView) {
+                        this.gridsView = new GridsView();
+                    }
+                    this.gridsView.render();
                     break;
                 case '#appliances_tab':
                     console.log('Switching to AppliancesView');

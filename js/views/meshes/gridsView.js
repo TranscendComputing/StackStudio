@@ -1,6 +1,6 @@
 /*!
  * StackStudio 2.0.0-rc.1 <http://stackstudio.transcendcomputing.com>
- * (c) 2012 Transcend Computing <http://www.transcendcomputing.com/>
+ * (c) 2014 Transcend Computing <http://www.transcendcomputing.com/>
  * Available under ASL2 license <http://www.apache.org/licenses/LICENSE-2.0.html>
  */
 /*jshint smarttabs:true */
@@ -11,77 +11,85 @@ define([
         'bootstrap',
         'backbone',
         'common',
-        'text!templates/meshes/subComponentTemplate.html'//,
-        // 'collections/grids',
-        // 'models/grid'
-], function( $, _, bootstrap, Backbone, Common,
-    gridsTemplate//,
-    // Grids,
-    // Grid
+        'icanhaz',
+        'text!templates/components/mainPage.html',
+        'text!templates/meshes/grid.html',
+        'collections/grids',
+        'models/grid'
+], function(
+    $,
+    _,
+    bootstrap,
+    Backbone,
+    Common,
+    ich,
+    mainPageTemplate,
+    gridTemplate,
+    Grids,
+    Grid
 ) {
 
     var GridsView = Backbone.View.extend({
 
         tagName: 'div',
 
-        template: _.template(gridsTemplate),
+        template: _.template(mainPageTemplate),
+
+        gridTemplate: _.template(gridTemplate),
+
+        primaryActions: [ "Start", "Stop", "Delete" ],
 
         grids: undefined,
-
-        offerings: undefined,
 
         currentGrid: undefined,
         
         events: {
-            "click #new_grid_button": "newGrid",
-            "click #save_grid_button": "saveGrid",
-            "click #close_grid_button": "closeGrid",
-            "click #delete_grid_button": "deleteGrid",
+            "click #new_component_button": "newGrid",
+            // "click #save_grid_button": "saveGrid",
+            // "click #close_grid_button": "closeGrid",
+            // "click #delete_grid_button": "deleteGrid",
             "click .grid": "openGrid"
         },
 
         initialize: function() {
             $("#grids_container").html(this.el);
             this.$el.html(this.template);
-            // this.grids = new Grids();
-            // this.grids.on( 'reset', this.addAllGrids, this );
-            // this.offerings = new Offerings();
-            // this.offerings.on( 'reset', this.addAllOfferings, this );
-            // var gridApp = this;
-            // Common.vent.off("gridCreated");
-            // Common.vent.on("gridCreated", function(newGrid) {
-            //     gridApp.currentGrid = new Grid(newGrid.grid);
-            //     gridApp.render();
-            // });
-            // Common.vent.off("gridUpdated");
-            // Common.vent.on("gridUpdated", function(updatedGrid) {
-            //     gridApp.currentGrid = new Grid(updatedGrid.grid);
-            //     gridApp.render();
-            // });
-            // Common.vent.off("gridDeleted");
-            // Common.vent.on("gridDeleted", function() {
-            //     gridApp.closeGrid();
-            // });
+            ich.refresh();
+            this.grids = new Grids();
+            this.grids.on( 'reset', this.addAllGrids, this );
+            var gridApp = this;
+            Common.vent.off("gridCreated");
+            gridApp.render();
+            Common.vent.on("gridCreated", function(newGrid) {
+                gridApp.currentGrid = new Grid(newGrid.grid);
+                gridApp.render();
+            });
+            Common.vent.off("gridUpdated");
+            Common.vent.on("gridUpdated", function(updatedGrid) {
+                gridApp.currentGrid = new Grid(updatedGrid.grid);
+                gridApp.render();
+            });
+            Common.vent.off("gridDeleted");
+            Common.vent.on("gridDeleted", function() {
+                gridApp.closeGrid();
+            });
         },
 
         render: function(){
             this.grids.fetch({reset:true});
-            if(this.currentGrid) {
-                if(this.currentGrid.id === "") {
-                    $("#grid_offerings_list_label").html("Offerings to Include");
-                    $("#grid_name_input").val("");
-                    $("#grid_version_input").val("");
-                    $("#grid_description_input").val("");
+            var actions = ich.component_actions({ primary_actions: this.primaryActions });
+            $("#button_group").html(actions);
+            if (this.currentGrid) {
+                var templ = this.gridTemplate({ grid: this.currentGrid.attributes }, {variable: 'grid'});
+                if ($("#grid_spec_form").length > 0) {
+                    $("#grid_spec_form").html(templ);
                 }else {
-                    $("#grid_offerings_list_label").html("Offerings Included");
-                    $("#grid_name_input").val(this.currentGrid.attributes.name);
-                    $("#grid_version_input").val(this.currentGrid.attributes.version);
-                    $("#grid_description_input").val(this.currentGrid.attributes.description);
-                    $("#grid_offerings_list").empty();
-                    $.each(this.currentGrid.attributes.offerings, function(index, value) {
-                        $("#grid_offerings_list").append("<li>"+value.offering.name+"</li>");
-                    });
+                    $("#component_open").append(templ);
                 }
+            }
+            $("#component_list_title").text("Grids");
+            $('#not_selected_message').text('Select a grid from the list to the left, or begin by creating a new grid!');
+            if(this.currentGrid) {
                 $("#not_selected").hide();
                 $("#component_open").show();
             }else {
@@ -91,87 +99,24 @@ define([
         },
 
         addAllGrids: function() {
-            $("#grid_list").empty();
+            $("#component_list").empty();
             this.grids.each(function(grid) {
-                $("#grid_list").append("<li><a id='"+grid.id+"' class='grid selectable_item'>"+grid.attributes.name+"</a></li>");
-            });
-        },
-
-        addAllOfferings: function() {
-            $("#grid_offerings_list").empty();
-            this.offerings.each(function(offering) {
-                $("#grid_offerings_list").append("<li><label class='checkbox'><input type='checkbox' style='margin-top:1px' name='offering' value='"+offering.id+"'>"+offering.attributes.name+"</label></li>");
+                $("#component_list").append("<li><a id='"+grid.attributes.StackName+"' class='grid selectable_item'>"+grid.attributes.StackName+"</a></li>");
             });
         },
 
         newGrid: function() {
-            if(this.currentGrid) {
-                var confirmation = confirm("Are you sure you want to open a new grid? Any unsaved changes to the current grid will be lose.");
-                if(confirmation === true) {
-                    this.openNewGrid();
-                }
-            }else {
-                this.openNewGrid();
-            }
+            this.openNewGrid();
         },
 
         openNewGrid: function() {
-            // this.currentGrid = new Grid();
-            // this.offerings.fetch({reset:true});
-            // this.render();
-        },
-
-        openGrid: function() {
-            if(this.currentGrid) {
-                var confirmation = confirm("Are you sure you want to open " + event.target.innerText + "? Any unsaved changes to the current grid will be lost.");
-                if(confirmation === true) {
-                    this.currentGrid = this.grids.get(event.target.id);
-                    this.render();
-                }
-            }else {
-                this.currentGrid = this.grids.get(event.target.id);
-                this.render();
-            }
-        },
-
-        saveGrid: function() {
-            if($("#offering_name_input").val().trim !== "") {
-                // Get Selected Offering IDs
-                var offeringIds = [];
-                $.each($("input:checked[type=checkbox][name=offering]"), function(index, value) {
-                    offeringIds.push(value.value);
-                });
-                // Build Grid Object from form
-                var options = {
-                    "name": $("#grid_name_input").val(),
-                    "org_id": sessionStorage.org_id,
-                    "version": $("#grid_version_input").val(),
-                    "description": $("#grid_description_input").val(),
-                    "offering_ids": offeringIds
-                };
-                // Create/Update Grid
-                if(this.currentGrid.id === "") {
-                    this.currentGrid.create(options);
-                }else {
-                    this.currentGrid.update(options);
-                }
-            }else {
-                Common.errorDialog({title:"Invalid Request", message:"You must provide a name for this grid."});
-            }
-        },
-
-        closeGrid: function() {
-            this.currentGrid = undefined;
+            this.currentGrid = new Grid();
             this.render();
         },
 
-        deleteGrid: function() {
-            if(this.currentGrid) {
-                var confirmation = confirm("Are you sure you want to delete " + this.currentGrid.attributes.name + "?");
-                if(confirmation === true) {
-                    this.currentGrid.destroy();
-                }
-            }
+        openGrid: function() {
+            this.currentGrid = this.grids.get(event.target.id);
+            this.render();
         },
         
         close: function(){

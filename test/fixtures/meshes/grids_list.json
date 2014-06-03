@@ -1,0 +1,29 @@
+[
+  {
+    "Grid": {
+      "StackName": "Logger1-AWS-East",
+      "TemplateURL": "http://some.s3bucket.com/CFTemplates/Logger1-AWS-East.json",
+      "SSHKeyPair": "griduser",
+      "NodeCount": 5,
+      "InstanceType": "m3.large"
+    }
+  },
+  {
+    "Grid": {
+      "StackName": "csMesh1-AWS-East",
+      "TemplateURL": "http://some.s3bucket.com/CFTemplates/csMesh1-AWS-East.json",
+      "SSHKeyPair": "griduser",
+      "NodeCount": 2,
+      "InstanceType": "m1.small"
+    }
+  },
+  {
+    "Grid": {
+      "StackName": "csMesh2-AWS-East",
+      "TemplateURL": "http://some.s3bucket.com/CFTemplates/csMesh2-AWS-East.json",
+      "SSHKeyPair": "devuser",
+      "NodeCount": 2,
+      "InstanceType": "t1.micro"
+    }
+  }
+]
