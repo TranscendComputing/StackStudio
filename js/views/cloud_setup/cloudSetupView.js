@@ -257,6 +257,7 @@ define([
     var params = {
       rootView: cloudSetupView
     };
+
     if (cloudSetupView.selectedId) {
       params.selectedId = cloudSetupView.selectedId;
       params.collection = cloudSetupView.selectedCollection;

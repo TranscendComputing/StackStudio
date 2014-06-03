@@ -12,10 +12,10 @@ define([
         'common',
         'text!templates/account/policiesManagementTemplate.html',
         'collections/policies',
-        // 'views/account/policyCreateView',
+        'views/account/policyCreateView',
         'jquery.dataTables',
         'jquery.dataTables.fnProcessingIndicator'
-], function( $, _, Backbone, Common, policiesManagementTemplate, Policies ) {
+], function( $, _, Backbone, Common, policiesManagementTemplate, Policies, PolicyCreateView ) {
 
     var PolicyManagementView = Backbone.View.extend({
 
@@ -35,7 +35,7 @@ define([
             "click #delete_user_button": "deletePolicy"
         },
 
-        initialize: function() {
+        initialize: function () {
             this.$el.html(this.template);
             this.rootView = this.options.rootView;
             $("#submanagement_app").html(this.$el);
@@ -109,7 +109,12 @@ define([
         },*/
 
         createPolicy: function() {
-            location.href = "#account/management/policy";
+            this.newResourceDialog = new PolicyCreateView({
+              org_id: Common.account.org_id,
+              account_id: Common.account.id,
+              rootView: this.rootView,
+              credentialId: this.credentialId
+            });
         },
 
         deletePolicy: function() {

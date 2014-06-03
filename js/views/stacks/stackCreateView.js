@@ -36,8 +36,8 @@ define([
 
         addEnabledClouds: function(){
             //debugger
-            var policy = JSON.parse(Common.account.group_policies);
-            var permissions = JSON.parse(Common.account.permissions);
+            var policy = Common.account.group_policies;
+            var permissions = Common.account.permissions;
             if( policy.length > 0 && permissions < 1){
                 policy = policy[0].group_policy;
                 $("#stack_compatible_clouds_select").empty();

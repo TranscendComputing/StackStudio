@@ -169,6 +169,7 @@ module.exports = function(grunt) {
                             shim: {
                                 'jasmine'       : {exports: 'jasmine'},
                                 //'jasmine-html'  : {deps: ['jasmine'], exports: 'jasmine'},
+                                'jquery-ui': { deps: ['jquery']},
                                 'jasmine-jquery': {exports: 'jasmine'},
                                 'jquery.multiselect': {deps: ['jquery']}
                             },

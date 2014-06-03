@@ -1,0 +1,78 @@
+/*!
+ * StackStudio 2.0.0-rc.1 <http://stackstudio.transcendcomputing.com>
+ * (c) 2012 Transcend Computing <http://www.transcendcomputing.com/>
+ * Available under ASL2 license <http://www.apache.org/licenses/LICENSE-2.0.html>
+ */
+/*jshint smarttabs:true */
+/*global define:true console:true requirejs:true require:true*/
+define([
+<<<<<<< HEAD
+    'jquery',
+    'underscore',
+    'backbone',
+    'common',
+    'js/views/account/homeView'
+  ],
+  function ( $, _, Backbone, Common, HomeView ) {
+=======
+        'jquery',
+        'underscore',
+        'backbone',
+        'common',
+        'views/account/newLoginView',
+        'text!templates/account/homeTemplate.html'
+    ],
+    function ( $, _, Backbone, Common, NewLoginView, homeTemplate ) {
+>>>>>>> c04de602d97f56db575d3a11978c283eb07c16f5
+
+    var AccountManagementView = Backbone.View.extend({
+
+      /** @type {Object} Object of events for view to listen on */
+      events: {
+        "click #addUser": "addUser"
+      },
+
+<<<<<<< HEAD
+      initialize : function ( options ) {
+        this.subView = new HomeView();
+      },
+
+      /** Add all of my own html elements */
+      render: function() {
+        this.subView.render();
+      }
+    });
+=======
+            /** Constructor method for current view */
+            initialize: function() {
+                //Render my own views
+                this.render();
+            },
+
+            /** Add all of my own html elements */
+            render: function () {
+                this.$el.html(this.template);
+                $('#main').html(this.$el);
+            },
+
+            addUser: function(event) {
+                new NewLoginView({org_id: sessionStorage.org_id});
+            }
+        });
+>>>>>>> c04de602d97f56db575d3a11978c283eb07c16f5
+
+    Common.router.on('route:account/management', function() {
+      if (Common.account) {
+        var accountView = new AccountManagementView();
+        accountView.render();
+      } else {
+        Common.router.navigate("", {
+          trigger: true
+        });
+        Common.login();
+      }
+    });
+
+    return AccountManagementView;
+  }
+);
