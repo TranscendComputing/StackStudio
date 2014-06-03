@@ -1,15 +1,17 @@
 [
   {
     "CapsuleSpec": {
-      "PolicyURL": "http://some/accounting/url",
-      "AccountingURL": "",
-      "ImageURL": "tdhite/demosite",
+      "Name": "Logger",
+      "Url": "http://some.s3bucket.com/capsules/Logger.json",
+      "PolicyURL": "http://some.s3bucket.com/polcies/LoggerPolicy.json",
+      "AccountingURL": "http://some.s3bucket.com/polcies/LoggerAcct.json",
+      "ImageURL": "tdhite/logstash",
       "StartCMD": "/start.sh {{range $index, $peer := .NetworkPeers}} {{$peer.IPAddress}}:{{$peer.Port}} {{end}}",
       "ServicePorts": [
-        "80"
+        "80", "4136"
       ],
       "PeerImageURLs": [
-        "tdhite/demosite",
+        "tdhite/logstash",
         "tdhite/mciaas",
         "tdhite/etcd"
       ],
@@ -35,15 +37,17 @@
   },
   {
     "CapsuleSpec": {
-      "PolicyURL": "http://some/accounting/url",
-      "AccountingURL": "",
+      "Name": "ETCD",
+      "Url": "http://some.s3bucket.com/capsules/ETCD.json",
+      "PolicyURL": "http://some.s3bucket.com/polcies/ETCDPolicy.json",
+      "AccountingURL": "http://some.s3bucket.com/polcies/ETCDAcct.json",
       "ImageURL": "tdhite/etcd",
       "StartCMD": "/start.sh {{range $index, $peer := .NetworkPeers}} {{$peer.IPAddress}}:{{$peer.Port}} {{end}}",
       "ServicePorts": [
         "80"
       ],
       "PeerImageURLs": [
-        "tdhite/demosite",
+        "tdhite/logstash",
         "tdhite/mciaas",
         "tdhite/etcd"
       ],
@@ -59,15 +63,17 @@
   },
   {
     "CapsuleSpec": {
-      "PolicyURL": "http://some/accounting/url",
-      "AccountingURL": "",
+      "Name": "MCIAAS",
+      "Url": "http://some.s3bucket.com/capsules/MCIAAS.json",
+      "PolicyURL": "http://some.s3bucket.com/polcies/MCIAASPolicy.json",
+      "AccountingURL": "http://some.s3bucket.com/polcies/MSIAASAcct.json",
       "ImageURL": "tdhite/mciaas",
       "StartCMD": "/start.sh {{range $index, $peer := .NetworkPeers}} {{$peer.IPAddress}}:{{$peer.Port}} {{end}}",
       "ServicePorts": [
         "80"
       ],
       "PeerImageURLs": [
-        "tdhite/demosite",
+        "tdhite/logstash",
         "tdhite/mciaas",
         "tdhite/etcd"
       ],
