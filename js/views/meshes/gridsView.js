@@ -81,8 +81,8 @@ define([
             $("#button_group").html(actions);
             if (this.currentGrid) {
                 var templ = this.gridTemplate({ grid: this.currentGrid.attributes }, {variable: 'grid'});
-                if ($("#grid_spec_form").length > 0) {
-                    $("#grid_spec_form").html(templ);
+                if ($("#grid_details").length > 0) {
+                    $("#grid_details").html(templ);
                 }else {
                     $("#component_open").append(templ);
                 }
