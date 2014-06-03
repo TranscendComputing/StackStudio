@@ -255,7 +255,42 @@ define(
     
             gotoPreviousState: function() {
                 router.navigate(this.previousState, {trigger: true});
+            },
+
+            logo : function ( key ) {
+              var logos = {
+                aws : '/images/ImageLogos/amazon20.png',
+                redhat : '/images/ImageLogos/redhead20.png',
+                suse : '/images/ImageLogos/suse20.png',
+                ubuntu : '/images/ImageLogos/canonical20.gif'
+              };
+              return logos[key];
             }
+                
+            //     {
+            //     case "aws":
+            //         imagePath = "/images/ImageLogos/amazon20.png";
+            //         break;
+            //     case "redhat":
+            //         imagePath = "/images/ImageLogos/redhat20.png";
+            //         break;
+            //     case "suse":
+            //         imagePath = "/images/ImageLogos/suse20.png";
+            //         break;
+            //     case "ubuntu":
+            //         imagePath = "/images/ImageLogos/canonical20.gif";
+            //         break;
+            //     case "windows":
+            //         imagePath = "/images/ImageLogos/windows20.png";
+            //         break;
+            //     case "centos":
+            //         imagePath = "/images/ImageLogos/centos.gif";
+            //         break;
+            //     case "fedora":
+            //         imagePath = "/images/ImageLogos/fedora36.png";
+            //         break;
+            //     }
+              // };
         };
 
         Common.__defineGetter__("account", function () {
