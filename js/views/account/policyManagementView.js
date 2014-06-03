@@ -367,26 +367,26 @@ define([
 
             if(form_name === "#content_aws form")
             {
-                o["default_alarms"] = this.alarms;
-                o["default_images"] = this.default_images;
+                o.default_alarms = this.alarms;
+                o.default_images = this.default_images;
             }
             if(form_name === "#content_os form")
             {
-                o["default_alarms"] = this.alarms;
-                o["default_images"] = this.default_images_os;
+                o.default_alarms = this.alarms;
+                o.default_images = this.default_images_os;
             }
             if(form_name === "#content_org form")
             {
                 if( $(".os.cloud-button").hasClass("active")){
-                    o["saved_os_cloud"] = true;
+                    o.saved_os_cloud = true;
                 }
                 if( $(".aws.cloud-button").hasClass("active")){
-                    o["saved_aws_cloud"] = true;
+                    o.saved_aws_cloud = true;
                 }
-                o["default_cloud"] = $("#default_cloud").val();
+                o.default_cloud = $("#default_cloud").val();
             }else{
-                if(o["enabled_cloud"] === undefined){
-                    o["enabled_cloud"] = "";
+                if(o.enabled_cloud === undefined){
+                    o.enabled_cloud = "";
                 }
             }
             return o;
@@ -394,6 +394,7 @@ define([
         
         populateFormHelper: function(indicator,p,form){
             var governance = indicator + "_governance";
+
             for (var key in p) {
               if (p.hasOwnProperty(key)) {
                 var typ = $( form + " input[name='"+key+"']" ).prop("type");
@@ -416,30 +417,23 @@ define([
                 if(p.default_alarms){
                     this.alarms = p.default_alarms;
                 }
-                for (var j in this.alarms){
-                    $("#alarm_table_"+ indicator).append("<tr><td>"+this.alarms[j].namespace+"</td><td>"+this.alarms[j].metric_name+"</td><td>"+this.alarms[j].threshold+"</td><td>"+this.alarms[j].period+"</td><td><a class='btn btn-mini btn-danger remove_alarm'><i class='fa fa-minus-circle icon-white'></i></a></td></tr>");
-                }
+
+                _.each(this.alarms, function ( alarm ) {
+                  $("#alarm_table_"+ indicator).append("<tr><td>"+alarm.namespace+"</td><td>"+alarm.metric_name+"</td><td>"+alarm.threshold+"</td><td>"+alarm.period+"</td><td><a class='btn btn-mini btn-danger remove_alarm'><i class='fa fa-minus-circle icon-white'></i></a></td></tr>");
+                });
                 
                 if(this.model.attributes[governance].default_images)
                 {
-                    var k;
+                  if(indicator === "aws" || indicator === "os") {
                     $("#default_images_table_" + indicator).dataTable().fnClearTable();
-                    if(indicator === "aws"){
-                        this.default_images = this.model.attributes[governance].default_images;
-                        for( k in this.default_images){
-                            $('input[name=use_approved_images_'+indicator+']').attr('checked', true);
-                            $("#default_images_table_" + indicator).dataTable().fnAddData([this.default_images[k]["name"],this.default_images[k]["id"],"<a class='btn btn-mini btn-danger remove_image'><i class='fa fa-minus-circle icon-white'></i></a>"]);
-                        }
-                    }
-                    if(indicator === "os"){
-                        this.default_images_os = this.model.attributes[governance].default_images;
-                        for( k in this.default_images_os){
-                            $('input[name=use_approved_images_'+indicator+']').attr('checked', true);
-                            $("#default_images_table_" + indicator).dataTable().fnAddData([this.default_images_os[k]["name"],this.default_images_os[k]["id"],"<a class='btn btn-mini btn-danger remove_image'><i class='fa fa-minus-circle icon-white'></i></a>"]);
-                        }
-                    }
+                    $('input[name=use_approved_images_' + indicator + ']').attr('checked', true);
+                    this['default_images_' + indicator] = this.model.attributes[governance].default_images;
+                    _.each(this['default_images_' + indicator], function ( image ) {
+                      $("#default_images_table_" + indicator).dataTable().fnAddData([image.name,image.id,"<a class='btn btn-mini btn-danger remove_image'><i class='fa fa-minus-circle icon-white'></i></a>"]);
+                    });
+                  }                    
                 }
-            }else{
+            } else{
                 $("#default_cloud").val(this.model.attributes[governance].default_cloud);
             }
         },
@@ -447,9 +441,9 @@ define([
             $('input:checkbox').removeAttr('checked');
             $("#policy_name").val(model.attributes.name);
             var p = model.attributes;
-            this.populateFormHelper("aws",p["aws_governance"],"#content_aws form");
-            this.populateFormHelper("os",p["os_governance"], "#content_os form");
-            this.populateFormHelper("org",p["org_governance"], "#content_org form");
+            this.populateFormHelper("aws",p.aws_governance,"#content_aws form");
+            this.populateFormHelper("os",p.os_governance, "#content_os form");
+            this.populateFormHelper("org",p.org_governance, "#content_org form");
         },
 
         refreshSession: function(){
@@ -504,15 +498,15 @@ define([
             $("#default_credentials_aws").empty();
             $("#default_credentials_os").empty();
 
-            for (var i in creds) {
-                if(creds[i].cloud_credential.cloud_provider === "AWS"){
-                    $("#default_credentials_aws").append("<option value='"+creds[i].cloud_credential.id+"'>"+creds[i].cloud_credential.name+"</option>");
-                }
-                else if(creds[i].cloud_credential.cloud_provider === "OpenStack"){
-                    $("#default_credentials_os").append("<option value='"+creds[i].cloud_credential.id+"'>"+creds[i].cloud_credential.name+"</option>");
-                }
-
-            }
+            _.each(creds, function ( cred ) {
+              if(cred.cloud_credential.cloud_provider === "AWS"){
+                  $("#default_credentials_aws").append("<option value='"+cred.cloud_credential.id+"'>"+cred.cloud_credential.name+"</option>");
+              }
+              else if(cred.cloud_credential.cloud_provider === "OpenStack") {
+                  $("#default_credentials_os").append("<option value='"+cred.cloud_credential.id+"'>"+cred.cloud_credential.name+"</option>");
+              }
+            });
+            
 
             if(typeof this.rootView !== 'undefined' && typeof this.rootView.treePolicy !== 'undefined'){
                 var tp = this.rootView.policies.get(this.rootView.treePolicy);
@@ -522,15 +516,34 @@ define([
             if($("#default_credentials_aws").length > 0){
                 $("#whole_form_aws").show("slow");
                 $("#cred_message_aws").hide("slow");
-                this.topics.fetch({ data: $.param({ cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val()}), reset: true });
-                this.images.fetch({ data: $.param({ cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val(), platform: $("#filter_platform_aws").val()}), reset: true });
-                this.vpcs.fetch({ data: $.param({ cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val()}), reset: true });
-                this.subnets.fetch({ data: $.param({ cred_id: $("#default_credentials_aws").val(), region: $("#default_region_aws").val()}), reset: true });
+
+                var options_aws = {
+                  data: $.param({
+                    cred_id: $('#default_credentials_aws').val(),
+                    region: $('#default_region_aws').val()
+                  }),
+                  reset: true
+                };
+
+                this.topics.fetch(options_aws);
+                this.vpcs.fetch(options_aws);
+                this.subnets.fetch(options_aws);
+
+                options_aws.data.platform = $("#filter_platform_aws").val();
+                this.images.fetch(options_aws);
             }
             if($("#default_credentials_os").length > 0){
                 $("#whole_form_os").show("slow");
                 $("#cred_message_os").hide("slow");
-                this.images_os.fetch({ data: $.param({ cred_id: $("#default_credentials_os").val(), region: $("#default_region_os").val()}), reset: true });
+                
+                var options = {
+                  data: $.param({
+                    cred_id: $('#default_credentials_os').val(),
+                    region: $('#default_region_os').val()
+                  }),
+                  reset: true
+                };
+                this.images_os.fetch(options);
             }
         },
 
@@ -731,60 +744,9 @@ define([
         *   text box if the checkbox is checked.
         */
         checkboxChanged: function(lambda){
-            switch(lambda.target.id)
-            {
-            case "check_rds_aws":
-                this.disableInput($("#max_rds_aws"),$("#"+lambda.target.id).is(':checked'));
-                break;
-            case "check_max_on_demand_aws":
-                this.disableInput($("#max_on_demand_aws"),$("#"+lambda.target.id).is(':checked'));
-                break;
-            case "check_max_reserved_aws":
-                this.disableInput($("#max_reserved_aws"),$("#"+lambda.target.id).is(':checked'));
-                break;
-            case "check_max_dedicated_aws":
-                this.disableInput($("#max_dedicated_aws"),$("#"+lambda.target.id).is(':checked'));
-                break;
-            case "check_max_spot_aws":
-                this.disableInput($("#max_spot_aws"),$("#"+lambda.target.id).is(':checked'));
-                break;
-            case "check_max_in_autoscale_aws":
-                this.disableInput($("#max_in_autoscale_aws"),$("#"+lambda.target.id).is(':checked'));
-                break;
-            case "project_name_toggle_aws":
-                this.disableInput($("#project_name_aws"),!$("#"+lambda.target.id).is(':checked'));
-                break;
-            case "project_name_toggle_os":
-                this.disableInput($("#project_name_os"),!$("#"+lambda.target.id).is(':checked'));
-                break;
-            case "check_max_on_demand_os":
-                this.disableInput($("#max_on_demand_os"),$("#"+lambda.target.id).is(':checked'));
-                break;
-            case "check_max_in_autoscale_os":
-                this.disableInput($("#max_in_autoscale_os"),$("#"+lambda.target.id).is(':checked'));
-                break;
-            case "check_rds_os":
-                this.disableInput($("#max_rds_os"),$("#"+lambda.target.id).is(':checked'));
-                break;
-            case "check_max_volumes_os":
-                this.disableInput($("#max_volumes_os"),$("#"+lambda.target.id).is(':checked'));
-                break;
-            case "check_max_volumes_size_os":
-                this.disableInput($("#max_volumes_size_os"),$("#"+lambda.target.id).is(':checked'));
-                break;
-            case "check_max_load_balancers_os":
-                this.disableInput($("#max_load_balancers_os"),$("#"+lambda.target.id).is(':checked'));
-                break;
-            case "check_max_security_groups_os":
-                this.disableInput($("#max_security_groups_os"),$("#"+lambda.target.id).is(':checked'));
-                break;
-            case "check_max_security_group_rules_os":
-                this.disableInput($("#max_security_group_rules_os"),$("#"+lambda.target.id).is(':checked'));
-                break;
-            case "check_max_ips_os":
-                this.disableInput($("#max_ips_os"),$("#"+lambda.target.id).is(':checked'));
-                break;
-            }
+          var $checkbox = $('#' + lambda.target.id);
+          var $input = $('#' + lambda.target.id.replace("check_", "").replace('_toggle_', ''));
+          this.disableInput($input, $checkbox.is('checked'));
         },
 
         disableInput: function(target,toggle){
