@@ -16,11 +16,11 @@ define([
 
         defaults: {
             StackName: 'New Grid Stack',
-            KeyPair: '',
-            InstanceCount: '1',
-            InstanceTypes: {},
-            VPCId: undefined,
-            PrivateIpAddress: undefined
+            TemplateURL: "http://some.s3bucket.com/CFTemplates/Grid.json",
+            SSHKeyPair: "griduser",
+            NodeCount: 2,
+            InstanceType: "m1.small",
+            CapacityOverview: {}
         },
 
         parse: function(resp) {
