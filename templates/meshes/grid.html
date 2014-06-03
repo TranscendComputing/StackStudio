@@ -1,0 +1,85 @@
+<form id="grid_details" class="form-horizontal">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="control-group">
+                    <label class="control-label" for="image_url">Name</label>
+                    <div class="list-group">
+                        <a href="#" class="list-group-item">
+                            <%= grid.StackName %>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="control-group">
+                    <label class="control-label" for="image_url">Template URL</label>
+                    <div class="list-group">
+                        <a href="#" class="list-group-item">
+                            <%= grid.TemplateURL %>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="control-group">
+                    <label class="control-label" for="start_command">SSH Key Pair</label>
+                    <div class="list-group">
+                        <a href="#" class="list-group-item">
+                            <%= grid.SSHKeyPair %>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="control-group">
+                    <label class="control-label">Node Count</label>
+                    <div class="list-group">
+                        <a href="#" class="list-group-item">
+                            <%= grid.NodeCount %>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="control-group">
+                    <label class="control-label">Instance Type</label>
+                    <div class="list-group">
+                        <li class="list-group-item"><%= grid.InstanceType %></li>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="control-group">
+                    <label class="control-label">Capacity Overview</label>
+                    <div class="list-group">
+                        <li class="list-group-item">
+                            <label class="control-label">CPU: </label>
+                            <%= grid.CapacityOverview.CPU || "N/A" %>
+                        </li>
+                        <li class="list-group-item">
+                            <label class="control-label">Mem: </label>
+                            <%= grid.CapacityOverview.Mem || "N/A" %>
+                        </li>
+                        <li class="list-group-item">
+                            <label class="control-label">Disk: </label>
+                            <%= grid.CapacityOverview.Disk || "N/A" %>
+                        </li>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+</form>

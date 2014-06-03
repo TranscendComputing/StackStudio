@@ -1,0 +1,59 @@
+[
+  {
+    "Appliance": {
+      "Name": "DemoSite",
+      "TenantID": "ddab1f30-83dc-11e3-baa7-0800200c9a66",
+      "ApplianceTypeURL": "demosite",
+      "ApplianceInstanceCount": "4",
+      "ApplianceSpecURL": "http://some.place.com/mytypes/DemoSiteSpec.json",
+      "ApplianceSpec": {
+        "Name": "DemoSite",
+        "PolicyURL": "http://some.place.com/mytypes/DemoSitePolicy.json",
+        "AccountingURL": "http://some.place.com/mytypes/DemoSiteAcct.json",
+        "CapsuleSpecURLs": [
+          "http://some.place.com/mytypes/Logger.json",
+          "http://some.place.com/mytypes/ElasticSearch.json",
+          "http://some.place.com/mytypes/Kibana.json"
+        ]
+      }
+    }
+  },
+  {
+    "Appliance": {
+      "Name": "MyAppliance",
+      "TenantID": "ddab1f30-83dc-11e3-baa7-0800200c9a66",
+      "ApplianceTypeURL": "myappliance",
+      "ApplianceInstanceCount": "3",
+      "ApplianceSpecURL": "http://some.place.com/mytypes/MyApplianceSpec.json",
+      "ApplianceSpec": {
+        "Name": "MyAppliance",
+        "PolicyURL": "http://some.place.com/mytypes/MyAppliancePolicy.json",
+        "AccountingURL": "http://some.place.com/mytypes/MyApplianceAcct.json",
+        "CapsuleSpecURLs": [
+          "http://some.place.com/mytypes/Logger.json",
+          "http://some.place.com/mytypes/ElasticSearch.json",
+          "http://some.place.com/mytypes/Kibana.json"
+        ]
+      }
+    }
+  },
+  {
+    "Appliance": {
+      "Name": "Logger",
+      "TenantID": "ddab1f30-83dc-11e3-baa7-0800200c9a66",
+      "ApplianceTypeURL": "logger",
+      "ApplianceInstanceCount": "2",
+      "ApplianceSpecURL": "http://some.place.com/mytypes/LoggerSpec.json",
+      "ApplianceSpec": {
+        "Name": "Logger",
+        "PolicyURL": "http://some.place.com/mytypes/LoggerPolicy.json",
+        "AccountingURL": "http://some.place.com/mytypes/LoggerAcct.json",
+        "CapsuleSpecURLs": [
+          "http://some.place.com/mytypes/Logger.json",
+          "http://some.place.com/mytypes/ElasticSearch.json",
+          "http://some.place.com/mytypes/Kibana.json"
+        ]
+      }
+    }
+  }
+]

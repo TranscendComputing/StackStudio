@@ -30,7 +30,6 @@ define([
   }
 
   var Router = Backbone.Router.extend({
-
     routes: {
       'account/cloudcredentials': 'cloudCredentials',
       'cloud/setup/:action/:id': 'cloudSetupRoute',
@@ -49,6 +48,7 @@ define([
       'platform_components': 'platformComponentsRoute',
       'stacks': 'stacksRoute',
       'offerings': 'offeringsRoute',
+      'meshes': 'meshesRoute',
       'projects': 'projects',
       'project/new': 'projectCreate',
       'projects/:url': 'projectEdit',
@@ -119,6 +119,14 @@ define([
       $(".main-nav a").removeClass("nav_selected");
       $("#offerings_nav").addClass("nav_selected");
       this.trigger("route:offerings");
+    },
+
+    meshesRoute: function(action) {
+      $("#sidebar").empty();
+      $("#sidebar").hide();
+      $(".main-nav a").removeClass("nav_selected");
+      $("#meshes_nav").addClass("nav_selected");
+      this.trigger("route:meshes");
     },
 
     accountManagementRoute: function(action) {
