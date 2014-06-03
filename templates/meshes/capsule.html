@@ -31,7 +31,7 @@
                     <label class="control-label">Exposed Ports</label>
                     <div class="list-group">
                         <a href="#" class="list-group-item">
-                            <%= capsuleSpec.ServicePorts %>
+                            <%= capsuleSpec.ServicePorts.join(',') %>
                         </a>
                     </div>
                 </div>
@@ -54,15 +54,22 @@
         <div class="row-fluid">
             <div class="span12">
                 <div class="control-group">
-                    <label class="control-label">Secure Tunnels To</label>
+                    <label class="control-label">Secure Tunnels</label>
                     <div class="list-group">
-                        <% if (capsuleSpec.TunnelTo == undefined || capsuleSpec.TunnelTo.length == 0) { %>
+                        <% if ((capsuleSpec.TunnelTo == undefined || capsuleSpec.TunnelTo.length == 0) && (capsuleSpec.TunnelFrom == undefined || capsuleSpec.TunnelFrom.length == 0)) { %>
                         <li class="list-group-item">None</li>
                         <% }else { %> 
                             <% _.each(capsuleSpec.TunnelTo, function(tunnel){ %>
                                 <% _.each(tunnel, function(peerTunnel){ %>
                         <li class="list-group-item">
-                            <%= peerTunnel.Type %>:<%= peerTunnel.InternalPort %>
+                            Tunnel To: <%= peerTunnel.Type %>:<%= peerTunnel.InternalPort %>
+                        </li>
+                                <% }); %>
+                            <% }); %>
+                            <% _.each(capsuleSpec.TunnelFrom, function(tunnel){ %>
+                                <% _.each(tunnel, function(peerTunnel){ %>
+                        <li class="list-group-item">
+                            Tunnel From: <%= peerTunnel.Type %>:<%= peerTunnel.InternalPort %>
                         </li>
                                 <% }); %>
                             <% }); %>
@@ -92,7 +99,7 @@
                             </li>
                             <li class="list-group-item">
                                 <label class="control-label">Encryption Model: </label>
-                                <%= volumeSpecs.EncryptionModel %>
+                                <%= volumeSpecs.EncryptionModel || "None" %>
                             </li>
                         </ul>
                         <% }); %>
@@ -106,7 +113,7 @@
                     <label class="control-label" for="policy_url">Policy URL</label>
                     <div class="list-group">
                         <a href="#" class="list-group-item">
-                            <%= capsuleSpec.PolicyURL %>
+                            <%= capsuleSpec.PolicyURL || "None" %>
                         </a>
                     </div>
                 </div>
@@ -118,7 +125,7 @@
                     <label class="control-label" for="accounting_url">Accounting URL</label>
                     <div class="list-group">
                         <a href="#" class="list-group-item">
-                            <%= capsuleSpec.AccountingURL %>
+                            <%= capsuleSpec.AccountingURL || "None" %>
                         </a>
                     </div>
                 </div>
