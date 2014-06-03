@@ -1,9 +1,5 @@
-<script id="spec_form" type="text/html">
-<form class="form-horizontal">
+<form id="capsule_spec_form" class="form-horizontal">
     <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Appliance Spec</h3>
-      </div>
       <div class="panel-body">
         <div class="row-fluid">
             <div class="span12">
@@ -11,7 +7,7 @@
                     <label class="control-label" for="image_url">Image URL</label>
                     <div class="list-group">
                         <a href="#" class="list-group-item">
-                            {{ImageURL}}
+                            <%= capsuleSpec.ImageURL %>
                         </a>
                     </div>
                 </div>
@@ -23,7 +19,7 @@
                     <label class="control-label" for="start_command">Start Command</label>
                     <div class="list-group">
                         <a href="#" class="list-group-item">
-                            {{StartCMD}}
+                            <%= capsuleSpec.StartCMD %>
                         </a>
                     </div>
                 </div>
@@ -35,7 +31,7 @@
                     <label class="control-label">Exposed Ports</label>
                     <div class="list-group">
                         <a href="#" class="list-group-item">
-                            {{ServicePorts}}
+                            <%= capsuleSpec.ServicePorts %>
                         </a>
                     </div>
                 </div>
@@ -46,11 +42,11 @@
                 <div class="control-group">
                     <label class="control-label">Peer Image URLS</label>
                     <div class="list-group">
-                        {{#PeerImageURLS}}
+                        <% _.each(capsuleSpec.PeerImageURLs, function(url){ %>
                         <a href="#" class="list-group-item">
-                            {{.}}
+                            <%= url %>
                         </a>
-                        {{/PeerImageURLS}}
+                        <% }); %>
                     </div>
                 </div>
             </div>
@@ -58,13 +54,15 @@
         <div class="row-fluid">
             <div class="span12">
                 <div class="control-group">
-                    <label class="control-label">Secure Tunnels</label>
+                    <label class="control-label">Secure Tunnels To</label>
                     <div class="list-group">
-                        {{#TunnelTo}}
-                        <a href="#" class="list-group-item">
-                            {{.}}
-                        </a>
-                        {{/TunnelTo}}
+                        <% _.each(capsuleSpec.TunnelTo, function(tunnel){ %>
+                            <% _.each(tunnel, function(peerTunnel){ %>
+                        <li class="list-group-item">
+                            <%= peerTunnel.Type %>:<%= peerTunnel.InternalPort %>
+                        </li>
+                            <% }); %>
+                        <% }); %>
                     </div>
                 </div>
             </div>
@@ -74,11 +72,26 @@
                 <div class="control-group">
                     <label class="control-label">Encrypted Volumes</label>
                     <div class="list-group">
-                        {{#VolumeSpecs}}
-                        <a href="#" class="list-group-item">
-                            {{.}}
-                        </a>
-                        {{/VolumeSpecs}}
+                        <% _.each(capsuleSpec.VolumeSpecs, function(volumeSpecs){ %>
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <label class="control-label">Internal Path: </label>
+                                <%= volumeSpecs.InternalPath %>
+                            </li>
+                            <li class="list-group-item">
+                                <label class="control-label">Size: </label>
+                                <%= volumeSpecs.Size %>
+                            </li>
+                            <li class="list-group-item">
+                                <label class="control-label">Encryption Key: </label>
+                                <%= volumeSpecs.EncryptionKey %>
+                            </li>
+                            <li class="list-group-item">
+                                <label class="control-label">Encryption Model: </label>
+                                <%= volumeSpecs.EncryptionModel %>
+                            </li>
+                        </ul>
+                        <% }); %>
                     </div>
                 </div>
             </div>
@@ -89,7 +102,7 @@
                     <label class="control-label" for="policy_url">Policy URL</label>
                     <div class="list-group">
                         <a href="#" class="list-group-item">
-                            {{PolicyURL}}
+                            <%= capsuleSpec.PolicyURL %>
                         </a>
                     </div>
                 </div>
@@ -101,7 +114,7 @@
                     <label class="control-label" for="accounting_url">Accounting URL</label>
                     <div class="list-group">
                         <a href="#" class="list-group-item">
-                            {{AccountingURL}}
+                            <%= capsuleSpec.AccountingURL %>
                         </a>
                     </div>
                 </div>
@@ -110,4 +123,3 @@
       </div>
     </div>
 </form>
-</script>

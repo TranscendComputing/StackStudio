@@ -27,7 +27,7 @@ define([
 
         tagName: 'div',
 
-        mainTemplate: _.template(mainPageTemplate),
+        template: _.template(mainPageTemplate),
 
         applianceTemplate: _.template(applianceTemplate),
 
@@ -51,10 +51,9 @@ define([
 
         initialize: function() {
             $("#appliances_container").html(this.el);
-            this.$el.html(this.mainTemplate);
+            this.$el.html(this.template);
             this.$el.append(this.applianceTemplate);
             ich.refresh();
-            this.templates = ich.templates;
             this.appliances = new Appliances();
             this.appliances.on( 'reset', this.addAllAppliances, this );
             var applianceApp = this;
@@ -86,9 +85,9 @@ define([
                 }else {
                     $("#component_open").append(form);
                 }
-                var appliance_spec_list = ich.spec_form(this.currentAppliance.attributes.ApplianceSpec);
-                if ($("#spec_form").length > 0) {
-                    $("#spec_form").html(appliance_spec_list);
+                var appliance_spec_list = ich.appliance_spec_form(this.currentAppliance.attributes.ApplianceSpec);
+                if ($("#appliance_spec_form").length > 0) {
+                    $("#appliance_spec_form").html(appliance_spec_list);
                 }else {
                     $("#component_open").append(appliance_spec_list);
                 }

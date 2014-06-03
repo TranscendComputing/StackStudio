@@ -14,7 +14,7 @@ define([
         // 'views/meshes/dashboardView',
         // 'views/meshes/gridsView',
         'views/meshes/appliancesView',
-        // 'views/meshes/capsulesView',
+        'views/meshes/capsulesView',
         'common'
 ], function( $,
  _,
@@ -24,7 +24,7 @@ meshesTemplate,
 // DashboardView,
 // GridsView,
 AppliancesView,
-// CapsulesView,
+CapsulesView,
 Common
 ) {
 
@@ -83,10 +83,10 @@ Common
                     break;
                 case '#capsules_tab':
                     console.log('Switching to CapsulesView');
-                    // if(!this.capsulesView) {
-                    //     this.capsulesView = new CapsulesView();
-                    // }
-                    // this.capsulesView.render();
+                    if(!this.capsulesView) {
+                        this.capsulesView = new CapsulesView();
+                    }
+                    this.capsulesView.render();
                     break;
                 }
             }
