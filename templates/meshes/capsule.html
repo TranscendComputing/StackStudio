@@ -1,136 +1,199 @@
+<% if(capsuleSpec.id) { %>
 <form id="capsule_spec_form" class="form-horizontal">
-    <div class="panel panel-default">
-      <div class="panel-body">
-        <div class="row-fluid">
-            <div class="span12">
-                <div class="control-group">
-                    <label class="control-label" for="image_url">Image URL</label>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="control-group">
+                <label class="control-label" for="input_image_url">Docker Image</label>
+                <div class="controls">
                     <div class="list-group">
-                        <a href="#" class="list-group-item">
+                        <a href="https://index.docker.io/u/<%= capsuleSpec.ImageURL %>" target="_blank" class="list-group-item">
                             <%= capsuleSpec.ImageURL %>
                         </a>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row-fluid">
-            <div class="span12">
-                <div class="control-group">
-                    <label class="control-label" for="start_command">Start Command</label>
-                    <div class="list-group">
-                        <a href="#" class="list-group-item">
-                            <%= capsuleSpec.StartCMD %>
-                        </a>
-                    </div>
-                </div>
-            </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="input_start_command">Start Command</label>
+        <div class="list-group">
+            <li class="list-group-item">
+                <%= capsuleSpec.StartCMD %>
+            </li>
         </div>
-        <div class="row-fluid">
-            <div class="span12">
-                <div class="control-group">
-                    <label class="control-label">Exposed Ports</label>
-                    <div class="list-group">
-                        <a href="#" class="list-group-item">
-                            <%= capsuleSpec.ServicePorts.join(',') %>
-                        </a>
-                    </div>
-                </div>
-            </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="input_service_ports">Exposed Ports</label>
+        <div class="list-group">
+            <li class="list-group-item">
+                <% if (capsuleSpec.ServicePorts && capsuleSpec.ServicePorts.length > 0) { %>
+                <%= capsuleSpec.ServicePorts.join(',') %>
+                <% }else { %>
+                None
+                <% } %>
+            </li>
         </div>
-        <div class="row-fluid">
-            <div class="span12">
-                <div class="control-group">
-                    <label class="control-label">Peer Image URLS</label>
-                    <div class="list-group">
-                        <% _.each(capsuleSpec.PeerImageURLs, function(url){ %>
-                        <a href="#" class="list-group-item">
-                            <%= url %>
-                        </a>
-                        <% }); %>
-                    </div>
-                </div>
-            </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="input_peer_image_urls">Peer Image URLS</label>
+        <div class="list-group">
+            <% _.each(capsuleSpec.PeerImageURLs, function(url){ %>
+            <a href="https://index.docker.io/u/<%=url%>" target="_blank" class="list-group-item">
+                <%= url %>
+            </a>
+            <% }); %>
         </div>
-        <div class="row-fluid">
-            <div class="span12">
-                <div class="control-group">
-                    <label class="control-label">Secure Tunnels</label>
-                    <div class="list-group">
-                        <% if ((capsuleSpec.TunnelTo == undefined || capsuleSpec.TunnelTo.length == 0) && (capsuleSpec.TunnelFrom == undefined || capsuleSpec.TunnelFrom.length == 0)) { %>
-                        <li class="list-group-item">None</li>
-                        <% }else { %> 
-                            <% _.each(capsuleSpec.TunnelTo, function(tunnel){ %>
-                                <% _.each(tunnel, function(peerTunnel){ %>
-                        <li class="list-group-item">
-                            Tunnel To: <%= peerTunnel.Type %>:<%= peerTunnel.InternalPort %>
-                        </li>
-                                <% }); %>
-                            <% }); %>
-                            <% _.each(capsuleSpec.TunnelFrom, function(tunnel){ %>
-                                <% _.each(tunnel, function(peerTunnel){ %>
-                        <li class="list-group-item">
-                            Tunnel From: <%= peerTunnel.Type %>:<%= peerTunnel.InternalPort %>
-                        </li>
-                                <% }); %>
-                            <% }); %>
-                        <% } %>
-                    </div>
-                </div>
-            </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Secure Tunnels</label>
+        <div class="list-group">
+            <% if ((capsuleSpec.TunnelTo == undefined || capsuleSpec.TunnelTo.length == 0) && (capsuleSpec.TunnelFrom == undefined || capsuleSpec.TunnelFrom.length == 0)) { %>
+            <li class="list-group-item">None</li>
+            <% }else { %> 
+                <% _.each(capsuleSpec.TunnelTo, function(tunnel){ %>
+                    <% _.each(tunnel, function(peerTunnel){ %>
+            <li class="list-group-item">
+                Tunnel To: <%= capsuleSpec.PeerImageURLs[_.indexOf(capsuleSpec.TunnelTo, tunnel)] %> at <%= peerTunnel.InternalPort %> with <%= peerTunnel.Type %>
+            </li>
+                    <% }); %>
+                <% }); %>
+                <% _.each(capsuleSpec.TunnelFrom, function(tunnel){ %>
+                    <% _.each(tunnel, function(peerTunnel){ %>
+            <li class="list-group-item">
+                Tunnel From: <%= capsuleSpec.PeerImageURLs[_.indexOf(capsuleSpec.TunnelFrom, tunnel)] %> at <%= peerTunnel.InternalPort %> with <%= peerTunnel.Type %>
+            </li>
+                    <% }); %>
+                <% }); %>
+            <% } %>
         </div>
-        <div class="row-fluid">
-            <div class="span12">
-                <div class="control-group">
-                    <label class="control-label">Encrypted Volumes</label>
-                    <div class="list-group">
-                        <% _.each(capsuleSpec.VolumeSpecs, function(volumeSpecs){ %>
-                        <ul class="list-group">
-                            <li class="list-group-item">
-                                <label class="control-label">Internal Path: </label>
-                                <%= volumeSpecs.InternalPath %>
-                            </li>
-                            <li class="list-group-item">
-                                <label class="control-label">Size: </label>
-                                <%= volumeSpecs.Size %>
-                            </li>
-                            <li class="list-group-item">
-                                <label class="control-label">Encryption Key: </label>
-                                <%= volumeSpecs.EncryptionKey %>
-                            </li>
-                            <li class="list-group-item">
-                                <label class="control-label">Encryption Model: </label>
-                                <%= volumeSpecs.EncryptionModel || "None" %>
-                            </li>
-                        </ul>
-                        <% }); %>
-                    </div>
-                </div>
-            </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Encrypted Volumes</label>
+        <div class="list-group">
+            <% _.each(capsuleSpec.VolumeSpecs, function(volumeSpecs){ %>
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <label class="control-label">Internal Path: </label>
+                    <%= volumeSpecs.InternalPath %>
+                </li>
+                <li class="list-group-item">
+                    <label class="control-label">Size: </label>
+                    <%= volumeSpecs.Size %>
+                </li>
+                <li class="list-group-item">
+                    <label class="control-label">Encryption Key: </label>
+                    <%= volumeSpecs.EncryptionKey %>
+                </li>
+                <li class="list-group-item">
+                    <label class="control-label">Encryption Model: </label>
+                    <%= volumeSpecs.EncryptionModel || "None" %>
+                </li>
+            </ul>
+            <% }); %>
         </div>
-        <div class="row-fluid">
-            <div class="span12">
-                <div class="control-group">
-                    <label class="control-label" for="policy_url">Policy URL</label>
-                    <div class="list-group">
-                        <a href="#" class="list-group-item">
-                            <%= capsuleSpec.PolicyURL || "None" %>
-                        </a>
-                    </div>
-                </div>
-            </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="policy_url">Policy URL</label>
+        <div class="list-group">
+            <% if(capsuleSpec.PolicyURL) { %>
+            <a href="<%= capsuleSpec.PolicyURL %>" target="_blank" class="list-group-item">
+                <%= capsuleSpec.PolicyURL %>
+            </a>
+            <% }else { %>
+            <li class="list-group-item">None</li>
+            <% } %>
         </div>
-        <div class="row-fluid">
-            <div class="span12">
-                <div class="control-group">
-                    <label class="control-label" for="accounting_url">Accounting URL</label>
-                    <div class="list-group">
-                        <a href="#" class="list-group-item">
-                            <%= capsuleSpec.AccountingURL || "None" %>
-                        </a>
-                    </div>
-                </div>
-            </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="accounting_url">Accounting URL</label>
+        <div class="list-group">
+            <% if(capsuleSpec.AccountingURL) { %>
+            <a href="<%= capsuleSpec.AccountingURL %>" target="_blank" class="list-group-item">
+                <%= capsuleSpec.AccountingURL %>
+            </a>
+            <% }else { %>
+            <li class="list-group-item">None</li>
+            <% } %>
         </div>
-      </div>
     </div>
 </form>
+<% }else { %>
+<form class="form-horizontal" role="form">
+  <div class="form-group">
+    <label for="input_image_url" class="col-sm-2 control-label">Docker Image</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="input_image_url" placeholder="Docker Image">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="input_start_cmd" class="col-sm-2 control-label">Start Command</label>
+    <div class="col-sm-10">
+      <input type="text" class="col-xs-5 form-control" id="input_start_cmd" placeholder="Start Command">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="input_start_cmd" class="col-sm-2 control-label">Exposed Ports</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="input_exposed_ports" placeholder="Exposed Ports">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="input_start_cmd" class="col-sm-2 control-label">Policy URL</label>
+    <div class="col-sm-10">
+      <input type="url" class="col-xs-5 form-control" id="input_policy_url" placeholder="http://somebucket.Policy.json">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="input_start_cmd" class="col-sm-2 control-label">Accounting URL</label>
+    <div class="col-sm-10">
+      <input type="url" class="col-xs-5 form-control" id="input_accounting_url" placeholder="http://somebucket/Acct.json">
+    </div>
+  </div> 
+  <div class="form-group" id="encpryted_volumes_group">
+    <label class="col-sm-2 control-label">Encrypted Volumes</label>
+    <div class="col-sm-10">
+      <div class="input-group">
+        <span class="input-group-addon">Internal Path:</span>
+        <input type="text" class="form-control" id="input_volume_path">
+      </div>
+      <div class="input-group">
+        <span class="input-group-addon">Size:</span>
+        <input type="text" class="form-control" id="input_volume_size">
+      </div>
+      <div class="input-group">
+        <span class="input-group-addon">Encryption Key:</span>        
+        <input type="tex" class="form-control" id="input_encryption_key">
+      </div>
+      <div class="input-group">
+        <span class="input-group-addon">Encryption Model:</span>
+        <input type="text" class="form-control" id="input_encryption_model">
+      </div>
+      <button class="btn btn-default" id="add_encrypted_volume_button">Add</button>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-2 control-label">Secure Tunnels</label>
+    <div class="col-sm-10">
+      <div class="row">
+        <div class="input-group col-xs-5">
+          <span class="input-group-addon">Tunnel To:</span>
+          <input type="text" class="form-control" id="input_volume_path">
+        </div>
+        <button class="btn btn-default" id="add_tunnel_to_button">Add</button>
+      </div>
+      <div class="row">
+        <div class="input-group col-xs-5">
+          <span class="input-group-addon">Tunnel From:</span>
+          <input type="text" class="form-control" id="input_volume_path">
+        </div>
+        <button class="btn btn-default" id="add_tunnel_from_button">Add</button>
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" class="btn btn-default">Save</button>
+    </div>
+  </div>
+</form>
+<% } %>

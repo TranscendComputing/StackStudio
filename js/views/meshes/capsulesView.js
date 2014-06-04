@@ -45,6 +45,7 @@ define([
         
         events: {
             "click #new_component_button": "newCapsule",
+            "click #add_tunnel_from_button": "addTunnelFrom",
             // "click #save_capsule_button": "saveCapsule",
             // "click #close_capsule_button": "closeCapsule",
             // "click #delete_capsule_button": "deleteCapsule",

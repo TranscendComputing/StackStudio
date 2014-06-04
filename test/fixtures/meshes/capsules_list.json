@@ -1,6 +1,7 @@
 [
   {
     "CapsuleSpec": {
+      "id": "1234",
       "Name": "Logger",
       "Url": "http://some.s3bucket.com/capsules/Logger.json",
       "PolicyURL": "http://some.s3bucket.com/polcies/LoggerPolicy.json",
@@ -37,6 +38,7 @@
   },
   {
     "CapsuleSpec": {
+      "id": "5678",
       "Name": "ETCD",
       "Url": "http://some.s3bucket.com/capsules/ETCD.json",
       "PolicyURL": "http://some.s3bucket.com/polcies/ETCDPolicy.json",
@@ -63,6 +65,7 @@
   },
   {
     "CapsuleSpec": {
+      "id": "0123",
       "Name": "MCIAAS",
       "Url": "http://some.s3bucket.com/capsules/MCIAAS.json",
       "PolicyURL": "http://some.s3bucket.com/polcies/MCIAASPolicy.json",
@@ -91,6 +94,18 @@
         {
           "InternalPath": "/tmp",
           "Size": "1M",
+          "EncryptionKey": "AAAAAA",
+          "EncryptionModel": ""
+        },
+        {
+          "InternalPath": "/dev",
+          "Size": "10M",
+          "EncryptionKey": "AAAAAA",
+          "EncryptionModel": ""
+        },
+        {
+          "InternalPath": "/share",
+          "Size": "100M",
           "EncryptionKey": "AAAAAA",
           "EncryptionModel": ""
         }
