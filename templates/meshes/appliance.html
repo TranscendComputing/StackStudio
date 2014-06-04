@@ -1,84 +1,44 @@
-<script id="appliance_form" type="text/html">
-<form id="appliance_form" class="form-horizontal">
-    <div class="panel panel-default">
-        <div class="panel-body">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="control-group">
-                        <label class="control-label" for="name_input">Name</label>
-                        <input type="text" id="name_input" class="form-control" value={{Name}}>
-                    </div>
-                </div>
-            </div>
-            <div class="row-fluid">
-                <div class="span12">
-                    <div class="control-group">
-                        <label class="control-label" for="appliance_specification_input">Appliance Specification URL</label>
-                        <div class="controls">
-                            <input type="text" id="appliance_specification_input" class="form-control" value={{ApplianceSpecURL}}>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row-fluid">
-                <div class="span12">
-                    <div class="control-group">
-                        <label class="control-label" for="appliance_instance_count_input">Instance Count</label>
-                        <input type="text" id="appliance_instance_count_input" class="form-control bfh-number" value={{ApplianceInstanceCount}}>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</form>   
-</script>
-
 <script id="appliance_spec_form" type="text/html">
 <form id="appliance_spec_form" class="form-horizontal">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Appliance Spec</h3>
-      </div>
-      <div class="panel-body">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="control-group">
-                    <label class="control-label" for="capsules_list">Capsules</label>
-                    <div class="list-group">
-                        {{#CapsuleSpecURLs}}
-                        <a href="#" class="list-group-item">
-                            {{.}}
-                        </a>
-                        {{/CapsuleSpecURLs}}
-                    </div>
-                </div>
-            </div>
+    <div class="control-group">
+        <label class="control-label" for="name_input">Name</label>
+        <input type="text" id="name_input" class="form-control" value={{Name}}>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="appliance_specification_input">Appliance Specification URL</label>
+        <div class="controls">
+            <input type="text" id="appliance_specification_input" class="form-control" value={{ApplianceSpecURL}}>
         </div>
-        <div class="row-fluid">
-            <div class="span12">
-                <div class="control-group">
-                    <label class="control-label" for="policy_url">Policy URL</label>
-                    <div class="list-group">
-                        <a href="#" class="list-group-item">
-                            {{PolicyURL}}
-                        </a>
-                    </div>
-                </div>
-            </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="appliance_instance_count_input">Instance Count</label>
+        <input type="text" id="appliance_instance_count_input" class="form-control bfh-number" value={{ApplianceInstanceCount}}>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="capsules_list">Capsules</label>
+        <div class="list-group">
+            {{#ApplianceSpec.CapsuleSpecURLs}}
+            <a href="#" class="list-group-item">
+                {{.}}
+            </a>
+            {{/ApplianceSpec.CapsuleSpecURLs}}
         </div>
-        <div class="row-fluid">
-            <div class="span12">
-                <div class="control-group">
-                    <label class="control-label" for="accounting_url">Accounting URL</label>
-                    <div class="list-group">
-                        <a href="#" class="list-group-item">
-                            {{AccountingURL}}
-                        </a>
-                    </div>
-                </div>
-            </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="policy_url">Policy URL</label>
+        <div class="list-group">
+            <a href="#" class="list-group-item">
+                {{ApplianceSpec.PolicyURL}}
+            </a>
         </div>
-      </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="accounting_url">Accounting URL</label>
+        <div class="list-group">
+            <a href="#" class="list-group-item">
+                {{ApplianceSpec.AccountingURL}}
+            </a>
+        </div>
     </div>
 </form>
 </script>
