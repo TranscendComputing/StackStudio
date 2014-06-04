@@ -1,6 +1,7 @@
 [
   {
     "Appliance": {
+      "id": "123",
       "Name": "DemoSite",
       "TenantID": "ddab1f30-83dc-11e3-baa7-0800200c9a66",
       "ApplianceTypeURL": "demosite",
@@ -20,6 +21,7 @@
   },
   {
     "Appliance": {
+      "id": "456",
       "Name": "MyAppliance",
       "TenantID": "ddab1f30-83dc-11e3-baa7-0800200c9a66",
       "ApplianceTypeURL": "myappliance",
@@ -39,6 +41,7 @@
   },
   {
     "Appliance": {
+      "id": "789",
       "Name": "Logger",
       "TenantID": "ddab1f30-83dc-11e3-baa7-0800200c9a66",
       "ApplianceTypeURL": "logger",

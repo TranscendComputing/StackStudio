@@ -38,15 +38,12 @@ define([
         events: {
             "click #new_component_button": "newAppliance",
             "click #save_appliance_button": "saveAppliance",
-            // "click #close_appliance_button": "closeAppliance",
-            // "click #delete_appliance_button": "deleteAppliance",
             "click .appliance": "openAppliance"
         },
 
         initialize: function() {
             $("#appliances_container").html(this.el);
             this.$el.html(this.template);
-            this.$el.append(this.applianceTemplate);
             ich.refresh();
             this.collection = new Appliances();
             this.collection.on( 'reset', this.addAllAppliances, this );
@@ -73,7 +70,7 @@ define([
             var actions = ich.component_actions({ primary_actions: this.primaryActions, secondary_actions: this.secondaryActions });
             $("#button_group").html(actions);
             if (this.model) {
-                var appliance_spec_form = ich.appliance_spec_form(this.model.attributes);
+                var appliance_spec_form = this.applianceTemplate({ appliance: this.model.attributes }, {variable: 'appliance'});
                 if ($("#appliance_spec_form").length > 0) {
                     $("#appliance_spec_form").html(appliance_spec_form);
                 }else {
@@ -99,14 +96,7 @@ define([
         },
 
         newAppliance: function() {
-            if(this.model) {
-                var confirmation = confirm("Are you sure you want to open a new appliance? Any unsaved changes to the current appliance will be lose.");
-                if(confirmation === true) {
-                    this.openNewAppliance();
-                }
-            }else {
-                this.openNewAppliance();
-            }
+            this.openNewAppliance();
         },
 
         openNewAppliance: function() {
