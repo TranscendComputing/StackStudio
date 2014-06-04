@@ -2,17 +2,17 @@
   {
     "CapsuleSpec": {
       "id": "1234",
-      "Name": "Logger",
-      "Url": "http://some.s3bucket.com/capsules/Logger.json",
-      "PolicyURL": "http://some.s3bucket.com/polcies/LoggerPolicy.json",
-      "AccountingURL": "http://some.s3bucket.com/polcies/LoggerAcct.json",
-      "ImageURL": "tdhite/logstash",
+      "Name": "DemoSite",
+      "Url": "http://some.s3bucket.com/capsules/DemoSite.json",
+      "PolicyURL": "http://some.s3bucket.com/polcies/DemoSitePolicy.json",
+      "AccountingURL": "http://some.s3bucket.com/polcies/DemoSiteAcct.json",
+      "ImageURL": "tdhite/demosite",
       "StartCMD": "/start.sh {{range $index, $peer := .NetworkPeers}} {{$peer.IPAddress}}:{{$peer.Port}} {{end}}",
       "ServicePorts": [
         "80", "4136"
       ],
       "PeerImageURLs": [
-        "tdhite/logstash",
+        "tdhite/demosite",
         "tdhite/mciaas",
         "tdhite/etcd"
       ],
@@ -49,7 +49,7 @@
         "80"
       ],
       "PeerImageURLs": [
-        "tdhite/logstash",
+        "tdhite/demosite",
         "tdhite/mciaas",
         "tdhite/etcd"
       ],
@@ -76,7 +76,7 @@
         "80"
       ],
       "PeerImageURLs": [
-        "tdhite/logstash",
+        "tdhite/demosite",
         "tdhite/mciaas",
         "tdhite/etcd"
       ],
