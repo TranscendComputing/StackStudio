@@ -59,6 +59,7 @@ define([
     afterSubAppRender: undefined,
     initialize: function() {
       var self = this;
+      this.render();
 
       this.cloudAccounts = new CloudAccounts();
 
@@ -96,8 +97,6 @@ define([
         reset: true
       });
 
-      this.render();
-
       if (Common.account && parseInt(Common.account.num_logins, 10) < 5) {
         this.tutorial = new TutorialView({
           rootView: this
@@ -129,21 +128,25 @@ define([
 
     tabSelected: function(event) {
       var $target = $(event.target);
-
-      if ($target.hasClass('cloud-submenu-item')) {
-        return;
+      
+      if($target.hasClass('cloud-submenu-item')) {
+          return;
       }
 
       var $el = $(event.currentTarget);
       //if it isn't expanded, expand it
-      if (!$el.hasClass('open')) {
-        $el.addClass('open');
+      if(!$el.hasClass('open')) {
+          $el.addClass('open');
       } else {
-        //only close it if the tab is already active -- prevents closing when switching to an already open tab
-        if ($el.hasClass('active')) {
-          $el.removeClass('open');
-        }
+          //only close it if the tab is already active -- prevents closing when switching to an already open tab
+          if($el.hasClass('active')) {
+              $el.removeClass('open');
+          }
       }
+
+      $('.sub-active', '#cloud_setup_menu').removeClass('sub-active');
+      $('.active', '#cloud_setup_menu').removeClass('active');
+      $el.addClass('active');
     },
 
     addAll: function(collection, $list) {
@@ -155,19 +158,24 @@ define([
     },
 
     itemSelected: function(event) {
-      var id = event.target.id;
-      var $list = $(event.currentTarget).parents('[data-collection-name]');
-      var collectionName = $list.attr('data-collection-name');
-      this.selectedId = id;
-      this.selectedCollection = this[collectionName];
+      var $el = $(event.currentTarget);
+      var $list = $el.parents('[data-collection-name]');
+      this.selectedId = event.target.id;
+      this.selectedCollection = this[$list.attr('data-collection-name')];
 
       var route = $list.attr('data-base-url');
 
       //if there is no route change, we need to trigger the route handler manually
-      if (location.hash === route) {
-        Backbone.history.loadUrl(Backbone.history.fragment);
+      if(location.hash === route) {
+          Backbone.history.loadUrl(Backbone.history.fragment);
       }
+
+      $('.active', '#cloud_setup_menu').removeClass('active');
+      $('.sub-active', '#cloud_setup_menu').removeClass('sub-active');
+      $el.parents().eq(2).addClass('active');
+      $el.addClass('sub-active');
     },
+
     close: function() {
       this.$el.empty();
       this.undelegateEvents();
@@ -186,94 +194,73 @@ define([
   var cloudSetupView;
   var self = this;
   Common.router.on("route:cloudSetup", function ( action, id ) {
+      // Make sure action always has a value, if not default to /
+      action = action || '/';
 
-    if (!Common.authenticate({ redirect: 'here' })) {
-      return;
-    }
-
-    if (!action || action === "/") {
-      Common.router.navigate("#cloud/setup/cloud-accounts_list", {
-        trigger: true
-      });
-      return;
-    }
-
-    var category = action.replace('/', '').split("_list")[0];
-
-    $('#cloud_setup_menu>li.active').removeClass('active');
-    $('.sub-active').removeClass('sub-active');
-    $('[data-group="' + category + '"]').addClass('active');
-
-    if (this.previousView !== cloudSetupView) {
-      this.unloadPreviousState();
-      cloudSetupView = new CloudSetupView();
-      this.setPreviousState(cloudSetupView);
-    }
-
-    var viewAssociations = {
-      "user_list": UsersManagementView,
-      "policy_list": PoliciesManagementView,
-      "group_list": GroupsManagementListView,
-      "cloud-credentials_list": CloudCredentialManagementListView,
-      "cloud-accounts_list": CloudAccountManagementListView,
-      "cloud-accounts": CloudAccountManagementView,
-      "cloud-credentials": CloudCredentialManagementView,
-      "user": UserUpdateView,
-      "policy": PolicyManagementView,
-      "group": GroupsManagementView,
-      "configuration_managers_list": DevOpsToolsManagementView,
-      "continuous_integration_list": ContinuousIntegrationManagementView,
-      "source_control_repositories_list": SourceControlRepositoryManagementListView,
-      "home": CloudAccountManagementListView
-    };
-
-    // Set SubView based on action as key in hash map above
-    var SubView = viewAssociations[action] || CloudAccountManagementView;
-
-    if (cloudSetupView.subApp) {
-      cloudSetupView.subApp.close();
-    }
-
-    if (action.indexOf('list') === -1) {
-
-      //if there is an id in the url
-      if(id) {
-        cloudSetupView.selectedId = id;
-        var collectionName = $('#' + id)
-                              .parents('[data-collection-name]')
-                              .attr('data-collection-name');
-        cloudSetupView.selectedCollection = cloudSetupView[collectionName];
-      } else { //otherwise, navigate to list view
-        if (!(cloudSetupView.selectedId && cloudSetupView.selectedCollection)) {
-          Common.router.navigate('#cloud/setup/' + action + '_list', {
-            trigger: true
-          });
-          return;
-        }
+      // Only load cloudSetupView if not already loaded or root action requested
+      if (this.previousView !== cloudSetupView || action === '/') {
+          this.unloadPreviousState();
+          cloudSetupView = new CloudSetupView();
+          this.setPreviousState(cloudSetupView);
       }
 
-    }
+      // Create params object for subApp instantiation below
+      var params = {
+          rootView : cloudSetupView,
+          selectedId : cloudSetupView.selectedId,
+          collection : cloudSetupView.selectedCollection
+      };
 
-    var params = {
-      rootView: cloudSetupView
-    };
+      // category is used below in jQuery styling. if category is false 
+      // (NaN, undefined, false) or is blank, default to cloud-accounts
+      var category = action.replace('/','').split("_list")[0];
+      if (!category || category === '') {
+          category = 'cloud-accounts';
+      }
 
-    if (cloudSetupView.selectedId) {
-      params.selectedId = cloudSetupView.selectedId;
-      params.collection = cloudSetupView.selectedCollection;
-    }
+      // HashMap for mapping actions to proper subApp view
+      var viewAssociations = {
+          "user_list" : UsersManagementView,
+          "policy_list" : PoliciesManagementView,
+          "group_list" : GroupsManagementListView,
+          "cloud-credentials_list" : CloudCredentialManagementListView,
+          "cloud-accounts_list" : CloudAccountManagementListView,
+          "cloud-accounts" : CloudAccountManagementView,
+          "cloud-credentials" : CloudCredentialManagementView,
+          "user" : UserUpdateView,
+          "policy" : PolicyManagementView,
+          "group" : GroupsManagementView,
+          "configuration_managers_list" : DevOpsToolsManagementView,
+          "continuous_integration_list" : ContinuousIntegrationManagementView,
+          "source_control_repositories_list" : SourceControlRepositoryManagementListView,
+          "home" : CloudAccountManagementListView,
+          "/": CloudAccountManagementListView
+      };
 
-    cloudSetupView.subApp = new SubView(params);
+      // Set SubView based on action as key in hash map above
+      var SubView = viewAssociations[action] || CloudAccountManagementListView;
 
-    if (cloudSetupView.selectedId) {
-      $('#' + cloudSetupView.selectedId).addClass('sub-active');
-    }
-    cloudSetupView.selectedId = undefined;
-    cloudSetupView.selectedCollection = undefined;
+      // Close/clear previous loaded subApp if defined/loaded
+      if (cloudSetupView.subApp) {
+          cloudSetupView.subApp.close();
 
-    if (cloudSetupView.afterSubAppRender) {
-      cloudSetupView.afterSubAppRender.call(cloudSetupView);
-    }
+          // Handle special case of user menu item by loading the
+          // UsersManagementView in background before showing edit dialig
+          if (action === 'user') {
+              cloudSetupView.subApp = new UsersManagementView(params);
+          }
+      }
+
+      // Instantiate subApp view object
+      cloudSetupView.subApp = new SubView(params);
+
+      // Reset attributes to avoid "bleed over"
+      cloudSetupView.selectedId = undefined;
+      cloudSetupView.selectedCollection = undefined;
+
+      if (cloudSetupView.afterSubAppRender) {
+          cloudSetupView.afterSubAppRender.call(cloudSetupView);
+      }
   }, Common);
 
   return CloudSetupView;
