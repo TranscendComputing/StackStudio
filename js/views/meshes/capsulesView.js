@@ -102,7 +102,7 @@ define([
         addAllCapsules: function() {
             $("#component_list").empty();
             this.capsules.each(function(capsule) {
-                $("#component_list").append("<li><a id='"+capsule.attributes.ImageURL+"' class='capsule selectable_item'>"+capsule.attributes.ImageURL+"</a></li>");
+                $("#component_list").append("<li><a id='"+capsule.attributes.Name+"' class='capsule selectable_item'>"+capsule.attributes.Name+"</a></li>");
             });
         },
 

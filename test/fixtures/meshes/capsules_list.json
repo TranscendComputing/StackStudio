@@ -1,17 +1,18 @@
 [
   {
     "CapsuleSpec": {
-      "Name": "Logger",
-      "Url": "http://some.s3bucket.com/capsules/Logger.json",
-      "PolicyURL": "http://some.s3bucket.com/polcies/LoggerPolicy.json",
-      "AccountingURL": "http://some.s3bucket.com/polcies/LoggerAcct.json",
-      "ImageURL": "tdhite/logstash",
+      "id": "1234",
+      "Name": "DemoSite",
+      "Url": "http://some.s3bucket.com/capsules/DemoSite.json",
+      "PolicyURL": "http://some.s3bucket.com/polcies/DemoSitePolicy.json",
+      "AccountingURL": "http://some.s3bucket.com/polcies/DemoSiteAcct.json",
+      "ImageURL": "tdhite/demosite",
       "StartCMD": "/start.sh {{range $index, $peer := .NetworkPeers}} {{$peer.IPAddress}}:{{$peer.Port}} {{end}}",
       "ServicePorts": [
         "80", "4136"
       ],
       "PeerImageURLs": [
-        "tdhite/logstash",
+        "tdhite/demosite",
         "tdhite/mciaas",
         "tdhite/etcd"
       ],
@@ -37,6 +38,7 @@
   },
   {
     "CapsuleSpec": {
+      "id": "5678",
       "Name": "ETCD",
       "Url": "http://some.s3bucket.com/capsules/ETCD.json",
       "PolicyURL": "http://some.s3bucket.com/polcies/ETCDPolicy.json",
@@ -47,7 +49,7 @@
         "80"
       ],
       "PeerImageURLs": [
-        "tdhite/logstash",
+        "tdhite/demosite",
         "tdhite/mciaas",
         "tdhite/etcd"
       ],
@@ -63,6 +65,7 @@
   },
   {
     "CapsuleSpec": {
+      "id": "0123",
       "Name": "MCIAAS",
       "Url": "http://some.s3bucket.com/capsules/MCIAAS.json",
       "PolicyURL": "http://some.s3bucket.com/polcies/MCIAASPolicy.json",
@@ -73,7 +76,7 @@
         "80"
       ],
       "PeerImageURLs": [
-        "tdhite/logstash",
+        "tdhite/demosite",
         "tdhite/mciaas",
         "tdhite/etcd"
       ],
@@ -91,6 +94,18 @@
         {
           "InternalPath": "/tmp",
           "Size": "1M",
+          "EncryptionKey": "AAAAAA",
+          "EncryptionModel": ""
+        },
+        {
+          "InternalPath": "/dev",
+          "Size": "10M",
+          "EncryptionKey": "AAAAAA",
+          "EncryptionModel": ""
+        },
+        {
+          "InternalPath": "/share",
+          "Size": "100M",
           "EncryptionKey": "AAAAAA",
           "EncryptionModel": ""
         }

@@ -12,7 +12,7 @@ define([
     'use strict';
 
     var Capsule = ResourceModel.extend({
-        idAttribute: 'ImageURL',
+        idAttribute: 'Name',
 
         defaults: {
             _id: '',
