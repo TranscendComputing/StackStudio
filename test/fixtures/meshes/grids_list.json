@@ -1,6 +1,7 @@
 [
   {
     "Grid": {
+      "id": "123",
       "StackName": "Logger1-AWS-East",
       "TemplateURL": "http://some.s3bucket.com/CFTemplates/Logger1-AWS-East.json",
       "SSHKeyPair": "griduser",
@@ -15,6 +16,7 @@
   },
   {
     "Grid": {
+      "id": "456",
       "StackName": "csMesh1-AWS-East",
       "TemplateURL": "http://some.s3bucket.com/CFTemplates/csMesh1-AWS-East.json",
       "SSHKeyPair": "griduser",
@@ -29,6 +31,7 @@
   },
   {
     "Grid": {
+      "id": "789",
       "StackName": "csMesh2-AWS-East",
       "TemplateURL": "http://some.s3bucket.com/CFTemplates/csMesh2-AWS-East.json",
       "SSHKeyPair": "devuser",
