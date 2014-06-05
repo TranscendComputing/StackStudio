@@ -191,7 +191,7 @@ define(
                     "cloud_credentials":[],
                     "project_memberships":[],
                     "group_policies":[]
-                }
+                };
 
                 cloudSetupView = new CloudSetupView();
             });
