@@ -39,8 +39,11 @@ define([
 
             //shouldn't let user update their own account here
             if(Common.account.id === this.userSelected.attributes.id) {
-                Common.router.navigate('#cloud/setup/user_list', { trigger: true });
-                return;
+                // XXX - raise error condition here instead of silently redirect
+                //       or just let the admin user modify their account here.
+                //       Why is this bad?
+                //Common.router.navigate('#cloud/setup/user_list', { trigger: true });
+                //return;
             }
 
             this.$el.html( this.template );

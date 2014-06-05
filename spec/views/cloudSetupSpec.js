@@ -56,13 +56,11 @@ define(
             });
 
             it("render is callable", function() {
-                 //spyOn(cloudSetupView, 'render');
                  cloudSetupView.render();
                  expect(cloudSetupView.render).toHaveBeenCalled();
             });
 
             it("onFetched is callable", function() {
-                 //spyOn(cloudSetupView, 'onFetched');
                  cloudSetupView.onFetched();
                  expect(cloudSetupView.onFetched).toHaveBeenCalled();
             });
@@ -102,7 +100,6 @@ define(
                 });
                 spyOn(CloudSetupView.prototype, 'onFetched').andCallFake(function(list) {
                     var collection;
-                    console.log('list:', list);
 
                     switch(list) {
                         case '#cloud_account_list':
@@ -168,11 +165,33 @@ define(
                             ]);
                             break;
                     }
-                    console.log('collection:', collection);
+
                     if (collection) {
                         this.addAll(collection, $(list));
                     }
                 });
+
+                Common.account = {
+                    "id":"53741c5e834a3c30eb000007",
+                    "org_id":"53741c5e834a3c30eb000001",
+                    "login":"eric06@gmail.com",
+                    "email":"eric06@gmail.com",
+                    "first_name":"Eric",
+                    "last_name":"Thompson",
+                    "company":"MyOrganization",
+                    "num_logins":5,
+                    "permissions":[{
+                        "permission":{
+                            "id":"53741c5e834a3c30eb000008",
+                            "name":"admin",
+                            "environment":"transcend"
+                        }
+                    }],
+                    "subscriptions":[],
+                    "cloud_credentials":[],
+                    "project_memberships":[],
+                    "group_policies":[]
+                };
 
                 cloudSetupView = new CloudSetupView();
             });
@@ -181,24 +200,23 @@ define(
                 expect(cloudSetupView.$el).toBe('section#main');
             });
 
-            // it("Verify cloud account list is populated", function() {
-            //     expect(cloudSetupView.$el.find('#cloud_account_list>li').length).toEqual(5);
-            // });
+            it("Verify cloud account list is populated", function() {
+                expect(cloudSetupView.$el.find('#cloud_account_list > li').length).toEqual(5);
+            });
 
-            // it("Verify group list is populated", function() {
-            //     expect($('#group_list > li').length).toEqual(4);
-            // });
+            it("Verify group list is populated", function() {
+                expect($('#group_list > li').length).toEqual(4);
+            });
 
-            // it("Verify user list is populated", function() {
-            //     expect($('#user_list > li').length).toEqual(5);
-            // });
+            it("Verify user list is populated", function() {
+                expect($('#user_list > li').length).toEqual(5);
+            });
 
-            // it("Verify policy list is populated", function() {
-            //     expect($('#policy_list > li').length).toEqual(5);
-            // });
+            it("Verify policy list is populated", function() {
+                expect($('#policy_list > li').length).toEqual(5);
+            });
 
             it("Verify credential list is populated", function() {
-                //console.info($("#main").html());
                 var collection = new CredCollection([
                     new CredModel({
                         id:"0000001",name:"Creds 1",description:"Creds 1",cloud_id:"0000001",
@@ -288,60 +306,60 @@ define(
                 expect($('.manager_list:eq(3) p', '#config_managers_page').length).toEqual(2);
             });
 
-            // it("Verify Cloud Accounts menu item is highlighted", function() {
-            //     expect(
-            //         $('#cloud_accounts_tab').hasClass('active') &&
-            //         $('#cloud_accounts_tab').hasClass('open')
-            //     ).toBeTruthy();
-            // });
+            it("Verify Cloud Accounts menu item is highlighted", function() {
+                expect(
+                    $('#cloud_accounts_tab').hasClass('active') &&
+                    $('#cloud_accounts_tab').hasClass('open')
+                ).toBeTruthy();
+            });
 
-            // it("Verify Cloud Credentials menu item is highlighted", function() {
-            //     $('#cloud_credentials_tab').trigger('click');
-            //     expect(
-            //         $('#cloud_credentials_tab').hasClass('active') &&
-            //         $('#cloud_credentials_tab').hasClass('open')
-            //     ).toBeTruthy();
-            // });
+            it("Verify Cloud Credentials menu item is highlighted", function() {
+                $('#cloud_credentials_tab').trigger('click');
+                expect(
+                    $('#cloud_credentials_tab').hasClass('active') &&
+                    $('#cloud_credentials_tab').hasClass('open')
+                ).toBeTruthy();
+            });
 
-            // it("Verify Groups menu item is highlighted", function() {
-            //     $('#groups_tab').trigger('click');
-            //     expect(
-            //         $('#groups_tab').hasClass('active') &&
-            //         $('#groups_tab').hasClass('open')
-            //     ).toBeTruthy();
-            // });
+            it("Verify Groups menu item is highlighted", function() {
+                $('#groups_tab').trigger('click');
+                expect(
+                    $('#groups_tab').hasClass('active') &&
+                    $('#groups_tab').hasClass('open')
+                ).toBeTruthy();
+            });
 
-            // it("Verify Policies menu item is highlighted", function() {
-            //     $('#policies_tab').trigger('click');
-            //     expect(
-            //         $('#policies_tab').hasClass('active') &&
-            //         $('#policies_tab').hasClass('open')
-            //     ).toBeTruthy();
-            // });
+            it("Verify Policies menu item is highlighted", function() {
+                $('#policies_tab').trigger('click');
+                expect(
+                    $('#policies_tab').hasClass('active') &&
+                    $('#policies_tab').hasClass('open')
+                ).toBeTruthy();
+            });
 
-            // it("Verify Users menu item is highlighted", function() {
-            //     $('#users_tab').trigger('click');
-            //     expect(
-            //         $('#users_tab').hasClass('active') &&
-            //         $('#users_tab').hasClass('open')
-            //     ).toBeTruthy();
-            // });
+            it("Verify Users menu item is highlighted", function() {
+                $('#users_tab').trigger('click');
+                expect(
+                    $('#users_tab').hasClass('active') &&
+                    $('#users_tab').hasClass('open')
+                ).toBeTruthy();
+            });
 
-            // it("Verify Configuration Managers menu item is highlighted", function() {
-            //     $('#configuration_managers_tab').trigger('click');
-            //     expect(
-            //         $('#configuration_managers_tab').hasClass('active') &&
-            //         $('#configuration_managers_tab').hasClass('open')
-            //     ).toBeTruthy();
-            // });
+            it("Verify Configuration Managers menu item is highlighted", function() {
+                $('#configuration_managers_tab').trigger('click');
+                expect(
+                    $('#configuration_managers_tab').hasClass('active') &&
+                    $('#configuration_managers_tab').hasClass('open')
+                ).toBeTruthy();
+            });
 
-            // it("Verify Source Control menu item is highlighted", function() {
-            //     $('#source_control_tab').trigger('click');
-            //     expect(
-            //         $('#source_control_tab').hasClass('active') &&
-            //         $('#source_control_tab').hasClass('open')
-            //     ).toBeTruthy();
-            // });
+            it("Verify Source Control menu item is highlighted", function() {
+                $('#source_control_tab').trigger('click');
+                expect(
+                    $('#source_control_tab').hasClass('active') &&
+                    $('#source_control_tab').hasClass('open')
+                ).toBeTruthy();
+            });
 
             // XXX - Add more tests to check for sub-active menu item highlighting
         });
