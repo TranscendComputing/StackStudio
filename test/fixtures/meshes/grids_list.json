@@ -1,0 +1,43 @@
+[
+  {
+    "Grid": {
+      "StackName": "Logger1-AWS-East",
+      "TemplateURL": "http://some.s3bucket.com/CFTemplates/Logger1-AWS-East.json",
+      "SSHKeyPair": "griduser",
+      "NodeCount": 5,
+      "InstanceType": "m3.large",
+      "CapacityOverview": {
+        "CPU": "10",
+        "Mem": "37.5",
+        "Disk": "160"
+      }
+    }
+  },
+  {
+    "Grid": {
+      "StackName": "csMesh1-AWS-East",
+      "TemplateURL": "http://some.s3bucket.com/CFTemplates/csMesh1-AWS-East.json",
+      "SSHKeyPair": "griduser",
+      "NodeCount": 2,
+      "InstanceType": "m1.small",
+      "CapacityOverview": {
+        "CPU": "2",
+        "Mem": "3.4",
+        "Disk": "320"
+      }
+    }
+  },
+  {
+    "Grid": {
+      "StackName": "csMesh2-AWS-East",
+      "TemplateURL": "http://some.s3bucket.com/CFTemplates/csMesh2-AWS-East.json",
+      "SSHKeyPair": "devuser",
+      "NodeCount": 2,
+      "InstanceType": "t1.micro",
+      "CapacityOverview": {
+        "CPU": "2",
+        "Mem": "1.226"
+      }
+    }
+  }
+]

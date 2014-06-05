@@ -3,7 +3,7 @@
 module.exports = function(grunt) {
     // Project configuration.
     grunt.initConfig({
-        pkg: grunt.file.readJSON('config/package.json'),
+        pkg: grunt.file.readJSON('package.json'),
         meta: {
             banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
             '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
@@ -67,7 +67,8 @@ module.exports = function(grunt) {
             'js/vendor/URI/URI.js': 'http://cdn.jsdelivr.net/uri.js/1.10.2/URI.js',
             'js/vendor/URI/punycode.js': 'http://cdn.jsdelivr.net/uri.js/1.10.2/punycode.js',
             'js/vendor/URI/IPv6.js': 'http://cdn.jsdelivr.net/uri.js/1.10.2/IPv6.js',
-            'js/vendor/URI/SecondLevelDomains.js': 'http://cdn.jsdelivr.net/uri.js/1.10.2/SecondLevelDomains.js'
+            'js/vendor/URI/SecondLevelDomains.js': 'http://cdn.jsdelivr.net/uri.js/1.10.2/SecondLevelDomains.js',
+            'js/vendor/jasmine-jquery-1.3.0.js': 'https://raw.githubusercontent.com/velesin/jasmine-jquery/1.3.0/lib/jasmine-jquery.js'
         },
         clean: ['js/vendor/require.js',
             'js/vendor/jquery.js',
@@ -83,7 +84,8 @@ module.exports = function(grunt) {
             'js/vendor/URI/URI.js',
             'js/vendor/URI/punycode.js',
             'js/vendor/URI/IPv6.js',
-            'js/vendor/URI/SecondLevelDomains.js'
+            'js/vendor/URI/SecondLevelDomains.js',
+            'js/vendor/jasmine-jquery-1.3.0.js'
         ],
         watch: {
             files: '<%= lint.files %>',
@@ -166,6 +168,7 @@ module.exports = function(grunt) {
                             */
                             shim: {
                                 'jasmine'       : {exports: 'jasmine'},
+                                'jquery-ui': { deps: ['jquery']},
                                 'jasmine-jquery': {exports: 'jasmine'},
                                 'jquery.multiselect': {deps: ['jquery']}
                             },

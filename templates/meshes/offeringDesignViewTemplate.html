@@ -1,0 +1,236 @@
+<div class="row well well-lg">
+	<div class="button_bar">
+		<div class="btn-group">
+				<button type="button" class="btn dropdown-toggle btn-success" data-toggle="dropdown">
+	    			Select Offering&nbsp;<span class="caret"></span>
+	  			</button>
+	  			<ul id="offerings_menu" class="dropdown-menu" role="menu"></ul>
+			</div>
+			<a id="new_offering_button" class="btn btn-primary">New Offering</a>
+			<div class="btn-group">
+				<button type="button" class="btn dropdown-toggle btn-danger" data-toggle="dropdown">
+	    			Delete Offering&nbsp;<span class="caret"></span>
+	  			</button>
+	  			<ul id="offerings_delete_menu" class="dropdown-menu" role="menu"></ul>
+		</div>
+	</div>
+	<div id="offering_opened" class="col-lg-12">
+		<form id="offering_form" class="form-horizontal">
+			<div class="col-lg-6">
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="control-group">
+							<label class="control-label" for="offering_name_input">Name</label>
+							<div class="controls">
+							  	<input type="text" id="offering_name_input" class="form-control"placeholder="Offering Name">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="control-group">
+							<label class="control-label" for="offering_version_input">Version</label>
+							<div class="controls">
+							  	<input type="text" id="offering_version_input" class="form-control"placeholder="Offering Version">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="control-group">
+							<label class="control-label" for="offering_url_input">Url</label>
+							<div class="controls">
+						  		<input type="url" id="offering_url_input" class="form-control" placeholder="Url for more information">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="control-group">
+							<label class="control-label" for="offering_sku_input">SKU</label>
+							<div class="controls">
+						  		<input type="text" id="offering_sku_input" class="form-control" placeholder="Billing SKU">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="control-group">
+							<label class="control-label" for="offering_brief_description_input">Brief Description</label>
+						 		<textarea id="offering_brief_description_input" class="form-control" rows="2" class="" placeholder="Brief Description"></textarea>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="control-group">
+							<label class="control-label" for="offering_detailed_description_input">Detailed Description</label>
+							 	<textarea id="offering_detailed_description_input" class="form-control" rows="4" placeholder="Detailed Description"></textarea>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="control-group">
+							<label class="control-label" for="offering_eula_select">EULA</label>
+								<select id="offering_eula_select" class="form-control">
+									<optgroup label="GPL 2-compatible">
+							 			<option>Artistic License 2.0</option>
+										<option>Berkeley Database License (aka the Sleepycat License or Sleepycat Software Product License)</option>
+										<option>Boost Software License</option>
+										<option>BSD license (modified version)</option>
+										<option>BDL / BSD Documentation License</option>
+										<option>CeCILL (CEA CNRS INRIA Logiciel Libre)</option>
+										<option>Cryptix General License</option>
+										<option>Eclipse Distribution License</option>
+										<option>EUPL - European Union Public License</option>
+										<option>GPL / GNU General Public License</option>
+										<option>Intel Open Source License</option>
+										<option>ISC license [2]</option>
+										<option>LGPL / GNU Lesser General Public License</option>
+										<option>License of Python</option>
+										<option>MIT license</option>
+										<option>Mozilla Public License (MPL) version 2.0 [3]</option>
+										<option>Public Domain</option>
+										<option>W3C Software Notice and License</option>
+										<option>WTFPL</option>
+										<option>X11 license</option>
+										<option>zlib/libpng license</option>
+										<option>Zope Public License</option>
+									</optgroup>
+									<optgroup label="GPL 2-incompatible">
+										<option>Academic Free License (AFL)</option>
+										<option>Affero General Public License (version 1)</option>
+										<option>Apache License</option>
+										<option>Apple Public Source License (APSL)</option>
+										<option>BSD license (original version)</option>
+										<option>Common Public License</option>
+										<option>Common Development and Distribution License (CDDL)</option>
+										<option>Eclipse Public License (EPL)</option>
+										<option>IBM Public License</option>
+										<option>LaTeX Project Public License (LPPL)</option>
+										<option>Microsoft Public License</option>
+										<option>Microsoft Reciprocal License</option>
+										<option>Mozilla Public License (MPL) Version 1.1 [4]</option>
+										<option>Netscape Public License (NPL)</option>
+										<option>Open Software License</option>
+										<option>OpenSSL license</option>
+										<option>PHP License</option>
+										<option>Q Public License (QPL)</option>
+										<option>Sun Industry Standards Source License (SISSL)</option>
+										<option>Sun Public License</option>
+										<option>XFree86 1.1 License</option>
+									</optgroup>
+									<optgroup label="Non Free">
+										<option>Microsoft Reference License</option>
+									</optgroup>
+									<optgroup label="Free Licensed Closed-Source">
+										<option>Free Solaris Binary License</option>
+										<option>Free For non commercial Use</option>
+									</optgroup>
+									<optgroup label="Pay Licensed Viewable-Source">
+										<option>Microsoft's Shared Source</option>
+									</optgroup>
+									<optgroup label="Pay Licensed Closed-Source">
+										<option>Microsoft Windows' EULA</option>
+									</optgroup>
+									<optgroup label="Custom">
+										<option>Custom</option>
+									</optgroup>
+								</select>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="control-group">
+							<label class="control-label" for="offering_custom_eula_input">Custom EULA</label>
+							 	<textarea id="offering_custom_eula_input" class="form-control" rows="4" class="form-control" placeholder="Custom EULA"></textarea>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="control-group">
+							<label class="control-label" for="offering_support_input">Support</label>
+							<div class="controls">
+							 	<textarea id="offering_support_input" class="form-control" rows="4" class="form-control" placeholder="Support"></textarea>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="control-group">
+							<label class="control-label" for="offering_pricing_input">Pricing</label>
+							<div class="controls">
+							 	<textarea id="offering_pricing_input" class="form-control" rows="4" class="form-control" placeholder="Pricing"></textarea>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="control-group">
+							<label class="control-label" for="offering_category_input">Category</label>
+							<div class="controls">
+							 	<textarea id="offering_category_input" class="form-control" rows="4" class="form-control" placeholder="List of related topics"></textarea>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-6">
+				<!-- <div class="row">
+                    <div class="col-lg-12">
+                        <div class="control-group">
+                            <label class="control-label" >Icon</label>
+                            <div class="controls" style="min-height:64px;">
+                                  <div style="background-image:url('/images/no-image-blog-one-64.png');width:64px;height:74px;background-repeat:none;float:left;border: solid 1px #0088CC;border-radius:4px;">
+                                      <button class="btn btn-mini btn-block" style="position:relative; top:53px;border-radius:4px;opacity:0.7" type="button">edit</button>
+                                  </div>
+                              </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="control-group">
+                            <label class="control-label" >Illustration</label>
+                            <div class="controls" style="min-height:74px;">
+                                <div style="background-image:url('/images/no-image-blog-one.png');width:300px;height:300px;background-repeat:none;float:left;border: solid 1px #0088CC;border-radius:4px">
+                                    <button class="btn btn-large btn-block" style="position:relative; top:256px;border-radius:4px;opacity:0.7" type="button">edit</button>
+                                  </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> -->
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="control-group">
+							<label class="control-label" for="offering_stacks_list">Stacks to Include</label>
+							<div class="controls" style="overflow-y:auto;">
+								<ul id="offering_stacks_list"></ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+		<div class="button_bar col-lg-10">
+			<div class="controls">
+				<a id="offering_save_button" class="btn btn-primary">Save Offering</a>
+				<a id="offering_close_button" class="btn btn-default">Close</a>
+			</div>
+		</div>
+	</div>
+	<div id="offering_not_opened">
+		<div class="jumbotron">
+		    <h3>Select an offering above, or begin by creating a new offering!</h3>
+		</div>
+	</div>
+</div>
