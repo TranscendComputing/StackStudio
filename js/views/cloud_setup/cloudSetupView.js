@@ -211,13 +211,6 @@ define([
           collection : cloudSetupView.selectedCollection
       };
 
-      // category is used below in jQuery styling. if category is false 
-      // (NaN, undefined, false) or is blank, default to cloud-accounts
-      var category = action.replace('/','').split("_list")[0];
-      if (!category || category === '') {
-          category = 'cloud-accounts';
-      }
-
       // HashMap for mapping actions to proper subApp view
       var viewAssociations = {
           "user_list" : UsersManagementView,
