@@ -55,6 +55,10 @@ define(
                 cloudSetupView = new CloudSetupView();
             });
 
+            afterEach(function() {
+                cloudSetupView = undefined;
+            });
+
             it("render is callable", function() {
                  cloudSetupView.render();
                  expect(cloudSetupView.render).toHaveBeenCalled();
@@ -194,6 +198,10 @@ define(
                 };
 
                 cloudSetupView = new CloudSetupView();
+            });
+
+            afterEach(function() {
+                cloudSetupView = undefined;
             });
 
             it("Verify view containing element is correct", function() {
