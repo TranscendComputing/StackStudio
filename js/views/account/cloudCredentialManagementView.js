@@ -121,6 +121,8 @@ define([
       } else {
         this.cloudCredentials.update(this.selectedCloudCredential);
       }
+
+      //this.cloudCredentials.refresh();
     },
 
     deleteCredential: function() {
