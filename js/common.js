@@ -302,14 +302,27 @@ define(
         });
 
         Common.__defineGetter__("credentials", function () {
-          return Common.cache('account').cloud_credentials;
+          return Common.account.cloud_credentials;
         });
 
         Common.__defineSetter__("credentials", function ( val ) {
           if(!Common.account) {
             Common.account = {};
           }
-          Common.cacheCollection.account.cloud_credentials = JSON.stringify(val);
+
+          Common.account.cloud_credentials = val;
+
+          // Have to update update sessionStorage here as well since Cloud.cache
+          // gets its initial values from sessionStorage when page is refreshed
+          //
+          // Also, sessionStorage is a flat key/value pair store. Meaning that
+          // sessionStorage is an object but sessionStorage.account is a string
+          // and not a nested object. In order to update properly, we need to convert
+          // sessionStorage.acount into an object, update cloud_credentials and then
+          // re-assign as converted string.
+          var sess_account = JSON.parse(sessionStorage.account);
+          sess_account.cloud_credentials = val;
+          sessionStorage.account = JSON.stringify(sess_account);
         });
 
         return Common;
