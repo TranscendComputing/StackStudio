@@ -30,8 +30,7 @@ define(
         fetch: function(options) {
             var cloudCreds = [];
             if(Common.credentials) {
-                var creds = (typeof Common.credentials === 'string') ? JSON.parse(Common.credentials) : Common.credentials;
-                $.each(creds, function(index, value) {
+                $.each(Common.credentials, function(index, value) {
                     var cloudCred = new CloudCredential(value.cloud_credential);
                     cloudCreds.push(cloudCred);
                 });
