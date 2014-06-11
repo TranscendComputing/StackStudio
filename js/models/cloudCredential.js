@@ -7,8 +7,9 @@
 /*global define:true console:true */
 define([
         'jquery',
-        'backbone'
-], function( $, Backbone ) {
+        'backbone',
+        'common'
+], function( $, Backbone, Common ) {
     'use strict';
 
     // Cloud Credential Model
@@ -39,7 +40,6 @@ define([
             topstack_enabled: false,
             topstack_configured: false
 		}
-
     });
 
     return CloudCredential;
