@@ -20,7 +20,7 @@ require(['config/rjsConfig'], function(undefined) {
                 'views/account/navLogin',
                 'views/dashboardView',
                 //'views/projectSidebarView',
-                //'views/account/accountManagementView',
+                'views/account/accountManagementView',
                 'views/cloud_setup/cloudSetupView',
                 //'views/projectAppView',
                 //// 'views/projectNavigationSidebarView',
