@@ -106,6 +106,7 @@ define(
         'routers/router',
         'views/errorDialog',
         'text!config/backend.json',
+        'bootstrap',
         'jquery-ui',
         'jquery-ui-plugins',
         'backbone.stickit',
@@ -130,9 +131,6 @@ define(
     
         // Initialize routing
         var router = new Router();
-    
-        /** http://backbonejs.org/#Sync-emulateHTTP */
-        //Backbone.emulateHTTP = true;
     
         //Base url for API calls
         var apiUrl = JSON.parse(backendTxt).backend_endpoint;
@@ -163,30 +161,19 @@ define(
         var consoleAppView = new CommandLineView();
         
         var Common = {
-            // Which filter are we using?
-            InstanceFilter: '', // empty, active, completed
-    
-            // What is the enter key constant?
-            ENTER_KEY: 13,
-    
-            // The common router
-            router: router,
-    
-            // The base API url
-            apiUrl: apiUrl,
-    
-            // The global variable to handle custom events
-            vent: vent,
-    
-            consoleAppView: consoleAppView,
-    
-            icons: icons,
-    
-            backbone: Backbone,
-    
-            previousView: {},
+            InstanceFilter: '', //  Which filter (empty, active, completed)?
+            ENTER_KEY: 13, // Define enter key constant?
+            router: router, // Router object instance
+            apiUrl: apiUrl, // Base API URI
+            vent: vent, // Custom event handlng object
+            consoleAppView: consoleAppView, // Self explanatory
+            icons: icons, // Icon object instance
+            backbone: Backbone, // Backbone framework instance
+            previousView: {}, // Default previousView object
+            cacheCollection: {}, // Default cacheCollection object
 
-            cacheCollection: {},
+            // RSS Feed URI
+            rssFeed: 'http://www.transcendcomputing.com/feed/',
 
             cache : function ( key, value ) {
               var self = this;
@@ -262,35 +249,13 @@ define(
                 aws : '/images/ImageLogos/amazon20.png',
                 redhat : '/images/ImageLogos/redhead20.png',
                 suse : '/images/ImageLogos/suse20.png',
-                ubuntu : '/images/ImageLogos/canonical20.gif'
+                ubuntu : '/images/ImageLogos/canonical20.gif',
+                windows : '/images/ImageLogos/windows20.png',
+                centos : '/images/ImageLogos/centos.gif',
+                fedora : '/images/ImageLogos/fedora36.png'
               };
               return logos[key];
             }
-                
-            //     {
-            //     case "aws":
-            //         imagePath = "/images/ImageLogos/amazon20.png";
-            //         break;
-            //     case "redhat":
-            //         imagePath = "/images/ImageLogos/redhat20.png";
-            //         break;
-            //     case "suse":
-            //         imagePath = "/images/ImageLogos/suse20.png";
-            //         break;
-            //     case "ubuntu":
-            //         imagePath = "/images/ImageLogos/canonical20.gif";
-            //         break;
-            //     case "windows":
-            //         imagePath = "/images/ImageLogos/windows20.png";
-            //         break;
-            //     case "centos":
-            //         imagePath = "/images/ImageLogos/centos.gif";
-            //         break;
-            //     case "fedora":
-            //         imagePath = "/images/ImageLogos/fedora36.png";
-            //         break;
-            //     }
-              // };
         };
 
         Common.__defineGetter__("account", function () {

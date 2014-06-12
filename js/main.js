@@ -7,66 +7,38 @@
 /*global define:true console:true */
 var DEBUG = false;
 require(['config/rjsConfig'], function(undefined) {
-    require(['common'], function (common) {
+//    require(['common'], function (Common) {
         if (DEBUG) {
             requirejs.config({urlArgs: 'cb=' + Math.random()});
         }
-    
-        var dashboardView = "views/dashboardView";
-        common.rssFeed = "http://www.transcendcomputing.com/feed/";
-        /* NOT WORKING
-        var site = window.location.hostname.split(".")[0];
-        var siteParam = window.location.search.replace("?site=", "");
-        if(site.indexOf("localhost") > -1 || site.indexOf("stackstudio") > -1 || site.indexOf("devessex") > -1 || site.length < 2)
-        {
-            dashboardView = "views/dashboardView";
-            common.rssFeed = "http://www.transcendcomputing.com/feed/";
-        }
-        if(dashboardView === undefined || siteParam !== "")
-        {
-            if(siteParam !== "")
-            {
-                site = siteParam.toLowerCase();
-            }
-            var siteCss = "css/sites/" + site + ".css";
-            var siteJs = "./js/sites/" + site + ".js";
-            var fileref=document.createElement("link");
-            fileref.setAttribute("rel", "stylesheet");
-            fileref.setAttribute("type", "text/css");
-            fileref.setAttribute("href", siteCss);
-            document.getElementsByTagName("head")[0].appendChild(fileref);
-            require([siteJs], function(){});
-            dashboardView = "views/mspDashboardView";
-        }
-        */
+
         require(
             [
-                'views/topNav',
+                'common',
+                // Load all main navigation views here so they are accessible
+                // from top level and let all sub-views be loaded by these views
                 'views/account/navLogin',
-                dashboardView,
-                'views/projectSidebarView',
-                'views/account/accountManagementView',
+                'views/dashboardView',
+                //'views/projectSidebarView',
+                //'views/account/accountManagementView',
                 'views/cloud_setup/cloudSetupView',
-                'views/projectAppView',
-                // 'views/projectNavigationSidebarView',
-                'views/projectResourceSidebarView',
-                // 'views/projectListItemView',
-                'views/projectEditView',
-                'views/resource/resourceNavigationView',
+                //'views/projectAppView',
+                //// 'views/projectNavigationSidebarView',
+                //'views/projectResourceSidebarView',
+                //// 'views/projectListItemView',
+                //'views/projectEditView',
                 'views/images/imagesView',
-                'views/assemblies/assembliesView',
                 'views/platform_components/platformComponentsView',
+                'views/assemblies/assembliesView',
                 'views/stacks/stacksView',
                 'views/offerings/offeringsView',
-                'views/meshes/meshesView'
+                'views/resource/resourceNavigationView'
+                //'views/meshes/meshesView'
             ],
-            function(TopNavView, NavLogin, DashboardView) {
-                var topNav = new TopNavView(),
-                navLogin = new NavLogin();
-                topNav.render();
-                navLogin.render();
-                common.backbone.history.start();
+            function(Common, NavLogin) {
+                new NavLogin().render();
+                Common.backbone.history.start();
             }
         );
-    });
+    //});
 });
