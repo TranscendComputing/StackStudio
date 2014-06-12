@@ -58,19 +58,19 @@ define([
     },
 
     defaultRoute: function(actions) {
-      //if (window.app === "stackplace") {
-      //  if ((typeof actions === 'object') && (actions.url !== undefined)) {
-      //    this.trigger('route:projectEdit', actions.url);
-      //  } else {
-      //    this.trigger('route:projectEdit');
-      //  }
-      //} else {
+      if (window.app === "stackplace") {
+        if ((typeof actions === 'object') && (actions.url !== undefined)) {
+          this.trigger('route:projectEdit', actions.url);
+        } else {
+          this.trigger('route:projectEdit');
+        }
+      } else {
         $("#sidebar").empty();
         $("#sidebar").hide();
         $(".main-nav a").removeClass("nav_selected");
         $("#dashboard_nav").addClass("nav_selected");
         this.trigger("route:dashboard");
-      //}
+      }
     },
 
     resourcesRoute: function(cloud, region, type, subtype, id, action) {
