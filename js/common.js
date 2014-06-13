@@ -113,6 +113,7 @@ define(
         'jquery-plugins',
         'jquery-ui-plugins',
         'jquery.jstree',
+        'jquery.form',
         'jquery.dataTables',
         'backbone.stickit',
         'dataTables.bootstrap'

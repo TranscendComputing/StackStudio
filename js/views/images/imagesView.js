@@ -6,10 +6,6 @@
 /*jshint smarttabs:true */
 /*global define:true console:true requirejs:true require:true alert:true*/
 define([
-        'jquery',
-        'underscore',
-        'bootstrap',
-        'backbone',
         'common',
         'text!templates/images/imagesTemplate.html',
         'text!templates/images/advancedTemplate.html',
@@ -17,10 +13,11 @@ define([
         'aws/collections/compute/awsImages',
         'collections/packedImages',
         'messenger',
-        'jquery-ui',
-        'jquery.form',
         'typeahead'
-], function( $, _, bootstrap, Backbone, Common, imagesTemplate, advancedTemplate, PackedImage, Images, PackedImages, Messenger ) {
+], function( Common, imagesTemplate, advancedTemplate, PackedImage, Images, PackedImages, Messenger ) {
+    var $ = Common.jquery;
+    var _ = Common.underscore;
+    var Backbone = Common.backbone;
 
     var ImagesView = Backbone.View.extend({
 
