@@ -25,17 +25,11 @@ define([
 
     var AppliancesView = Backbone.View.extend({
 
-        tagName: 'div',
+        el: '#appliances_container',
 
         template: _.template(mainPageTemplate),
 
         applianceTemplate: _.template(applianceTemplate),
-
-        templates: undefined,
-
-        appliances: undefined,
-
-        currentAppliance: undefined,
 
         primaryActions: [ "Clone", "Delete" ],
 
@@ -44,28 +38,25 @@ define([
         events: {
             "click #new_component_button": "newAppliance",
             "click #save_appliance_button": "saveAppliance",
-            // "click #close_appliance_button": "closeAppliance",
-            // "click #delete_appliance_button": "deleteAppliance",
             "click .appliance": "openAppliance"
         },
 
         initialize: function() {
             $("#appliances_container").html(this.el);
             this.$el.html(this.template);
-            this.$el.append(this.applianceTemplate);
             ich.refresh();
-            this.appliances = new Appliances();
-            this.appliances.on( 'reset', this.addAllAppliances, this );
+            this.collection = new Appliances();
+            this.collection.on( 'reset', this.addAllAppliances, this );
             var applianceApp = this;
             Common.vent.off("applianceCreated");
             applianceApp.render();
             Common.vent.on("applianceCreated", function(newAppliance) {
-                applianceApp.currentAppliance = new Appliance(newAppliance.appliance);
+                applianceApp.model = new Appliance(newAppliance.appliance);
                 applianceApp.render();
             });
             Common.vent.off("applianceUpdated");
             Common.vent.on("applianceUpdated", function(updatedAppliance) {
-                applianceApp.currentAppliance = new Appliance(updatedAppliance.appliance);
+                applianceApp.model = new Appliance(updatedAppliance.appliance);
                 applianceApp.render();
             });
             Common.vent.off("applianceDeleted");
@@ -75,26 +66,20 @@ define([
         },
 
         render: function(){
-            this.appliances.fetch({reset:true});
+            this.collection.fetch({reset:true});
             var actions = ich.component_actions({ primary_actions: this.primaryActions, secondary_actions: this.secondaryActions });
             $("#button_group").html(actions);
-            if (this.currentAppliance) {
-                var form = ich.appliance_form(this.currentAppliance.attributes);
-                if ($("#appliance_form").length > 0) {
-                    $("#appliance_form").html(form);
-                }else {
-                    $("#component_open").append(form);
-                }
-                var appliance_spec_list = ich.appliance_spec_form(this.currentAppliance.attributes.ApplianceSpec);
+            if (this.model) {
+                var appliance_spec_form = this.applianceTemplate({ appliance: this.model.attributes }, {variable: 'appliance'});
                 if ($("#appliance_spec_form").length > 0) {
-                    $("#appliance_spec_form").html(appliance_spec_list);
+                    $("#appliance_spec_form").html(appliance_spec_form);
                 }else {
-                    $("#component_open").append(appliance_spec_list);
+                    $("#component_open").append(appliance_spec_form);
                 }
             }
             $("#component_list_title").text("Appliances");
             $('#not_selected_message').text('Select an appliance from the list to the left, or begin by creating a new appliance!');
-            if(this.currentAppliance) {
+            if(this.model) {
                 $("#not_selected").hide();
                 $("#component_open").show();
             }else {
@@ -105,29 +90,22 @@ define([
 
         addAllAppliances: function() {
             $("#component_list").empty();
-            this.appliances.each(function(appliance) {
+            this.collection.each(function(appliance) {
                 $("#component_list").append("<li><a id='"+appliance.attributes.Name+"' class='appliance selectable_item'>"+appliance.attributes.Name+"</a></li>");
             });
         },
 
         newAppliance: function() {
-            if(this.currentAppliance) {
-                var confirmation = confirm("Are you sure you want to open a new appliance? Any unsaved changes to the current appliance will be lose.");
-                if(confirmation === true) {
-                    this.openNewAppliance();
-                }
-            }else {
-                this.openNewAppliance();
-            }
+            this.openNewAppliance();
         },
 
         openNewAppliance: function() {
-            this.currentAppliance = new Appliance();
+            this.model = new Appliance();
             this.render();
         },
 
         openAppliance: function() {
-            this.currentAppliance = this.appliances.get(event.target.id);
+            this.model = this.collection.get(event.target.id);
             this.render();
         },
 
@@ -141,10 +119,10 @@ define([
                     "instance_count": $("#appliance_instance_count_input").val()
                 };
                 // Create/Update Appliance
-                if(this.currentAppliance.id === "") {
-                    this.currentAppliance.create(options);
+                if(this.model.id === "") {
+                    this.model.create(options);
                 }else {
-                    this.currentAppliance.update(options);
+                    this.model.update(options);
                 }
             }else {
                 Common.errorDialog({title:"Invalid Request", message:"You must provide a name for this appliance."});
