@@ -5,260 +5,272 @@
  */
 /*jshint smarttabs:true */
 /*global define:true console:true requirejs:true require:true*/
-define([
-  'jquery',
-  'underscore',
-  'backbone',
-  'common',
-  'text!templates/cloud_setup/cloudSetupTemplate.html',
-  'collections/cloudAccounts',
-  'collections/cloudCredentials',
-  'collections/policies',
-  'collections/users',
-  'collections/groups',
-  'views/account/cloudAccountManagementView',
-  'views/account/cloudCredentialManagementView',
-  'views/account/cloudCredentialManagementListView',
-  'views/account/cloudAccountManagementListView',
-  'views/account/usersManagementView',
-  'views/account/userUpdateView',
-  'views/account/policiesManagementView',
-  'views/account/policyManagementView',
-  'views/account/groupsManagementView',
-  'views/account/groupsManagementListView',
-  'views/account/devOpsToolsManagementView',
-  'views/account/continuousIntegrationManagementView',
-  'views/account/sourceControlRepositoryManagementListView',
-  'views/firstTimeTutorialView',
-  'jquery-plugins',
-  'jquery-ui-plugins',
-  'jquery.jstree'
-], function($, _, Backbone, Common, setupTemplate, CloudAccounts, CloudCredentials,
-  Policies, Users, Groups, CloudAccountManagementView, CloudCredentialManagementView,
-  CloudCredentialManagementListView, CloudAccountManagementListView,
-  UsersManagementView, UserUpdateView, PoliciesManagementView, PolicyManagementView,
-  GroupsManagementView, GroupsManagementListView, DevOpsToolsManagementView,
-  ContinuousIntegrationManagementView, SourceControlRepositoryManagementListView,
-  TutorialView) {
-  var CloudSetupView = Backbone.View.extend({
-    /** @type {String} DOM element to attach view to */
-    el: "#main",
-    /** @type {Template} HTML template to generate view from */
-    template: _.template(setupTemplate),
-    /** @type {Object} Object of events for view to listen on */
-    events: {
-      "click #treeAddUser": "addUser",
-      "click #cloud_setup_menu>li": "tabSelected",
-      "click #cloud_setup_menu ul a": "itemSelected"
-    },
-    subApp: undefined,
-    groups: undefined,
-    cloudCredentials: undefined,
-    cloudAccounts: undefined,
-    policies: undefined,
-    afterSubAppRender: undefined,
-    initialize: function() {
-      var self = this;
-      this.render();
+define(
+    [
+        'common',
+        'text!templates/cloud_setup/cloudSetupTemplate.html',
+        'collections/cloudAccounts',
+        'collections/cloudCredentials',
+        'collections/policies',
+        'collections/users',
+        'collections/groups',
+        'views/account/cloudAccountManagementView',
+        'views/account/cloudCredentialManagementView',
+        'views/account/cloudCredentialManagementListView',
+        'views/account/cloudAccountManagementListView',
+        'views/account/usersManagementView',
+        'views/account/userUpdateView',
+        'views/account/policiesManagementView',
+        'views/account/policyManagementView',
+        'views/account/groupsManagementView',
+        'views/account/groupsManagementListView',
+        'views/account/devOpsToolsManagementView',
+        'views/account/continuousIntegrationManagementView',
+        'views/account/sourceControlRepositoryManagementListView',
+        'views/firstTimeTutorialView'
+    ],
+    function(Common, setupTemplate, CloudAccounts, CloudCredentials, Policies,
+             Users, Groups, CloudAccountManagementView, CloudCredentialManagementView,
+             CloudCredentialManagementListView, CloudAccountManagementListView,
+             UsersManagementView, UserUpdateView, PoliciesManagementView, PolicyManagementView,
+             GroupsManagementView, GroupsManagementListView, DevOpsToolsManagementView,
+             ContinuousIntegrationManagementView, SourceControlRepositoryManagementListView,
+             TutorialView) {
 
-      this.cloudAccounts = new CloudAccounts();
+        var $ = Common.jquery;
+        var _ = Common.underscore;
+        var Backbone = Common.backbone;
 
-      //todo -- Cache these or something so we don't waste the calls -- they're really just for the badges
-      this.cloudAccounts.fetch({
-        data: $.param({
-          org_id: Common.account.org_id,
-          account_id: Common.account.id
-        }),
-        success: this.onFetched('#cloud_account_list'),
-        reset: true
-      });
+        var CloudSetupView = Backbone.View.extend({
+            /** @type {String} DOM element to attach view to */
+            el: "#main",
+            /** @type {Template} HTML template to generate view from */
+            template: _.template(setupTemplate),
+            /** @type {Object} Object of events for view to listen on */
+            events: {
+              "click #treeAddUser": "addUser",
+              "click #cloud_setup_menu>li": "tabSelected",
+              "click #cloud_setup_menu ul a": "itemSelected"
+            },
 
-      this.credentials = new CloudCredentials();
-      this.credentials.reset(Common.credentials);
+            subApp: undefined,
+            groups: undefined,
+            cloudCredentials: undefined,
+            cloudAccounts: undefined,
+            policies: undefined,
+            afterSubAppRender: undefined,
 
-      this.policies = new Policies();
-      this.policies.fetch({
-        data: $.param({
-          org_id: Common.account.org_id
-        }),
-        success: this.onFetched('#policy_list'),
-        reset: true
-      });
+            initialize: function() {
+                var self = this;
+                this.render();
+          
+                this.cloudAccounts = new CloudAccounts();
+          
+                //todo -- Cache these or something so we don't waste the calls -- they're really just for the badges
+                this.cloudAccounts.fetch({
+                    data: $.param({
+                        org_id: Common.account.org_id,
+                        account_id: Common.account.id
+                    }),
+                    success: this.onFetched('#cloud_account_list'),
+                    reset: true
+                });
+          
+                this.credentials = new CloudCredentials();
+                this.credentials.reset(Common.credentials);
+          
+                this.policies = new Policies();
+                this.policies.fetch({
+                    data: $.param({
+                        org_id: Common.account.org_id
+                    }),
+                    success: this.onFetched('#policy_list'),
+                    reset: true
+                });
+          
+                this.users = new Users();
+                this.users.fetch({
+                    success: this.onFetched('#user_list'),
+                    reset: true
+                });
+          
+                this.groups = new Groups();
+                this.groups.fetch({
+                    success: this.onFetched('#group_list'),
+                    reset: true
+                });
+          
+                if (Common.account && parseInt(Common.account.num_logins, 10) < 5) {
+                    this.tutorial = new TutorialView({
+                        rootView: this
+                    });
+          
+                    this.afterSubAppRender = function() {
+                        self.tutorial.update();
+                    };
+                }
+            },
+        
+            render: function() {
+                this.$el.html(this.template);
+        
+                if (this.tutorial) {
+                    this.tutorial.render();
+                }
+        
+                //cloud credentials stored in session
+                $('#cred_list').parent().find('.badge').text(Common.credentials.length);
+            },
+        
+            onFetched: function(list) {
+                var self = this;
+                return function(coll) {
+                    self.addAll(coll, $(list));
+                };
+            },
+        
+            tabSelected: function(event) {
+                var $target = $(event.target);
+                var $el = $(event.currentTarget);
+              
+                if ($target.hasClass('cloud-submenu-item')) {
+                    return;
+                }
+        
+                //if it isn't expanded, expand it
+                if (!$el.hasClass('open')) {
+                    $el.addClass('open');
+                } else {
+                    //only close it if the tab is already active -- prevents closing when switching to an already open tab
+                    if ($el.hasClass('active')) {
+                        $el.removeClass('open');
+                    }
+                }
+        
+                $('.sub-active', '#cloud_setup_menu').removeClass('sub-active');
+                $('.active', '#cloud_setup_menu').removeClass('active');
+                $el.addClass('active');
+            },
+        
+            addAll: function(collection, $list) {
+                $list.empty();
 
-      this.users = new Users();
-      this.users.fetch({
-        success: this.onFetched('#user_list'),
-        reset: true
-      });
+                collection.each(function(model) {
+                    $list.append(
+                        '<li><a id="'+
+                        model.attributes.id+
+                        '" class="cloud-submenu-item '+
+                        $list.attr('data-collection-name')+
+                        '" href="'+$list.attr('data-base-url')+'">'+
+                        (model.attributes.name || model.attributes.login)+
+                        '</a></li>'
+                    );
+                });
 
-      this.groups = new Groups();
-      this.groups.fetch({
-        success: this.onFetched('#group_list'),
-        reset: true
-      });
+                $list.parent().find('.badge').text(collection.length);
+            },
+        
+            itemSelected: function(event) {
+                var $el = $(event.currentTarget);
+                var $list = $el.parents('[data-collection-name]');
+                this.selectedId = event.target.id;
+                this.selectedCollection = this[$list.attr('data-collection-name')];
+        
+                var route = $list.attr('data-base-url');
+        
+                //if there is no route change, we need to trigger the route handler manually
+                if (location.hash === route) {
+                    Backbone.history.loadUrl(Backbone.history.fragment);
+                }
+        
+                $('.active', '#cloud_setup_menu').removeClass('active');
+                $('.sub-active', '#cloud_setup_menu').removeClass('sub-active');
+                $el.parents().eq(2).addClass('active');
+                $el.addClass('sub-active');
+            },
+        
+            close: function() {
+                this.$el.empty();
+                this.undelegateEvents();
+                this.stopListening();
+                this.unbind();
 
-      if (Common.account && parseInt(Common.account.num_logins, 10) < 5) {
-        this.tutorial = new TutorialView({
-          rootView: this
+                // handle other unbinding needs here
+                _.each(this.subViews, function(childView) {
+                    if (childView.close) {
+                        childView.close();
+                    }
+                });
+            }
         });
 
-        this.afterSubAppRender = function() {
-          self.tutorial.update();
-        };
-      }
-    },
+        /** Variable to track whether view has been initialized or not */
+        var cloudSetupView;
+        var self = this;
 
-    render: function() {
-      this.$el.html(this.template);
-
-      if (this.tutorial) {
-        this.tutorial.render();
-      }
-
-      //cloud credentials stored in session
-      $('#cred_list').parent().find('.badge').text(Common.credentials.length);
-    },
-
-    onFetched: function(list) {
-      var self = this;
-      return function(coll) {
-        self.addAll(coll, $(list));
-      };
-    },
-
-    tabSelected: function(event) {
-      var $target = $(event.target);
+        Common.router.on("route:cloudSetup", function ( action, id ) {
+            // Make sure action always has a value, if not default to /
+            action = action || '/';
       
-      if($target.hasClass('cloud-submenu-item')) {
-          return;
-      }
-
-      var $el = $(event.currentTarget);
-      //if it isn't expanded, expand it
-      if(!$el.hasClass('open')) {
-          $el.addClass('open');
-      } else {
-          //only close it if the tab is already active -- prevents closing when switching to an already open tab
-          if($el.hasClass('active')) {
-              $el.removeClass('open');
-          }
-      }
-
-      $('.sub-active', '#cloud_setup_menu').removeClass('sub-active');
-      $('.active', '#cloud_setup_menu').removeClass('active');
-      $el.addClass('active');
-    },
-
-    addAll: function(collection, $list) {
-      $list.empty();
-      collection.each(function(model) {
-        $list.append('<li><a id="' + model.attributes.id + '" class="cloud-submenu-item ' + $list.attr('data-collection-name') + '" href="' + $list.attr('data-base-url') + '">' + (model.attributes.name || model.attributes.login) + '</a></li>');
-      });
-      $list.parent().find('.badge').text(collection.length);
-    },
-
-    itemSelected: function(event) {
-      var $el = $(event.currentTarget);
-      var $list = $el.parents('[data-collection-name]');
-      this.selectedId = event.target.id;
-      this.selectedCollection = this[$list.attr('data-collection-name')];
-
-      var route = $list.attr('data-base-url');
-
-      //if there is no route change, we need to trigger the route handler manually
-      if(location.hash === route) {
-          Backbone.history.loadUrl(Backbone.history.fragment);
-      }
-
-      $('.active', '#cloud_setup_menu').removeClass('active');
-      $('.sub-active', '#cloud_setup_menu').removeClass('sub-active');
-      $el.parents().eq(2).addClass('active');
-      $el.addClass('sub-active');
-    },
-
-    close: function() {
-      this.$el.empty();
-      this.undelegateEvents();
-      this.stopListening();
-      this.unbind();
-      // handle other unbinding needs here
-      _.each(this.subViews, function(childView) {
-        if (childView.close) {
-          childView.close();
-        }
-      });
+            // Only load cloudSetupView if not already loaded or root action requested
+            if (this.previousView !== cloudSetupView || action === '/') {
+                this.unloadPreviousState();
+                cloudSetupView = new CloudSetupView();
+                this.setPreviousState(cloudSetupView);
+            }
+      
+            // Create params object for subApp instantiation below
+            var params = {
+                rootView : cloudSetupView,
+                selectedId : cloudSetupView.selectedId,
+                collection : cloudSetupView.selectedCollection
+            };
+      
+            // HashMap for mapping actions to proper subApp view
+            var viewAssociations = {
+                "user_list" : UsersManagementView,
+                "policy_list" : PoliciesManagementView,
+                "group_list" : GroupsManagementListView,
+                "cloud-credentials_list" : CloudCredentialManagementListView,
+                "cloud-accounts_list" : CloudAccountManagementListView,
+                "cloud-accounts" : CloudAccountManagementView,
+                "cloud-credentials" : CloudCredentialManagementView,
+                "user" : UserUpdateView,
+                "policy" : PolicyManagementView,
+                "group" : GroupsManagementView,
+                "configuration_managers_list" : DevOpsToolsManagementView,
+                "continuous_integration_list" : ContinuousIntegrationManagementView,
+                "source_control_repositories_list" : SourceControlRepositoryManagementListView,
+                "home" : CloudAccountManagementListView,
+                "/": CloudAccountManagementListView
+            };
+      
+            // Set SubView based on action as key in hash map above
+            var SubView = viewAssociations[action] || CloudAccountManagementListView;
+      
+            // Close/clear previous loaded subApp if defined/loaded
+            if (cloudSetupView.subApp) {
+                cloudSetupView.subApp.close();
+      
+                // Handle special case of user menu item by loading the
+                // UsersManagementView in background before showing edit dialig
+                if (action === 'user') {
+                    cloudSetupView.subApp = new UsersManagementView(params);
+                }
+            }
+      
+            // Instantiate subApp view object
+            cloudSetupView.subApp = new SubView(params);
+      
+            // Reset attributes to avoid "bleed over"
+            cloudSetupView.selectedId = undefined;
+            cloudSetupView.selectedCollection = undefined;
+      
+            if (cloudSetupView.afterSubAppRender) {
+                cloudSetupView.afterSubAppRender.call(cloudSetupView);
+            }
+        }, Common);
+      
+        return CloudSetupView;
     }
-  });
-
-  /** Variable to track whether view has been initialized or not */
-  var cloudSetupView;
-  var self = this;
-  Common.router.on("route:cloudSetup", function ( action, id ) {
-      // Make sure action always has a value, if not default to /
-      action = action || '/';
-
-      // Only load cloudSetupView if not already loaded or root action requested
-      if (this.previousView !== cloudSetupView || action === '/') {
-          this.unloadPreviousState();
-          cloudSetupView = new CloudSetupView();
-          this.setPreviousState(cloudSetupView);
-      }
-
-      // Create params object for subApp instantiation below
-      //
-      // selectedId relies on a submenu item being selected to be populated
-      // default to id if selectedId is undefined so index list items can
-      // navigate properly. 
-      var params = {
-          rootView : cloudSetupView,
-          selectedId : cloudSetupView.selectedId || id,
-          collection : cloudSetupView.selectedCollection
-      };
-
-      // HashMap for mapping actions to proper subApp view
-      var viewAssociations = {
-          "user_list" : UsersManagementView,
-          "policy_list" : PoliciesManagementView,
-          "group_list" : GroupsManagementListView,
-          "cloud-credentials_list" : CloudCredentialManagementListView,
-          "cloud-accounts_list" : CloudAccountManagementListView,
-          "cloud-accounts" : CloudAccountManagementView,
-          "cloud-credentials" : CloudCredentialManagementView,
-          "user" : UserUpdateView,
-          "policy" : PolicyManagementView,
-          "group" : GroupsManagementView,
-          "configuration_managers_list" : DevOpsToolsManagementView,
-          "continuous_integration_list" : ContinuousIntegrationManagementView,
-          "source_control_repositories_list" : SourceControlRepositoryManagementListView,
-          "home" : CloudAccountManagementListView,
-          "/": CloudAccountManagementListView
-      };
-
-      // Set SubView based on action as key in hash map above
-      var SubView = viewAssociations[action] || CloudAccountManagementListView;
-
-      // Close/clear previous loaded subApp if defined/loaded
-      if (cloudSetupView.subApp) {
-          cloudSetupView.subApp.close();
-
-          // Handle special case of user menu item by loading the
-          // UsersManagementView in background before showing edit dialig
-          if (action === 'user') {
-              cloudSetupView.subApp = new UsersManagementView(params);
-          }
-      }
-
-      // Instantiate subApp view object
-      cloudSetupView.subApp = new SubView(params);
-
-      // Reset attributes to avoid "bleed over"
-      cloudSetupView.selectedId = undefined;
-      cloudSetupView.selectedCollection = undefined;
-
-      if (cloudSetupView.afterSubAppRender) {
-          cloudSetupView.afterSubAppRender.call(cloudSetupView);
-      }
-  }, Common);
-
-  return CloudSetupView;
-});
+);

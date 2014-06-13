@@ -102,18 +102,22 @@ define(
         'jquery',
         'underscore',
         'backbone',
+        'icanhaz',
+        'ace',
         'views/consoleAppView',
         'routers/router',
         'views/errorDialog',
         'text!config/backend.json',
         'bootstrap',
         'jquery-ui',
+        'jquery-plugins',
         'jquery-ui-plugins',
-        'backbone.stickit',
+        'jquery.jstree',
         'jquery.dataTables',
+        'backbone.stickit',
         'dataTables.bootstrap'
     ],
-    function ( $, _, Backbone, CommandLineView, Router, ErrorDialog, backendTxt ) {
+    function ( $, _, Backbone, Ich, Ace, CommandLineView, Router, ErrorDialog, backendTxt ) {
         // Added custom handler for select
         Backbone.Stickit.addHandler({
             selector: 'select',
@@ -126,7 +130,7 @@ define(
                 }
             }
         });
-    
+
         // Within this scope, jquery and jquery UI have been loaded.
     
         // Initialize routing
@@ -159,7 +163,7 @@ define(
     
         // Initialize the command line, since that's global to all pages.
         var consoleAppView = new CommandLineView();
-        
+
         var Common = {
             InstanceFilter: '', //  Which filter (empty, active, completed)?
             ENTER_KEY: 13, // Define enter key constant?
@@ -168,7 +172,12 @@ define(
             vent: vent, // Custom event handlng object
             consoleAppView: consoleAppView, // Self explanatory
             icons: icons, // Icon object instance
+            jquery: $,
+            underscore: _,
             backbone: Backbone, // Backbone framework instance
+            //bootstrap: Bootstrap,
+            ace: Ace,
+            icanhaz: Ich,
             previousView: {}, // Default previousView object
             cacheCollection: {}, // Default cacheCollection object
 
