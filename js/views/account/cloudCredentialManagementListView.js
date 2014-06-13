@@ -52,7 +52,7 @@ define([
 
             Common.vent.on("cloudCredentialCreated", function() {
                 credentialsView.render();
-                this.credentials.fetch({
+                credentialsView.credentials.fetch({
                     reset: true
                 });
             });
@@ -65,7 +65,7 @@ define([
             
             Common.vent.on("cloudCredentialDeleted", function() {
                 credentialsView.render();
-                this.credentials.fetch({
+                credentialsView.credentials.fetch({
                     reset: true
                 });
             });

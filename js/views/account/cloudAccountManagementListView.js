@@ -59,6 +59,7 @@ define([
       this.cloudAccounts = new CloudAccounts();
       this.rootView.cloudAccounts = this.cloudAccounts;
       this.cloudAccounts.on('reset', this.addAllCloudAccounts, this);
+
       this.render();
     },
 

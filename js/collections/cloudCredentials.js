@@ -66,15 +66,11 @@ define([
                 dataType: 'json',
                 data: JSON.stringify(cloudCredential),
                 success: function(data) {
-                    var cloudCreds = [];
-                    Common.credentials = data.account.cloud_credentials;
-                    var cloudCredentials = Common.credentials;
-                    $.each(cloudCredentials, function(index, value) {
-                        var cloudCred = new CloudCredential(value.cloud_credential);
-                        cloudCreds.push(cloudCred);
-                    });
-                    coll.reset(cloudCreds);
+                    coll.reset(data.account.cloud_credentials);
                     Common.vent.trigger("cloudCredentialCreated");
+                },
+                error: function(err, status) {
+                  Common.errorDialog(err, status);
                 }
             }, coll);
 		},
