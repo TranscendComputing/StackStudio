@@ -112,6 +112,7 @@ define([
             if(this.selectedCloudCredential.id === ""){
                 this.cloudCredentials.create(this.selectedCloudCredential, {cloud_account_id: this.selectedCloudAccount.id});
                 this.$el.dialog('close');
+                this.cloudCredentials.add(this.selectedCloudCredential);
                 if(this.onCreated) {
                     this.onCreated();
                 }
