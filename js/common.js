@@ -3,9 +3,8 @@
  * (c) 2012 Transcend Computing <http://www.transcendcomputing.com/>
  * Available under ASL2 license <http://www.apache.org/licenses/LICENSE-2.0.html>
  */
-/*
 
-/**
+/*
  * This require block requires the core apps loaded by CDN, and fails back to
  * a local copy if not available (e.g. working disconnected).
  */
@@ -18,84 +17,43 @@ require(
         'jquery-ui',
         'jquery.jstree'
     ],
-    // XXX - Does this function need parameters? function() {}, should suffice?
-    function ($, _, Backbone, ich) {},
-    function (err) {
-        //The errback, error callback
-        //The error has a list of modules that failed
+    function() {},
+    function(err) {
+        // The errback, error callback
+        // The error has a list of modules that failed
         for (var i = 0; err.requireModules && i < err.requireModules.length; i++) {
             var failedId = err.requireModules[i];
-            if (failedId === 'jquery') {
-                // undef is function only on the global requirejs object.
-                // Use it to clear internal knowledge of jQuery. Any modules
-                // that were dependent on jQuery and in the middle of loading
-                // will not be loaded yet, they will wait until a valid jQuery
-                // does load.
-                requirejs.undef(failedId);
+            var offlineVendorPaths = {
+                'jquery'        : {'jquery'        : 'js/vendor/jquery'},
+                'jquery-ui'     : {'jquery-ui'     : 'js/vendor/jquery-ui'},
+                'underscore'    : {'underscore'    : 'js/vendor/lodash'},
+                'icanhaz'       : {'icanhaz'       : 'js/vendor/ICanHaz'},
+                'backbone'      : {'backbone'      : 'js/vendor/backbone'},
+                'jquery.jstree' : {'jquery.jstree' : 'js/vendor/jquery.jstree'}
+            };
 
-                // Set the path to jQuery to local path
-                console.log("Redirecting to local path.");
-                requirejs.config({
-                    paths: {
-                        jquery: 'js/vendor/jquery'
-                    }
-                });
-
-                // Try again. Note that the above require callback
-                // with the "Do something with $ here" comment will
-                // be called if this new attempt to load jQuery succeeds.
-                require(['jquery'], function () {});
-            } else if (failedId === 'jquery-ui') {
-                requirejs.undef(failedId);
-                console.log("Redirecting to local path:" + failedId);
-                requirejs.config({
-                    paths: {
-                        'jquery-ui': 'js/vendor/jquery-ui'
-                    }
-                });
-                require(['jquery-ui'], function () {console.log("Got it now.")});
-            } else if (failedId === 'underscore') {
-                requirejs.undef(failedId);
-                requirejs.config({
-                    paths: {
-                        'underscore': 'js/vendor/lodash'
-                    }
-                });
-                require(['underscore'], function () {});
-            } else if (failedId === 'icanhaz') {
-                requirejs.undef(failedId);
-                requirejs.config({
-                    paths: {
-                        'icanhaz': 'js/vendor/ICanHaz'
-                    }
-                });
-                require(['icanhaz'], function () {});
-            } else if (failedId === 'backbone') {
-                requirejs.undef(failedId);
-                requirejs.config({
-                    paths: {
-                        'backbone': 'js/vendor/backbone'
-                    }
-                });
-                require(['backbone'], function () {});
-            } else if (failedId === 'jquery.jstree') {
-                requirejs.undef(failedId);
-                requirejs.config({
-                    paths: {
-                        'jquery.jstree': 'js/vendor/jquery.jstree'
-                    }
-                });
-                require(['jquery.jstree'], function () {});
-            } else {
+            // If failedId does not match anything we expect,
+            // generate error message and skip to next loop iteration
+            if (! offlineVendorPaths[failedId]) {
                 console.log("Unhandled require failure:" +failedId);
+                continue;
             }
+
+            // undef is function only on the global requirejs object.
+            // Use it to clear internal knowledge of jQuery. Any modules
+            // that were dependent on jQuery and in the middle of loading
+            // will not be loaded yet, they will wait until a valid jQuery
+            // does load.
+            requirejs.undef(failedId);
+
+            // Overwrite RequireJS config to set offline path for vendor lib
+            requirejs.config({paths: offlineVendorPaths[failedId]});
         }
     }
 );
 
 /**
- * This require block initializes core apps/views that are common to most
- * pages.
+ * This require block initializes core apps/views that are common to most pages.
  */
 define(
     [
@@ -118,7 +76,7 @@ define(
         'backbone.stickit',
         'dataTables.bootstrap'
     ],
-    function ( $, _, Backbone, Ich, Ace, CommandLineView, Router, ErrorDialog, backendTxt ) {
+    function( $, _, Backbone, Ich, Ace, CommandLineView, Router, ErrorDialog, backendTxt ) {
         // Added custom handler for select
         Backbone.Stickit.addHandler({
             selector: 'select',
@@ -154,7 +112,7 @@ define(
           git: "<img src='/images/CompanyLogos/gitIcon.png' class='git_icon'/>"
         };
     
-        $(document).on('click', '.no-default', function ( e ) {
+        $(document).on('click', '.no-default', function( e ) {
             e.preventDefault();
         });
 
@@ -185,7 +143,7 @@ define(
             // RSS Feed URI
             rssFeed: 'http://www.transcendcomputing.com/feed/',
 
-            cache : function ( key, value ) {
+            cache : function( key, value ) {
               var self = this;
               if(!value) {
                 if(!this.cacheCollection[key]) {
@@ -206,24 +164,24 @@ define(
               }
             },
 
-            clearCache : function () {
+            clearCache : function() {
               this.cacheCollection = {};
               if(typeof Storage !== 'undefined') {
                 sessionStorage.clear();
               }
             },
 
-            login : function ( options ) {
+            login : function( options ) {
               this.router.navigate('#', { trigger: true });
               require([
                 'views/account/accountLoginView'
-              ], function ( LoginView ) {
+              ], function( LoginView ) {
                 var loginView = new LoginView(options);
                 loginView.render();    
               });
             },
 
-            authenticate : function ( options ) {
+            authenticate : function( options ) {
               options = options || {};
               if(!this.account) {
                 if(options.redirect === 'here') {
@@ -254,7 +212,7 @@ define(
                 router.navigate(this.previousState, {trigger: true});
             },
 
-            logo : function ( key ) {
+            logo : function( key ) {
               var logos = {
                 aws : '/images/ImageLogos/amazon20.png',
                 redhat : '/images/ImageLogos/redhead20.png',
@@ -268,11 +226,11 @@ define(
             }
         };
 
-        Common.__defineGetter__("account", function () {
+        Common.__defineGetter__("account", function() {
           return Common.cache('account');
         });
 
-        Common.__defineSetter__("account", function ( val ) {
+        Common.__defineSetter__("account", function( val ) {
           Common.cache('account', val);          
         });
 
@@ -280,7 +238,7 @@ define(
           return Common.account.cloud_credentials;
         });
 
-        Common.__defineSetter__("credentials", function ( val ) {
+        Common.__defineSetter__("credentials", function( val ) {
           if(!Common.account) {
             Common.account = {};
           }
