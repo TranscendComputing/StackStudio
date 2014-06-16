@@ -43,7 +43,6 @@ define([
 
       this.cloudCredentials = new CloudCredentials();
       this.cloudCredentials.reset(_.pluck(Common.credentials, "cloud_credential"));
-
       this.selectedCloudCredential = this.cloudCredentials.get(options.selectedId);
 
       this.subViews = [];

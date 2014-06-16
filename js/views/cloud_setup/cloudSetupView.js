@@ -205,9 +205,13 @@ define([
       }
 
       // Create params object for subApp instantiation below
+      //
+      // selectedId relies on a submenu item being selected to be populated
+      // default to id if selectedId is undefined so index list items can
+      // navigate properly. 
       var params = {
           rootView : cloudSetupView,
-          selectedId : cloudSetupView.selectedId,
+          selectedId : cloudSetupView.selectedId || id,
           collection : cloudSetupView.selectedCollection
       };
 
