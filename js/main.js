@@ -25,8 +25,8 @@ require(['config/rjsConfig'], function(undefined) {
             'views/assemblies/assembliesView',
             'views/stacks/stacksView',
             'views/offerings/offeringsView',
-            'views/resource/resourceNavigationView'
-            //'views/meshes/meshesView'
+            'views/resource/resourceNavigationView',
+            'views/meshes/meshesView'
         ],
         function(Common, NavLogin) {
             new NavLogin().render();
