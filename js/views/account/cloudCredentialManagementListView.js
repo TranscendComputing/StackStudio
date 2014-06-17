@@ -69,6 +69,7 @@ define([
                     reset: true
                 });
             });
+
             this.selectedCredential = undefined;
 
             this.credentials.fetch({
@@ -99,6 +100,7 @@ define([
             $("#group_users_table").dataTable().fnClearTable();
             this.credentials.each(function ( cred ) {
                 var rowData = ['<a href="#cloud/setup/cloud-credentials/' + cred.attributes.id + '" id="'+ cred.attributes.id+'" class="credential_item">'+cred.attributes.name+"</a>",cred.attributes.cloud_provider];
+                // XXX - This looks to be a copy and paste error. rename this table to something dealing with creds
                 $("#group_users_table").dataTable().fnAddData(rowData);
             });
         },

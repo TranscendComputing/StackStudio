@@ -5,47 +5,46 @@
  */
 /*jshint smarttabs:true*/
 /*global define:true console:true alert:true*/
-define([
+define(
+    [
         'jquery',
         'backbone',
         'models/cloudCredential',
         'common',
         'messenger'
-], function( $, Backbone, CloudCredential, Common, Messenger ) {
-	'use strict';
-
-	// Cloud Credential Collection
-	// ---------------
-
-	var CloudCredentialList = Backbone.Collection.extend({
-
-		// Reference to this collection's model.
-		model: CloudCredential,
-
-    /**
-     * Override Collection.fetch() because CloudCredentials are
-     * stored in session storage for a user when logged in (views/accountLoginView)
-     * @param  {Object} options
-     * @return {nil}
-     */
-    fetch: function(options) {
-        var cloudCreds = [];
-        if(Common.credentials) {
-            $.each(Common.credentials, function(index, value) {
-                var cloudCred = new CloudCredential(value.cloud_credential);
-                cloudCreds.push(cloudCred);
-            });
-        }
-        this.reset(cloudCreds);
-
-		},
-		/**
+    ],
+    function( $, Backbone, CloudCredential, Common, Messenger ) {
+        'use strict';
+    
+        var CloudCredentialList = Backbone.Collection.extend({
+    
+        // Reference to this collection's model.
+        model: CloudCredential,
+    
+        /**
+         * Override Collection.fetch() because CloudCredentials are
+         * stored in session storage for a user when logged in (views/accountLoginView)
+         * @param  {Object} options
+         * @return {nil}
+         */
+        fetch: function(options) {
+            var cloudCreds = [];
+            if(Common.credentials) {
+                $.each(Common.credentials, function(index, value) {
+                    var cloudCred = new CloudCredential(value.cloud_credential);
+                    cloudCreds.push(cloudCred);
+                });
+            }
+            this.reset(cloudCreds);
+        },
+    
+        /**
          * Creates a new set of cloud credentials for the user
          * @param  {CloudCredential} model
          * @param  {Object} options
          * @return {nil}
          */
-		create: function(model, options) {
+        create: function(model, options) {
             Messenger.options = {
                 extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-right',
                 theme: 'future'
@@ -66,6 +65,7 @@ define([
                 dataType: 'json',
                 data: JSON.stringify(cloudCredential),
                 success: function(data) {
+                    Common.credentials = data.account.cloud_credentials;
                     coll.reset(data.account.cloud_credentials);
                     Common.vent.trigger("cloudCredentialCreated");
                 },
@@ -73,14 +73,15 @@ define([
                   Common.errorDialog(err, status);
                 }
             }, coll);
-		},
-		/**
+        },
+    
+        /**
          * Updates a users cloud credential
          * @param  {CloudCredential} model
          * @param  {Object} options
          * @return {nil}
          */
-		update: function(model, options) {
+        update: function(model, options) {
             var url = Common.apiUrl + "/identity/v1/accounts/" + Common.account.id + "/cloud_credentials/" + model.attributes.id + "?_method=PUT";
             var cloudCredential = {"cloud_credential": model.attributes};
             new Messenger().run({
@@ -100,13 +101,14 @@ define([
                     Common.vent.trigger("cloudCredentialSaved");
                 }
             });
-		},
-		/**
+        },
+    
+        /**
          * Deletes a users cloud credential
          * @param  {Model} cloudCredential
          * @return {nil}
          */
-		deleteCredential: function(cloudCredential) {
+        deleteCredential: function(cloudCredential) {
             var coll = this;
             var url = Common.apiUrl + "/identity/v1/accounts/" + Common.account.id + "/cloud_credentials/" + cloudCredential.id + "?_method=DELETE";
             new Messenger().run({
@@ -126,11 +128,8 @@ define([
                     Common.vent.trigger("cloudCredentialDeleted");
                 }
             });
-		}
+        }
+    });
 
-
-	});
-
-	return CloudCredentialList;
-
+    return CloudCredentialList;
 });
