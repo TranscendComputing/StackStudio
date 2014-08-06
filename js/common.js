@@ -73,8 +73,7 @@ define(
         'jquery.jstree',
         'jquery.form',
         'jquery.dataTables',
-        'backbone.stickit',
-        'dataTables.bootstrap'
+        'backbone.stickit'
     ],
     function( $, _, Backbone, Ich, Ace, CommandLineView, Router, ErrorDialog, backendTxt ) {
         // Added custom handler for select
