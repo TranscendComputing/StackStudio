@@ -165,6 +165,9 @@ define([
 
         close : function () {
           this.$el.modal('hide');
+          this.$el.remove();
+          $('.modal-backdrop').remove();
+          $('body').removeClass('modal-open');
         }
     });
     
